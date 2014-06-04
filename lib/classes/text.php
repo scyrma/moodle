@@ -572,6 +572,11 @@ class core_text {
         return $result;
     }
 
+    /**
+     * Returns Byte-order-mark (BOM) sequence
+     *
+     * @return string
+     */
     public static function get_bom() {
         return "\xef\xbb\xbf";
     }
