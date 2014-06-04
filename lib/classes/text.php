@@ -572,6 +572,10 @@ class core_text {
         return $result;
     }
 
+    public static function get_bom() {
+        return "\xef\xbb\xbf";
+    }
+
     /**
      * Removes the BOM from unicode string {@link http://unicode.org/faq/utf_bom.html}
      *
@@ -579,7 +583,7 @@ class core_text {
      * @return string
      */
     public static function trim_utf8_bom($str) {
-        $bom = "\xef\xbb\xbf";
+        $bom = $this->get_bom();
         if (strpos($str, $bom) === 0) {
             return substr($str, strlen($bom));
         }

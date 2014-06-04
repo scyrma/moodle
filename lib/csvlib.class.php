@@ -432,17 +432,18 @@ class csv_export_writer {
     }
 
     /**
-     * Echos or returns a csv data line by line for displaying.
+     * Echos or returns a csv data line by line for displaying
      *
      * @param bool $return  Set to true to return a string with the csv data.
      * @return string       csv data.
      */
     public function print_csv_data($return = false) {
+        $bom = core_text::get_bom();
         if (!$return) {
-            echo "\xEF\xBB\xBF"; // Add utf8 BOM
+            echo $bom;
         }
         fseek($this->fp, 0);
-        $returnstring = "\xEF\xBB\xBF";
+        $returnstring = $bom;
         while (($content = fgets($this->fp)) !== false) {
             if (!$return){
                 echo $content;
