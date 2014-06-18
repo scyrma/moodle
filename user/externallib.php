@@ -108,7 +108,7 @@ class core_user_external extends external_api {
                                         'type'  => new external_value(PARAM_ALPHANUMEXT, 'The name of the custom field'),
                                         'value' => new external_value(PARAM_RAW, 'The value of the custom field')
                                     )
-                                ), 'User custom fields (also known as user profil fields)', VALUE_OPTIONAL)
+                                ), 'User custom fields (also known as user profile fields)', VALUE_OPTIONAL)
                         )
                     )
                 )

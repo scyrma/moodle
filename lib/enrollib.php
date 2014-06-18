@@ -1167,7 +1167,7 @@ abstract class enrol_plugin {
     }
 
     /**
-     * Does this plugin assign protected roles are can they be manually removed?
+     * Does this plugin assign protected roles or can they be manually removed?
      * @return bool - false means anybody may tweak roles, it does not use itemid and component when assigning roles
      */
     public function roles_protected() {
