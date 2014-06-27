@@ -24,7 +24,7 @@ require_once($CFG->dirroot.'/grade/export/grade_export_form.php');
  */
 abstract class grade_export {
 
-    public $plugin; // plgin name - must be filled in subclasses!
+    public $plugin; // plugin name - must be filled in subclasses!
 
     public $grade_items; // list of all course grade items
     public $groupid;     // groupid, 0 means all groups
