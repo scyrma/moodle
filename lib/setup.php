@@ -883,7 +883,7 @@ if (!empty($CFG->debugvalidators) and !empty($CFG->guestloginbutton)) {
     }
 }
 
-// Apache log integration. In apache conf file one can use ${MOODULEUSER}n in
+// Apache log integration. In apache conf file one can use ${MOODLEUSER}n in
 // LogFormat to get the current logged in username in moodle.
 if ($USER && function_exists('apache_note')
     && !empty($CFG->apacheloguser) && isset($USER->username)) {
