@@ -173,7 +173,7 @@ define('PARAM_NOTAGS',   'notags');
 
 /**
  * PARAM_PATH - safe relative path name, all dangerous chars are stripped, protects against XSS, SQL injections and directory
- * traversals note: the leading slash is not removed, window drive letter is not allowed
+ * traversals note: the leading slash is not removed, windows drive letter is not allowed
  */
 define('PARAM_PATH',     'path');
 
