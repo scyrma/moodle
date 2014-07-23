@@ -289,7 +289,7 @@ class core_string_manager_standard implements core_string_manager {
                         $path = core_component::get_plugin_directory($plugintype, $pluginname);
                         $file = "{$path}/lang/en/{$plugintype}_{$pluginname}.php";
                     }
-                    debugging("Invalid get_string() identifier: '{$identifier}' or component '{$component}'. " .
+                    debugging("Invalid get_string() identifier '{$identifier}' or component '{$component}'. " .
                     "Perhaps you are missing \$string['{$identifier}'] = ''; in {$file}?", DEBUG_DEVELOPER);
                 }
                 return "[[$identifier]]";
