@@ -270,7 +270,7 @@
     $mods = $modinfo->get_cms();
     $sections = $modinfo->get_section_info_all();
 
-    // CAUTION, hacky fundamental variable defintion to follow!
+    // CAUTION, hacky fundamental variable definition to follow!
     // Note that because of the way course fromats are constructed though
     // inclusion we pass parameters around this way..
     $displaysection = $section;
