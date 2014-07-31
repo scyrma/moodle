@@ -1002,7 +1002,7 @@ class core_course_renderer extends plugin_renderer_base {
         }
 
         // If there is content but NO link (eg label), then display the
-        // content here (BEFORE any icons). In this case cons must be
+        // content here (BEFORE any icons). In this case icons must be
         // displayed after the content so that it makes more sense visually
         // and for accessibility reasons, e.g. if you have a one-line label
         // it should work similarly (at least in terms of ordering) to an
