@@ -468,7 +468,7 @@ class problem_000013 extends problem_base {
     function solution() {
         return '<p>Upgrade to Moodle 1.9.1 or later, or manually execute the ' .
         'code in question_multianswer_fix_subquestion_parents_and_categories in ' .
-        '<a href="http://cvs.moodle.org/moodle/question/type/multianswer/db/upgrade.php?revision=1.1.10.2&amp;view=markup">/question/type/multianswer/db/upgrade.php' .
+        '<a href="https://github.com/moodle/moodle/blob/MOODLE_19_STABLE/question/type/multianswer/db/upgrade.php#L47">/question/type/multianswer/db/upgrade.php' .
         'from the 1.9 stable branch</a>.</p>';
     }
 }
