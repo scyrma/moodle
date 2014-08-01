@@ -11,7 +11,7 @@ Auth/RADIUS
 XML/Parser
 =================
 1/ changed ereg_ to preg_
-* http://cvs.moodle.org/moodle/lib/pear/XML/Parser.php.diff?r1=1.1&r2=1.2
+* https://github.com/moodle/moodle/commit/695933097930bc095f3c1e22d0437139582863d3#diff-22e7ae4a1e2f08c50135a64a27628ede
 
 
 Quickforms
