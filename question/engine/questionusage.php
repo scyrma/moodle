@@ -629,7 +629,7 @@ class question_usage_by_activity {
                     if (isset($behaviourvars[$behaviourvarname])) {
                         // Expected behaviour var found.
                         if ($responsedata[$responsedatakey]) {
-                            // Only set the behaviour var if the column value from the cvs file is non zero.
+                            // Only set the behaviour var if the column value from the csv file is non zero.
                             // The behaviours only look at whether the var is set or not they don't look at the value.
                             $slotresponse[$responsedatakey] = $responsedata[$responsedatakey];
                         }
