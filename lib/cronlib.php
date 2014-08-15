@@ -224,7 +224,7 @@ function cron_run() {
     if ($DB->count_records('user_preferences', array('name'=>'create_password', 'value'=>'1'))) {
         mtrace('Creating passwords for new users...');
         $usernamefields = get_all_user_name_fields(true, 'u');
-        $newusers = $DB->get_recordset_sql("SELECT u.id as id, u.email,
+        $newusers = $DB->get_recordset_sql("SELECT u.id as id, u.email, u.auth,
                                                  $usernamefields, u.username, u.lang,
                                                  p.id as prefid
                                             FROM {user} u
