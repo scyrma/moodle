@@ -130,15 +130,11 @@ function message_print_contact_selector($countunreadtotal, $viewing, $user1, $us
         }
     }
 
-    // Only show the search button if we're viewing our own messages.
-    // Search isn't currently able to deal with user A wanting to search user B's messages.
-    if ($showactionlinks) {
+    // Only show the search button if we're viewing our own contacts.
+    if ($viewing == MESSAGE_VIEW_CONTACTS && $user2 == null) {
         echo html_writer::start_tag('form', array('action' => 'index.php','method' => 'GET'));
         echo html_writer::start_tag('fieldset');
         $managebuttonclass = 'visible';
-        if ($viewing == MESSAGE_VIEW_SEARCH) {
-            $managebuttonclass = 'hiddenelement';
-        }
         $strmanagecontacts = get_string('search','message');
         echo html_writer::empty_tag('input', array('type' => 'hidden','name' => 'viewing','value' => MESSAGE_VIEW_SEARCH));
         echo html_writer::empty_tag('input', array('type' => 'submit','value' => $strmanagecontacts,'class' => $managebuttonclass));
@@ -494,6 +490,7 @@ function message_print_contacts($onlinecontacts, $offlinecontacts, $strangers, $
  * @return void
  */
 function message_print_usergroup_selector($viewing, $courses, $coursecontexts, $countunreadtotal, $countblocked, $strunreadmessages, $user1 = null) {
+    global $PAGE;
     $options = array();
 
     if ($countunreadtotal>0) { //if there are unread messages
@@ -531,15 +528,11 @@ function message_print_usergroup_selector($viewing, $courses, $coursecontexts, $
         $options[MESSAGE_VIEW_BLOCKED] = $str;
     }
 
-    echo html_writer::start_tag('form', array('id' => 'usergroupform','method' => 'get','action' => ''));
-    echo html_writer::start_tag('fieldset');
-    if ( !empty($user1) && !empty($user1->id) ) {
-        echo html_writer::empty_tag('input', array('type' => 'hidden','name' => 'user1','value' => $user1->id));
-    }
-    echo html_writer::label(get_string('messagenavigation', 'message'), 'viewing');
-    echo html_writer::select($options, 'viewing', $viewing, false, array('id' => 'viewing','onchange' => 'this.form.submit()'));
-    echo html_writer::end_tag('fieldset');
-    echo html_writer::end_tag('form');
+    $select = new single_select($PAGE->url, 'viewing', $options, $viewing, false);
+    $select->set_label(get_string('messagenavigation', 'message'));
+
+    $renderer = $PAGE->get_renderer('core');
+    echo $renderer->render($select);
 }
 
 /**
@@ -2375,11 +2368,18 @@ function message_mark_message_read($message, $timeread, $messageworkingempty=fal
 
     $DB->delete_records('message', array('id' => $messageid));
 
+    // Get the context for the user who received the message.
+    $context = context_user::instance($message->useridto, IGNORE_MISSING);
+    // If the user no longer exists the context value will be false, in this case use the system context.
+    if ($context === false) {
+        $context = context_system::instance();
+    }
+
     // Trigger event for reading a message.
     $event = \core\event\message_viewed::create(array(
         'objectid' => $messagereadid,
         'userid' => $message->useridto, // Using the user who read the message as they are the ones performing the action.
-        'context'  => context_user::instance($message->useridto),
+        'context' => $context,
         'relateduserid' => $message->useridfrom,
         'other' => array(
             'messageid' => $messageid
@@ -2606,4 +2606,60 @@ function message_current_user_is_involved($user1, $user2) {
         return false;
     }
     return true;
+}
+
+/**
+ * Get messages sent or/and received by the specified users.
+ *
+ * @param  int      $useridto       the user id who received the message
+ * @param  int      $useridfrom     the user id who sent the message. -10 or -20 for no-reply or support user
+ * @param  int      $notifications  1 for retrieving notifications, 0 for messages, -1 for both
+ * @param  bool     $read           true for retrieving read messages, false for unread
+ * @param  string   $sort           the column name to order by including optionally direction
+ * @param  int      $limitfrom      limit from
+ * @param  int      $limitnum       limit num
+ * @return external_description
+ * @since  2.8
+ */
+function message_get_messages($useridto, $useridfrom = 0, $notifications = -1, $read = true,
+                                $sort = 'mr.timecreated DESC', $limitfrom = 0, $limitnum = 0) {
+    global $DB;
+
+    $messagetable = $read ? '{message_read}' : '{message}';
+    $params = array('deleted' => 0);
+
+    // Empty useridto means that we are going to retrieve messages send by the useridfrom to any user.
+    if (empty($useridto)) {
+        $userfields = get_all_user_name_fields(true, 'u', '', 'userto');
+        $joinsql = "JOIN {user} u ON u.id = mr.useridto";
+        $usersql = "mr.useridfrom = :useridfrom AND u.deleted = :deleted";
+        $params['useridfrom'] = $useridfrom;
+    } else {
+        $userfields = get_all_user_name_fields(true, 'u', '', 'userfrom');
+        // Left join because useridfrom may be -10 or -20 (no-reply and support users).
+        $joinsql = "LEFT JOIN {user} u ON u.id = mr.useridfrom";
+        $usersql = "mr.useridto = :useridto AND (u.deleted IS NULL OR u.deleted = :deleted)";
+        $params['useridto'] = $useridto;
+        if (!empty($useridfrom)) {
+            $usersql .= " AND mr.useridfrom = :useridfrom";
+            $params['useridfrom'] = $useridfrom;
+        }
+    }
+
+    // Now, if retrieve notifications, conversations or both.
+    $typesql = "";
+    if ($notifications !== -1) {
+        $typesql = "AND mr.notification = :notification";
+        $params['notification'] = ($notifications) ? 1 : 0;
+    }
+
+    $sql = "SELECT mr.*, $userfields
+              FROM $messagetable mr
+                   $joinsql
+             WHERE $usersql
+                   $typesql
+             ORDER BY $sort";
+
+    $messages = $DB->get_records_sql($sql, $params, $limitfrom, $limitnum);
+    return $messages;
 }

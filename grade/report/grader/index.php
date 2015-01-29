@@ -40,8 +40,8 @@ $target        = optional_param('target', 0, PARAM_ALPHANUM);
 $toggle        = optional_param('toggle', null, PARAM_INT);
 $toggle_type   = optional_param('toggle_type', 0, PARAM_ALPHANUM);
 
-$graderreportsifirst  = optional_param('sifirst', null, PARAM_ALPHA);
-$graderreportsilast   = optional_param('silast', null, PARAM_ALPHA);
+$graderreportsifirst  = optional_param('sifirst', null, PARAM_NOTAGS);
+$graderreportsilast   = optional_param('silast', null, PARAM_NOTAGS);
 
 // The report object is recreated each time, save search information to SESSION object for future use.
 if (isset($graderreportsifirst)) {
@@ -52,7 +52,7 @@ if (isset($graderreportsilast)) {
 }
 
 $PAGE->set_url(new moodle_url('/grade/report/grader/index.php', array('id'=>$courseid)));
-$PAGE->requires->yui_module('moodle-gradereport_grader-scrollview', 'M.gradereport_grader.scrollview.init');
+$PAGE->requires->yui_module('moodle-gradereport_grader-gradereporttable', 'Y.M.gradereport_grader.init', null, null, true);
 
 // basic access checks
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
@@ -184,6 +184,7 @@ if ($USER->gradeediting[$course->id] && ($report->get_pref('showquickfeedback') 
     echo '<div>';
     echo '<input type="hidden" value="'.s($courseid).'" name="id" />';
     echo '<input type="hidden" value="'.sesskey().'" name="sesskey" />';
+    echo '<input type="hidden" value="'.time().'" name="timepageload" />';
     echo '<input type="hidden" value="grader" name="report"/>';
     echo '<input type="hidden" value="'.$page.'" name="page"/>';
     echo $reporthtml;
