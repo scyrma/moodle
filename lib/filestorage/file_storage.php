@@ -2243,7 +2243,13 @@ class file_storage {
         $DB->update_record('files_reference', (object)$data);
     }
 
-    public function sync_filedir() {
-        return $this->filesystem->upload_moodle_data();
+    /**
+     * Synchronise the file directory.
+     *
+     * This calls the sync_filedir function on the file system.
+     * @param $debug bool
+     */
+    public function sync_filedir($debug = false) {
+        return $this->filesystem->sync_filedir();
     }
 }
