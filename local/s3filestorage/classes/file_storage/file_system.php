@@ -277,11 +277,12 @@ class file_system extends \file_system {
         $key = $this->get_contentpath_from_hash($contenthash);
 
         // Perform the headObject in a try/catch.
-        // This saves an API call performing the doesObjectExist, which performs the same operation as headObject
-        // anyway, but does so in a try/catch which checks things such as 
+        // This saves an API call performing the doesObjectExist, which
+        // performs the same operation as headObject anyway.
         try {
             // Fetch the head information.
             // If no file exists at the specified key, then a NoSuchKeyException is thrown.
+            $start = microtime();
             $object = self::$client->headObject(array(
                     'Bucket'        => self::$bucket,
                     'Key'           => $key,
@@ -297,7 +298,8 @@ class file_system extends \file_system {
 
             if ($md5match && $sizematch) {
                 // A copy of this file is already present, and it has a matching MD5 and file size.
-                // No pointin uploading it again so return early.
+                // No point in uploading it again so return early.
+                error_log("{$key}: File present on S3 in " . microtime_diff($start, microtime()) . " seconds ({$filesize})");
                 return $result;
             } else {
                 // There's already a key present, but it has a different MD5 or content size.
@@ -307,8 +309,16 @@ class file_system extends \file_system {
         } catch (NoSuchKeyException $e) {
             // Only catch the NoSuchKeyException exception.
             // There is no key here - upload the file.
+            error_log("{$key}: File absent from S3 in " . microtime_diff($start, microtime()) . " seconds ({$filesize})");
+
+            // We must use a file handle here. If we were to pass the path to the sourcefile to upload, the literal
+            // string for the path would be saved as the file content.
             $fh = fopen($sourcefile, 'r');
+
+            $start = microtime();
             self::$client->upload(self::$bucket, $key, $fh);
+            error_log("{$key}: File uploaded to S3 in " . microtime_diff($start, microtime()) . " seconds ({$filesize})");
+
             // Note: No need to fclose here. The AWS API does it as part of the upload.
         }
 
