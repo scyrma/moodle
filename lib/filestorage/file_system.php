@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Core file system class definition.
  *
@@ -36,8 +35,14 @@ defined('MOODLE_INTERNAL') || die();
  */
 class file_system {
 
+    /**
+     * @var file_storage The reference to the file storage instance.
+     */
     protected $fs = null;
 
+    /**
+     * @var string The path to the local copy of the filedir.
+     */
     protected $filedir = null;
 
     public function __construct($filedir, $dirpermissions, $filepermissions, file_storage $fs = null) {
@@ -52,6 +57,14 @@ class file_system {
         }
     }
 
+    /**
+     * Return the file_system instance.
+     *
+     * @param string $filedir The path to the local filedir.
+     * @param int $dirpermissions The directory permissions when creating new directories
+     * @param int $filepermissions The file permissions when creating new files
+     * @param file_storage $fs The instance of file_storage to instantiate the class with.
+     */
     public static function instance($filedir = null, $dirpermissions = null, $filepermissions = null, file_storage $fs = null) {
         global $CFG;
 
@@ -68,20 +81,28 @@ class file_system {
             } else {
                 $class = get_class();
             }
-            $instance = new $class($filedir, $dirpermissions, $filepermissions, $fs);
+            $instance = new static($filedir, $dirpermissions, $filepermissions, $fs);
         }
 
         return $instance;
     }
 
-    public function upload_moodle_data() {
+    /**
+     * Synchronise the local filedir with any remote filedir.
+     */
+    public function sync_filedir() {
         return;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // old stored_file stuff
-    ////////////////////////////////////////////////////////////////////////////
-
+    /**
+     * Output the content of the specified stored file.
+     *
+     * Note, this is different to get_content() as it uses the built-in php
+     * readfile function which is more efficient.
+     *
+     * @param stored_file $file The file to serve.
+     * @return void
+     */
     public function readfile(stored_file $file) {
         $this->ensure_readable($file);
         $path = $this->get_fullpath_from_storedfile($file, true);
@@ -89,51 +110,67 @@ class file_system {
     }
 
     /**
-     * Get file pathname by contenthash
+     * Get the full path for the stored file, including the path to the
+     * filedir.
      *
-     * NOTE, this function is not calling sync_external_file, it assume the contenthash is current
-     * Protected - developers must not gain direct access to this function.
+     * Note: This function does not ensure that the file is present on disk.
      *
+     * @param stored_file $file The file to serve.
+     * @param bool $sync Whether to call sync_external_file first.
      * @return string full path to pool file with file content
      */
     protected function get_fullpath_from_storedfile(stored_file $file, $sync = false) {
         if ($sync) {
             $file->sync_external_file();
         }
-        // Detect is local file or not.
+        // This does not check that the file is present on disk.
         return $this->get_fullpath_from_hash($file->get_contenthash());
     }
 
     /**
-     * Return path to file with given hash.
+     * Get the full directory to the stored file, including the path to the
+     * filedir, and the directory which the file is actually in.
      *
-     * NOTE: must not be public, files in pool must not be modified
-     *
-     * @param string $contenthash content hash
-     * @return string expected file location
+     * @param string $contenthash The content hash
+     * @return string The full path to the content directory
      */
     protected function get_fulldir_from_hash($contenthash) {
         return $this->filedir . DIRECTORY_SEPARATOR . $this->get_contentdir_from_hash($contenthash);
     }
 
     /**
-     * Return path to file with given hash.
+     * Get the full path for the specified hash, including the path to the filedir.
      *
-     * NOTE: must not be public, files in pool must not be modified
-     *
-     * @param string $contenthash content hash
-     * @return string expected file location
+     * @param string $contenthash The content hash
+     * @return string The full path to the content file
      */
     protected function get_fullpath_from_hash($contenthash) {
         return $this->filedir . DIRECTORY_SEPARATOR . $this->get_contentpath_from_hash($contenthash);
     }
 
+    /**
+     * Get the content directory for the specified content hash.
+     * This is the directory that the file will be in, but without the
+     * fulldir.
+     *
+     * @param string $contenthash The content hash
+     * @return string The directory within filedir
+     */
     protected function get_contentdir_from_hash($contenthash) {
-        $l1 = $contenthash[0].$contenthash[1];
-        $l2 = $contenthash[2].$contenthash[3];
+        $l1 = $contenthash[0] . $contenthash[1];
+        $l2 = $contenthash[2] . $contenthash[3];
         return "$l1/$l2";
     }
 
+    /**
+     * Get the content path for the specified content hash within filedir.
+     *
+     * This does not include the filedir, and is often used by file systems
+     * as the object key for storage and retrieval.
+     *
+     * @param string $contenthash The content hash
+     * @return string The filepath within filedir
+     */
     protected function get_contentpath_from_hash($contenthash) {
         return $this->get_contentdir_from_hash($contenthash) . "/$contenthash";
     }
@@ -185,6 +222,16 @@ class file_system {
         return copy($source, $pathname);
     }
 
+    /**
+     * Get the content of the specified stored file.
+     *
+     * Generally you will probably want to use readfile() to serve content,
+     * and where possible you should see if you can use
+     * get_content_file_handle and work with the file stream instead.
+     *
+     * @param stored_file $file The file to retrieve
+     * @return string The full file content
+     */
     public function get_content(stored_file $file) {
         $this->ensure_readable($file);
         $source = $this->get_fullpath_from_storedfile($file, true);
@@ -195,6 +242,7 @@ class file_system {
     /**
      * List contents of archive.
      *
+     * @param stored_file $file The archive to inspect
      * @param file_packer $packer file packer instance
      * @return array of file infos
      */
@@ -206,10 +254,11 @@ class file_system {
     /**
      * Extract file to given file path (real OS filesystem), existing files are overwritten.
      *
-     * @param file_packer $packer file packer instance
-     * @param string $pathname target directory
-     * @param file_progress $progress Progress indicator callback or null if not required
-     * @return array|bool list of processed files; false if error
+     * @param stored_file $file The archive to inspect
+     * @param file_packer $packer File packer instance
+     * @param string $pathname Target directory
+     * @param file_progress $progress progress indicator callback or null if not required
+     * @return array|bool List of processed files; false if error
      */
     public function extract_to_pathname(stored_file $file, file_packer $packer, $pathname, file_progress $progress = null) {
         $archivefile = $this->get_fullpath_from_storedfile($file, true);
@@ -219,11 +268,12 @@ class file_system {
     /**
      * Adds this file path to a curl request (POST only).
      *
-     * @param curl $curlrequest the curl request object
-     * @param string $key what key to use in the POST request
+     * @param stored_file $file The file to add to the curl request
+     * @param curl $curlrequest The curl request object
+     * @param string $key What key to use in the POST request
      * @return void
      */
-    public function add_to_curl_request(&$curlrequest, $key) {
+    public function add_to_curl_request(stored_file $file, &$curlrequest, $key) {
         $path = $this->get_fullpath_from_storedfile($file, true);
         if (function_exists('curl_file_create')) {
             // As of PHP 5.5, the usage of the @filename API for file uploading is deprecated.
@@ -237,6 +287,7 @@ class file_system {
     /**
      * Extract file to given file path (real OS filesystem), existing files are overwritten.
      *
+     * @param stored_file $file The archive to inspect
      * @param file_packer $packer file packer instance
      * @param int $contextid context ID
      * @param string $component component
@@ -257,6 +308,7 @@ class file_system {
     /**
      * Add file/directory into archive.
      *
+     * @param stored_file $file The file to archive
      * @param file_archive $filearch file archive instance
      * @param string $archivepath pathname in archive
      * @return bool success
@@ -271,9 +323,10 @@ class file_system {
     }
 
     /**
-     * Returns information about image,
-     * information is determined from the file content
+     * Returns information about image.
+     * Information is determined from the file content
      *
+     * @param stored_file $file The file to inspect
      * @return mixed array with width, height and mimetype; false if not an image
      */
     public function get_imageinfo($file) {
@@ -285,7 +338,7 @@ class file_system {
         }
         $image = array('width'=>$imageinfo[0], 'height'=>$imageinfo[1], 'mimetype'=>image_type_to_mime_type($imageinfo[2]));
         if (empty($image['width']) or empty($image['height']) or empty($image['mimetype'])) {
-            // gd can not parse it, sorry
+            // GD can not parse it, sorry.
             return false;
         }
         return $image;
@@ -296,6 +349,7 @@ class file_system {
      *
      * When you want to modify a file, create a new file and delete the old one.
      *
+     * @param stored_file $file The file to retrieve a handle for
      * @param int $type Type of file handle (FILE_HANDLE_xx constant)
      * @return resource file handle
      */
@@ -305,6 +359,16 @@ class file_system {
         return self::get_file_handle_for_path($path, $type);
     }
 
+    /**
+     * Return a file handle for the specified path.
+     *
+     * This abstraction should be used when overriding get_content_file_handle in a new file system.
+     *
+     * @param string $path The path to the file. This shoudl be any type of path that fopen and gzopen accept.
+     * @param int $type Type of file handle (FILE_HANDLE_xx constant)
+     * @return resource
+     * @throws coding_exception When an unexpected type of file handle is requested
+     */
     protected static function get_file_handle_for_path($path, $type = stored_file::FILE_HANDLE_FOPEN) {
         switch ($type) {
             case stored_file::FILE_HANDLE_FOPEN:
@@ -318,18 +382,14 @@ class file_system {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // old file_storage stuff
-    ////////////////////////////////////////////////////////////////////////////
-
     /**
-     * Return mimetype by given file pathname
+     * Return mimetype by given file pathname.
      *
      * If file has a known extension, we return the mimetype based on extension.
      * Otherwise (when possible) we try to get the mimetype from file contents.
      *
-     * @param string $pathname full path to the file
-     * @param string $filename correct file name with extension, if omitted will be taken from $path
+     * @param string $pathname Full path to the file on disk
+     * @param string $filename Correct file name with extension, if omitted will be taken from $path
      * @return string
      */
     public static function mimetype($pathname, $filename = null) {
@@ -345,10 +405,23 @@ class file_system {
     }
 
     /**
+     * Retrieve the mime information for the specified stored file.
+     *
+     * @param stored_file $file The stored file to retrieve mime information for
+     * @return string The MIME type.
+     */
+    public function stored_file_mimetype(stored_file $file) {
+        // The mimetype functions do require that the file exists locally.
+        $this->ensure_readable($file);
+        $pathname = $this->get_fullpath_from_storedfile($file);
+        return self::mimetype($pathname, $file->get_filename());
+    }
+
+    /**
      * Add file content to sha1 pool.
      *
-     * @param string $pathname path to file
-     * @param string $contenthash sha1 hash of content if known (performance only)
+     * @param string $pathname Path to file currently on disk
+     * @param string $contenthash SHA1 hash of content if known (performance only)
      * @return array (contenthash, filesize, newfile)
      */
     public function add_file_to_pool($pathname, $contenthash = NULL) {
@@ -515,13 +588,4 @@ class file_system {
         return array($contenthash, $filesize, $newfile);
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    // New stuff
-    ////////////////////////////////////////////////////////////////////////////
-    public function stored_file_mimetype(stored_file $file) {
-        // The mimetype functions do require that the file exists locally for some obscure reason.
-        $this->ensure_readable($file);
-        $pathname = $this->get_fullpath_from_storedfile($file);
-        return self::mimetype($pathname, $file->get_filename());
-    }
 }
