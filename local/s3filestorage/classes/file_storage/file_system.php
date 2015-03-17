@@ -32,6 +32,8 @@ use stored_file;
 
 use Aws\Common\Aws;
 use moodle_exception;
+use file_pool_content_exception;
+use Aws\S3\Exception\NoSuchKeyException;
 
 use Aws\S3\S3Client;
 
@@ -269,13 +271,45 @@ class file_system extends \file_system {
     private function push_to_s3($result) {
         list($contenthash, $filesize, $newfile) = $result;
 
-        if ($newfile) {
-            // TODO Schedule a file push.
-            $source = $this->get_fullpath_from_hash($contenthash);
-            $key = $this->get_contentpath_from_hash($contenthash);
+        // Note: We cannot rely on the result of $newfile as this only checks whether a file was present in filedir,
+        // which may be empty.
+        $sourcefile = $this->get_fullpath_from_hash($contenthash);
+        $key = $this->get_contentpath_from_hash($contenthash);
 
-            $fh = fopen($source, 'r');
+        // Perform the headObject in a try/catch.
+        // This saves an API call performing the doesObjectExist, which performs the same operation as headObject
+        // anyway, but does so in a try/catch which checks things such as 
+        try {
+            // Fetch the head information.
+            // If no file exists at the specified key, then a NoSuchKeyException is thrown.
+            $object = self::$client->headObject(array(
+                    'Bucket'        => self::$bucket,
+                    'Key'           => $key,
+                ));
+
+            // Compare the local file size against the remote ContentLength.
+            $sizematch  = ($object->get('ContentLength') == $filesize);
+
+            // S3 stores the MD5 of a file to use as the ETag.
+            // Note: ETags have quotes around them hence the following weirdness.
+            $localmd5   = '"' . md5(file_get_contents($sourcefile)) . '"';
+            $md5match   = ($object->get('ETag') == $localmd5);
+
+            if ($md5match && $sizematch) {
+                // A copy of this file is already present, and it has a matching MD5 and file size.
+                // No pointin uploading it again so return early.
+                return $result;
+            } else {
+                // There's already a key present, but it has a different MD5 or content size.
+                // Better fail here for safety's sake.
+                throw new file_pool_content_exception($contenthash);
+            }
+        } catch (NoSuchKeyException $e) {
+            // Only catch the NoSuchKeyException exception.
+            // There is no key here - upload the file.
+            $fh = fopen($sourcefile, 'r');
             self::$client->upload(self::$bucket, $key, $fh);
+            // Note: No need to fclose here. The AWS API does it as part of the upload.
         }
 
         return $result;
