@@ -291,18 +291,13 @@ class file_system extends \file_system {
             // Compare the local file size against the remote ContentLength.
             $sizematch  = ($object->get('ContentLength') == $filesize);
 
-            // S3 stores the MD5 of a file to use as the ETag.
-            // Note: ETags have quotes around them hence the following weirdness.
-            $localmd5   = '"' . md5(file_get_contents($sourcefile)) . '"';
-            $md5match   = ($object->get('ETag') == $localmd5);
-
-            if ($md5match && $sizematch) {
-                // A copy of this file is already present, and it has a matching MD5 and file size.
+            if ($sizematch) {
+                // A copy of this file is already present, and it has a matching file size.
                 // No point in uploading it again so return early.
                 error_log("{$key}: File present on S3 in " . microtime_diff($start, microtime()) . " seconds ({$filesize})");
                 return $result;
             } else {
-                // There's already a key present, but it has a different MD5 or content size.
+                // There's already a key present, but it has a different file size.
                 // Better fail here for safety's sake.
                 throw new file_pool_content_exception($contenthash);
             }
