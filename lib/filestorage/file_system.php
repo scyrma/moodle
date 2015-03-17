@@ -81,7 +81,7 @@ class file_system {
             } else {
                 $class = get_class();
             }
-            $instance = new static($filedir, $dirpermissions, $filepermissions, $fs);
+            $instance = new $class($filedir, $dirpermissions, $filepermissions, $fs);
         }
 
         return $instance;
