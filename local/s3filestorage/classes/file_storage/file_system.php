@@ -94,14 +94,23 @@ class file_system extends \file_system {
     }
 
     /**
-     * Return an empty string. No nesting of directories when using the
-     * local S3 Cache Directory.
+     * Return the filedir. The filedir is specific to this request.
      *
      * @param string $contenthash
      * @return string
      */
-    protected function get_contentdir_from_hash($contenthash) {
-        return "";
+    protected function get_fulldir_from_hash($contenthash) {
+        return $this->filedir;
+    }
+
+    /**
+     * Return the filedir/$contenthash. The filedir is specific to this request.
+     *
+     * @param string $contenthash
+     * @return string
+     */
+    protected function get_fullpath_from_hash($contenthash) {
+        return $this->filedir . DIRECTORY_SEPARATOR . $contenthash;
     }
 
     /**
