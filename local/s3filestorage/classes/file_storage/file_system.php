@@ -54,12 +54,23 @@ class file_system extends \file_system {
     public function __construct($filedir, $dirpermissions, $filepermissions, file_storage $fs = null) {
         global $CFG;
 
-        // Set up the rest of the constructor.
-        parent::__construct($filedir, $dirpermissions, $filepermissions, $fs);
-
         if (!isset($CFG->s3bucket)) {
             throw new moodle_exception('S3 not configured');
         }
+
+        $s3filedir = make_localcache_directory(substr(md5(microtime()), 0, 8));
+        if (!$s3filedir) {
+            throw new moodle_exception('Unable to create a S3 cache directory');
+        }
+
+        if (strpos($s3filedir, $filedir)) {
+            throw new moodle_exception('The S3 cache directory is within filedir. Aborting before something dangerous happens');
+        }
+
+        \core_shutdown_manager::register_function(array($this, 'cleanup'), array($s3filedir));
+
+        // Set up the rest of the constructor.
+        parent::__construct($s3filedir, $dirpermissions, $filepermissions, $fs);
 
         // Attempt to connect to S3.
         if (isset($CFG->awsconfig)) {
@@ -69,6 +80,28 @@ class file_system extends \file_system {
         }
         self::$client = $aws->get('S3');
         self::$bucket = $CFG->s3bucket;
+    }
+
+    /**
+     * The shutdown handler for the S3 file storage system.
+     *
+     * This will remove the temporary filedir.
+     * This looks like a dangerous operation
+     */
+    public function cleanup($s3filedir) {
+        // Unlink the entire filedir.
+        remove_dir($s3filedir);
+    }
+
+    /**
+     * Return an empty string. No nesting of directories when using the
+     * local S3 Cache Directory.
+     *
+     * @param string $contenthash
+     * @return string
+     */
+    protected function get_contentdir_from_hash($contenthash) {
+        return "";
     }
 
     /**
@@ -231,11 +264,7 @@ class file_system extends \file_system {
      * Upload the entire moodle data directory to S3.
      */
     public function sync_filedir($debug = false) {
-        // By default uploadDirectory only uploads missing and/or different files.
-        $options = array(
-            'debug' => $debug,
-        );
-        self::$client->uploadDirectory($this->filedir, self::$bucket, '', $options);
+        throw new moodle_exception('Sorry, but no');
     }
 
     /**
