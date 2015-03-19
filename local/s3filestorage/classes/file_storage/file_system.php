@@ -136,8 +136,7 @@ class file_system extends \file_system {
      * @param stored_file $file The stored file.
      */
     public function readfile(stored_file $file) {
-        // TODO convert this to use fopen.
-        return parent::readfile($file);
+        return readfile_allow_large($this->get_presigned_url($file->get_contenthash()), $file->get_filesize());
     }
 
     /**
