@@ -214,13 +214,15 @@ class file_system extends \file_system {
 
         $temptarget = $target . '.tmp';
         // Attempt to fetch the file.
-        $subpath = $this->get_contentpath_from_hash($contenthash);
+        $key = $this->get_contentpath_from_hash($contenthash);
         try {
+            $start = microtime();
             self::$client->getObject(array(
                     'Bucket'    => self::$bucket,
-                    'Key'       => $subpath,
+                    'Key'       => $key,
                     'SaveAs'    => $temptarget,
                 ));
+            error_log("{$key}: Fetched file from S3 in " . microtime_diff($start, microtime()) . " seconds");
             // Atomicity is nice.
             rename($temptarget, $target);
             chmod($target, $this->filepermissions); // Fix permissions if needed.
