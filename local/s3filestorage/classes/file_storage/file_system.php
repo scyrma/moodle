@@ -377,4 +377,19 @@ class file_system extends \file_system {
         return $result;
     }
 
+    /**
+     * Returns information about image.
+     * Information is determined from the file content
+     *
+     * @param stored_file $file The file to inspect
+     * @return mixed array with width, height and mimetype; false if not an image
+     */
+    public function get_imageinfo($file) {
+        if (!$this->is_image($file)) {
+            return false;
+        }
+
+        return $this->get_imageinfo_from_path($this->get_presigned_url($file->get_contenthash()));
+    }
+
 }
