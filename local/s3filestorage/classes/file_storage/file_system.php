@@ -126,7 +126,20 @@ class file_system extends \file_system {
      * @throws file_exception When the file could not be found at all.
      */
     public function ensure_readable(stored_file $file) {
-        $this->fetch_local_copy($file->get_contenthash());
+        if ($file->is_directory()) {
+            // We cannot store directories in S3, so we cannot fetch them.
+            return true;
+        }
+
+        $contenthash = $file->get_contenthash();
+        if ($file->get_filesize() === 0) {
+            // S3 Cannot deal with empty files - touch the target on the filesystem.
+            $target = $this->get_fullpath_from_hash($contenthash);
+            touch($target);
+            chmod($target, $this->filepermissions); // Fix permissions if needed.
+        }
+
+        $this->fetch_local_copy($contenthash);
         return parent::ensure_readable($file);
     }
 
@@ -314,6 +327,11 @@ class file_system extends \file_system {
         // which may be empty.
         $sourcefile = $this->get_fullpath_from_hash($contenthash);
         $key = $this->get_contentpath_from_hash($contenthash);
+
+        if ($filesize === 0 || is_dir($sourcefile)) {
+            // We cannot push empty files or directories.
+            return $result;
+        }
 
         // Perform the headObject in a try/catch.
         // This saves an API call performing the doesObjectExist, which
