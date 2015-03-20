@@ -330,13 +330,55 @@ class file_system {
      * @return mixed array with width, height and mimetype; false if not an image
      */
     public function get_imageinfo($file) {
-        $this->ensure_readable($file);
-        $mimetype = $file->get_mimetype();
-        $path = $this->get_fullpath_from_storedfile($file, true);
-        if (!preg_match('|^image/|', $mimetype) || !filesize($path) || !($imageinfo = getimagesize($path))) {
+        if (!$this->is_image($file)) {
             return false;
         }
-        $image = array('width'=>$imageinfo[0], 'height'=>$imageinfo[1], 'mimetype'=>image_type_to_mime_type($imageinfo[2]));
+
+        $this->ensure_readable();
+        $path = $this->get_fullpath_from_storedfile($file, true);
+
+        return $this->get_imageinfo_from_path($path);
+    }
+
+    /**
+     * Attempt to determine whether the specified file is likely to be an
+     * image.
+     * Since this relies upon the mimetype stored in the files table, there
+     * may be times when this information is not 100% accurate.
+     *
+     * @param stored_file $file The file to check
+     * @return bool
+     */
+    public function is_image(stored_file $file) {
+        if (!$file->get_filesize()) {
+            // An empty file cannot be an image.
+            return false;
+        }
+
+        $mimetype = $file->get_mimetype();
+        if (!preg_match('|^image/|', $mimetype)) {
+            // The mimetype does not include image.
+            return false;
+        }
+
+        // If it looks like an image, and it smells like an image, perhaps it's an image!
+        return true;
+    }
+
+    /**
+     * Returns image information relating to the specified path or URL.
+     *
+     * @param string $path The path to pass to getimagesize.
+     * @return array Containing width, height, and mimetype.
+     */
+    protected function get_imageinfo_from_path($path) {
+        $imageinfo = getimagesize($path);
+
+        $image = array(
+                'width'     => $imageinfo[0],
+                'height'    => $imageinfo[1],
+                'mimetype'  => image_type_to_mime_type($imageinfo[2]),
+            );
         if (empty($image['width']) or empty($image['height']) or empty($image['mimetype'])) {
             // GD can not parse it, sorry.
             return false;
@@ -392,16 +434,38 @@ class file_system {
      * @param string $filename Correct file name with extension, if omitted will be taken from $path
      * @return string
      */
-    public static function mimetype($pathname, $filename = null) {
+    public static function mimetype($fullpath, $filename = null) {
         if (empty($filename)) {
-            $filename = $pathname;
+            $filename = $fullpath;
         }
+
+        // The mimeinfo function determines the mimetype purely based on the file extension.
         $type = mimeinfo('type', $filename);
-        if ($type === 'document/unknown' && class_exists('finfo') && file_exists($pathname)) {
-            $finfo = new finfo(FILEINFO_MIME_TYPE);
-            $type = mimeinfo_from_type('type', $finfo->file($pathname));
+
+        if ($type === 'document/unknown') {
+            // The type is unknown. Inspect the file now.
+            $type = self::mimetype_from_file($fullpath);
         }
         return $type;
+    }
+
+    /**
+     * Inspect a file on disk for it's mimetype.
+     *
+     * @param string $fullpath Path to file on disk
+     * @param string $default The default mimetype to use if the file was not found.
+     * @return string The mimetype
+     */
+    public static function mimetype_from_file($fullpath, $default = 'document/unknown') {
+        $type = $default;
+
+        if (file_exists($fullpath) && class_exists('finfo')) {
+            // The type is unknown. Attempt to look up the file type now.
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            return mimeinfo_from_type('type', $finfo->file($fullpath));
+        }
+
+        return 'document/unknown';
     }
 
     /**
@@ -411,10 +475,18 @@ class file_system {
      * @return string The MIME type.
      */
     public function stored_file_mimetype(stored_file $file) {
-        // The mimetype functions do require that the file exists locally.
-        $this->ensure_readable($file);
         $pathname = $this->get_fullpath_from_storedfile($file);
-        return self::mimetype($pathname, $file->get_filename());
+        $mimetype = self::mimetype($pathname, $file->get_filename());
+
+        if (!$this->is_readable($file) && $mimetype === 'document/unknown') {
+            // The type is unknown, but the full checks weren't completed because the file isn't locally available.
+            // Ensure we have a local copy and try again.
+            $this->ensure_readable($file);
+
+            $mimetype = self::mimetype_from_file($pathname);
+        }
+
+        return $mimetype;
     }
 
     /**
