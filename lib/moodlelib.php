@@ -9184,6 +9184,13 @@ function get_performance_info() {
         $info['txt'] .= 'Caches used (hits/misses/sets): 0/0/0 ';
     }
 
+    // BEGIN MOODLECLOUD HACK.
+    $info['dbread']         = $DB->perf_get_reads();
+    $info['allwrites']      = $DB->perf_get_writes();
+    $info['perfwrites']     = $PERF->logwrites;
+    $info['finalwrites']    = $info['writes'] - $info['perfwrites'];
+    // END MOODLECLOUD HACK.
+
     $info['html'] = '<div class="performanceinfo siteinfo container-fluid">'.$info['html'].'</div>';
     return $info;
 }
