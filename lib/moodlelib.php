@@ -8911,7 +8911,7 @@ function get_performance_info() {
     $info['dbread']         = $DB->perf_get_reads();
     $info['allwrites']      = $DB->perf_get_writes();
     $info['perfwrites']     = $PERF->logwrites;
-    $info['finalwrites']    = $info['writes'] - $info['perfwrites'];
+    $info['finalwrites']    = $info['allwrites'] - $info['perfwrites'];
     // END MOODLECLOUD HACK.
 
     $info['html'] = '<div class="performanceinfo siteinfo">'.$info['html'].'</div>';
