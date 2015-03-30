@@ -362,6 +362,10 @@ function default_exception_handler($ex) {
         redirect(get_login_url());
     }
 
+    // START MOODLECLOUD HACK.
+    logstore_monolog\log::log(get_class($ex), array('exceptions' => $ex), 'exceptions');
+    // END MOODLECLOUD HACK.
+
     $info = get_exception_info($ex);
 
     if (debugging('', DEBUG_MINIMAL)) {
