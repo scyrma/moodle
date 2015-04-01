@@ -5768,8 +5768,10 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
     // Make sure that we fall back onto some reasonable no-reply address.
     $noreplyaddress = empty($CFG->noreplyaddress) ? 'noreply@' . get_host_from_url($CFG->wwwroot) : $CFG->noreplyaddress;
 
-    // Make up an email address for handling bounces.
-    if (!empty($CFG->handlebounces)) {
+    if ($CFG->mailsender) {
+        $mail->Sender = $CFG->mailsender;
+    } else if (!empty($CFG->handlebounces)) {
+        // Make up an email address for handling bounces.
         $modargs = 'B'.base64_encode(pack('V', $user->id)).substr(md5($user->email), 0, 16);
         $mail->Sender = generate_email_processing_address(0, $modargs);
     } else {
