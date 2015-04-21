@@ -313,6 +313,8 @@ class file_system extends \file_system {
      */
     public function add_file_to_pool($pathname, $contenthash = NULL) {
         $result = parent::add_file_to_pool($pathname, $contenthash);
+        self::check_file_within_quota($result);
+
         return $this->push_to_s3($result);
     }
 
@@ -324,6 +326,8 @@ class file_system extends \file_system {
      */
     public function add_string_to_pool($content) {
         $result = parent::add_string_to_pool($content);
+        self::check_file_within_quota($result);
+
         return $this->push_to_s3($result);
     }
 
@@ -429,6 +433,45 @@ class file_system extends \file_system {
      */
     protected static function log_statistic($eventname, $data) {
         logger::log($eventname, $data, 'local_filestorage');
+    }
+
+    /**
+     * Check whether a file is within the file system quota.
+     *
+     * @return void
+     */
+    protected function check_file_within_quota($result) {
+        global $DB;
+        if (defined('FILESTORAGE_QUOTA')) {
+            list($contenthash, $filesize, $newfile) = $result;
+
+            // Cannot rely upon $newfile as the file may not exist on the local file system.
+            if (!$DB->record_exists('files', array('contenthash' => $contenthash))) {
+                $current = self::unique_storage_size_used();
+                if (($current + $filesize) > FILESTORAGE_QUOTA) {
+                    throw new \local_filestorage\exception\quota_exception($current, $filesize);
+                }
+            }
+        }
+    }
+
+    /**
+     * Determine the current unique file storage size.
+     *
+     * @return int
+     */
+    public static function unique_storage_size_used() {
+        global $DB;
+
+        return $DB->get_field_sql("
+            SELECT SUM(f.filesize)
+              FROM (
+                    SELECT DISTINCT
+                                    filesize
+                               FROM {files}
+                              WHERE filearea <> 'draft'
+                           GROUP BY filesize, contenthash
+              ) AS f");
     }
 
 }
