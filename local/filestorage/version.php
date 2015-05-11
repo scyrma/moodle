@@ -17,7 +17,7 @@
 /**
  * Version information.
  *
- * @package   local_s3filestorage
+ * @package   local_filestorage
  * @copyright 2015 Andrew Nicols <andrew@nicols.co.uk>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,4 +26,4 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2015031300;       // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2014110400;       // Requires this Moodle version
-$plugin->component = 'local_s3filestorage';      // Full name of the plugin (used for diagnostics)
+$plugin->component = 'local_filestorage';      // Full name of the plugin (used for diagnostics)
