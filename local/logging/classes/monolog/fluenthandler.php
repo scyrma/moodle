@@ -81,7 +81,7 @@ class fluenthandler extends \Monolog\Handler\AbstractProcessingHandler {
         $channel = $record['channel'];
 
         if ($logger = $this->get_logger($channel)) {
-            $this->logger->post($channel, $record);
+            $this->logger->post('moodle.' . $channel, $record);
         }
     }
 }
