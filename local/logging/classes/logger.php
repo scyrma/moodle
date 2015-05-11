@@ -26,26 +26,28 @@ namespace local_logging;
 
 require_once(dirname(__DIR__) . '/vendor/autoload.php');
 
-use Monolog\Logger;
 use Monolog\Formatter\LogglyFormatter;
 use local_logging\monolog\fluenthandler as FluentHandler;
 
 defined('MOODLE_INTERNAL') || die();
 
-class log {
-    protected static function get_logger($channel = 'logstore') {
-        global $CFG;
-
+class logger {
+    /**
+     * Get the logger for the named channel.
+     *
+     * @param string $channel The name of the channel to log to.
+     * @return Monolog\Logger
+     */
+    protected static function get_logger($channel = null) {
         static $loggers = array();
 
-        if (!isset($loggers[$channel])) {
-            if (!$logpath = get_config('local_logging', 'logpath')) {
-                // If this plugin is not configured to log somewhere, then don't bother setting it up any further.
-                return null;
-            }
+        if (null === $channel) {
+            $channel = 'logstore';
+        }
 
+        if (!isset($loggers[$channel])) {
             // Setup the logger.
-            $logger[$channel] = new Logger($channel);
+            $logger[$channel] = new \Monolog\Logger($channel);
 
             $handler = new FluentHandler();
             $logger[$channel]->pushHandler($handler);
@@ -57,14 +59,17 @@ class log {
     /**
      * Log the item.
      *
-     * @param array $evententries raw event data
+     * @param string $eventname The name of the event to log.
+     * @param object $eventdata The event data.
+     * @param int $loglevel The Monolog log level constant.
+     * @param string $channel The name of the channel to log to.
      */
-    public static function log($eventname, $eventdata, $channel = 'logstore') {
+    public static function log($eventname, $eventdata, $loglevel = null, $channel = null) {
         global $_SERVER, $USER, $CFG;
 
         if ($logger = self::get_logger($channel)) {
             if (!isset($eventdata['userid'])) {
-                $eventdata['userid'] = $USER->id ?: null;
+               $eventdata['userid'] = $USER->id ?: null;
             }
             if (isset($_SERVER['REQUEST_URI'])) {
                 $eventdata['uri'] = $_SERVER['REQUEST_URI'];
@@ -79,8 +84,15 @@ class log {
             $eventdata['moodleversion'] = $CFG->version;
             $eventdata['wwwroot'] = $CFG->wwwroot;
 
-            // TODO add the Amazon Instance tag.
-            $logger->addInfo($eventname, $eventdata);
+            // TODO add the Amazon Instance tag and other associated info.
+
+            if (!isset($loglevel)) {
+                // Default to the INFO level.
+                $loglevel = \Monolog\Logger::INFO;
+            }
+
+            // Log at the desired level.
+            $logger->addRecord($loglevel, $eventname, $eventdata);
         }
     }
 

@@ -60,7 +60,15 @@ class fluenthandler extends \Monolog\Handler\AbstractProcessingHandler {
      */
     protected function get_logger() {
         if (!$this->logger) {
-            $this->logger = new FluentLogger();
+
+            if (!$host = get_config('local_logging', 'host')) {
+                $host = FluentLogger::DEFAULT_ADDRESS;
+            }
+            if (!$port = get_config('local_logging', 'port')) {
+                $port = FluentLogger::DEFAULT_LISTEN_PORT;
+            }
+
+            $this->logger = new FluentLogger($host, $port);
         }
 
         return $this->logger;
