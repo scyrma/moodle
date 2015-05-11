@@ -160,11 +160,11 @@ class core_shutdown_manager {
             }
 
             // BEGIN MOODLECLOUD HACK.
-            if (logstore_monolog\log::is_logging('performance')) {
+            if (local_logging\logger::is_logging('performance')) {
                 $perf = get_performance_info();
                 unset($perf['html']);
                 unset($perf['txt']);
-                logstore_monolog\log::log('performance', $perf, 'performance');
+                local_logging\logger::log('performance', $perf, null, 'performance');
             }
             // END MOODLECLOUD HACK.
         }
