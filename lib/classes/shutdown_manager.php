@@ -164,7 +164,7 @@ class core_shutdown_manager {
                 $perf = get_performance_info();
                 unset($perf['html']);
                 unset($perf['txt']);
-                local_logging\logger::log('performance', $perf, null, 'performance');
+                local_logging\logger::log('performance', $perf, 'performance');
             }
             // END MOODLECLOUD HACK.
         }
