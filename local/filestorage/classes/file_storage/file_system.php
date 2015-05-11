@@ -17,13 +17,13 @@
 /**
  * A version of the file system for S3.
  *
- * @package    s3filestorage
+ * @package    filestorage
  * @subpackage local
  * @copyright  2015 Andrew Nicols
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_s3filestorage\file_storage;
+namespace local_filestorage\file_storage;
 
 require_once(dirname(dirname(__DIR__)) . '/vendor/autoload.php');
 
