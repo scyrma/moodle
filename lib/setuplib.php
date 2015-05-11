@@ -349,7 +349,7 @@ function default_exception_handler($ex) {
     }
 
     // START MOODLECLOUD HACK.
-    logstore_monolog\log::log(get_class($ex), array('exceptions' => $ex), 'exceptions');
+    local_logging\logger::log(get_class($ex), array('exceptions' => $ex), null, 'exceptions');
     // END MOODLECLOUD HACK.
 
     $info = get_exception_info($ex);
