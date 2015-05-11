@@ -67,7 +67,7 @@ class statistics {
         }
         $data->uniquelastaccess = $uniquelastaccess;
 
-        logger::log('statistics', $data, 'statistics');
+        logger::log('statistics', (array) $data, 'statistics');
     }
 
     protected static function since_time($overlastminutes) {
