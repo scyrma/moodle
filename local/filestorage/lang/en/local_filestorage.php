@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for local_s3filestorage.
+ * Strings for local_filestorage.
  *
- * @package   local_s3filestorage
+ * @package   local_filestorage
  * @copyright 2015 Andrew Nicols <andrew@nicols.co.uk>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
