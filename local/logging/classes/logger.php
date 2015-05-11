@@ -61,10 +61,10 @@ class logger {
      *
      * @param string $eventname The name of the event to log.
      * @param object $eventdata The event data.
-     * @param int $loglevel The Monolog log level constant.
      * @param string $channel The name of the channel to log to.
+     * @param int $loglevel The Monolog log level constant.
      */
-    public static function log($eventname, $eventdata, $loglevel = null, $channel = null) {
+    public static function log($eventname, $eventdata, $channel = null, $loglevel = null) {
         global $_SERVER, $USER, $CFG;
 
         if ($logger = self::get_logger($channel)) {
