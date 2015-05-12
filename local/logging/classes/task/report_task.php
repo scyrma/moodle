@@ -37,6 +37,6 @@ class reporting_task extends \core\task\scheduled_task {
      * Execute task.
      */
     public function execute() {
-            logger::log($event['eventname'], $event);
+        logger::log($event['eventname'], $event);
     }
 }
