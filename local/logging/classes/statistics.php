@@ -65,7 +65,14 @@ class statistics {
         foreach ($timeperiods as $desc => $period) {
             $uniquelastaccess[$desc] = self::get_unique_lastaccess($period);
         }
-        $data->uniquelastaccess = $uniquelastaccess;
+
+        $data->users = array(
+                // Count of all users, and deleted users.
+                // This does include system users (guest).
+                'total'         => $DB->count_records('user'),
+                'deleted'       => $DB->count_records('user', array('deleted' => 1)),
+                'lastaccess'    => $uniquelastaccess,
+            );
 
         logger::log('statistics', (array) $data, 'statistics');
     }
