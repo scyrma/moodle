@@ -23,7 +23,7 @@
  */
 namespace local_logging\task;
 
-class reporting_task extends \core\task\scheduled_task {
+class report_task extends \core\task\scheduled_task {
     /**
      * Get a descriptive name for this task (shown to admins).
      *
