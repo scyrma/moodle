@@ -81,6 +81,10 @@ class fluenthandler extends \Monolog\Handler\AbstractProcessingHandler {
         $channel = $record['channel'];
 
         if ($logger = $this->get_logger($channel)) {
+            if (isset($record['formatted'])) {
+                // Remove the formatted version. We pass JSON.
+                unset($record['formatted']);
+            }
             $this->logger->post('moodle.' . $channel, $record);
         }
     }
