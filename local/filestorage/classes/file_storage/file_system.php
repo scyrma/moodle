@@ -37,6 +37,8 @@ use Aws\S3\Exception\NoSuchKeyException;
 
 use Aws\S3\S3Client;
 
+use local_logging\logger;
+
 defined('MOODLE_INTERNAL') || die();
 
 class file_system extends \file_system {
@@ -235,7 +237,14 @@ class file_system extends \file_system {
                     'Key'       => $key,
                     'SaveAs'    => $temptarget,
                 ));
-            error_log("{$key}: Fetched file from S3 in " . microtime_diff($start, microtime()) . " seconds");
+
+            self::log_statistic('fetched', array(
+                    'message'       => 'Fetched file from S3',
+                    'contenthash'   => $contenthash,
+                    'filesize'      => filesize($temptarget),
+                    'time'          => microtime_diff($start, microtime()),
+                ));
+
             // Atomicity is nice.
             rename($temptarget, $target);
             chmod($target, $this->filepermissions); // Fix permissions if needed.
@@ -351,7 +360,12 @@ class file_system extends \file_system {
             if ($sizematch) {
                 // A copy of this file is already present, and it has a matching file size.
                 // No point in uploading it again so return early.
-                error_log("{$key}: File present on S3 in " . microtime_diff($start, microtime()) . " seconds ({$filesize})");
+                self::log_statistic('precheckmatch', array(
+                        'message'       => 'New file matched existing file in S3',
+                        'contenthash'   => $contenthash,
+                        'filesize'      => $filesize,
+                        'time'          => microtime_diff($start, microtime()),
+                    ));
                 return $result;
             } else {
                 // There's already a key present, but it has a different file size.
@@ -361,7 +375,12 @@ class file_system extends \file_system {
         } catch (NoSuchKeyException $e) {
             // Only catch the NoSuchKeyException exception.
             // There is no key here - upload the file.
-            error_log("{$key}: File absent from S3 in " . microtime_diff($start, microtime()) . " seconds ({$filesize})");
+            self::log_statistic('precheckfail', array(
+                    'message'       => 'Existing file not found when checking before upload',
+                    'contenthash'   => $contenthash,
+                    'filesize'      => $filesize,
+                    'time'          => microtime_diff($start, microtime()),
+                ));
 
             // We must use a file handle here. If we were to pass the path to the sourcefile to upload, the literal
             // string for the path would be saved as the file content.
@@ -369,7 +388,12 @@ class file_system extends \file_system {
 
             $start = microtime();
             self::$client->upload(self::$bucket, $key, $fh);
-            error_log("{$key}: File uploaded to S3 in " . microtime_diff($start, microtime()) . " seconds ({$filesize})");
+            self::log_statistic('uploaded', array(
+                    'message'       => 'New file uploaded to S3',
+                    'contenthash'   => $contenthash,
+                    'filesize'      => $filesize,
+                    'time'          => microtime_diff($start, microtime()),
+                ));
 
             // Note: No need to fclose here. The AWS API does it as part of the upload.
         }
@@ -390,6 +414,16 @@ class file_system extends \file_system {
         }
 
         return $this->get_imageinfo_from_path($this->get_presigned_url($file->get_contenthash()));
+    }
+
+    /**
+     * Log some statistics to the logger.
+     *
+     * @param string $eventname
+     * @param array $data
+     */
+    protected static function log_statistic($eventname, $data) {
+        logger::log($eventname, $data, 'local_filestorage');
     }
 
 }
