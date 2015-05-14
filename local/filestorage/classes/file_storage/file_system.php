@@ -239,7 +239,7 @@ class file_system extends \file_system {
                 ));
 
             self::log_statistic('fetched', array(
-                    'message'       => 'Fetched file from S3',
+                    'logmessage'    => 'Fetched file from S3',
                     'contenthash'   => $contenthash,
                     'filesize'      => filesize($temptarget),
                     'time'          => microtime_diff($start, microtime()),
@@ -361,7 +361,7 @@ class file_system extends \file_system {
                 // A copy of this file is already present, and it has a matching file size.
                 // No point in uploading it again so return early.
                 self::log_statistic('precheckmatch', array(
-                        'message'       => 'New file matched existing file in S3',
+                        'logmessage'    => 'New file matched existing file in S3',
                         'contenthash'   => $contenthash,
                         'filesize'      => $filesize,
                         'time'          => microtime_diff($start, microtime()),
@@ -376,7 +376,7 @@ class file_system extends \file_system {
             // Only catch the NoSuchKeyException exception.
             // There is no key here - upload the file.
             self::log_statistic('precheckfail', array(
-                    'message'       => 'Existing file not found when checking before upload',
+                    'logmessage'    => 'Existing file not found when checking before upload',
                     'contenthash'   => $contenthash,
                     'filesize'      => $filesize,
                     'time'          => microtime_diff($start, microtime()),
@@ -389,7 +389,7 @@ class file_system extends \file_system {
             $start = microtime();
             self::$client->upload(self::$bucket, $key, $fh);
             self::log_statistic('uploaded', array(
-                    'message'       => 'New file uploaded to S3',
+                    'logmessage'    => 'New file uploaded to S3',
                     'contenthash'   => $contenthash,
                     'filesize'      => $filesize,
                     'time'          => microtime_diff($start, microtime()),
