@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace local_logging\task;
+use local_logging\statistics;
 
 class report_task extends \core\task\scheduled_task {
     /**
@@ -37,6 +38,6 @@ class report_task extends \core\task\scheduled_task {
      * Execute task.
      */
     public function execute() {
-        logger::log($event['eventname'], $event);
+        statistics::log_statistics();
     }
 }
