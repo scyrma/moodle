@@ -52,7 +52,7 @@ class store implements \tool_log\log\writer {
      */
     protected function insert_event_entries($evententries) {
         foreach ($evententries as $event) {
-            logger::log('logstore', $event);
+            logger::log($event['eventname'], $event);
         }
     }
 }
