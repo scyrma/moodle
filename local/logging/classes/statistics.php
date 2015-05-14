@@ -69,8 +69,8 @@ class statistics {
         $data->users = array(
                 // Count of all users, and deleted users.
                 // This does include system users (guest).
-                'total'         => $DB->count_records('user'),
-                'deleted'       => $DB->count_records('user', array('deleted' => 1)),
+                'total'         => self::get_user_count(),
+                'deleted'       => self::get_user_count(1),
                 'lastaccess'    => $uniquelastaccess,
             );
 
@@ -158,5 +158,16 @@ EOF;
         }
 
         return $data;
+    }
+
+    public static function get_user_count($deleted = null) {
+        global $DB;
+        $params = array();
+
+        if (null !== $deleted) {
+            $params['deleted'] = $deleted;
+        }
+
+        return $DB->count_records('user', $params);
     }
 }
