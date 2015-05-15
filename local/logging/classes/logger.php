@@ -81,6 +81,14 @@ class logger {
                 $eventdata['cliargs'] = $_SERVER['argv'];
             }
 
+            if (defined('CLI_SCRIPT')) {
+                $eventdata['type'] = 'CLI';
+            } else if (defined('AJAX_SCRIPT')) {
+                $eventdata['type'] = 'AJAX';
+            } else {
+                $eventdata['type'] = 'Web';
+            }
+
             if (isset($CFG->moodlecloudversion)) {
                 $eventdata['moodlecloudversion'] = $CFG->moodlecloudversion;
             }
