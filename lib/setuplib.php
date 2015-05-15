@@ -415,6 +415,20 @@ function default_error_handler($errno, $errstr, $errfile, $errline, $errcontext)
         //fatal catchable error
         throw new coding_exception('PHP catchable fatal error', $errstr);
     }
+
+    // START MOODLECLOUD HACK.
+    if (strpos($errfile, 'local/logging') === false) {
+        $exception = array('exceptions' => array(
+                'errno'         => $errno,
+                'errstr'        => $errstr,
+                'errfile'       => $errfile,
+                'errline'       => $errline,
+                // Note: Do not include the errcontext here - things get circular.
+            ));
+        local_logging\logger::log($errstr, $exception, 'exceptions', \Monolog\Logger::ERROR);
+    }
+    // END MOODLECLOUD HACK.
+
     return false;
 }
 
