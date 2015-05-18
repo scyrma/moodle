@@ -277,6 +277,11 @@ class file_system extends \file_system {
         // It must be a sufficient period of time to allow slow reads of large files.
         $url = $command->createPresignedUrl('+1 day');
 
+        self::log_statistic('generatedurl', array(
+                'logmessage'    => 'Generated pre-signed URL',
+                'contenthash'   => $contenthash,
+            ));
+
         return $url;
     }
 
