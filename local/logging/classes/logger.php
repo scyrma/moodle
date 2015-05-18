@@ -81,12 +81,14 @@ class logger {
                 $eventdata['cliargs'] = $_SERVER['argv'];
             }
 
-            if (defined('CLI_SCRIPT')) {
+            if (defined('CLI_SCRIPT') && CLI_SCRIPT) {
                 $eventdata['type'] = 'CLI';
-            } else if (defined('AJAX_SCRIPT')) {
+            } else if (defined('AJAX_SCRIPT') && AJAX_SCRIPT) {
                 $eventdata['type'] = 'AJAX';
+            } else if (isset($_SERVER) && isset($_SERVER['SERVER_ADDR'])) {
+                $eventdata['type'] = 'HTTP';
             } else {
-                $eventdata['type'] = 'Web';
+                $eventdata['type'] = 'Unknown';
             }
 
             if (isset($CFG->moodlecloudversion)) {
