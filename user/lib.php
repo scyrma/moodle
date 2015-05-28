@@ -41,6 +41,12 @@ function user_create_user($user, $updatepassword = true, $triggerevent = true) {
         $user = (object) $user;
     }
 
+    // BEGIN MOODLECLOUD HACK.
+    if (core_hack_moodlecloud::site_is_over_user_quota()) {
+        throw new moodle_exception('overquota');
+    }
+    // END MOODLECLOUD HACK.
+
     // Check username.
     if ($user->username !== core_text::strtolower($user->username)) {
         throw new moodle_exception('usernamelowercase');
