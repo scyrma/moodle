@@ -26,7 +26,7 @@ namespace local_logging;
 
 require_once(dirname(__DIR__) . '/vendor/autoload.php');
 
-use Monolog\Formatter\LogglyFormatter;
+use Monolog\Formatter\LineFormatter;
 use local_logging\monolog\fluenthandler as FluentHandler;
 
 defined('MOODLE_INTERNAL') || die();
@@ -50,6 +50,14 @@ class logger {
             $loggers[$channel] = new \Monolog\Logger($channel);
 
             $handler = new FluentHandler();
+
+            if ($channel === 'exceptions') {
+                // Provide stacktraces with exceptions.
+                $formatter = new LineFormatter();
+                $formatter->includeStacktraces();
+                $handler->setFormatter($formatter);
+            }
+
             $loggers[$channel]->pushHandler($handler);
         }
 
