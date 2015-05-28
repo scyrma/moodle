@@ -91,6 +91,9 @@ class logger {
                 $eventdata['type'] = 'Unknown';
             }
 
+            // Add the IP address of the client.
+            $eventdata['ipaddress'] = getremoteaddr();
+
             if (isset($CFG->moodlecloudversion)) {
                 $eventdata['moodlecloudversion'] = $CFG->moodlecloudversion;
             }
