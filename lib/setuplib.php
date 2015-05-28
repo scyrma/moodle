@@ -370,7 +370,7 @@ function default_exception_handler($ex) {
     }
 
     // START MOODLECLOUD HACK.
-    local_logging\logger::log(get_class($ex), array('exceptions' => $ex), 'exceptions');
+    local_logging\logger::log(get_class($ex), array('exception' => $ex), 'exceptions');
     // END MOODLECLOUD HACK.
 
     $info = get_exception_info($ex);
