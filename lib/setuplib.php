@@ -211,6 +211,11 @@ class required_capability_exception extends moodle_exception {
         } else {
             $link = $context->get_url();
         }
+        // BEGIN MOODLECLOUD HACK.
+        if (core_hack_moodlecloud::capability_is_restricted_by_quota($capability)) {
+            $capabilityname .= ' - Quota limits have been exceeded.';
+        }
+        // END MOODLECLOUD HACK.
         parent::__construct($errormessage, $stringfile, $link, $capabilityname);
     }
 }
