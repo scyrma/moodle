@@ -1029,6 +1029,9 @@ if (isset($CFG->maintenance_later) and $CFG->maintenance_later <= time()) {
 // might be converted to utf-8 in admin/index.php during installation
 
 
+// BEGIN MOODLECLOUD HACK.
+core_hack_moodlecloud::fiddle_config_settings();
+// END MOODLECLOUD HACK.
 
 // this is a funny trick to make Eclipse believe that $OUTPUT and other globals
 // contains an instance of core_renderer, etc. which in turn fixes autocompletion ;-)
