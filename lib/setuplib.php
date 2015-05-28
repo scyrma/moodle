@@ -416,7 +416,8 @@ function default_error_handler($errno, $errstr, $errfile, $errline, $errcontext)
     }
 
     // START MOODLECLOUD HACK.
-    if (strpos($errfile, 'local/logging') === false) {
+    if (error_reporting() !== 0 && strpos($errfile, 'local/logging') === false) {
+        // Do not log issues with the logging itself, or if the errors are surpressed.
         $exception = array('exceptions' => array(
                 'errno'         => $errno,
                 'errstr'        => $errstr,
