@@ -1,0 +1,119 @@
+<?php
+
+namespace local_moodlecloud\tasks;
+use core\task\adhoc_task;
+use core\task\manager;
+use moodle_url;
+use curl;
+use stdClass;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/' . $CFG->admin . '/registration/lib.php');
+
+class register extends adhoc_task {
+    public function execute() {
+        global $DB;
+
+        $huburl = HUB_MOODLEORGHUBURL;
+
+        mtrace("Moodlecloud Registration ({$huburl}): Looking up hub");
+        $hub = $DB->get_record('registration_hubs', array('huburl' => $huburl));
+        if (!$hub) {
+            mtrace("Moodlecloud Registration ({$huburl}): Hub not found. Configuring");
+            // We haven't created the hub at all yet.
+            $this->configure($huburl);
+        }
+
+        // Check for valid DNS.
+        if ($this->is_dns_valid($huburl)) {
+            mtrace("Moodlecloud Registration ({$huburl}): DNS is valid. Registering.");
+            $this->register($huburl);
+        } else {
+            mtrace("Moodlecloud Registration ({$huburl}): DNS not yet valid. Queueing self again.");
+            manager::queue_adhoc_task(new register());
+        }
+    }
+
+    public function configure($huburl) {
+        $registrationmanager = new \registration_manager();
+
+        // Ensure that the hub detailsare in place.
+        $hub = new stdClass();
+        $hub->token = $registrationmanager->get_site_secret_for_hub($huburl);
+        $hub->secret = $hub->token;
+        $hub->huburl = $huburl;
+        $hub->hubname = 'Moodle.org';
+        $hub->confirmed = 0;
+
+        // Grab some useful items here.
+        $cleanhuburl = clean_param($huburl, PARAM_ALPHANUMEXT);
+        $admin = get_admin();
+        $site = get_site();
+
+        // Set the default values.
+        $sitename = format_string($site->fullname, true, array('context' => \context_course::instance(SITEID)));
+        set_config('site_name_'             . $cleanhuburl, $sitename,                  'hub');
+
+        // Set the site description.
+        set_config('site_description_'      . $cleanhuburl, $sitename,                  'hub');
+
+        $contactname = fullname($admin, true);
+        set_config('site_contactname_'      . $cleanhuburl, $contactname,               'hub');
+
+        set_config('site_contactemail_'     . $cleanhuburl, $admin->email,              'hub');
+        set_config('site_privacy_'          . $cleanhuburl, HUB_SITENOTPUBLISHED,       'hub');
+
+        // 0 = registrationcontactno.
+        $contactable = 0;
+        set_config('site_contactable_'      . $cleanhuburl, $contactable,               'hub');
+
+        // Do not alert administrators - we handle upgrades anyway.
+        $emailalert = 0;
+        set_config('site_emailalert_'       . $cleanhuburl, $emailalert,                'hub');
+
+        // By default set this to the current language.
+        set_config('site_language_'         . $cleanhuburl, current_language(),         'hub');
+
+        // Add the new hub details to the database.
+        $hub->id = $registrationmanager->add_registeredhub($hub);
+    }
+
+    private function register($huburl) {
+        global $CFG;
+
+        $registrationmanager = new \registration_manager();
+
+        // Now retrieve everything again.
+        $hub = $registrationmanager->get_unconfirmedhub($huburl);
+        $params = $registrationmanager->get_site_info($huburl);
+        $params['token']    = $hub->token;
+        $params['url']      = $CFG->wwwroot;
+
+        $url = new moodle_url($huburl . '/local/hub/siteregistration.php', $params);
+        $curl = new curl();
+        $curl->get($url->out(false));
+    }
+
+    private function is_dns_valid($huburl) {
+        global $CFG;
+        // Grab the HOST part of the hub.
+        $fqdn = parse_url($CFG->wwwroot, PHP_URL_HOST);
+
+        // Check for DNS records.
+        $somefound = false;
+        if ($records = dns_get_record($fqdn)) {
+            foreach ($records as $record) {
+                if ($record['host'] === $fqdn) {
+                    // This is very specific to moodlecloud.
+                    // Each host should be CNAMEd and should not point to the signup ELB.
+                    if ($record['type'] === 'CNAME' && strpos($record['target'], '-signup-') === false) {
+                        $somefound = true;
+                    }
+                }
+            }
+        }
+
+        return $somefound;
+    }
+}
