@@ -185,6 +185,10 @@ if ($formdata = $mform2->is_cancelled()) {
     $usersskipped  = 0;
     $weakpasswords = 0;
 
+    // BEGIN MOODLECLOUD HACK.
+    $cloudquota = core_hack_moodlecloud::number_of_user_slots_remaining();
+    // END MOODLECLOUD HACK.
+
     // caches
     $ccache         = array(); // course cache - do not fetch all courses here, we  will not probably use them all anyway!
     $cohorts        = array();
@@ -721,6 +725,14 @@ if ($formdata = $mform2->is_cancelled()) {
             }
 
         } else {
+            // BEGIN MOODLECLOUD HACK.
+            if ($usersnew >= $cloudquota) {
+                $upt->track('status', 'Quota limits have been exceeded.', 'error');
+                $userserrors++;
+                continue;
+            }
+            // END MOODLECLOUD HACK.
+
             // save the new user to the database
             $user->confirmed    = 1;
             $user->timemodified = time();
