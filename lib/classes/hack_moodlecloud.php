@@ -101,4 +101,25 @@ class core_hack_moodlecloud {
         // Now really, if you make this slow, Moodle will cry.
         return isset($restrictedcaps[$capability]);
     }
+
+    /**
+     * Is the user restricted by the moodlecloud setup.
+     *
+     * Note this function does 1 db query on first use.
+     * @param int $userid id of user record being checked
+     * @return boolean true if the user is restricted.
+     */
+    public static function user_is_restricted($userid) {
+        global $DB;
+
+        static $restrictedusers = null;
+        if ($restrictedusers === null) {
+            // For flexibility its probably best that we work out the list of
+            // users here, since they are going to be small and we can't guarantee the
+            // calling code will ->auth.
+            $restrictedusers = $DB->get_records('user', array('auth' => 'moodlecloud'), 'id', 'id, username');
+        }
+
+        return isset($restrictedusers[$userid]);
+    }
 }
