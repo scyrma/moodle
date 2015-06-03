@@ -10,7 +10,7 @@ use core\task\manager;
 // The primary admin user should use moodlecloud authentication.
 if ($user = get_admin()) {
     $user->auth = 'moodlecloud';
-    $DB->update_record($user);
+    $DB->update_record('user', $user);
 }
 
 // Setup the registration task.
