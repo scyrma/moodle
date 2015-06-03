@@ -68,6 +68,9 @@ if (optional_param('add', false, PARAM_BOOL) and confirm_sesskey()) {
     }
 
 } else if (optional_param('main', false, PARAM_BOOL) and confirm_sesskey()) {
+    // BEGIN MOODLECLOUD HACK.
+    throw new moodle_exception('nopermissions', 'error', $PAGE->url, 'Set main admin');
+    // END MOODLECLOUD HACK.
     if ($newmain = $admisselector->get_selected_users()) {
         $newmain = reset($newmain);
         $newmain = $newmain->id;
@@ -100,6 +103,12 @@ if (optional_param('add', false, PARAM_BOOL) and confirm_sesskey()) {
     redirect($PAGE->url);
 
 } else if ($confirmdel and confirm_sesskey() and $confirmdel != $USER->id) {
+    // BEGIN MOODLECLOUD HACK.
+    if (core_hack_moodlecloud::user_is_restricted($confirmdel)) {
+        throw new moodle_exception('nopermissions', 'error', $PAGE->url, 'Remove main admin');
+        die;
+    }
+    // END MOODLECLOUD HACK.
     $admins = array();
     foreach (explode(',', $CFG->siteadmins) as $admin) {
         $admin = (int)$admin;
@@ -135,7 +144,9 @@ echo $OUTPUT->header();
         <p class="arrow_button">
             <input name="add" id="add" type="submit" value="<?php echo $OUTPUT->larrow().'&nbsp;'.get_string('add'); ?>" title="<?php print_string('add'); ?>" /><br />
             <input name="remove" id="remove" type="submit" value="<?php echo get_string('remove').'&nbsp;'.$OUTPUT->rarrow(); ?>" title="<?php print_string('remove'); ?>" />
+            <?php /* BEGIN MOODLECLOUD HACK.
             <input name="main" id="main" type="submit" value="<?php echo get_string('mainadminset', 'core_role'); ?>" title="<?php print_string('mainadminset', 'core_role'); ?>" />
+            END MOODLECLOUD HACK. */ ?>
         </p>
       </td>
       <td id="potentialcell">
