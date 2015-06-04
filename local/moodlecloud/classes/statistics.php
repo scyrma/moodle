@@ -26,7 +26,7 @@ namespace local_moodlecloud;
 use \stdClass;
 
 class statistics {
-    public static function log_statistics() {
+    public static function get_statistics() {
         $data = new stdClass();
 
         // Get file usage data.
@@ -74,7 +74,11 @@ class statistics {
                 'lastaccess'    => $uniquelastaccess,
             );
 
-        logger::log('statistics', (array) $data, 'statistics');
+        return $data;
+    }
+
+    public static function log_statistics() {
+        logger::log('statistics', (array) self::get_statistics(), 'statistics');
     }
 
     protected static function since_time($overlastminutes) {
