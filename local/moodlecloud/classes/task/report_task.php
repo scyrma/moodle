@@ -15,12 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Language strings.
+ * A scheduled task for statistics reporting of MoodleCloud.
  *
  * @package   local_moodlecloud
  * @copyright 2015 Andrew Nicols <andrew@nicols.co.uk>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace local_moodlecloud\task;
+use local_moodlecloud\statistics;
 
-$string['pluginname'] = 'MoodleCloud';
-$string['reporting_task'] = 'MoodleCloud Statistics Reporting';
+class report_task extends \core\task\scheduled_task {
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('reporting_task', 'local_moodlecloud');
+    }
+
+    /**
+     * Execute task.
+     */
+    public function execute() {
+        statistics::log_statistics();
+    }
+}
