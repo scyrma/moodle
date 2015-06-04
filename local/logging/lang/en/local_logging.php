@@ -23,4 +23,3 @@
  */
 
 $string['pluginname'] = 'MoodleCloud Logging';
-$string['reporting_task'] = 'MoodleCloud Statistics Reporting';
