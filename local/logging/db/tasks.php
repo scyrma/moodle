@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information.
+ * Definition of Logging tasks.
  *
  * @package   local_logging
+ * @category  task
  * @copyright 2015 Andrew Nicols <andrew@nicols.co.uk>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015060900;       // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014110400;       // Requires this Moodle version
-$plugin->component = 'local_logging';  // Full name of the plugin (used for diagnostics)
+$tasks = array(
+);
