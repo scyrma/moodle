@@ -24,6 +24,7 @@
 namespace local_moodlecloud;
 
 use \stdClass;
+use local_logging\logger;
 
 class statistics {
     public static function get_statistics() {
