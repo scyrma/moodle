@@ -44,6 +44,7 @@ class helper {
         if (null === $options) {
             $options = array(
                     'exceptions'    => false,
+                    'verify'        => false,
                 );
         }
 
