@@ -101,7 +101,7 @@ echo $OUTPUT->doctype() ?>
         <?php echo $OUTPUT->blocks('side-post', $sidepost); ?>
     </div>
 
-    <footer id="page-footer">
+    <footer id="page-footer" style="background-color:white;width:100vw;margin-left:calc(-1 * ((100vw - 100%) / 2));">
         <div id="course-footer"><?php echo $OUTPUT->course_footer(); ?></div>
         <p class="helplink">
         <?php echo theme_moodlecloud_get_footerlinks($OUTPUT->page->context); ?>
