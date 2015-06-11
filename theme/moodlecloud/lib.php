@@ -245,7 +245,7 @@ googletag.cmd.push(function() { googletag.display('div-gpt-ad-1432631430132-0');
 
     } else {
         //width:728px;height:90px;background-color:green;
-        $s = '<div id="moodlecloud_ad" style="margin-left:auto;margin-right:auto;">
+        $s = '<div id="moodlecloud_ad" style="margin-left:auto;margin-right:auto;display:block !important;">
          <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <!-- Moodle Free Student Footer Block -->
 <ins class="adsbygoogle"
