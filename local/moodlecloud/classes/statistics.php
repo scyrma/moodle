@@ -36,7 +36,10 @@ class statistics {
                         'including_drafts' => self::get_disk_usage(),
                         'excluding_drafts' => self::get_disk_usage(true),
                     ),
-                'types'     => self::get_file_breakdown(),
+                'types'     => array(
+                        'including_drafts' => self::get_file_breakdown(),
+                        'excluding_drafts' => self::get_file_breakdown(true),
+                    ),
             );
 
         // Table sizes.
@@ -135,11 +138,15 @@ EOF;
         return $DB->get_field_sql($sql, $params);
     }
 
-    public static function get_file_breakdown() {
+    public static function get_file_breakdown($excludedraft = false) {
         global $DB;
 
         $where = '';
         $params = array();
+        if ($excludedraft) {
+            $where = 'AND filearea <> ?';
+            $params[] = 'draft';
+        }
 
         $sql = <<<EOF
 SELECT
@@ -150,6 +157,7 @@ FROM (
         filesize,
         regexp_replace(mimetype, '/.+\$', '') AS mimetype
     FROM {files}
+    {$where}
     WHERE filesize > 0
     GROUP BY filesize, regexp_replace(mimetype, '/.+\$', ''), contenthash
 ) iq
