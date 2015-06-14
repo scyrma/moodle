@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Theme Moodlefree lang file.
+ * Theme Moodlecloud lang file.
  *
  * @package    theme_moodlecloud
  * @copyright  2014 Frédéric Massart
@@ -45,10 +45,10 @@ $string['backgroundrepeatrepeatx'] = 'Repeat horizontally';
 $string['backgroundrepeatrepeaty'] = 'Repeat vertically';
 $string['bodybackground'] = 'Background colour';
 $string['bodybackground_desc'] = 'The main colour to use for the background.';
-$string['choosereadme'] = '<p>Moodlefree is a theme that allows you to easily customise Moodle\'s look and feel directly from the web interface.</p>
+$string['choosereadme'] = '<p>Moodlecloud is a theme that allows you to easily customise Moodle\'s look and feel directly from the web interface.</p>
 <p>Visit the admin settings to change colours, add an image as a background, add your logo and more.</p>';
 
-$string['configtitle'] = 'Moodlefree';
+$string['configtitle'] = 'Moodlecloud';
 $string['contentbackground'] = 'Main content background colour';
 $string['contentbackground_desc'] = 'The background colour of the main content of the site, leave empty for none.';
 
@@ -66,7 +66,7 @@ $string['linkcolor_desc'] = 'The colour of the links.';
 $string['logo'] = 'Logo';
 $string['logodesc'] = 'The logo is displayed in the header.<br /> If the height of your logo is more than 75px add div.logo {height: 100px;} to the Custom CSS box below, amending accordingly if the height is other than 100px.';
 
-$string['pluginname'] = 'Moodlefree';
+$string['pluginname'] = 'Moodlecloud';
 
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
