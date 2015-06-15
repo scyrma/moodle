@@ -189,10 +189,17 @@ function theme_moodlecloud_get_footerlinks($context) {
     $s = $OUTPUT->page_doc_link();
 
     if (theme_moodlecloud_is_teacher($context)) {
-        $s .= ' | <a href="https://moodle.org/community" target="_blank">Support Forums</a>';
+        $title = get_string('supportforums', 'theme_moodlecloud');
+        $s .= " | <a href='https://moodle.org/community' target='_blank'>$title</a>";
     }
     if (is_siteadmin()) {
-        $s .= ' | Report a problem | Free Moodle FAQ';
+        $title = get_string('reportproblem', 'theme_moodlecloud');
+        //$s .= " | <a href='#' target='_blank'>$title</a>";
+        $s .= " | $title";
+
+        $title = get_string('faq', 'theme_moodlecloud');
+        //$s .= " | <a href='#' target='_blank'>$title</a>";
+        $s .= " | $title";
     }
     return $s;
 }
