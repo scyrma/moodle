@@ -55,6 +55,7 @@ $string['contentbackground_desc'] = 'The background colour of the main content o
 $string['customcss'] = 'Custom CSS';
 $string['customcssdesc'] = 'Whatever CSS rules you add to this textarea will be reflected in every page, making for easier customization of this theme.';
 
+$string['faq'] = 'Free Moodle FAQ';
 $string['footnote'] = 'Footnote';
 $string['footnotedesc'] = 'Whatever you add to this textarea will be displayed in the footer throughout your Moodle site.';
 
@@ -70,8 +71,10 @@ $string['pluginname'] = 'Moodlecloud';
 
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
+$string['reportproblem'] = 'Report a problem';
 $string['secondarybackground'] = 'Secondary background colour';
 $string['secondarybackground_desc'] = 'The background colour of any secondary content, such as blocks.';
+$string['supportforums'] = 'Support Forums';
 $string['textcolor'] = 'Text colour';
 $string['textcolor_desc'] = 'The colour of the text.';
 
