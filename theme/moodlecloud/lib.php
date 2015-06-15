@@ -197,6 +197,37 @@ function theme_moodlecloud_get_footerlinks($context) {
     return $s;
 }
 
+function theme_moodlecloud_get_readspeaker() {
+    global $OUTPUT;
+
+    $protocol = (!empty($_SERVER['HTTPS']) || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+	$slink = (!empty($_SERVER['HTTPS']) || $_SERVER['SERVER_PORT'] == 443) ? "sf1-" : "f1.";
+	$region = (!empty($_SERVER['HTTPS']) || $_SERVER['SERVER_PORT'] == 443) ? "" : ".eu";
+
+	$pageURL = $protocol.$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+	$encodedURL=urlencode($pageURL);
+
+	$dr_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', str_replace('\\', '/', dirname(__FILE__))).'/docreader/proxy.php';
+
+    $cid = 8018; //get_config('readspeaker_embhl', 'cid');
+    $lang = 'en_au'; //get_config('readspeaker_embhl', 'lang');
+    $readid = 'page'; //get_config('readspeaker_embhl', 'readid');
+
+	$s = '<div style="text-align: center;width:100%;">
+	<div style="display: inline-block;">
+
+	<script type="text/javascript">window.rsConf = {general: {usePost: true}}; window.rsDocReaderConf = {proxypath: "'.$dr_path.'"}</script><script src="'.$protocol.$slink.'eu.readspeaker.com/script/'.$cid.'/ReadSpeaker.js?pids=embhl,dr&amp;skin=ReadSpeakerCompactSkin" type="text/javascript"></script>
+	<div id="readspeaker_button1" class="rs_skip rsbtn rs_preserve">
+	<a accesskey="L" class="rsbtn_play" title="Listen to this page using ReadSpeaker" href="'.$protocol.'app'.$region.'.readspeaker.com/cgi-bin/rsent?customerid='.$cid.'&amp;lang='.$lang.'&amp;readid='.$readid.'&amp;url='.$encodedURL.'">
+	<span class="rsbtn_left rsimg rspart"><span class="rsbtn_text"><span>Listen</span></span></span>
+    <span class="rsbtn_right rsimg rsplay rspart"></span>
+	</a>
+	</div>
+
+	</div></div>';
+    return $s;
+}
+
 /**
  * The ads for teachers and admins require some JS to be added to the page header.
  */
