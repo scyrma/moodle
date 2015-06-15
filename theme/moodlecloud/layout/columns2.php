@@ -90,6 +90,7 @@ echo $OUTPUT->doctype() ?>
         </p>
         <?php
         echo theme_moodlecloud_get_ad($OUTPUT->page->context);
+        echo theme_moodlecloud_get_readspeaker();
         echo $html->footnote;
         echo $OUTPUT->login_info();
         echo $OUTPUT->home_link();
