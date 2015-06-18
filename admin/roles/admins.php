@@ -104,9 +104,8 @@ if (optional_param('add', false, PARAM_BOOL) and confirm_sesskey()) {
 
 } else if ($confirmdel and confirm_sesskey() and $confirmdel != $USER->id) {
     // BEGIN MOODLECLOUD HACK.
-    if (core_hack_moodlecloud::user_is_restricted($confirmdel)) {
+    if (local_moodlecloud\restrictions\user::user_is_restricted($confirmdel)) {
         throw new moodle_exception('nopermissions', 'error', $PAGE->url, 'Remove main admin');
-        die;
     }
     // END MOODLECLOUD HACK.
     $admins = array();
