@@ -24,3 +24,4 @@
 
 $string['pluginname'] = 'MoodleCloud';
 $string['reporting_task'] = 'MoodleCloud Statistics Reporting';
+$string['userquotahit'] = 'You have reached your quota for the number of users you may have on your site.';
