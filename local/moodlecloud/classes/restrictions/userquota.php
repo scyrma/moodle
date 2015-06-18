@@ -36,16 +36,22 @@ class userquota {
      * @return bool
      */
     public static function is_user_quota_enforced() {
-        if (!defined('MOODLECLOUD_USER_QUOTA')) {
-            return false;
+        static $enforced = null;
+
+        if (null === $enforced) {
+            if (!defined('MOODLECLOUD_USER_QUOTA')) {
+                $enforced = false;
+            }
+
+            if (during_initial_install()) {
+                // Do not restrict during the initial install.
+                $enforced = false;
+            } else {
+                $enforced = true;
+            }
         }
 
-        if (during_initial_install()) {
-            // Do not restrict during the initial install.
-            return false;
-        } else {
-            return true;
-        }
+        return $enforced;
     }
 
     /**
