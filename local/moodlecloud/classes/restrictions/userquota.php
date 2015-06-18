@@ -65,7 +65,7 @@ class userquota {
             if ($exception) {
                 $a = new \stdClass;
                 $a->quota = MOODLECLOUD_USER_QUOTA;
-                throw new moodle_exception('userquotahit', 'local_moodlecloud', '', $a);
+                throw new \moodle_exception('userquotahit', 'local_moodlecloud', '', $a);
             } else {
                 return true;
             }
