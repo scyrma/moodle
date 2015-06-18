@@ -48,9 +48,7 @@ function user_create_user($user, $updatepassword = true, $triggerevent = true) {
     }
 
     // BEGIN MOODLECLOUD HACK.
-    if (core_hack_moodlecloud::site_is_over_user_quota()) {
-        throw new moodle_exception('overquota');
-    }
+    local_moodlecloud\restrictions\userquota::site_is_over_user_quota();
     // END MOODLECLOUD HACK.
 
     // Check username.

@@ -467,7 +467,7 @@ function has_capability($capability, context $context, $user = null, $doanything
     }
 
     // BEGIN MOODLECLOUD HACK.
-    if (core_hack_moodlecloud::capability_is_restricted_by_quota($capability)) {
+    if (local_moodlecloud\restrictions\capability::capability_is_restricted_by_quota($capability)) {
         return false;
     }
     // END MOODLECLOUD HACK.
