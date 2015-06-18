@@ -44,7 +44,7 @@ class settings {
             return;
         }
 
-        if (userquota::site_is_over_user_quota()) {
+        if (userquota::site_is_over_user_quota(false)) {
             // Prevent registration without hacking the code everywhere..
             $CFG->registerauth = '';
             $CFG->config_php_settings['registerauth'] = '';
