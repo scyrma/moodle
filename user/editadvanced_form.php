@@ -154,7 +154,7 @@ class user_editadvanced_form extends moodleform {
 
         // User can not change own auth method.
         // BEGIN MOODLECLOUD HACK.
-        if ($userid == $USER->id || core_hack_moodlecloud::user_is_restricted($userid)) {
+        if ($userid == $USER->id || local_moodlecloud\restrictions\user::user_is_restricted($userid)) {
             // END MOODLECLOUD HACK.
             $mform->hardFreeze('auth');
             $mform->hardFreeze('preference_auth_forcepasswordchange');
