@@ -139,6 +139,10 @@ class enrol_mnet_mnetservice_enrol {
         $user = $DB->get_record('user', array('username'=>$userdata['username'], 'mnethostid'=>$client->id));
 
         if ($user === false) {
+            // BEGIN MOODLECLOUD HACK.
+            local_moodlecloud\restrictions\userquota::site_is_over_user_quota();
+            // END MOODLECLOUD HACK.
+
             // here we could check the setting if the enrol_mnet is allowed to auto-register
             // users {@link http://tracker.moodle.org/browse/MDL-21327}
             $user = mnet_strip_user((object)$userdata, mnet_fields_to_import($client));

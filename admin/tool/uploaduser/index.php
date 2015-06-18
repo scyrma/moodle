@@ -185,7 +185,7 @@ if ($formdata = $mform2->is_cancelled()) {
     $weakpasswords = 0;
 
     // BEGIN MOODLECLOUD HACK.
-    $cloudquota = core_hack_moodlecloud::number_of_user_slots_remaining();
+    $cloudquota = local_moodlecloud\restrictions\userquota::number_of_user_slots_remaining();
     // END MOODLECLOUD HACK.
 
     // caches
@@ -713,7 +713,7 @@ if ($formdata = $mform2->is_cancelled()) {
 
         } else {
             // BEGIN MOODLECLOUD HACK.
-            if ($usersnew >= $cloudquota) {
+            if ($cloudquota && $usersnew >= $cloudquota) {
                 $upt->track('status', 'Quota limits have been exceeded.', 'error');
                 $userserrors++;
                 continue;

@@ -283,6 +283,9 @@ class auth_plugin_mnet extends auth_plugin_base {
         // add the remote user to the database if necessary, and if allowed
         // TODO: refactor into a separate function
         if (empty($localuser) || ! $localuser->id) {
+            // BEGIN MOODLECLOUD HACK.
+            local_moodlecloud\restrictions\userquota::site_is_over_user_quota();
+            // END MOODLECLOUD HACK.
             /*
             if (empty($this->config->auto_add_remote_users)) {
                 print_error('nolocaluser', 'mnet');

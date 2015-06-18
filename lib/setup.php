@@ -1030,7 +1030,11 @@ if (isset($CFG->maintenance_later) and $CFG->maintenance_later <= time()) {
 
 
 // BEGIN MOODLECLOUD HACK.
-core_hack_moodlecloud::fiddle_config_settings();
+if (class_exists('\local_moodlecloud\restrictions\settings')) {
+    // This must be called inside a check because it may not be present yet
+    // on the initial run.
+    local_moodlecloud\restrictions\settings::fiddle_config_settings();
+}
 // END MOODLECLOUD HACK.
 
 // this is a funny trick to make Eclipse believe that $OUTPUT and other globals
