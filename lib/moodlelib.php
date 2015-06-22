@@ -2576,6 +2576,10 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
         $setwantsurltome = false;
     }
 
+    // START MOODLECLOUD HACK.
+    \auth_moodlecloud\sso::require_login();
+    // END MOODLECLOUD HACK.
+
     // Redirect to the login page if session has expired, only with dbsessions enabled (MDL-35029) to maintain current behaviour.
     if ((!isloggedin() or isguestuser()) && !empty($SESSION->has_timed_out) && !empty($CFG->dbsessions)) {
         if ($preventredirect) {
