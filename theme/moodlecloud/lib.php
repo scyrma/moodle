@@ -274,11 +274,13 @@ function theme_moodlecloud_get_ad($context) {
     $s = null;
 
     if (theme_moodlecloud_is_teacher($context)) {
-        $s = "<!-- /23455367/free_moodle_teacher_site -->
+        $s = "<div id='moodlecloud_ad' style='width:728px;margin-left:auto;margin-right:auto;display:block !important;'>
+<!-- /23455367/free_moodle_teacher_site -->
 <div id='div-gpt-ad-1432631430132-0' style='height:90px; width:728px;'>
 <script type='text/javascript'>
 googletag.cmd.push(function() { googletag.display('div-gpt-ad-1432631430132-0'); });
 </script>
+</div>
 </div>";
 
     } else {
