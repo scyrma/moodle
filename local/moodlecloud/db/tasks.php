@@ -29,7 +29,7 @@ $tasks = array(
     array(
         'classname' => 'local_moodlecloud\task\report_task',
         'blocking' => 0,
-        'minute' => '*',
+        'minute' => '*/10',
         'hour' => '*',
         'day' => '*',
         'month' => '*',
