@@ -157,8 +157,8 @@ FROM (
         filesize,
         regexp_replace(mimetype, '/.+\$', '') AS mimetype
     FROM {files}
-    {$where}
     WHERE filesize > 0
+    {$where}
     GROUP BY filesize, regexp_replace(mimetype, '/.+\$', ''), contenthash
 ) iq
 GROUP BY iq.mimetype
