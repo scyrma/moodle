@@ -96,7 +96,7 @@ class userquota {
             return null;
         }
 
-        $usercount = $DB->count_records('user', array('deleted' => 0));
+        $usercount = $DB->count_records_select('user', 'deleted = ? AND username <> ?', array(0, 'guest'));
 
         // Don't return negative number if over quota.
         return max(MOODLECLOUD_USER_QUOTA - $usercount, 0);
