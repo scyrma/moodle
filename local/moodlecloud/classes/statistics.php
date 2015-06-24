@@ -177,10 +177,15 @@ EOF;
         global $DB;
         $params = array();
 
+        // Exclude the guest user.
+        $where = 'username <> ?';
+        $params[] = 'guest';
+
         if (null !== $deleted) {
-            $params['deleted'] = $deleted;
+            $where .= ' AND deleted = ?';
+            $params[] = $deleted;
         }
 
-        return $DB->count_records('user', $params);
+        return $DB->count_records_select('user', $where, $params);
     }
 }
