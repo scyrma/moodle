@@ -216,9 +216,9 @@ function theme_moodlecloud_get_readspeaker() {
 
 	$dr_path = str_replace($_SERVER['DOCUMENT_ROOT'], '', str_replace('\\', '/', dirname(__FILE__))).'/docreader/proxy.php';
 
-    $cid = 8018; //get_config('readspeaker_embhl', 'cid');
-    $lang = 'en_au'; //get_config('readspeaker_embhl', 'lang');
-    $readid = 'page'; //get_config('readspeaker_embhl', 'readid');
+    $cid = 8018;
+    $lang = 'en_au';
+    $readid = 'region-main';
 
 	$s = '<div style="text-align: center;width:100%;">
 	<div style="display: inline-block;">
