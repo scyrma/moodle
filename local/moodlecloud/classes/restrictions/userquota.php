@@ -42,11 +42,11 @@ class userquota {
             if (!defined('MOODLECLOUD_USER_QUOTA')) {
                 $enforced = false;
             }
-
-            if (during_initial_install()) {
+            else if (during_initial_install()) {
                 // Do not restrict during the initial install.
                 $enforced = false;
-            } else {
+            }
+            else {
                 $enforced = true;
             }
         }
