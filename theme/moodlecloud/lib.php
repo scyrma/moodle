@@ -226,8 +226,8 @@ function theme_moodlecloud_get_readspeaker() {
 	<script type="text/javascript">window.rsConf = {general: {usePost: true}}; window.rsDocReaderConf = {proxypath: "'.$dr_path.'"}</script><script src="'.$protocol.$slink.'eu.readspeaker.com/script/'.$cid.'/ReadSpeaker.js?pids=embhl,dr&amp;skin=ReadSpeakerCompactSkin" type="text/javascript"></script>
 	<div id="readspeaker_button1" class="rs_skip rsbtn rs_preserve">
 	<a accesskey="L" class="rsbtn_play" title="Listen to this page using ReadSpeaker" href="'.$protocol.'app'.$region.'.readspeaker.com/cgi-bin/rsent?customerid='.$cid.'&amp;lang='.$lang.'&amp;readid='.$readid.'&amp;url='.$encodedURL.'">
-	<span class="rsbtn_left rsimg rspart"><span class="rsbtn_text"><span>Listen</span></span></span>
-    <span class="rsbtn_right rsimg rsplay rspart"></span>
+	<span class="rsbtn_left rspart"><span class="rsbtn_text"><span>Listen</span></span></span>
+    <span class="rsbtn_right rsplay rspart"></span>
 	</a>
 	</div>
 
