@@ -186,22 +186,23 @@ function theme_moodlecloud_is_teacher($context) {
 function theme_moodlecloud_get_footerlinks($context) {
     global $OUTPUT;
 
-    $s = $OUTPUT->page_doc_link();
+    $links = array();
+
+    if ($doclink = $OUTPUT->page_doc_link()) {
+        $links[] = $doclink;
+    }
 
     if (theme_moodlecloud_is_teacher($context)) {
         $title = get_string('supportforums', 'theme_moodlecloud');
-        $s .= " | <a href='https://moodle.org/community' target='_blank'>$title</a>";
+        $link = new moodle_urL('https://moodle.org/community');
+        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
     }
     if (is_siteadmin()) {
-        $title = get_string('reportproblem', 'theme_moodlecloud');
-        //$s .= " | <a href='#' target='_blank'>$title</a>";
-        $s .= " | $title";
-
         $title = get_string('faq', 'theme_moodlecloud');
-        //$s .= " | <a href='#' target='_blank'>$title</a>";
-        $s .= " | $title";
+        $link = new moodle_urL('https://moodle.com/cloud/faq');
+        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
     }
-    return $s;
+    return implode(' | ', $links);;
 }
 
 /**
