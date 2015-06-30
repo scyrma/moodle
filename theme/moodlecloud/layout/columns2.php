@@ -44,6 +44,7 @@ echo $OUTPUT->doctype() ?>
 </head>
 
 <body <?php echo $OUTPUT->body_attributes('two-column'); ?>>
+<div class="wrapper">
 
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
 
@@ -82,23 +83,23 @@ echo $OUTPUT->doctype() ?>
         <?php echo $OUTPUT->blocks('side-pre', $sidepre);
         ?>
     </div>
+</div>
+</div>
 
-    <footer id="page-footer" style="background-color:white;width:100vw;margin-left:calc(-1 * ((100vw - 100%) / 2));">
-        <div id="course-footer"><?php echo $OUTPUT->course_footer(); ?></div>
-        <p class="helplink">
-        <?php echo theme_moodlecloud_get_footerlinks($OUTPUT->page->context); ?>
-        </p>
-        <?php
-        echo theme_moodlecloud_get_ad($OUTPUT->page->context);
-        echo $html->footnote;
-        echo $OUTPUT->login_info();
-        echo $OUTPUT->home_link();
-        echo $OUTPUT->standard_footer_html();
-        ?>
-    </footer>
+<footer id="page-footer">
+    <div id="course-footer"><?php echo $OUTPUT->course_footer(); ?></div>
+    <p class="helplink">
+    <?php echo theme_moodlecloud_get_footerlinks($OUTPUT->page->context); ?>
+    </p>
+    <?php
+    echo theme_moodlecloud_get_ad($OUTPUT->page->context);
+    echo $html->footnote;
+    echo $OUTPUT->login_info();
+    echo $OUTPUT->home_link();
+    echo $OUTPUT->standard_footer_html();
+    ?>
 
     <?php echo $OUTPUT->standard_end_of_body_html() ?>
-
-</div>
+</footer>
 </body>
 </html>
