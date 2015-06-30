@@ -41,6 +41,7 @@ class sso {
 
         if ($attemptlogin) {
             complete_user_login($admin);
+            update_user_record_by_id($admin->id);
             return true;
         }
     }
