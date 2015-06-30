@@ -19,3 +19,23 @@ div.logo {
 /* Custom CSS Settings
 -------------------------*/
 [[setting:customcss]]
+
+body,
+html {
+    height: 100%;
+}
+.wrapper {
+    min-height: 100%;
+    margin-bottom: -210px; /* 150px + body padding-top */
+}
+.wrapper::after {
+    content: "";
+    display: block;
+    min-height: 150px;
+}
+footer {
+    min-height: 150px;
+    background-color: #fff;
+    width: 100vw;
+    margin-left:calc(-1 * ((100vw - 100%) / 2));
+}
