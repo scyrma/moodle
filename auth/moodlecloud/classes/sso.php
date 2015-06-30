@@ -40,8 +40,8 @@ class sso {
         }
 
         if ($attemptlogin) {
+            $admin = update_user_record_by_id($admin->id);
             complete_user_login($admin);
-            update_user_record_by_id($admin->id);
             return true;
         }
     }
