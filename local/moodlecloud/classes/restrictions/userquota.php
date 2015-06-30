@@ -71,6 +71,7 @@ class userquota {
             if ($exception) {
                 $a = new \stdClass;
                 $a->quota = MOODLECLOUD_USER_QUOTA;
+                $a->helpurl = 'https://moodle.com/cloud/faq/#userquota';
                 throw new \moodle_exception('userquotahit', 'local_moodlecloud', '', $a);
             } else {
                 return true;
