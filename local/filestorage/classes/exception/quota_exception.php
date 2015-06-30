@@ -19,7 +19,7 @@ class quota_exception extends \moodle_exception {
         $a = new \stdClass();
         $a->current = $current;
         $a->filesize = $filesize;
-        $a->helpurl = 'https://moodle.com/faq/quota';
+        $a->helpurl = 'https://moodle.com/cloud/faq/#filequota';
         parent::__construct('quotahit', 'local_filestorage', '', $a);
     }
 }
