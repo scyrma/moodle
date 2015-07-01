@@ -82,9 +82,6 @@ if (file_exists("$CFG->dirroot/theme/$themename/config.php")) {
 }
 
 $candidatedir = "$CFG->localcachedir/theme/$rev/$themename/css";
-// START MOODLECLOUD HACK.
-$candidatedir = "$CFG->cachedir/theme/$rev/$themename/css";
-// END MOODLECLOUD HACK.
 $etag = "$rev/$themename/$type";
 $candidatename = $type;
 if (!$usesvg) {
