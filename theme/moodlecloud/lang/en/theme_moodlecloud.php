@@ -77,4 +77,10 @@ $string['secondarybackground_desc'] = 'The background colour of any secondary co
 $string['supportforums'] = 'Support Forums';
 $string['textcolor'] = 'Text colour';
 $string['textcolor_desc'] = 'The colour of the text.';
-
+$string['adunblock_title'] = 'Ad blocker detected :(';
+$string['adunblock_message'] = '
+    <p>We\'ve detected that your browser is blocking ads on this site.</p>
+    <p>MoodleCloud is provided to users free of charge and we depend on advertising to help pay for it.</p>
+    <p>The ads are quite unobtrusive. We\'d really appreciate it if you can change your Ad blocker settings to add this site to your whitelist.</p>
+    <p>To read more on how to unblock these ads, read <a href="https://moodle.com/cloud/faq#adblock">our FAQ</a></p>
+    <p>Thanks, MoodleCloud team.</p>';
