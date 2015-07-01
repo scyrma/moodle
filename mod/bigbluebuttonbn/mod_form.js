@@ -1,3 +1,10 @@
+/**
+ * @package   mod_bigbluebuttonbn
+ * @author    Jesus Federico  (jesus [at] blindsidenetworks [dt] com)
+ * @copyright 2014-2015 Blindside Networks Inc.
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v2 or later
+ */
+
 bigbluebuttonbn_participant_selection_set = function() {
     bigbluebuttonbn_select_clear('bigbluebuttonbn_participant_selection');
 
@@ -15,14 +22,12 @@ bigbluebuttonbn_participant_selection_set = function() {
                 bigbluebuttonbn_select_enable('bigbluebuttonbn_participant_selection')
             }
         }
-            
     }
 }
 
 bigbluebuttonbn_participant_list_update = function() {
     var participant_list = document.getElementsByName('participants')[0];
     participant_list.value = JSON.stringify(bigbluebuttonbn_participant_list).replace(/"/g, '&quot;');
-    console.debug(participant_list);
 }
 
 bigbluebuttonbn_participant_remove = function(type, id) {
@@ -54,11 +59,11 @@ bigbluebuttonbn_participant_add = function() {
             found = true;
         }
     }
-    
+
     //If not found
     if( !found ){
         // Add it to memory
-        var participant = {"selectiontype": participant_selection_type.value, "selectionid": participant_selection.value, "role": "viewer", "id": null};
+        var participant = {"selectiontype": participant_selection_type.value, "selectionid": participant_selection.value, "role": "viewer"};
         bigbluebuttonbn_participant_list.push(participant);
 
         // Add it to the form
@@ -123,4 +128,39 @@ bigbluebuttonbn_select_add_option = function(id, text, value) {
     option.text = text; 
     option.value = value;
     select.add(option , 0);
+}
+
+bigbluebuttonbn_update_predefinedprofile = function() {
+
+    var selected_predefinedprofile = Y.one('#id_predefinedprofile option:checked');
+    if( selected_predefinedprofile == null) {
+        //The predefinedprofiles were not active, a value from the hidden input field will be used
+        selected_predefinedprofile = Y.one('#id_predefinedprofile');
+    }
+
+    var features = bigbluebuttonbn_predefinedprofiles[selected_predefinedprofile.get('value')].features;
+
+    // Schedule feature validation
+    var fieldset_schedule = Y.DOM.byId('id_schedule');
+    if( features.schedule ) {
+        console.debug('feature schedule enabled for ' + selected_predefinedprofile.get('text') );
+        //Y.DOM.setStyle(fieldset_schedule, 'visibility', 'visible');
+        Y.DOM.setStyle(fieldset_schedule, 'display', 'block');
+    } else {
+        console.debug('feature schedule disabled for ' + selected_predefinedprofile.get('text') );
+        //Y.DOM.setStyle(fieldset_schedule, 'visibility', 'visible');
+        Y.DOM.setStyle(fieldset_schedule, 'display', 'none');
+    }
+
+    // Groups feature validation
+    var fieldset_groups = Y.DOM.byId('id_modstandardelshdr');
+    if( features.groups ) {
+        console.debug('feature groups enabled for ' + selected_predefinedprofile.get('text') );
+        //Y.DOM.setStyle(fieldset_groups, 'visibility', 'shown');
+        Y.DOM.setStyle(fieldset_groups, 'display', 'block');
+    } else {
+        console.debug('feature groups disabled for ' + selected_predefinedprofile.get('text') );
+        //Y.DOM.setStyle(fieldset_groups, 'visibility', 'hidden');
+        Y.DOM.setStyle(fieldset_groups, 'display', 'none');
+    }
 }
