@@ -18,6 +18,9 @@ if ($ADMIN->fulltree) {
             get_string('config_general', 'bigbluebuttonbn'),
             get_string('config_general_description', 'bigbluebuttonbn')));
 
+// START MOODLECLOUD HACK
+if (false) {
+// END MOODLECLOUD HACK
     $settings->add( new admin_setting_configtext( 'bigbluebuttonbn_server_url',
             get_string( 'config_server_url', 'bigbluebuttonbn' ),
             get_string( 'config_server_url_description', 'bigbluebuttonbn' ),
@@ -26,6 +29,9 @@ if ($ADMIN->fulltree) {
             get_string( 'config_shared_secret', 'bigbluebuttonbn' ),
             get_string( 'config_shared_secret_description', 'bigbluebuttonbn' ), 
             '8cd8ef52e8e101574e400365b55e11a6'));
+// START MOODLECLOUD HACK
+}
+// END MOODLECLOUD HACK
 
     //// Configuration for recording feature
     $settings->add( new admin_setting_heading('bigbluebuttonbn_recording',
