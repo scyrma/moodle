@@ -209,65 +209,34 @@ function theme_moodlecloud_get_footerlinks($context) {
  * The ads for teachers and admins require some JS to be added to the page header.
  */
 function theme_moodlecloud_get_ad_header($context) {
-    $s = null;
     if (theme_moodlecloud_is_teacher($context)) {
-        $s = "<script type='text/javascript'>
-  var googletag = googletag || {};
-  googletag.cmd = googletag.cmd || [];
-  (function() {
-    var gads = document.createElement('script');
-    gads.async = true;
-    gads.type = 'text/javascript';
-    var useSSL = 'https:' == document.location.protocol;
-    gads.src = (useSSL ? 'https:' : 'http:') +
-      '//www.googletagservices.com/tag/js/gpt.js';
-    var node = document.getElementsByTagName('script')[0];
-    node.parentNode.insertBefore(gads, node);
-  })();
-</script>
-
-<script type='text/javascript'>
-  googletag.cmd.push(function() {
-    googletag.defineSlot('/23455367/free_moodle_teacher_site', [728, 90], 'div-gpt-ad-1432631430132-0').addService(googletag.pubads());
-    googletag.pubads().enableSingleRequest();
-    googletag.enableServices();
-  });
-</script>";
+        return file_get_contents(__DIR__ . '/ads/teacher_head.html');
     }
-    return $s;
 }
 
 /**
  * Partners ads for teachers and admins, adsense for students.
  */
 function theme_moodlecloud_get_ad($context) {
-    $s = null;
+    global $PAGE, $SESSION;
+
+    // These strings are used by the JS checker.
+    $PAGE->requires->strings_for_js(array(
+            'adunblock_title',
+            'adunblock_message',
+        ), 'theme_moodlecloud');
 
     if (theme_moodlecloud_is_teacher($context)) {
-        $s = "<div id='moodlecloud_ad' style='width:728px;margin-left:auto;margin-right:auto;display:block !important;'>
-<!-- /23455367/free_moodle_teacher_site -->
-<div id='div-gpt-ad-1432631430132-0' style='height:90px; width:728px;'>
-<script type='text/javascript'>
-googletag.cmd.push(function() { googletag.display('div-gpt-ad-1432631430132-0'); });
-</script>
-</div>
-</div>";
-
+        return html_writer::div(file_get_contents(__DIR__ . '/ads/teacher_body.html'), '', array(
+            'id'            => 'moodlecloud_ad',
+            'data-notified' => isset($SESSION->theme_moodlecloud_adblock_notified),
+            'style'         => 'width:728px;margin-left:auto;margin-right:auto;display:block !important;',
+        ));
     } else {
-        //width:728px;height:90px;background-color:green;
-        $s = '<div id="moodlecloud_ad" style="margin-left:auto;margin-right:auto;display:block !important;">
-         <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<!-- Moodle Free Student Footer Block -->
-<ins class="adsbygoogle"
-     style="display:inline-block;width:728px;height:90px"
-     data-ad-client="ca-pub-3092401428789996"
-     data-ad-slot="1236105465"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-         </div>';
+        return html_writer::div(file_get_contents(__DIR__ . '/ads/general_body.html'), '', array(
+            'id'            => 'moodlecloud_ad',
+            'data-notified' => isset($SESSION->theme_moodlecloud_adblock_notified),
+            'style'         => 'margin-left:auto;margin-right:auto;display:block !important;',
+        ));
     }
-
-    return $s;
 }
-
