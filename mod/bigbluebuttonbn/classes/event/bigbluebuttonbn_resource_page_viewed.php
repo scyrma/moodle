@@ -4,14 +4,14 @@
  *
  * @package   mod_bigbluebuttonbn
  * @author    Jesus Federico  (jesus [at] blindsidenetworks [dt] com)
- * @copyright 2014 Blindside Networks Inc.
+ * @copyright 2014-2015 Blindside Networks Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v2 or later
  */
 
 namespace mod_bigbluebuttonbn\event;
 defined('MOODLE_INTERNAL') || die();
 
-class bigbluebuttonbn_meeting_left extends \core\event\base {
+class bigbluebuttonbn_resource_page_viewed extends \core\event\base {
     /**
      * Init method.
      *
@@ -29,7 +29,7 @@ class bigbluebuttonbn_meeting_left extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('event_meeting_left', 'mod_bigbluebuttonbn');
+        return get_string('event_resource_page_viewed', 'mod_bigbluebuttonbn');
     }
 
     /**
@@ -38,8 +38,8 @@ class bigbluebuttonbn_meeting_left extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' has left a bigbluebutton meeting for the bigbluebuttonbn activity with id '$this->contextinstanceid' for " .
-        "the course id '$this->objectid'.";
+        return "The user with id '$this->userid' viewed the bigbluebuttonbn page for " .
+        "the course id '$this->contextinstanceid'.";
     }
 
     /**
