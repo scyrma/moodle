@@ -104,6 +104,13 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
     /**
      * @inheritdoc
      */
+    function can_reset_password() {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
     function user_update($olduser, $newuser) {
         if ($olduser->auth !== $newuser->auth) {
             throw new \moodle_exception('Cannot change authentication for primary administrator');
