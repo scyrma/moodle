@@ -26,7 +26,9 @@ html {
 }
 .wrapper {
     min-height: 100%;
-    margin-bottom: -210px; /* 150px + body padding-top */
+    margin-top: -60px;
+    padding-top: 60px;
+    margin-bottom: -150px;
 }
 .wrapper::after {
     content: "";
