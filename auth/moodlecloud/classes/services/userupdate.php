@@ -26,6 +26,10 @@ class userupdate extends service {
                         'required'      => false,
                         'type'          => 'string',
                     ),
+                'timezone' => array(
+                        'required'      => false,
+                        'type'          => 'string',
+                    ),
             );
     }
 
