@@ -54,10 +54,18 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
      * @inheritdoc
      */
     function user_login($username, $password) {
-        return auth_moodlecloud\helper::call('login', array(
-                'username'          => $username,
-                'password'          => $password,
-            ));
+        global $DB;
+
+        // Fetch the user by username.
+        $user = $DB->get_record('user', array('username' => $username));
+        if ($user && $user->auth === 'moodlecloud') {
+            return auth_moodlecloud\helper::call('login', array(
+                    'username'          => $username,
+                    'password'          => $password,
+                ));
+        }
+
+        return false;
     }
 
     /**
