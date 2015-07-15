@@ -5634,6 +5634,17 @@ class admin_setting_manageenrols extends admin_setting {
             }
         }
 
+// START MOODLECLOUD HACK.
+if (isset($CFG->moodlecloud_blocked_enrol)) {
+    foreach ($CFG->moodlecloud_blocked_enrol as $k => $mcblocked) {
+        if (!$mcblocked) {
+            continue;
+        }
+        unset($allenrols[$k]);
+    }
+}
+// END MOODLECLOUD HACK.
+
         $return = $OUTPUT->heading(get_string('actenrolshhdr', 'enrol'), 3, 'main', true);
         $return .= $OUTPUT->box_start('generalbox enrolsui');
 
