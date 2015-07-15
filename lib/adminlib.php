@@ -6493,6 +6493,17 @@ class admin_setting_manageauths extends admin_setting {
             }
         }
 
+// START MOODLECLOUD HACK.
+if (isset($CFG->moodlecloud_blocked_auth)) {
+    foreach ($CFG->moodlecloud_blocked_auth as $k => $mcblocked) {
+        if (!$mcblocked) {
+            continue;
+        }
+        unset($displayauths[$k]);
+    }
+}
+// END MOODLECLOUD HACK.
+
         $return = $OUTPUT->heading(get_string('actauthhdr', 'auth'), 3, 'main');
         $return .= $OUTPUT->box_start('generalbox authsui');
 
