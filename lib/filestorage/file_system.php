@@ -247,6 +247,7 @@ class file_system {
      * @return array of file infos
      */
     public function list_files($file, file_packer $packer) {
+        $this->ensure_readable($file);
         $archivefile = $this->get_fullpath_from_storedfile($file, true);
         return $packer->list_files($archivefile);
     }
