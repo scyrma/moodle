@@ -93,6 +93,11 @@ class register extends adhoc_task {
         $url = new moodle_url($huburl . '/local/hub/siteregistration.php', $params);
         $curl = new curl();
         $curl->get($url->out(false));
+
+        $hub->token = $newtoken;
+        $hub->confirmed = 1;
+        $hub->hubname = $hubname;
+        $registrationmanager->update_registeredhub($hub);
     }
 
     private function is_dns_valid($huburl) {

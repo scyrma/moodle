@@ -35,7 +35,11 @@
  */
 
 require('../../config.php');
+// START MOODLECLOUD HACK.
+if (false) {
 require_once($CFG->libdir . '/adminlib.php');
+}
+// END MOODLECLOUD HACK.
 
 $newtoken = optional_param('newtoken', '', PARAM_ALPHANUM);
 $url = optional_param('url', '', PARAM_URL);
@@ -43,7 +47,11 @@ $hubname = optional_param('hubname', '', PARAM_TEXT);
 $token = optional_param('token', '', PARAM_TEXT);
 $error = optional_param('error', '', PARAM_ALPHANUM);
 
+// START MOODLECLOUD HACK.
+if (false) {
 admin_externalpage_setup('registrationmoodleorg');
+}
+// END MOODLECLOUD HACK.
 
 if ($url !== HUB_MOODLEORGHUBURL) {
     // Allow other plugins to confirm registration on hubs other than moodle.net . Plugins implementing this
