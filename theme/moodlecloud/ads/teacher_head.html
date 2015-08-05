@@ -1,4 +1,4 @@
-<script type='text/javascript'>
+<script type="text/javascript">
   var googletag = googletag || {};
   googletag.cmd = googletag.cmd || [];
   (function() {
@@ -6,16 +6,30 @@
     gads.async = true;
     gads.type = 'text/javascript';
     var useSSL = 'https:' == document.location.protocol;
-    gads.src = (useSSL ? 'https:' : 'http:') +
-      '//www.googletagservices.com/tag/js/gpt.js';
+    gads.src = (useSSL ? 'https:' : 'http:') + '//www.googletagservices.com/tag/js/gpt.js';
     var node = document.getElementsByTagName('script')[0];
     node.parentNode.insertBefore(gads, node);
   })();
+  var resizeTimer;
+  function resizer() {
+    googletag.pubads().refresh([window.adslot]);
+  }
+  window.addEventListener("resize", function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resizer, 250);
+  });
 </script>
- 
-<script type='text/javascript'>
+<script type="text/javascript">
   googletag.cmd.push(function() {
-    googletag.defineSlot('/23455367/free_moodle_teacher_site', [728, 90], 'div-gpt-ad-1432631430132-0').addService(googletag.pubads());
+    var mapping = googletag.sizeMapping();
+    mapping.addSize([1280, 800], [728,90]); // Desktop
+    mapping.addSize([600,800], [468,60]); // Tablet (Portrait)
+    mapping.addSize([800,600], [468,60]); // Tablet (Landscape)
+    mapping.addSize([0, 0], [320,50]); // Mobile
+    mapping.build();
+    window.adslot = googletag.defineSlot('/23455367/free_moodle_teacher_site', [728, 90], 'teacher-ad-block');
+    adslot.defineSizeMapping(mapping);
+    adslot.addService(googletag.pubads());
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
   });
