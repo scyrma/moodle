@@ -27,9 +27,9 @@
     mapping.addSize([800,600], [468,60]); // Tablet (Landscape)
     mapping.addSize([0, 0], [320,50]); // Mobile
     mapping.build();
-    window.adslot = googletag.defineSlot('/23455367/free_moodle_teacher_site', [728, 90], 'teacher-ad-block');
-    adslot.defineSizeMapping(mapping);
-    adslot.addService(googletag.pubads());
+    window.adslot = googletag.defineSlot('/23455367/free_moodle_teacher_site', [[728, 90], [468, 60], [320, 50]], 'teacher-ad-block');
+    window.adslot.defineSizeMapping(mapping);
+    window.adslot.addService(googletag.pubads());
     googletag.pubads().enableSingleRequest();
     googletag.enableServices();
   });
