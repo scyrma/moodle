@@ -226,17 +226,15 @@ function theme_moodlecloud_get_ad($context) {
             'adunblock_message',
         ), 'theme_moodlecloud');
 
-    if (theme_moodlecloud_is_teacher($context)) {
-        return html_writer::div(file_get_contents(__DIR__ . '/ads/teacher_body.html'), '', array(
+    $adconfig = array(
             'id'            => 'moodlecloud_ad',
             'data-notified' => isset($SESSION->theme_moodlecloud_adblock_notified),
             'style'         => 'width:728px;margin-left:auto;margin-right:auto;display:block !important;',
-        ));
+        );
+
+    if (theme_moodlecloud_is_teacher($context)) {
+        return html_writer::div(file_get_contents(__DIR__ . '/ads/teacher_body.html'), '', $adconfig);
     } else {
-        return html_writer::div(file_get_contents(__DIR__ . '/ads/general_body.html'), '', array(
-            'id'            => 'moodlecloud_ad',
-            'data-notified' => isset($SESSION->theme_moodlecloud_adblock_notified),
-            'style'         => 'margin-left:auto;margin-right:auto;display:block !important;',
-        ));
+        return html_writer::div(file_get_contents(__DIR__ . '/ads/general_body.html'), '', $adconfig);
     }
 }
