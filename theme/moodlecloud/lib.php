@@ -229,7 +229,7 @@ function theme_moodlecloud_get_ad($context) {
     $adconfig = array(
             'id'            => 'moodlecloud_ad',
             'data-notified' => isset($SESSION->theme_moodlecloud_adblock_notified),
-            'style'         => 'width:728px;margin-left:auto;margin-right:auto;display:block !important;',
+            'style'         => 'margin-left:auto;margin-right:auto;display:block !important;',
         );
 
     if (theme_moodlecloud_is_teacher($context)) {
