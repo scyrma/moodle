@@ -210,7 +210,12 @@ function theme_moodlecloud_get_footerlinks($context) {
  */
 function theme_moodlecloud_get_ad_header($context) {
     if (theme_moodlecloud_is_teacher($context)) {
-        return file_get_contents(__DIR__ . '/ads/teacher_head.html');
+        if (defined('MOODLECLOUD_FEATURE_TEACHERADS_DISABLED') && MOODLECLOUD_FEATURE_TEACHERADS_DISABLED) {
+            // Teacher ads are disabled.
+            return '';
+        } else {
+            return file_get_contents(__DIR__ . '/ads/teacher_head.html');
+        }
     }
 }
 
@@ -233,8 +238,23 @@ function theme_moodlecloud_get_ad($context) {
         );
 
     if (theme_moodlecloud_is_teacher($context)) {
-        return html_writer::div(file_get_contents(__DIR__ . '/ads/teacher_body.html'), '', $adconfig);
+        // User is an administrator of some kind.
+
+        if (defined('MOODLECLOUD_FEATURE_TEACHERADS_DISABLED') && MOODLECLOUD_FEATURE_TEACHERADS_DISABLED) {
+            // Teacher ads are disabled.
+            return '';
+        } else {
+            return html_writer::div(file_get_contents(__DIR__ . '/ads/teacher_body.html'), '', $adconfig);
+        }
     } else {
-        return html_writer::div(file_get_contents(__DIR__ . '/ads/general_body.html'), '', $adconfig);
+        // User is not an administrator.
+
+        if (defined('MOODLECLOUD_FEATURE_STUDENTADS_DISABLED') && MOODLECLOUD_FEATURE_STUDENTADS_DISABLED) {
+            // Student ads are disabled.
+            return '';
+        } else {
+            // Display the student ads.
+            return html_writer::div(file_get_contents(__DIR__ . '/ads/general_body.html'), '', $adconfig);
+        }
     }
 }
