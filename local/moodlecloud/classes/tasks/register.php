@@ -15,19 +15,22 @@ class register extends adhoc_task {
     public function execute() {
         global $DB;
 
-        $huburl = HUB_MOODLEORGHUBURL;
+        // Delay execution of the task a little longer to give DNS more of a fighting chance.
+        sleep(30);
 
-        mtrace("Moodlecloud Registration ({$huburl}): Looking up hub");
-        $hub = $DB->get_record('registration_hubs', array('huburl' => $huburl));
-        if (!$hub) {
-            mtrace("Moodlecloud Registration ({$huburl}): Hub not found. Configuring");
-            // We haven't created the hub at all yet.
-            $this->configure($huburl);
-        }
+        $huburl = HUB_MOODLEORGHUBURL;
 
         // Check for valid DNS.
         if ($this->is_dns_valid($huburl)) {
             mtrace("Moodlecloud Registration ({$huburl}): DNS is valid. Registering.");
+            $hub = $DB->get_record('registration_hubs', array('huburl' => $huburl));
+            if (!$hub) {
+                mtrace("Moodlecloud Registration ({$huburl}): Hub not found. Configuring");
+                // We haven't created the hub at all yet.
+                $this->configure($huburl);
+            }
+
+
             $this->register($huburl);
         } else {
             mtrace("Moodlecloud Registration ({$huburl}): DNS not yet valid. Queueing self again.");
@@ -93,11 +96,6 @@ class register extends adhoc_task {
         $url = new moodle_url($huburl . '/local/hub/siteregistration.php', $params);
         $curl = new curl();
         $curl->get($url->out(false));
-
-        $hub->token = $newtoken;
-        $hub->confirmed = 1;
-        $hub->hubname = $hubname;
-        $registrationmanager->update_registeredhub($hub);
     }
 
     private function is_dns_valid($huburl) {
