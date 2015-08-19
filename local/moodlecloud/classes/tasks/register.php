@@ -30,7 +30,6 @@ class register extends adhoc_task {
                 $this->configure($huburl);
             }
 
-
             $this->register($huburl);
         } else {
             mtrace("Moodlecloud Registration ({$huburl}): DNS not yet valid. Queueing self again.");
@@ -88,14 +87,15 @@ class register extends adhoc_task {
         $registrationmanager = new \registration_manager();
 
         // Now retrieve everything again.
-        $hub = $registrationmanager->get_unconfirmedhub($huburl);
-        $params = $registrationmanager->get_site_info($huburl);
-        $params['token']    = $hub->token;
-        $params['url']      = $CFG->wwwroot;
+        if ($hub = $registrationmanager->get_unconfirmedhub($huburl)) {
+            $params = $registrationmanager->get_site_info($huburl);
+            $params['token']    = $hub->token;
+            $params['url']      = $CFG->wwwroot;
 
-        $url = new moodle_url($huburl . '/local/hub/siteregistration.php', $params);
-        $curl = new curl();
-        $curl->get($url->out(false));
+            $url = new moodle_url($huburl . '/local/hub/siteregistration.php', $params);
+            $curl = new curl();
+            $curl->get($url->out(false));
+        }
     }
 
     private function is_dns_valid($huburl) {
