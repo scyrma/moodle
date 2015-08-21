@@ -36,6 +36,7 @@ if ($hub = $registrationmanager->get_registeredhub($huburl)) {
         $result = $xmlrpcclient->call($function, $params);
     } catch (Exception $e) {
         echo "Unregistration of courses failed: " . $e->getMessage() . "\n";
+        exit(1);
         // Ignore this particular failure.
     }
 
@@ -47,7 +48,7 @@ if ($hub = $registrationmanager->get_registeredhub($huburl)) {
         $result = $xmlrpcclient->call($function, $params);
     } catch (Exception $e) {
         echo "Unregistration of site failed: " . $e->getMessage() . "\n";
-        // TODO report this to PagerDuty.
+        exit(1);
     }
 
     $registrationmanager->delete_registeredhub($huburl);
