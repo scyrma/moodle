@@ -301,6 +301,9 @@ class file_system {
      */
     public function extract_to_storage(stored_file $file, file_packer $packer, $contextid,
             $component, $filearea, $itemid, $pathbase, $userid = null, file_progress $progress = null) {
+
+        // The extract_to_storage function needs the file to exist on disk.
+        $this->ensure_readable($file);
         $archivefile = $this->get_fullpath_from_storedfile($file, true);
         return $packer->extract_to_storage($archivefile, $contextid,
                 $component, $filearea, $itemid, $pathbase, $userid, $progress);
