@@ -42,6 +42,11 @@ class login extends service {
             // User was not found.
             return false;
         }
+        else if ($response->getStatusCode() === 505) {
+            // 505 is the code we use when signup is in maintenance mode
+            throw new \moodle_exception('servermaintenance', 'auth_moodlecloud');
+            return false;
+        }
         else if ($response->getStatusCode() >= 500) {
             // This was some kind of service failure.
             return false;
