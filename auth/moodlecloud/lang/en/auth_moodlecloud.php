@@ -23,3 +23,4 @@
  */
 
 $string['pluginname'] = 'MoodleCloud';
+$string['servermaintenance'] = 'The MoodleCloud service is currently undergoing scheduled maintenance. Please try again later';
