@@ -15,6 +15,7 @@ $string['bbbdurationwarning'] = 'The maximum duration for this session is %durat
 $string['bbbrecordwarning'] = 'This session may be recorded.';
 $string['bigbluebuttonbn:join'] = 'Join a meeting';
 $string['bigbluebuttonbn:moderate'] = 'Moderate a meeting';
+$string['bigbluebuttonbn:managerecordings'] = 'Manage recordings';
 $string['bigbluebuttonbn:addinstance'] = 'Add a new meeting';
 $string['bigbluebuttonbn'] = 'BigBlueButton';
 
@@ -84,7 +85,7 @@ $string['config_feature_predefinedprofile_enabled_description'] = 'Pre-defined p
 $string['config_feature_userlimit'] = 'Configuration for "User limit" feature';
 $string['config_feature_userlimit_description'] = 'These settings enable or disable options in the UI and also define default values for these options.';
 $string['config_feature_userlimit_default'] = 'User limit enabled by default';
-$string['config_feature_userlimit_default_description'] = 'User limit feature is enabled by default when a new room or conference is added.';
+$string['config_feature_userlimit_default_description'] = 'The number of users allowed in a session by default when a new room or conference is added. If the number is set to 0, no limit is established';
 $string['config_feature_userlimit_editable'] = 'User limit feature can be edited';
 $string['config_feature_userlimit_editable_description'] = 'User limit value by default can be edited when the room or conference is added or updated.';
 
@@ -248,16 +249,12 @@ $string['view_message_session_has_users'] = 'There are';
 $string['view_message_room_closed'] = 'This room is closed.';
 $string['view_message_room_ready'] = 'This room is ready.';
 $string['view_message_room_open'] = 'This room is open.';
-
-$string['view_message_conference_not_started'] = 'This conference has not yet started.';
-
 $string['view_message_conference_room_ready'] = 'This conference room is ready. You can join the session now.';
 $string['view_message_conference_not_started'] = 'This conference has not yet started.';
 $string['view_message_conference_wait_for_moderator'] = 'Waiting for a moderator to join.';
-
 $string['view_message_conference_in_progress'] = 'This conference is in progress.';
-
 $string['view_message_conference_has_ended'] = 'This conference has ended.';
+$string['view_message_tab_close'] = 'This tab/window must be closed manually';
 
 
 $string['view_groups_selection_warning'] = 'There is a conference room for each group and you have access to more than one. Be sure to select the correct one.';
@@ -268,16 +265,20 @@ $string['view_conference_action_end'] = 'End session';
 $string['view_conference_action_lineup'] = 'Line up for joining session';
 
 
-$string['view_delete_confirmation'] = 'Are you sure to delete this recording?';
-$string['view_head_actionbar'] = 'Toolbar';
-$string['view_head_activity'] = 'Activity';
-$string['view_head_course'] = 'Course';
-$string['view_head_date'] = 'Date';
-$string['view_head_description'] = 'Description';
-$string['view_head_length'] = 'Length';
-$string['view_head_duration'] = 'Duration';
-$string['view_head_recording'] = 'Recording';
-$string['view_duration_min'] = 'min';
+$string['view_recording_delete_confirmation'] = 'Are you sure to delete this recording?';
+$string['view_recording_actionbar'] = 'Toolbar';
+$string['view_recording_activity'] = 'Activity';
+$string['view_recording_course'] = 'Course';
+$string['view_recording_date'] = 'Date';
+$string['view_recording_description'] = 'Description';
+$string['view_recording_length'] = 'Length';
+$string['view_recording_duration'] = 'Duration';
+$string['view_recording_recording'] = 'Recording';
+$string['view_recording_duration_min'] = 'min';
+$string['view_recording_name'] = 'Name';
+$string['view_recording_tags'] = 'Tags';
+$string['view_recording_modal_button'] = 'Apply';
+$string['view_recording_modal_title'] = 'Set values for recording';
 
 $string['event_activity_created'] = 'BigBlueButtonBN activity created';
 $string['event_activity_viewed'] = 'BigBlueButtonBN activity viewed';
@@ -299,23 +300,15 @@ $string['predefined_profile_collaborationroom'] = 'Collaboration room';
 $string['predefined_profile_scheduledsession'] = 'Scheduled session';
 
 
-$string['email_title_notification'] = '{$a->activity_type} has been {$a->action}';
-$string['email_body_notification'] = '<p>{$a->activity_type} &quot;{$a->activity_title}&quot; has been {$a->action}.</p>';
-$string['email_body_notification_meeting_details'] = '<p><b>{$a->activity_title}</b> Details:'.
-        '<table border="0" style="margin: 5px 0 0 20px"><tbody>'.
-        '<tr><td style="font-weight:bold;color:#555;">Title: </td><td>'.
-        '{$a->activity_title}</td></tr>'.
-        '<tr><td style="font-weight:bold;color:#555;">Description: </td><td>'.
-        '{$a->activity_description}</td></tr>'.
-        '<tr><td style="font-weight:bold;color:#555;">Start date: </td><td>'.
-        '{$a->activity_openingtime}</td></tr>'.
-        '<tr><td style="font-weight:bold;color:#555;">End date: </td><td>'.
-        '{$a->activity_closingtime}</td></tr>'.
-        '<tr><td style="font-weight:bold;color:#555;">{$a->action} by: </td><td>'.
-        '{$a->activity_owner}</td></tr>'.
-        '</tbody></table>'.
-        '</p>';
-$string['email_body_recording_ready'] = '<p>Recording for {$a->activity_type} &quot;{$a->activity_title}&quot; is ready.</p>';
-$string['email_footer'] = '<p><hr/><br/>'.
-        'This automatic notification message was sent by {$a->user_name} ({$a->user_email}) '.
-        'from the course {$a->course_name}.</p>';
+$string['email_title_notification_has_been'] = 'has been';
+$string['email_body_notification_meeting_has_been'] = 'has been';
+$string['email_body_notification_meeting_details'] = 'Details';
+$string['email_body_notification_meeting_title'] = 'Title';
+$string['email_body_notification_meeting_description'] = 'Description';
+$string['email_body_notification_meeting_start_date'] = 'Start date';
+$string['email_body_notification_meeting_end_date'] = 'End date';
+$string['email_body_notification_meeting_by'] = 'by';
+$string['email_body_recording_ready_for'] = 'Recording for';
+$string['email_body_recording_ready_is_ready'] = 'is ready';
+$string['email_footer_sent_by'] = 'This automatic notification message was sent by';
+$string['email_footer_sent_from'] = 'from the course';
