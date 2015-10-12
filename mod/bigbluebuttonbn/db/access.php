@@ -43,7 +43,20 @@ $capabilities = array(
         //
         // Ability to moderate a meeting
         'mod/bigbluebuttonbn:moderate' => array(
-                'captype' => 'write',
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_MODULE,
+                'legacy' => array(
+                        'manager' => CAP_ALLOW,
+                        //'coursecreator' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                        'teacher' => CAP_ALLOW
+                )
+        ),
+
+        //
+        // Ability to manage recordings
+        'mod/bigbluebuttonbn:managerecordings' => array(
+                'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,
                 'legacy' => array(
                         'manager' => CAP_ALLOW,
@@ -52,5 +65,4 @@ $capabilities = array(
                         'teacher' => CAP_ALLOW
                 )
         )
-
 );
