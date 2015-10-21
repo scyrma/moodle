@@ -338,7 +338,7 @@ class file_system {
             return false;
         }
 
-        $this->ensure_readable();
+        $this->ensure_readable($file);
         $path = $this->get_fullpath_from_storedfile($file, true);
 
         return $this->get_imageinfo_from_path($path);
