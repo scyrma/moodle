@@ -7,7 +7,7 @@ require_once($CFG->dirroot . '/' . $CFG->admin . '/registration/lib.php');
 require_once($CFG->dirroot . '/course/publish/lib.php');
 require_once($CFG->dirroot . "/webservice/xmlrpc/lib.php");
 
-$huburl = 'http://loganberry.local/localhub';
+$huburl = HUB_MOODLEORGHUBURL;
 
 $registrationmanager = new \registration_manager();
 $publicationmanager = new course_publish_manager();
