@@ -242,6 +242,9 @@ $CFG->admin = 'admin';
 //      $CFG->session_handler_class = '\core\session\file';
 //      $CFG->session_file_save_path = $CFG->dataroot.'/sessions';
 //
+//   File system handler:
+//      $CFG->filesystem_handler_class = '\file_system';
+//
 //   Memcached session handler (requires memcached server and extension):
 //      $CFG->session_handler_class = '\core\session\memcached';
 //      $CFG->session_memcached_save_path = '127.0.0.1:11211';
