@@ -5544,8 +5544,10 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
 
     $supportuser = core_user::get_support_user();
 
-    // Make up an email address for handling bounces.
-    if (!empty($CFG->handlebounces)) {
+    if ($CFG->mailsender) {
+        $mail->Sender = $CFG->mailsender;
+    } else if (!empty($CFG->handlebounces)) {
+        // Make up an email address for handling bounces.
         $modargs = 'B'.base64_encode(pack('V', $user->id)).substr(md5($user->email), 0, 16);
         $mail->Sender = generate_email_processing_address(0, $modargs);
     } else {
