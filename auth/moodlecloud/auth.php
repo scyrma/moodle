@@ -49,6 +49,7 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
         $this->config->field_updatelocal_email         = 'onlogin';
         $this->config->field_updatelocal_timezone      = 'onlogin';
         $this->config->field_updatelocal_country       = 'onlogin';
+        $this->config->field_updatelocal_lang          = 'onlogin';
         $this->config->field_updatelocal_phonenumber   = false;
     }
 
@@ -153,10 +154,10 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
             $update['country'] = $newuser->country;
         }
 
-        // Language, not updated from signup
-        // if ($olduser->lang !== $newuser->lang) {
-        //     $update['lang'] = $newuser->lang;
-        // }
+        // Language
+        if ($olduser->lang !== $newuser->lang) {
+            $update['lang'] = $newuser->lang;
+        }
 
         if (count($update)) {
             return auth_moodlecloud\helper::call('userupdate', $update);
