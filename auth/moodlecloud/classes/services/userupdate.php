@@ -34,6 +34,10 @@ class userupdate extends service {
                         'required'      => false,
                         'type'          => 'string',
                     ),
+                'lang' => array(
+                        'required'      => false,
+                        'type'          => 'string',
+                    ),
             );
     }
 
