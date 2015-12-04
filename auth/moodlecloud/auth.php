@@ -42,6 +42,7 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
         $this->config->field_lock_email         = 'unlockedifempty';
         $this->config->field_lock_timezone      = 'unlockedifempty';
         $this->config->field_lock_country       = 'unlockedifempty';
+        $this->config->field_lock_lang          = 'unlockedifempty';
         $this->config->field_lock_phonenumber   = false;
 
         $this->config->field_updatelocal_firstname     = 'onlogin';
