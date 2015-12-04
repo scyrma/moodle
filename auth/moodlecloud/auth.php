@@ -41,12 +41,16 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
         $this->config->field_lock_lastname      = 'unlockedifempty';
         $this->config->field_lock_email         = 'unlockedifempty';
         $this->config->field_lock_timezone      = 'unlockedifempty';
+        $this->config->field_lock_country       = 'unlockedifempty';
+        $this->config->field_lock_lang          = 'unlockedifempty';
         $this->config->field_lock_phonenumber   = false;
 
         $this->config->field_updatelocal_firstname     = 'onlogin';
         $this->config->field_updatelocal_lastname      = 'onlogin';
         $this->config->field_updatelocal_email         = 'onlogin';
         $this->config->field_updatelocal_timezone      = 'onlogin';
+        $this->config->field_updatelocal_country       = 'onlogin';
+        $this->config->field_updatelocal_lang          = 'onlogin';
         $this->config->field_updatelocal_phonenumber   = false;
     }
 
@@ -141,8 +145,19 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
             $update['email'] = $newuser->email;
         }
 
+        // Timezone
         if ($olduser->timezone !== $newuser->timezone) {
             $update['timezone'] = $newuser->timezone;
+        }
+
+        // Country
+        if ($olduser->country !== $newuser->country) {
+            $update['country'] = $newuser->country;
+        }
+
+        // Language
+        if ($olduser->lang !== $newuser->lang) {
+            $update['lang'] = $newuser->lang;
         }
 
         if (count($update)) {
