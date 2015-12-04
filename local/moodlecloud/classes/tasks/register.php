@@ -12,11 +12,13 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/' . $CFG->admin . '/registration/lib.php');
 
 class register extends adhoc_task {
-    public function execute() {
+    public function execute($wait_for_dns = true) {
         global $DB;
 
-        // Delay execution of the task a little longer to give DNS more of a fighting chance.
-        sleep(30);
+        if ($wait_for_dns) {
+            // Delay execution of the task a little longer to give DNS more of a fighting chance.
+            sleep(30);
+        }
 
         $huburl = HUB_MOODLEORGHUBURL;
 
@@ -38,7 +40,11 @@ class register extends adhoc_task {
     }
 
     public function configure($huburl) {
+        global $DB;
         $registrationmanager = new \registration_manager();
+
+        // update user from signup - fetch country
+        $admin = update_user_record_by_id(2);
 
         // Ensure that the hub detailsare in place.
         $hub = new stdClass();
@@ -50,7 +56,6 @@ class register extends adhoc_task {
 
         // Grab some useful items here.
         $cleanhuburl = clean_param($huburl, PARAM_ALPHANUMEXT);
-        $admin = get_admin();
         $site = get_site();
 
         // Set the default values.
@@ -74,6 +79,9 @@ class register extends adhoc_task {
         $emailalert = 0;
         set_config('site_emailalert_'       . $cleanhuburl, $emailalert,                'hub');
 
+        // Use the admin's country as site's country
+        set_config('site_country_'          . $cleanhuburl, $admin->country,            'hub');
+
         // By default set this to the current language.
         set_config('site_language_'         . $cleanhuburl, current_language(),         'hub');
 
@@ -94,6 +102,10 @@ class register extends adhoc_task {
 
             $url = new moodle_url($huburl . '/local/hub/siteregistration.php', $params);
             $curl = new curl();
+            $curl->setopt([
+                'CURLOPT_SSL_VERIFYPEER' => 0,
+                'CURLOPT_SSL_VERIFYHOST' => 0,
+            ]);
             $curl->get($url->out(false));
         }
     }
