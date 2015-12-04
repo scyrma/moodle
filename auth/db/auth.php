@@ -340,7 +340,8 @@ class auth_plugin_db extends auth_plugin_base {
                         $updateuser = new stdClass();
                         $updateuser->id   = $user->id;
                         $updateuser->suspended = 1;
-                        user_update_user($updateuser, false);
+                        $updateuser = $this->clean_data($updateuser);
+                        user_update_user($updateuser, false, true, false);
                         $trace->output(get_string('auth_dbsuspenduser', 'auth_db', array('name'=>$user->username, 'id'=>$user->id)), 1);
                     }
                 }
@@ -434,7 +435,8 @@ class auth_plugin_db extends auth_plugin_base {
                         $updateuser = new stdClass();
                         $updateuser->id = $olduser->id;
                         $updateuser->suspended = 0;
-                        user_update_user($updateuser);
+                        $updateuser = $this->clean_data($updateuser);
+                        user_update_user($updateuser, true, true, false);
                         $trace->output(get_string('auth_dbreviveduser', 'auth_db', array('name' => $username,
                             'id' => $olduser->id)), 1);
                         continue;
@@ -597,7 +599,8 @@ class auth_plugin_db extends auth_plugin_base {
         }
         if ($needsupdate) {
             require_once($CFG->dirroot . '/user/lib.php');
-            user_update_user($updateuser);
+            $updateuser = $this->clean_data($updateuser);
+            user_update_user($updateuser, true, true, false);
         }
         return $DB->get_record('user', array('id'=>$userid, 'deleted'=>0));
     }
