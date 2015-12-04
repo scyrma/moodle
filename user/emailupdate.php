@@ -67,8 +67,6 @@ if (empty($preferences['newemailattemptsleft'])) {
         echo $OUTPUT->continue_button("$CFG->wwwroot/user/view.php?id=$user->id");
     } else {
         // Update user email.
-        $authplugin = get_auth_plugin($user->auth);
-        $authplugin->user_update($olduser, $user);
         user_update_user($user, false);
         $a->email = $user->email;
         $stremailupdatesuccess = get_string('emailupdatesuccess', 'auth', $a);
