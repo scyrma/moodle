@@ -133,8 +133,9 @@ function user_create_user($user, $updatepassword = true, $triggerevent = true) {
  * @param bool $updatepassword if true, authentication plugin will update password.
  * @param bool $triggerevent set false if user_updated event should not be triggred.
  *             This will not affect user_password_updated event triggering.
+ * @param bool $updateauth. If true, update_user will be called on the authentication plugin.
  */
-function user_update_user($user, $updatepassword = true, $triggerevent = true) {
+function user_update_user($user, $updatepassword = true, $triggerevent = true, $updateauth = true) {
     global $DB;
 
     // Set the timecreate field to the current time.
@@ -171,6 +172,7 @@ function user_update_user($user, $updatepassword = true, $triggerevent = true) {
         unset($user->calendartype);
     }
 
+    $oldversion = $DB->get_record('user', array('id' => $user->id));
     $user->timemodified = time();
 
     // Validate user data object.
@@ -183,19 +185,24 @@ function user_update_user($user, $updatepassword = true, $triggerevent = true) {
     }
 
     $DB->update_record('user', $user);
+    $updateduser = $DB->get_record('user', array('id' => $user->id));
+    $authplugin = get_auth_plugin($updateduser->auth);
+
+    if ($updateauth) {
+        $authplugin->user_update($oldversion, $updateduser);
+    }
 
     if ($updatepassword) {
         // Get full user record.
-        $updateduser = $DB->get_record('user', array('id' => $user->id));
 
         // If password was set, then update its hash.
         if (isset($passwd)) {
-            $authplugin = get_auth_plugin($updateduser->auth);
             if ($authplugin->can_change_password()) {
                 $authplugin->user_update_password($updateduser, $passwd);
             }
         }
     }
+
     // Trigger event if required.
     if ($triggerevent) {
         \core\event\user_updated::create_from_userid($user->id)->trigger();
