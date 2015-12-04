@@ -5,31 +5,26 @@ define('CLI_SCRIPT', true);
 require_once(dirname(dirname(dirname(__DIR__))) . '/config.php');
 require_once($CFG->dirroot . '/' . $CFG->admin . '/registration/lib.php');
 
+use local_moodlecloud\tasks\register as register_adhoc_task;
+use core\task\manager;
+
 /* 1. Send user language to signup */
 $admin = $DB->get_record('user', array('auth' => 'moodlecloud'));
 
 $authplugin = get_auth_plugin($admin->auth);
 if ($authplugin->authtype == 'moodlecloud') {
-    $user_withouth_lang = clone($admin);
+    $user_withouth_lang = clone $admin;
     $user_withouth_lang->lang = '';
-    $authplugin->user_update($user_no_lang, $admin);
+    $authplugin->user_update($user_withouth_lang, $admin);
 }
 
-/* 2. Update user from signup to set country (if not already set) */
-// update_user_record_by_id($admin->id);
+/* 2. Clear existing registration's data */
+$DB->delete_records('registration_hubs', array('huburl' => HUB_MOODLEORGHUBURL));
+$DB->delete_records('config_plugins', array('plugin' => 'hub'));
+cache_helper::invalidate_by_definition('core', 'config', array(), 'core');
 
-/* 3. Register site with hub */
-$huburl = HUB_MOODLEORGHUBURL;
+/* 3. Do the registration */
+$task = new register_adhoc_task();
+$task->execute(false);
 
-$registrationmanager = new \registration_manager();
-
-if ($hub = $registrationmanager->get_unconfirmedhub($huburl)) {
-    $params = $registrationmanager->get_site_info($huburl);
-    $params['token']    = $hub->token;
-    $params['url']      = $CFG->wwwroot;
-
-    $url = new moodle_url($huburl . '/local/hub/siteregistration.php', $params);
-    $curl = new curl();
-    $curl->get($url->out(false));
-}
 
