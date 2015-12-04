@@ -52,4 +52,6 @@ if ($hub = $registrationmanager->get_registeredhub($huburl)) {
     }
 
     $registrationmanager->delete_registeredhub($huburl);
+} else {
+    echo "No registered hub found for {$huburl}\n";
 }
