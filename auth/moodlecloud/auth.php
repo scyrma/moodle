@@ -52,6 +52,9 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
         $this->config->field_updatelocal_country       = 'onlogin';
         $this->config->field_updatelocal_lang          = 'onlogin';
         $this->config->field_updatelocal_phonenumber   = false;
+
+        // Add timezone to the fields that can be updated from external sources
+        $this->userfields[] = 'timezone';
     }
 
     /**
