@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2014111000;
+$plugin->version   = 2015121400;
 $plugin->requires  = 2014110400;
 $plugin->component = 'theme_moodlecloud';
 $plugin->dependencies = array(
