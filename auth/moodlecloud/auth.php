@@ -170,4 +170,16 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
         // If no change was made, we should return true.
         return true;
     }
+
+    /**
+     * Get the SSO Out URL.
+     *
+     * @return moodle_url
+     */
+    public function get_sso_url() {
+        if ($url = auth_moodlecloud\helper::call('ssoout', [])) {
+            return new moodle_url($url);
+        }
+        return null;
+    }
 }
