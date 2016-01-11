@@ -269,6 +269,11 @@ if ($hassiteconfig) {
     $ADMIN->add('repositorysettings', new admin_externalpage('repositoryinstanceedit',
         new lang_string('editrepositoryinstance', 'repository'), $url, 'moodle/site:config', true));
     foreach (core_plugin_manager::instance()->get_plugins_of_type('repository') as $plugin) {
+// START MOODLECLOUD HACK.
+if (isset($CFG->moodlecloud_blocked_repositories) && isset($CFG->moodlecloud_blocked_repositories[$plugin->name])) {
+    continue;
+}
+// END MOODLECLOUD HACK.
         /** @var \core\plugininfo\repository $plugin */
         $plugin->load_settings($ADMIN, 'repositorysettings', $hassiteconfig);
     }
