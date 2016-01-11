@@ -811,14 +811,15 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->course = $course->id;
         $record->userid = $user->id;
         $record->forum = $forum->id;
+        $record->timemodified = time();
         $disc1 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $disc2 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $disc3 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $disc4 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $disc5 = $forumgen->create_discussion($record);
 
         // Getting the neighbours.
@@ -844,8 +845,8 @@ class mod_forum_lib_testcase extends advanced_testcase {
 
         // Post in some discussions. We manually update the discussion record because
         // the data generator plays with timemodified in a way that would break this test.
-        sleep(1);
-        $disc1->timemodified = time();
+        $record->timemodified++;
+        $disc1->timemodified = $record->timemodified;
         $DB->update_record('forum_discussions', $disc1);
 
         $neighbours = forum_get_discussion_neighbours($cm, $disc5, $forum);
@@ -861,13 +862,13 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $this->assertEmpty($neighbours['next']);
 
         // After some discussions were created.
-        sleep(1);
+        $record->timemodified++;
         $disc6 = $forumgen->create_discussion($record);
         $neighbours = forum_get_discussion_neighbours($cm, $disc6, $forum);
         $this->assertEquals($disc1->id, $neighbours['prev']->id);
         $this->assertEmpty($neighbours['next']);
 
-        sleep(1);
+        $record->timemodified++;
         $disc7 = $forumgen->create_discussion($record);
         $neighbours = forum_get_discussion_neighbours($cm, $disc7, $forum);
         $this->assertEquals($disc6->id, $neighbours['prev']->id);
@@ -875,7 +876,7 @@ class mod_forum_lib_testcase extends advanced_testcase {
 
         // Adding timed discussions.
         $CFG->forum_enabletimedposts = true;
-        $now = time();
+        $now = $record->timemodified;
         $past = $now - 60;
         $future = $now + 60;
 
@@ -885,25 +886,26 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->forum = $forum->id;
         $record->timestart = $past;
         $record->timeend = $future;
-        sleep(1);
+        $record->timemodified = $now;
+        $record->timemodified++;
         $disc8 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $record->timestart = $future;
         $record->timeend = 0;
         $disc9 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $record->timestart = 0;
         $record->timeend = 0;
         $disc10 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $record->timestart = 0;
         $record->timeend = $past;
         $disc11 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $record->timestart = $past;
         $record->timeend = $future;
         $disc12 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $record->timestart = $future + 1; // Should be last post for those that can see it.
         $record->timeend = 0;
         $disc13 = $forumgen->create_discussion($record);
@@ -986,10 +988,9 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $this->setAdminUser();
 
         // Two discussions with identical timemodified ignore each other.
-        sleep(1);
-        $now = time();
-        $DB->update_record('forum_discussions', (object) array('id' => $disc3->id, 'timemodified' => $now));
-        $DB->update_record('forum_discussions', (object) array('id' => $disc2->id, 'timemodified' => $now));
+        $record->timemodified++;
+        $DB->update_record('forum_discussions', (object) array('id' => $disc3->id, 'timemodified' => $record->timemodified));
+        $DB->update_record('forum_discussions', (object) array('id' => $disc2->id, 'timemodified' => $record->timemodified));
         $disc2 = $DB->get_record('forum_discussions', array('id' => $disc2->id));
         $disc3 = $DB->get_record('forum_discussions', array('id' => $disc3->id));
 
@@ -1023,14 +1024,15 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->course = $course->id;
         $record->userid = $user->id;
         $record->forum = $forum->id;
+        $record->timemodified = time();
         $disc1 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $disc2 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $disc3 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $disc4 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $disc5 = $forumgen->create_discussion($record);
 
         // Getting the neighbours.
@@ -1055,8 +1057,8 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $this->assertEmpty($neighbours['next']);
 
         // Make sure that the thread's timemodified does not affect the order.
-        sleep(1);
-        $disc1->timemodified = time();
+        $record->timemodified++;
+        $disc1->timemodified = $record->timemodified;
         $DB->update_record('forum_discussions', $disc1);
 
         $neighbours = forum_get_discussion_neighbours($cm, $disc1, $forum);
@@ -1068,13 +1070,13 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $this->assertEquals($disc3->id, $neighbours['next']->id);
 
         // Add another blog post.
-        sleep(1);
+        $record->timemodified++;
         $disc6 = $forumgen->create_discussion($record);
         $neighbours = forum_get_discussion_neighbours($cm, $disc6, $forum);
         $this->assertEquals($disc5->id, $neighbours['prev']->id);
         $this->assertEmpty($neighbours['next']);
 
-        sleep(1);
+        $record->timemodified++;
         $disc7 = $forumgen->create_discussion($record);
         $neighbours = forum_get_discussion_neighbours($cm, $disc7, $forum);
         $this->assertEquals($disc6->id, $neighbours['prev']->id);
@@ -1082,7 +1084,7 @@ class mod_forum_lib_testcase extends advanced_testcase {
 
         // Adding timed discussions.
         $CFG->forum_enabletimedposts = true;
-        $now = time();
+        $now = $record->timemodified;
         $past = $now - 60;
         $future = $now + 60;
 
@@ -1092,21 +1094,22 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->forum = $forum->id;
         $record->timestart = $past;
         $record->timeend = $future;
-        sleep(1);
+        $record->timemodified = $now;
+        $record->timemodified++;
         $disc8 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $record->timestart = $future;
         $record->timeend = 0;
         $disc9 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $record->timestart = 0;
         $record->timeend = 0;
         $disc10 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $record->timestart = 0;
         $record->timeend = $past;
         $disc11 = $forumgen->create_discussion($record);
-        sleep(1);
+        $record->timemodified++;
         $record->timestart = $past;
         $record->timeend = $future;
         $disc12 = $forumgen->create_discussion($record);
@@ -1174,10 +1177,9 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $this->setAdminUser();
 
         // Two blog posts with identical creation time ignore each other.
-        sleep(1);
-        $now = time();
-        $DB->update_record('forum_posts', (object) array('id' => $disc2->firstpost, 'created' => $now));
-        $DB->update_record('forum_posts', (object) array('id' => $disc3->firstpost, 'created' => $now));
+        $record->timemodified++;
+        $DB->update_record('forum_posts', (object) array('id' => $disc2->firstpost, 'created' => $record->timemodified));
+        $DB->update_record('forum_posts', (object) array('id' => $disc3->firstpost, 'created' => $record->timemodified));
 
         $neighbours = forum_get_discussion_neighbours($cm, $disc2, $forum);
         $this->assertEquals($disc12->id, $neighbours['prev']->id);
@@ -1218,11 +1220,13 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->userid = $user1->id;
         $record->forum = $forum1->id;
         $record->groupid = $group1->id;
+        $record->timemodified = time();
         $disc11 = $forumgen->create_discussion($record);
         $record->forum = $forum2->id;
+        $record->timemodified++;
         $disc21 = $forumgen->create_discussion($record);
 
-        sleep(1);
+        $record->timemodified++;
         $record->userid = $user2->id;
         $record->forum = $forum1->id;
         $record->groupid = $group2->id;
@@ -1230,7 +1234,7 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->forum = $forum2->id;
         $disc22 = $forumgen->create_discussion($record);
 
-        sleep(1);
+        $record->timemodified++;
         $record->userid = $user1->id;
         $record->forum = $forum1->id;
         $record->groupid = null;
@@ -1238,7 +1242,7 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->forum = $forum2->id;
         $disc23 = $forumgen->create_discussion($record);
 
-        sleep(1);
+        $record->timemodified++;
         $record->userid = $user2->id;
         $record->forum = $forum1->id;
         $record->groupid = $group2->id;
@@ -1246,7 +1250,7 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->forum = $forum2->id;
         $disc24 = $forumgen->create_discussion($record);
 
-        sleep(1);
+        $record->timemodified++;
         $record->userid = $user1->id;
         $record->forum = $forum1->id;
         $record->groupid = $group1->id;
@@ -1412,11 +1416,13 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->userid = $user1->id;
         $record->forum = $forum1->id;
         $record->groupid = $group1->id;
+        $record->timemodified = time();
         $disc11 = $forumgen->create_discussion($record);
         $record->forum = $forum2->id;
+        $record->timemodified++;
         $disc21 = $forumgen->create_discussion($record);
 
-        sleep(1);
+        $record->timemodified++;
         $record->userid = $user2->id;
         $record->forum = $forum1->id;
         $record->groupid = $group2->id;
@@ -1424,7 +1430,7 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->forum = $forum2->id;
         $disc22 = $forumgen->create_discussion($record);
 
-        sleep(1);
+        $record->timemodified++;
         $record->userid = $user1->id;
         $record->forum = $forum1->id;
         $record->groupid = null;
@@ -1432,7 +1438,7 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->forum = $forum2->id;
         $disc23 = $forumgen->create_discussion($record);
 
-        sleep(1);
+        $record->timemodified++;
         $record->userid = $user2->id;
         $record->forum = $forum1->id;
         $record->groupid = $group2->id;
@@ -1440,7 +1446,7 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $record->forum = $forum2->id;
         $disc24 = $forumgen->create_discussion($record);
 
-        sleep(1);
+        $record->timemodified++;
         $record->userid = $user1->id;
         $record->forum = $forum1->id;
         $record->groupid = $group1->id;
@@ -2013,5 +2019,79 @@ class mod_forum_lib_testcase extends advanced_testcase {
         $discussions = forum_get_discussions($cm, '', true, -1, -1, false, -1, 0, $group3->id);
         self::assertCount(0, $discussions);
 
+    }
+
+    /**
+     * Tests the mod_forum_myprofile_navigation() function.
+     */
+    public function test_mod_forum_myprofile_navigation() {
+        $this->resetAfterTest(true);
+
+        // Set up the test.
+        $tree = new \core_user\output\myprofile\tree();
+        $user = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
+        $iscurrentuser = true;
+
+        // Set as the current user.
+        $this->setUser($user);
+
+        // Check the node tree is correct.
+        mod_forum_myprofile_navigation($tree, $user, $iscurrentuser, $course);
+        $reflector = new ReflectionObject($tree);
+        $nodes = $reflector->getProperty('nodes');
+        $nodes->setAccessible(true);
+        $this->assertArrayHasKey('forumposts', $nodes->getValue($tree));
+        $this->assertArrayHasKey('forumdiscussions', $nodes->getValue($tree));
+    }
+
+    /**
+     * Tests the mod_forum_myprofile_navigation() function as a guest.
+     */
+    public function test_mod_forum_myprofile_navigation_as_guest() {
+        global $USER;
+
+        $this->resetAfterTest(true);
+
+        // Set up the test.
+        $tree = new \core_user\output\myprofile\tree();
+        $course = $this->getDataGenerator()->create_course();
+        $iscurrentuser = true;
+
+        // Set user as guest.
+        $this->setGuestUser();
+
+        // Check the node tree is correct.
+        mod_forum_myprofile_navigation($tree, $USER, $iscurrentuser, $course);
+        $reflector = new ReflectionObject($tree);
+        $nodes = $reflector->getProperty('nodes');
+        $nodes->setAccessible(true);
+        $this->assertArrayNotHasKey('forumposts', $nodes->getValue($tree));
+        $this->assertArrayNotHasKey('forumdiscussions', $nodes->getValue($tree));
+    }
+
+    /**
+     * Tests the mod_forum_myprofile_navigation() function as a user viewing another user's profile.
+     */
+    public function test_mod_forum_myprofile_navigation_different_user() {
+        $this->resetAfterTest(true);
+
+        // Set up the test.
+        $tree = new \core_user\output\myprofile\tree();
+        $user = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
+        $iscurrentuser = true;
+
+        // Set to different user's profile.
+        $this->setUser($user2);
+
+        // Check the node tree is correct.
+        mod_forum_myprofile_navigation($tree, $user, $iscurrentuser, $course);
+        $reflector = new ReflectionObject($tree);
+        $nodes = $reflector->getProperty('nodes');
+        $nodes->setAccessible(true);
+        $this->assertArrayHasKey('forumposts', $nodes->getValue($tree));
+        $this->assertArrayHasKey('forumdiscussions', $nodes->getValue($tree));
     }
 }

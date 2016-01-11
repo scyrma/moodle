@@ -67,6 +67,7 @@ class flexible_table {
     var $column_suppress = array();
     var $column_nosort   = array('userpic');
     private $column_textsort = array();
+    /** @var boolean Stores if setup has already been called on this flixible table. */
     var $setup           = false;
     var $baseurl         = NULL;
     var $request         = array();
@@ -1656,8 +1657,21 @@ class table_default_export_format_parent {
      * started yet.
      */
     var $documentstarted = false;
-    function table_default_export_format_parent(&$table) {
+
+    /**
+     * Constructor
+     *
+     * @param flexible_table $table
+     */
+    public function __construct(&$table) {
         $this->table =& $table;
+    }
+
+    /**
+     * Old syntax of class constructor for backward compatibility.
+     */
+    public function table_default_export_format_parent(&$table) {
+        self::__construct($table);
     }
 
     function set_table(&$table) {

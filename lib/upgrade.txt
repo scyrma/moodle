@@ -1,6 +1,13 @@
 This files describes API changes in core libraries and APIs,
 information provided here is intended especially for developers.
 
+=== 3.0.1 ===
+
+* Number of changes to allow to run Moodle on PHP7. This should not affect existing plugins
+  when running on PHP5 but it is recommended to ensure PHP7 compatibility in plugins as well.
+  From Moodle 3.1 calling parent constructors by class names will show deprecation warnings.
+  Refer to https://docs.moodle.org/dev/Moodle_and_PHP7 for more information.
+
 === 3.0 ===
 
 * Minify updated to 2.2.1
@@ -151,6 +158,7 @@ information provided here is intended especially for developers.
   line interface scripts.
 * External function core_course_external::get_course_contents returned parameter "name" has been changed to PARAM_RAW,
   this is because the new external_format_string function may return raw data if the global moodlewssettingraw parameter is used.
+* Function is_web_crawler() has been deprecated, please use core_useragent::is_web_crawler() instead.
 
 === 2.9.1 ===
 

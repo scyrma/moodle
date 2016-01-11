@@ -2026,7 +2026,7 @@ function get_user_preferences($name = null, $default = null, $user = null) {
 // FUNCTIONS FOR HANDLING TIME.
 
 /**
- * Given date parts in user time produce a GMT timestamp.
+ * Given Gregorian date parts in user time produce a GMT timestamp.
  *
  * @package core
  * @category time
@@ -2208,7 +2208,7 @@ function date_format_string($date, $format, $tz = 99) {
 
 /**
  * Given a $time timestamp in GMT (seconds since epoch),
- * returns an array that represents the date in user time
+ * returns an array that represents the Gregorian date in user time
  *
  * @package core
  * @category time
@@ -4936,7 +4936,6 @@ function remove_course_contents($courseid, $showfeedback = true, array $options 
     $oldcourse->summary          = '';
     $oldcourse->cacherev         = 0;
     $oldcourse->legacyfiles      = 0;
-    $oldcourse->enablecompletion = 0;
     if (!empty($options['keep_groups_and_groupings'])) {
         $oldcourse->defaultgroupingid = 0;
     }
@@ -7692,6 +7691,18 @@ function shorten_text($text, $ideal=30, $exact = false, $ending='...') {
                             'tag'  => core_text::strtolower($tagmatchings[1]),
                             'pos'  => core_text::strlen($truncate),
                         );
+                } else if (preg_match('/^<!--\[if\s.*?\]>$/s', $linematchings[1], $tagmatchings)) {
+                    $tagdetails[] = (object) array(
+                            'open' => true,
+                            'tag'  => core_text::strtolower('if'),
+                            'pos'  => core_text::strlen($truncate),
+                    );
+                } else if (preg_match('/^<!--<!\[endif\]-->$/s', $linematchings[1], $tagmatchings)) {
+                    $tagdetails[] = (object) array(
+                            'open' => false,
+                            'tag'  => core_text::strtolower('if'),
+                            'pos'  => core_text::strlen($truncate),
+                    );
                 }
             }
             // Add html-tag to $truncate'd text.
@@ -7777,7 +7788,11 @@ function shorten_text($text, $ideal=30, $exact = false, $ending='...') {
 
     // Close all unclosed html-tags.
     foreach ($opentags as $tag) {
-        $truncate .= '</' . $tag . '>';
+        if ($tag === 'if') {
+            $truncate .= '<!--<![endif]-->';
+        } else {
+            $truncate .= '</' . $tag . '>';
+        }
     }
 
     return $truncate;

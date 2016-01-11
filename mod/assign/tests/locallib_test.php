@@ -2143,7 +2143,7 @@ Anchor link 2:<a title=\"bananas\" href=\"../logo-240x60.gif\">Link text</a>
         $pagination = array('userid'=>$this->students[0]->id,
                             'rownum'=>0,
                             'last'=>true,
-                            'useridlistid'=>time(),
+                            'useridlistid' => $assign->get_useridlist_key_id(),
                             'attemptnumber'=>0);
         $formparams = array($assign, $data, $pagination);
         $mform = new mod_assign_grade_form(null, $formparams);
