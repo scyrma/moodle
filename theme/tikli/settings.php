@@ -625,45 +625,6 @@ if (is_siteadmin()) {
 
     $ADMIN->add('theme_tikli', $temp);
 
-    //usernavbar setting
-    $temp = new admin_settingpage('theme_tikli_user_nav',  get_string('usernavsettings', 'theme_tikli'));
-    //temp for user navigation
-    // Enable My.
-    $name = 'theme_tikli/enablemy';
-    $title = get_string('enablemy', 'theme_tikli');
-    $description = get_string('enablemydesc', 'theme_tikli');
-    $default = true;
-    $setting = new admin_setting_configcheckbox($name, $title, $description, $default, true, false);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Enable View Profile.
-    $name = 'theme_tikli/enableprofile';
-    $title = get_string('enableprofile', 'theme_tikli');
-    $description = get_string('enableprofiledesc', 'theme_tikli');
-    $default = true;
-    $setting = new admin_setting_configcheckbox($name, $title, $description, $default, true, false);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Enable Private Files.
-    $name = 'theme_tikli/enableprivatefiles';
-    $title = get_string('enableprivatefiles', 'theme_tikli');
-    $description = get_string('enableprivatefilesdesc', 'theme_tikli');
-    $default = false;
-    $setting = new admin_setting_configcheckbox($name, $title, $description, $default, true, false);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Enable Badges.
-    $name = 'theme_tikli/enablebadges';
-    $title = get_string('enablebadges', 'theme_tikli');
-    $description = get_string('enablebadgesdesc', 'theme_tikli');
-    $default = false;
-    $setting = new admin_setting_configcheckbox($name, $title, $description, $default, true, false);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-    $ADMIN->add('theme_tikli', $temp);
     $temp = new admin_settingpage('theme_tikli_colors',  get_string('colorsettings', 'theme_tikli'));
 
     $name = 'theme_tikli/colorscheme';
