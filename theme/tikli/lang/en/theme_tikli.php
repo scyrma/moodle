@@ -81,20 +81,6 @@ $string['leftfootnotelinkdescsection5'] = 'You may insert the link to be redirec
 $string['leftfootnotesectionlink6'] = 'Footnote section 6 link (left)';
 $string['leftfootnotelinkdescsection6'] = 'You may insert the link to be redirected at, for the above text.';
 
-/*user nav lang pack*/
-$string['enablemy'] = 'Enable My';
-$string['enablemydesc'] = 'Check the Box to enable the “Dashboard” option.';
-$string['enableprofile'] = 'Enable Profile';
-$string['enableprofiledesc'] = 'Check the Box to enable the “Profile” option';
-$string['enableeditprofile'] = 'Enable Edit Profile';
-$string['enableeditprofiledesc'] = 'Enable Edit Profile Desc';
-$string['enablecalendar'] = 'Enable Calendar';
-$string['enablecalendardesc'] = 'Enable Calendar Desc';
-$string['enableprivatefiles'] = 'Enable Private Files';
-$string['enableprivatefilesdesc'] = 'Check the Box to enable the “Private Files” option.';
-$string['enablebadges'] = 'Enable Badges';
-$string['enablebadgesdesc'] = 'Check the Box to enable the “Badges” option.';
-
 /*font*/
 
 $string['fontselectdesc'] = 'You may choose from the ‘Standard’ fonts or add your customised fonts by selecting ‘Custom’ font.';
