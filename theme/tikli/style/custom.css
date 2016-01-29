@@ -1,9 +1,7 @@
 /* Custom CSS
 -------------------------*/
 h1,
-h2 {
-  font-family: [[setting:headingfont]];
-}
+h2,
 h1,
 h2,
 h3,
@@ -21,7 +19,9 @@ input.srch-fld,
 input[type="text"],
 .adminsearchform input[type="text"],
 .da-slide,
-select, .news-updates-header a, input[type="file"]
+select, .news-updates-header a, input[type="file"] {
+  font-family: [[setting:headingfont]];
+}
 
 p,
 .da-slide p,
@@ -59,4 +59,12 @@ h4 {
 
 .loginpanel h2:before, a.click {
     background-image: url([[setting:logo]]);
+}
+
+.number-section {
+    background: #f7f7f7 url([[setting:parallaxbackgroundimage]]);
+}
+
+.navbar-inner .nav-collapse.in {
+    height: auto !important;
 }
