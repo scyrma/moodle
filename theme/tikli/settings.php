@@ -217,7 +217,7 @@ if (is_siteadmin()) {
             $name = 'theme_tikli/video';
             $title = get_string('video', 'theme_tikli');
             $description = get_string('videodesc', 'theme_tikli');
-            $default = '<iframe src="https://player.vimeo.com/video/45232468" width="560" height="300" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+            $default = '<iframe src="https://player.vimeo.com/video/45232468" width="560" height="300"></iframe>';
             $setting = new admin_setting_configtext($name, $title, $description, $default);
             $setting->set_updatedcallback('theme_reset_all_caches');
             $temp->add($setting);
@@ -263,7 +263,7 @@ if (is_siteadmin()) {
         $name = 'theme_tikli/slidercount';
         $title = get_string('slidercount', 'theme_tikli');
         $description = get_string('slidercountdesc', 'theme_tikli');
-        $setting = new admin_setting_configselect($name, $title, $description, 0,
+        $setting = new admin_setting_configselect($name, $title, $description, 5,
         array(
                 1 => get_string('one', 'theme_tikli'),
                 2 => get_string('two', 'theme_tikli'),
@@ -407,6 +407,445 @@ if (is_siteadmin()) {
     $description = get_string('frontpageblockdescriptionsectiondesc3', 'theme_tikli');
     $default = 'Saturday, June 5, 2015';
     $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $temp->add(new admin_setting_heading('theme_tikli_thirdsection', get_string('thirdsection', 'theme_tikli'),
+        format_text(get_string('thirdsectiondesc', 'theme_tikli'), FORMAT_MARKDOWN)));
+
+    $name = 'theme_tikli/thirdsectionheading';
+    $title = get_string('thirdsectionheading', 'theme_tikli');
+    $description = get_string('thirdsectionheadingdesc', 'theme_tikli');
+    $default = 'Online Education for Everyone';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/thirdsectionsubheading';
+    $title = get_string('thirdsectionsubheading', 'theme_tikli');
+    $description = get_string('thirdsectionsubheadingdesc', 'theme_tikli');
+    $default = 'Wducation for Everyone Online Education for Everyone Online Education for Everyone';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/thirdsectioncount';
+    $title = get_string('thirdsectioncount', 'theme_tikli');
+    $description = get_string('thirdsectioncountdesc', 'theme_tikli');
+    $setting = new admin_setting_configselect($name, $title, $description, 4,
+    array(
+            1 => get_string('one', 'theme_tikli'),
+            2 => get_string('two', 'theme_tikli'),
+            3 => get_string('three', 'theme_tikli'),
+            4 => get_string('four', 'theme_tikli'),
+        ));
+    $temp->add($setting);
+
+    for($thirdsectioncounts = 1; $thirdsectioncounts <= get_config('theme_tikli', 'thirdsectioncount'); $thirdsectioncounts = $thirdsectioncounts + 1) {
+        $name = 'theme_tikli/thirdsubsectioncolumnimage'.$thirdsectioncounts;
+        $title = get_string('thirdsubsectioncolumnimage', 'theme_tikli');
+        $description = get_string('thirdsubsectioncolumnimagedesc', 'theme_tikli');
+        $setting = new admin_setting_configstoredfile($name, $title, $description, 'thirdsubsectioncolumnimage'.$thirdsectioncounts);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+        
+        $name = 'theme_tikli/thirdsubsectioncolumnfirsttext'.$thirdsectioncounts;
+        $title = get_string('thirdsubsectioncolumnfirsttext', 'theme_tikli');
+        $description = get_string('thirdsubsectioncolumnfirsttextdesc', 'theme_tikli');
+        $default = 'Quality Product';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/thirdsubsectioncolumnsecondtext'.$thirdsectioncounts;
+        $title = get_string('thirdsubsectioncolumnsecondtext', 'theme_tikli');
+        $description = get_string('thirdsubsectioncolumnsecondtextdesc', 'theme_tikli');
+        $default = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/thirdsubsectioncolumnlink'.$thirdsectioncounts;
+        $title = get_string('thirdsubsectioncolumnlink', 'theme_tikli');
+        $description = get_string('thirdsubsectioncolumnlinkdesc', 'theme_tikli');
+        $default = '#';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+    }
+
+    $temp->add(new admin_setting_heading('theme_tikli_coursequicklinks', get_string('coursequicklinks', 'theme_tikli'),
+        format_text(get_string('coursequicklinksdesc', 'theme_tikli'), FORMAT_MARKDOWN)));
+
+    $name = 'theme_tikli/coursesectionheading';
+    $title = get_string('coursesectionheading', 'theme_tikli');
+    $description = get_string('coursesectionheadingdesc', 'theme_tikli');
+    $default = 'COURSES & ACADEMICS';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/coursesectionsubheading';
+    $title = get_string('coursesectionsubheading', 'theme_tikli');
+    $description = get_string('coursesectionsubheadingdesc', 'theme_tikli');
+    $default = 'What we offer to our students';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/coursesectionoverview';
+    $title = get_string('coursesectionoverview', 'theme_tikli');
+    $description = get_string('coursesectionoverview', 'theme_tikli');
+    $default = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard.";
+    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/quicklinkscolumns';
+    $title = get_string('quicklinkscolumns', 'theme_tikli');
+    $description = get_string('quicklinkscolumnsdesc', 'theme_tikli');
+    $setting = new admin_setting_configselect($name, $title, $description, 3,
+    array(
+            1 => get_string('one', 'theme_tikli'),
+            2 => get_string('two', 'theme_tikli'),
+            3 => get_string('three', 'theme_tikli'),
+        ));
+    $temp->add($setting);
+
+    for($quicklinkcols = 1; $quicklinkcols <= get_config('theme_tikli', 'quicklinkscolumns'); $quicklinkcols = $quicklinkcols + 1) {
+        
+        $name = 'theme_tikli/quicklinksrows'.$quicklinkcols;
+        $title = get_string('quicklinksrows', 'theme_tikli');
+        $description = get_string('quicklinksrowsdesc', 'theme_tikli');
+        $setting = new admin_setting_configselect($name, $title, $description, 5,
+        array(
+                1 => get_string('one', 'theme_tikli'),
+                2 => get_string('two', 'theme_tikli'),
+                3 => get_string('three', 'theme_tikli'),
+                4 => get_string('four', 'theme_tikli'),
+                5 => get_string('five', 'theme_tikli'),
+            ));
+        $temp->add($setting);
+        
+        for($quicklinkrows = 1; $quicklinkrows <= get_config('theme_tikli', 'quicklinksrows'.$quicklinkcols); $quicklinkrows = $quicklinkrows + 1) {
+            $name = 'theme_tikli/text'.$quicklinkcols.'_'.$quicklinkrows;
+            $title = get_string('text', 'theme_tikli');
+            $description = get_string('textdesc', 'theme_tikli');
+            $default = '';
+            $setting = new admin_setting_configtext($name, $title,  $description, $default);
+            $setting->set_updatedcallback('theme_reset_all_caches');
+            $temp->add($setting);
+
+            $name = 'theme_tikli/link'.$quicklinkcols.'_'.$quicklinkrows;
+            $title = get_string('link', 'theme_tikli');
+            $description = get_string('linkdesc', 'theme_tikli');
+            $default = '';
+            $setting = new admin_setting_configtext($name, $title,  $description, $default);
+            $setting->set_updatedcallback('theme_reset_all_caches');
+            $temp->add($setting);
+        }
+    }
+    $temp->add(new admin_setting_heading('theme_tikli_parallaxcountersection', get_string('parallaxcountersection', 'theme_tikli'),
+        format_text(get_string('parallaxcountersectiondesc', 'theme_tikli'), FORMAT_MARKDOWN)));
+
+    $name = 'theme_tikli/parallaxcounterheading';
+    $title = get_string('parallaxcounterheading', 'theme_tikli');
+    $description = get_string('parallaxcounterheadingdesc', 'theme_tikli');
+    $default = 'INSIDE STORY AND STATISTICS';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/parallaxcountersubheading';
+    $title = get_string('parallaxcountersubheading', 'theme_tikli');
+    $description = get_string('parallaxcountersubheadingdesc', 'theme_tikli');
+    $default = 'In the year 2015 we achieved a new level of success';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/parallaxbackgroundimage';
+    $title = get_string('parallaxbackgroundimage', 'theme_tikli');
+    $description = get_string('parallaxbackgroundimagedesc', 'theme_tikli');
+    $setting = new admin_setting_configstoredfile($name, $title, $description, 'parallaxbackgroundimage');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/parallaxcountercount';
+    $title = get_string('parallaxcountercount', 'theme_tikli');
+    $description = get_string('parallaxcountercountdesc', 'theme_tikli');
+    $setting = new admin_setting_configselect($name, $title, $description, 4,
+    array(
+            1 => get_string('one', 'theme_tikli'),
+            2 => get_string('two', 'theme_tikli'),
+            3 => get_string('three', 'theme_tikli'),
+            4 => get_string('four', 'theme_tikli'),
+        ));
+    $temp->add($setting);
+
+    for($parallaxcountercounts = 1; $parallaxcountercounts <= get_config('theme_tikli', 'parallaxcountercount'); $parallaxcountercounts = $parallaxcountercounts + 1) {
+
+        $name = 'theme_tikli/parallaxcountercountnumber'.$parallaxcountercounts;
+        $title = get_string('parallaxcountercountnumber', 'theme_tikli');
+        $description = get_string('parallaxcountercountnumberdesc', 'theme_tikli');
+        $default = '';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/parallaxcountercountnumbertext'.$parallaxcountercounts;
+        $title = get_string('parallaxcountercountnumbertext', 'theme_tikli');
+        $description = get_string('parallaxcountercountnumbertextdesc', 'theme_tikli');
+        $default = '';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+    }
+
+    $temp->add(new admin_setting_heading('theme_tikli_staticnumbersection', get_string('staticnumbersection', 'theme_tikli'),
+        format_text(get_string('staticnumbersectiondesc', 'theme_tikli'), FORMAT_MARKDOWN)));
+
+    $name = 'theme_tikli/staticnumbersectioncount';
+    $title = get_string('staticnumbersectioncount', 'theme_tikli');
+    $description = get_string('staticnumbersectioncountdesc', 'theme_tikli');
+    $setting = new admin_setting_configselect($name, $title, $description, 4,
+    array(
+            1 => get_string('one', 'theme_tikli'),
+            2 => get_string('two', 'theme_tikli'),
+            3 => get_string('three', 'theme_tikli'),
+            4 => get_string('four', 'theme_tikli'),
+        ));
+    $temp->add($setting);
+
+    for($staticnumbersectioncounts = 1; $staticnumbersectioncounts <= get_config('theme_tikli', 'staticnumbersectioncount'); $staticnumbersectioncounts = $staticnumbersectioncounts + 1) {
+
+        $name = 'theme_tikli/staticnumberheading'.$staticnumbersectioncounts;
+        $title = get_string('staticnumberheading', 'theme_tikli');
+        $description = get_string('staticnumberheadingdesc', 'theme_tikli');
+        $default = '';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/staticnumber'.$staticnumbersectioncounts;
+        $title = get_string('staticnumber', 'theme_tikli');
+        $description = get_string('staticnumberdesc', 'theme_tikli');
+        $default = '';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/staticnumbertext'.$staticnumbersectioncounts;
+        $title = get_string('staticnumbertext', 'theme_tikli');
+        $description = get_string('staticnumbertextdesc', 'theme_tikli');
+        $default = '';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/staticnumbersubtext'.$staticnumbersectioncounts;
+        $title = get_string('staticnumbersubtext', 'theme_tikli');
+        $description = get_string('staticnumbersubtextdesc', 'theme_tikli');
+        $default = '';
+        $setting = new admin_setting_configtext($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+    }
+    $temp->add(new admin_setting_heading('theme_tikli_feedbacksection', get_string('feedback', 'theme_tikli'),
+    format_text(get_string('feedbackdesc', 'theme_tikli'), FORMAT_MARKDOWN)));
+
+    $name = 'theme_tikli/feedbackheading';
+    $title = get_string('feedbackheading', 'theme_tikli');
+    $description = get_string('feedbackheadingdesc', 'theme_tikli');
+    $default = 'STUDENTS FEEDBACK';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/feedbacksubheading';
+    $title = get_string('feedbacksubheading', 'theme_tikli');
+    $description = get_string('feedbacksubheadingdesc', 'theme_tikli');
+    $default = 'We love our students, they love us too..';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/feedbackiframe';
+    $title = get_string('feedbackiframe', 'theme_tikli');
+    $description = get_string('feedbackiframedesc', 'theme_tikli');
+    $default = '<iframe src="https://player.vimeo.com/video/45232468" width="560" height="300"></iframe>';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/feedbackbrieftext';
+    $title = get_string('feedbackbrieftext', 'theme_tikli');
+    $description = get_string('feedbackbrieftextdesc', 'theme_tikli');
+    $default = '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris consectetur dui et ullamcorper eleifend. Aliquam condimentum id ante eu commodo. Quisque pulvinar tempor ultricies.</p><p><strong>Etiam vel suscipit odio.</strong></p>';
+    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/feedbackslidecount';
+    $title = get_string('feedbackslidecount', 'theme_tikli');
+    $description = get_string('feedbackslidecountdesc', 'theme_tikli');
+    $setting = new admin_setting_configselect($name, $title, $description, 3,
+    array(
+            1 => get_string('one', 'theme_tikli'),
+            2 => get_string('two', 'theme_tikli'),
+            3 => get_string('three', 'theme_tikli'),
+        ));
+    $temp->add($setting);
+
+    for($feedbackslides = 1; $feedbackslides <= get_config('theme_tikli', 'feedbackslidecount'); $feedbackslides = $feedbackslides + 1) {
+        $name = 'theme_tikli/feedbackslideimage_1_'.$feedbackslides;
+        $title = get_string('feedbackslideimage', 'theme_tikli');
+        $description = get_string('feedbackslideimagedesc', 'theme_tikli');
+        $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_1_'.$feedbackslides);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslidename_1_'.$feedbackslides;
+        $title = get_string('feedbackslidename', 'theme_tikli');
+        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+        $default = '<strong>Rozy Verottie ,</strong> Australia';
+        $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslidereview_1_'.$feedbackslides;
+        $title = get_string('feedbackslidereview', 'theme_tikli');
+        $description = get_string('feedbackslidereviewdesc', 'theme_tikli');
+        $default = 'Duis turpis elit, rutrum eu laoreet non, faucibus a urna. Pellentesque eu tempor velit. Cras vitae velit ut magna finibus auctor vel vitae velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra. Duis turpis elit, rutrum eu laoreet non, faucibus a urna. Pellentesque eu tempor velit. 
+        Cras vitae velit ut magna finibus auctor vel vitae velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra.';
+        $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslideimage_2_'.$feedbackslides;
+        $title = get_string('feedbackslideimage', 'theme_tikli');
+        $description = get_string('feedbackslideimagedesc', 'theme_tikli');
+        $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_2_'.$feedbackslides);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslidename_2_'.$feedbackslides;
+        $title = get_string('feedbackslidename', 'theme_tikli');
+        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+        $default = '<strong>Rozy Verottie ,</strong> Australia';
+        $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslidereview_2_'.$feedbackslides;
+        $title = get_string('feedbackslidename', 'theme_tikli');
+        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+        $default = 'Duis turpis elit, rutrum eu laoreet non, faucibus a urna. Pellentesque eu tempor velit. Cras vitae velit ut magna finibus auctor vel vitae velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra.';
+        $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslideimage_3_'.$feedbackslides;
+        $title = get_string('feedbackslideimage', 'theme_tikli');
+        $description = get_string('feedbackslideimagedesc', 'theme_tikli');
+        $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_3_'.$feedbackslides);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslidename_3_'.$feedbackslides;
+        $title = get_string('feedbackslidename', 'theme_tikli');
+        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+        $default = '<strong>Rozy Verottie ,</strong> Australia';
+        $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslidereview_3_'.$feedbackslides;
+        $title = get_string('feedbackslidename', 'theme_tikli');
+        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+        $default = 'Duis turpis elit, rutrum eu laoreet non, faucibus a urna. Pellentesque eu tempor velit. Cras vitae velit ut magna finibus auctor vel vitae velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra.';
+        $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslideimage_4_'.$feedbackslides;
+        $title = get_string('feedbackslideimage', 'theme_tikli');
+        $description = get_string('feedbackslideimagedesc', 'theme_tikli');
+        $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_4_'.$feedbackslides);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslidename_4_'.$feedbackslides;
+        $title = get_string('feedbackslidename', 'theme_tikli');
+        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+        $default = '<strong>Rozy Verottie ,</strong> Australia';
+        $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+
+        $name = 'theme_tikli/feedbackslidereview_4_'.$feedbackslides;
+        $title = get_string('feedbackslidename', 'theme_tikli');
+        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+        $default = 'Duis turpis elit, rutrum eu laoreet non, faucibus a urna. Pellentesque eu tempor velit. Cras vitae velit ut magna finibus auctor vel vitae velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra.Duis turpis elit, rutrum eu laoreet non, faucibus a urna. Pellentesque eu tempor velit. 
+        Cras vitae velit ut magna finibus auctor vel vitae velit. Class aptent taciti sociosqu ad litora torquent per conubia nostra.';
+        $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $temp->add($setting);
+    }
+
+
+    $temp->add(new admin_setting_heading('theme_tikli_mapsection', get_string('map', 'theme_tikli'),
+    format_text(get_string('mapdesc', 'theme_tikli'), FORMAT_MARKDOWN)));
+
+    $name = 'theme_tikli/place';
+    $title = get_string('place', 'theme_tikli');
+    $description = get_string('placedesc', 'theme_tikli');
+    $default = get_string('placevalue', 'theme_tikli');
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/country';
+    $title = get_string('country', 'theme_tikli');
+    $description = get_string('countrydesc', 'theme_tikli');
+    $default = get_string('countryvalue', 'theme_tikli');
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $temp->add(new admin_setting_heading('theme_tikli_contactsection', get_string('contactemailsection', 'theme_tikli'),
+    format_text(get_string('contactemailsectiondesc', 'theme_tikli'), FORMAT_MARKDOWN)));
+
+    $name = 'theme_tikli/emailcontact';
+    $title = get_string('emailcontact', 'theme_tikli');
+    $description = get_string('emailcontactdesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/emailsubject';
+    $title = get_string('emailsubject', 'theme_tikli');
+    $description = get_string('emailsubjectdesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/someinfoimage';
+    $title = get_string('someinfoimage', 'theme_tikli');
+    $description = get_string('someinfoimagedesc', 'theme_tikli');
+    $setting = new admin_setting_configstoredfile($name, $title, $description, 'someinfoimage');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/somesupportinfo';
+    $title = get_string('somesupportinfo', 'theme_tikli');
+    $description = get_string('somesupportinfodesc', 'theme_tikli');
+    $default = '<h4>DEDICATED SUPPORT</h4><p>For direct contact or inquiries send us an email.</p><p>Alternatively please fill free to fillup the form.</p><p>Market research and telephones sales will not be accepted.</p> ';
+    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
@@ -633,9 +1072,9 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    $name = 'theme_tikli/secondmarketspotsectionlink3';
-    $title = get_string('secondmarketspotsectionlink3', 'theme_tikli');
-    $description = get_string('secondmarketspotsectionlinkdesc3', 'theme_tikli');
+    $name = 'theme_tikli/secondmarketspotsectionlink2';
+    $title = get_string('secondmarketspotsectionlink2', 'theme_tikli');
+    $description = get_string('secondmarketspotsectionlinkdesc2', 'theme_tikli');
     $default = 'javascript:void(0);';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');
@@ -818,6 +1257,14 @@ if (is_siteadmin()) {
     $description = get_string('addressfontawesomeicondesc', 'theme_tikli');
     $default = 'addressfontawesomeicon';
     $setting = new admin_setting_configstoredfile($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/someinfo';
+    $title = get_string('someinfo', 'theme_tikli');
+    $description = get_string('someinfodesc', 'theme_tikli');
+    $default = '<h2>Moodle LMS</h2>';
+    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
