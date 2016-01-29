@@ -49,7 +49,6 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
 </head>
 <body <?php echo $OUTPUT->body_attributes(); ?>>
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
-<?php include $CFG->dirroot . '/theme/tikli/analyticstracking.php'; ?>
 <header class="navbar navbar-fixed-top">
   <nav class="navbar-inner">
     <?php if (get_config('theme_tikli', 'logoorsitename') === "logo") { ?>
