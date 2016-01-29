@@ -18,19 +18,17 @@ if (right_to_left()) {
     } else { ?>
     <header id="page-header" class="clearfix">
         <div id="page-navbar" class="clearfix">
-            <div class = "container">
                 <div class="row">
                     <nav class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></nav>
                     <div class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></div>
                 </div>
-            </div>
         </div>
         <div id="course-header">
             <?php echo $OUTPUT->course_header(); ?>
         </div>
     </header>
     <?php } ?>
-    <div id="page-content" class="row-fluid">
+    <div id="page-content" class="row-fluid"><div class="custom-width">
         <section id="region-main" class="<?php echo $regionmain; ?>">
             <?php
             echo $OUTPUT->course_content_header();
@@ -38,6 +36,7 @@ if (right_to_left()) {
             echo $OUTPUT->course_content_footer();
             ?>
         </section>
+        </div>
         <?php
         echo $OUTPUT->blocks('side-pre', $sidepre);
         ?>
