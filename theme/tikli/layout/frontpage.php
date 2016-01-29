@@ -3,22 +3,26 @@
 $html = theme_tikli_get_html_for_settings($OUTPUT, $PAGE);
 GLOBAL $DB, $CFG, $OUTPUT, $USER;
 $colorscheme = get_config('theme_tikli', 'colorscheme');
-$course = $DB->get_records_sql('SELECT c.* FROM {course} c where id != ?',array(1));
+$course = $DB->get_records_sql('SELECT c.* FROM {course} c where id != ? and visible = ?',array(1, 1));
 
 $coursedetailsarray = array();
 foreach ($course as $key => $coursevalue) {   	
 	$coursedetailsarray[$key]["courseid"] = $CFG->wwwroot."/course/view.php?id=".$coursevalue->id;
 	$coursedetailsarray[$key]["coursename"] = $coursevalue->fullname;
-	$courseteacher = $DB->get_record_sql('SELECT u.*
+	$courseteacher = $DB->get_records_sql('SELECT u.*
 	FROM {course} c
 	JOIN {context} ct ON c.id = ct.instanceid
 	JOIN {role_assignments} ra ON ra.contextid = ct.id
 	JOIN {user} u ON u.id = ra.userid
 	JOIN {role} r ON r.id = ra.roleid Where c.id = ? and r.shortname = ?', array($coursevalue->id, 'editingteacher'));
 	if(!empty($courseteacher)) {
-		$coursedetailsarray[$key]["teachername"] = $courseteacher->firstname." ".$courseteacher->lastname;
+		foreach ($courseteacher as $keycourseteacher => $courseteachervalue) {
+			$coursedetailsarray[$key]["teachername"][$keycourseteacher] = $courseteachervalue->firstname." ".$courseteachervalue->lastname;
+			$coursedetailsarray[$key]["teacherid"][$keycourseteacher] = $CFG->wwwroot."/user/profile.php?id=".$courseteachervalue->id;
+		}
 	} else {
 		$coursedetailsarray[$key]["teachername"] = "";
+		$coursedetailsarray[$key]["teacherid"] = "";
 	}
 	$coursecontext = context_course::instance($coursevalue->id);
 	$isfile = $DB->get_records_sql("Select * from {files} where contextid = ? and filename != ?", array($coursecontext->id, "."));
@@ -239,6 +243,64 @@ if(get_config('theme_tikli', 'videotype') === "0") {
 }
 $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
 $url = "'".$CFG->wwwroot."/theme/tikli/js/frontpageslider/jquery.cslider.js"."'";
+
+$hasthirdsectionheading = get_config('theme_tikli', 'thirdsectionheading');
+$hasthirdsectionsubheading = get_config('theme_tikli', 'thirdsectionsubheading');
+$hasthirdsection = array();
+for($thirdsectioncounts = 1; $thirdsectioncounts <= get_config('theme_tikli', 'thirdsectioncount'); $thirdsectioncounts = $thirdsectioncounts + 1) {
+	$checkthirdsectionimage = $PAGE->theme->setting_file_url('thirdsubsectioncolumnimage'.$thirdsectioncounts, 'thirdsubsectioncolumnimage'.$thirdsectioncounts);
+	if(!empty($checkthirdsectionimage)) {
+		$hasthirdsection[$thirdsectioncounts]['image'] = $PAGE->theme->setting_file_url('thirdsubsectioncolumnimage'.$thirdsectioncounts, 'thirdsubsectioncolumnimage'.$thirdsectioncounts);
+	} else {
+		$hasthirdsection[$thirdsectioncounts]['image'] = $CFG->wwwroot."/theme/tikli/css/img/top-featured-icon-1.png";
+	}
+	$hasthirdsection[$thirdsectioncounts]['firsttext'] = get_config('theme_tikli', 'thirdsubsectioncolumnfirsttext'.$thirdsectioncounts);
+	$hasthirdsection[$thirdsectioncounts]['secondtext'] = get_config('theme_tikli', 'thirdsubsectioncolumnsecondtext'.$thirdsectioncounts);
+	$hasthirdsection[$thirdsectioncounts]['url'] = get_config('theme_tikli', 'thirdsubsectioncolumnlink'.$thirdsectioncounts);
+}
+
+$hasparallaxcounter = array();
+for($hasparallaxcountercounts = 1; $hasparallaxcountercounts <= get_config('theme_tikli', 'parallaxcountercount'); $hasparallaxcountercounts = $hasparallaxcountercounts + 1) {
+	$hasparallaxcounter[$hasparallaxcountercounts]['parallaxcountercountnumbertext'] = get_config('theme_tikli', 'parallaxcountercountnumbertext'.$hasparallaxcountercounts);
+	$hasparallaxcounter[$hasparallaxcountercounts]['parallaxcountercountnumber'] = get_config('theme_tikli', 'parallaxcountercountnumber'.$hasparallaxcountercounts);
+}
+$hasstaticnumber = array();
+for($staticnumbersectioncounts = 1; $staticnumbersectioncounts <= get_config('theme_tikli', 'staticnumbersectioncount'); $staticnumbersectioncounts = $staticnumbersectioncounts + 1) {
+	$hasstaticnumber[$staticnumbersectioncounts]['staticnumberheading'] = get_config('theme_tikli', 'staticnumberheading'.$staticnumbersectioncounts);
+	$hasstaticnumber[$staticnumbersectioncounts]['staticnumber'] = get_config('theme_tikli', 'staticnumber'.$staticnumbersectioncounts);
+	$hasstaticnumber[$staticnumbersectioncounts]['staticnumbertext'] = get_config('theme_tikli', 'staticnumbertext'.$staticnumbersectioncounts);
+	$hasstaticnumber[$staticnumbersectioncounts]['staticnumbersubtext'] = get_config('theme_tikli', 'staticnumbersubtext'.$staticnumbersectioncounts);
+}
+$hasplace = get_config('theme_tikli', 'place');
+$hascountry = get_config('theme_tikli', 'country');
+$map = '<iframe class = "mapframe" height="330" src="https://www.google.com/maps/embed/v1/place?q='.get_config('theme_tikli', 'place').',+'.get_config('theme_tikli', 'country').'&amp;key=AIzaSyAN0om9mFmy1QN6Wf54tXAowK4eT0ZUPrU"></iframe>';
+$hassomeinfoimage = $PAGE->theme->setting_file_url('someinfoimage', 'someinfoimage');
+if (!empty($hassomeinfoimage)) {
+	$hassomeinfoimage = $PAGE->theme->setting_file_url('someinfoimage', 'someinfoimage');
+} else {
+	$hassomeinfoimage = $CFG->wwwroot."/theme/tikli/css/img/img-support-icon.png";
+}
+$hassomesupportinfo = get_config('theme_tikli', 'somesupportinfo');
+
+$hasfeedbackheading = get_config('theme_tikli', 'feedbackheading');
+$hasfeedbacksubheading = get_config('theme_tikli', 'feedbacksubheading');
+$hasfeedbackiframe = get_config('theme_tikli', 'feedbackiframe');
+$hasfeedbackbrieftext = get_config('theme_tikli', 'feedbackbrieftext');
+
+for($feedbackslides = 1; $feedbackslides <= get_config('theme_tikli', 'feedbackslidecount'); $feedbackslides = $feedbackslides + 1) {
+	for($feedinner = 1; $feedinner <= 4; $feedinner = $feedinner + 1) {
+		$hasimg = get_config('theme_tikli', 'feedbackslideimage_'.$feedinner.'_'.$feedbackslides);
+		if (!empty($hasimg)) {
+			$hasfeedbacks[$feedbackslides]["feedbackslideimage_".$feedinner] = $PAGE->theme->setting_file_url('feedbackslideimage_'.$feedinner.'_'.$feedbackslides, 'feedbackslideimage_'.$feedinner.'_'.$feedbackslides);
+		} else {
+			$hasfeedbacks[$feedbackslides]["feedbackslideimage_".$feedinner] = $CFG->wwwroot."/theme/tikli/css/img/userimage.png";
+		}
+		$hasfeedbacks[$feedbackslides]["feedbackslidename_".$feedinner] = get_config('theme_tikli', 'feedbackslidename_'.$feedinner.'_'.$feedbackslides);
+		$hasfeedbacks[$feedbackslides]["feedbackslidereview_".$feedinner] = get_config('theme_tikli', 'feedbackslidereview_'.$feedinner.'_'.$feedbackslides);
+	}
+}
+
+
 echo $OUTPUT->doctype();?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
@@ -251,6 +313,7 @@ echo $OUTPUT->doctype();?>
 	<link type="text/css" rel="Stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/bootstrap-responsive.css">
 	<link type="text/css" rel="Stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/jquery.bxslider.css">
 	<link type="text/css" rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/font-awesome.min.css">
+	<link type="text/css" rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/animation.css" />
 	<link type="text/css" rel="Stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/styles.css">
 
 	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery-2.1.4.js"></script>
@@ -258,6 +321,8 @@ echo $OUTPUT->doctype();?>
 	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery.bxslider.min.js"></script>
 	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/frontpage.js"></script>
 	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/font.js"></script>
+	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery.animateNumber.js"></script>
+	<script type="text/javascript" src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/wow.min.js"></script> 
 	<link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/frontpageslider/cssliderdemo.css" />
 	<link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/frontpageslider/cssliderstyle.css" />
 	
@@ -406,6 +471,7 @@ echo $OUTPUT->doctype();?>
       </div>
       
 			<?php } ?>
+			<?php if (!empty($CFG->custommenuitems)) { ?>
 			<div class="navbar">
       			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
         			<i class="fa fa-arrow-circle-down"></i>
@@ -413,7 +479,9 @@ echo $OUTPUT->doctype();?>
       			<div class="nav-collapse collapse">
       				<?php echo $OUTPUT->custom_menu();?>
       			</div>
+      		<?php } ?>
       		</div>
+
 			</div>
 			<?php if(get_config('theme_tikli', 'frontpageimagecontent') == 0) { ?><div class="welcome-block"><?php } else if (get_config('theme_tikli', 'frontpageimagecontent') == 1) { ?><div class="welcome-block-slider"><?php } ?>
 				
@@ -422,16 +490,16 @@ echo $OUTPUT->doctype();?>
 								<?php if(get_config('theme_tikli', 'frontpagevideoalignment') == 1) { //video right?>
                                 <div class="container">
 									<div class="row">
-									<div class="span6">
+									<div class="span6 static-content-align">
 										<?php if(!empty($addtext)) { echo $addtext; }?>
 									</div>
 									<?php if(!empty($iframevideo)) { ?>
-										<div class="span6">
+										<div class="span6 static-content-align">
 											<?php if(!empty($iframevideo)) { echo $iframevideo; }?>
 										</div>
 									<?php } ?>
 									<?php if(!empty($uploadedvideo)) { ?>
-										<div class="span6">
+										<div class="span6 static-content-align">
 											<video width="560" height="315" controls>
 												<?php if(!empty($uploadedvideo)) { ?><source src="<?php echo $uploadedvideo;?>" type="video/mp4"> <?php } ?>
 											</video>
@@ -439,18 +507,20 @@ echo $OUTPUT->doctype();?>
 									<?php } ?>
 									<?php } else if (get_config('theme_tikli', 'frontpagevideoalignment') == 0) { ?>
 									<?php if(!empty($iframevideo)) { ?>
-										<div class="span6">
+									<div class="container">
+									<div class="row">
+										<div class="span6 static-content-align">
 											<?php if(!empty($iframevideo)) { echo $iframevideo; }?>
 										</div>
 									<?php } ?>
 									<?php if(!empty($uploadedvideo)) { ?>
-										<div class="span6">
+										<div class="span6 static-content-align">
 											<video width="560" height="315" controls>
 												<?php if(!empty($uploadedvideo)) { ?><source src="<?php echo $uploadedvideo;?>" type="video/mp4"> <?php } ?>
 											</video>
 										</div>
 									<?php } ?>
-									<div class="span6">
+									<div class="span6 static-content-align">
 										<?php if(!empty($addtext)) { echo $addtext; }?>
 									</div>
 									<?php } ?>
@@ -524,20 +594,53 @@ echo $OUTPUT->doctype();?>
 					</div>
 				</div><!-- END of .container -->
 			</div><!-- END of .news-updates -->
+			  <!-- Start of circle featured section -->
+			  <div class="row-fluid">
+			    <div class="top-featured-course">
+			      <div class="container">
+			        <?php if(!empty($hasthirdsectionheading)) { ?><h2 class="wow fadeInUp " data-wow-duration="1s" data-wow-delay="0s" data-wow-offset="10"><?php echo $hasthirdsectionheading;?></h2><?php } ?>
+			        <?php if(!empty($hasthirdsectionsubheading)) { ?><h4 class="wow fadeInUp " data-wow-duration="1s" data-wow-delay=".25s" data-wow-offset="10"><?php echo $hasthirdsectionsubheading;?></h4><?php } ?>
+			        <ul class="top-featured-course-items">
+			        <?php $incrementdelaywow = 0.5;?>
+			        <?php for($thirdsectioncounts = 1; $thirdsectioncounts <= get_config('theme_tikli', 'thirdsectioncount'); $thirdsectioncounts = $thirdsectioncounts + 1) { ?>
+			          <li class="wow fadeInUp " data-wow-duration="1s" data-wow-delay="<?php echo $incrementdelaywow; ?>s" data-wow-offset="10"> <a href="<?php echo $hasthirdsection[$thirdsectioncounts]['url']; ?>">
+			            <div class="top-featured-course-items-icon"> <img src="<?php echo $hasthirdsection[$thirdsectioncounts]['image']; ?>" alt=""> </div>
+			            <?php if (!empty($hasthirdsection[$thirdsectioncounts]['firsttext'])) { ?><h5><?php echo $hasthirdsection[$thirdsectioncounts]['firsttext']; ?></h5><?php } ?>
+			            <?php if (!empty($hasthirdsection[$thirdsectioncounts]['secondtext'])) { ?><p><?php echo $hasthirdsection[$thirdsectioncounts]['secondtext']; ?></p><?php } ?>
+			            </a>
+			           </li>
+
+			        <?php $incrementdelaywow = $incrementdelaywow + 0.25; } ?>
+			        </ul>
+			      </div>
+			    </div>
+			  </div>
+			  <!-- End of circle featured section -->
 			<?php if(!empty($course)) { ?>
 			<div class="popular-courses">
 				<div class="container-fluid">
-					<div class="popular-courses-nav">
-						<div><span id="slider-prev"><img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/i-arr-l-1.png" alt=""></span></div>
-						<div>
-							<h3>Our Popular courses</h3>
-							<p><a href="<?php echo $CFG->wwwroot; ?>/course/index.php">View All Courses</a></p>
-						</div>
-						<div><span id="slider-next"><img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/i-arr-r-1.png" alt=""></span></div>
-					</div>
+					<div class="container nheading">
+						<?php if (!empty(get_config('theme_tikli', 'coursesectionheading'))) { ?>
+				        	<div class="span5 popular-course-nheading">
+				              <?php if (!empty(get_config('theme_tikli', 'coursesectionheading'))) { ?><h4><?php echo get_config('theme_tikli', 'coursesectionheading'); ?></h4><?php } ?>
+				              <?php if (!empty(get_config('theme_tikli', 'coursesectionsubheading'))) { ?><h2><?php echo get_config('theme_tikli', 'coursesectionsubheading'); ?></h2><?php } ?>
+				              <?php if (!empty(get_config('theme_tikli', 'coursesectionoverview'))) { ?><p><?php echo get_config('theme_tikli', 'coursesectionoverview'); ?></p><?php } ?>
+				        	</div>
+				        <?php } ?>
+			            <div class="span7 popular-course-links">
+			            	<?php for($quicklinkcols = 1; $quicklinkcols <= get_config('theme_tikli', 'quicklinkscolumns'); $quicklinkcols = $quicklinkcols + 1) { ?>
+				            	<ul>	
+				            	<?php for($quicklinkrows = 1; $quicklinkrows <= get_config('theme_tikli', 'quicklinksrows'.$quicklinkcols); $quicklinkrows = $quicklinkrows + 1) { ?>
+					                <li><a <?php if (($quicklinkrows == get_config('theme_tikli', 'quicklinksrows'.$quicklinkcols)) && ($quicklinkcols == get_config('theme_tikli', 'quicklinkscolumns'))) { ?>class = "viewmore" <?php } ?>href="<?php echo get_config('theme_tikli', 'link'.$quicklinkcols.'_'.$quicklinkrows); ?>"><?php echo get_config('theme_tikli', 'text'.$quicklinkcols.'_'.$quicklinkrows); ?></a></li>
+				                <?php } ?>
+				                </ul>
+			                <?php } ?>
+			            </div>
+        			</div>
+					
 					<div class="course-items">
 						<ul class="popular-courses-slider">
-							<?php foreach($coursedetailsarray as $coursedetailsarrayvalue) { ?>
+							<?php foreach($coursedetailsarray as $keycoursedetail => $coursedetailsarrayvalue) { ?>
 							<li>
 								<div class="course-item">
 									<div class="img-wr">
@@ -545,8 +648,13 @@ echo $OUTPUT->doctype();?>
 									</div>
 									<div class="course-item-cont">
 										<h5><a href="<?php echo $coursedetailsarrayvalue['courseid'];?>"><?php echo $coursedetailsarrayvalue['coursename'];?></a></h5>
-										<?php if($coursedetailsarrayvalue['teachername'] != '') { ?>
-											<h6><?php echo get_string('defaultcourseteacher');?> : <a href="javascript:void(0);"><?php echo $coursedetailsarrayvalue['teachername'];?></a></h6>
+										<?php if($coursedetailsarrayvalue['teachername'] != '') { 
+											foreach ($coursedetailsarrayvalue['teachername'] as $keys => $value) { ?>
+												<h6><?php echo get_string('defaultcourseteacher');?> : <a href="<?php echo $coursedetailsarrayvalue['teacherid'][$keys];?>"><?php echo $value;?></a></h6>
+										<?php }
+										?>
+
+											
 										<?php } else { ?>
 											<h6><?php echo get_string('defaultcourseteacher');?> : <a href="javascript:void(0);">Not assigned</a></h6>
 										<?php } ?>
@@ -557,9 +665,152 @@ echo $OUTPUT->doctype();?>
 							<?php } ?>
 						</ul><!-- END of .popular-courses-slider -->
 					</div><!-- END of .course-items -->
+					<div class="popular-courses-nav">
+						<div><span id="slider-prev"><img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/i-arr-l-1.png" alt=""></span></div>
+						<div><span id="slider-next"><img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/i-arr-r-1.png" alt=""></span></div>
+					</div>
 				</div><!-- END of .container-fluid -->
 			</div><!-- END of .popular-courses -->
 			<?php } ?>
+			  <div class="row-fluid">
+			    <div  class="number-section">
+			      <div class="container">
+			        <div class="number-section-heading wow fadeInUp " data-wow-duration="1s" data-wow-delay="0s" data-wow-offset="10">
+			           <h2>INSIDE STORY AND STATISTICS</h2>
+			        <h4>In the year 2015 we achieved a new level of success</h4>
+			        </div>
+			        <div class="number-section-content">
+			          <ul>
+			            <?php for($hasparallaxcountercounts = 1; $hasparallaxcountercounts <= get_config('theme_tikli', 'parallaxcountercount'); $hasparallaxcountercounts = $hasparallaxcountercounts + 1) { ?>
+
+			            <li>
+			              <?php if($hasparallaxcounter[$hasparallaxcountercounts]['parallaxcountercountnumber']) { ?><h2 class="numbers wcounter" data-number="<?php echo $hasparallaxcounter[$hasparallaxcountercounts]['parallaxcountercountnumber']; ?>" data-wow-iteration="1"></h2><?php } ?>
+			              <?php if ($hasparallaxcounter[$hasparallaxcountercounts]['parallaxcountercountnumbertext']) { ?><h3><?php echo $hasparallaxcounter[$hasparallaxcountercounts]['parallaxcountercountnumbertext'];?></h3><?php } ?>
+			            </li>
+			            <?php } ?>
+			            
+			          </ul>
+			        </div>
+			      </div>
+			    </div>
+			  </div>
+			  <!-- End of jQuery number counter section -->
+			  <div class="row-fluid">
+			    <div  class="static-number-section">
+			      <div class="container">
+			        <div class="static-number-section-content">
+			          <ul>
+			          	<?php $incrementdelaywow = 0.25;?>
+			          	<?php for($staticnumbersectioncounts = 1; $staticnumbersectioncounts <= get_config('theme_tikli', 'staticnumbersectioncount'); $staticnumbersectioncounts = $staticnumbersectioncounts + 1) { ?>
+			            <li class="wow fadeInUp " data-wow-duration="1s" data-wow-delay="<?php echo $incrementdelaywow;?>s" data-wow-offset="10">
+			              <?php if ($hasstaticnumber[$staticnumbersectioncounts]["staticnumberheading"]) { ?><h5><?php echo $hasstaticnumber[$staticnumbersectioncounts]["staticnumberheading"];?></h5><?php } ?>
+			              <?php if ($hasstaticnumber[$staticnumbersectioncounts]["staticnumber"]) { ?><h2><?php echo $hasstaticnumber[$staticnumbersectioncounts]["staticnumber"];?></h2><?php } ?>
+			              <?php if ($hasstaticnumber[$staticnumbersectioncounts]["staticnumbertext"]) { ?><h3><?php echo $hasstaticnumber[$staticnumbersectioncounts]["staticnumbertext"];?></h3><?php } ?>
+			              <?php if ($hasstaticnumber[$staticnumbersectioncounts]["staticnumbersubtext"]) { ?><h4><?php echo $hasstaticnumber[$staticnumbersectioncounts]["staticnumbersubtext"];?></h4><?php } ?>
+			            </li>
+			            <?php $incrementdelaywow = $incrementdelaywow + 0.25; } ?>
+			          </ul>
+			        </div>
+			      </div>
+			    </div>
+			  </div>
+			  <!-- End of static number section -->
+			<div class="row-fluid">
+			    <div  class="students-area">
+			      <div class="container">
+			        <div class="span5 students-area-feedback">
+			          <?php if (!empty($hasfeedbackheading)) { ?><h3><?php echo $hasfeedbackheading;?></h3><?php } ?>
+			          <?php if (!empty($hasfeedbacksubheading)) { ?><h2><?php echo $hasfeedbacksubheading;?></h2><?php } ?>
+			          <?php if(!empty($hasfeedbackiframe)) { echo $hasfeedbackiframe; }?>
+			           <?php if (!empty($hasfeedbackbrieftext)) { echo $hasfeedbackbrieftext; } ?>
+			        </div>
+			        <div class="span7 slidergrid">
+			            <ul class="bxslidergrid">
+			              <?php for($feedbackslides = 1; $feedbackslides <= get_config('theme_tikli', 'feedbackslidecount'); $feedbackslides = $feedbackslides + 1) { ?>
+			              <li>
+			              	<div class="div_to_hold">
+				              	<?php for($feedinner = 1; $feedinner <= 2; $feedinner = $feedinner + 1) {?>
+					                  <div class="grid-testimo">
+					                    <div class="blog_box">
+					                      <div class="blog_box_bloger"><img src="<?php echo $hasfeedbacks[$feedbackslides]["feedbackslideimage_".$feedinner]; ?>" alt=""></div>
+					                     	<?php echo $hasfeedbacks[$feedbackslides]["feedbackslidename_".$feedinner]; ?>
+					                       <p>“<?php echo $hasfeedbacks[$feedbackslides]["feedbackslidereview_".$feedinner]; ?>”</p>
+					                     </div>
+					                  </div>
+				                <?php } ?>
+			                </div>
+			                <div class="div_to_hold">
+				                <?php for($feedinner = 3; $feedinner <= 4; $feedinner = $feedinner + 1) { ?>
+					                  <div class="grid-testimo">
+					                    <div class="blog_box">
+					                      <div class="blog_box_bloger"><img src="<?php echo $hasfeedbacks[$feedbackslides]["feedbackslideimage_".$feedinner]; ?>" alt=""></div>
+					                     	<?php echo $hasfeedbacks[$feedbackslides]["feedbackslidename_".$feedinner]; ?>
+					                       <p>“<?php echo $hasfeedbacks[$feedbackslides]["feedbackslidereview_".$feedinner]; ?>”</p>
+					                     </div>
+					                  </div>
+					            <?php } ?>
+				            </div>
+			                <div class="clearfix"></div>
+			              </li>
+			              <?php } ?>
+			              
+			            </ul>
+			            <div class="bxslidergrid-nav">
+			              <span id="bxslidergrid-prev">
+			                <img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/bxslider-img/arr-l-grid.png" alt="">
+			              </span>
+			              <span id="bxslidergrid-next">
+			                <img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/bxslider-img/arr-r-grid.png" alt="">
+			              </span>
+			            </div>
+			        </div><!--span7-->
+			    </div>
+			  </div>
+			</div><!--end row-fluid -->
+		  <?php if (!empty($hasplace) || !empty($hascountry)) { ?><div class="row-fluid">
+		    <div  class="map-area"><?php echo $map; ?></div>
+		   </div><!-- End of map -->
+		   <?php } ?>
+   
+		   <div class="row-fluid">
+		    <div  class="contact-home-area">
+		       <div class="container">
+		       	   <?php if (!empty($hassomesupportinfo)) { ?>
+				       <div class=" span5 bounceInRight wow "  data-wow-duration="1.5s" data-wow-delay=".55s" data-wow-offset="10">
+				      	 <div class="offset1 customer-support">
+				         	<ul>
+				            	<li>
+				         			<img src="<?php echo $hassomeinfoimage;?>" alt="">
+				            	</li>
+				            	<?php if (!empty($hassomesupportinfo)) { ?>
+					             	<li>
+					                  <?php echo $hassomesupportinfo; ?>	
+					                </li>
+					            <?php } ?>
+				            </ul>
+				         </div>
+				       </div>
+				   <?php } ?>
+		 		  <div class="span7 bounceInLeft wow "  data-wow-duration="1.5s" data-wow-delay=".55s" data-wow-offset="10">
+		          <div class="offset1 home-contact-form">
+		           <!-- <form class="form-horizontal"> -->
+		              <div class="control-group">
+		                <input type="hidden" value="<?php echo get_string('emptynameemail', 'theme_tikli');?>" class="emptynameemail">
+						<input type="hidden" value="<?php echo get_string('msgsent', 'theme_tikli');?>" class="msgsent">
+						<input type="hidden" value="<?php echo $CFG->wwwroot?>/theme/tikli/mail.php" class = "hiddenform">
+		                <input type="text" id="name" class="span6 text-field-home msgname" placeholder="Name">
+		                <input type="email" id="email" class="span6 home-email-pad text-field-home" placeholder="Email">
+		                <div class="clearfix"></div>
+		                <textarea class="span12 textarea-field-home msg" rows="3" placeholder="Message"></textarea>
+		              </div>
+		              <div id = "msgresponse"></div>
+		              <button type="submit" class="btn-form-submit pull-right send">Send Email</button>
+		            <!-- </form> -->
+		          </div>
+		        </div>
+		        </div>
+		    </div>
+		   </div>
 			<div class="block-links">
 				<div class="container">
 					<div class="row">
@@ -669,7 +920,7 @@ echo $OUTPUT->doctype();?>
 										<?php } ?>
 									</div>
 								<?php } ?>
-								<h2>MOODLE LMS</h2>
+								<?php if (!empty(get_config('theme_tikli', 'someinfo'))) { echo get_config('theme_tikli', 'someinfo'); } ?>
 								<?php if($address || $phone || $email) { ?>
 									<div>
 										<?php if(!empty($addressfontawesomeicon)) { ?><i><img class="block-links-contacts" src="<?php echo $addressfontawesomeicon; ?>" alt=""></i><?php } ?>
@@ -706,23 +957,16 @@ echo $OUTPUT->doctype();?>
 		<?php
 			echo $OUTPUT->main_content();
 			include('footer.php');
+			if (isloggedin() && $isregistration->value != 'email') { ?>
+			<input type="hidden" name="custommenu" value="yeslogin" id="custommenu">
+		<?php } else if (!isloggedin() && $isregistration->value == 'email') { ?>
+			<input type="hidden" name="custommenu" value="nologinselfreg" id="custommenu">
+		<?php } else if (!isloggedin()) { ?>
+			<input type="hidden" name="custommenu" value="nologin" id="custommenu">
+		<?php }
 		?>
-	
-<?php if (!isloggedin()) { ?>
-	<script type="text/javascript">
-	$(".btn-navbar").on("click",function() {
-	   $(this).toggleClass('active-drop');
-	   $(".nav-collapse").toggleClass('landing-no-login');
-	});
-	</script>
-<?php } else { ?>
-	<script type="text/javascript">
-	$(".btn-navbar").on("click",function() {
-		$(this).toggleClass('active-drop');
-		$(".nav-collapse").toggleClass('drop-logged-in');
-	});
-	</script>
-<?php } ?>
-<script type="text/javascript" src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/frontpageslider/jquery.cslider.js"></script>
+
+
+<!--<script type="text/javascript" src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/frontpageslider/jquery.cslider.js"></script>-->
 </body>
 </html>
