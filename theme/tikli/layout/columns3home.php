@@ -16,7 +16,7 @@ if (right_to_left()) {
     $sidepre = 'span4 pull-right';
     $sidepost = 'span3 desktop-first-column';
 }
-$course = $DB->get_records_sql('SELECT c.* FROM {course} c where id != ?',array(1));
+$course = $DB->get_records_sql('SELECT c.* FROM {course} c where id != ? and visible = ?',array(1, 1));
 $coursedetailsarray = array();
 foreach ($course as $key => $coursevalue) {   	
 	$coursedetailsarray[$key]["courseid"] = $CFG->wwwroot."/course/view.php?id=".$coursevalue->id;
@@ -24,16 +24,20 @@ foreach ($course as $key => $coursevalue) {
 	$coursedetailsarray[$key]["coursename"] = $coursevalue->fullname;
 	$summarystring = strlen($coursevalue->summary) > 160 ? substr($coursevalue->summary, 0, 160)."..." : $coursevalue->summary;
 	$coursedetailsarray[$key]["coursesummary"] = $summarystring;
-	$courseteacher = $DB->get_record_sql('SELECT u.*
+	$courseteacher = $DB->get_records_sql('SELECT u.*
 	FROM {course} c
 	JOIN {context} ct ON c.id = ct.instanceid
 	JOIN {role_assignments} ra ON ra.contextid = ct.id
 	JOIN {user} u ON u.id = ra.userid
 	JOIN {role} r ON r.id = ra.roleid Where c.id = ? and r.shortname = ?', array($coursevalue->id, 'editingteacher'));
 	if(!empty($courseteacher)) {
-		$coursedetailsarray[$key]["teachername"] = $courseteacher->firstname." ".$courseteacher->lastname;
+		foreach ($courseteacher as $keycourseteacher => $courseteachervalue) {
+            $coursedetailsarray[$key]["teachername"][$keycourseteacher] = $courseteachervalue->firstname." ".$courseteachervalue->lastname;
+            $coursedetailsarray[$key]["teacherid"][$keycourseteacher] = $CFG->wwwroot."/user/profile.php?id=".$courseteachervalue->id;
+        }
 	} else {
 		$coursedetailsarray[$key]["teachername"] = "Not assigned";
+        $coursedetailsarray[$key]["teacherid"] = "";
 	}
 	$coursecontext = context_course::instance($coursevalue->id);
 	$isfile = $DB->get_records_sql("Select * from {files} where contextid = ? and filename != ?", array($coursecontext->id, "."));
@@ -60,12 +64,10 @@ $coursecontext = context_course::instance(1);
     } else { ?>
     <header id="page-header" class="clearfix">
         <div id="page-navbar" class="clearfix">
-            <div class = "container">
                 <div class="row">
                     <nav class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></nav>
                     <div class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></div>
                 </div>
-            </div>
         </div>
         <div id="course-header">
             <?php echo $OUTPUT->course_header(); ?>
@@ -96,7 +98,7 @@ $coursecontext = context_course::instance(1);
                         <div id="frontpage-course-list">
                             <div class="courses frontpage-course-list-all">
                                 <div class="course-items course-items-grid-view">
-                                	<?php foreach($coursedetailsarray as $coursedetailsarrayvalue) { ?>
+                                	<?php foreach($coursedetailsarray as $keycoursedetail => $coursedetailsarrayvalue) { ?>
 	                                    <div class="course-item">
 	                                        <div class="img-wr">
 	                                            <a href="<?php echo $coursedetailsarrayvalue['courseid'];?>"><img src="<?php echo $coursedetailsarrayvalue['courseimage'];?>" alt=""></a>
@@ -104,8 +106,14 @@ $coursecontext = context_course::instance(1);
 	                                        <div class="course-item-cont">
 	                                            <a href="javascript:void(0);" class="btn-togle-details">Show Details</a>
 	                                            <h5><a href="<?php echo $coursedetailsarrayvalue['courseid'];?>"><?php echo $coursedetailsarrayvalue['coursename'];?></a></h5>
-                                                <?php if($coursedetailsarrayvalue['teachername'] != '') { ?>
-	                                               <h6><?php echo get_string('defaultcourseteacher');?> : <a href="javascript:void(0);"><?php echo $coursedetailsarrayvalue['teachername'];?></a></h6>
+                                                <?php if($coursedetailsarrayvalue['teachername'] != 'Not assigned') { ?>
+                                                    <div class="abc">
+                                                    <?php foreach ($coursedetailsarrayvalue['teachername'] as $keys => $value) {?>
+	                                               <h6><?php echo get_string('defaultcourseteacher');?> : <a href="<?php echo $coursedetailsarrayvalue['teacherid'][$keys];?>"><?php echo $value;?></a></h6>
+                                                    <?php } ?>
+                                                    </div>
+                                                <?php } else { ?>
+                                                    <div class="abc"><h6><?php echo get_string('defaultcourseteacher');?> : <a href="javascript:void(0);">Not assigned</a></h6></div>
                                                 <?php } ?>
 	                                            <div class="for-list-view-wr">
 	                                                <div class="for-list-view">

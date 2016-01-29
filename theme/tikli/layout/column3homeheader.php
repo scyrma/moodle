@@ -28,15 +28,15 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?php echo $OUTPUT->page_title(); ?></title>
   <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
-  <link href="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/css/styles.css" rel="stylesheet">  
+  <link rel="stylesheet" href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/font-awesome.css">
+  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/styles.css" rel="stylesheet">  
   <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery-2.1.4.js"></script>
   <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/bootstrap.min.js"></script>
   <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery.bxslider.min.js"></script>
   <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/engine.js"></script>
-  <link href="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/css/bootstrap.css" rel="stylesheet">
-  <link href="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/css/jquery.bxslider.css" rel="stylesheet">
+  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/bootstrap.css" rel="stylesheet">
+  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/jquery.bxslider.css" rel="stylesheet">
   <style type="text/css">
     *[role="main"] {
         display: none;
@@ -164,13 +164,14 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
           </ul>
         </div>
       </div>
-   
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <i class="fa fa-arrow-circle-down"></i>
-      </a>
-      <div class="nav-collapse collapse">
-      <?php echo $OUTPUT->custom_menu();?>
-      </div>
+      <?php if (!empty($CFG->custommenuitems)) { ?>
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <i class="fa fa-arrow-circle-down"></i>
+        </a>
+        <div class="nav-collapse collapse">
+        <?php echo $OUTPUT->custom_menu();?>
+        </div>
+      <?php } ?>
     <?php } else { ?>
     <div class="logining-wr">
         <a href="<?php echo $CFG->wwwroot; ?>/login/index.php"><?php echo get_string('login');?></a>

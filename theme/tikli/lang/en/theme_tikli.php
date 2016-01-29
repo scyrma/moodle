@@ -20,7 +20,10 @@ $string['colorsettings'] = 'Color Settings';
 $string['fontsettings' ] = 'Font Settings';
 $string['frontpagesettings'] = 'Frontpage Settings';
 $string['configtitle'] = 'Tikli';
-
+$string['msgsent'] = 'Message sent';
+$string['emptynameemail'] = 'Please enter name and email address.';
+$string['region-side-post'] = 'Right';
+$string['region-side-pre'] = 'Left';
 
 /*logo*/
 $string['logo'] = 'Logo';
@@ -195,6 +198,103 @@ $string['frontpageblockdesc'] = 'You may add a text to be shown below the headin
 $string['frontpageblocklink'] = 'Body text link';
 $string['frontpageblocklinkdesc'] = 'You may insert the link for the body text, where the user will be redirected after they click on it.';
 
+
+/*******************************Featured content****************************/
+
+$string['thirdsection'] = 'Featured content';
+$string['thirdsectiondesc'] = '';
+
+$string['thirdsectionheading'] = 'Add heading';
+$string['thirdsectionheadingdesc'] = '';
+
+$string['thirdsectionsubheading'] = 'Add sub heading';
+$string['thirdsectionsubheadingdesc'] = '';
+
+$string['thirdsectioncount'] = 'Select no of column(s)';
+$string['thirdsectioncountdesc'] = '';
+
+$string['thirdsubsectioncolumnimage'] = 'Upload column image';
+$string['thirdsubsectioncolumnimagedesc'] = ' ';
+
+$string['thirdsubsectioncolumnfirsttext'] = 'Add first text';
+$string['thirdsubsectioncolumnfirsttextdesc'] = ' ';
+
+$string['thirdsubsectioncolumnsecondtext'] = 'Add second text';
+$string['thirdsubsectioncolumnsecondtextdesc'] = ' ';
+
+$string['thirdsubsectioncolumnlink'] = 'Add URL';
+$string['thirdsubsectioncolumnlinkdesc'] = ' ';
+
+
+/*******************************parallaxcountersection*************************************/
+
+$string['parallaxcountersection'] = 'Number counter';
+$string['parallaxcountersectiondesc'] = ' ';
+
+$string['parallaxcounterheading'] = 'Add heading ';
+$string['parallaxcounterheadingdesc'] = ' ';
+
+$string['parallaxcountersubheading'] = 'Add sub heading ';
+$string['parallaxcountersubheadingdesc'] = ' ';
+
+$string['parallaxcountercount'] = 'No of counter ';
+$string['parallaxcountercountdesc'] = 'Maximum 4';
+
+$string['parallaxcountercountnumber'] = 'Enter Number ';
+$string['parallaxcountercountnumberdesc'] = '';
+
+$string['parallaxcountercountnumbertext'] = 'Add text';
+$string['parallaxcountercountnumbertextdesc'] = ' ';
+
+$string['parallaxbackgroundimage'] = 'Upload background image.';
+$string['parallaxbackgroundimagedesc'] = ' ';
+
+/***************************staticnumbersection********************************/
+$string['staticnumbersection'] = 'Facts';
+$string['staticnumbersectiondesc'] = '';
+
+$string['staticnumbersectioncount'] = 'Number of facts';
+$string['staticnumbersectioncountdesc'] = 'Max 4';
+
+$string['staticnumberheading'] = 'Add heading';
+$string['staticnumberheadingdesc'] = '';
+
+$string['staticnumber'] = 'Add some number or text';
+$string['staticnumberdesc'] = '';
+
+$string['staticnumbertext'] = 'Add text';
+$string['staticnumbertextdesc'] = '';
+
+$string['staticnumbersubtext'] = 'Add sub text';
+$string['staticnumbersubtextdesc'] = '';
+/****************************map section start*********************************/
+$string['map'] = 'Map section';
+$string['mapdesc'] = '';
+
+$string['place'] = 'Enter your place (city/town/village)';
+$string['placedesc'] = '';
+$string['placevalue'] = 'Kolkata';
+
+
+$string['country'] = 'Enter your country';
+$string['countrydesc'] = '';
+$string['countryvalue'] = 'India';
+/****************************map section end**********************************/
+/****************************contact support and email start******************************/
+$string['support'] = 'Enter some information';
+$string['supportdesc'] = 'Enter some information';
+
+$string['somesupportinfo'] = 'Add Some information';
+$string['somesupportinfodesc'] = '';
+
+$string['someinfoimage'] = 'Upload image';
+$string['someinfoimagedesc'] = '';
+$string['contactemailsection'] = 'Contact section';
+$string['contactemailsectiondesc'] = '';
+$string['emailcontact'] = 'Email';
+$string['emailcontactdesc'] = '';
+$string['emailsubject'] = 'Email subject';
+$string['emailsubjectdesc'] = 'You may add the subject for your email.';
 /*block section 1*/
 $string['frontpageblocksection1'] = 'Body section 1 title';
 $string['frontpageblocksectiondesc1'] = 'This is where you may add the text for section 1';
@@ -238,7 +338,8 @@ $string['addressfontawesomeicon'] = 'Upload your Address icon';
 $string['addressfontawesomeicondesc'] = 'You may upload an icon for your address';
 $string['address'] = 'Enter Address';
 $string['addressdesc'] = 'You may enter your Address.';
-
+$string['someinfo'] = 'You may add some brief text for footer column 3 ';
+$string['someinfodesc'] = '';
 $string['phonefontawesomeicon'] = 'Upload your Phone icon';
 $string['phonefontawesomeicondesc'] = 'Upload your Phone icon';
 $string['phone'] = 'Enter Phone Number';
@@ -350,3 +451,62 @@ $string['downloadresourcesdesc'] = 'Downloadresources desc';
 
 $string['forumdicussion'] = 'Forum Dicussion';
 $string['forumdicussiondesc'] = 'Forum Dicussion desc';
+
+/**********************************Testimonials*************************************/
+$string['feedback'] = 'Testimonials';
+$string['feedbackdesc'] = '';
+
+$string['feedbackheading'] = 'Add heading';
+$string['feedbackheadingdesc'] = 'You may enter your heading.';
+
+$string['feedbacksubheading'] = 'Add sub heading';
+$string['feedbacksubheadingdesc'] = 'You may enter your sub heading.';
+
+$string['feedbackiframe'] = 'Iframe Embedded code';
+$string['feedbackiframedesc'] = 'Here, you may insert the iframe Embedded code of the video that is to be embedded.';
+
+$string['feedbackbrieftext'] = 'Add brife text';
+$string['feedbackbrieftextdesc'] = 'You may enter your brife description.';
+
+$string['feedbackslidecount'] = 'No of slides for testimonial.';
+$string['feedbackslidecountdesc'] = '';
+
+$string['feedbackslideimage'] = 'Upload user image';
+$string['feedbackslideimagedesc'] = '';
+
+$string['feedbackslidename'] = 'Enter user name';
+$string['feedbackslidenamedesc'] = '';
+
+$string['feedbackslidereview'] = 'Enter user details';
+$string['feedbackslidereviewdesc'] = '';
+
+
+
+
+$string['quicklinksheading'] = 'Enter heading text for Quick Links';
+$string['quicklinksheadingdesc'] = 'You may add heading text for Quick Links section.';
+$string['quicklinksheadingvalue'] = 'Quick links';
+$string['quicklinkscolumns'] = 'Enter number of columns for Quick Links section';
+$string['quicklinkscolumnsdesc'] = 'You may add the required number of columns that the Quick Links section will have.';
+
+$string['quicklinksrows'] = 'Enter number of rows for column ';
+$string['quicklinksrowsdesc'] = 'You may add the required number of rows that column 1 in Quick Links section will have.';
+
+$string['text'] = 'Enter Text'; 
+$string['textdesc'] = 'Enter text for the link where the user will be redirected.';
+$string['link'] = 'Enter Link';
+$string['linkdesc'] = 'Enter the link address where the user will be redirected.';
+$string['columnheading'] = 'Enter Column heading';
+$string['columnheadingdesc'] = '';
+
+$string['coursequicklinks'] = 'Course quick links';
+$string['coursequicklinksdesc'] = '';
+
+$string['coursesectionheading'] = 'Course section heading';
+$string['coursesectionheadingdesc'] = '';
+
+$string['coursesectionsubheading'] = 'Course section sub heading';
+$string['coursesectionsubheadingdesc'] = '';
+
+$string['coursesectionoverview'] = 'Course section overview';
+$string['coursesectionoverviewdesc'] = '';
