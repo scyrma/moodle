@@ -1,7 +1,10 @@
 <?php
 // Get the HTML for the settings bits.
 $html = theme_tikli_get_html_for_settings($OUTPUT, $PAGE);
-require('columns1header.php');?>
+require('columns1header.php');
+if (!isloggedin() && $isregistration->value == 'email') { ?>
+    <input type="hidden" name="custommenu" value="nologinselfreg" id="custommenu">
+<?php } ?>
 <div id="page" class="container-fluid">
 
     <?php if ($CFG->version >= 2015051100) {
