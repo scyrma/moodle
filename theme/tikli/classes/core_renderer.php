@@ -18,7 +18,7 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         if($hasfavicon) {
             return $PAGE->theme->setting_file_url('faviconurl', 'faviconurl');
         } else {
-            return $CFG->wwwroot.'/theme/'.$CFG->theme.'/pix/favicon.ico';
+            return $CFG->wwwroot.'/theme/tikli/pix/favicon.ico';
         }
     }
     public function user_profile_picture() {

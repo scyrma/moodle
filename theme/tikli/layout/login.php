@@ -12,13 +12,13 @@ $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
   	<meta name="viewport" content="width=device-width, initial-scale=1">
   	<title><?php echo $OUTPUT->page_title(); ?></title>
   	<link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
-  	<link href="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/css/styles.css" rel="stylesheet">  
-  	<script src="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/js/jquery-2.1.4.js"></script>
-	<script src="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/js/bootstrap.min.js"></script>
-	<script src="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/js/jquery.bxslider.min.js"></script>
-	<script src="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/js/jquery.scroll.js"></script>
-	<script src="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/js/engine.js"></script>
-	<script src="<?php echo $CFG->wwwroot ?>/theme/<?php echo $CFG->theme ?>/js/login.js"></script>
+  	<link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/styles.css" rel="stylesheet">  
+  	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/jquery-2.1.4.js"></script>
+	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/bootstrap.min.js"></script>
+	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/jquery.bxslider.min.js"></script>
+	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/jquery.scroll.js"></script>
+	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/engine.js"></script>
+	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/login.js"></script>
 	<?php
       include($CFG->dirroot . '/theme/tikli/settings/colorchange.php');
     ?>

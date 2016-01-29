@@ -289,6 +289,16 @@ color: #e74c3c;
 </style>
 <?php } if ($color_scheme == 'green') { ?>
 <style type="text/css">
+.course-items-grid-view .abc::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #F1C40F;
+}
+.top-featured-course a:hover .top-featured-course-items-icon {
+	background: #e8d070;
+    box-shadow: 4px 4px 0 #f1c40f;
+}
 #dock .dockedtitle {
 	background-color : rgba(26, 188, 156, .8)!important;
 }
@@ -496,12 +506,27 @@ footer {
 footer span {
 	color: #434e58;
 }
-
+.number-section-content h2 {
+	color: #1abc9c;
+}
+.static-number-section {
+	background: #1abc9c;
+}
 /* ----------------------------------------------------------------------------------- */
 </style>
 <?php } if ($color_scheme == 'blue') { ?>
 <style type="text/css">
 
+.course-items-grid-view .abc::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #f39c11;
+}
+.top-featured-course a:hover .top-featured-course-items-icon {
+	background: #f7b852;
+    box-shadow: 4px 4px 0 #f39c11;
+}
 #dock .dockedtitle {
 	background-color : rgba(90, 170, 224, .8)!important;
 }
@@ -711,11 +736,25 @@ footer span {
     background: #f39c11!important;    
 }
 }
+.number-section-content h2 {
+	color: #3498db;
+}
+.static-number-section {
+	background: #3498db;
+}
 /* ----------------------------------------------------------------------------------- */
 </style>
 <?php } if ($color_scheme == 'orange') { ?>
 <style type="text/css">
-
+.course-items-grid-view .abc::-webkit-scrollbar-thumb
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #2a80b9;
+}
+.top-featured-course a:hover .top-featured-course-items-icon {
+	background: #70b4e2;
+    box-shadow: 4px 4px 0 #2A80B9;
+}
 #dock .dockedtitle {
 	background-color : rgba(233, 149, 76, .8)!important;
 }
@@ -933,10 +972,28 @@ footer span {
 .block .minicalendar td.today {
 	background-color: #2a80b9;
 }
+
+.number-section-content h2 {
+	color: #e67e22;
+}
+.static-number-section {
+	background: #e67e22;
+}
 /* ----------------------------------------------------------------------------------- */
 </style>
 <?php } if ($color_scheme == 'purple') { ?>
 <style type="text/css">
+
+.course-items-grid-view .abc::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #f39c11;
+}
+.top-featured-course a:hover .top-featured-course-items-icon {
+	background: #f7b852;
+    box-shadow: 4px 4px 0 #f39c11;
+}
 @media screen and (max-width: 767px) {
 .landing-page .logo-wr {
     background: #f39c11!important;    
@@ -1148,7 +1205,12 @@ footer span {
 .block .minicalendar td.today {
 	background-color: #f39c11;
 }
-
+.number-section-content h2 {
+	color: #9b59b6;
+}
+.static-number-section {
+	background: #9b59b6;
+}
 /* ----------------------------------------------------------------------------------- */
 </style>
 <?php }
