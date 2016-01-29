@@ -39,6 +39,10 @@ function theme_tikli_process_css($css, $theme) {
         $font = 'Raleway';
     }
     $logobackgroundimage = $theme->setting_file_url('logobackgroundimage', 'logobackgroundimage');
+
+    $parallaxbackgroundimage = $theme->setting_file_url('parallaxbackgroundimage', 'parallaxbackgroundimage');
+    $css = theme_tikli_set_parallaxbackgroundimage($css, $parallaxbackgroundimage);
+    
     $headingfont = theme_tikli_get_setting('fontnameheading');
     $bodyfont = theme_tikli_get_setting('fontnamebody');
     $css = theme_tikli_set_logobackgroundimage($css, $logobackgroundimage);
@@ -56,11 +60,12 @@ function theme_tikli_process_css($css, $theme) {
     $css = theme_tikli_set_customcss($css, $customcss);
     return $css;
 }
-function theme_tikli_set_pagebackground($css, $pagebackground) {
-    $tag = '[[setting:pagebackground]]';
-    $replacement = $pagebackground;
+function theme_tikli_set_parallaxbackgroundimage($css, $parallaxbackgroundimage) {
+    GLOBAL $CFG;
+    $tag = '[[setting:parallaxbackgroundimage]]';
+    $replacement = $parallaxbackgroundimage;
     if (is_null($replacement)) {
-        $replacement = '';
+        $replacement = $CFG->wwwroot.'/theme/tikli/css/img/bg-banner-2.jpg';
     }
     $css = str_replace($tag, $replacement, $css);
     return $css;
@@ -266,6 +271,42 @@ function theme_tikli_pluginfile($course, $cm, $context, $filearea, $args, $force
             return $theme->setting_file_serve('slideimage5', $args, $forcedownload, $options);
         } else if($filearea === 'faviconurl') {
             return $theme->setting_file_serve('faviconurl', $args, $forcedownload, $options);
+        } else if($filearea === 'thirdsubsectioncolumnimage1') {
+            return $theme->setting_file_serve('thirdsubsectioncolumnimage1', $args, $forcedownload, $options);
+        } else if($filearea === 'thirdsubsectioncolumnimage2') {
+            return $theme->setting_file_serve('thirdsubsectioncolumnimage2', $args, $forcedownload, $options);
+        } else if($filearea === 'thirdsubsectioncolumnimage3') {
+            return $theme->setting_file_serve('thirdsubsectioncolumnimage3', $args, $forcedownload, $options);
+        } else if($filearea === 'thirdsubsectioncolumnimage4') {
+            return $theme->setting_file_serve('thirdsubsectioncolumnimage4', $args, $forcedownload, $options);
+        } else if($filearea === 'parallaxbackgroundimage') {
+            return $theme->setting_file_serve('parallaxbackgroundimage', $args, $forcedownload, $options);
+        } else if($filearea === 'someinfoimage') {
+            return $theme->setting_file_serve('someinfoimage', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_1_1') {
+            return $theme->setting_file_serve('feedbackslideimage_1_1', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_2_1') {
+            return $theme->setting_file_serve('feedbackslideimage_2_1', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_3_1') {
+            return $theme->setting_file_serve('feedbackslideimage_3_1', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_4_1') {
+            return $theme->setting_file_serve('feedbackslideimage_4_1', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_1_2') {
+            return $theme->setting_file_serve('feedbackslideimage_1_2', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_2_2') {
+            return $theme->setting_file_serve('feedbackslideimage_2_2', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_3_2') {
+            return $theme->setting_file_serve('feedbackslideimage_3_2', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_4_2') {
+            return $theme->setting_file_serve('feedbackslideimage_4_2', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_1_3') {
+            return $theme->setting_file_serve('feedbackslideimage_1_3', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_2_3') {
+            return $theme->setting_file_serve('feedbackslideimage_2_3', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_3_3') {
+            return $theme->setting_file_serve('feedbackslideimage_3_3', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_4_3') {
+            return $theme->setting_file_serve('feedbackslideimage_4_3', $args, $forcedownload, $options);
         } else {
             send_file_not_found();
         }

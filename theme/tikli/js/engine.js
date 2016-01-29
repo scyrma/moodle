@@ -69,13 +69,27 @@ $(".side-pre-menu").on("click",function() {
 $('.menulist').css('display', 'none');
 $('.menubars').on("click",function() {
 	$('.menulist').toggleClass('usermenu-show active-drop-user-menuinner');
+	$('.nav-collapse').removeClass('in').removeAttr('style');
+	$('.btn-navbar').addClass('collapsed');
 });
-$('.nav-collapse').removeClass('collapse');
+
 $(".btn-navbar").on("click",function() {
-	$(this).toggleClass("active-drop");
-	$('.nav-collapse').toggleClass('in collapse').removeClass('collapse');
+	if ($('#custommenu').val() == "nologinselfreg"){ 
+		$('.nav-collapse').toggleClass('in').removeAttr('style').addClass("inner-active-drop-nologin-selfreg");
+	} else {
+		$('.nav-collapse').toggleClass('in').removeAttr('style');
+	}
+
 	$('.usermenu-show').removeClass('usermenu-show');
 });
+
+
+$( window ).load(function() {
+  var outerHeight = $('#region-main').outerHeight();
+	$('#block-region-side-post').css('min-height', outerHeight+'px');
+	$('#block-region-side-pre').css('min-height', outerHeight+'px');
+	});
+
 });
 
 
