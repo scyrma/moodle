@@ -21,28 +21,27 @@ $THEME->blockrtlmanipulations = array(
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
 $THEME->csspostprocess = 'theme_tikli_process_css';
 $THEME->layouts = array(
-  // The site home page.
-	'frontpage' => array(
-	    'file' => 'frontpage.php',
-      'regions' => array(),
-      'options' => array('nonavbar' => true),
-	),
-  'login' => array(
+    // The site home page.
+    'frontpage' => array(
+        'file' => 'frontpage.php',
+        'regions' => array(),
+        'options' => array('nonavbar' => true),
+    ),
+    'login' => array(
         'file' => 'login.php',
         'regions' => array(),
-        'options' => array('langmenu'=>true),
-  ),
-  'coursecategory' => array(
+        'options' => array('langmenu' => true),
+    ),
+    'coursecategory' => array(
         'file' => 'columns3home.php',
         'defaultregion' => array(),
         'regions' => array('side-pre', 'side-post'),
         'options' => array('nonavbar' => false),
-   ),
-  'admin' => array(
+    ),
+    'admin' => array(
         'file' => 'columns3.php',
         'defaultregion' => array(),
         'regions' => array('side-pre', 'side-post'),
     ),
-
 );
 
