@@ -1519,26 +1519,4 @@ if (is_siteadmin()) {
         $temp->add($setting);
     }
     $ADMIN->add('theme_tikli', $temp);
-
-    /* Analytics temp */
-    $temp = new admin_settingpage('theme_tikli_analytics', get_string('analytics', 'theme_tikli'));
-    $temp->add(new admin_setting_heading('theme_tikli_analytics', get_string('analyticsheadingsub', 'theme_tikli'),
-        format_text(get_string('analyticsdesc', 'theme_tikli'), FORMAT_MARKDOWN)));
-
-    $name = 'theme_tikli/analyticstrackingid';
-    $title = get_string('analyticstrackingid', 'theme_tikli');
-    $description = get_string('analyticstrackingiddesc', 'theme_tikli');
-    $default = 'UA-XXXXXXXX-X';
-    $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $temp->add($setting);
-
-    $name = 'theme_tikli/analyticstrackingscript';
-    $title = get_string('analyticstrackingscript', 'theme_tikli');
-    $description = get_string('analyticstrackingscriptdesc', 'theme_tikli');
-    $default = '';
-    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-    $ADMIN->add('theme_tikli', $temp);
-
 }
