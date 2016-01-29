@@ -40,9 +40,6 @@ function theme_tikli_process_css($css, $theme) {
     }
     $logobackgroundimage = $theme->setting_file_url('logobackgroundimage', 'logobackgroundimage');
 
-    $parallaxbackgroundimage = $theme->setting_file_url('parallaxbackgroundimage', 'parallaxbackgroundimage');
-    $css = theme_tikli_set_parallaxbackgroundimage($css, $parallaxbackgroundimage);
-    
     $headingfont = theme_tikli_get_setting('fontnameheading');
     $bodyfont = theme_tikli_get_setting('fontnamebody');
     $css = theme_tikli_set_logobackgroundimage($css, $logobackgroundimage);
@@ -50,7 +47,7 @@ function theme_tikli_process_css($css, $theme) {
     $css = theme_tikli_set_bodyfont($css, $bodyfont);
     $css = theme_tikli_set_fontfiles($css, 'heading', $headingfont);
     $css = theme_tikli_set_fontfiles($css, 'body', $bodyfont);
-    
+
     // Set custom CSS.
     if (!empty($theme->settings->customcss)) {
         $customcss = $theme->settings->customcss;
@@ -60,16 +57,7 @@ function theme_tikli_process_css($css, $theme) {
     $css = theme_tikli_set_customcss($css, $customcss);
     return $css;
 }
-function theme_tikli_set_parallaxbackgroundimage($css, $parallaxbackgroundimage) {
-    GLOBAL $CFG;
-    $tag = '[[setting:parallaxbackgroundimage]]';
-    $replacement = $parallaxbackgroundimage;
-    if (is_null($replacement)) {
-        $replacement = $CFG->wwwroot.'/theme/tikli/css/img/bg-banner-2.jpg';
-    }
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
+
 function theme_tikli_set_logobackgroundimage($css, $themelogobackgroundimage) {
     GLOBAL $CFG;
     $colorscheme = get_config('theme_tikli', 'colorscheme');
@@ -215,42 +203,6 @@ function theme_tikli_pluginfile($course, $cm, $context, $filearea, $args, $force
             return $theme->setting_file_serve('pagebackground', $args, $forcedownload, $options);
         } else if ($filearea === 'icon') {
             return $theme->setting_file_serve('icon', $args, $forcedownload, $options);
-        } else if ($filearea === 'marketspotfontawesomeicon') {
-            return $theme->setting_file_serve('marketspotfontawesomeicon', $args, $forcedownload, $options);
-        } else if ($filearea === 'marketspotsectionfontawesomeicon1') {
-            return $theme->setting_file_serve('marketspotsectionfontawesomeicon1', $args, $forcedownload, $options);
-        } else if ($filearea === 'marketspotsectionfontawesomeicon2') {
-            return $theme->setting_file_serve('marketspotsectionfontawesomeicon2', $args, $forcedownload, $options);
-        } else if ($filearea === 'marketspotsectionfontawesomeicon3') {
-            return $theme->setting_file_serve('marketspotsectionfontawesomeicon3', $args, $forcedownload, $options);
-        } else if ($filearea === 'marketspotsectionfontawesomeicon4') {
-            return $theme->setting_file_serve('marketspotsectionfontawesomeicon4', $args, $forcedownload, $options);
-        } else if ($filearea === 'secondmarketspotfontawesomeicon') {
-            return $theme->setting_file_serve('secondmarketspotfontawesomeicon', $args, $forcedownload, $options);
-        } else if ($filearea === 'secondmarketspotsectionfontawesomeicon1') {
-            return $theme->setting_file_serve('secondmarketspotsectionfontawesomeicon1', $args, $forcedownload, $options);
-        } else if ($filearea === 'secondmarketspotsectionfontawesomeicon2') {
-            return $theme->setting_file_serve('secondmarketspotsectionfontawesomeicon2', $args, $forcedownload, $options);
-        } else if ($filearea === 'secondmarketspotsectionfontawesomeicon3') {
-            return $theme->setting_file_serve('secondmarketspotsectionfontawesomeicon3', $args, $forcedownload, $options);
-        } else if ($filearea === 'secondmarketspotsectionfontawesomeicon4') {
-            return $theme->setting_file_serve('secondmarketspotsectionfontawesomeicon4', $args, $forcedownload, $options);
-        } else if ($filearea === 'contactwithusfontawesomeicon') {
-            return $theme->setting_file_serve('contactwithusfontawesomeicon', $args, $forcedownload, $options);
-        } else if ($filearea === 'socialfontawesomeicon1') {
-            return $theme->setting_file_serve('socialfontawesomeicon1', $args, $forcedownload, $options);
-        } else if ($filearea === 'socialfontawesomeicon2') {
-            return $theme->setting_file_serve('socialfontawesomeicon2', $args, $forcedownload, $options);
-        } else if ($filearea === 'socialfontawesomeicon3') {
-            return $theme->setting_file_serve('socialfontawesomeicon3', $args, $forcedownload, $options);
-        } else if ($filearea === 'socialfontawesomeicon4') {
-            return $theme->setting_file_serve('socialfontawesomeicon4', $args, $forcedownload, $options);
-        } else if ($filearea === 'addressfontawesomeicon') {
-            return $theme->setting_file_serve('addressfontawesomeicon', $args, $forcedownload, $options);
-        } else if ($filearea === 'phonefontawesomeicon') {
-            return $theme->setting_file_serve('phonefontawesomeicon', $args, $forcedownload, $options);
-        } else if ($filearea === 'emailfontawesomeicon') {
-            return $theme->setting_file_serve('emailfontawesomeicon', $args, $forcedownload, $options);
         } else if ($filearea === 'uploadvideo') {
             return $theme->setting_file_serve('uploadvideo', $args, $forcedownload, $options);
         } else if ($filearea === 'logobackgroundimage') {
@@ -259,30 +211,8 @@ function theme_tikli_pluginfile($course, $cm, $context, $filearea, $args, $force
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
         } else if (preg_match("/^(marketing|slide)[1-9][0-9]*image$/", $filearea)) {
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
-        } else if($filearea === 'slideimage1') {
-            return $theme->setting_file_serve('slideimage1', $args, $forcedownload, $options);
-        } else if($filearea === 'slideimage2') {
-            return $theme->setting_file_serve('slideimage2', $args, $forcedownload, $options);
-        } else if($filearea === 'slideimage3') {
-            return $theme->setting_file_serve('slideimage3', $args, $forcedownload, $options);
-        } else if($filearea === 'slideimage4') {
-            return $theme->setting_file_serve('slideimage4', $args, $forcedownload, $options);
-        } else if($filearea === 'slideimage5') {
-            return $theme->setting_file_serve('slideimage5', $args, $forcedownload, $options);
         } else if($filearea === 'faviconurl') {
             return $theme->setting_file_serve('faviconurl', $args, $forcedownload, $options);
-        } else if($filearea === 'thirdsubsectioncolumnimage1') {
-            return $theme->setting_file_serve('thirdsubsectioncolumnimage1', $args, $forcedownload, $options);
-        } else if($filearea === 'thirdsubsectioncolumnimage2') {
-            return $theme->setting_file_serve('thirdsubsectioncolumnimage2', $args, $forcedownload, $options);
-        } else if($filearea === 'thirdsubsectioncolumnimage3') {
-            return $theme->setting_file_serve('thirdsubsectioncolumnimage3', $args, $forcedownload, $options);
-        } else if($filearea === 'thirdsubsectioncolumnimage4') {
-            return $theme->setting_file_serve('thirdsubsectioncolumnimage4', $args, $forcedownload, $options);
-        } else if($filearea === 'parallaxbackgroundimage') {
-            return $theme->setting_file_serve('parallaxbackgroundimage', $args, $forcedownload, $options);
-        } else if($filearea === 'someinfoimage') {
-            return $theme->setting_file_serve('someinfoimage', $args, $forcedownload, $options);
         } else if($filearea === 'feedbackslideimage_1_1') {
             return $theme->setting_file_serve('feedbackslideimage_1_1', $args, $forcedownload, $options);
         } else if($filearea === 'feedbackslideimage_2_1') {
@@ -379,7 +309,7 @@ function theme_tikli_get_html_for_settings(renderer_base $output, moodle_page $p
         $return->leftfootnotesectionlink1 = $page->theme->settings->leftfootnotesectionlink1;
     }
 
-    
+
     if (!empty($page->theme->settings->leftfootnotesection2)) {
         $return->leftfootnotesection2 = $page->theme->settings->leftfootnotesection2;
     }
