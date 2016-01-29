@@ -131,16 +131,6 @@ $string['blue'] = 'Blue Orange ';
 $string['orange'] = 'Orange Blue';
 $string['purple'] = 'Purple Orange';
 
-
-// Analytics.
-$string['analytics'] = 'Analytics';
-$string['analyticsheadingsub'] = 'Powerful analytics for Moodle';
-$string['analyticsdesc'] = '';
-$string['analyticstrackingid'] = 'Google Analytics ID';
-$string['analyticstrackingiddesc'] = 'Here, you may insert the GA tracking ID created exclusively for your site.';
-$string['analyticstrackingscript'] = 'Google Analytics Script';
-$string['analyticstrackingscriptdesc'] = 'Copy the GA script from the google analytics page and paste it here.';
-
 /*theme_tikli_frontpage*/
 
 $string['frontpageimagecontent'] = 'Header content';
