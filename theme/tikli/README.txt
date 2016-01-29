@@ -1,5 +1,5 @@
 
-Installing TIKLI theme
+Installing Tikli theme
 ---------------------
 
 Please unzip the theme Tikli in your moodle theme folder.Now you can safely install the theme.
@@ -14,7 +14,7 @@ Administration > Site Administration > Appearance > Themes > Tikli
 from the list of theme names that appear at this point in the side block.
 
 For any further assistance, please check the full documentation or feel free to contact Tikli.
-Online Documentation  Link:   http://tikli.dualcube.com/documentation/
+Documentation  Link:   http://tikli.dualcube.com/documentation/
 
 
 
