@@ -1,6 +1,10 @@
 <?php
+
 require_once($CFG->dirroot . '/theme/bootstrapbase/renderers.php');
+require_once($CFG->dirroot . '/course/renderer.php');
+
 class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
+
     public function full_header() {
         $html = html_writer::start_tag('header', array('id' => 'page-header', 'class' => 'clearfix'));
         //$html .= $this->context_header();
@@ -12,6 +16,7 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         $html .= html_writer::end_tag('header');
         return $html;
     }
+
     public function favicon() {
         GLOBAL $PAGE, $CFG;
         $hasfavicon = $PAGE->theme->setting_file_url('faviconurl', 'faviconurl');
@@ -21,11 +26,13 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             return $CFG->wwwroot.'/theme/tikli/pix/favicon.ico';
         }
     }
+
     public function user_profile_picture() {
         GLOBAL $USER;
         $userpic = parent::user_picture($USER, array('link' => false, 'size' => 80));
         return $userpic;
     }
+
     public function user_menu_logged_in($user) {
         // Get some navigation opts.
         $opts = user_get_user_navigation_info($user, $this->page);
@@ -85,6 +92,37 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         return $this->render_from_template('theme_tikli/usermenu', $data);
     }
 
+    public function user_menu_guest($withlinks = null) {
+        $loginurl = get_login_url();
+        $loginpage = $this->is_login_page();
+        $returnstr = get_string('loggedinasguest');
+
+        // Note: this behaviour is intended to match that of core_renderer::login_info,
+        // but should not be considered to be good practice; layout options are
+        // intended to be theme-specific. Please don't copy this snippet anywhere else.
+        if (is_null($withlinks)) {
+            $withlinks = empty($this->page->layout_options['nologinlinks']);
+        }
+
+        // Add a class for when $withlinks is false.
+        $usermenuclasses = 'usermenu';
+        if (!$withlinks) {
+            $usermenuclasses .= ' withoutlinks';
+        }
+
+        if (!$loginpage && $withlinks) {
+            $returnstr .= " (<a href=\"$loginurl\">".get_string('login').'</a>)';
+        }
+
+        return html_writer::div(
+            html_writer::span(
+                $returnstr,
+                'login'
+            ),
+            $usermenuclasses
+        );
+    }
+
     public function user_menu_logged_out() {
         $data = array(
             'loginlink' => get_login_url(),
@@ -106,180 +144,30 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             $user = $USER;
         }
 
-        // Note: this behaviour is intended to match that of core_renderer::login_info,
-        // but should not be considered to be good practice; layout options are
-        // intended to be theme-specific. Please don't copy this snippet anywhere else.
-        if (is_null($withlinks)) {
-            $withlinks = empty($this->page->layout_options['nologinlinks']);
-        }
-
-        // Add a class for when $withlinks is false.
-        $usermenuclasses = 'usermenu';
-        if (!$withlinks) {
-            $usermenuclasses .= ' withoutlinks';
-        }
-
-        $returnstr = "";
-
         if (during_initial_install()) {
             // If during initial install, return the empty return string.
-            return $returnstr;
+            return "";
         }
 
-        $loginpage = $this->is_login_page();
-        $loginurl = get_login_url();
         // If not logged in, show the typical not-logged-in string.
         if (!isloggedin()) {
             return $this->user_menu_logged_out();
         }
-        return $this->user_menu_logged_in($user);
 
         // If logged in as a guest user, show a string to that effect.
         if (isguestuser()) {
-            $returnstr = get_string('loggedinasguest');
-            if (!$loginpage && $withlinks) {
-                $returnstr .= " (<a href=\"$loginurl\">".get_string('login').'</a>)';
-            }
-
-            return html_writer::div(
-                html_writer::span(
-                    $returnstr,
-                    'login'
-                ),
-                $usermenuclasses
-            );
+            return $this->user_menu_guest($withlinks);
+        } else {
+            return $this->user_menu_logged_in($user);
         }
-
-        // Get some navigation opts.
-        $opts = user_get_user_navigation_info($user, $this->page);
-
-        $avatarclasses = "avatars";
-        $avatarcontents = html_writer::span($opts->metadata['useravatar'], 'avatar current');
-        $usertextcontents = $opts->metadata['userfullname'];
-
-        // Other user.
-        if (!empty($opts->metadata['asotheruser'])) {
-            $avatarcontents .= html_writer::span(
-                $opts->metadata['realuseravatar'],
-                'avatar realuser'
-            );
-            $usertextcontents = $opts->metadata['realuserfullname'];
-            $usertextcontents .= html_writer::tag(
-                'span',
-                get_string(
-                    'loggedinas',
-                    'moodle',
-                    html_writer::span(
-                        $opts->metadata['userfullname'],
-                        'value'
-                    )
-                ),
-                array('class' => 'meta viewingas')
-            );
-        }
-
-        // Role.
-        if (!empty($opts->metadata['asotherrole'])) {
-            $role = core_text::strtolower(preg_replace('#[ ]+#', '-', trim($opts->metadata['rolename'])));
-            $usertextcontents .= html_writer::span(
-                $opts->metadata['rolename'],
-                'meta role role-' . $role
-            );
-        }
-
-        // User login failures.
-        if (!empty($opts->metadata['userloginfail'])) {
-            $usertextcontents .= html_writer::span(
-                $opts->metadata['userloginfail'],
-                'meta loginfailures'
-            );
-        }
-
-        // MNet.
-        if (!empty($opts->metadata['asmnetuser'])) {
-            $mnet = strtolower(preg_replace('#[ ]+#', '-', trim($opts->metadata['mnetidprovidername'])));
-            $usertextcontents .= html_writer::span(
-                $opts->metadata['mnetidprovidername'],
-                'meta mnet mnet-' . $mnet
-            );
-        }
-
-        $returnstr .= html_writer::span(
-            html_writer::span($usertextcontents, 'usertext') .
-            html_writer::span($avatarcontents, $avatarclasses),
-            'userbutton'
-        );
-
-        // Create a divider (well, a filler).
-        $divider = new action_menu_filler();
-        $divider->primary = false;
-
-        $am = new action_menu();
-        $am->initialise_js($this->page);
-        $am->set_menu_trigger(
-            $returnstr
-        );
-        $am->set_alignment(action_menu::TR, action_menu::BR);
-        $am->set_nowrap_on_items();
-        if ($withlinks) {
-            $navitemcount = count($opts->navitems);
-            $idx = 0;
-            foreach ($opts->navitems as $key => $value) {
-
-                switch ($value->itemtype) {
-                    case 'divider':
-                        // If the nav item is a divider, add one and skip link processing.
-                        $am->add($divider);
-                        break;
-
-                    case 'invalid':
-                        // Silently skip invalid entries (should we post a notification?).
-                        break;
-
-                    case 'link':
-                        // Process this as a link item.
-                        $pix = null;
-                        if (isset($value->pix) && !empty($value->pix)) {
-                            $pix = new pix_icon($value->pix, $value->title, null, array('class' => 'iconsmall'));
-                        } else if (isset($value->imgsrc) && !empty($value->imgsrc)) {
-                            $value->title = html_writer::img(
-                                $value->imgsrc,
-                                $value->title,
-                                array('class' => 'iconsmall')
-                            ) . $value->title;
-                        }
-                        $al = new action_menu_link_secondary(
-                            $value->url,
-                            $pix,
-                            $value->title,
-                            array('class' => 'icon')
-                        );
-                        $am->add($al);
-                        break;
-                }
-
-                $idx++;
-
-                // Add dividers after the first item and before the last item.
-                if ($idx == 1 || $idx == $navitemcount - 1) {
-                    $am->add($divider);
-                }
-            }
-        }
-
-        return html_writer::div(
-            $this->render($am),
-            $usermenuclasses
-        );
-
     }
 }
-require_once($CFG->dirroot.'/course/renderer.php');
-    /** 
-     * overridding core_course_renderer class for adding alt tag.
-     * @copyright 2010 Sam Hemelryk
-     * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-     */
+
+/**
+ * overridding core_course_renderer class for adding alt tag.
+ * @copyright 2010 Sam Hemelryk
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class theme_tikli_core_course_renderer extends core_course_renderer {
     /**
      * Returns HTML to display course content (summary, course contacts and optionally category name)
