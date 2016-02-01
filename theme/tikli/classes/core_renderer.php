@@ -5,6 +5,18 @@ require_once($CFG->dirroot . '/course/renderer.php');
 
 class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
+    private $cssfiles = array(
+        'bootstrap.css',
+        'bootstrap-responsive.css',
+        'font-awesome.min.css',
+        'styles.css'
+    );
+
+    private $jsfiles = array(
+        'jquery-2.1.4.js',
+        'bootstrap.min.js'
+    );
+
     public function full_header() {
         $html = html_writer::start_tag('header', array('id' => 'page-header', 'class' => 'clearfix'));
         //$html .= $this->context_header();
@@ -160,6 +172,56 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         } else {
             return $this->user_menu_logged_in($user);
         }
+    }
+
+    public function get_theme_source_root() {
+        // TODO: Use $THEME.
+        global $CFG;
+        return sprintf("%s/theme/%s", $CFG->wwwroot, 'tikli');
+    }
+
+    public function get_theme_source_css($filename) {
+        return sprintf("%s/css/%s", $this->get_theme_source_root(), $filename);
+    }
+
+    public function get_theme_source_js($filename) {
+        return sprintf("%s/js/%s", $this->get_theme_source_root(), $filename);
+    }
+
+    public function base_theme_head_html($cssfiles = array(), $jsfiles = array()) {
+        $cssfiles = array_merge($this->cssfiles, $cssfiles);
+        $jsfiles = array_merge($this->jsfiles, $jsfiles);
+        $context = array(
+            'cssfiles' => array_map(array($this, 'get_theme_source_css'), $cssfiles),
+            'jsfiles' => array_map(array($this, 'get_theme_source_js'), $jsfiles),
+            'title' => $this->page_title(),
+            'iconurl' => $this->favicon()
+        );
+
+        return $this->render_from_template('theme_tikli/head_elements', $context);
+    }
+
+    public function frontpage_theme_head_html() {
+        $frontpagecssfiles = array(
+            'jquery.bxslider.css',
+            'animation.css',
+            'frontpageslider/cssliderdemo.css',
+            'frontpageslider/cssliderstyle.css'
+        );
+        $frontpagejsfiles = array(
+            'jquery.bxslider.min.js',
+            'frontpage.js',
+            'font.js',
+        );
+
+        return $this->base_theme_head_html($frontpagecssfiles, $frontpagejsfiles);
+    }
+
+    public function standard_theme_head_html() {
+        $standardcssfiles = array();
+        $standardjsfiles = array('engine.js');
+
+        return $this->base_theme_head_html($standardcssfiles, $standardjsfiles);
     }
 }
 
