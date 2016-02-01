@@ -43,9 +43,9 @@ if (right_to_left()) {
     </div>
     </div>
 
-    <?php 
+    <?php
         include('footer.php');
-        echo $OUTPUT->standard_end_of_body_html() 
+        echo $OUTPUT->standard_end_of_body_html()
     ?>
 
 </div>
