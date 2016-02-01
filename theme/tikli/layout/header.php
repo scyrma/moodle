@@ -69,8 +69,6 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
         <span>toggle menu</span>
     </button>
 
-<?php
-    require_once(__DIR__ . '/usermenu.php');
-?>
+    <?php echo $OUTPUT->user_menu(); ?>
   </nav>
 </header>
