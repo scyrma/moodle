@@ -17,21 +17,7 @@ if (right_to_left()) {
 echo $OUTPUT->doctype() ?>
 <?php require('header.php'); ?>
 <div id="page" class="container-fluid">
-    <?php if ($CFG->version >= 2015051100) {
-        echo $OUTPUT->full_header();
-    } else { ?>
-    <header id="page-header" class="clearfix">
-        <div id="page-navbar" class="clearfix">
-            <div class="row">
-                <nav class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></nav>
-                <div class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></div>
-            </div>
-        </div>
-        <div id="course-header">
-            <?php echo $OUTPUT->course_header(); ?>
-        </div>
-    </header>
-    <?php } ?>
+    <?php echo $OUTPUT->full_header(); ?>
     <div id="page-content" class="row-fluid">
         <div id="region-main-box" class="<?php echo $regionmainbox; ?>">
             <div class="row-fluid">
@@ -48,9 +34,9 @@ echo $OUTPUT->doctype() ?>
         <?php echo $OUTPUT->blocks('side-post', $sidepost); ?>
     </div>
 
-    <?php 
+    <?php
         include('footer.php');
-        echo $OUTPUT->standard_end_of_body_html() 
+        echo $OUTPUT->standard_end_of_body_html()
     ?>
 
 </div>

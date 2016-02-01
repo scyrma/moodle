@@ -12,12 +12,12 @@ jQuery(document).ready(function() {
 	$('input[type=text]').each(function(i,el) {
 		if (!el.value || el.value == '') {
 	        el.placeholder = placeholderusername[el.id];
-	    }   
+	    }
 	});
 	$('input[type=password]').each(function(i,el) {
 		if (!el.value || el.value == '') {
 	        el.placeholder = placeholderspassword[el.id];
-	    }   
+	    }
 	});
 	$('.signupform').find('input[type=submit]').addClass('signup');
 	$('.loginbox').removeClass('twocolumns').addClass('onecolumns');
