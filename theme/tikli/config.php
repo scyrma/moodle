@@ -33,7 +33,7 @@ $THEME->layouts = array(
         'options' => array('langmenu' => true),
     ),
     'coursecategory' => array(
-        'file' => 'columns3home.php',
+        'file' => 'coursecategory.php',
         'defaultregion' => array(),
         'regions' => array('side-pre', 'side-post'),
         'options' => array('nonavbar' => false),
