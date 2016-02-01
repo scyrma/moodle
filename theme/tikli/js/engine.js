@@ -1,28 +1,5 @@
 ﻿jQuery(document).ready(function() {
 
-// BEGIN script for slider on landing page
-	var _minSlides,
-		_width = $(window).width();
-
-	if (_width <= 767) {
-		_minSlides = 1;
-	} else {
-		_minSlides = 4;
-	}
-	_sliderCourses = $('.popular-courses-slider').bxSlider({
-		speed: 1500,
-		nextSelector: '#slider-next',
-		prevSelector: '#slider-prev',
-		pager: false,
-		minSlides: _minSlides,
-		maxSlides: _minSlides,
-		slideWidth: 5000,
-		adaptiveHeight: true,
-		auto: false,
-		pause: 7000,
-	});
-// END script for slider on landing page
-
 // BEGIN script for grid or list courses list view
 	$('.btn-view-list').click(function(){
 		$('.course-items').addClass('course-items-list-view');
@@ -52,7 +29,7 @@
 
 
 /*tooltip for column3home.php*/
-$('[data-toggle="tooltip"]').tooltip();  
+$('[data-toggle="tooltip"]').tooltip();
 
 $("li.dropdown").on("click",function() {
    $(this).toggleClass('open');
@@ -60,8 +37,8 @@ $("li.dropdown").on("click",function() {
 
 
 $('#block-region-side-pre').addClass('left-menu-close');
-$(".side-pre-menu").on("click",function() {   
-   $(this).toggleClass('is-active'); 
+$(".side-pre-menu").on("click",function() {
+   $(this).toggleClass('is-active');
    $('#block-region-side-pre').toggleClass('left-menu-open');
    $('.nav-collapse').toggleClass('zindexclass');
 });
@@ -74,7 +51,7 @@ $('.menubars').on("click",function() {
 });
 
 $(".btn-navbar").on("click",function() {
-	if ($('#custommenu').val() == "nologinselfreg"){ 
+	if ($('#custommenu').val() == "nologinselfreg"){
 		$('.nav-collapse').toggleClass('in').removeAttr('style').addClass("inner-active-drop-nologin-selfreg");
 	} else {
 		$('.nav-collapse').toggleClass('in').removeAttr('style');
