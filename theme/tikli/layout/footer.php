@@ -20,13 +20,15 @@
 					<a href="<?php echo $html->leftfootnotesectionlink6; ?>"><?php echo $html->leftfootnotesection6; ?></a>
 				</p>
 			</div>
-			
+
 			<div class="span3 right">
 				<div id="course-footer"><?php echo $OUTPUT->course_footer(); ?></div>
         		<p class="helplink"><?php echo $OUTPUT->page_doc_link(); ?></p>
 		        <?php
-		        
-		        echo $html->footnote;
+
+                if (isset($html->footnote)) {
+		            echo $html->footnote;
+                }
 		        echo $OUTPUT->login_info();
 		        echo $OUTPUT->standard_footer_html();
 		        ?>
