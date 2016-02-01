@@ -18,7 +18,7 @@ if (right_to_left()) {
 }
 $course = $DB->get_records_sql('SELECT c.* FROM {course} c where id != ? and visible = ?',array(1, 1));
 $coursedetailsarray = array();
-foreach ($course as $key => $coursevalue) {   	
+foreach ($course as $key => $coursevalue) {
 	$coursedetailsarray[$key]["courseid"] = $CFG->wwwroot."/course/view.php?id=".$coursevalue->id;
 	$coursedetailsarray[$key]["enroledusers"] = $CFG->wwwroot."/enrol/users.php?id=".$coursevalue->id;
 	$coursedetailsarray[$key]["coursename"] = $coursevalue->fullname;
@@ -43,21 +43,21 @@ foreach ($course as $key => $coursevalue) {
 	$isfile = $DB->get_records_sql("Select * from {files} where contextid = ? and filename != ?", array($coursecontext->id, "."));
 	if($isfile) {
 		foreach ($isfile as $key1 => $isfilevalue) {
-			$courseimage =  $CFG->wwwroot . "/pluginfile.php/" . $isfilevalue->contextid ."/". $isfilevalue->component . "/" . $isfilevalue->filearea . "/" . $isfilevalue->filename;	
+			$courseimage =  $CFG->wwwroot . "/pluginfile.php/" . $isfilevalue->contextid ."/". $isfilevalue->component . "/" . $isfilevalue->filearea . "/" . $isfilevalue->filename;
 		}
-	}   
+	}
 	if(!empty($courseimage)) {
 		$coursedetailsarray[$key]["courseimage"] = $courseimage;
 	} else {
 		$coursedetailsarray[$key]["courseimage"] = $CFG->wwwroot."/theme/tikli/data/nopic.jpg";
 	}
 	$courseimage = '';
-	
-}		
+
+}
 $coursecontext = context_course::instance(1);
 
 ?>
-<?php require('column3homeheader.php'); ?>
+<?php require('header.php'); ?>
 <div id="page" class="container-fluid">
     <?php if ($CFG->version >= 2015051100) {
         echo $OUTPUT->full_header();
@@ -142,19 +142,22 @@ $coursecontext = context_course::instance(1);
                       </div>
                     </div>
                     <?php } ?>
-                    <?php           
+                    <!-- TODO: THIS SHOULD BE IN CSS FILE -->
+                    <div class="hidden">
+                    <?php
                     echo $OUTPUT->main_content();
                     ?>
+                    </div>
                 </section>
                 <?php echo $OUTPUT->blocks('side-pre', $sidepre); ?>
             </div>
         </div>
         <?php echo $OUTPUT->blocks('side-post', $sidepost); ?>
     </div>
-    
-    <?php 
+
+    <?php
         include('footer.php');
-        echo $OUTPUT->standard_end_of_body_html() 
+        echo $OUTPUT->standard_end_of_body_html()
     ?>
 </div>
 </body>
