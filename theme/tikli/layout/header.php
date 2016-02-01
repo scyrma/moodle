@@ -31,7 +31,7 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
   <title><?php echo $OUTPUT->page_title(); ?></title>
   <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
   <link rel="stylesheet" href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/font-awesome.css">
-  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/styles.css" rel="stylesheet">  
+  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/styles.css" rel="stylesheet">
   <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery-2.1.4.js"></script>
   <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/bootstrap.min.js"></script>
   <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery.bxslider.min.js"></script>
@@ -71,7 +71,7 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
         <span>toggle menu</span>
     </button>
 
-    <?php if(isloggedin()) { 
+    <?php if(isloggedin()) {
       if ( $CFG->version >= '2015051100.00' ) {
         $file = get_string('privatefiles');
       } else {
@@ -178,5 +178,3 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
     <?php } ?>
   </nav>
 </header>
-
-
