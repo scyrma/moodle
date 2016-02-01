@@ -23,20 +23,7 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
 ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?php echo $OUTPUT->page_title(); ?></title>
-  <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
-  <link rel="stylesheet" href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/font-awesome.css">
-  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/styles.css" rel="stylesheet">
-  <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery-2.1.4.js"></script>
-  <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/bootstrap.min.js"></script>
-  <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery.bxslider.min.js"></script>
-  <script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/engine.js"></script>
-  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/bootstrap.css" rel="stylesheet">
-  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/bootstrap-responsive.css" rel="stylesheet">
-  <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/jquery.bxslider.css" rel="stylesheet">
+    <?php echo $OUTPUT->standard_theme_head_html(); ?>
   <?php
       include($CFG->dirroot . '/theme/tikli/settings/colorchange.php');
   ?>
