@@ -119,7 +119,6 @@ echo $OUTPUT->doctype();?>
 	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/frontpage.js"></script>
 	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/font.js"></script>
 	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery.animateNumber.js"></script>
-	<script type="text/javascript" src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/wow.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/frontpageslider/cssliderdemo.css" />
 	<link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/frontpageslider/cssliderstyle.css" />
 

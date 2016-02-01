@@ -10,24 +10,10 @@ if (right_to_left()) {
     $regionmain = 'span9';
     $sidepre = 'span3 pull-right left-menu-close';
 }
- ?>
+?>
 <?php require('header.php'); ?>
 <div id="page" class="container-fluid">
-    <?php if ($CFG->version >= 2015051100) {
-        echo $OUTPUT->full_header();
-    } else { ?>
-    <header id="page-header" class="clearfix">
-        <div id="page-navbar" class="clearfix">
-                <div class="row">
-                    <nav class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></nav>
-                    <div class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></div>
-                </div>
-        </div>
-        <div id="course-header">
-            <?php echo $OUTPUT->course_header(); ?>
-        </div>
-    </header>
-    <?php } ?>
+    <?php echo $OUTPUT->full_header(); ?>
     <div id="page-content" class="row-fluid"><div class="custom-width">
         <section id="region-main" class="<?php echo $regionmain; ?>">
             <?php
