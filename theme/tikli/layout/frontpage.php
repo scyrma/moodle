@@ -173,9 +173,7 @@ echo $OUTPUT->doctype();?>
 		    	</a>
 		    </div>
 		    <?php } ?>
-<?php
-    require_once(__DIR__ . '/usermenu.php');
-?>
+            <?php echo $OUTPUT->user_menu(); ?>
 			<?php if (!empty($CFG->custommenuitems)) { ?>
 			<div class="navbar">
       			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
