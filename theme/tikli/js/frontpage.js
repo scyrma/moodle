@@ -29,30 +29,6 @@ jQuery(document).ready(function() {
 	});
 // END script for slider on landing page
 
-$(".send").click(function(e){
-		var url = $('.hiddenform').val();
-		var name = $('.msgname').val();
-		var email = $('.home-email-pad').val();
-		var msgsent = $('.msgsent').val();
-		var msg = $('.msg').val();
-		var emptynameemail = $('.emptynameemail').val();
-		if( name != "" && email != "") {
-		    $.ajax({url: url, 
-			    	data : { name : name, email : email, msg : msg},
-			    	type: 'post',
-			    	success: function(result){
-			    		$("#msgresponse").css('display', 'block');
-			        	$("#msgresponse").html(msgsent);
-			        	$('.msgname').val("");
-			        	$('.home-email-pad').val("");
-			        	$('.msg').val("");
-			    	}
-			});
-		} else {
-			$("#msgresponse").css('display', 'block');
-			$("#msgresponse").html(emptynameemail);
-		}
-	});
 /*add class for frontpage.php*/
 if($('.news-updates-extraclass').length == 1) {
 	$('.news-updates-extraclass').each(function() {
@@ -89,8 +65,8 @@ $('.menubar').on("click",function() {
 	$('.btn-navbar').addClass('collapsed');
 });
 
-$(".btn-navbar").on("click",function() { 
-	if ($('#custommenu').val() == "nologin") { 
+$(".btn-navbar").on("click",function() {
+	if ($('#custommenu').val() == "nologin") {
 		$(this).addClass("active-drop").addClass("active-drop-nologin");
 	} else if ($('#custommenu').val() == "nologinselfreg"){
 		$(this).addClass("active-drop").addClass("active-drop-nologin-selfreg");
@@ -106,23 +82,6 @@ if ($("html").attr("dir") == "rtl") {
 	$(".course-items").attr('dir', 'ltr');
 	$(".slidergrid").attr('dir', 'ltr');
 }
-var wownumber = new WOW({
-		boxClass:     'wcounter', 
-	    callback:     function(box) {
-				$( ".numbers" ).each(function() {
-					var counter = $(this).data("number");
-					$(this).stop().animateNumber({number: counter}, 5000);
-				});
-      			// the callback is fired every time an animation is started
-	      		// the argument that is passed in is the DOM node being 
-	    },
-	    animateNumber: null // optional scroll container selector, otherwise use window
-	  }
-	);
-	wownumber.init();
-	
-	wow = new WOW();
-	wow.init();
 
-	$(".bx-prev, .bx-next").html("");
+$(".bx-prev, .bx-next").html("");
 });
