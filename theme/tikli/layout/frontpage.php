@@ -101,26 +101,7 @@ for($feedbackslides = 1; $feedbackslides <= get_config('theme_tikli', 'feedbacks
 echo $OUTPUT->doctype();?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
-	<meta charset="utf-8">
-  	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo $OUTPUT->page_title(); ?></title>
-    <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
-    <link type="text/css" rel="Stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/bootstrap.css">
-	<link type="text/css" rel="Stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/bootstrap-responsive.css">
-	<link type="text/css" rel="Stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/jquery.bxslider.css">
-	<link type="text/css" rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/font-awesome.min.css">
-	<link type="text/css" rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/animation.css" />
-	<link type="text/css" rel="Stylesheet" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/styles.css">
-
-	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery-2.1.4.js"></script>
-	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/bootstrap.min.js"></script>
-	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery.bxslider.min.js"></script>
-	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/frontpage.js"></script>
-	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/font.js"></script>
-	<script src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/jquery.animateNumber.js"></script>
-	<link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/frontpageslider/cssliderdemo.css" />
-	<link rel="stylesheet" type="text/css" href="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/frontpageslider/cssliderstyle.css" />
+    <?php echo $OUTPUT->frontpage_theme_head_html(); ?>
 
 	<style>
 	ul, ol {
