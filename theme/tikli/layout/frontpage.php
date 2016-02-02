@@ -58,20 +58,6 @@ $frontpageblocksection3 = get_config('theme_tikli', 'frontpageblocksection3');
 $frontpageblocklinksection3 = get_config('theme_tikli', 'frontpageblocklinksection3');
 $frontpageblockdescriptionsection3 = get_config('theme_tikli', 'frontpageblockdescriptionsection3');
 
-$checkhaslogo = $PAGE->theme->setting_file_url('logo', 'logo');
-if(!empty($checkhaslogo)) {
-	$haslogo = $PAGE->theme->setting_file_url('logo', 'logo');
-} else {
-	$haslogo = $CFG->wwwroot.'/theme/tikli/pix/logo-2.png';
-}
-
-$checkhasiconlogo = $PAGE->theme->setting_file_url('icon', 'icon');
-if(!empty($checkhasiconlogo)) {
-  $hasiconlogo = $PAGE->theme->setting_file_url('icon', 'icon');
-} else {
-  $hasiconlogo = $CFG->wwwroot.'/theme/tikli/pix/icon-logo.png';
-}
-
 if(get_config('theme_tikli', 'videotype') === "0") {
 	$iframevideo = get_config('theme_tikli', 'video');
 } else {
@@ -120,25 +106,7 @@ echo $OUTPUT->doctype();?>
 </head>
 	<body class="landing-page">
 		<header><div class="mobile-top-head">
-			<?php if (get_config('theme_tikli', 'logoorsitename') === "logo") { ?>
-		    <div class="logo-wr">
-		      <a class="logo-img" href="<?php echo $CFG->wwwroot; ?>">
-		        <img alt="logo" src="<?php echo $haslogo;?>" />
-		      </a>
-		    </div>
-		    <?php } else if (get_config('theme_tikli', 'logoorsitename') === "sitename") { ?>
-		    <div class="logo-wr">
-      			<a class="logo-img text" href="<?php echo $CFG->wwwroot; ?>">
-		    		<h1><?php echo $SITE->fullname; ?></h1>
-		    	</a>
-    		</div>
-		    <?php } else if (get_config('theme_tikli', 'logoorsitename') === "iconsitename") { ?>
-		    <div class="logo-wr">
-      			<a class="logo-img icontext" href="<?php echo $CFG->wwwroot; ?>">
-		    		<h1><span class="logoicon"><img alt="logo" src="<?php echo $hasiconlogo;?>" /></span><span><?php echo $SITE->fullname; ?></span></h1>
-		    	</a>
-		    </div>
-		    <?php } ?>
+            <?php echo $OUTPUT->logo(); ?>
             <?php echo $OUTPUT->user_menu(); ?>
 			<?php if (!empty($CFG->custommenuitems)) { ?>
 			<div class="navbar">
