@@ -58,22 +58,9 @@ $coursecontext = context_course::instance(1);
 
 ?>
 <?php require('header.php'); ?>
-<div id="page" class="container-fluid">
-    <?php if ($CFG->version >= 2015051100) {
-        echo $OUTPUT->full_header();
-    } else { ?>
-    <header id="page-header" class="clearfix">
-        <div id="page-navbar" class="clearfix">
-                <div class="row">
-                    <nav class="breadcrumb-nav"><?php echo $OUTPUT->navbar(); ?></nav>
-                    <div class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></div>
-                </div>
-        </div>
-        <div id="course-header">
-            <?php echo $OUTPUT->course_header(); ?>
-        </div>
-    </header>
-    <?php } ?>
+<div id="page" class="container-fluid course-category">
+    <?php echo $OUTPUT->full_header(); ?>
+
     <div id="page-content" class="row-fluid background-grey">
         <div id="region-main-box" class="<?php echo $regionmainbox; ?>">
             <div class="row-fluid">
@@ -142,12 +129,8 @@ $coursecontext = context_course::instance(1);
                       </div>
                     </div>
                     <?php } ?>
-                    <!-- TODO: THIS SHOULD BE IN CSS FILE -->
-                    <div class="hidden">
-                    <?php
-                    echo $OUTPUT->main_content();
-                    ?>
-                    </div>
+
+                    <?php echo $OUTPUT->main_content(); ?>
                 </section>
                 <?php echo $OUTPUT->blocks('side-pre', $sidepre); ?>
             </div>
