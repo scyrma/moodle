@@ -23,7 +23,7 @@ if ( get_config('theme_tikli', 'logoorsitename') === "sitename" ||  (get_config(
 }
 @media screen and (max-width: 767px) {
 .landing-page .logo-wr {
-    background: #FF9E57!important;    
+    background: #FF9E57!important;
 }
 }
 .da-dots span.da-dots-current:after {
@@ -46,14 +46,14 @@ background-size: 100%!important;
 /*----*/
 header.navbar,
 #block-region-side-pre .block .header,
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
-	background: #e74c3c;	
+	background: #e74c3c;
 }
 #block-region-side-post .block .minicalendar th{
 	background-color:#e84c3d;
 }
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
 	background: #e84c3d;
 }
@@ -66,7 +66,7 @@ header.navbar,
 #block-region-side-post .dimmed_text {
     color: #333;
 }
-.loginbox a:hover, 
+.loginbox a:hover,
 .loginbox .error {
 	color:#ff9e57!important;
 }
@@ -87,37 +87,37 @@ header.navbar,
     color: #333;
 }
 /* Buttons start */
-#page button, 
-#page input.form-submit, 
-#page input[type="button"], 
-#page input[type="submit"], 
-#page input[type="reset"], 
-#page input.form-submit, 
-#page input#id_submitbutton, 
-#page input#id_submitbutton2, 
-#page .path-admin .buttons input[type="submit"], 
+#page button,
+#page input.form-submit,
+#page input[type="button"],
+#page input[type="submit"],
+#page input[type="reset"],
+#page input.form-submit,
+#page input#id_submitbutton,
+#page input#id_submitbutton2,
+#page .path-admin .buttons input[type="submit"],
 #page td.submit input,
 #page #notice .singlebutton + .singlebutton input {
 	 color: #fff;
 
 }
-#page input.form-submit, 
-#page input[type="button"], 
-#page input[type="submit"], 
+#page input.form-submit,
+#page input[type="button"],
+#page input[type="submit"],
 #page input[type="reset"],
-#block-region-side-post #searchform_button, 
+#block-region-side-post #searchform_button,
 #block-region-side-pre #searchform_button,
 #page #livelogs-pause-button,
 #page #notice .singlebutton + .singlebutton input {
-    background-color: #4f4f4f;    
-    border-color: rgba(0, 0, 0, 0.4); 
+    background-color: #4f4f4f;
+    border-color: rgba(0, 0, 0, 0.4);
 	box-shadow: 0 2px 0 0 rgba(0, 0, 0, .8);
 }
 
-#page input.form-submit, 
-#page input#id_submitbutton, 
-#page input#id_submitbutton2, 
-#page .path-admin .buttons input[type="submit"], 
+#page input.form-submit,
+#page input#id_submitbutton,
+#page input#id_submitbutton2,
+#page .path-admin .buttons input[type="submit"],
 #page td.submit input,
 #page #id_saveanddisplay {
     background-color: #e74c3c;
@@ -125,7 +125,7 @@ header.navbar,
 	box-shadow: 0 2px 0 0 #b33121;
 }
 
-.loginbox input[type="submit"], 
+.loginbox input[type="submit"],
 .loginbox input[type="submit"]:hover {
 	background: #2a2424!important;
 }
@@ -146,17 +146,17 @@ header.navbar,
 
 .block .calendartable .calendar-controls a,
 div.minicalendarblock caption a {
-	color:#FFF;	
+	color:#FFF;
 }
 
 #block-region-side-post .block .minicalendar th,
-#block-region-side-pre .block .minicalendar th, 
+#block-region-side-pre .block .minicalendar th,
 #block-region-side-post .block .minicalendar td {
-	color:#FFF;	
+	color:#FFF;
 }
 
 #block-region-side-pre .block .minicalendar td {
-	color:#222;	
+	color:#222;
 }
 
 #block-region-side-post .block .minicalendar td.weekend {
@@ -191,12 +191,12 @@ div.minicalendarblock caption a {
 
 
 .block.block_calendar_month .content h3.eventskey {
-	color:#fff; 
+	color:#fff;
 }
 
 #block-region-side-post .block .calendartable .weekdays {
 	background-color:#e84c3d;
-	
+
 }
 
 #block-region-side-post .block .minicalendar td {
@@ -237,11 +237,11 @@ div.minicalendarblock caption a {
 .moodle-dialogue-ft a,
 footer a,
 footer a:hover,
-.btn-see-all, 
+.btn-see-all,
 body .btn-see-all,
 .popular-courses-nav a,
 .btn-view-all {
-	color: #e74c3c;	
+	color: #e74c3c;
 }
 
 #block-region-side-post .calendar_filters.filters a,
@@ -274,17 +274,17 @@ footer span {
 footer a:active,
 footer a:focus,
  {
-  color: #e74c3c;	
+  color: #e74c3c;
  }
 
 .popular-courses-nav a:hover {
-color: #e74c3c;	
+color: #e74c3c;
 }
 .block-links-item .btn-view-all:hover {
-color: #e74c3c;	
+color: #e74c3c;
 }
 .news-updates .container:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/red-orange/i-notice.png) no-repeat center top;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/red-orange/i-notice.png) no-repeat center top;
 }
 </style>
 <?php } if ($color_scheme == 'green') { ?>
@@ -304,7 +304,7 @@ color: #e74c3c;
 }
 @media screen and (max-width: 767px) {
 .landing-page .logo-wr {
-    background: #f1c40f!important;    
+    background: #f1c40f!important;
 }
 }
 .da-dots span.da-dots-current:after {
@@ -314,7 +314,7 @@ color: #e74c3c;
 	border: solid 2px #f1c40f;
 }
 .news-updates .container:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/green/i-notice.png) no-repeat center top;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/green/i-notice.png) no-repeat center top;
 }
 @media screen and (max-width: 1199px) {
 .news-updates .container:before {
@@ -352,62 +352,62 @@ footer a:focus,
 .breadcrumb a,
 .userbutton > span:last-child span,
 .usermenu .menu a:hover, .course-item h6 a  {
-	color: #1abc9c;	
+	color: #1abc9c;
 }
 
 .btn.btn-navbar.active-drop .fa {
-	color:#1abc9c!important;	
+	color:#1abc9c!important;
 }
 
 
 .logining-wr a:last-child {
-	color:#1abc9c;	
+	color:#1abc9c;
 }
 
 .loginbox .loginform .form-input input {
-	border: 1px solid #1abc9c;			
-	
+	border: 1px solid #1abc9c;
+
 }
 
 .logining-wr a:first-child {
-    background: #1abc9c!important;										
-    box-shadow: 1px 1px 0 0 #0a5948!important;						
+    background: #1abc9c!important;
+    box-shadow: 1px 1px 0 0 #0a5948!important;
 }
 
-#page input.form-submit, 
-#page input#id_submitbutton, 
-#page input#id_submitbutton2, 
-#page .path-admin .buttons input[type="submit"], 
+#page input.form-submit,
+#page input#id_submitbutton,
+#page input#id_submitbutton2,
+#page .path-admin .buttons input[type="submit"],
 #page td.submit input,
 #page #id_saveanddisplay,
 .mdl-align .btn-primary {
-    background-color: #1abc9c;		
-    border-color: #118b72;			
+    background-color: #1abc9c;
+    border-color: #118b72;
 
-	box-shadow: 0 2px 0 0 #118b72;	
+	box-shadow: 0 2px 0 0 #118b72;
 }
 
 
 
 
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
 	box-shadow: none!important;
 }
 
 .view-toggle .btn-view-list.active {
-	background-color: #1abc9c;										
+	background-color: #1abc9c;
 }
 
 header.navbar,
 #block-region-side-pre .block .header,
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
-	background: #1abc9c;	
+	background: #1abc9c;
 }
 
 .landing-page .logo-img {
-	background: #f1c40f;		
+	background: #f1c40f;
 }
 
 .landing-page header,
@@ -422,12 +422,12 @@ header.navbar,
 }
 
 .btn-1 {
-    background: #f1c40f none repeat scroll 0 0; 
-	
+    background: #f1c40f none repeat scroll 0 0;
+
 }
 
 .navbar-inner .logo-wr {
-	background: #f1c40f;  
+	background: #f1c40f;
 }
 
 .landing-page .userbutton > span:last-child span:after {
@@ -435,11 +435,11 @@ header.navbar,
 }
 
 .loginpanel h2:before, a.click {
-    background: #f1c40f no-repeat scroll center center; 
+    background: #f1c40f no-repeat scroll center center;
 }
 
 .rememberpass input + label:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/green/i-ch-unch-2.png) no-repeat center;			
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/green/i-ch-unch-2.png) no-repeat center;
 }
 
 .rememberpass input + label:after {
@@ -447,18 +447,18 @@ header.navbar,
 }
 
 .rememberpass input:checked + label:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/green/i-ch-ch-2.png) no-repeat center;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/green/i-ch-ch-2.png) no-repeat center;
 }
 
 .userbutton > span:last-child span:after {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/green/dwn-arrow.png) no-repeat center right;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/green/dwn-arrow.png) no-repeat center right;
 }
 
 .landing-page .active-drop-user-menu .userbutton > span:last-child span:after {
     background: rgba(0, 0, 0, 0) url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/green/dwn-arrow-landing-hover.png) no-repeat scroll right 8px;
 }
 
-.loginbox a:hover, 
+.loginbox a:hover,
 .loginbox .error {
 	color:rgba(255, 255, 255, .8)!important;
 }
@@ -466,25 +466,25 @@ header.navbar,
 
 #block-region-side-post .calendar_filters.filters a,
 #block-region-side-post .block_community a:hover,
-#block-region-side-post .moodle-actionmenu .toggle-display, 
+#block-region-side-post .moodle-actionmenu .toggle-display,
 #block-region-side-post .moodle-actionmenu .menu-action-text,
-#block-region-side-pre .moodle-actionmenu .toggle-display, 
+#block-region-side-pre .moodle-actionmenu .toggle-display,
 #block-region-side-pre .moodle-actionmenu .menu-action-text,
-#block-region-side-post .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-post .moodle-actionmenu .toggle-display:hover,
 #block-region-side-post .moodle-actionmenu .menu-action-text:hover {
-	color: #333; 
+	color: #333;
 }
 
-#block-region-side-pre .moodle-actionmenu .toggle-display, 
+#block-region-side-pre .moodle-actionmenu .toggle-display,
 #block-region-side-pre .moodle-actionmenu .menu-action-text {
-	color: #111; 
+	color: #111;
 }
 
-#block-region-side-post .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-post .moodle-actionmenu .toggle-display:hover,
 #block-region-side-post .moodle-actionmenu .menu-action-text:hover,
-#block-region-side-pre .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-pre .moodle-actionmenu .toggle-display:hover,
 #block-region-side-pre .moodle-actionmenu .menu-action-text:hover {
-	text-decoration:underline;	
+	text-decoration:underline;
 }
 
 
@@ -531,7 +531,7 @@ footer span {
 	background-color : rgba(90, 170, 224, .8)!important;
 }
 .news-updates .container:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/i-notice.png) no-repeat center top;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/i-notice.png) no-repeat center top;
 }
 @media screen and (max-width: 1199px) {
 .news-updates .container:before {
@@ -563,39 +563,39 @@ footer a:focus,
 .breadcrumb a,
 .userbutton > span:last-child span,
 .usermenu .menu a:hover, .course-item h6 a  {
-	color: #3498db;	
+	color: #3498db;
 }
 
 .btn.btn-navbar.active-drop .fa {
-	color:#3498db!important;	
+	color:#3498db!important;
 }
 
 
 .logining-wr a:last-child {
-	color:#3498db;	
+	color:#3498db;
 }
 
 .loginbox .loginform .form-input input {
-	border: 1px solid #3498db;			
-	
+	border: 1px solid #3498db;
+
 }
 
 .logining-wr a:first-child {
-    background: #3498db!important;										
-    box-shadow: 1px 1px 0 0 #0a5948!important;						
+    background: #3498db!important;
+    box-shadow: 1px 1px 0 0 #0a5948!important;
 }
 
-#page input.form-submit, 
-#page input#id_submitbutton, 
-#page input#id_submitbutton2, 
-#page .path-admin .buttons input[type="submit"], 
+#page input.form-submit,
+#page input#id_submitbutton,
+#page input#id_submitbutton2,
+#page .path-admin .buttons input[type="submit"],
 #page td.submit input,
 #page #id_saveanddisplay,
 .mdl-align .btn-primary {
-    background-color: #3498db;		
-    border-color: #1f689a;			
+    background-color: #3498db;
+    border-color: #1f689a;
 
-	box-shadow: 0 2px 0 0 #1f689a;	
+	box-shadow: 0 2px 0 0 #1f689a;
 }
 
 #block-region-side-post .block .minicalendar th {
@@ -606,24 +606,24 @@ footer a:focus,
 }
 
 
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
 	box-shadow: none!important;
 }
 
 .view-toggle .btn-view-list.active {
-	background-color: #3498db;										
+	background-color: #3498db;
 }
 
 header.navbar,
 #block-region-side-pre .block .header,
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
-	background: #3498db;	
+	background: #3498db;
 }
 
 .landing-page .logo-img {
-	background: #f39c11;		
+	background: #f39c11;
 }
 
 .landing-page header,
@@ -638,26 +638,26 @@ header.navbar,
 }
 
 .btn-1 {
-    background: #f39c11 none repeat scroll 0 0; 
-	
+    background: #f39c11 none repeat scroll 0 0;
+
 }
 
 .navbar-inner .logo-wr {
-	background: #f39c11;  
+	background: #f39c11;
 }
 .news-updates .container:before {
-	background: url(theme/tikli/css/img/blue/i-notice.png) no-repeat center top;	
+	background: url(theme/tikli/css/img/blue/i-notice.png) no-repeat center top;
 }
 .landing-page .userbutton > span:last-child span:after {
     background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/dwn-arrow-landing.png) no-repeat scroll right 8px;
 }
 
 .loginpanel h2:before, a.click {
-    background: #f39c11 no-repeat scroll center center; 
+    background: #f39c11 no-repeat scroll center center;
 }
 
 .rememberpass input + label:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/i-ch-unch-2.png) no-repeat center;			
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/i-ch-unch-2.png) no-repeat center;
 }
 
 .rememberpass input + label:after {
@@ -665,18 +665,18 @@ header.navbar,
 }
 
 .rememberpass input:checked + label:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/i-ch-ch-2.png) no-repeat center;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/i-ch-ch-2.png) no-repeat center;
 }
 
 .userbutton > span:last-child span:after {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/dwn-arrow.png) no-repeat center right;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/dwn-arrow.png) no-repeat center right;
 }
 
 .landing-page .active-drop-user-menu .userbutton > span:last-child span:after {
     background: rgba(0, 0, 0, 0) url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/blue/dwn-arrow-landing-hover.png) no-repeat scroll right 8px;
 }
 
-.loginbox a:hover, 
+.loginbox a:hover,
 .loginbox .error {
 	color:rgba(255, 255, 255, .8)!important;
 }
@@ -684,25 +684,25 @@ header.navbar,
 
 #block-region-side-post .calendar_filters.filters a,
 #block-region-side-post .block_community a:hover,
-#block-region-side-post .moodle-actionmenu .toggle-display, 
+#block-region-side-post .moodle-actionmenu .toggle-display,
 #block-region-side-post .moodle-actionmenu .menu-action-text,
-#block-region-side-pre .moodle-actionmenu .toggle-display, 
+#block-region-side-pre .moodle-actionmenu .toggle-display,
 #block-region-side-pre .moodle-actionmenu .menu-action-text,
-#block-region-side-post .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-post .moodle-actionmenu .toggle-display:hover,
 #block-region-side-post .moodle-actionmenu .menu-action-text:hover {
-	color: #333; 
+	color: #333;
 }
 
-#block-region-side-pre .moodle-actionmenu .toggle-display, 
+#block-region-side-pre .moodle-actionmenu .toggle-display,
 #block-region-side-pre .moodle-actionmenu .menu-action-text {
-	color: #111; 
+	color: #111;
 }
 
-#block-region-side-post .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-post .moodle-actionmenu .toggle-display:hover,
 #block-region-side-post .moodle-actionmenu .menu-action-text:hover,
-#block-region-side-pre .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-pre .moodle-actionmenu .toggle-display:hover,
 #block-region-side-pre .moodle-actionmenu .menu-action-text:hover {
-	text-decoration:underline;	
+	text-decoration:underline;
 }
 
 
@@ -733,7 +733,7 @@ footer span {
 }
 @media screen and (max-width: 767px) {
 .landing-page .logo-wr {
-    background: #f39c11!important;    
+    background: #f39c11!important;
 }
 }
 .number-section-content h2 {
@@ -760,7 +760,7 @@ footer span {
 }
 @media screen and (max-width: 767px) {
 .landing-page .logo-wr {
-    background: #2a80b9!important;    
+    background: #2a80b9!important;
 }
 }
 .da-dots span.da-dots-current:after {
@@ -770,7 +770,7 @@ footer span {
 	border: solid 2px #2a80b9;
 }
 .news-updates .container:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/i-notice.png) no-repeat center top;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/i-notice.png) no-repeat center top;
 }
 @media screen and (max-width: 1199px) {
 .news-updates .container:before {
@@ -802,64 +802,64 @@ footer a:focus,
 .breadcrumb a,
 .userbutton > span:last-child span,
 .usermenu .menu a:hover, .course-item h6 a  {
-	color: #e67e22;	
+	color: #e67e22;
 }
 
 .btn.btn-navbar.active-drop .fa {
-	color:#e67e22!important;	
+	color:#e67e22!important;
 }
 
 
 .logining-wr a:last-child {
-	color:#e67e22;	
+	color:#e67e22;
 }
 
 .loginbox .loginform .form-input input {
-	border: 1px solid #e67e22;			
-	
+	border: 1px solid #e67e22;
+
 }
 
 .logining-wr a:first-child {
-    background: #e67e22!important;										
-    box-shadow: 1px 1px 0 0 #0a5948!important;						
+    background: #e67e22!important;
+    box-shadow: 1px 1px 0 0 #0a5948!important;
 }
 
-#page input.form-submit, 
-#page input#id_submitbutton, 
-#page input#id_submitbutton2, 
-#page .path-admin .buttons input[type="submit"], 
+#page input.form-submit,
+#page input#id_submitbutton,
+#page input#id_submitbutton2,
+#page .path-admin .buttons input[type="submit"],
 #page td.submit input,
 #page #id_saveanddisplay,
 .mdl-align .btn-primary {
-    background-color: #e67e22;		
-    border-color: #b05e16;			
+    background-color: #e67e22;
+    border-color: #b05e16;
 
-	box-shadow: 0 2px 0 0 #b05e16;	
+	box-shadow: 0 2px 0 0 #b05e16;
 }
 
 #block-region-side-post .block .minicalendar th{
-	background-color:#e84c3d; 										
+	background-color:#e84c3d;
 }
 
 
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
 	box-shadow: none!important;
 }
 
 .view-toggle .btn-view-list.active {
-	background-color: #e67e22;										
+	background-color: #e67e22;
 }
 
 header.navbar,
 #block-region-side-pre .block .header,
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
-	background: #e67e22;	
+	background: #e67e22;
 }
 
 .landing-page .logo-img {
-	background: #2a80b9;		
+	background: #2a80b9;
 }
 
 .landing-page header,
@@ -874,26 +874,26 @@ header.navbar,
 }
 
 .btn-1 {
-    background: #2a80b9 none repeat scroll 0 0; 
-	
+    background: #2a80b9 none repeat scroll 0 0;
+
 }
 
 .navbar-inner .logo-wr {
-	background: #2a80b9;  
+	background: #2a80b9;
 }
 .news-updates .container:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/i-notice.png) no-repeat center top;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/i-notice.png) no-repeat center top;
 }
 .landing-page .userbutton > span:last-child span:after {
     background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/dwn-arrow-landing.png) no-repeat scroll right 8px;
 }
 
 .loginpanel h2:before, a.click {
-    background: #2a80b9 no-repeat scroll center center; 
+    background: #2a80b9 no-repeat scroll center center;
 }
 
 .rememberpass input + label:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/i-ch-unch-2.png) no-repeat center;			
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/i-ch-unch-2.png) no-repeat center;
 }
 
 .rememberpass input + label:after {
@@ -901,18 +901,18 @@ header.navbar,
 }
 
 .rememberpass input:checked + label:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/i-ch-ch-2.png) no-repeat center;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/i-ch-ch-2.png) no-repeat center;
 }
 
 .userbutton > span:last-child span:after {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/dwn-arrow.png) no-repeat center right;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/dwn-arrow.png) no-repeat center right;
 }
 
 .landing-page .active-drop-user-menu .userbutton > span:last-child span:after {
     background: rgba(0, 0, 0, 0) url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/orange/dwn-arrow-landing-hover.png) no-repeat scroll right 8px;
 }
 
-.loginbox a:hover, 
+.loginbox a:hover,
 .loginbox .error {
 	color:rgba(255, 255, 255, .8)!important;
 }
@@ -920,25 +920,25 @@ header.navbar,
 
 #block-region-side-post .calendar_filters.filters a,
 #block-region-side-post .block_community a:hover,
-#block-region-side-post .moodle-actionmenu .toggle-display, 
+#block-region-side-post .moodle-actionmenu .toggle-display,
 #block-region-side-post .moodle-actionmenu .menu-action-text,
-#block-region-side-pre .moodle-actionmenu .toggle-display, 
+#block-region-side-pre .moodle-actionmenu .toggle-display,
 #block-region-side-pre .moodle-actionmenu .menu-action-text,
-#block-region-side-post .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-post .moodle-actionmenu .toggle-display:hover,
 #block-region-side-post .moodle-actionmenu .menu-action-text:hover {
-	color: #333; 
+	color: #333;
 }
 
-#block-region-side-pre .moodle-actionmenu .toggle-display, 
+#block-region-side-pre .moodle-actionmenu .toggle-display,
 #block-region-side-pre .moodle-actionmenu .menu-action-text {
-	color: #111; 
+	color: #111;
 }
 
-#block-region-side-post .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-post .moodle-actionmenu .toggle-display:hover,
 #block-region-side-post .moodle-actionmenu .menu-action-text:hover,
-#block-region-side-pre .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-pre .moodle-actionmenu .toggle-display:hover,
 #block-region-side-pre .moodle-actionmenu .menu-action-text:hover {
-	text-decoration:underline;	
+	text-decoration:underline;
 }
 
 
@@ -996,7 +996,7 @@ footer span {
 }
 @media screen and (max-width: 767px) {
 .landing-page .logo-wr {
-    background: #f39c11!important;    
+    background: #f39c11!important;
 }
 }
 #dock .dockedtitle {
@@ -1009,7 +1009,7 @@ footer span {
 	border: solid 2px #f39c11;
 }
 .news-updates .container:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/i-notice.png) no-repeat center top;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/i-notice.png) no-repeat center top;
 }
 @media screen and (max-width: 1199px) {
 .news-updates .container:before {
@@ -1041,64 +1041,64 @@ footer a:focus,
 .breadcrumb a,
 .userbutton > span:last-child span,
 .usermenu .menu a:hover, .course-item h6 a  {
-	color: #9b59b6;	
+	color: #9b59b6;
 }
 
 .btn.btn-navbar.active-drop .fa {
-	color:#9b59b6!important;	
+	color:#9b59b6!important;
 }
 
 
 .logining-wr a:last-child {
-	color:#9b59b6;	
+	color:#9b59b6;
 }
 
 .loginbox .loginform .form-input input {
-	border: 1px solid #9b59b6;			
-	
+	border: 1px solid #9b59b6;
+
 }
 
 .logining-wr a:first-child {
-    background: #9b59b6!important;										
-    box-shadow: 1px 1px 0 0 #0a5948!important;						
+    background: #9b59b6!important;
+    box-shadow: 1px 1px 0 0 #0a5948!important;
 }
 
-#page input.form-submit, 
-#page input#id_submitbutton, 
-#page input#id_submitbutton2, 
-#page .path-admin .buttons input[type="submit"], 
+#page input.form-submit,
+#page input#id_submitbutton,
+#page input#id_submitbutton2,
+#page .path-admin .buttons input[type="submit"],
 #page td.submit input,
 #page #id_saveanddisplay,
 .mdl-align .btn-primary {
-    background-color: #9b59b6;		
-    border-color: #6c3382;			
+    background-color: #9b59b6;
+    border-color: #6c3382;
 
-	box-shadow: 0 2px 0 0 #6c3382;	
+	box-shadow: 0 2px 0 0 #6c3382;
 }
 
 #block-region-side-post .block .minicalendar th{
-	background-color:#e84c3d; 										
+	background-color:#e84c3d;
 }
 
 
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
 	box-shadow: none!important;
 }
 
 .view-toggle .btn-view-list.active {
-	background-color: #9b59b6;										
+	background-color: #9b59b6;
 }
 
 header.navbar,
 #block-region-side-pre .block .header,
-.navbar-fixed-top .navbar-inner, 
+.navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
-	background: #9b59b6;	
+	background: #9b59b6;
 }
 
 .landing-page .logo-img {
-	background: #f39c11;		
+	background: #f39c11;
 }
 
 .landing-page header,
@@ -1113,26 +1113,26 @@ header.navbar,
 }
 
 .btn-1 {
-    background: #f39c11 none repeat scroll 0 0; 
-	
+    background: #f39c11 none repeat scroll 0 0;
+
 }
 
 .navbar-inner .logo-wr {
-	background: #f39c11;  
+	background: #f39c11;
 }
 .news-updates .container:before {
-	background: url(theme/tikli/css/img/purple/i-notice.png) no-repeat center top;	
+	background: url(theme/tikli/css/img/purple/i-notice.png) no-repeat center top;
 }
 .landing-page .userbutton > span:last-child span:after {
     background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/dwn-arrow-landing.png) no-repeat scroll right 8px;
 }
 
 .loginpanel h2:before, a.click {
-    background: #f39c11 no-repeat scroll center center; 
+    background: #f39c11 no-repeat scroll center center;
 }
 
 .rememberpass input + label:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/i-ch-unch-2.png) no-repeat center;			
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/i-ch-unch-2.png) no-repeat center;
 }
 
 .rememberpass input + label:after {
@@ -1140,18 +1140,18 @@ header.navbar,
 }
 
 .rememberpass input:checked + label:before {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/i-ch-ch-2.png) no-repeat center;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/i-ch-ch-2.png) no-repeat center;
 }
 
 .userbutton > span:last-child span:after {
-	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/dwn-arrow.png) no-repeat center right;	
+	background: url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/dwn-arrow.png) no-repeat center right;
 }
 
 .landing-page .active-drop-user-menu .userbutton > span:last-child span:after {
     background: rgba(0, 0, 0, 0) url(<?php echo $CFG->wwwroot ?>/theme/tikli/css/img/purple/dwn-arrow-landing-hover.png) no-repeat scroll right 8px;
 }
 
-.loginbox a:hover, 
+.loginbox a:hover,
 .loginbox .error {
 	color:rgba(255, 255, 255, .8)!important;
 }
@@ -1159,25 +1159,25 @@ header.navbar,
 
 #block-region-side-post .calendar_filters.filters a,
 #block-region-side-post .block_community a:hover,
-#block-region-side-post .moodle-actionmenu .toggle-display, 
+#block-region-side-post .moodle-actionmenu .toggle-display,
 #block-region-side-post .moodle-actionmenu .menu-action-text,
-#block-region-side-pre .moodle-actionmenu .toggle-display, 
+#block-region-side-pre .moodle-actionmenu .toggle-display,
 #block-region-side-pre .moodle-actionmenu .menu-action-text,
-#block-region-side-post .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-post .moodle-actionmenu .toggle-display:hover,
 #block-region-side-post .moodle-actionmenu .menu-action-text:hover {
-	color: #333; 
+	color: #333;
 }
 
-#block-region-side-pre .moodle-actionmenu .toggle-display, 
+#block-region-side-pre .moodle-actionmenu .toggle-display,
 #block-region-side-pre .moodle-actionmenu .menu-action-text {
-	color: #111; 
+	color: #111;
 }
 
-#block-region-side-post .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-post .moodle-actionmenu .toggle-display:hover,
 #block-region-side-post .moodle-actionmenu .menu-action-text:hover,
-#block-region-side-pre .moodle-actionmenu .toggle-display:hover, 
+#block-region-side-pre .moodle-actionmenu .toggle-display:hover,
 #block-region-side-pre .moodle-actionmenu .menu-action-text:hover {
-	text-decoration:underline;	
+	text-decoration:underline;
 }
 
 
