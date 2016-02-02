@@ -3,24 +3,19 @@
 $html = theme_tikli_get_html_for_settings($OUTPUT, $PAGE);
 global $USER, $PAGE, $CFG, $DB;
 
-$checklogo = $PAGE->theme->setting_file_url('logo', 'logo');
-if(!empty($checklogo)) {
-    $haslogo = $PAGE->theme->setting_file_url('logo', 'logo');
-} else {
-    $haslogo = $CFG->wwwroot.'/theme/tikli/pix/logo-2.png';
+$logo = $PAGE->theme->setting_file_url('logo', 'logo');
+if(empty($logo)) {
+    $logo = $CFG->wwwroot.'/theme/tikli/pix/logo-2.png';
 }
 
-$checkicon = $PAGE->theme->setting_file_url('icon', 'icon');
-if(!empty($checkicon)) {
-    $hasiconlogo = $PAGE->theme->setting_file_url('icon', 'icon');
-} else {
-    $hasiconlogo = $CFG->wwwroot.'/theme/tikli/pix/icon-logo.png';
+$iconlogo = $PAGE->theme->setting_file_url('icon', 'icon');
+if(empty($iconlogo)) {
+    $iconlogo = $CFG->wwwroot.'/theme/tikli/pix/icon-logo.png';
 }
 
 echo $OUTPUT->doctype();
 
 $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
-$colorscheme = get_config('theme_tikli', 'colorscheme');
 ?>
 
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
@@ -38,7 +33,7 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
             <?php if (get_config('theme_tikli', 'logoorsitename') === "logo") { ?>
                 <div class="logo-wr">
                     <a class="logo-img" href="<?php echo $CFG->wwwroot; ?>">
-                        <img alt="logo" src="<?php echo $haslogo;?>" />
+                        <img alt="logo" src="<?php echo $logo;?>" />
                     </a>
                 </div>
             <?php } else if (get_config('theme_tikli', 'logoorsitename') === "sitename") { ?>
@@ -50,7 +45,7 @@ $colorscheme = get_config('theme_tikli', 'colorscheme');
             <?php } else if (get_config('theme_tikli', 'logoorsitename') === "iconsitename") { ?>
                 <div class="logo-wr">
                     <a class="logo-img" href="<?php echo $CFG->wwwroot; ?>">
-                        <h1><span class="logoicon"><img alt="logo" src="<?php echo $hasiconlogo;?>" /></span><span><?php echo $SITE->fullname; ?></span></h1>
+                        <h1><span class="logoicon"><img alt="logo" src="<?php echo $iconlogo;?>" /></span><span><?php echo $SITE->fullname; ?></span></h1>
                     </a>
                 </div>
             <?php } ?>

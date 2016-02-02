@@ -304,8 +304,14 @@ img {
     width: 100%;
 }
 
+.landing-page ul, ol {
+    margin: 0px !important;
+}
 
-
+.landing-page *[role="main"],
+.course-category *[role="main"] {
+    display: none;
+}
 
 /* 2 - END of Tags styles and General styles ---------------------------------------------------------- */
 /* 3 - BEGIN of header ---------------------------------------------------------- */
