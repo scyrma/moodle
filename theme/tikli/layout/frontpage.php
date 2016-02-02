@@ -103,14 +103,6 @@ echo $OUTPUT->doctype();?>
 <head>
     <?php echo $OUTPUT->frontpage_theme_head_html(); ?>
 
-	<style>
-	ul, ol {
-	    margin: 0px !important;
-	}
-	*[role="main"] {
-		display: none;
-	}
-	</style>
 	<script type="text/javascript" src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/frontpageslider/modernizr.custom.28468.js"></script>
 
 	<script type="text/javascript">
@@ -123,14 +115,7 @@ echo $OUTPUT->doctype();?>
 
 		});
 	</script>
-	<?php
-	    include($CFG->dirroot . '/theme/tikli/settings/colorchange.php');
-      if ( $CFG->version >= '2015051100.00' ) {
-        $file = get_string('privatefiles');
-      } else {
-          $file = get_string('myfiles');
-      }
-	?>
+	<?php include($CFG->dirroot . '/theme/tikli/settings/colorchange.php'); ?>
 	<?php echo $OUTPUT->standard_head_html() ?>
 </head>
 	<body class="landing-page">
