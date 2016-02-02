@@ -67,11 +67,11 @@ $('.menubar').on("click",function() {
 
 $(".btn-navbar").on("click",function() {
 	if ($('#custommenu').val() == "nologin") {
-		$(this).addClass("active-drop").addClass("active-drop-nologin");
+		$(this).toggleClass("active-drop active-drop-nologin");
 	} else if ($('#custommenu').val() == "nologinselfreg"){
-		$(this).addClass("active-drop").addClass("active-drop-nologin-selfreg");
+		$(this).toggleClass("active-drop active-drop-nologin-selfreg");
 	} else {
-		$(this).addClass("active-drop");
+		$(this).toggleClass("active-drop");
 	}
 	$('.menu').removeClass('usermenu-show');
 	$('.usermenu').removeClass('active-drop-user-menu');
