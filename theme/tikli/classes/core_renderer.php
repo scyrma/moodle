@@ -223,6 +223,35 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
         return $this->base_theme_head_html($standardcssfiles, $standardjsfiles);
     }
+
+    public function logo() {
+        global $CFG, $SITE, $PAGE;
+
+        $logo = $PAGE->theme->setting_file_url('logo', 'logo');
+        $iconlogo = $PAGE->theme->setting_file_url('icon', 'icon');
+        $configsetting = get_config('theme_tikli', 'logoorsitename');
+
+        if ($configsetting === "logo" && !empty($logo)) {
+            $context = array(
+                'href' => $CFG->wwwroot,
+                'src' => $logo
+            );
+            return $this->render_from_template('theme_tikli/logo_logo', $context);
+        } else if ($configsetting === "iconsitename" && !empty($iconlogo)) {
+            $context = array(
+                'href' => $CFG->wwwroot,
+                'src' => $iconlogo,
+                'sitename' => $SITE->fullname
+            );
+            return $this->render_from_template('theme_tikli/logo_icon', $context);
+        } else {
+            $context = array(
+                'href' => $CFG->wwwroot,
+                'sitename' => $SITE->fullname
+            );
+            return $this->render_from_template('theme_tikli/logo_sitename', $context);
+        }
+    }
 }
 
 /**
