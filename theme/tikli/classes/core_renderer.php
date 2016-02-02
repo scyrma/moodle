@@ -50,7 +50,7 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         $opts = user_get_user_navigation_info($user, $this->page);
 
         $data = array(
-            'user_profile_picture'  => $opts->metadata['useravatar'],
+            'user_profile_picture'  => $this->user_profile_picture(),
             // TODO - do we want to separate these out?
             'fullname'              => fullname($user),
             'firstname'             => $user->firstname,
@@ -250,6 +250,59 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
                 'sitename' => $SITE->fullname
             );
             return $this->render_from_template('theme_tikli/logo_sitename', $context);
+        }
+    }
+
+    public function news_and_updates() {
+        $frontpageblockheading = get_config('theme_tikli', 'frontpageblockheading');
+
+        if (!empty($frontpageblockheading)) {
+            $frontpageblock = get_config('theme_tikli', 'frontpageblock');
+            $frontpageblocklink = get_config('theme_tikli', 'frontpageblocklink');
+
+            $frontpageblocksection1 = get_config('theme_tikli', 'frontpageblocksection1');
+            $frontpageblocklinksection1 = get_config('theme_tikli', 'frontpageblocklinksection1');
+            $frontpageblockdescriptionsection1 = get_config('theme_tikli', 'frontpageblockdescriptionsection1');
+
+            $frontpageblocksection2 = get_config('theme_tikli', 'frontpageblocksection2');
+            $frontpageblocklinksection2 = get_config('theme_tikli', 'frontpageblocklinksection2');
+            $frontpageblockdescriptionsection2 = get_config('theme_tikli', 'frontpageblockdescriptionsection2');
+
+            $frontpageblocksection3 = get_config('theme_tikli', 'frontpageblocksection3');
+            $frontpageblocklinksection3 = get_config('theme_tikli', 'frontpageblocklinksection3');
+            $frontpageblockdescriptionsection3 = get_config('theme_tikli', 'frontpageblockdescriptionsection3');
+
+            $colourscheme = get_config('theme_tikli', 'colorscheme');
+
+            $context = array(
+                'heading' => $frontpageblockheading,
+                'linkurl' => $frontpageblocklink,
+                'linktext' => $frontpageblock,
+                'linkiconurl' => $this->get_theme_source_css(sprintf('img/%s/i-arr-r-2.png', $colourscheme)),
+                'newsitems' => array()
+            );
+
+            $context['newsitems'][] = array(
+                'title' => $frontpageblocksection1,
+                'linkurl' => $frontpageblocklinksection1,
+                'description' => $frontpageblockdescriptionsection1
+            );
+
+            $context['newsitems'][] = array(
+                'title' => $frontpageblocksection2,
+                'linkurl' => $frontpageblocklinksection2,
+                'description' => $frontpageblockdescriptionsection2
+            );
+
+            $context['newsitems'][] = array(
+                'title' => $frontpageblocksection3,
+                'linkurl' => $frontpageblocklinksection3,
+                'description' => $frontpageblockdescriptionsection3
+            );
+
+            return $this->render_from_template('theme_tikli/news_and_updates', $context);
+        } else {
+            return "";
         }
     }
 }
