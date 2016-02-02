@@ -42,22 +42,6 @@ $addtext = get_config('theme_tikli', 'addtext');
 $slideinterval = get_config('theme_tikli', 'slideinterval');
 $slideautoplay = get_config('theme_tikli', 'sliderautoplay');
 
-$frontpageblockheading = get_config('theme_tikli', 'frontpageblockheading');
-$frontpageblock = get_config('theme_tikli', 'frontpageblock');
-$frontpageblocklink = get_config('theme_tikli', 'frontpageblocklink');
-
-$frontpageblocksection1 = get_config('theme_tikli', 'frontpageblocksection1');
-$frontpageblocklinksection1 = get_config('theme_tikli', 'frontpageblocklinksection1');
-$frontpageblockdescriptionsection1 = get_config('theme_tikli', 'frontpageblockdescriptionsection1');
-
-$frontpageblocksection2 = get_config('theme_tikli', 'frontpageblocksection2');
-$frontpageblocklinksection2 = get_config('theme_tikli', 'frontpageblocklinksection2');
-$frontpageblockdescriptionsection2 = get_config('theme_tikli', 'frontpageblockdescriptionsection2');
-
-$frontpageblocksection3 = get_config('theme_tikli', 'frontpageblocksection3');
-$frontpageblocklinksection3 = get_config('theme_tikli', 'frontpageblocklinksection3');
-$frontpageblockdescriptionsection3 = get_config('theme_tikli', 'frontpageblockdescriptionsection3');
-
 if(get_config('theme_tikli', 'videotype') === "0") {
 	$iframevideo = get_config('theme_tikli', 'video');
 } else {
@@ -203,34 +187,7 @@ echo $OUTPUT->doctype();?>
 		</header><!-- END of header -->
 
 		<div class="content">
-			<div class="news-updates">
-				<div class="container">
-					<div class="row">
-						<?php if(!empty($frontpageblockheading)) { ?>
-							<div class="span3">
-								<h3><?php if(!empty($frontpageblockheading)) { echo $frontpageblockheading; } ?></h3>
-								<p><a href=<?php if(!empty($frontpageblocklink)) { echo $frontpageblocklink; } ?> class="btn-see-all"><?php if(!empty($frontpageblock)) { echo $frontpageblock; } ?><i><img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/<?php echo $colorscheme ?>/i-arr-r-2.png" alt=""></i></a></p>
-							</div>
-							<?php if(!empty($frontpageblocklinksection1)) { ?>
-							<div class="span3 news-updates-extraclass">
-								<p><a href="<?php if(!empty($frontpageblocklinksection1)) { echo $frontpageblocklinksection1; } ?>"><?php if(!empty($frontpageblocksection1)) { echo $frontpageblocksection1; } ?></a></p>
-								<h5><?php if(!empty($frontpageblockdescriptionsection1)) { echo $frontpageblockdescriptionsection1; } ?></h5>
-							</div>
-							<?php } if(!empty($frontpageblocklinksection2)) { ?>
-							<div class="span3 news-updates-extraclass">
-								<p><a href="<?php if(!empty($frontpageblocklinksection2)) { echo $frontpageblocklinksection2; } ?>"><?php if(!empty($frontpageblocksection2)) { echo $frontpageblocksection2; } ?></a></p>
-								<h5><?php if(!empty($frontpageblockdescriptionsection2)) { echo $frontpageblockdescriptionsection2; } ?></h5>
-							</div>
-							<?php } if(!empty($frontpageblocklinksection3)) { ?>
-							<div class="span3 news-updates-extraclass">
-								<p><a href="<?php if(!empty($frontpageblocklinksection3)) { echo $frontpageblocklinksection3; } ?>"><?php if(!empty($frontpageblocksection3)) { echo $frontpageblocksection3; } ?></a></p>
-								<h5><?php if(!empty($frontpageblockdescriptionsection3)) { echo $frontpageblockdescriptionsection3; } ?></h5>
-							</div>
-							<?php } ?>
-						<?php } ?>
-					</div>
-				</div><!-- END of .container -->
-			</div><!-- END of .news-updates -->
+            <?php echo $OUTPUT->news_and_updates() ?>
 
 			<?php if(!empty($course)) { ?>
 			<div class="popular-courses">
