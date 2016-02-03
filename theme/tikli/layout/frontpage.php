@@ -2,42 +2,7 @@
 // Get the HTML for the settings bits.
 $html = theme_tikli_get_html_for_settings($OUTPUT, $PAGE);
 GLOBAL $DB, $CFG, $OUTPUT, $USER;
-$colorscheme = get_config('theme_tikli', 'colorscheme');
-$course = $DB->get_records_sql('SELECT c.* FROM {course} c where id != ? and visible = ?',array(1, 1));
 
-$coursedetailsarray = array();
-foreach ($course as $key => $coursevalue) {
-	$coursedetailsarray[$key]["courseid"] = $CFG->wwwroot."/course/view.php?id=".$coursevalue->id;
-	$coursedetailsarray[$key]["coursename"] = $coursevalue->fullname;
-	$courseteacher = $DB->get_records_sql('SELECT u.*
-	FROM {course} c
-	JOIN {context} ct ON c.id = ct.instanceid
-	JOIN {role_assignments} ra ON ra.contextid = ct.id
-	JOIN {user} u ON u.id = ra.userid
-	JOIN {role} r ON r.id = ra.roleid Where c.id = ? and r.shortname = ?', array($coursevalue->id, 'editingteacher'));
-	if(!empty($courseteacher)) {
-		foreach ($courseteacher as $keycourseteacher => $courseteachervalue) {
-			$coursedetailsarray[$key]["teachername"][$keycourseteacher] = $courseteachervalue->firstname." ".$courseteachervalue->lastname;
-			$coursedetailsarray[$key]["teacherid"][$keycourseteacher] = $CFG->wwwroot."/user/profile.php?id=".$courseteachervalue->id;
-		}
-	} else {
-		$coursedetailsarray[$key]["teachername"] = "";
-		$coursedetailsarray[$key]["teacherid"] = "";
-	}
-	$coursecontext = context_course::instance($coursevalue->id);
-	$isfile = $DB->get_records_sql("Select * from {files} where contextid = ? and filename != ?", array($coursecontext->id, "."));
-	if($isfile) {
-		foreach ($isfile as $key1 => $isfilevalue) {
-			$courseimage =  $CFG->wwwroot . "/pluginfile.php/" . $isfilevalue->contextid ."/". $isfilevalue->component . "/" . $isfilevalue->filearea . "/" . $isfilevalue->filename;
-		}
-	}
-	if(!empty($courseimage)) {
-		$coursedetailsarray[$key]["courseimage"] = $courseimage;
-	} else {
-		$coursedetailsarray[$key]["courseimage"] = $CFG->wwwroot."/theme/tikli/data/nopic.jpg";
-	}
-	$courseimage = '';
-}
 $addtext = get_config('theme_tikli', 'addtext');
 $slideinterval = get_config('theme_tikli', 'slideinterval');
 $slideautoplay = get_config('theme_tikli', 'sliderautoplay');
@@ -187,64 +152,9 @@ echo $OUTPUT->doctype();?>
 		</header><!-- END of header -->
 
 		<div class="content">
-            <?php echo $OUTPUT->news_and_updates() ?>
+            <?php echo $OUTPUT->frontpage_news_and_updates(); ?>
 
-			<?php if(!empty($course)) { ?>
-			<div class="popular-courses">
-				<div class="container-fluid">
-					<div class="container nheading">
-						<?php if (!empty(get_config('theme_tikli', 'coursesectionheading'))) { ?>
-				        	<div class="span5 popular-course-nheading">
-				              <?php if (!empty(get_config('theme_tikli', 'coursesectionheading'))) { ?><h4><?php echo get_config('theme_tikli', 'coursesectionheading'); ?></h4><?php } ?>
-				              <?php if (!empty(get_config('theme_tikli', 'coursesectionsubheading'))) { ?><h2><?php echo get_config('theme_tikli', 'coursesectionsubheading'); ?></h2><?php } ?>
-				              <?php if (!empty(get_config('theme_tikli', 'coursesectionoverview'))) { ?><p><?php echo get_config('theme_tikli', 'coursesectionoverview'); ?></p><?php } ?>
-				        	</div>
-				        <?php } ?>
-			            <div class="span7 popular-course-links">
-			            	<?php for($quicklinkcols = 1; $quicklinkcols <= get_config('theme_tikli', 'quicklinkscolumns'); $quicklinkcols = $quicklinkcols + 1) { ?>
-				            	<ul>
-				            	<?php for($quicklinkrows = 1; $quicklinkrows <= get_config('theme_tikli', 'quicklinksrows'.$quicklinkcols); $quicklinkrows = $quicklinkrows + 1) { ?>
-					                <li><a <?php if (($quicklinkrows == get_config('theme_tikli', 'quicklinksrows'.$quicklinkcols)) && ($quicklinkcols == get_config('theme_tikli', 'quicklinkscolumns'))) { ?>class = "viewmore" <?php } ?>href="<?php echo get_config('theme_tikli', 'link'.$quicklinkcols.'_'.$quicklinkrows); ?>"><?php echo get_config('theme_tikli', 'text'.$quicklinkcols.'_'.$quicklinkrows); ?></a></li>
-				                <?php } ?>
-				                </ul>
-			                <?php } ?>
-			            </div>
-        			</div>
-
-					<div class="course-items">
-						<ul class="popular-courses-slider">
-							<?php foreach($coursedetailsarray as $keycoursedetail => $coursedetailsarrayvalue) { ?>
-							<li>
-								<div class="course-item">
-									<div class="img-wr">
-										<a href="<?php echo $coursedetailsarrayvalue['courseid'];?>"><img src="<?php echo $coursedetailsarrayvalue['courseimage'];?>" alt=""></a>
-									</div>
-									<div class="course-item-cont">
-										<h5><a href="<?php echo $coursedetailsarrayvalue['courseid'];?>"><?php echo $coursedetailsarrayvalue['coursename'];?></a></h5>
-										<?php if($coursedetailsarrayvalue['teachername'] != '') {
-											foreach ($coursedetailsarrayvalue['teachername'] as $keys => $value) { ?>
-												<h6><?php echo get_string('defaultcourseteacher');?> : <a href="<?php echo $coursedetailsarrayvalue['teacherid'][$keys];?>"><?php echo $value;?></a></h6>
-										<?php }
-										?>
-
-
-										<?php } else { ?>
-											<h6><?php echo get_string('defaultcourseteacher');?> : <a href="javascript:void(0);">Not assigned</a></h6>
-										<?php } ?>
-									</div>
-									<a href="<?php echo $coursedetailsarrayvalue['courseid'];?>" class="btn-plus"><img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/<?php echo $colorscheme ?>/i-plus.png" height="42" width="42" alt=""></a>
-								</div>
-							</li><!-- END of .slide -->
-							<?php } ?>
-						</ul><!-- END of .popular-courses-slider -->
-					</div><!-- END of .course-items -->
-					<div class="popular-courses-nav">
-						<div><span id="slider-prev"><img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/i-arr-l-1.png" alt=""></span></div>
-						<div><span id="slider-next"><img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/i-arr-r-1.png" alt=""></span></div>
-					</div>
-				</div><!-- END of .container-fluid -->
-			</div><!-- END of .popular-courses -->
-			<?php } ?>
+            <?php echo $OUTPUT->frontpage_courses(); ?>
 
 			<div class="row-fluid">
 			    <div  class="students-area">

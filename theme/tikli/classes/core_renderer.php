@@ -253,57 +253,148 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         }
     }
 
-    public function news_and_updates() {
+    public function frontpage_news_and_updates() {
         $frontpageblockheading = get_config('theme_tikli', 'frontpageblockheading');
 
-        if (!empty($frontpageblockheading)) {
-            $frontpageblock = get_config('theme_tikli', 'frontpageblock');
-            $frontpageblocklink = get_config('theme_tikli', 'frontpageblocklink');
-
-            $frontpageblocksection1 = get_config('theme_tikli', 'frontpageblocksection1');
-            $frontpageblocklinksection1 = get_config('theme_tikli', 'frontpageblocklinksection1');
-            $frontpageblockdescriptionsection1 = get_config('theme_tikli', 'frontpageblockdescriptionsection1');
-
-            $frontpageblocksection2 = get_config('theme_tikli', 'frontpageblocksection2');
-            $frontpageblocklinksection2 = get_config('theme_tikli', 'frontpageblocklinksection2');
-            $frontpageblockdescriptionsection2 = get_config('theme_tikli', 'frontpageblockdescriptionsection2');
-
-            $frontpageblocksection3 = get_config('theme_tikli', 'frontpageblocksection3');
-            $frontpageblocklinksection3 = get_config('theme_tikli', 'frontpageblocklinksection3');
-            $frontpageblockdescriptionsection3 = get_config('theme_tikli', 'frontpageblockdescriptionsection3');
-
-            $colourscheme = get_config('theme_tikli', 'colorscheme');
-
-            $context = array(
-                'heading' => $frontpageblockheading,
-                'linkurl' => $frontpageblocklink,
-                'linktext' => $frontpageblock,
-                'linkiconurl' => $this->get_theme_source_css(sprintf('img/%s/i-arr-r-2.png', $colourscheme)),
-                'newsitems' => array()
-            );
-
-            $context['newsitems'][] = array(
-                'title' => $frontpageblocksection1,
-                'linkurl' => $frontpageblocklinksection1,
-                'description' => $frontpageblockdescriptionsection1
-            );
-
-            $context['newsitems'][] = array(
-                'title' => $frontpageblocksection2,
-                'linkurl' => $frontpageblocklinksection2,
-                'description' => $frontpageblockdescriptionsection2
-            );
-
-            $context['newsitems'][] = array(
-                'title' => $frontpageblocksection3,
-                'linkurl' => $frontpageblocklinksection3,
-                'description' => $frontpageblockdescriptionsection3
-            );
-
-            return $this->render_from_template('theme_tikli/news_and_updates', $context);
-        } else {
+        if (empty($frontpageblockheading)) {
             return "";
         }
+
+        $frontpageblock = get_config('theme_tikli', 'frontpageblock');
+        $frontpageblocklink = get_config('theme_tikli', 'frontpageblocklink');
+
+        $frontpageblocksection1 = get_config('theme_tikli', 'frontpageblocksection1');
+        $frontpageblocklinksection1 = get_config('theme_tikli', 'frontpageblocklinksection1');
+        $frontpageblockdescriptionsection1 = get_config('theme_tikli', 'frontpageblockdescriptionsection1');
+
+        $frontpageblocksection2 = get_config('theme_tikli', 'frontpageblocksection2');
+        $frontpageblocklinksection2 = get_config('theme_tikli', 'frontpageblocklinksection2');
+        $frontpageblockdescriptionsection2 = get_config('theme_tikli', 'frontpageblockdescriptionsection2');
+
+        $frontpageblocksection3 = get_config('theme_tikli', 'frontpageblocksection3');
+        $frontpageblocklinksection3 = get_config('theme_tikli', 'frontpageblocklinksection3');
+        $frontpageblockdescriptionsection3 = get_config('theme_tikli', 'frontpageblockdescriptionsection3');
+
+        $colourscheme = get_config('theme_tikli', 'colorscheme');
+
+        $context = array(
+            'heading' => $frontpageblockheading,
+            'linkurl' => $frontpageblocklink,
+            'linktext' => $frontpageblock,
+            'linkiconurl' => $this->get_theme_source_css(sprintf('img/%s/i-arr-r-2.png', $colourscheme)),
+            'newsitems' => array()
+        );
+
+        $context['newsitems'][] = array(
+            'title' => $frontpageblocksection1,
+            'linkurl' => $frontpageblocklinksection1,
+            'description' => $frontpageblockdescriptionsection1
+        );
+
+        $context['newsitems'][] = array(
+            'title' => $frontpageblocksection2,
+            'linkurl' => $frontpageblocklinksection2,
+            'description' => $frontpageblockdescriptionsection2
+        );
+
+        $context['newsitems'][] = array(
+            'title' => $frontpageblocksection3,
+            'linkurl' => $frontpageblocklinksection3,
+            'description' => $frontpageblockdescriptionsection3
+        );
+
+        return $this->render_from_template('theme_tikli/frontpage_news_and_updates', $context);
+    }
+
+    public function frontpage_courses() {
+        global $DB, $CFG;
+
+        $colorscheme = get_config('theme_tikli', 'colorscheme');
+        $courses = $DB->get_records_sql('SELECT c.* FROM {course} c where id != ? and visible = ?',array(1, 1));
+
+        if (empty($courses)) {
+            return "";
+        }
+
+        $coursedetailsarray = array();
+        foreach ($courses as $key => $coursevalue) {
+            $url = new \moodle_url('/course/view.php', array('id' => $coursevalue->id));
+
+            $courseinfo = array(
+                'url' => $url->out(),
+                'name' => $coursevalue->fullname,
+                'teachers' => array(),
+            );
+
+            $courseteacher = $DB->get_records_sql('SELECT u.*
+            FROM {course} c
+            JOIN {context} ct ON c.id = ct.instanceid
+            JOIN {role_assignments} ra ON ra.contextid = ct.id
+            JOIN {user} u ON u.id = ra.userid
+            JOIN {role} r ON r.id = ra.roleid Where c.id = ? and r.shortname = ?', array($coursevalue->id, 'editingteacher'));
+            if(!empty($courseteacher)) {
+                foreach ($courseteacher as $keycourseteacher => $courseteachervalue) {
+                    $profileurl = new \moodle_url('/user/profile.php', array('id' => $courseteachervalue->id));
+
+                    $courseinfo['teachers'][] = array(
+                        'name' => $courseteachervalue->firstname." ".$courseteachervalue->lastname,
+                        'profileurl' => $profileurl->out()
+                    );
+                }
+            } else {
+                $courseinfo['teachers'][] = array(
+                    // TODO: Lang strings.
+                    'name' => 'Not assigned',
+                    'profileurl' => 'javascript:void(0);'
+                );
+            }
+
+            $coursecontext = context_course::instance($coursevalue->id);
+            $isfile = $DB->get_records_sql("Select * from {files} where contextid = ? and filename != ?", array($coursecontext->id, "."));
+            if($isfile) {
+                foreach ($isfile as $key1 => $isfilevalue) {
+                    $courseimage =  $CFG->wwwroot . "/pluginfile.php/" . $isfilevalue->contextid ."/". $isfilevalue->component . "/" . $isfilevalue->filearea . "/" . $isfilevalue->filename;
+                }
+            }
+            if(empty($courseimage)) {
+                $courseimage = $CFG->wwwroot."/theme/tikli/data/nopic.jpg";
+            }
+
+            $courseinfo['imageurl'] = $courseimage;
+
+            $coursedetailsarray[] = $courseinfo;
+        }
+
+        $categories = array();
+
+        for($quicklinkcols = 1; $quicklinkcols <= get_config('theme_tikli', 'quicklinkscolumns'); $quicklinkcols = $quicklinkcols + 1) {
+            for($quicklinkrows = 1; $quicklinkrows <= get_config('theme_tikli', 'quicklinksrows'.$quicklinkcols); $quicklinkrows = $quicklinkrows + 1) {
+                $category = array(
+                    'url' => get_config('theme_tikli', 'link'.$quicklinkcols.'_'.$quicklinkrows),
+                    'name' => get_config('theme_tikli', 'text'.$quicklinkcols.'_'.$quicklinkrows)
+                );
+
+                $categories[] = $category;
+            }
+        }
+
+        $categoriesurl = new \moodle_url('/course/index.php');
+
+        $context = array(
+            'courses' => $coursedetailsarray,
+            'categories' => $categories,
+            'categoriesurl' => $categoriesurl->out(),
+            'heading' => get_config('theme_tikli', 'coursesectionheading'),
+            'subheading' => get_config('theme_tikli', 'coursesectionsubheading'),
+            'overview' => get_config('theme_tikli', 'coursesectionoverview'),
+            'imageurls' => array(
+                'plus' => $this->get_theme_source_css(sprintf('img/%s/i-plus.png', $colorscheme)),
+                'sliderprev' => $this->get_theme_source_css('img/i-arr-l-1.png'),
+                'slidernext' => $this->get_theme_source_css('img/i-arr-r-1.png'),
+            )
+        );
+
+        return $this->render_from_template('theme_tikli/frontpage_courses', $context);
     }
 }
 
