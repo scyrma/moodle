@@ -1,0 +1,44 @@
+<div class="popular-courses">
+    <div class="container-fluid">
+        <div class="container nheading">
+            <div class="span5 popular-course-nheading">
+              {{# heading }}<h4>{{ . }}</h4>{{/ heading }}
+              {{# subheading }}<h2>{{ . }}</h2>{{/ subheading }}
+              {{# overview }}<p>{{ . }}</p>{{/ overview }}
+            </div>
+            <div class="span7 popular-course-links">
+                <ul>
+                    {{# categories }}
+                        <li><a href="{{{ url }}}" alt="">{{ name }}</a></li>
+                    {{/ categories }}
+                    <li><a class="viewmore" href="{{{ categoriesurl }}}" alt="">view all courses</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="course-items">
+            <ul class="popular-courses-slider">
+                {{# courses }}
+                    <li>
+                        <div class="course-item">
+                            <div class="img-wr">
+                                <a href="{{{ url }}}"><img src="{{{ imageurl }}}" alt=""></a>
+                            </div>
+                            <div class="course-item-cont">
+                                <h5><a href="{{{ url }}}">{{ name }}</a></h5>
+                                {{# teachers }}
+                                    <h6>{{# str }} defaultcourseteacher {{/ str }} : <a href="{{{ profileurl }}}">{{ name }}</a></h6>
+                                {{/ teachers }}
+                            </div>
+                            <a href="{{{ url }}}" class="btn-plus"><img src="{{{ imageurls.plus }}}" height="42" width="42" alt=""></a>
+                        </div>
+                    </li>
+                {{/ courses }}
+            </ul>
+        </div>
+        <div class="popular-courses-nav">
+            <div><span id="slider-prev"><img src="{{{ imageurls.sliderprev }}}" alt=""></span></div>
+            <div><span id="slider-next"><img src="{{{ imageurls.slidernext }}}" alt=""></span></div>
+        </div>
+    </div>
+</div>
