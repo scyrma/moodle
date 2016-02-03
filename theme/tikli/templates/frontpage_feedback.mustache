@@ -1,0 +1,50 @@
+<div class="row-fluid">
+    <div class="students-area">
+        <div class="container">
+            <div class="span5 students-area-feedback">
+                {{# heading }}<h3>{{ . }}</h3>{{/ heading }}
+                {{# subheading }}<h2>{{ . }}</h2>{{/ subheading }}
+                {{# iframe }}{{{ . }}}{{/ iframe }}
+                {{# brieftext }}{{{ . }}}{{/ brieftext }}
+            </div>
+            <div class="span7 slidergrid">
+                <ul class="bxslidergrid">
+                    {{# slides }}
+                        <li>
+                            <div class="div_to_hold">
+                                {{# column1 }}
+                                    <div class="grid-testimo">
+                                        <div class="blog_box">
+                                            <div class="blog_box_bloger"><img src="{{{ imageurl }}}" alt=""></div>
+                                            {{{ name }}}
+                                            <p>“{{ text }}”</p>
+                                        </div>
+                                    </div>
+                                {{/ column1 }}
+                            </div>
+                            <div class="div_to_hold">
+                                {{# column2 }}
+                                    <div class="grid-testimo">
+                                        <div class="blog_box">
+                                            <div class="blog_box_bloger"><img src="{{{ imageurl }}}" alt=""></div>
+                                            {{{ name }}}
+                                            <p>“{{ text }}”</p>
+                                        </div>
+                                    </div>
+                                {{/ column2 }}
+                            </div>
+                        </li>
+                    {{/ slides }}
+                </ul>
+                <div class="bxslidergrid-nav">
+                    <span id="bxslidergrid-prev">
+                        <img src="{{{ imageurls.sliderprev }}}" alt="">
+                    </span>
+                    <span id="bxslidergrid-next">
+                        <img src="{{{ imageurls.slidernext }}}" alt="">
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
