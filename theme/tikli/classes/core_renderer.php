@@ -349,6 +349,7 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
                 );
             }
 
+            $courseimage = '';
             $coursecontext = context_course::instance($coursevalue->id);
             $isfile = $DB->get_records_sql("Select * from {files} where contextid = ? and filename != ?", array($coursecontext->id, "."));
             if($isfile) {
