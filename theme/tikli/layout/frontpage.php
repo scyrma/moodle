@@ -156,58 +156,7 @@ echo $OUTPUT->doctype();?>
 
             <?php echo $OUTPUT->frontpage_courses(); ?>
 
-			<div class="row-fluid">
-			    <div  class="students-area">
-			      <div class="container">
-			        <div class="span5 students-area-feedback">
-			          <?php if (!empty($hasfeedbackheading)) { ?><h3><?php echo $hasfeedbackheading;?></h3><?php } ?>
-			          <?php if (!empty($hasfeedbacksubheading)) { ?><h2><?php echo $hasfeedbacksubheading;?></h2><?php } ?>
-			          <?php if(!empty($hasfeedbackiframe)) { echo $hasfeedbackiframe; }?>
-			           <?php if (!empty($hasfeedbackbrieftext)) { echo $hasfeedbackbrieftext; } ?>
-			        </div>
-			        <div class="span7 slidergrid">
-			            <ul class="bxslidergrid">
-			              <?php for($feedbackslides = 1; $feedbackslides <= get_config('theme_tikli', 'feedbackslidecount'); $feedbackslides = $feedbackslides + 1) { ?>
-			              <li>
-			              	<div class="div_to_hold">
-				              	<?php for($feedinner = 1; $feedinner <= 2; $feedinner = $feedinner + 1) {?>
-					                  <div class="grid-testimo">
-					                    <div class="blog_box">
-					                      <div class="blog_box_bloger"><img src="<?php echo $hasfeedbacks[$feedbackslides]["feedbackslideimage_".$feedinner]; ?>" alt=""></div>
-					                     	<?php echo $hasfeedbacks[$feedbackslides]["feedbackslidename_".$feedinner]; ?>
-					                       <p>“<?php echo $hasfeedbacks[$feedbackslides]["feedbackslidereview_".$feedinner]; ?>”</p>
-					                     </div>
-					                  </div>
-				                <?php } ?>
-			                </div>
-			                <div class="div_to_hold">
-				                <?php for($feedinner = 3; $feedinner <= 4; $feedinner = $feedinner + 1) { ?>
-					                  <div class="grid-testimo">
-					                    <div class="blog_box">
-					                      <div class="blog_box_bloger"><img src="<?php echo $hasfeedbacks[$feedbackslides]["feedbackslideimage_".$feedinner]; ?>" alt=""></div>
-					                     	<?php echo $hasfeedbacks[$feedbackslides]["feedbackslidename_".$feedinner]; ?>
-					                       <p>“<?php echo $hasfeedbacks[$feedbackslides]["feedbackslidereview_".$feedinner]; ?>”</p>
-					                     </div>
-					                  </div>
-					            <?php } ?>
-				            </div>
-			                <div class="clearfix"></div>
-			              </li>
-			              <?php } ?>
-
-			            </ul>
-			            <div class="bxslidergrid-nav">
-			              <span id="bxslidergrid-prev">
-			                <img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/bxslider-img/arr-l-grid.png" alt="">
-			              </span>
-			              <span id="bxslidergrid-next">
-			                <img src="<?php echo $CFG->wwwroot; ?>/theme/tikli/css/img/bxslider-img/arr-r-grid.png" alt="">
-			              </span>
-			            </div>
-			        </div><!--span7-->
-			    </div>
-			  </div>
-			</div><!--end row-fluid -->
+            <?php echo $OUTPUT->frontpage_feedback(); ?>
 		</div><!-- END of .content -->
 		<?php
 			echo $OUTPUT->main_content();
