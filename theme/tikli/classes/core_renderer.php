@@ -456,17 +456,26 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     public function frontpage_header_content_static() {
         global $PAGE;
 
+        $text = get_config('theme_tikli', 'addtext');
+        $iframehtml = get_config('theme_tikli', 'video');
+        $videosrc = $PAGE->theme->setting_file_url('uploadvideo', 'uploadvideo');
+
+        if (empty($text) && empty($iframehtml) && empty($videosrc)) {
+            // No content configured.
+            return "";
+        }
+
         $context = array(
-            'text' => get_config('theme_tikli', 'addtext'),
+            'text' => $text,
             'videoalignleft' => get_config('theme_tikli', 'frontpagevideoalignment') == 1 ? false : true,
         );
 
         if(get_config('theme_tikli', 'videotype') === "0") {
             $context['iframevideo'] = true;
-            $context['iframehtml'] = get_config('theme_tikli', 'video');
+            $context['iframehtml'] = $iframehtml;
         } else {
             $context['iframevideo'] = false;
-            $context['videosrc'] = $PAGE->theme->setting_file_url('uploadvideo', 'uploadvideo');
+            $context['videosrc'] = $videosrc;
         }
 
         return $this->render_from_template('theme_tikli/frontpage_header_content_static', $context);
