@@ -1,7 +1,7 @@
 <?php
 
 require_once($CFG->dirroot . '/theme/bootstrapbase/renderers.php');
-require_once($CFG->dirroot . '/course/renderer.php');
+require_once($CFG->dirroot . '/lib/coursecatlib.php');
 
 class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
@@ -378,23 +378,23 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         }
 
         $colorscheme = get_config('theme_tikli', 'colorscheme');
-        $categories = array();
+        $categorydetails = array();
         $categoriesurl = new \moodle_url('/course/index.php');
+        $categorieslist = coursecat::make_categories_list();
+        $categoryids = array_keys($categorieslist);
+        $categories = coursecat::get_many($categoryids);
+        unset($categorieslist);
 
-        for($quicklinkcols = 1; $quicklinkcols <= get_config('theme_tikli', 'quicklinkscolumns'); $quicklinkcols = $quicklinkcols + 1) {
-            for($quicklinkrows = 1; $quicklinkrows <= get_config('theme_tikli', 'quicklinksrows'.$quicklinkcols); $quicklinkrows = $quicklinkrows + 1) {
-                $category = array(
-                    'url' => get_config('theme_tikli', 'link'.$quicklinkcols.'_'.$quicklinkrows),
-                    'name' => get_config('theme_tikli', 'text'.$quicklinkcols.'_'.$quicklinkrows)
-                );
-
-                $categories[] = $category;
+        foreach ($categories as $category) {
+            // Only show visible categories that have at least one course.
+            if ($category->visible && $category->coursecount) {
+                $categorydetails[] = array('name' => $category->name);
             }
         }
 
         $context = array(
             'courses' => $coursedetails,
-            'categories' => $categories,
+            'categories' => $categorydetails,
             'categoriesurl' => $categoriesurl->out(),
             'heading' => get_config('theme_tikli', 'coursesectionheading'),
             'subheading' => get_config('theme_tikli', 'coursesectionsubheading'),
