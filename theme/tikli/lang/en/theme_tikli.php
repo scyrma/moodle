@@ -278,3 +278,8 @@ $string['coursesectionsubheadingdesc'] = '';
 
 $string['coursesectionoverview'] = 'Course section overview';
 $string['coursesectionoverviewdesc'] = '';
+
+/* coursecategory page */
+$string['listview'] = 'List view';
+$string['gridview'] = 'Grid view';
+$string['coursesearch'] = 'Search courses';
