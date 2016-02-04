@@ -205,7 +205,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         $frontpagecssfiles = array(
             'jquery.bxslider.css',
             'animation.css',
-            'frontpageslider/cssliderdemo.css',
             'frontpageslider/cssliderstyle.css'
         );
         $frontpagejsfiles = array(
@@ -439,6 +438,72 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         }
 
         return $this->render_from_template('theme_tikli/frontpage_feedback', $context);
+    }
+
+
+    public function frontpage_header_content_static() {
+        global $PAGE;
+
+        $context = array(
+            'text' => get_config('theme_tikli', 'addtext'),
+            'videoalignleft' => get_config('theme_tikli', 'frontpagevideoalignment') == 1 ? false : true,
+        );
+
+        if(get_config('theme_tikli', 'videotype') === "0") {
+            $context['iframevideo'] = true;
+            $context['iframehtml'] = get_config('theme_tikli', 'video');
+        } else {
+            $context['iframevideo'] = false;
+            $context['videosrc'] = $PAGE->theme->setting_file_url('uploadvideo', 'uploadvideo');
+        }
+
+        return $this->render_from_template('theme_tikli/frontpage_header_content_static', $context);
+    }
+
+    public function frontpage_header_content_slider() {
+        global $PAGE, $CFG;
+        $numberofslides = get_config('theme_tikli', 'slidercount');
+
+        if (empty($numberofslides)) {
+            return "";
+        }
+
+        $context = array(
+            'slides' => array(),
+            'slideinterval' => get_config('theme_tikli', 'slideinterval'),
+            'slideautoplay' => get_config('theme_tikli', 'sliderautoplay')
+        );
+
+        for ($slidecount = 1; $slidecount <= $numberofslides; $slidecount++) {
+            $imageurl = $PAGE->theme->setting_file_url('slideimage'.$slidecount, 'slideimage'.$slidecount);
+            $title = get_config('theme_tikli', 'slidertitle'.$slidecount);
+            $text = get_config('theme_tikli', 'slidertext'.$slidecount);
+            $linkurl = get_config('theme_tikli', 'sliderurl'.$slidecount);
+            $linktext = get_config('theme_tikli', 'sliderbuttontext'.$slidecount);
+
+            if (!empty($text) || !empty($linkurl) || !empty($imageurl)) {
+                $context['slides'][] = array(
+                    'imageurl' => $imageurl,
+                    'title' => $title,
+                    'text' => $text,
+                    'linkurl' => $linkurl,
+                    'linktext' => $linktext
+                );
+            }
+        }
+
+        return $this->render_from_template('theme_tikli/frontpage_header_content_slider', $context);
+    }
+
+    public function frontpage_header_content() {
+        switch(get_config('theme_tikli', 'frontpageimagecontent')) {
+            case 0:
+                return $this->frontpage_header_content_static();
+            case 1:
+                return $this->frontpage_header_content_slider();
+            default:
+                return "";
+        }
     }
 }
 
