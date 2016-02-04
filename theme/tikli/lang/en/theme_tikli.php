@@ -16,7 +16,7 @@ Website: <a href="https://dualcube.com/">https://dualcube.com/</a>
 $string['generalsettings' ] = 'General Settings';
 $string['navsettings'] = 'Nav Settings';
 $string['usernavsettings'] = 'User Nav Settings';
-$string['colorsettings'] = 'Color Settings';
+$string['colorsettings'] = 'Colour Settings';
 $string['fontsettings' ] = 'Font Settings';
 $string['frontpagesettings'] = 'Frontpage Settings';
 $string['configtitle'] = 'Tikli';
@@ -24,6 +24,8 @@ $string['msgsent'] = 'Message sent';
 $string['emptynameemail'] = 'Please enter name and email address.';
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
+$string['slidernext'] = 'Next slide';
+$string['sliderprev'] = 'Previous slide';
 
 /*logo*/
 $string['logo'] = 'Logo';
@@ -173,7 +175,10 @@ $string['frontpageblock'] = 'Body text';
 $string['frontpageblockdesc'] = 'You may add a text to be shown below the heading.';
 $string['frontpageblocklink'] = 'Body text link';
 $string['frontpageblocklinkdesc'] = 'You may insert the link for the body text, where the user will be redirected after they click on it.';
-
+$string['viewallcourses'] = 'View all courses';
+$string['courseimage'] = 'Course image for {$a}';
+$string['courselinkimage'] = 'Link to course {$a}';
+$string['userimage'] = 'User profile image';
 
 /*******************************Featured content****************************/
 
@@ -283,3 +288,6 @@ $string['coursesectionoverviewdesc'] = '';
 $string['listview'] = 'List view';
 $string['gridview'] = 'Grid view';
 $string['coursesearch'] = 'Search courses';
+$string['coursedetails'] = 'Show details for course {$a}';
+$string['viewcourse'] = 'Go to course {$a}';
+$string['viewcourseusers'] = 'View enrolled users for course {$a}';
