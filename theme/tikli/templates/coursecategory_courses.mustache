@@ -1,0 +1,60 @@
+<div class="custommain">
+    <div class="region-main-header clearfix">
+        <div class="view-toggle">
+            <a href="javascript:void(0);" class="btn-view-list">{{# str }} listview, theme_tikli {{/ str }}</a>
+            <a href="javascript:void(0);" class="btn-view-grid active">{{# str }} gridview, theme_tikli {{/ str }}</a>
+        </div>
+        <div class="search-wr">
+            <form class="adminsearchform" method="get" action="{{{ urls.coursesearch }}}">
+                <div>
+                    <label for="adminsearchquery" class="accesshide">{{# str }} coursesearch, theme_tikli {{/ str }}</label>
+                    <input id="adminsearchquery" type="text" name="search" value="">
+                    <input type="submit" value="Go">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div id="frontpage-course-list">
+        <div class="courses frontpage-course-list-all">
+            <div class="course-items course-items-grid-view">
+                {{# courses }}
+                    <div class="course-item">
+                        <div class="img-wr">
+                            <a href="{{{ url }}}"><img src="{{{ imageurl }}}" alt=""></a>
+                        </div>
+                        <div class="course-item-cont">
+                            <a href="javascript:void(0);" class="btn-togle-details"></a>
+                            <h5><a href="{{{ url }}}">{{ name }}</a></h5>
+                            {{# teachers }}
+                                <div class="abc"><h6>{{# str }} defaultcourseteacher {{/ str }} : <a href="{{{ profileurl }}}">{{ name }}</a></h6></div>
+                            {{/ teachers }}
+                            <div class="for-list-view-wr">
+                                <div class="for-list-view">
+                                    <div class="img-wr">
+                                        <a href="{{{ url }}}"><img src="{{{ imageurl }}}" alt=""></a>
+                                    </div>
+                                    <p>{{{ summary }}}</p>
+                                    <a href="{{{ url }}}" class="btn-plus"><img src="{{{ imageurls.plus }}}" height="42" width="42" alt=""></a>
+                                </div>
+                            </div>
+                            <h4>
+                                <a href="{{{ url }}}" data-toggle="tooltip" title="{{ name }}"><img src="{{{ imageurls.courselink }}}" alt=""></a>
+                                <a href="{{{ enrolledusersurl }}}" data-toggle="tooltip" title="{{# str }} enrolusers, enrol {{/ str }}"><img src="{{{ imageurls.enrolleduserslink }}}" alt=""></a>
+                            </h4>
+                        </div>
+                    </div>
+                {{/ courses }}
+            </div>
+        </div>
+    </div>
+</div>
+{{# showaddcourse }}
+    <div class="center">
+        <div class="btn-show-more-wr">
+            <a class="btn-show-more" href="{{{ urls.addcourse }}}">
+                <span>{{#str}} addnewcourse {{/ str }}</span>
+            </a>
+        </div>
+    </div>
+{{/ showaddcourse }}
