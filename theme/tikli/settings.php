@@ -196,14 +196,6 @@ if (is_siteadmin()) {
         $setting->set_updatedcallback('theme_reset_all_caches');
         $temp->add($setting);
 
-        $name = 'theme_tikli/addlink';
-        $title = get_string('addlink', 'theme_tikli');
-        $description = get_string('addlinkdesc', 'theme_tikli');
-        $default = 'javascript:void(0);';
-        $setting = new admin_setting_configtext($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
-
         $name = 'theme_tikli/videotype';
         $title = get_string('videotype', 'theme_tikli');
         $description = get_string('videotypedesc', 'theme_tikli');
@@ -279,6 +271,14 @@ if (is_siteadmin()) {
 
             $description = get_string('slideimagedesc', 'theme_tikli');
             $setting = new admin_setting_configstoredfile($name, $title, $description, 'slideimage'.$slidecounts);
+            $setting->set_updatedcallback('theme_reset_all_caches');
+            $temp->add($setting);
+
+            $name = 'theme_tikli/slidertitle'.$slidecounts;
+            $title = get_string('slidertitle', 'theme_tikli');
+            $description = get_string('slidertitledesc', 'theme_tikli');
+            $default = '<h2><span>Education is a time-tested path to progress</span><br>YOU ENTER TO LEARN, LEAVE TO ACHIEVE</h2><p>Education ignites a purpose within us and beckons us on a path of enlightenment. It allows for a progressive mind to flourish that builds a self-sustaining society.</p>';
+            $setting = new admin_setting_configtext($name, $title, $description, $default);
             $setting->set_updatedcallback('theme_reset_all_caches');
             $temp->add($setting);
 
