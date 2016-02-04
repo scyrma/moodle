@@ -1,26 +1,26 @@
 <div class="welcome-block">
     <div class="container">
         <div class="row">
-            {{^ videoalignleft }}
-                <div class="span6 static-content-align">{{{ text }}}</div>
-            {{/ videoalignleft }}
-            {{# iframevideo }}
-                {{# iframehtml }}
-                    <div class="span6 static-content-align">{{{ . }}}</div>
-                {{/ iframehtml }}
-            {{/ iframevideo }}
-            {{^ iframevideo }}
-                {{# videosrc }}
+            {{^videoalignleft}}
+                <div class="span6 static-content-align">{{{text}}}</div>
+            {{/videoalignleft}}
+            {{#iframevideo}}
+                {{#iframehtml}}
+                    <div class="span6 static-content-align">{{{.}}}</div>
+                {{/iframehtml}}
+            {{/iframevideo}}
+            {{^iframevideo}}
+                {{#videosrc}}
                     <div class="span6 static-content-align">
                         <video width="560" height="315" controls>
-                            <source src="{{{ . }}}" type="video/mp4">
+                            <source src="{{{.}}}" type="video/mp4">
                         </video>
                     </div>
-                {{/ videosrc }}
-            {{/ iframevideo }}
-            {{# videoalignleft }}
-                <div class="span6 static-content-align">{{{ text }}}</div>
-            {{/ videoalignleft }}
+                {{/videosrc}}
+            {{/iframevideo}}
+            {{#videoalignleft}}
+                <div class="span6 static-content-align">{{{text}}}</div>
+            {{/videoalignleft}}
         </div>
     </div>
 </div>
