@@ -9,7 +9,11 @@
             <div class="span7 popular-course-links">
                 <ul>
                     {{#categories}}
-                        <li><a href="{{{url}}}" alt="">{{name}}</a></li>
+                        <li>
+                            {{#url}}<a href="{{{.}}}" alt="">{{/url}}
+                            {{name}}
+                            {{#url}}</a>{{/url}}
+                        </li>
                     {{/categories}}
                     <li><a class="viewmore" href="{{{categoriesurl}}}" alt="">{{#str}}viewallcourses, theme_tikli{{/str}}</a></li>
                 </ul>
