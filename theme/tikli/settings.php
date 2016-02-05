@@ -627,6 +627,7 @@ if (is_siteadmin()) {
 
     $temp = new admin_settingpage('theme_tikli_colors',  get_string('colorsettings', 'theme_tikli'));
 
+    /*
     $name = 'theme_tikli/colorscheme';
     $title = get_string('colorscheme', 'theme_tikli');
     $description = get_string('colorschemedesc', 'theme_tikli');
@@ -642,6 +643,25 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
     $ADMIN->add('theme_tikli', $temp);
+    */
+
+    $name = 'theme_tikli/primarycolour';
+    $title = get_string('colorscheme', 'theme_tikli');
+    $description = get_string('colorschemedesc', 'theme_tikli');
+    $default = '#f39c11';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/secondarycolour';
+    $title = get_string('colorscheme', 'theme_tikli');
+    $description = get_string('colorschemedesc', 'theme_tikli');
+    $default = '#3498db';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+    $ADMIN->add('theme_tikli', $temp);
+
     /*font*/
 
     $temp = new admin_settingpage('theme_tikli_font',  get_string('fontsettings', 'theme_tikli'));
