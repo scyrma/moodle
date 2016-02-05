@@ -6,10 +6,10 @@ require_once($CFG->dirroot . '/lib/coursecatlib.php');
 class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
     private $cssfiles = array(
-        'bootstrap.css',
-        'bootstrap-responsive.css',
+        //'bootstrap.css',
+        //'bootstrap-responsive.css',
         'font-awesome.min.css',
-        'styles.css'
+        //'styles.css'
     );
 
     private $jsfiles = array(
