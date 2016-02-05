@@ -353,27 +353,21 @@ function theme_tikli_get_html_for_settings(renderer_base $output, moodle_page $p
 }
 
 /**
- * All theme functions should start with theme_tikli_
- * @deprecated since 2.5.1
+ * Returns variables for LESS.
+ *
+ * We will inject some LESS variables from the settings that the user has defined
+ * for the theme. No need to write some custom LESS for this.
+ *
+ * @param theme_config $theme The theme config object.
+ * @return array of LESS variables without the @.
  */
-function tikli_process_css() {
-    throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
+function theme_tikli_less_variables($theme) {
+    $variables = array();
+    if (!empty($theme->settings->primarycolour)) {
+        $variables['primaryColour'] = $theme->settings->primarycolour;
+    }
+    if (!empty($theme->settings->secondarycolour)) {
+        $variables['secondaryColour'] = $theme->settings->secondarycolour;
+    }
+    return $variables;
 }
-
-/**
- * All theme functions should start with theme_tikli_
- * @deprecated since 2.5.1
- */
-function tikli_set_logo() {
-    throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
-}
-
-/**
- * All theme functions should start with theme_tikli_
- * @deprecated since 2.5.1
- */
-function tikli_set_customcss() {
-    throw new coding_exception('Please call theme_'.__FUNCTION__.' instead of '.__FUNCTION__);
-}
-
-
