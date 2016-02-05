@@ -9,6 +9,9 @@ $THEME->name = 'tikli';
 //
 $THEME->doctype = 'html5';
 $THEME->parents = array('bootstrapbase');
+$THEME->lessfile = 'styles';
+#$THEME->parents_exclude_sheets = array('bootstrapbase' => array('moodle'));
+$THEME->lessvariablescallback = 'theme_tikli_less_variables';
 $THEME->sheets = array('custom', 'moodlecloud');
 $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
