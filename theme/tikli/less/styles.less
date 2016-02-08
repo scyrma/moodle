@@ -679,14 +679,76 @@ img {
 	max-width: 80%;
 }
 
-.news-updates .container:before {
-	content: "";
+.news-updates .news-icon {
 	display: block;
 	position: absolute;
-	left: -122px;
+	left: -112px;
 	top: -35px;
 	width: 112px;
 	height: 82px;
+
+    .news-icon-container {
+        position: relative;
+        height: 100%;
+        width: 100%;
+
+        .left {
+            position: absolute;
+            top: 0;
+            left: -30px;
+            width: 30px;
+            height: 30px;
+            background-color: @secondaryColour;
+        }
+
+        .left:before {
+            content: "";
+            height: 30px;
+            width: 30px;
+            position: absolute;
+            border-top-right-radius: 150%;
+            background-color: #f7f7ff;
+        }
+
+        .middle {
+            position: absolute;
+            top: 0;
+            width: 70px;
+            height: 100%;
+            background-color: @secondaryColour;
+            border-bottom-left-radius: 45%;
+            border-bottom-right-radius: 45%;
+
+            img {
+                width: 30px;
+                height: 30px;
+                margin: 10px;
+                margin-top: 20px;
+                background-color: #f7f7ff;
+                border-radius: 50%;
+                padding: 10px;
+            }
+        }
+
+        .right {
+            position: absolute;
+            top: 0;
+            right: 12px;
+            width: 30px;
+            height: 30px;
+            background-color: @secondaryColour;
+        }
+
+        .right:before {
+            content: "";
+            height: 30px;
+            width: 30px;
+            position: absolute;
+            border-top-left-radius: 150%;
+            background-color: #f7f7ff;
+            right: 0;
+        }
+    }
 }
 
 .news-updates .span3 {
@@ -4034,11 +4096,48 @@ div[class*="span"] {
 	margin: 2%;
 	width: 82%;
 }
-.news-updates .container:before {
+.news-updates .news-icon {
 	left: -60px;
 	top: -35px;
 	width: 60px;
 	height: 44px;
+
+    .news-icon-container {
+        .left {
+            left: -15px;
+            width: 15px;
+            height: 15px;
+        }
+
+        .left:before {
+            height: 15px;
+            width: 15px;
+        }
+
+        .middle {
+            width: 37px;
+
+            img {
+                width: 15px;
+                height: 15px;
+                margin: 6px;
+                margin-top: 12px;
+                padding: 5px;
+            }
+        }
+
+        .right {
+            right: 12px;
+            width: 15px;
+            height: 15px;
+        }
+
+        .right:before {
+            height: 15px;
+            width: 15px;
+            right: -4px;
+        }
+    }
 }
 .block-links h3 {
 	padding: 10px 0 10px 11px;
@@ -4353,7 +4452,7 @@ header.navbar {
 .news-updates .container {
 	max-width: 90%;
 }
-.news-updates .container:before {
+.news-updates .news-icon {
 	left: -44px;
 }
 .news-updates h3 {
@@ -4620,6 +4719,9 @@ footer .container-fluid .span3 {
 	max-width: 100%;
     width: 100%;
 }
+.landing-page .logo-wr:before {
+    display: none;
+}
 
 .landing-page .logo-img {
 	margin: 0 0 0 25px;
@@ -4649,7 +4751,7 @@ footer .container-fluid .span3 {
 .news-updates .row {
 	padding: 10px 0 0;
 }
-.news-updates .container:before {
+.news-updates .news-icon {
 	left: auto;
 	right: 0;
 }
@@ -6419,7 +6521,6 @@ header.navbar,
     font-size: 0;
     height: 0;
     width: 0;
-    border-top: 0 solid transparent;
     border-bottom: 270px solid transparent;
     border-left: 315px solid @primaryColour;
     position: absolute;
@@ -6427,9 +6528,11 @@ header.navbar,
 }
 
 
+/* TODO: remove
 .news-updates .container:before {
 	background: url('@{imgDir}red-orange/i-notice.png') no-repeat center top;
 }
+*/
 
 .landing-page .userbutton > span:last-child span:after {
     background: url("@{imgDir}red-orange/dwn-arrow-landing.png") no-repeat scroll right 8px;
@@ -6515,9 +6618,12 @@ footer span {
 #region-main .course_category_tree.clearfix { display: none;}
 
 @media screen and (max-width: 1199px) {
+
+/* TODO: Remove
 .news-updates .container:before {
 	background-size: 100%!important;
 }
+*/
 
 .course-item .img-wr img {
 	display: block;
@@ -7004,14 +7110,18 @@ ul.dropdown-menu li.dropdown-submenu:hover>a {
   background-color: rgba(90, 170, 224, 0.8) !important;
 }
 
+/* TODO: Remove
 .news-updates .container:before {
   background: url('@{imgDir}blue/i-notice.png') no-repeat center top;
 }
+*/
 
 @media screen and (max-width: 1199px) {
+    /* TODO: Remove
   .news-updates .container:before {
     background-size: 100%!important;
   }
+    */
 }
 
 .view-toggle .btn-view-list.active,
@@ -7119,9 +7229,11 @@ header.navbar,
   background: @primaryColour;
 }
 
+/* TODO: Remove
 .news-updates .container:before {
   background: url('@{imgDir}blue/i-notice.png') no-repeat center top;
 }
+*/
 
 .landing-page .userbutton > span:last-child span:after {
   background: url('@{imgDir}blue/dwn-arrow-landing.png') no-repeat scroll right 8px;
