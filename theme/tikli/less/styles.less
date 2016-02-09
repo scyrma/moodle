@@ -142,6 +142,7 @@ body {
 	font-family: 'OpenSans', sans-serif;
 	font-weight: normal;
 	font-size: 14px;
+    background-color: #f7f7ff;
 }
 
 a:hover {
@@ -978,7 +979,36 @@ i img {
 	bottom: -4px;
 	height: 45px;
 	width: 45px;
-	background: #FFF;
+	background-color: #f7f7ff;
+
+    .plus-container {
+        position: relative;
+        height: 42px;
+        width: 42px;
+
+        .plus {
+            height: 100%;
+            width: 100%;
+            background-color: @secondaryColour;
+            border-top-left-radius: 3px;
+            color: #fff;
+            font-size: 32px;
+            box-sizing: border-box;
+            padding-left: 6px;
+            padding-top: 3px;
+        }
+
+        .cutoff {
+            height: 0;
+            width: 0;
+            z-index: 2;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 42px solid transparent;
+            border-bottom: 42px solid #f7f7ff;
+        }
+    }
 }
 
 .popular-courses .course-item .btn-plus {
@@ -7179,9 +7209,9 @@ footer a:focus,
 #page td.submit input,
 #page #id_saveanddisplay,
 .mdl-align .btn-primary {
-  background-color: @secondaryColour;
-  border-color: #1f689a;
-  box-shadow: 0 2px 0 0 #1f689a;
+    background-color: @secondaryColour;
+    border-color: darken(@secondaryColour, 10%);
+    box-shadow: 0 2px 0 0 darken(@secondaryColour, 10%);
 }
 
 #block-region-side-post .block .minicalendar th {
@@ -7935,7 +7965,7 @@ footer span {
 
 
 .popular-course-links li a:hover {
-    color: #ea4e3f;
+    color: @secondaryColour;
     opacity: 1;
 }
 /*Popular-course*/
