@@ -165,20 +165,13 @@ $string['sliderautoplaydesc'] = 'Select ‘yes’ if you want automatic transiti
 $string['true'] = 'Yes';
 $string['false'] = 'No';
 
-$string['frontpageblocks'] = 'Body Content';
-$string['frontpageblocksdesc'] = 'You may insert a heading for your site’s body';
-
-$string['frontpageblockheading'] = 'Body heading';
-$string['frontpageblockheadingdesc'] = 'Front Page Block Heading Desc';
-
-$string['frontpageblock'] = 'Body text';
-$string['frontpageblockdesc'] = 'You may add a text to be shown below the heading.';
-$string['frontpageblocklink'] = 'Body text link';
-$string['frontpageblocklinkdesc'] = 'You may insert the link for the body text, where the user will be redirected after they click on it.';
 $string['viewallcourses'] = 'View all courses';
 $string['courseimage'] = 'Course image for {$a}';
 $string['courselinkimage'] = 'Link to course {$a}';
 $string['userimage'] = 'User profile image';
+
+$string['newstitle'] = 'News & Updates';
+$string['newslink'] = 'See all announcement';
 
 /*******************************Featured content****************************/
 
