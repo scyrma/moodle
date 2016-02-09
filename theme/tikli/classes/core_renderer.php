@@ -20,61 +20,56 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     private function get_course_details() {
         global $DB, $CFG;
 
-        $courses = $DB->get_records_sql('SELECT c.* FROM {course} c where id != ? and visible = ?',array(1, 1));
+        $coursecategory = coursecat::get_default();
+        $courses = $coursecategory->get_courses(array('summary' => 1, 'coursecontacts' => 1));
 
         if (empty($courses)) {
             return array();
         }
 
         $coursedetailsarray = array();
-        foreach ($courses as $key => $coursevalue) {
-            $url = new \moodle_url('/course/view.php', array('id' => $coursevalue->id));
-            $enrolledusersurl = new \moodle_url('/enrol/users.php', array('id' => $coursevalue->id));
+        foreach ($courses as $course) {
+            //$context = context_course::instance($course->id);
+            $url = new \moodle_url('/course/view.php', array('id' => $course->id));
+            $enrolledusersurl = new \moodle_url('/enrol/users.php', array('id' => $course->id));
+            $summary = format_text($course->summary, $course->summaryformat, array(), $course->id);
+            $name = format_string(get_course_display_name_for_list($course), true, array());
 
             $courseinfo = array(
                 'url' => $url->out(),
                 'enrolledusersurl' => $enrolledusersurl->out(),
-                'name' => $coursevalue->fullname,
-                'summary' => $coursevalue->summary,
-                'teachers' => array(),
+                'name' => $name,
+                'summary' => $summary,
+                'contacts' => array(),
             );
 
-            $courseteacher = $DB->get_records_sql('SELECT u.*
-            FROM {course} c
-            JOIN {context} ct ON c.id = ct.instanceid
-            JOIN {role_assignments} ra ON ra.contextid = ct.id
-            JOIN {user} u ON u.id = ra.userid
-            JOIN {role} r ON r.id = ra.roleid Where c.id = ? and r.shortname = ?', array($coursevalue->id, 'editingteacher'));
-            if(!empty($courseteacher)) {
-                foreach ($courseteacher as $keycourseteacher => $courseteachervalue) {
-                    $profileurl = new \moodle_url('/user/profile.php', array('id' => $courseteachervalue->id));
-
-                    $courseinfo['teachers'][] = array(
-                        'name' => $courseteachervalue->firstname." ".$courseteachervalue->lastname,
-                        'profileurl' => $profileurl->out()
+            if ($course->has_course_contacts()) {
+                foreach ($course->get_course_contacts() as $userid => $coursecontact) {
+                    $profileurl = new \moodle_url('/user/view.php', array('id' => $userid, 'course' => SITEID));
+                    $info = array(
+                        'name' => $coursecontact['username'],
+                        'profileurl' => $profileurl->out(),
+                        'rolename' => $coursecontact['rolename'],
                     );
-                }
-            } else {
-                $courseinfo['teachers'][] = array(
-                    // TODO: Lang strings.
-                    'name' => 'Not assigned',
-                    'profileurl' => 'javascript:void(0);'
-                );
-            }
 
-            $courseimage = '';
-            $coursecontext = context_course::instance($coursevalue->id);
-            $isfile = $DB->get_records_sql("Select * from {files} where contextid = ? and filename != ?", array($coursecontext->id, "."));
-            if ($isfile) {
-                foreach ($isfile as $key1 => $isfilevalue) {
-                    $courseimage =  $CFG->wwwroot . "/pluginfile.php/" . $isfilevalue->contextid ."/". $isfilevalue->component . "/" . $isfilevalue->filearea . "/" . $isfilevalue->filename;
+                    $courseinfo['contacts'][] = $info;
                 }
             }
-            if (empty($courseimage)) {
-                $courseimage = $CFG->wwwroot."/theme/tikli/data/nopic.jpg";
+
+            $imageurl = $CFG->wwwroot."/theme/tikli/data/nopic.jpg";
+
+            foreach ($course->get_course_overviewfiles() as $file) {
+                $isimage = $file->is_valid_image();
+                if ($isimage) {
+                    $imageurl = file_encode_url("$CFG->wwwroot/pluginfile.php",
+                        '/'. $file->get_contextid(). '/'. $file->get_component(). '/'.
+                        $file->get_filearea(). $file->get_filepath(). $file->get_filename(), !$isimage);
+
+                    break;
+                }
             }
 
-            $courseinfo['imageurl'] = $courseimage;
+            $courseinfo['imageurl'] = $imageurl;
 
             $coursedetailsarray[] = $courseinfo;
         }
@@ -84,7 +79,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
     public function full_header() {
         $html = html_writer::start_tag('header', array('id' => 'page-header', 'class' => 'clearfix'));
-        //$html .= $this->context_header();
         $html .= html_writer::start_div('clearfix', array('id' => 'page-navbar'));
         $html .= html_writer::tag('nav', $this->navbar(), array('class' => 'breadcrumb-nav'));
         $html .= html_writer::div($this->page_heading_button(), 'breadcrumb-button');
@@ -95,17 +89,17 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function favicon() {
-        GLOBAL $PAGE, $CFG;
-        $hasfavicon = $PAGE->theme->setting_file_url('faviconurl', 'faviconurl');
-        if($hasfavicon) {
-            return $PAGE->theme->setting_file_url('faviconurl', 'faviconurl');
+        global $PAGE, $CFG;
+        $favicon = $PAGE->theme->setting_file_url('faviconurl', 'faviconurl');
+        if($favicon) {
+            return $favicon;
         } else {
             return $CFG->wwwroot.'/theme/tikli/pix/favicon.ico';
         }
     }
 
     public function user_profile_picture() {
-        GLOBAL $USER;
+        global $USER;
         $userpic = parent::user_picture($USER, array('link' => false, 'size' => 80));
         return $userpic;
     }
