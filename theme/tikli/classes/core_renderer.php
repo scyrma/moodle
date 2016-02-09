@@ -377,7 +377,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             return "";
         }
 
-        $colorscheme = get_config('theme_tikli', 'colorscheme');
         $categorydetails = array();
         $categoriesurl = new \moodle_url('/course/index.php');
         $categorieslist = coursecat::make_categories_list();
@@ -400,7 +399,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             'subheading' => get_config('theme_tikli', 'coursesectionsubheading'),
             'overview' => get_config('theme_tikli', 'coursesectionoverview'),
             'imageurls' => array(
-                'plus' => $this->get_theme_source_css(sprintf('img/%s/i-plus.png', $colorscheme)),
                 'sliderprev' => $this->get_theme_source_css('img/i-arr-l-1.png'),
                 'slidernext' => $this->get_theme_source_css('img/i-arr-r-1.png'),
             )
@@ -542,7 +540,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         $context = array(
             'courses' => $coursedetails,
             'imageurls' => array(
-                'plus' => $this->get_theme_source_css(sprintf("/img/%s/i-plus.png", $colorscheme)),
                 'courselink' => $this->get_theme_source_css(sprintf("/img/%s/i-c-1.png", $colorscheme)),
                 'enrolleduserslink' => $this->get_theme_source_css(sprintf("/img/%s/i-c-2.png", $colorscheme)),
             ),
