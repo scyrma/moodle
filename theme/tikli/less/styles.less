@@ -322,6 +322,56 @@ img {
     display: none;
 }
 
+.chevron::before {
+    border-style: solid;
+    border-width: 0.25em 0.25em 0 0;
+    content: '';
+    display: inline-block;
+    height: 0.45em;
+    left: 0.15em;
+    position: relative;
+    top: 0.15em;
+    transform: rotate(-45deg);
+    vertical-align: middle;
+    width: 0.45em;
+}
+
+.chevron.right:before {
+    left: 0;
+    transform: rotate(45deg);
+}
+
+.chevron.bottom:before {
+    top: 0;
+    transform: rotate(135deg);
+}
+
+.chevron.left:before {
+    left: 0.25em;
+    transform: rotate(-135deg);
+}
+
+.circle {
+    background-color: @secondaryColour;
+    color: #fff;
+    border-radius: 50%;
+    vertical-align: middle;
+
+    .chevron {
+        width: 100% !important;
+        height: 100% !important;
+
+        &:before {
+            border-color: #fff;
+        }
+
+        &.bottom:before {
+            top: -13%;
+            left: 22%;
+        }
+    }
+}
+
 /* 2 - END of Tags styles and General styles ---------------------------------------------------------- */
 /* 3 - BEGIN of header ---------------------------------------------------------- */
 
@@ -538,11 +588,17 @@ img {
 	border-top: solid 1px rgba(0, 0, 0, .1)!important;
 }
 
-.landing-page .userbutton > span:last-child span:after {
+.landing-page .userbutton > span:last-child .circle {
 	float: none;
 	height: 20px;
+	width: 20px;
 	margin-left: 15px;
 	margin-top: -10px;
+
+    .chevron.bottom:before {
+        top: -0.1em;
+        left: 0.45em;
+    }
 }
 
 .landing-page .usermenu .menu {
@@ -623,37 +679,22 @@ img {
 	width: 89%;
 }
 .bxslidergrid-nav span {
-
 	cursor: pointer;
-
 	text-indent: -9999px;
-
 	width: 69px;
-
 	height: 69px;
-
 	overflow: hidden;
-
 	position: relative;
 }
 .bxslidergrid-nav span a{
-
 	text-indent: -9999px;
-
 	display: block;
-
 	z-index: 3;
-
 	position: absolute;
-
 	left: 0;
-
 	top: 0;
-
 	width: 100%;
-
 	height: 100%;
-
 }
 .news-updates {
 	background: #f7f7ff;
@@ -755,7 +796,6 @@ img {
 .news-updates .span3 {
 	box-sizing: border-box;
 	padding: 0 0 0 0;
-
 }
 
 .news-updates .news-updates-extraclass.news-updates-item1.span3 {
@@ -772,6 +812,27 @@ img {
 .news-updates .news-updates-extraclass.news-updates-item3.span3 {
 	width: 23%!important;
 	padding-right: 10px;
+}
+
+.news-updates {
+    .circle {
+        height: 15px;
+        width: 15px;
+        display: inline-block;
+        margin-left: 5px;
+        vertical-align: middle;
+
+        .chevron {
+            &:before {
+                vertical-align: top;
+            }
+
+            &.right:before {
+                left: 0.3em;
+                top: 0.35em;
+            }
+        }
+    }
 }
 
 i {
@@ -1407,8 +1468,7 @@ span.userbutton > span:first-child {
 	width: 116px;
 }
 
-.userbutton > span:last-child span:after {
-	content: "";
+.userbutton > span:last-child .circle {
 	display: inline-block;
 	width: 17px;
 	height: 17px;
@@ -6557,17 +6617,6 @@ header.navbar,
     z-index: -1;
 }
 
-
-/* TODO: remove
-.news-updates .container:before {
-	background: url('@{imgDir}red-orange/i-notice.png') no-repeat center top;
-}
-*/
-
-.landing-page .userbutton > span:last-child span:after {
-    background: url("@{imgDir}red-orange/dwn-arrow-landing.png") no-repeat scroll right 8px;
-}
-
 .loginpanel h2:before, a.click {
     background: #ff9e57 url('@{imgDir}logo-1.png') no-repeat scroll center center;
 }
@@ -6582,14 +6631,6 @@ header.navbar,
 
 .rememberpass input:checked + label:before {
 	background: url('@{imgDir}red-orange/i-ch-ch-2.png') no-repeat center;
-}
-
-.userbutton > span:last-child span:after {
-	background: url('@{imgDir}red-orange/dwn-arrow.png') no-repeat center right;
-}
-
-.landing-page .active-drop-user-menu .userbutton > span:last-child span:after {
-    background: rgba(0, 0, 0, 0) url("@{imgDir}red-orange/dwn-arrow-landing-hover.png") no-repeat scroll right 8px;
 }
 
 .loginbox a:hover,
@@ -7023,7 +7064,7 @@ footer span {
 .dir-rtl .dropdown-menu > li > a {
 	text-align: right;
 }
-.dir-rtl .userbutton > span:last-child span:after {
+.dir-rtl .userbutton > span:last-child .circle {
 	margin-left: 10px;
 }
 .dir-rtl .userbutton > span:last-child span {
@@ -7259,16 +7300,6 @@ header.navbar,
   background: @primaryColour;
 }
 
-/* TODO: Remove
-.news-updates .container:before {
-  background: url('@{imgDir}blue/i-notice.png') no-repeat center top;
-}
-*/
-
-.landing-page .userbutton > span:last-child span:after {
-  background: url('@{imgDir}blue/dwn-arrow-landing.png') no-repeat scroll right 8px;
-}
-
 .loginpanel h2:before,
 a.click {
   background: @primaryColour no-repeat scroll center center;
@@ -7284,14 +7315,6 @@ a.click {
 
 .rememberpass input:checked + label:before {
   background: url('@{imgDir}blue/i-ch-ch-2.png') no-repeat center;
-}
-
-.userbutton > span:last-child span:after {
-  background: url('@{imgDir}blue/dwn-arrow.png') no-repeat center right;
-}
-
-.landing-page .active-drop-user-menu .userbutton > span:last-child span:after {
-  background: rgba(0, 0, 0, 0) url('@{imgDir}blue/dwn-arrow-landing-hover.png') no-repeat scroll right 8px;
 }
 
 .loginbox a:hover,
