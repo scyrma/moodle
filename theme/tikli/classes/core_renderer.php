@@ -2,6 +2,7 @@
 
 require_once($CFG->dirroot . '/theme/bootstrapbase/renderers.php');
 require_once($CFG->dirroot . '/lib/coursecatlib.php');
+require_once($CFG->dirroot . '/mod/forum/lib.php');
 
 class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
@@ -312,54 +313,26 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function frontpage_news_and_updates() {
-        $frontpageblockheading = get_config('theme_tikli', 'frontpageblockheading');
-
-        if (empty($frontpageblockheading)) {
-            return "";
-        }
-
-        $frontpageblock = get_config('theme_tikli', 'frontpageblock');
-        $frontpageblocklink = get_config('theme_tikli', 'frontpageblocklink');
-
-        $frontpageblocksection1 = get_config('theme_tikli', 'frontpageblocksection1');
-        $frontpageblocklinksection1 = get_config('theme_tikli', 'frontpageblocklinksection1');
-        $frontpageblockdescriptionsection1 = get_config('theme_tikli', 'frontpageblockdescriptionsection1');
-
-        $frontpageblocksection2 = get_config('theme_tikli', 'frontpageblocksection2');
-        $frontpageblocklinksection2 = get_config('theme_tikli', 'frontpageblocklinksection2');
-        $frontpageblockdescriptionsection2 = get_config('theme_tikli', 'frontpageblockdescriptionsection2');
-
-        $frontpageblocksection3 = get_config('theme_tikli', 'frontpageblocksection3');
-        $frontpageblocklinksection3 = get_config('theme_tikli', 'frontpageblocklinksection3');
-        $frontpageblockdescriptionsection3 = get_config('theme_tikli', 'frontpageblockdescriptionsection3');
-
-        $colourscheme = get_config('theme_tikli', 'colorscheme');
+        $forum = forum_get_course_forum(SITEID, 'news');
+        $cm = get_coursemodule_from_instance('forum', $forum->id, $forum->course, false, MUST_EXIST);
+        $discussions = forum_get_discussions($cm, "", false, -1, 3);
+        $linkurl = new \moodle_url('mod/forum/view.php', array('id' => $forum->id));
 
         $context = array(
-            'heading' => $frontpageblockheading,
-            'linkurl' => $frontpageblocklink,
-            'linktext' => $frontpageblock,
-            'linkiconurl' => $this->get_theme_source_css(sprintf('img/%s/i-arr-r-2.png', $colourscheme)),
+            'heading' => 'News & Updates',
+            'linkurl' => $linkurl->out(),
+            'linktext' => 'see all announcements',
             'newsitems' => array()
         );
 
-        $context['newsitems'][] = array(
-            'title' => $frontpageblocksection1,
-            'linkurl' => $frontpageblocklinksection1,
-            'description' => $frontpageblockdescriptionsection1
-        );
-
-        $context['newsitems'][] = array(
-            'title' => $frontpageblocksection2,
-            'linkurl' => $frontpageblocklinksection2,
-            'description' => $frontpageblockdescriptionsection2
-        );
-
-        $context['newsitems'][] = array(
-            'title' => $frontpageblocksection3,
-            'linkurl' => $frontpageblocklinksection3,
-            'description' => $frontpageblockdescriptionsection3
-        );
+        foreach ($discussions as $discussion) {
+            $linkurl = new \moodle_url('mod/forum/discuss.php', array('d' => $discussion->id));
+            $context['newsitems'][] = array(
+                'title' => $discussion->name,
+                'modified' => userdate($discussion->timemodified),
+                'linkurl' => $linkurl->out(),
+            );
+        }
 
         return $this->render_from_template('theme_tikli/frontpage_news_and_updates', $context);
     }
