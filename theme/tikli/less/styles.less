@@ -1,7 +1,6 @@
 @import "../../bootstrapbase/less/moodle.less";
 
 @themeDir: 'tikli/';
-@fontsDir: '@{themeDir}css/fonts/';
 @imgDir: '@{themeDir}/css/img/';
 @primaryColour: #f39c11;
 @secondaryColour: #3498db;
@@ -26,88 +25,88 @@ Description:
 
 @font-face {
 	font-family: 'OpenSans';
-	src: url('@{fontsDir}OpenSans/OpenSans.eot');
-	src: url('@{fontsDir}OpenSans/OpenSans.eot?#iefix') format('embedded-opentype'),
-			 url('@{fontsDir}OpenSans/OpenSans.woff') format('woff'),
-			 url('@{fontsDir}OpenSans/OpenSans.ttf') format('truetype'),
-			 url('@{fontsDir}OpenSans/OpenSans.svg#OpenSans') format('svg');
+	src: url([[font:theme|OpenSans.eot]]);
+	src: url([[font:theme|OpenSans.eot]]) format('embedded-opentype'),
+			 url([[font:theme|OpenSans.woff]]) format('woff'),
+			 url([[font:theme|OpenSans.ttf]]) format('truetype'),
+			 url([[font:theme|OpenSans.svg]]) format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'OpenSans';
-	src: url('@{fontsDir}OpenSans/OpenSans-Light.eot');
-	src: url('@{fontsDir}OpenSans/OpenSans-Light.eot?#iefix') format('embedded-opentype'),
-			 url('@{fontsDir}OpenSans/OpenSans-Light.woff') format('woff'),
-			 url('@{fontsDir}OpenSans/OpenSans-Light.ttf') format('truetype'),
-			 url('@{fontsDir}OpenSans/OpenSans-Light.svg#OpenSans') format('svg');
+    src: url([[font:theme|OpenSans-Light.eot]]);
+	src: url([[font:theme|OpenSans-Light.eot]]) format('embedded-opentype'),
+			 url([[font:theme|OpenSans-Light.woff]]) format('woff'),
+			 url([[font:theme|OpenSans-Light.ttf]]) format('truetype'),
+			 url([[font:theme|OpenSans-Light.svg]]) format('svg');
 	font-weight: 100;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'OpenSans';
-	src: url('@{fontsDir}OpenSans/OpenSans-Semibold.eot');
-	src: url('@{fontsDir}OpenSans/OpenSans-Semibold.eot?#iefix') format('embedded-opentype'),
-			 url('@{fontsDir}OpenSans/OpenSans-Semibold.woff') format('woff'),
-			 url('@{fontsDir}OpenSans/OpenSans-Semibold.ttf') format('truetype'),
-			 url('@{fontsDir}OpenSans/OpenSans-Semibold.svg#OpenSans') format('svg');
+    src: url([[font:theme|OpenSans-Semibold.eot]]);
+	src: url([[font:theme|OpenSans-Semibold.eot]]) format('embedded-opentype'),
+			 url([[font:theme|OpenSans-Semibold.woff]]) format('woff'),
+			 url([[font:theme|OpenSans-Semibold.ttf]]) format('truetype'),
+			 url([[font:theme|OpenSans-Semibold.svg]]) format('svg');
 	font-weight: 600;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'OpenSans';
-	src: url('@{fontsDir}OpenSans/OpenSans-Bold.eot');
-	src: url('@{fontsDir}OpenSans/OpenSans-Bold.eot?#iefix') format('embedded-opentype'),
-			 url('@{fontsDir}OpenSans/OpenSans-Bold.woff') format('woff'),
-			 url('@{fontsDir}OpenSans/OpenSans-Bold.ttf') format('truetype'),
-			 url('@{fontsDir}OpenSans/OpenSans-Bold.svg#OpenSans') format('svg');
+    src: url([[font:theme|OpenSans-Bold.eot]]);
+	src: url([[font:theme|OpenSans-Bold.eot]]) format('embedded-opentype'),
+			 url([[font:theme|OpenSans-Bold.woff]]) format('woff'),
+			 url([[font:theme|OpenSans-Bold.ttf]]) format('truetype'),
+			 url([[font:theme|OpenSans-Bold.svg]]) format('svg');
 	font-weight: 800;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Raleway';
-	src: url('@{fontsDir}Raleway/Raleway.eot');
-	src: url('@{fontsDir}Raleway/Raleway.eot?#iefix') format('embedded-opentype'),
-			 url('@{fontsDir}Raleway/Raleway.woff') format('woff'),
-			 url('@{fontsDir}Raleway/Raleway.ttf') format('truetype'),
-			 url('@{fontsDir}Raleway/Raleway.svg#Raleway') format('svg');
+    src: url([[font:theme|Raleway.eot]]);
+	src: url([[font:theme|Raleway.eot]]) format('embedded-opentype'),
+			 url([[font:theme|Raleway.woff]]) format('woff'),
+			 url([[font:theme|Raleway.ttf]]) format('truetype'),
+			 url([[font:theme|Raleway.svg]]) format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Raleway';
-	src: url('@{fontsDir}Raleway/Raleway-Light.eot');
-	src: url('@{fontsDir}Raleway/Raleway-Light.eot?#iefix') format('embedded-opentype'),
-			 url('@{fontsDir}Raleway/Raleway-Light.woff') format('woff'),
-			 url('@{fontsDir}Raleway/Raleway-Light.ttf') format('truetype'),
-			 url('@{fontsDir}Raleway/Raleway-Light.svg#Raleway') format('svg');
+    src: url([[font:theme|Raleway-Light.eot]]);
+	src: url([[font:theme|Raleway-Light.eot]]) format('embedded-opentype'),
+			 url([[font:theme|Raleway-Light.woff]]) format('woff'),
+			 url([[font:theme|Raleway-Light.ttf]]) format('truetype'),
+			 url([[font:theme|Raleway-Light.svg]]) format('svg');
 	font-weight: 100;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Raleway';
-	src: url('@{fontsDir}Raleway/Raleway-Medium.eot');
-	src: url('@{fontsDir}Raleway/Raleway-Medium.eot?#iefix') format('embedded-opentype'),
-			 url('@{fontsDir}Raleway/Raleway-Medium.woff') format('woff'),
-			 url('@{fontsDir}Raleway/Raleway-Medium.ttf') format('truetype'),
-			 url('@{fontsDir}Raleway/Raleway-Medium.svg#Raleway') format('svg');
+    src: url([[font:theme|Raleway-Medium.eot]]);
+	src: url([[font:theme|Raleway-Medium.eot]]) format('embedded-opentype'),
+			 url([[font:theme|Raleway-Medium.woff]]) format('woff'),
+			 url([[font:theme|Raleway-Medium.ttf]]) format('truetype'),
+			 url([[font:theme|Raleway-Medium.svg]]) format('svg');
 	font-weight: 600;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Raleway';
-	src: url('@{fontsDir}Raleway/Raleway-Bold.eot');
-	src: url('@{fontsDir}Raleway/Raleway-Bold.eot?#iefix') format('embedded-opentype'),
-			 url('@{fontsDir}Raleway/Raleway-Bold.woff') format('woff'),
-			 url('@{fontsDir}Raleway/Raleway-Bold.ttf') format('truetype'),
-			 url('@{fontsDir}Raleway/Raleway-Bold.svg#Raleway') format('svg');
+    src: url([[font:theme|Raleway-Bold.eot]]);
+	src: url([[font:theme|Raleway-Bold.eot]]) format('embedded-opentype'),
+			 url([[font:theme|Raleway-Bold.woff]]) format('woff'),
+			 url([[font:theme|Raleway-Bold.ttf]]) format('truetype'),
+			 url([[font:theme|Raleway-Bold.svg]]) format('svg');
 	font-weight: 800;
 	font-style: normal;
 }
