@@ -248,6 +248,10 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         return sprintf("%s/js/%s", $this->get_theme_source_root(), $filename);
     }
 
+    public function get_theme_source_img($filename) {
+        return sprintf("%s/pix/custom/%s", $this->get_theme_source_root(), $filename);
+    }
+
     public function base_theme_head_html($cssfiles = array(), $jsfiles = array()) {
         $cssfiles = array_merge($this->cssfiles, $cssfiles);
         $jsfiles = array_merge($this->jsfiles, $jsfiles);
@@ -366,8 +370,8 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             'subheading' => get_config('theme_tikli', 'coursesectionsubheading'),
             'overview' => get_config('theme_tikli', 'coursesectionoverview'),
             'imageurls' => array(
-                'sliderprev' => $this->get_theme_source_css('img/i-arr-l-1.png'),
-                'slidernext' => $this->get_theme_source_css('img/i-arr-r-1.png'),
+                'sliderprev' => $this->get_theme_source_img('i-arr-l-1.png'),
+                'slidernext' => $this->get_theme_source_img('i-arr-r-1.png'),
             )
         );
 
@@ -384,8 +388,8 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             'brieftext' => get_config('theme_tikli', 'feedbackbrieftext'),
             'slides' => array(),
             'imageurls' => array(
-                'sliderprev' => $this->get_theme_source_css('img/bxslider-img/arr-l-grid.png'),
-                'slidernext' => $this->get_theme_source_css('img/bxslider-img/arr-r-grid.png'),
+                'sliderprev' => $this->get_theme_source_img('bxslider-img/arr-l-grid.png'),
+                'slidernext' => $this->get_theme_source_img('bxslider-img/arr-r-grid.png'),
             )
         );
 
@@ -402,7 +406,7 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
                 if (!empty($hasimg)) {
                     $feedback['imageurl'] = $PAGE->theme->setting_file_url('feedbackslideimage_'.$feedinner.'_'.$feedbackslides, 'feedbackslideimage_'.$feedinner.'_'.$feedbackslides);
                 } else {
-                    $feedback['imageurl'] = $this->get_theme_source_css('img/userimage.png');
+                    $feedback['imageurl'] = $this->get_theme_source_img('userimage.png');
                 }
 
                 $feedback['name'] = get_config('theme_tikli', 'feedbackslidename_'.$feedinner.'_'.$feedbackslides);
@@ -507,8 +511,8 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         $context = array(
             'courses' => $coursedetails,
             'imageurls' => array(
-                'courselink' => $this->get_theme_source_css(sprintf("/img/%s/i-c-1.png", $colorscheme)),
-                'enrolleduserslink' => $this->get_theme_source_css(sprintf("/img/%s/i-c-2.png", $colorscheme)),
+                'courselink' => $this->get_theme_source_img(sprintf("%s/i-c-1.png", $colorscheme)),
+                'enrolleduserslink' => $this->get_theme_source_img(sprintf("%s/i-c-2.png", $colorscheme)),
             ),
             'urls' => array(
                 'coursesearch' => $coursesearchurl->out(),

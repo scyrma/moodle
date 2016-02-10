@@ -1,7 +1,5 @@
 @import "../../bootstrapbase/less/moodle.less";
 
-@themeDir: 'tikli/';
-@imgDir: '@{themeDir}/css/img/';
 @primaryColour: #f39c11;
 @secondaryColour: #3498db;
 
@@ -1089,7 +1087,7 @@ i img {
 }
 
 .block-links {
-	background: #eeeef6 url('@{imgDir}b-block-links.png') repeat-x center top;
+	background: #eeeef6 url([[pix:theme|custom/b-block-links]]) repeat-x center top;
 	padding: 40px 0 18px;
 }
 
@@ -1162,7 +1160,7 @@ i img {
 	display: inline-block;
 	float: left;
 	text-indent: -9999px;
-	background: #c8c9d4 url('@{imgDir}column3/i-plus-2.png') no-repeat center;
+	background: #c8c9d4 url([[pix:theme|custom/column3/i-plus-2]]) no-repeat center;
 	width: 71px;
 	height: 66px;
 	margin: 0 24px 0 0;
@@ -1172,7 +1170,7 @@ i img {
 
 .btn-togle-details.active {
 	border-bottom-left-radius: 0;
-	background: #c8c9d4 url('@{imgDir}column3/i-minus-2.png') no-repeat center;
+	background: #c8c9d4 url([[pix:theme|custom/column3/i-minus-2]]) no-repeat center;
 }
 
 .course-item-cont .img-wr {
@@ -2032,7 +2030,7 @@ header.navbar {
 	font-size: 0;
 	width: 10px;
 	height: 10px;
-	background: url("@{imgDir}i-breadcrumb-sep.png") no-repeat center center;
+	background: url([[pix:theme|custom/i-breadcrumb-sep]]) no-repeat center center;
 	display: inline-block;
 }
 
@@ -2040,7 +2038,7 @@ header.navbar {
 	font-size: 0;
 	width: 18px;
 	height: 12px;
-	background: url("@{imgDir}i-breadcrumb-sep.png") no-repeat center center;
+	background: url([[pix:theme|custom/i-breadcrumb-sep]]) no-repeat center center;
 	display: inline-block;
 }
 
@@ -2069,7 +2067,7 @@ header.navbar {
 
 .view-toggle .btn-view-list {
 	position: relative;
-	background: #a2a2af url("@{imgDir}red-orange/b-sprite.png") no-repeat;
+	background: #a2a2af url([[pix:theme|custom/red-orange/b-sprite]]) no-repeat;
 	background-position: -7px -367px;
 }
 
@@ -2093,7 +2091,7 @@ header.navbar {
 
 .view-toggle .btn-view-grid {
 	position: relative;
-	background: #a2a2af url("@{imgDir}red-orange/b-sprite.png") no-repeat;
+	background: #a2a2af url([[pix:theme|custom/red-orange/b-sprite]]) no-repeat;
 	background-position: -47px -368px;
 }
 
@@ -2171,7 +2169,7 @@ header.navbar {
 	margin: 0!important;
 	padding: 0;
 	border-radius: 0 4px 4px 0!important;
-	background-image: url("@{imgDir}red-orange/b-sprite.png")!important;
+	background-image: url([[pix:theme|custom/red-orange/b-sprite]])!important;
 	background-position: -95px -368px;
 	width: 38px;
 	height: 38px;
@@ -2214,7 +2212,7 @@ header.navbar {
 
 #block-region-side-post #searchform_button,
 #block-region-side-pre #searchform_button {
-	background-image: url("@{imgDir}red-orange/b-sprite.png")!important;
+	background-image: url([[pix:theme|custom/red-orange/b-sprite]])!important;
 	background-position: -95px -368px;
 	text-indent: -9999px;
 	margin: 0;
@@ -2516,7 +2514,7 @@ a:hover .i-def, .header:hover .i-def, .active .i-def {
 }
 
 .topic-button.topic-close {
-	background: #efefef url('@{imgDir}topic-p/i-marker-red.png') no-repeat 98.5% center;
+	background: #efefef url([[pix:theme|custom/topic-p/i-marker-red]]) no-repeat 98.5% center;
 }
 
 .topic-button.topic-close a {
@@ -2524,7 +2522,7 @@ a:hover .i-def, .header:hover .i-def, .active .i-def {
 }
 
 .topic-button.topic-inactive {
-	background: #efefef url('@{imgDir}topic-p/i-marker-grey.png') no-repeat 98.5% center;
+	background: #efefef url([[pix:theme|custom/topic-p/i-marker-grey]]) no-repeat 98.5% center;
 }
 
 .topic-button.topic-inactive a {
@@ -2532,7 +2530,7 @@ a:hover .i-def, .header:hover .i-def, .active .i-def {
 }
 
 .topic-button.topic-active {
-	background: #efefef url('@{imgDir}topic-p/i-marker-green.png') no-repeat 98.5% center;
+	background: #efefef url([[pix:theme|custom/topic-p/i-marker-green]]) no-repeat 98.5% center;
 }
 
 .topic-nav a {
@@ -2914,7 +2912,7 @@ body.login-pagebg #region-main {
 	position: relative;
 }
 .login-pagebg .langmenu div:after {
-    background: #FFF url("@{imgDir}/bg-lan-list.jpg") no-repeat scroll center center;
+    background: #FFF url([[pix:theme|custom/bg-lan-list]]) no-repeat scroll center center;
     content: "";
     height: 28px;
     pointer-events: none;
@@ -3191,7 +3189,7 @@ body.login-pagebg #region-main {
 }
 
 .quizinfo-top {
-	background: url('@{imgDir}quiz/quiz-banner.jpg') no-repeat right top;
+	background: url([[pix:theme|custom/quiz/quiz-banner]]) no-repeat right top;
 	background-size: 100% 100%;
 	padding: 15px 16px 15px;
 }
@@ -3596,11 +3594,11 @@ body.login-pagebg #region-main {
 	width: 18px;
 	height: 18px;
 	margin: 6px 10px -4px 7px;
-	background: url('@{imgDir}quiz/i-ch-unch-1.png') no-repeat left center;
+	background: url([[pix:theme|custom/quiz/i-ch-unch-1]]) no-repeat left center;
 }
 
 .que .answer input[type="radio"]:checked + label:before, .que .answer input[type="checkbox"]:checked + label:before {
-	background: url('@{imgDir}quiz/i-ch-ch-1.png') no-repeat left center;
+	background: url([[pix:theme|custom/quiz/i-ch-ch-1]]) no-repeat left center;
 }
 
 .que .answer input[type="radio"] + label:after, .que .answer input[type="checkbox"] + label:after {
@@ -3609,7 +3607,7 @@ body.login-pagebg #region-main {
 	position: absolute;
 	width: 0;
 	height: 0;
-	background: url('@{imgDir}quiz/i-ch-ch-1.png') no-repeat left center;
+	background: url([[pix:theme|custom/quiz/i-ch-ch-1]]) no-repeat left center;
 }
 
 .que + .submitbtns .btn-2 {
@@ -4893,7 +4891,7 @@ footer .right {
 	width: 73px;
 	overflow: hidden;
 	padding: 0;
-	background: #FF9E57 url('@{imgDir}column3/i-accordion.png') no-repeat center;
+	background: #FF9E57 url([[pix:theme|custom/column3/i-accordion]]) no-repeat center;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -4941,7 +4939,7 @@ footer .right {
 	width: 73px;
 	overflow: hidden;
 	padding: 0;
-	background: #FF9E57 url('@{imgDir}column3/i-accordion.png') no-repeat center;
+	background: #FF9E57 url([[pix:theme|custom/column3/i-accordion]]) no-repeat center;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -4959,7 +4957,7 @@ footer .right {
 }
 .loginpanel h2:before, a.click {
 	left: 20%;
-	background: #FF9E57 url('@{imgDir}logo-1.png') no-repeat center;
+	background: #FF9E57 url([[pix:theme|custom/logo-1]]) no-repeat center;
 	height: 81px;
 	width: 60%;
 }
@@ -6157,7 +6155,7 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
 }
 
 .block_adminblock .content .singleselect form div:after {
-    background: #fff url('@{imgDir}i-list-dropdown.png') no-repeat center center;
+    background: #fff url([[pix:theme|custom/i-list-dropdown]]) no-repeat center center;
     content: "";
     height: 36px;
     pointer-events: none;
@@ -6629,19 +6627,19 @@ header.navbar,
 }
 
 .loginpanel h2:before, a.click {
-    background: #ff9e57 url('@{imgDir}logo-1.png') no-repeat scroll center center;
+    background: #ff9e57 url([[pix:theme|custom/logo-1]]) no-repeat scroll center center;
 }
 
 .rememberpass input + label:before {
-	background: url('@{imgDir}red-orange/i-ch-unch-2.png') no-repeat center;
+	background: url([[pix:theme|custom/red-orange/i-ch-unch-2]]) no-repeat center;
 }
 
 .rememberpass input + label:after {
-	background: url('@{imgDir}i-ch-unch-2.png') no-repeat center;
+	background: url([[pix:theme|custom/i-ch-unch-2]]) no-repeat center;
 }
 
 .rememberpass input:checked + label:before {
-	background: url('@{imgDir}red-orange/i-ch-ch-2.png') no-repeat center;
+	background: url([[pix:theme|custom/red-orange/i-ch-ch-2]]) no-repeat center;
 }
 
 .loginbox a:hover,
@@ -7194,7 +7192,7 @@ ul.dropdown-menu li.dropdown-submenu:hover>a {
 
 /* TODO: Remove
 .news-updates .container:before {
-  background: url('@{imgDir}blue/i-notice.png') no-repeat center top;
+  background: url([[pix:theme|custom/blue/i-notice]]) no-repeat center top;
 }
 */
 
@@ -7317,15 +7315,15 @@ a.click {
 }
 
 .rememberpass input + label:before {
-  background: url('@{imgDir}blue/i-ch-unch-2.png') no-repeat center;
+  background: url([[pix:theme|custom/blue/i-ch-unch-2]]) no-repeat center;
 }
 
 .rememberpass input + label:after {
-  background: url('@{imgDir}i-ch-unch-2.png') no-repeat center;
+  background: url([[pix:theme|custom/i-ch-unch-2]]) no-repeat center;
 }
 
 .rememberpass input:checked + label:before {
-  background: url('@{imgDir}blue/i-ch-ch-2.png') no-repeat center;
+  background: url([[pix:theme|custom/blue/i-ch-ch-2]]) no-repeat center;
 }
 
 .loginbox a:hover,
@@ -7715,7 +7713,7 @@ footer span {
 
 .number-section {
     padding: 100px 0;
-    background: #f7f7f7 url('@{imgDir}/bg-banner-2.jpg');
+    background: #f7f7f7 url([[pix:theme|custom/bg-banner-2]]);
     background-attachment: fixed;
     background-size: cover;
     text-align: center;
