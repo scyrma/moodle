@@ -47,13 +47,9 @@ h4 {
 [[setting:fontfilesheading]]
 [[setting:fontfilesbody]]
 
-.landing-page .logo-wr {
-    /*background: url([[setting:logobackgroundimage]]) no-repeat left top;*/
-}
 @media screen and (max-width: 1280px) and (min-width: 768px) {
 	.landing-page .logo-wr {
 		background-size: 95%;
-
 	}
 }
 
