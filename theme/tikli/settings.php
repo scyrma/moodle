@@ -335,50 +335,6 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    $name = 'theme_tikli/quicklinkscolumns';
-    $title = get_string('quicklinkscolumns', 'theme_tikli');
-    $description = get_string('quicklinkscolumnsdesc', 'theme_tikli');
-    $setting = new admin_setting_configselect($name, $title, $description, 3,
-    array(
-            1 => get_string('one', 'theme_tikli'),
-            2 => get_string('two', 'theme_tikli'),
-            3 => get_string('three', 'theme_tikli'),
-        ));
-    $temp->add($setting);
-
-    for($quicklinkcols = 1; $quicklinkcols <= get_config('theme_tikli', 'quicklinkscolumns'); $quicklinkcols = $quicklinkcols + 1) {
-        $name = 'theme_tikli/quicklinksrows'.$quicklinkcols;
-        $title = get_string('quicklinksrows', 'theme_tikli');
-        $description = get_string('quicklinksrowsdesc', 'theme_tikli');
-        $setting = new admin_setting_configselect($name, $title, $description, 5,
-        array(
-                1 => get_string('one', 'theme_tikli'),
-                2 => get_string('two', 'theme_tikli'),
-                3 => get_string('three', 'theme_tikli'),
-                4 => get_string('four', 'theme_tikli'),
-                5 => get_string('five', 'theme_tikli'),
-            ));
-        $temp->add($setting);
-
-        for($quicklinkrows = 1; $quicklinkrows <= get_config('theme_tikli', 'quicklinksrows'.$quicklinkcols); $quicklinkrows = $quicklinkrows + 1) {
-            $name = 'theme_tikli/text'.$quicklinkcols.'_'.$quicklinkrows;
-            $title = get_string('text', 'theme_tikli');
-            $description = get_string('textdesc', 'theme_tikli');
-            $default = '';
-            $setting = new admin_setting_configtext($name, $title,  $description, $default);
-            $setting->set_updatedcallback('theme_reset_all_caches');
-            $temp->add($setting);
-
-            $name = 'theme_tikli/link'.$quicklinkcols.'_'.$quicklinkrows;
-            $title = get_string('link', 'theme_tikli');
-            $description = get_string('linkdesc', 'theme_tikli');
-            $default = '';
-            $setting = new admin_setting_configtext($name, $title,  $description, $default);
-            $setting->set_updatedcallback('theme_reset_all_caches');
-            $temp->add($setting);
-        }
-    }
-
     $temp->add(new admin_setting_heading('theme_tikli_feedbacksection', get_string('feedback', 'theme_tikli'),
     format_text(get_string('feedbackdesc', 'theme_tikli'), FORMAT_MARKDOWN)));
 
@@ -525,39 +481,105 @@ if (is_siteadmin()) {
 
     $temp = new admin_settingpage('theme_tikli_colors',  get_string('colorsettings', 'theme_tikli'));
 
-    /*
-    $name = 'theme_tikli/colorscheme';
-    $title = get_string('colorscheme', 'theme_tikli');
-    $description = get_string('colorschemedesc', 'theme_tikli');
-    $default = 'red-orange';
-    $setting = new admin_setting_configselect($name, $title, $description, $default, array(
-        'red-orange' => get_string('redorange', 'theme_tikli'),
-        'green' => get_string('green', 'theme_tikli'),
-        'orange' => get_string('orange', 'theme_tikli'),
-        'blue' => get_string('blue', 'theme_tikli'),
-        'purple' => get_string('purple', 'theme_tikli')
+    /* COLOUR SETTINGS */
 
-    ));
+    /* Primary Colour */
+    $name = 'theme_tikli/primarycolour';
+    $title = get_string('primarycolour', 'theme_tikli');
+    $description = get_string('primarycolourdesc', 'theme_tikli');
+    $default = '#3498db';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
-    $ADMIN->add('theme_tikli', $temp);
-    */
 
-    $name = 'theme_tikli/primarycolour';
-    $title = get_string('colorscheme', 'theme_tikli');
-    $description = get_string('colorschemedesc', 'theme_tikli');
+    $name = 'theme_tikli/primaryfontcolour';
+    $title = get_string('primaryfontcolour', 'theme_tikli');
+    $description = get_string('primaryfontcolourdesc', 'theme_tikli');
+    $default = '#ffffff';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/primarylinkcolour';
+    $title = get_string('primarylinkcolour', 'theme_tikli');
+    $description = get_string('primarylinkcolourdesc', 'theme_tikli');
+    $default = '#ffffff';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    /* Secondary Colour */
+
+    $name = 'theme_tikli/secondarycolour';
+    $title = get_string('secondarycolour', 'theme_tikli');
+    $description = get_string('secondarycolourdesc', 'theme_tikli');
     $default = '#f39c11';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    $name = 'theme_tikli/secondarycolour';
-    $title = get_string('colorscheme', 'theme_tikli');
-    $description = get_string('colorschemedesc', 'theme_tikli');
+    $name = 'theme_tikli/secondaryfontcolour';
+    $title = get_string('secondaryfontcolour', 'theme_tikli');
+    $description = get_string('secondaryfontcolourdesc', 'theme_tikli');
+    $default = '#ffffff';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/secondarylinkcolour';
+    $title = get_string('secondarylinkcolour', 'theme_tikli');
+    $description = get_string('secondarylinkcolourdesc', 'theme_tikli');
+    $default = '#ffffff';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    /* Footer Colour */
+
+    $name = 'theme_tikli/footercolour';
+    $title = get_string('footercolour', 'theme_tikli');
+    $description = get_string('footercolourdesc', 'theme_tikli');
+    $default = '#242b32';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/footerfontcolour';
+    $title = get_string('footerfontcolour', 'theme_tikli');
+    $description = get_string('footerfontcolourdesc', 'theme_tikli');
+    $default = '#bdc3c7';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_tikli/footerlinkcolour';
+    $title = get_string('footerlinkcolour', 'theme_tikli');
+    $description = get_string('footerlinkcolourdesc', 'theme_tikli');
     $default = '#3498db';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
+
+    /* Block colour */
+
+    $name = 'theme_tikli/blocklinkcolour';
+    $title = get_string('blocklinkcolour', 'theme_tikli');
+    $description = get_string('blocklinkcolourdesc', 'theme_tikli');
+    $default = '#3498db';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    /* Main content colour */
+
+    $name = 'theme_tikli/mainlinkcolour';
+    $title = get_string('mainlinkcolour', 'theme_tikli');
+    $description = get_string('mainlinkcolourdesc', 'theme_tikli');
+    $default = '#3498db';
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
     $ADMIN->add('theme_tikli', $temp);
 
     /*font*/
