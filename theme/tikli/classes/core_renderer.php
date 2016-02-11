@@ -95,7 +95,7 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         if($favicon) {
             return $favicon;
         } else {
-            return $CFG->wwwroot.'/theme/tikli/pix/favicon.ico';
+            return parent::favicon();
         }
     }
 
