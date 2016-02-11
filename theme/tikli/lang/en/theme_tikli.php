@@ -171,9 +171,8 @@ $string['viewallcourses'] = 'View all courses';
 $string['courseimage'] = 'Course image for {$a}';
 $string['courselinkimage'] = 'Link to course {$a}';
 $string['userimage'] = 'User profile image';
-
-$string['newstitle'] = 'News & Updates';
-$string['newslink'] = 'See all announcement';
+$string['newslink'] = 'See all announcements';
+$string['nonewsitems'] = 'Your site currently has no news items. Click here to add some!';
 
 /*******************************Featured content****************************/
 
