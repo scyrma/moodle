@@ -111,13 +111,30 @@ $string['fontfileeotbody'] = 'Body EOT font file';
 $string['fontfilesvgbody'] = 'Body SVG font file';
 
 /*color*/
-$string['colorscheme'] = 'Pick a Color Scheme';
-$string['colorschemedesc'] = 'You can choose a color scheme for your website from the following - Red Orange, Green Yellow, Orange Blue, Blue Orange & Purple Orange.';
-$string['redorange'] = 'Red Orange';
-$string['green'] = 'Green Yellow';
-$string['blue'] = 'Blue Orange ';
-$string['orange'] = 'Orange Blue';
-$string['purple'] = 'Purple Orange';
+$string['primarycolour'] = 'Pick a primary colour';
+$string['primarycolourdesc'] = 'This is the colour of elements such as the nav bar and block headings';
+$string['primaryfontcolour'] = 'Pick a primary font colour';
+$string['primaryfontcolourdesc'] = 'This is the colour of text within the primary colour';
+$string['primarylinkcolour'] = 'Pick a primary link colour';
+$string['primarylinkcolourdesc'] = 'This is the colour of links within the primary colour';
+$string['secondarycolour'] = 'Pick a secondary colour';
+$string['secondarycolourdesc'] = 'This is the colour of elements such as the site name / logo and calendar accents';
+$string['secondaryfontcolour'] = 'Pick a secondary font colour';
+$string['secondaryfontcolourdesc'] = 'This is the colour of text within the secondary colour';
+$string['secondarylinkcolour'] = 'Pick a secondary link colour';
+$string['secondarylinkcolourdesc'] = 'This is the colour of links within the secondary colour';
+$string['footercolour'] = 'Pick a footer colour';
+$string['footercolourdesc'] = 'This is the colour of the footer';
+$string['footerfontcolour'] = 'Pick a footer font colour';
+$string['footerfontcolourdesc'] = 'This is the colour of text within the footer';
+$string['footerlinkcolour'] = 'Pick a footer link colour';
+$string['footerlinkcolourdesc'] = 'This is the colour of links within the footer';
+$string['blocklinkcolour'] = 'Pick a block link colour';
+$string['blocklinkcolourdesc'] = 'This is the colour of links within the block elements';
+$string['mainlinkcolour'] = 'Pick a main link colour';
+$string['mainlinkcolourdesc'] = 'This is the colour of links within the main content (non primary, secondard or block elements)';
+
+
 
 /*theme_tikli_frontpage*/
 
