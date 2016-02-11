@@ -38,11 +38,9 @@ function theme_tikli_process_css($css, $theme) {
     } else {
         $font = 'Raleway';
     }
-    $logobackgroundimage = $theme->setting_file_url('logobackgroundimage', 'logobackgroundimage');
 
     $headingfont = theme_tikli_get_setting('fontnameheading');
     $bodyfont = theme_tikli_get_setting('fontnamebody');
-    $css = theme_tikli_set_logobackgroundimage($css, $logobackgroundimage);
     $css = theme_tikli_set_headingfont($css, $headingfont);
     $css = theme_tikli_set_bodyfont($css, $bodyfont);
     $css = theme_tikli_set_fontfiles($css, 'heading', $headingfont);
@@ -55,18 +53,6 @@ function theme_tikli_process_css($css, $theme) {
         $customcss = null;
     }
     $css = theme_tikli_set_customcss($css, $customcss);
-    return $css;
-}
-
-function theme_tikli_set_logobackgroundimage($css, $themelogobackgroundimage) {
-    GLOBAL $CFG;
-    $colorscheme = get_config('theme_tikli', 'colorscheme');
-    $tag = '[[setting:logobackgroundimage]]';
-    $replacement = $themelogobackgroundimage;
-    if (is_null($replacement)) {
-        $replacement = $CFG->wwwroot.'/theme/tikli/css/img/'.$colorscheme.'/b-logo.png';
-    }
-    $css = str_replace($tag, $replacement, $css);
     return $css;
 }
 
