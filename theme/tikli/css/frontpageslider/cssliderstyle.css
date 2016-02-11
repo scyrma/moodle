@@ -47,7 +47,7 @@
 }
 
 .da-slide h2 {
-	font-weight:700!important;	
+	font-weight:700!important;
 }
 
 .da-slide span {
@@ -55,7 +55,6 @@
 }
 
 .da-slide h2{
-	color: #fff;
 	width: 50%;
 	top: 45px;
 	font-size: 27px;
@@ -78,7 +77,7 @@
 	width: 30%;
 	height: 422px;
 	line-height: 422px;
-	left: 110%; 
+	left: 110%;
 }
 .da-slide .da-link{
 	top: 270px; /*depends on p height*/
@@ -115,7 +114,7 @@
 	border: solid 2px #ff9e57;
 	margin: 3px;
 	cursor: pointer;
-	
+
 }
 .da-dots span.da-dots-current:after{
 	content: '';
@@ -689,7 +688,7 @@
 }
 }
 
-@media screen and (max-width: 1279px) { 
+@media screen and (max-width: 1279px) {
 
 .da-slide h2 {
     font-size: 18px;
@@ -701,21 +700,21 @@
 
 }
 
-@media screen and (max-width: 767px) { 
+@media screen and (max-width: 767px) {
 
 .da-slide h2 {
-    font-size: 13px; 
+    font-size: 13px;
 	line-height: 20px!important;
 }
 
 .da-slide p {
-    font-size: 13px; 
+    font-size: 13px;
 	line-height: 20px!important;
 }
 
 }
 
-@media screen and (max-width: 480px) { 
+@media screen and (max-width: 480px) {
 
 .da-slide h2 {
     line-height: 18px!important;
