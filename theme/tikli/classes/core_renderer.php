@@ -7,10 +7,7 @@ require_once($CFG->dirroot . '/mod/forum/lib.php');
 class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
     private $cssfiles = array(
-        //'bootstrap.css',
-        //'bootstrap-responsive.css',
         'font-awesome.min.css',
-        //'styles.css'
     );
 
     private $jsfiles = array(
@@ -18,11 +15,8 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         'bootstrap.min.js'
     );
 
-    private function get_course_details() {
+    private function serialise_courses($courses) {
         global $DB, $CFG;
-
-        $coursecategory = coursecat::get_default();
-        $courses = $coursecategory->get_courses(array('summary' => 1, 'coursecontacts' => 1));
 
         if (empty($courses)) {
             return array();
@@ -30,7 +24,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
         $coursedetailsarray = array();
         foreach ($courses as $course) {
-            //$context = context_course::instance($course->id);
             $url = new \moodle_url('/course/view.php', array('id' => $course->id));
             $enrolledusersurl = new \moodle_url('/enrol/users.php', array('id' => $course->id));
             $summary = format_text($course->summary, $course->summaryformat, array(), $course->id);
@@ -274,7 +267,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         $frontpagejsfiles = array(
             'jquery.bxslider.min.js',
             'frontpage.js',
-            'font.js',
         );
 
         return $this->base_theme_head_html($frontpagecssfiles, $frontpagejsfiles);
@@ -322,10 +314,14 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         $discussions = forum_get_discussions($cm, "", false, -1, 3);
         $linkurl = new \moodle_url('mod/forum/view.php', array('id' => $forum->id));
 
+        if (empty($discussions) && !forum_user_can_post_discussion($forum, null, -1, $cm)) {
+            return "";
+        }
+
         $context = array(
-            'heading' => 'News & Updates',
+            'heading' => $forum->name,
             'linkurl' => $linkurl->out(),
-            'linktext' => 'see all announcements',
+            'linktext' => get_string('newslink', 'theme_tikli'),
             'newsitems' => array()
         );
 
@@ -342,11 +338,14 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function frontpage_courses() {
-        $coursedetails = $this->get_course_details();
+        $coursecategory = coursecat::get(0);
+        $courses = $coursecategory->get_courses(array('summary' => 1, 'coursecontacts' => 1, 'recursive' => 1));
 
-        if (empty($coursedetails)) {
+        if (empty($courses)) {
             return "";
         }
+
+        $coursedetails = $this->serialise_courses($courses);
 
         $categorydetails = array();
         $categoriesurl = new \moodle_url('/course/index.php');
@@ -497,11 +496,14 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function coursecategory_courses() {
-        $coursedetails = $this->get_course_details();
+        $coursecategory = coursecat::get(0);
+        $courses = $coursecategory->get_courses(array('summary' => 1, 'coursecontacts' => 1, 'recursive' => 1));
 
-        if (empty($coursedetails)) {
+        if (empty($courses)) {
             return "";
         }
+
+        $coursedetails = $this->serialise_courses($courses);
 
         $colorscheme = get_config('theme_tikli', 'colorscheme');
         $coursesearchurl = new \moodle_url('/course/search.php');
