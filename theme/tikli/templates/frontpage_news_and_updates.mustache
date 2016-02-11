@@ -9,10 +9,10 @@
         </div>
         <div class="row">
             <div class="span3">
-                <h3>{{#str}} newstitle, theme_tikli {{/str}}</h3>
+                <h3>{{heading}}</h3>
                 <p>
                     <a href="{{{linkurl}}}" class="btn-see-all">
-                        {{#str}} newslink, theme_tikli {{/str}}
+                        {{linktext}}
                         <span class="circle">
                             <span class="chevron right"></span>
                         </span>
@@ -23,6 +23,11 @@
                 <div class="span3 news-updates-extraclass">
                     <p><a href="{{{linkurl}}}">{{title}}</a></p>
                     <h5>{{modified}}</h5>
+                </div>
+            {{/newsitems}}
+            {{^newsitems}}
+                <div class="span9">
+                    <a href="{{{linkurl}}}">{{#str}} nonewsitems, theme_tikli {{/str}}</a>
                 </div>
             {{/newsitems}}
         </div>
