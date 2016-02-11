@@ -1,17 +1,4 @@
 <?php
-$string['choosereadme'] = '
-<div class="clearfix">
-<div class="well">
-<h2>Tikli</h2>
-<p><img class=img-polaroid src="tikli/pix/screenshot.jpg" /></p>
-</div>
-<div class="well">
-<h3>Theme Credits</h3>
-<p>Authors: Ensine Knowledge System PVT LTD.<br>
-Contact: tikli@dualcube.com<br>
-Website: <a href="https://dualcube.com/">https://dualcube.com/</a>
-</p>
-</div></div>';
 
 $string['generalsettings' ] = 'General Settings';
 $string['navsettings'] = 'Nav Settings';
@@ -30,8 +17,6 @@ $string['sliderprev'] = 'Previous slide';
 /*logo*/
 $string['logo'] = 'Logo';
 $string['logodesc'] = 'You may add the logo to be displayed on the header. Note- Preferred aspect ratio is 6:1. In case you wish to customise, you can do so from the     custom CSS box below.';
-$string['logobackgroundimage'] = 'Logo Background Image';
-$string['logobackgroundimagedesc'] = 'You may add a background image for the logo.';
 $string['logoorsitename'] = 'Choose site logo format';
 $string['logoorsitenamedesc'] = 'You may customise how the site header logo looks like. The options available are: Logo - Only the logo will be shown; Sitename - Only the sitename will be shown; Icon+sitename - An icon along with the sitename will be shown.';
 $string['onlylogo'] = 'Logo Only';
