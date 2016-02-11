@@ -9,8 +9,5 @@ if ( get_config('theme_tikli', 'logoorsitename') === "sitename" ||  (get_config(
 		font-size: 22px !important;
 		background-image: none !important;
 	}
-	#page .loginbox h2 a:hover {
-		color: #FFF!important;
-	}
 </style>
 <?php } ?>
