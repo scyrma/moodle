@@ -366,8 +366,35 @@ function theme_tikli_less_variables($theme) {
     if (!empty($theme->settings->primarycolour)) {
         $variables['primaryColour'] = $theme->settings->primarycolour;
     }
+    if (!empty($theme->settings->primaryfontcolour)) {
+        $variables['primaryFontColour'] = $theme->settings->primaryfontcolour;
+    }
+    if (!empty($theme->settings->primarylinkcolour)) {
+        $variables['primaryLinkColour'] = $theme->settings->primarylinkcolour;
+    }
     if (!empty($theme->settings->secondarycolour)) {
         $variables['secondaryColour'] = $theme->settings->secondarycolour;
+    }
+    if (!empty($theme->settings->secondaryfontcolour)) {
+        $variables['secondaryFontColour'] = $theme->settings->secondaryfontcolour;
+    }
+    if (!empty($theme->settings->secondarylinkcolour)) {
+        $variables['secondaryLinkColour'] = $theme->settings->secondarylinkcolour;
+    }
+    if (!empty($theme->settings->footercolour)) {
+        $variables['footerColour'] = $theme->settings->footercolour;
+    }
+    if (!empty($theme->settings->footerfontcolour)) {
+        $variables['footerFontColour'] = $theme->settings->footerfontcolour;
+    }
+    if (!empty($theme->settings->footerlinkcolour)) {
+        $variables['footerLinkColour'] = $theme->settings->footerlinkcolour;
+    }
+    if (!empty($theme->settings->mainlinkcolour)) {
+        $variables['mainLinkColour'] = $theme->settings->mainlinkcolour;
+    }
+    if (!empty($theme->settings->blocklinkcolour)) {
+        $variables['blockLinkColour'] = $theme->settings->blocklinkcolour;
     }
     return $variables;
 }
