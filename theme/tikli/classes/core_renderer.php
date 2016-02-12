@@ -500,17 +500,12 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
         $coursedetails = $this->serialise_courses($courses);
 
-        $colorscheme = get_config('theme_tikli', 'colorscheme');
         $coursesearchurl = new \moodle_url('/course/search.php');
         $addcourseurl = new \moodle_url('/course/edit.php', array('category' => 1, 'returnto' => 'category'));
         $coursecontext = context_course::instance(1);
 
         $context = array(
             'courses' => $coursedetails,
-            'imageurls' => array(
-                'courselink' => $this->get_theme_source_img(sprintf("%s/i-c-1.png", $colorscheme)),
-                'enrolleduserslink' => $this->get_theme_source_img(sprintf("%s/i-c-2.png", $colorscheme)),
-            ),
             'urls' => array(
                 'coursesearch' => $coursesearchurl->out(),
                 'addcourse' => $addcourseurl->out(),
