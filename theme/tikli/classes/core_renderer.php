@@ -6,10 +6,6 @@ require_once($CFG->dirroot . '/mod/forum/lib.php');
 
 class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
-    private $cssfiles = array(
-        'font-awesome.min.css',
-    );
-
     private $jsfiles = array(
         'jquery-2.1.4.js',
         'bootstrap.min.js'
@@ -246,7 +242,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function base_theme_head_html($cssfiles = array(), $jsfiles = array()) {
-        $cssfiles = array_merge($this->cssfiles, $cssfiles);
         $jsfiles = array_merge($this->jsfiles, $jsfiles);
         $context = array(
             'cssfiles' => array_map(array($this, 'get_theme_source_css'), $cssfiles),
