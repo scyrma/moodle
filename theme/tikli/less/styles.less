@@ -2029,10 +2029,18 @@ header.navbar {
 
 .breadcrumb span.arrow {
 	font-size: 0;
-	width: 10px;
-	height: 10px;
-	background: url([[pix:theme|custom/i-breadcrumb-sep]]) no-repeat center center;
 	display: inline-block;
+
+    &:before {
+        content: "\f105";
+        font: normal normal normal 14px/1 FontAwesome;
+        display: inline-block;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 20px;
+        line-height: 24px;
+    }
 }
 
 .backup_progress span.arrow {
@@ -2134,6 +2142,7 @@ header.navbar {
 	float: left;
 }
 
+.coursesearchform,
 .adminsearchform {
 	line-height: 35px;
 	float: right;
@@ -2141,6 +2150,7 @@ header.navbar {
 }
 
 .adminsearchform input[type="text"],
+.coursesearchform input[type="text"],
 .block_blog_menu .blogsearchform input[type="text"] {
 	margin: 0;
 	padding: 0 10px 0;
@@ -2173,15 +2183,45 @@ header.navbar {
 	margin: 0!important;
 	padding: 0;
 	border-radius: 0 4px 4px 0!important;
-	background-image: url([[pix:theme|custom/red-orange/b-sprite]])!important;
-	background-position: -95px -368px;
 	width: 38px;
 	height: 38px;
 	overflow: hidden;
 	text-indent: -9999px;
 	float: right;
 	position: relative;
-	border-radius: 3px;
+    background-color: transparent;
+    z-index: 2;
+}
+
+#page {
+    .adminsearchform input[type="submit"],
+    .block_blog_menu .blogsearchform input[type="submit"],
+    #tag-search-box #searchform_button  {
+        background-color: transparent;
+    }
+}
+
+.adminsearchform div:after,
+.block_blog_menu .blogsearchform div:after,
+#tag-search-box #searchform_button:before {
+    content: "\f002";
+    font: normal normal normal 14px/1 FontAwesome;
+    display: inline-block;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+	border-radius: 0 4px 4px 0!important;
+    position: absolute;
+    font-size: 25px;
+    line-height: 40px;
+    color: #fff;
+    height: 38px;
+    width: 38px;
+    background-color: #4f4f4f;
+    z-index: 1;
+    box-sizing: border-box;
+    padding-left: 7px;
 }
 
 .adminsearchform input[type="submit"]:focus,
@@ -2203,9 +2243,8 @@ header.navbar {
 	margin-right: 2px;
 }
 
-.adminsearchform input[type="submit"]:hover {
-	background-color: #e74c3c;
-	background-position: -95px -368px;
+#page .adminsearchform input[type="submit"]:hover {
+	background-color: rgba(255, 255, 255, 0.8);
 }
 
 #block-region-side-post .adminsearchform,
@@ -4148,8 +4187,11 @@ div[class*="span"] {
 /* ----------------------------------------------------------------------------------- */
 
 @media screen and (min-width: 1400px) {
-.search-wr .adminsearchform {
-    width: 326px;
+.search-wr {
+    .coursesearchform,
+    .adminsearchform {
+        width: 326px;
+    }
 }
 
 }
@@ -4400,6 +4442,7 @@ h2 {
 footer p {
 	font-size: 10px;
 }
+.coursesearchform,
 .adminsearchform {
 	width: 70%;
 	width: ~"-webkit-calc(100% - 85px)";
@@ -4407,6 +4450,7 @@ footer p {
 	width: ~"calc(100% - 85px)";
 	border-radius: 5px;
 }
+.coursesearchform input[type="text"],
 .adminsearchform input[type="text"] {
 	border-color: transparent;
 }
@@ -4585,6 +4629,7 @@ footer {
 #block-region-side-post .header h2 {
 	font-size: 12px;
 }
+.coursesearchform input[type="text"],
 .adminsearchform input[type="text"] {
 	font-size: 13px;
 }
@@ -4610,12 +4655,14 @@ footer {
 	float: right;
 	padding: 4px 10px 0 0;
 }
+.coursesearchform,
 .adminsearchform {
 	border-radius: 4px;
 	height: 37px;
 	overflow: hidden;
 	box-sizing: border-box;
 }
+.coursesearchform input[type="text"],
 .adminsearchform input[type="text"] {
 	font-size: 13px;
 	height: 36px;
@@ -4624,6 +4671,7 @@ footer {
 .search-wr:hover input[type="text"] {
 	opacity: 1;
 }
+.coursesearchform input[type="text"]:focus,
 .adminsearchform input[type="text"]:focus {
 	opacity: 1;
 }
@@ -6194,16 +6242,19 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
 	 padding: 10px 20px;
 }
 
-#page .search-wr .adminsearchform button[type="submit"] {
+#page .search-wr .coursesearchform button[type="submit"] {
 	box-shadow: none;
 	border: none;
     margin: 0;
+    padding: 0;
     height: 38px;
+    width: 38px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     font-size: 25px;
 }
 
+#page .search-wr .coursesearchform input[type="text"],
 #page .search-wr .adminsearchform input[type="text"] {
 	height: 38px;
 	width: 89%;
@@ -6324,7 +6375,6 @@ div.minicalendarblock caption a {
 
 #dock .dockedtitle {
     border: none!important;
-    background-color: rgba(231, 76, 60, .8)!important;
     background-image: none!important;
     box-shadow: none!important;
     color: #FFF!important;
@@ -6410,14 +6460,16 @@ div.minicalendarblock caption a {
 	background: #2a2424!important;
 }
 
-#page .search-wr .adminsearchform button[type="submit"] {
+#page .search-wr .coursesearchform button[type="submit"] {
 	background-color: #a2a2af;
 }
 
+#page .search-wr .coursesearchform input[type="text"],
 #page .search-wr .adminsearchform input[type="text"] {
 	background: #e8e9f3;
 }
 
+.coursesearchform input[type="text"],
 .adminsearchform input[type="text"] {
 	border-color: #a2a2af;
 }
@@ -7150,7 +7202,8 @@ ul.dropdown-menu li.dropdown-submenu:hover>a {
 }
 
 #dock .dockedtitle {
-  background-color: rgba(90, 170, 224, 0.8) !important;
+    background-color: @primaryColour;
+    opacity: 0.8;
 }
 
 .view-toggle .btn-view-list.active,
