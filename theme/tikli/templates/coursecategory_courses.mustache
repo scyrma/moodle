@@ -1,15 +1,21 @@
 <div class="custommain">
     <div class="region-main-header clearfix">
         <div class="view-toggle">
-            <a href="javascript:void(0);" class="btn-view-list">{{#str}} listview, theme_tikli {{/str}}</a>
-            <a href="javascript:void(0);" class="btn-view-grid active">{{#str}} gridview, theme_tikli {{/str}}</a>
+            <a href="javascript:void(0);" class="btn-view-list" alt="{{#str}} listview, theme_tikli {{/str}}">
+                <i class="fa fa-bars"></i>
+            </a>
+            <a href="javascript:void(0);" class="btn-view-grid active" alt="{{#str}} gridview, theme_tikli {{/str}}">
+                <i class="fa fa-th"></i>
+            </a>
         </div>
         <div class="search-wr">
             <form class="adminsearchform" method="get" action="{{{urls.coursesearch}}}">
                 <div>
                     <label for="adminsearchquery" class="accesshide">{{#str}} coursesearch, theme_tikli {{/str}}</label>
-                    <input id="adminsearchquery" type="text" name="search" value="">
-                    <input type="submit" value="Go">
+                    <div class="input-append">
+                        <input id="adminsearchquery" type="text" name="search" value=""></input>
+                        <button type="submit" value="Go"><i class="fa fa-search"></i></button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -24,7 +30,10 @@
                             <a href="{{{url}}}"><img src="{{{imageurl}}}" alt="{{#str}} courseimage, theme_tikli, {{name}} {{/str}}"></a>
                         </div>
                         <div class="course-item-cont">
-                            <a href="javascript:void(0);" class="btn-togle-details"></a>
+                            <a href="javascript:void(0);" class="btn-togle-details">
+                                <i class="fa fa-plus-square-o closed"></i>
+                                <i class="fa fa-minus-square-o open"></i>
+                            </a>
                             <h5><a href="{{{url}}}">{{name}}</a></h5>
                             {{#contacts}}
                                 <div class="abc"><h6>{{rolename}} : <a href="{{{profileurl}}}">{{name}}</a></h6></div>
@@ -44,11 +53,11 @@
                                 </div>
                             </div>
                             <h4>
-                                <a href="{{{url}}}" data-toggle="tooltip" title="{{name}}">
-                                    <img src="{{{imageurls.courselink}}}" alt="{{#str}} viewcourse, theme_tikli, {{name}} {{/str}}">
+                                <a href="{{{url}}}" data-toggle="tooltip" title="{{name}}" alt="{{#str}} viewcourse, theme_tikli, {{name}} {{/str}}">
+                                    <i class="fa fa-arrow-circle-o-right"></i>
                                 </a>
-                                <a href="{{{enrolledusersurl}}}" data-toggle="tooltip" title="{{#str}} enrolusers, enrol {{/str}}">
-                                    <img src="{{{imageurls.enrolleduserslink}}}" alt="{{#str}} viewcourseusers, theme_tikli, {{name}} {{/str}}">
+                                <a href="{{{enrolledusersurl}}}" data-toggle="tooltip" title="{{#str}} enrolusers, enrol {{/str}}" alt="{{#str}} viewcourseusers, theme_tikli, {{name}} {{/str}}">
+                                    <i class="fa fa-users"></i>
                                 </a>
                             </h4>
                         </div>
