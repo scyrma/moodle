@@ -81,7 +81,7 @@ function theme_tikli_set_logo($css, $logo) {
     $tag = '[[setting:logo]]';
     $replacement = $logo;
     if (is_null($replacement)) {
-        $replacement = $CFG->wwwroot.'/theme/tikli/pix/logo-2.png';
+        return $css;
     }
 
     $css = str_replace($tag, $replacement, $css);
