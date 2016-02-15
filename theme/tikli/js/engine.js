@@ -29,12 +29,14 @@
 
 
 /*tooltip for column3home.php*/
-$('[data-toggle="tooltip"]').tooltip();
+// TODO: MAKE THIS WORK.
+//$('[data-toggle="tooltip"]').tooltip();
 
+/*
 $("li.dropdown").on("click",function() {
    $(this).toggleClass('open');
 });
-
+*/
 
 $('#block-region-side-pre').addClass('left-menu-close');
 $(".side-pre-menu").on("click",function() {
@@ -65,6 +67,15 @@ $(".btn-navbar").on("click",function() {
 	$('.usermenu-show').removeClass('usermenu-show');
 });
 
+$("#show-subcategories").click(function() {
+    $('#all-category-picker-container').addClass('hidden');
+    $('#subcategory-picker-container').removeClass('hidden');
+});
+
+$("#show-all-categories").click(function() {
+    $('#subcategory-picker-container').addClass('hidden');
+    $('#all-category-picker-container').removeClass('hidden');
+});
 
 $( window ).load(function() {
   var outerHeight = $('#region-main').outerHeight();

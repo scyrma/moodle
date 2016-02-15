@@ -8,7 +8,7 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
     private $jsfiles = array(
         'jquery-2.1.4.js',
-        'bootstrap.min.js'
+        //'bootstrap.min.js'
     );
 
     private function serialise_courses($courses) {
@@ -65,6 +65,18 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         }
 
         return $coursedetailsarray;
+    }
+
+    private function serialise_categories($categories) {
+        $serialiser = function($category) {
+            $url = new \moodle_url('/course/index.php', array('categoryid' => $category->id));
+            return array(
+                'name' => $category->name,
+                'url' => $url->out(),
+            );
+        };
+
+        return array_map($serialiser, $categories);
     }
 
     public function full_header() {
@@ -490,22 +502,61 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         }
     }
 
-    public function coursecategory_courses() {
-        $coursecategory = coursecat::get(0);
-        $courses = $coursecategory->get_courses(array('summary' => 1, 'coursecontacts' => 1, 'recursive' => 1));
-
-        if (empty($courses)) {
-            return "";
+    public function coursecategory_courses($categoryid) {
+        if (!$categoryid && coursecat::count_all() == 1) {
+            $coursecategory = coursecat::get_default();
+        } else {
+            $coursecategory = coursecat::get($categoryid);
         }
 
-        $coursedetails = $this->serialise_courses($courses);
+        $categorypickers = array();
+        if ($categoryid) {
+            $html = html_writer::start_tag('div', array('class' => 'categorypicker'));
+            $select = new single_select(new \moodle_url('/course/index.php'), 'categoryid',
+                    coursecat::make_categories_list(), $coursecategory->id, null, 'all-category-picker');
+            $select->set_label(get_string('allcategories').':');
+            $html .= $this->render($select);
+            $html .= html_writer::end_tag('div');
+
+            $categorypickers['all'] = $html;
+        }
+
+        $courses = $coursecategory->get_courses(array('summary' => 1, 'coursecontacts' => 1));
+        $hascourses = !empty($courses);
+        $coursedetails = array();
+
+        if ($hascourses) {
+            $coursedetails = $this->serialise_courses($courses);
+        }
+
+        $childcategories = array_values($coursecategory->get_children());
+        $haschildcategories = !empty($childcategories);
+
+        if ($haschildcategories) {
+            $categorylist = array('-1' => '');
+            foreach ($childcategories as $category) {
+                $categorylist[$category->id] = $category->name;
+            }
+
+            $html = html_writer::start_tag('div', array('class' => 'categorypicker'));
+            $select = new single_select(new \moodle_url('/course/index.php'), 'categoryid',
+                    $categorylist, $coursecategory->id, null, 'subcategory-picker');
+            $select->set_label(get_string('subcategories').':');
+            $html .= $this->render($select);
+            $html .= html_writer::end_tag('div');
+
+            $categorypickers['sub'] = $html;
+        }
 
         $coursesearchurl = new \moodle_url('/course/search.php');
         $addcourseurl = new \moodle_url('/course/edit.php', array('category' => 1, 'returnto' => 'category'));
         $coursecontext = context_course::instance(1);
 
         $context = array(
+            'hascourses' => $hascourses,
             'courses' => $coursedetails,
+            'haschildcategories' => $haschildcategories,
+            'categorypickers' => $categorypickers,
             'urls' => array(
                 'coursesearch' => $coursesearchurl->out(),
                 'addcourse' => $addcourseurl->out(),
