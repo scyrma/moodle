@@ -923,7 +923,7 @@ i img {
 .course-items {
 	font-family: 'Raleway';
 	text-align: center;
-	margin: -2% -1% 0 -1%;
+	margin: 0 -1% 0 -1%;
 }
 
 .course-items:after {
@@ -1068,10 +1068,6 @@ i img {
 	padding: 40px 0 18px;
 }
 
-.courses.frontpage-course-list-all {
-	margin: 29px 0 0;
-}
-
 .course-items.course-items-grid-view .for-list-view-wr {
 	display: block !important;
 	padding-bottom: 15px;
@@ -1110,7 +1106,7 @@ i img {
 }
 
 .course-items-list-view.course-items {
-	margin: 0 0 35px;
+	margin: 1% 0 35px;
 }
 
 .course-items-list-view .course-item {
@@ -2338,6 +2334,71 @@ header.navbar {
 .btn-show-more img {
 	vertical-align: middle;
 	margin: 0 16px 0 0;
+}
+
+.no-courses {
+    text-align: center;
+}
+
+.picker-container {
+    & > * {
+        display: inline-block;
+    }
+
+    #subcategory-picker-container {
+        &.hidden {
+            display: none;
+        }
+    }
+
+    #all-category-picker-container {
+        &.hidden {
+            display: none;
+        }
+    }
+
+    #category-picker-filter {
+        display: inline-block;
+        background-color: #a2a2af;
+        color: #fff;
+        height: 37px;
+        width: 37px;
+        border-radius: 3px;
+        font-size: 25px;
+        line-height: 38px;
+        text-align: center;
+        vertical-align: middle;
+
+        &.active {
+            background-color: @primaryColour;
+            color: @primaryFontColour;
+        }
+    }
+
+    .categorypicker {
+        label, select {
+            display: inline-block;
+        }
+
+        select {
+            height: 38px;
+            background-color: #e8e9f3;
+            border-color: #a2a2af;
+        }
+    }
+}
+
+#page-course-index-category {
+    .picker-container {
+        .categorypicker {
+            margin: 0;
+        }
+    }
+}
+
+#course-list-container {
+    padding: 0;
+    margin-top: 50px;
 }
 
 /* 6 - END of column3 page ---------------------------------------------------------- */
@@ -4082,10 +4143,6 @@ body.login-pagebg #region-main {
 	max-width: 100%;
 	width: 100%;
 }
-.course-items-list-view.course-items {
-	margin: 0 0 35px;
-}
-
 .course-items-list-view .course-item p {
 	padding: 0 30px 0 45px;
 	/*line-height: 26px;*/
