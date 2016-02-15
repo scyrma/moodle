@@ -13,6 +13,12 @@ $THEME->lessfile = 'styles';
 #$THEME->parents_exclude_sheets = array('bootstrapbase' => array('moodle'));
 $THEME->lessvariablescallback = 'theme_tikli_less_variables';
 $THEME->sheets = array('custom', 'moodlecloud');
+/*
+$THEME->javascripts_footer = array(
+    'fontpage',
+    'engine'
+);
+ */
 $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
 $THEME->enable_dock = true;

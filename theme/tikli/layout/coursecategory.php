@@ -2,6 +2,9 @@
 // Get the HTML for the settings bits.
 $html = theme_tikli_get_html_for_settings($OUTPUT, $PAGE);
 global $DB, $CFG;
+
+$categoryid = optional_param('categoryid', 0, PARAM_INT); // Category id
+
 // Set default (LTR) layout mark-up for a three column page.
 $regionmainbox = 'span9';
 $regionmain = 'span8 pull-right';
@@ -15,6 +18,10 @@ if (right_to_left()) {
     $sidepost = 'span3 desktop-first-column';
 }
 
+if ($CFG->forcelogin) {
+    require_login();
+}
+
 ?>
 <?php require('header.php'); ?>
 <div id="page" class="container-fluid course-category">
@@ -24,7 +31,8 @@ if (right_to_left()) {
         <div id="region-main-box" class="<?php echo $regionmainbox; ?>">
             <div class="row-fluid">
                 <section id="region-main" class="<?php echo $regionmain; ?>">
-                    <?php echo $OUTPUT->coursecategory_courses(); ?>
+                    <?php echo $OUTPUT->skip_link_target('maincontent'); ?>
+                    <?php echo $OUTPUT->coursecategory_courses($categoryid); ?>
                     <?php echo $OUTPUT->main_content(); ?>
                 </section>
                 <?php echo $OUTPUT->blocks('side-pre', $sidepre); ?>
