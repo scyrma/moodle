@@ -286,3 +286,4 @@ $string['coursedetails'] = 'Show details for course {$a}';
 $string['viewcourse'] = 'Go to course {$a}';
 $string['viewcourseusers'] = 'View enrolled users for course {$a}';
 $string['nocourses'] = 'There are no courses in this category';
+$string['filtersubcategories'] = 'Filter down to subcategories';
