@@ -24,6 +24,7 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             $enrolledusersurl = new \moodle_url('/enrol/users.php', array('id' => $course->id));
             $summary = format_text($course->summary, $course->summaryformat, array(), $course->id);
             $name = format_string(get_course_display_name_for_list($course), true, array());
+            $imageurl = '';
 
             $courseinfo = array(
                 'url' => $url->out(),
@@ -46,8 +47,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
                 }
             }
 
-            $imageurl = $CFG->wwwroot."/theme/tikli/data/nopic.jpg";
-
             foreach ($course->get_course_overviewfiles() as $file) {
                 $isimage = $file->is_valid_image();
                 if ($isimage) {
@@ -57,6 +56,11 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
                     break;
                 }
+            }
+
+            if (empty($imageurl)) {
+                $imagenumber = $course->id % 20;
+                $imageurl = sprintf("%s/theme/tikli/pix/custom/course/%s.jpg", $CFG->wwwroot, $imagenumber);
             }
 
             $courseinfo['imageurl'] = $imageurl;
