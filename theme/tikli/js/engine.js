@@ -67,7 +67,7 @@ $(".btn-navbar").on("click",function() {
 	$('.usermenu-show').removeClass('usermenu-show');
 });
 
-$('#category-picker-filter').click(function() {
+$('#category-picker-filter').on('click', function() {
     $('#all-category-picker-container').toggleClass('hidden');
     $('#subcategory-picker-container').toggleClass('hidden');
     $(this).toggleClass('active');
