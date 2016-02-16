@@ -1,0 +1,43 @@
+<div class="custommain">
+    <div class="region-main-header clearfix">
+        <div class="search-wr">
+            <form class="coursesearchform" method="get" action="{{{urls.coursesearch}}}">
+                <div>
+                    <label for="coursesearchquery" class="accesshide">{{#str}} coursesearch, theme_tikli {{/str}}</label>
+                    <div class="input-append">
+                        <input id="coursesearchquery" type="text" name="search" value="" placeholder="{{#str}} coursesearch, theme_tikli {{/str}}"></input>
+                        <button type="submit" value="Go"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div id="category-list-container" class="container-fluid">
+        <div class="row-fluid">
+            {{#categories}}
+                <a href="{{{url}}}" class="grid-item category">
+                    <h3 class="name">{{name}}</h3>
+                    <ul>
+                        <li title="{{#str}} numberofcourses {{/str}}">
+                            <i class="fa fa-graduation-cap"></i> {{coursecount}} {{#str}} courses {{/str}}
+                        </li>
+                        <li title="{{#str}} numberofsubcategories, theme_tikli {{/str}}">
+                            <i class="fa fa-sitemap"></i> {{subcategorycount}} {{#str}} subcategories {{/str}}
+                        </li>
+                    </ul>
+                    <div class="description">{{{description}}}</div>
+                </a>
+            {{/categories}}
+        </div>
+    </div>
+</div>
+{{#showaddcourse}}
+    <div class="center">
+        <div class="btn-show-more-wr">
+            <a class="btn-show-more" href="{{{urls.addcourse}}}">
+                <span>{{#str}} addnewcourse {{/str}}</span>
+            </a>
+        </div>
+    </div>
+{{/showaddcourse}}
