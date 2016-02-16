@@ -9,13 +9,9 @@
             <div class="span7 popular-course-links">
                 <ul>
                     {{#categories}}
-                        <li>
-                            {{#url}}<a href="{{{.}}}" alt="">{{/url}}
-                            {{name}}
-                            {{#url}}</a>{{/url}}
-                        </li>
+                        <li><a href="{{{url}}}" title="{{name}}">{{name}}</a></li>
                     {{/categories}}
-                    <li><a class="viewmore" href="{{{categoriesurl}}}" alt="">{{#str}}viewallcourses, theme_tikli{{/str}}</a></li>
+                    <li><a class="viewmore" href="{{{categoriesurl}}}">{{#str}}viewallcategories, theme_tikli{{/str}}</a></li>
                 </ul>
             </div>
         </div>
@@ -26,7 +22,7 @@
                     <li>
                         <div class="course-item">
                             <div class="img-wr">
-                                <a href="{{{url}}}"><img src="{{{imageurl}}}" alt="{{#str}} courseimage, theme_tikli, {{name}} {{/str}}"></a>
+                                <a href="{{{url}}}"><img src="{{{imageurl}}}" title="{{#str}} courseimage, theme_tikli, {{name}} {{/str}}"></a>
                             </div>
                             <div class="course-item-cont">
                                 <h5><a href="{{{url}}}">{{name}}</a></h5>
