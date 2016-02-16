@@ -68,11 +68,16 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     private function serialise_categories($categories) {
-        $serialiser = function($category) {
+        $helper = new \coursecat_helper();
+
+        $serialiser = function($category) use ($helper) {
             $url = new \moodle_url('/course/index.php', array('categoryid' => $category->id));
             return array(
                 'name' => $category->name,
                 'url' => $url->out(),
+                'description' => $helper->get_category_formatted_description($category),
+                'coursecount' => $category->coursecount,
+                'subcategorycount' => $category->get_children_count(),
             );
         };
 
@@ -502,15 +507,29 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         }
     }
 
-    public function coursecategory_courses($categoryid) {
-        if (!$categoryid && coursecat::count_all() == 1) {
-            $coursecategory = coursecat::get_default();
-        } else {
-            $coursecategory = coursecat::get($categoryid);
-        }
+    public function coursecategory_categories() {
+        global $CFG;
 
+        $category = coursecat::get(0);
+        $childcategories = array_values($category->get_children());
+        $moodlecontext = get_category_or_system_context($category->id);
+        $coursesearchurl = new \moodle_url('/course/search.php');
+        $addcourseurl = new \moodle_url('/course/edit.php', array('category' => $CFG->defaultrequestcategory, 'returnto' => 'topcat'));
+        $context = array(
+            'categories' => $this->serialise_categories($childcategories),
+            'showaddcourse' => has_capability('moodle/course:create', $moodlecontext),
+            'urls' => array(
+                'coursesearch' => $coursesearchurl->out(),
+                'addcourse' => $addcourseurl->out(),
+            ),
+        );
+
+        return $this->render_from_template('theme_tikli/coursecategory_categories', $context);
+    }
+
+    public function coursecategory_courses($coursecategory) {
         $categorypickers = array();
-        if ($categoryid) {
+        if ($coursecategory->id) {
             $html = html_writer::start_tag('div', array('class' => 'categorypicker'));
             $select = new single_select(new \moodle_url('/course/index.php'), 'categoryid',
                     coursecat::make_categories_list(), $coursecategory->id, null, 'all-category-picker');
@@ -549,8 +568,8 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
         }
 
         $coursesearchurl = new \moodle_url('/course/search.php');
-        $addcourseurl = new \moodle_url('/course/edit.php', array('category' => 1, 'returnto' => 'category'));
-        $coursecontext = context_course::instance(1);
+        $addcourseurl = new \moodle_url('/course/edit.php', array('category' => $coursecategory->id, 'returnto' => 'category'));
+        $moodlecontext = get_category_or_system_context($coursecategory->id);
 
         $context = array(
             'hascourses' => $hascourses,
@@ -561,9 +580,25 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
                 'coursesearch' => $coursesearchurl->out(),
                 'addcourse' => $addcourseurl->out(),
             ),
-            'showaddcourse' => has_capability('moodle/course:create', $coursecontext),
+            'showaddcourse' => has_capability('moodle/course:create', $moodlecontext),
         );
 
         return $this->render_from_template('theme_tikli/coursecategory_courses', $context);
+    }
+
+    public function coursecategory_index($categoryid) {
+        if (!$categoryid) {
+            // If no id is given and we've only got one category just show those courses.
+            if (coursecat::count_all() == 1) {
+                return $this->coursecategory_courses(coursecat::get_default());
+            } else {
+            // Otherwise show a list of the categories.
+                return $this->coursecategory_categories();
+            }
+        } else {
+        // If we were given a category id then show that one specifically.
+            $coursecategory = coursecat::get($categoryid);
+            return $this->coursecategory_courses($coursecategory);
+        }
     }
 }
