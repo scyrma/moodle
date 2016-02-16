@@ -167,7 +167,7 @@ $string['sliderautoplaydesc'] = 'Select ‘yes’ if you want automatic transiti
 $string['true'] = 'Yes';
 $string['false'] = 'No';
 
-$string['viewallcourses'] = 'View all courses';
+$string['viewallcategories'] = 'View all categories';
 $string['courseimage'] = 'Course image for {$a}';
 $string['courselinkimage'] = 'Link to course {$a}';
 $string['userimage'] = 'User profile image';
