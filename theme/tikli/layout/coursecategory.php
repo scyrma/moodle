@@ -32,7 +32,7 @@ if ($CFG->forcelogin) {
             <div class="row-fluid">
                 <section id="region-main" class="<?php echo $regionmain; ?>">
                     <?php echo $OUTPUT->skip_link_target('maincontent'); ?>
-                    <?php echo $OUTPUT->coursecategory_courses($categoryid); ?>
+                    <?php echo $OUTPUT->coursecategory_index($categoryid); ?>
                     <?php echo $OUTPUT->main_content(); ?>
                 </section>
                 <?php echo $OUTPUT->blocks('side-pre', $sidepre); ?>
