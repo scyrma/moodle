@@ -68,6 +68,10 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     private function serialise_categories($categories) {
+        if (empty($categories)) {
+            return array();
+        }
+
         $helper = new \coursecat_helper();
 
         $serialiser = function($category) use ($helper) {
@@ -359,19 +363,16 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
         $coursedetails = $this->serialise_courses($courses);
 
-        $categorydetails = array();
         $categoriesurl = new \moodle_url('/course/index.php');
-        $categorieslist = coursecat::make_categories_list();
-        $categoryids = array_keys($categorieslist);
-        $categories = coursecat::get_many($categoryids);
-        unset($categorieslist);
+        $category = coursecat::get(0);
+        $categories = array_values($category->get_children());
 
-        foreach ($categories as $category) {
-            // Only show visible categories that have at least one course.
-            if ($category->visible && $category->coursecount) {
-                $categorydetails[] = array('name' => $category->name);
-            }
-        }
+        $filter = function($category) {
+            return $category->visible && $category->coursecount;
+        };
+
+        $categories = array_values(array_filter($categories, $filter));
+        $categorydetails = $this->serialise_categories($categories);
 
         $context = array(
             'courses' => $coursedetails,
