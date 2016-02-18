@@ -209,30 +209,14 @@ function theme_tikli_pluginfile($course, $cm, $context, $filearea, $args, $force
             return $theme->setting_file_serve('slideimage5', $args, $forcedownload, $options);
         } else if($filearea === 'faviconurl') {
             return $theme->setting_file_serve('faviconurl', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_1_1') {
-            return $theme->setting_file_serve('feedbackslideimage_1_1', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_2_1') {
-            return $theme->setting_file_serve('feedbackslideimage_2_1', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_3_1') {
-            return $theme->setting_file_serve('feedbackslideimage_3_1', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_4_1') {
-            return $theme->setting_file_serve('feedbackslideimage_4_1', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_1_2') {
-            return $theme->setting_file_serve('feedbackslideimage_1_2', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_2_2') {
-            return $theme->setting_file_serve('feedbackslideimage_2_2', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_3_2') {
-            return $theme->setting_file_serve('feedbackslideimage_3_2', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_4_2') {
-            return $theme->setting_file_serve('feedbackslideimage_4_2', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_1_3') {
-            return $theme->setting_file_serve('feedbackslideimage_1_3', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_2_3') {
-            return $theme->setting_file_serve('feedbackslideimage_2_3', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_3_3') {
-            return $theme->setting_file_serve('feedbackslideimage_3_3', $args, $forcedownload, $options);
-        } else if($filearea === 'feedbackslideimage_4_3') {
-            return $theme->setting_file_serve('feedbackslideimage_4_3', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_1') {
+            return $theme->setting_file_serve('feedbackslideimage_1', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_2') {
+            return $theme->setting_file_serve('feedbackslideimage_2', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_3') {
+            return $theme->setting_file_serve('feedbackslideimage_3', $args, $forcedownload, $options);
+        } else if($filearea === 'feedbackslideimage_4') {
+            return $theme->setting_file_serve('feedbackslideimage_4', $args, $forcedownload, $options);
         } else {
             send_file_not_found();
         }
