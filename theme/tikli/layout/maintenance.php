@@ -10,9 +10,6 @@ echo $OUTPUT->doctype() ?>
     <link href="<?php echo $CFG->wwwroot ?>/theme/tikli/css/styles.css" rel="stylesheet">
     <?php echo $OUTPUT->standard_head_html() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php
-      include($CFG->dirroot . '/theme/tikli/settings/colorchange.php');
-    ?>
 </head>
 
 <body <?php echo $OUTPUT->body_attributes(); ?>>
