@@ -12,7 +12,6 @@ $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
 <head>
     <?php
         echo $OUTPUT->standard_theme_head_html();
-        include($CFG->dirroot . '/theme/tikli/settings/colorchange.php');
         echo $OUTPUT->standard_head_html()
     ?>
 </head>
