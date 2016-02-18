@@ -197,6 +197,16 @@ function theme_tikli_pluginfile($course, $cm, $context, $filearea, $args, $force
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
         } else if (preg_match("/^(marketing|slide)[1-9][0-9]*image$/", $filearea)) {
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
+        } else if($filearea === 'slideimage1') {
+            return $theme->setting_file_serve('slideimage1', $args, $forcedownload, $options);
+        } else if($filearea === 'slideimage2') {
+            return $theme->setting_file_serve('slideimage2', $args, $forcedownload, $options);
+        } else if($filearea === 'slideimage3') {
+            return $theme->setting_file_serve('slideimage3', $args, $forcedownload, $options);
+        } else if($filearea === 'slideimage4') {
+            return $theme->setting_file_serve('slideimage4', $args, $forcedownload, $options);
+        } else if($filearea === 'slideimage5') {
+            return $theme->setting_file_serve('slideimage5', $args, $forcedownload, $options);
         } else if($filearea === 'faviconurl') {
             return $theme->setting_file_serve('faviconurl', $args, $forcedownload, $options);
         } else if($filearea === 'feedbackslideimage_1_1') {
