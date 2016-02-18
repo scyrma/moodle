@@ -23,7 +23,6 @@ echo $OUTPUT->doctype();?>
 
 		});
 	</script>
-	<?php include($CFG->dirroot . '/theme/tikli/settings/colorchange.php'); ?>
 	<?php echo $OUTPUT->standard_head_html() ?>
 </head>
 	<body class="landing-page">
