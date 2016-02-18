@@ -5897,12 +5897,6 @@ form.logselecform select.select {
 	z-index: 1111!important;
 }
 
-.dropdown-menu li {
-	padding-top: 6px!important;
-	padding-bottom: 6px!important;
-	border-bottom: solid 1px #e3e3ec!important;
-}
-
 .navbar .dropdown-menu li a {
 	color: #000;
 }
@@ -7227,12 +7221,25 @@ footer span {
 }
 
 .dropdown-menu li {
-    border-bottom: 1px solid #e3e3ec !important;
+    border-bottom: 1px solid #e3e3ec;
     padding-bottom: 6px !important;
     padding-left: 5%;
+    padding-right: 5%;
     padding-top: 6px !important;
-    width: 94%;
     word-wrap: break-word;
+    box-sizing: border-box;
+
+    &:last-child {
+        border-bottom: 1px solid transparent;
+    }
+}
+
+.dropdown-menu > li > a {
+    display: inline-block;
+}
+
+.dropdown-submenu > a:after {
+    display: inline-block;
 }
 
 .dropdown-menu .divider {
