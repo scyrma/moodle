@@ -175,7 +175,7 @@ if (is_siteadmin()) {
     $name = 'theme_tikli/frontpageimagecontent';
     $title = get_string('frontpageimagecontentstyle', 'theme_tikli');
     $description = get_string('frontpageimagecontentstyledesc', 'theme_tikli');
-    $setting = new admin_setting_configselect($name, $title, $description, 1,
+    $setting = new admin_setting_configselect($name, $title, $description, 0,
     array(
             0 => get_string('staticcontent', 'theme_tikli'),
             1 => get_string('slidercontent', 'theme_tikli'),
@@ -364,110 +364,97 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    $name = 'theme_tikli/feedbackslidecount';
-    $title = get_string('feedbackslidecount', 'theme_tikli');
-    $description = get_string('feedbackslidecountdesc', 'theme_tikli');
-    $setting = new admin_setting_configselect($name, $title, $description, 3,
-    array(
-            1 => get_string('one', 'theme_tikli'),
-            2 => get_string('two', 'theme_tikli'),
-            3 => get_string('three', 'theme_tikli'),
-        ));
+    $name = 'theme_tikli/feedbackslideimage_1';
+    $title = get_string('feedbackslideimage', 'theme_tikli');
+    $description = get_string('feedbackslideimagedesc', 'theme_tikli');
+    $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_1');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    for($feedbackslides = 1; $feedbackslides <= get_config('theme_tikli', 'feedbackslidecount'); $feedbackslides = $feedbackslides + 1) {
-        $name = 'theme_tikli/feedbackslideimage_1_'.$feedbackslides;
-        $title = get_string('feedbackslideimage', 'theme_tikli');
-        $description = get_string('feedbackslideimagedesc', 'theme_tikli');
-        $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_1_'.$feedbackslides);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslidename_1';
+    $title = get_string('feedbackslidename', 'theme_tikli');
+    $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslidename_1_'.$feedbackslides;
-        $title = get_string('feedbackslidename', 'theme_tikli');
-        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
-        $default = '';
-        $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslidereview_1';
+    $title = get_string('feedbackslidereview', 'theme_tikli');
+    $description = get_string('feedbackslidereviewdesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslidereview_1_'.$feedbackslides;
-        $title = get_string('feedbackslidereview', 'theme_tikli');
-        $description = get_string('feedbackslidereviewdesc', 'theme_tikli');
-        $default = '';
-        $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslideimage_2';
+    $title = get_string('feedbackslideimage', 'theme_tikli');
+    $description = get_string('feedbackslideimagedesc', 'theme_tikli');
+    $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_2');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslideimage_2_'.$feedbackslides;
-        $title = get_string('feedbackslideimage', 'theme_tikli');
-        $description = get_string('feedbackslideimagedesc', 'theme_tikli');
-        $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_2_'.$feedbackslides);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslidename_2';
+    $title = get_string('feedbackslidename', 'theme_tikli');
+    $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslidename_2_'.$feedbackslides;
-        $title = get_string('feedbackslidename', 'theme_tikli');
-        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
-        $default = '';
-        $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslidereview_2';
+    $title = get_string('feedbackslidereview', 'theme_tikli');
+    $description = get_string('feedbackslidereviewdesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslidereview_2_'.$feedbackslides;
-        $title = get_string('feedbackslidereview', 'theme_tikli');
-        $description = get_string('feedbackslidereviewdesc', 'theme_tikli');
-        $default = '';
-        $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslideimage_3';
+    $title = get_string('feedbackslideimage', 'theme_tikli');
+    $description = get_string('feedbackslideimagedesc', 'theme_tikli');
+    $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_3');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslideimage_3_'.$feedbackslides;
-        $title = get_string('feedbackslideimage', 'theme_tikli');
-        $description = get_string('feedbackslideimagedesc', 'theme_tikli');
-        $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_3_'.$feedbackslides);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslidename_3';
+    $title = get_string('feedbackslidename', 'theme_tikli');
+    $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslidename_3_'.$feedbackslides;
-        $title = get_string('feedbackslidename', 'theme_tikli');
-        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
-        $default = '';
-        $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslidereview_3';
+    $title = get_string('feedbackslidereview', 'theme_tikli');
+    $description = get_string('feedbackslidereviewdesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslidereview_3_'.$feedbackslides;
-        $title = get_string('feedbackslidereview', 'theme_tikli');
-        $description = get_string('feedbackslidereviewdesc', 'theme_tikli');
-        $default = '';
-        $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslideimage_4';
+    $title = get_string('feedbackslideimage', 'theme_tikli');
+    $description = get_string('feedbackslideimagedesc', 'theme_tikli');
+    $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_4');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslideimage_4_'.$feedbackslides;
-        $title = get_string('feedbackslideimage', 'theme_tikli');
-        $description = get_string('feedbackslideimagedesc', 'theme_tikli');
-        $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_4_'.$feedbackslides);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
+    $name = 'theme_tikli/feedbackslidename_4';
+    $title = get_string('feedbackslidename', 'theme_tikli');
+    $description = get_string('feedbackslidenamedesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
-        $name = 'theme_tikli/feedbackslidename_4_'.$feedbackslides;
-        $title = get_string('feedbackslidename', 'theme_tikli');
-        $description = get_string('feedbackslidenamedesc', 'theme_tikli');
-        $default = '';
-        $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
-
-        $name = 'theme_tikli/feedbackslidereview_4_'.$feedbackslides;
-        $title = get_string('feedbackslidereview', 'theme_tikli');
-        $description = get_string('feedbackslidereviewdesc', 'theme_tikli');
-        $default = '';
-        $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
-    }
+    $name = 'theme_tikli/feedbackslidereview_4';
+    $title = get_string('feedbackslidereview', 'theme_tikli');
+    $description = get_string('feedbackslidereviewdesc', 'theme_tikli');
+    $default = '';
+    $setting = new admin_setting_configtextarea($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
     $ADMIN->add('theme_tikli', $temp);
 

@@ -403,36 +403,30 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             'iframe' => get_config('theme_tikli', 'feedbackiframe'),
             'brieftext' => get_config('theme_tikli', 'feedbackbrieftext'),
             'slides' => array(),
-            'imageurls' => array(
-                'sliderprev' => $this->get_theme_source_img('bxslider-img/arr-l-grid.png'),
-                'slidernext' => $this->get_theme_source_img('bxslider-img/arr-r-grid.png'),
-            )
         );
 
-        for($feedbackslides = 1; $feedbackslides <= get_config('theme_tikli', 'feedbackslidecount'); $feedbackslides = $feedbackslides + 1) {
-            $slide = array();
-            $column = 'column1';
-            for($feedinner = 1; $feedinner <= 4; $feedinner = $feedinner + 1) {
-                if ($feedinner >= 3) {
-                    $column = 'column2';
-                }
+        for ($slidenumber = 1; $slidenumber <= 4; $slidenumber++) {
+            $name = get_config('theme_tikli', 'feedbackslidename_'.$slidenumber);
+            $text = get_config('theme_tikli', 'feedbackslidereview_'.$slidenumber);
 
-                $feedback = array();
-                $hasimg = get_config('theme_tikli', 'feedbackslideimage_'.$feedinner.'_'.$feedbackslides);
-                if (!empty($hasimg)) {
-                    $feedback['imageurl'] = $PAGE->theme->setting_file_url('feedbackslideimage_'.$feedinner.'_'.$feedbackslides, 'feedbackslideimage_'.$feedinner.'_'.$feedbackslides);
-                } else {
-                    $feedback['imageurl'] = $this->get_theme_source_img('userimage.png');
-                }
+            if (empty($name) || empty($text)) {
+                continue;
+            }
 
-                $feedback['name'] = get_config('theme_tikli', 'feedbackslidename_'.$feedinner.'_'.$feedbackslides);
-                $feedback['text'] = get_config('theme_tikli', 'feedbackslidereview_'.$feedinner.'_'.$feedbackslides);
+            $slide = array(
+                'name' => $name,
+                'text' => $text,
+            );
 
-                $slide[$column][] = $feedback;
+            $hasimg = get_config('theme_tikli', 'feedbackslideimage_'.$slidenumber);
+            if (!empty($hasimg)) {
+                $slide['imageurl'] = $PAGE->theme->setting_file_url('feedbackslideimage_'.$slidenumber, 'feedbackslideimage_'.$slidenumber);
             }
 
             $context['slides'][] = $slide;
         }
+
+        $context['hasslides'] = !empty($context['slides']);
 
         return $this->render_from_template('theme_tikli/frontpage_feedback', $context);
     }
