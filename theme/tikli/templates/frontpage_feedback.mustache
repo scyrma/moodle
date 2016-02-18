@@ -1,50 +1,27 @@
 <div class="row-fluid">
     <div class="students-area">
         <div class="container">
-            <div class="span5 students-area-feedback">
-                {{#heading}}<h3>{{.}}</h3>{{/heading}}
-                {{#subheading}}<h2>{{.}}</h2>{{/subheading}}
-                {{#iframe}}{{{.}}}{{/iframe}}
-                {{#brieftext}}{{{.}}}{{/brieftext}}
+            <div class="students-area-feedback
+                {{#hasslides}}span5{{/hasslides}}
+                {{^hasslides}}no-slides{{/hasslides}}">
+                    {{#heading}}<h3>{{.}}</h3>{{/heading}}
+                    {{#subheading}}<h2>{{.}}</h2>{{/subheading}}
+                    {{#iframe}}{{{.}}}{{/iframe}}
+                    {{#brieftext}}{{{.}}}{{/brieftext}}
             </div>
-            <div class="span7 slidergrid">
-                <ul class="bxslidergrid">
-                    {{#slides}}
-                        <li>
-                            <div class="div_to_hold">
-                                {{#column1}}
-                                    <div class="grid-testimo">
-                                        <div class="blog_box">
-                                            <div class="blog_box_bloger"><img src="{{{imageurl}}}" alt="{{#str}} userimage, theme_tikli {{/str}}"></div>
-                                            {{{name}}}
-                                            <p>“{{text}}”</p>
-                                        </div>
-                                    </div>
-                                {{/column1}}
-                            </div>
-                            <div class="div_to_hold">
-                                {{#column2}}
-                                    <div class="grid-testimo">
-                                        <div class="blog_box">
-                                            <div class="blog_box_bloger"><img src="{{{imageurl}}}" alt="{{#str}} userimage, theme_tikli {{/str}}"></div>
-                                            {{{name}}}
-                                            <p>“{{text}}”</p>
-                                        </div>
-                                    </div>
-                                {{/column2}}
-                            </div>
-                        </li>
-                    {{/slides}}
-                </ul>
-                <div class="bxslidergrid-nav">
-                    <span id="bxslidergrid-prev">
-                        <img src="{{{imageurls.sliderprev}}}" alt="{{#str}} sliderprev, theme_tikli {{/str}}">
-                    </span>
-                    <span id="bxslidergrid-next">
-                        <img src="{{{imageurls.slidernext}}}" alt="{{#str}} slidernext, theme_tikli {{/str}}">
-                    </span>
-                </div>
+            {{#hasslides}}
+            <div class="span7">
+                {{#slides}}
+                    <div class="grid-testimo">
+                        <div class="blog_box">
+                            {{#imageurl}}<div class="blog_box_bloger"><img src="{{{.}}}" alt="{{#str}} userimage, theme_tikli {{/str}}"></div>{{/imageurl}}
+                            <div class="testimonial-name">{{{name}}}</div>
+                            <p class="testimonial-text"><i class="fa fa-quote-left"></i>{{text}}<i class="fa fa-quote-right"></i></p>
+                        </div>
+                    </div>
+                {{/slides}}
             </div>
+            {{/hasslides}}
         </div>
     </div>
 </div>
