@@ -1,11 +1,4 @@
 jQuery(document).ready(function() {
-	$('.bxslidergrid').bxSlider({
-    adaptiveHeight: true,
-    nextSelector: '#bxslidergrid-next',
-    prevSelector: '#bxslidergrid-prev',
-    pager: false
-    });
-    $(".bx-prev, .bx-next").html("");
 // BEGIN script for slider on landing page
 	var _minSlides,
 		_width = $(window).width();
