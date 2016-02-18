@@ -249,7 +249,7 @@ if (is_siteadmin()) {
         $name = 'theme_tikli/slidercount';
         $title = get_string('slidercount', 'theme_tikli');
         $description = get_string('slidercountdesc', 'theme_tikli');
-        $setting = new admin_setting_configselect($name, $title, $description, 5,
+        $setting = new admin_setting_configselect($name, $title, $description, 1,
         array(
                 1 => get_string('one', 'theme_tikli'),
                 2 => get_string('two', 'theme_tikli'),
@@ -261,15 +261,15 @@ if (is_siteadmin()) {
 
         for($slidecounts = 1; $slidecounts <= get_config('theme_tikli', 'slidercount'); $slidecounts = $slidecounts + 1) {
             $name = 'theme_tikli/slideimage'.$slidecounts;
-            $title = get_string('slideimage', 'theme_tikli');
+            $title = get_string('slideimage', 'theme_tikli', $slidecounts);
 
-            $description = get_string('slideimagedesc', 'theme_tikli');
+            $description = get_string('slideimagedesc', 'theme_tikli', $slidecounts);
             $setting = new admin_setting_configstoredfile($name, $title, $description, 'slideimage'.$slidecounts);
             $setting->set_updatedcallback('theme_reset_all_caches');
             $temp->add($setting);
 
             $name = 'theme_tikli/slidertitle'.$slidecounts;
-            $title = get_string('slidertitle', 'theme_tikli');
+            $title = get_string('slidertitle', 'theme_tikli', $slidecounts);
             $description = get_string('slidertitledesc', 'theme_tikli');
             $default = '';
             $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -277,7 +277,7 @@ if (is_siteadmin()) {
             $temp->add($setting);
 
             $name = 'theme_tikli/slidertext'.$slidecounts;
-            $title = get_string('slidertext', 'theme_tikli');
+            $title = get_string('slidertext', 'theme_tikli', $slidecounts);
             $description = get_string('slidertextdesc', 'theme_tikli');
             $default = '';
             $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
@@ -285,7 +285,7 @@ if (is_siteadmin()) {
             $temp->add($setting);
 
             $name = 'theme_tikli/sliderbuttontext'.$slidecounts;
-            $title = get_string('sliderbuttontext', 'theme_tikli');
+            $title = get_string('sliderbuttontext', 'theme_tikli', $slidecounts);
             $description = get_string('sliderbuttontextdesc', 'theme_tikli');
             $default = '';
             $setting = new admin_setting_configtext($name, $title, $description, $default);
@@ -293,7 +293,7 @@ if (is_siteadmin()) {
             $temp->add($setting);
 
             $name = 'theme_tikli/sliderurl'.$slidecounts;
-            $title = get_string('sliderurl', 'theme_tikli');
+            $title = get_string('sliderurl', 'theme_tikli', $slidecounts);
             $description = get_string('sliderurldesc', 'theme_tikli');
             $default = '';
             $setting = new admin_setting_configtext($name, $title, $description, $default);
