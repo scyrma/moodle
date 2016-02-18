@@ -4,6 +4,7 @@ $html = theme_tikli_get_html_for_settings($OUTPUT, $PAGE);
 GLOBAL $DB;
 echo $OUTPUT->doctype();
 $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
+$showsitename = (get_config('theme_tikli', 'logoorsitename') === "sitename" ||  (get_config('theme_tikli', 'logoorsitename') === "iconsitename"));
 ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
@@ -15,9 +16,6 @@ $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
   	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/jquery-2.1.4.js"></script>
 	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/bootstrap.min.js"></script>
 	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/login.js"></script>
-	<?php
-      include($CFG->dirroot . '/theme/tikli/settings/colorchange.php');
-    ?>
     <?php echo $OUTPUT->standard_head_html() ?>
 </head>
 <body <?php echo $OUTPUT->body_attributes(); ?>>
@@ -27,7 +25,7 @@ $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
 	<input type="hidden" id="sitename" value="<?php if ( (get_config('theme_tikli', 'logoorsitename') === "sitename") ||  (get_config('theme_tikli', 'logoorsitename') === "iconsitename") ) { echo $SITE->fullname; } else { echo '';}?>">
 	<div id="page" class="container-fluid login-page">
 		<div id="page-content" class="row-fluid">
-			<section id="region-main" class="container login-regin-main">
+        <section id="region-main" class="container login-regin-main <?php if ($showsitename) { echo 'show-site-name'; } ?>">
 				<?php
 				echo $OUTPUT->course_content_header();
 				echo $OUTPUT->main_content();
