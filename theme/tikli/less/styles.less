@@ -1686,64 +1686,66 @@ header.navbar {
 }
 
 .block {
-    .header {
-        .block_action {
-            float: right;
-            /*padding: 0 0 0;*/
-            position: relative;
-            z-index: 3;
-            border-color: @primaryFontColour;
+    &[data-dockable="1"] {
+        .header {
+            .block_action {
+                float: right;
+                /*padding: 0 0 0;*/
+                position: relative;
+                z-index: 3;
+                border-color: @primaryFontColour;
 
-            img {
-                margin: 0 0 0 2px;
-                vertical-align: middle;
-            }
+                img {
+                    margin: 0 0 0 2px;
+                    vertical-align: middle;
+                }
 
-            &:before {
-                content: "\f068";
-                display: inline-block;
-                font: normal normal normal 14px/1 FontAwesome;
-                text-rendering: auto;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-                box-sizing: border-box;
-                z-index: -1;
-                width: 21px;
-                height: 21px;
-                text-align: center;
-                position: absolute;
-                margin-left: 2px;
-                border: 1px solid;
-                border-radius: 3px;
-                line-height: 21px;
-            }
+                &:before {
+                    content: "\f068";
+                    display: inline-block;
+                    font: normal normal normal 14px/1 FontAwesome;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                    box-sizing: border-box;
+                    z-index: -1;
+                    width: 21px;
+                    height: 21px;
+                    text-align: center;
+                    position: absolute;
+                    margin-left: 2px;
+                    border: 1px solid;
+                    border-radius: 3px;
+                    line-height: 21px;
+                }
 
-            &:after {
-                content: "\f053";
-                display: inline-block;
-                font: normal normal normal 14px/1 FontAwesome;
-                text-rendering: auto;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-                box-sizing: border-box;
-                z-index: -1;
-                width: 21px;
-                height: 21px;
-                text-align: center;
-                position: absolute;
-                left: 39px;
-                margin-left: 2px;
-                border: 1px solid;
-                border-radius: 3px;
-                line-height: 21px;
+                &:after {
+                    content: "\f053";
+                    display: inline-block;
+                    font: normal normal normal 14px/1 FontAwesome;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                    box-sizing: border-box;
+                    z-index: -1;
+                    width: 21px;
+                    height: 21px;
+                    text-align: center;
+                    position: absolute;
+                    left: 39px;
+                    margin-left: 2px;
+                    border: 1px solid;
+                    border-radius: 3px;
+                    line-height: 21px;
+                }
             }
         }
-    }
 
-    &.hidden {
-        .header {
-            .block_action:before {
-                content: "\f067";
+        &.hidden {
+            .header {
+                .block_action:before {
+                    content: "\f067";
+                }
             }
         }
     }
@@ -1807,12 +1809,80 @@ header.navbar {
             }
         }
     }
+
+    .block-control-actions {
+        .menubar {
+            span[data-draggroups="block"] {
+                position: relative;
+
+                &:before {
+                    content: "\f047";
+                    display: inline-block;
+                    font: normal normal normal 14px/1 FontAwesome;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                    box-sizing: border-box;
+                    width: 20px;
+                    height: 20px;
+                    text-align: left;
+                    position: absolute;
+                    left: 0;
+                    line-height: 20px;
+                    cursor: move;
+                    color: @primaryFontColour;
+                }
+            }
+
+            .toggle-display {
+                position: relative;
+
+                &:before {
+                    content: "\f013 \f0d7";
+                    display: inline-block;
+                    font: normal normal normal 14px/1 FontAwesome;
+                    text-rendering: auto;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                    box-sizing: border-box;
+                    width: 30px;
+                    height: 20px;
+                    text-align: center;
+                    position: absolute;
+                    left: 0;
+                    line-height: 20px;
+                    color: @primaryFontColour;
+                    letter-spacing: 3px;
+                }
+            }
+        }
+    }
+}
+
+#region-main {
+    .block {
+        .block-control-actions {
+            .menubar {
+                span[data-draggroups="block"]:before {
+                    color: #333;
+                }
+            }
+
+            .toggle-display {
+                &:before {
+                    color: #333;
+                }
+            }
+        }
+    }
 }
 
 .dir-rtl {
-    .block {
+    .block[data-dockable="1"] {
         .header {
             .block_action {
+                float: left;
+
                 &:before {
                     left: 39px;
                 }
@@ -1830,6 +1900,22 @@ header.navbar {
             .moveto {
                 &:before {
                     content: "\f053";
+                }
+            }
+        }
+    }
+
+    .block {
+        .block-control-actions {
+            .menubar {
+                span[data-draggroups="block"]:before {
+                    text-align: right;
+                }
+            }
+
+            .toggle-display {
+                &:before {
+                    text-align: right;
                 }
             }
         }
