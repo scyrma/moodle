@@ -7158,11 +7158,14 @@ footer span {
 	float: right;
 }
 
-.dir-rtl .logo-wr {
-    transform: rotateY(180deg);
-}
-.dir-rtl .logo-img img {
-	transform: rotateY(180deg);
+.dir-rtl {
+    .navbar-inner {
+        .logo-wr {
+            -webkit-box-shadow: -6px -1px 17px -5px rgba(0, 0, 0, 0.5);
+            -moz-box-shadow: -6px -1px 17px -5px rgba(0, 0, 0, 0.5);
+            box-shadow: -6px -1px 17px -5px rgba(0, 0, 0, 0.5);
+        }
+    }
 }
 .dir-rtl .navbar .nav {
 	float: left !important;
