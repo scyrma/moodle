@@ -6410,16 +6410,29 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
 	padding: 5px;
 }
 
-.block_adminblock .content .singleselect form div:after {
-    background: #fff url([[pix:theme|custom/i-list-dropdown]]) no-repeat center center;
-    content: "";
-    height: 36px;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    top: 1px;
-	right: 1px;
-    width: 36px;
+.block_adminblock .content .singleselect form div{
+    &:hover:after {
+        opacity: 0.8;
+    }
+
+    &:after {
+        content: "\f078";
+        height: 34px;
+        pointer-events: none;
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 34px;
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        box-sizing: border-box;
+        text-align: center;
+        line-height: 34px;
+        background-color: #fff;
+    }
 }
 
 .block_adminblock .select.autosubmit.singleselect option {
