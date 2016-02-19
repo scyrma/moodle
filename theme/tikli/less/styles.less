@@ -6410,28 +6410,35 @@ textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[ty
 	padding: 5px;
 }
 
-.block_adminblock .content .singleselect form div{
-    &:hover:after {
-        opacity: 0.8;
+.block_adminblock .content .singleselect form {
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
     }
 
-    &:after {
-        content: "\f078";
-        height: 34px;
-        pointer-events: none;
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        width: 34px;
-        display: inline-block;
-        font: normal normal normal 14px/1 FontAwesome;
-        text-rendering: auto;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        box-sizing: border-box;
-        text-align: center;
-        line-height: 34px;
-        background-color: #fff;
+    div {
+        &:hover:after {
+            opacity: 0.8;
+        }
+
+        &:after {
+            content: "\f078";
+            height: 34px;
+            pointer-events: none;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 34px;
+            display: inline-block;
+            font: normal normal normal 14px/1 FontAwesome;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
+            text-align: center;
+            line-height: 34px;
+            background-color: #fff;
+        }
     }
 }
 
