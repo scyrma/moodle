@@ -600,4 +600,12 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             return $this->coursecategory_courses($coursecategory);
         }
     }
+
+    public function login_page_header() {
+        $html = html_writer::start_div('login-logo');
+        $html .= $this->logo();
+        $html .= html_writer::end_div();
+
+        return $html;
+    }
 }

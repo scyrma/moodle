@@ -3175,53 +3175,12 @@ a:hover .i-def, .header:hover .i-def, .active .i-def {
 /* 9 - BEGIN of login page ---------------------------------------------------------- */
 
 
-.login-pagebg .langmenu {
-	text-align: center;
-}
 body.login-pagebg {
     background: #c6cbce;
 }
 
 body.login-pagebg #region-main {
     background: none!important;
-}
-
-.login-pagebg .langmenu div {
-	display: inline-block;
-	position: relative;
-}
-.login-pagebg .langmenu form {
-    select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        padding: 0 28px 0 6px;
-    }
-
-    div {
-        &:hover:after {
-            opacity: 0.7;
-        }
-
-        &:after {
-            content: "\f078";
-            height: 34px;
-            pointer-events: none;
-            position: absolute;
-            top: 7px;
-            right: 2px;
-            height: 26px;
-            width: 26px;
-            display: inline-block;
-            font: normal normal normal 14px/1 FontAwesome;
-            text-rendering: auto;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            box-sizing: border-box;
-            text-align: center;
-            line-height: 26px;
-            background-color: #fff;
-        }
-    }
 }
 
 .login-page #region-main {
@@ -3261,26 +3220,13 @@ body.login-pagebg #region-main {
     font-size: 14px;
     font-weight: 400;
     line-height: 40px;
-    margin: 15px;
     overflow: visible;
-    padding: 100px 0 0;
+    margin: 0;
 }
 .loginpanel {
     margin: 0 auto;
     max-width: 554px;
     position: relative;
-}
-.loginpanel h2:before, a.click {
-    box-sizing: border-box;
-    content: "";
-    display: block;
-    float: none;
-    height: 81px;
-    left: 25%;
-    padding: 0;
-    position: absolute;
-    top: -81px;
-    min-width: 50%;
 }
 
 .loginbox h2 {
@@ -3480,11 +3426,74 @@ body.login-pagebg #region-main {
 	line-height: 32px;
 }
 
-.show-site-name {
-    .loginpanel h2:before, a.click {
-        line-height: 81px !important;
-        font-size: 22px !important;
-        background-image: none !important;
+.login-logo {
+    .logo-wr {
+        width: 280px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: -1px;
+        background-color: @secondaryColour;
+        text-align: center;
+
+        a {
+            * {
+                opacity: 0.5;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+}
+
+#page-login-index {
+    header, footer {
+        display: none;
+    }
+
+    #region-main {
+        .langmenu {
+            margin-top: 15px;
+            text-align: center;
+
+            form {
+                select {
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    padding: 0 28px 0 6px;
+                }
+
+                div {
+                    display: inline-block;
+                    position: relative;
+
+                    &:hover:after {
+                        opacity: 0.7;
+                    }
+
+                    &:after {
+                        content: "\f078";
+                        height: 34px;
+                        pointer-events: none;
+                        position: absolute;
+                        top: 22px;
+                        right: 2px;
+                        height: 26px;
+                        width: 26px;
+                        display: inline-block;
+                        font: normal normal normal 14px/1 FontAwesome;
+                        text-rendering: auto;
+                        -webkit-font-smoothing: antialiased;
+                        -moz-osx-font-smoothing: grayscale;
+                        box-sizing: border-box;
+                        text-align: center;
+                        line-height: 26px;
+                        background-color: #fff;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -5238,12 +5247,6 @@ footer .right {
 	margin: 0;
 	box-sizing: border-box;
 }
-.loginpanel h2:before, a.click {
-	left: 20%;
-	background: #FF9E57 url([[pix:theme|custom/logo-1]]) no-repeat center;
-	height: 81px;
-	width: 60%;
-}
 
 #page a.click {
 	font-size: 22px!important;
@@ -5256,9 +5259,6 @@ footer .right {
 }
 
 
-.loginbox {
-	padding: 100px 0 0;
-}
 .course-items .course-item {
 	max-width: 100%;
 	width: 92%;
@@ -5348,9 +5348,6 @@ footer .right {
 .top-banner-left {
 	display: none;
 }
-#region-main {
-	padding: 18px 15px 20px 15px!important;
-}
 
 /*login page customise*/
 
@@ -5359,23 +5356,18 @@ body {
 	padding-right: 0!important;
 }
 
+#page-login-index {
+    #region-main {
+        padding: 0;
+    }
+}
+
 .login-page {
    padding-left: 0!important;
    padding-right: 0!important;
 }
 
-.loginbox {
-    margin: 30px -15px 0 !important;
-    padding: 27px 0 0;
-}
-
-.loginpanel::before {
-    left: 0;
-    width: 100%;
-}
-
-.loginpanel h2:before, a.click {
-    left: 0;
+.login-logo .logo-wr {
     width: 100%;
 }
 
@@ -6921,10 +6913,6 @@ header.navbar,
     border-left: 315px solid @secondaryColour;
     position: absolute;
     z-index: -1;
-}
-
-.loginpanel h2:before, a.click {
-    background: #ff9e57 url([[pix:theme|custom/logo-1]]) no-repeat scroll center center;
 }
 
 #block-region-side-post .calendar_filters.filters a,
