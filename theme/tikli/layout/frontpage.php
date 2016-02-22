@@ -4,28 +4,18 @@ $html = theme_tikli_get_html_for_settings($OUTPUT, $PAGE);
 GLOBAL $DB, $CFG, $OUTPUT, $USER;
 
 $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
-$url = "'".$CFG->wwwroot."/theme/tikli/js/frontpageslider/jquery.cslider.js"."'";
 
 echo $OUTPUT->doctype();?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
-    <?php echo $OUTPUT->frontpage_theme_head_html(); ?>
-
-	<script type="text/javascript" src="<?php echo $CFG->wwwroot; ?>/theme/tikli/js/frontpageslider/modernizr.custom.28468.js"></script>
-
-	<script type="text/javascript">
-		var url = <?php echo $url;?>;
-
-		  $( window ).load(function() {
-		  	$.getScript( url, function() {
-				$('#da-slider').cslider();
-		  	});
-
-		});
-	</script>
-	<?php echo $OUTPUT->standard_head_html() ?>
+    <?php
+        echo $OUTPUT->standard_head_html();
+        echo $OUTPUT->frontpage_theme_head_html();
+    ?>
 </head>
 	<body class="landing-page">
+        <?php echo $OUTPUT->standard_top_of_body_html() ?>
+
 		<header><div class="mobile-top-head">
             <?php echo $OUTPUT->logo(); ?>
             <?php echo $OUTPUT->user_menu(); ?>
@@ -55,13 +45,15 @@ echo $OUTPUT->doctype();?>
 		<?php
 			echo $OUTPUT->main_content();
 			include('footer.php');
+            echo $OUTPUT->standard_end_of_body_html();
+
 			if (isloggedin() && $isregistration->value != 'email') { ?>
-			<input type="hidden" name="custommenu" value="yeslogin" id="custommenu">
-		<?php } else if (!isloggedin() && $isregistration->value == 'email') { ?>
-			<input type="hidden" name="custommenu" value="nologinselfreg" id="custommenu">
-		<?php } else if (!isloggedin()) { ?>
-			<input type="hidden" name="custommenu" value="nologin" id="custommenu">
-		<?php }
+                <input type="hidden" name="custommenu" value="yeslogin" id="custommenu">
+            <?php } else if (!isloggedin() && $isregistration->value == 'email') { ?>
+                <input type="hidden" name="custommenu" value="nologinselfreg" id="custommenu">
+            <?php } else if (!isloggedin()) { ?>
+                <input type="hidden" name="custommenu" value="nologin" id="custommenu">
+            <?php }
 		?>
 </body>
 </html>
