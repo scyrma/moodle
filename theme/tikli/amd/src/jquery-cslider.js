@@ -1,4 +1,4 @@
-(function( $, undefined ) {
+define(['jquery'], function($) {
 		
 	/*
 	 * Slider object.
@@ -323,4 +323,4 @@
 		
 	};
 	
-})( jQuery );
+});
