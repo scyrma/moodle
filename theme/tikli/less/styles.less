@@ -3190,15 +3190,38 @@ body.login-pagebg #region-main {
 	display: inline-block;
 	position: relative;
 }
-.login-pagebg .langmenu div:after {
-    background: #FFF url([[pix:theme|custom/bg-lan-list]]) no-repeat scroll center center;
-    content: "";
-    height: 28px;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    top: 6px;
-    width: 28px;
+.login-pagebg .langmenu form {
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding: 0 28px 0 6px;
+    }
+
+    div {
+        &:hover:after {
+            opacity: 0.7;
+        }
+
+        &:after {
+            content: "\f078";
+            height: 34px;
+            pointer-events: none;
+            position: absolute;
+            top: 7px;
+            right: 2px;
+            height: 26px;
+            width: 26px;
+            display: inline-block;
+            font: normal normal normal 14px/1 FontAwesome;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
+            text-align: center;
+            line-height: 26px;
+            background-color: #fff;
+        }
+    }
 }
 
 .login-page #region-main {
