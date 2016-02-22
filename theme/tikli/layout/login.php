@@ -14,7 +14,6 @@ $showsitename = (get_config('theme_tikli', 'logoorsitename') === "sitename" ||  
   	<title><?php echo $OUTPUT->page_title(); ?></title>
   	<link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
   	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/jquery-2.1.4.js"></script>
-	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/bootstrap.min.js"></script>
 	<script src="<?php echo $CFG->wwwroot ?>/theme/tikli/js/login.js"></script>
     <?php echo $OUTPUT->standard_head_html() ?>
 </head>
