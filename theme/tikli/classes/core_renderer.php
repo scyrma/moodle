@@ -8,7 +8,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
     private $jsfiles = array(
         'jquery-2.1.4.js',
-        //'bootstrap.min.js'
     );
 
     private function serialise_courses($courses) {
@@ -285,16 +284,18 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
             'frontpageslider/cssliderstyle.css'
         );
         $frontpagejsfiles = array(
-            'jquery.bxslider.min.js',
-            'frontpage.js',
         );
+
+        $this->page->requires->js_call_amd('theme_tikli/frontpage', 'init');
 
         return $this->base_theme_head_html($frontpagecssfiles, $frontpagejsfiles);
     }
 
     public function standard_theme_head_html() {
         $standardcssfiles = array();
-        $standardjsfiles = array('engine.js');
+        $standardjsfiles = array();
+
+        $this->page->requires->js_call_amd('theme_tikli/engine', 'init');
 
         return $this->base_theme_head_html($standardcssfiles, $standardjsfiles);
     }
