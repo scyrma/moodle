@@ -195,54 +195,6 @@ $string['newslink'] = 'See all announcements';
 $string['nonewsitems'] = 'Your site currently has no news items. Click here to add some!';
 $string['staticimagealt'] = 'Header static content image';
 
-/*******************************Featured content****************************/
-
-$string['thirdsection'] = 'Featured content';
-$string['thirdsectiondesc'] = '';
-
-$string['thirdsectionheading'] = 'Add heading';
-$string['thirdsectionheadingdesc'] = '';
-
-$string['thirdsectionsubheading'] = 'Add sub heading';
-$string['thirdsectionsubheadingdesc'] = '';
-
-$string['thirdsectioncount'] = 'Select no of column(s)';
-$string['thirdsectioncountdesc'] = '';
-
-$string['thirdsubsectioncolumnimage'] = 'Upload column image';
-$string['thirdsubsectioncolumnimagedesc'] = ' ';
-
-$string['thirdsubsectioncolumnfirsttext'] = 'Add first text';
-$string['thirdsubsectioncolumnfirsttextdesc'] = ' ';
-
-$string['thirdsubsectioncolumnsecondtext'] = 'Add second text';
-$string['thirdsubsectioncolumnsecondtextdesc'] = ' ';
-
-$string['thirdsubsectioncolumnlink'] = 'Add URL';
-$string['thirdsubsectioncolumnlinkdesc'] = ' ';
-
-/*block section 1*/
-$string['frontpageblocksection1'] = 'Body section 1 title';
-$string['frontpageblocksectiondesc1'] = 'This is where you may add the text for section 1';
-$string['frontpageblocklinksection1'] = 'Body section 1 link';
-$string['frontpageblocklinksectiondesc1'] = 'Here, you may insert the link at which the user will be redirected at.';
-$string['frontpageblockdescriptionsection1'] = 'Body section 1 description';
-$string['frontpageblockdescriptionsectiondesc1'] = 'A brief description in the context of the title.';
-
-$string['frontpageblocksection2'] = 'Body section 2 title';
-$string['frontpageblocksectiondesc2'] = 'This is where you may add the text for section 2';
-$string['frontpageblocklinksection2'] = 'Body section 2 link';
-$string['frontpageblocklinksectiondesc2'] = 'Here, you may insert the link at which the user will be redirected at.';
-$string['frontpageblockdescriptionsection2'] = 'Body section 2 description';
-$string['frontpageblockdescriptionsectiondesc2'] = 'A brief description in the context of the title.';
-
-$string['frontpageblocksection3'] = 'Body section 3 title';
-$string['frontpageblocksectiondesc3'] = 'This is where you may add the text for section 3';
-$string['frontpageblocklinksection3'] = 'Body section 3 link';
-$string['frontpageblocklinksectiondesc3'] = 'Here, you may insert the link at which the user will be redirected at.';
-$string['frontpageblockdescriptionsection3'] = 'Body section 3 description';
-$string['frontpageblockdescriptionsectiondesc3'] = 'A brief description in the context of the title.';
-
 /**********************************Testimonials*************************************/
 $string['feedback'] = 'Testimonials';
 $string['feedbackdesc'] = '';
