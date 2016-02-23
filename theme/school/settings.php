@@ -165,6 +165,66 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
+    // Contact information.
+    $temp->add(new admin_setting_heading('theme_school_nextsection', get_string('contactinformation', 'theme_school'),
+        format_text(get_string('contactinformationdesc', 'theme_school'), FORMAT_MARKDOWN)));
+
+    $name = 'theme_school/facebook';
+    $title = get_string('facebook', 'theme_school');
+    $description = get_string('facebookdesc', 'theme_school');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_school/twitter';
+    $title = get_string('twitter', 'theme_school');
+    $description = get_string('twitterdesc', 'theme_school');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_school/googleplus';
+    $title = get_string('googleplus', 'theme_school');
+    $description = get_string('googleplusdesc', 'theme_school');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_school/youtube';
+    $title = get_string('youtube', 'theme_school');
+    $description = get_string('youtubedesc', 'theme_school');
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_school/contactaddress';
+    $title = get_string('contactaddress', 'theme_school');
+    $description = '';
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_school/contactphone';
+    $title = get_string('contactphone', 'theme_school');
+    $description = '';
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    $name = 'theme_school/contactemail';
+    $title = get_string('contactemail', 'theme_school');
+    $description = '';
+    $default = '';
+    $setting = new admin_setting_configtext($name, $title, $description, $default);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
     $ADMIN->add('theme_school', $temp);
 
 
