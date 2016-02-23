@@ -1,0 +1,103 @@
+<div class="custommain">
+    <div class="region-main-header clearfix">
+        <div class="search-wr">
+            <form class="coursesearchform" method="get" action="{{{urls.coursesearch}}}">
+                <div>
+                    <label for="coursesearchquery" class="accesshide">{{#str}} coursesearch, theme_school {{/str}}</label>
+                    <div class="input-append">
+                        <input id="coursesearchquery" type="text" name="search" value="" placeholder="{{#str}} coursesearch, theme_school {{/str}}"></input>
+                        <button type="submit" value="Go"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="pull-right picker-container">
+            {{#categorypickers.all}}
+                <div id="all-category-picker-container">
+                    {{{.}}}
+                </div>
+            {{/categorypickers.all}}
+            {{#categorypickers.sub}}
+                <div id="subcategory-picker-container" {{#categorypickers.all}}class="hidden"{{/categorypickers.all}}>
+                    {{{.}}}
+                </div>
+                {{#categorypickers.all}}
+                    <a id="category-picker-filter" href="javascript:void(0);" title="{{#str}} filtersubcategories, theme_school {{/str}}"><i class="fa fa-filter"></i></a>
+                {{/categorypickers.all}}
+            {{/categorypickers.sub}}
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div id="course-list-container" class="container-fluid">
+        {{#hascourses}}
+            <div class="row-fluid">
+                <div class="view-toggle pull-right">
+                    <a href="javascript:void(0);" class="btn-view-list" title="{{#str}} listview, theme_school {{/str}}">
+                        <i class="fa fa-bars"></i>
+                    </a>
+                    <a href="javascript:void(0);" class="btn-view-grid active" title="{{#str}} gridview, theme_school {{/str}}">
+                        <i class="fa fa-th"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row-fluid courses frontpage-course-list-all">
+                <div class="course-items course-items-grid-view">
+                    {{#courses}}
+                        <div class="course-item">
+                            <div class="img-wr">
+                                <a href="{{{url}}}"><img src="{{{imageurl}}}" title="{{#str}} courseimage, theme_school, {{name}} {{/str}}"></a>
+                            </div>
+                            <div class="course-item-cont">
+                                <a href="javascript:void(0);" class="btn-togle-details">
+                                    <i class="fa fa-plus-square-o closed"></i>
+                                    <i class="fa fa-minus-square-o open"></i>
+                                </a>
+                                <h5><a href="{{{url}}}">{{name}}</a></h5>
+                                {{#contacts}}
+                                    <div class="abc"><h6>{{rolename}} : <a href="{{{profileurl}}}">{{name}}</a></h6></div>
+                                {{/contacts}}
+                                <div class="for-list-view-wr">
+                                    <div class="for-list-view">
+                                        <div class="img-wr">
+                                            <a href="{{{url}}}"><img src="{{{imageurl}}}" alt="{{#str}} courseimage, theme_school, {{name}} {{/str}}"></a>
+                                        </div>
+                                        <p>{{{summary}}}</p>
+                                        <a href="{{{url}}}" class="btn-plus">
+                                            <div class="plus-container">
+                                                <div class="plus">&#43;</div>
+                                                <div class="cutoff"></div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <h4>
+                                    <a href="{{{url}}}" data-toggle="tooltip" title="{{name}}" alt="{{#str}} viewcourse, theme_school, {{name}} {{/str}}">
+                                        <i class="fa fa-arrow-circle-o-right"></i>
+                                    </a>
+                                    <a href="{{{enrolledusersurl}}}" data-toggle="tooltip" title="{{#str}} enrolusers, enrol {{/str}}" alt="{{#str}} viewcourseusers, theme_school, {{name}} {{/str}}">
+                                        <i class="fa fa-users"></i>
+                                    </a>
+                                </h4>
+                            </div>
+                        </div>
+                    {{/courses}}
+                </div>
+            </div>
+        {{/hascourses}}
+
+        {{^hascourses}}
+            <div class="row-fluid">
+                <p class="no-courses">{{#str}} nocourses, theme_school {{/str}}</p>
+            </div>
+        {{/hascourses}}
+    </div>
+</div>
+{{#showaddcourse}}
+    <div class="center">
+        <div class="btn-show-more-wr">
+            <a class="btn-show-more" href="{{{urls.addcourse}}}">
+                <span>{{#str}} addnewcourse {{/str}}</span>
+            </a>
+        </div>
+    </div>
+{{/showaddcourse}}

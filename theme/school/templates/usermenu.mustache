@@ -1,0 +1,29 @@
+<div class="usermenu">
+<div>
+    <ul class="menubar menubars">
+    <li>
+        <a href="javascript:void(0);">
+        <span class="userbutton">
+            <span>
+                <span class="avatar current">
+                    {{{ user_profile_picture }}}
+                </span>
+            </span>
+            <span>
+                {{ firstname }}
+                <span>
+                    {{ lastname }}
+                    <i class="fa fa-chevron-circle-down"></i>
+                </span>
+            </span>
+        </span>
+        </a>
+    </li>
+    </ul>
+    <ul class="menu menulist">
+        {{# menuitems }}
+            {{> theme_school/usermenu_item_link }}
+        {{/ menuitems }}
+    </ul>
+</div>
+</div>
