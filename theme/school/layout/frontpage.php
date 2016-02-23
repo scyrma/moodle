@@ -44,7 +44,7 @@ echo $OUTPUT->doctype();?>
 		</div><!-- END of .content -->
 		<?php
 			echo $OUTPUT->main_content();
-			include('footer.php');
+            echo $OUTPUT->theme_footer();
             echo $OUTPUT->standard_end_of_body_html();
 
 			if (isloggedin() && $isregistration->value != 'email') { ?>
