@@ -42,8 +42,8 @@ if ($CFG->forcelogin) {
     </div>
 
     <?php
-        include('footer.php');
-        echo $OUTPUT->standard_end_of_body_html()
+        echo $OUTPUT->theme_footer();
+        echo $OUTPUT->standard_end_of_body_html();
     ?>
 </div>
 </body>

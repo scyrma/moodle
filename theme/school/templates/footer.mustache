@@ -1,0 +1,26 @@
+<footer>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="span9">
+                {{#leftfootnote}}
+                    <p>{{{.}}}</p>
+                {{/leftfootnote}}
+                <p class="foot-note-links">
+                    {{#footnotelinks}}
+                        <a href="{{{url}}}">{{text}}</a>
+                        <span>|</span>
+                    {{/footnotelinks}}
+                </p>
+            </div>
+
+            <div class="span3 right">
+                <div id="course-footer">{{{coursefooter}}}</div>
+                <p class="helplink">{{{doclinks}}}</p>
+
+                {{#footnote}}<div class="footnote text-center">{{{.}}}</div>{{/footnote}}
+                {{{logininfo}}}
+                {{{standardfooterhtml}}}
+            </div>
+        </div>
+    </div><!-- END of .container-fluid -->
+</footer><!-- END of footer -->
