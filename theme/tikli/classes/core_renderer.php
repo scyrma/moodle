@@ -6,10 +6,6 @@ require_once($CFG->dirroot . '/mod/forum/lib.php');
 
 class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
 
-    private $jsfiles = array(
-        'jquery-2.1.4.js',
-    );
-
     private function serialise_courses($courses) {
         global $DB, $CFG;
 
@@ -266,7 +262,6 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function base_theme_head_html($cssfiles = array(), $jsfiles = array()) {
-        $jsfiles = array_merge($this->jsfiles, $jsfiles);
         $context = array(
             'cssfiles' => array_map(array($this, 'get_theme_source_css'), $cssfiles),
             'jsfiles' => array_map(array($this, 'get_theme_source_js'), $jsfiles),
@@ -278,26 +273,15 @@ class theme_tikli_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function frontpage_theme_head_html() {
-        $frontpagecssfiles = array(
-            'jquery.bxslider.css',
-            'animation.css',
-            'frontpageslider/cssliderstyle.css'
-        );
-        $frontpagejsfiles = array(
-        );
-
         $this->page->requires->js_call_amd('theme_tikli/frontpage', 'init');
 
-        return $this->base_theme_head_html($frontpagecssfiles, $frontpagejsfiles);
+        return $this->base_theme_head_html();
     }
 
     public function standard_theme_head_html() {
-        $standardcssfiles = array();
-        $standardjsfiles = array();
-
         $this->page->requires->js_call_amd('theme_tikli/engine', 'init');
 
-        return $this->base_theme_head_html($standardcssfiles, $standardjsfiles);
+        return $this->base_theme_head_html();
     }
 
     public function logo() {

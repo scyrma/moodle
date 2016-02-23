@@ -53,10 +53,6 @@ h4 {
 	}
 }
 
-.loginpanel h2:before, a.click {
-    background-image: url([[setting:logo]]);
-}
-
 .navbar-inner .nav-collapse.in {
     height: auto !important;
 }
