@@ -189,6 +189,8 @@ function theme_school_pluginfile($course, $cm, $context, $filearea, $args, $forc
             return $theme->setting_file_serve('pagebackground', $args, $forcedownload, $options);
         } else if ($filearea === 'icon') {
             return $theme->setting_file_serve('icon', $args, $forcedownload, $options);
+        } else if ($filearea === 'frontpagemediaimage') {
+            return $theme->setting_file_serve('frontpagemediaimage', $args, $forcedownload, $options);
         } else if ($filearea === 'uploadvideo') {
             return $theme->setting_file_serve('uploadvideo', $args, $forcedownload, $options);
         } else if ($filearea === 'logobackgroundimage') {

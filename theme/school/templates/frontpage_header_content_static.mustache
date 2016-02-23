@@ -1,26 +1,33 @@
 <div class="welcome-block">
     <div class="container">
         <div class="row">
-            {{^videoalignleft}}
+            {{^mediaalignleft}}
                 <div class="span6 static-content-align">{{{text}}}</div>
-            {{/videoalignleft}}
-            {{#iframevideo}}
-                {{#iframehtml}}
-                    <div class="span6 static-content-align">{{{.}}}</div>
-                {{/iframehtml}}
-            {{/iframevideo}}
-            {{^iframevideo}}
-                {{#videosrc}}
+            {{/mediaalignleft}}
+            {{#mediaimage}}
                     <div class="span6 static-content-align">
-                        <video width="560" height="315" controls>
-                            <source src="{{{.}}}" type="video/mp4">
-                        </video>
+                        <img src="{{{imageurl}}}" alt="{{#str}} staticimagealt, theme_school {{/str}}" />
                     </div>
-                {{/videosrc}}
-            {{/iframevideo}}
-            {{#videoalignleft}}
+            {{/mediaimage}}
+            {{^mediaimage}}
+                {{#iframevideo}}
+                    {{#iframehtml}}
+                        <div class="span6 static-content-align">{{{.}}}</div>
+                    {{/iframehtml}}
+                {{/iframevideo}}
+                {{^iframevideo}}
+                    {{#videosrc}}
+                        <div class="span6 static-content-align">
+                            <video width="560" height="315" controls>
+                                <source src="{{{.}}}" type="video/mp4">
+                            </video>
+                        </div>
+                    {{/videosrc}}
+                {{/iframevideo}}
+            {{/mediaimage}}
+            {{#mediaalignleft}}
                 <div class="span6 static-content-align">{{{text}}}</div>
-            {{/videoalignleft}}
+            {{/mediaalignleft}}
         </div>
     </div>
 </div>
