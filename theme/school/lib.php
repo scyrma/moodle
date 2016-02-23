@@ -273,62 +273,6 @@ function theme_school_get_html_for_settings(renderer_base $output, moodle_page $
         $return->heading = $output->page_heading();
     }
 
-    if (!empty($page->theme->settings->footnote)) {
-        $return->footnote = '<div class="footnote text-center">'.format_text($page->theme->settings->footnote).'</div>';
-    }
-
-    if (!empty($page->theme->settings->leftfootnote)) {
-        $return->leftfootnote = format_text($page->theme->settings->leftfootnote);
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesection1)) {
-        $return->leftfootnotesection1 = $page->theme->settings->leftfootnotesection1;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesectionlink1)) {
-        $return->leftfootnotesectionlink1 = $page->theme->settings->leftfootnotesectionlink1;
-    }
-
-
-    if (!empty($page->theme->settings->leftfootnotesection2)) {
-        $return->leftfootnotesection2 = $page->theme->settings->leftfootnotesection2;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesectionlink2)) {
-        $return->leftfootnotesectionlink2 = $page->theme->settings->leftfootnotesectionlink2;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesection3)) {
-        $return->leftfootnotesection3 = $page->theme->settings->leftfootnotesection3;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesectionlink3)) {
-        $return->leftfootnotesectionlink3 = $page->theme->settings->leftfootnotesectionlink3;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesection4)) {
-        $return->leftfootnotesection4 = $page->theme->settings->leftfootnotesection4;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesectionlink4)) {
-        $return->leftfootnotesectionlink4 = $page->theme->settings->leftfootnotesectionlink4;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesection5)) {
-        $return->leftfootnotesection5 = $page->theme->settings->leftfootnotesection5;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesectionlink5)) {
-        $return->leftfootnotesectionlink5 = $page->theme->settings->leftfootnotesectionlink5;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesection6)) {
-        $return->leftfootnotesection6 = $page->theme->settings->leftfootnotesection6;
-    }
-
-    if (!empty($page->theme->settings->leftfootnotesectionlink6)) {
-        $return->leftfootnotesectionlink6 = $page->theme->settings->leftfootnotesectionlink6;
-    }
     return $return;
 }
 
