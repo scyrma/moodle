@@ -18,7 +18,7 @@ if (!isloggedin() && $isregistration->value == 'email') { ?>
     </div>
 
     <?php
-        include('footer.php');
+        echo $OUTPUT->theme_footer();
         echo $OUTPUT->standard_end_of_body_html();
         $PAGE->requires->js_call_amd('theme_school/login', 'init');
     ?>
