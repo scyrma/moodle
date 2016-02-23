@@ -631,6 +631,16 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
         $context['footnotelinks'] = $footnotelinks;
 
+        $context['facebookurl'] = get_config('theme_school', 'facebook');
+        $context['twitterurl'] = get_config('theme_school', 'twitter');
+        $context['googleplusurl'] = get_config('theme_school', 'googleplus');
+        $context['youtubeurl'] = get_config('theme_school', 'youtube');
+        $context['address'] = get_config('theme_school', 'contactaddress');
+        $context['phone'] = get_config('theme_school', 'contactphone');
+        $context['email'] = get_config('theme_school', 'contactemail');
+        $context['hascontacts'] = !empty($context['facebookurl']) || !empty($context['twitterurl']) || !empty($context['googleplusurl'])
+            || !empty($context['youtubeurl']) || !empty($context['address']) || !empty($context['phone']) || !empty($context['email']);
+
         return $this->render_from_template('theme_school/footer', $context);
     }
 }
