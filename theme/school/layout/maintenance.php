@@ -30,7 +30,7 @@ echo $OUTPUT->doctype() ?>
 
     <footer id="page-footer">
         <?php
-        include('footer.php');
+        echo $OUTPUT->theme_footer();
         echo $OUTPUT->standard_footer_html();
         ?>
     </footer>
