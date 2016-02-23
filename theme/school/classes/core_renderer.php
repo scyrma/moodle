@@ -422,24 +422,31 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
         $text = get_config('theme_school', 'addtext');
         $iframehtml = get_config('theme_school', 'video');
-        $videosrc = $PAGE->theme->setting_file_url('uploadvideo', 'uploadvideo');
+        $videosrc = $this->page->theme->setting_file_url('uploadvideo', 'uploadvideo');
+        $imageurl = $this->page->theme->setting_file_url('frontpagemediaimage', 'frontpagemediaimage');
+        $ismediaimage = get_config('theme_school', 'frontpagestaticcontentselect') ? false : true;
 
-        if (empty($text) && empty($iframehtml) && empty($videosrc)) {
+        if (empty($text) && empty($iframehtml) && empty($videosrc) && empty($imageurl)) {
             // No content configured.
             return "";
         }
 
         $context = array(
             'text' => $text,
-            'videoalignleft' => get_config('theme_school', 'frontpagevideoalignment') == 1 ? false : true,
+            'mediaalignleft' => get_config('theme_school', 'frontpagemediaalignment') == 1 ? false : true,
+            'mediaimage' => $ismediaimage,
         );
 
-        if(get_config('theme_school', 'videotype') === "0") {
-            $context['iframevideo'] = true;
-            $context['iframehtml'] = $iframehtml;
+        if ($ismediaimage) {
+            $context['imageurl'] = $imageurl;
         } else {
-            $context['iframevideo'] = false;
-            $context['videosrc'] = $videosrc;
+            if(get_config('theme_school', 'videotype') === "0") {
+                $context['iframevideo'] = true;
+                $context['iframehtml'] = $iframehtml;
+            } else {
+                $context['iframevideo'] = false;
+                $context['videosrc'] = $videosrc;
+            }
         }
 
         return $this->render_from_template('theme_school/frontpage_header_content_static', $context);

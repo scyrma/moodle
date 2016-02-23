@@ -145,18 +145,24 @@ $string['staticcontent'] = 'Static Content';
 $string['slidercontent'] = 'Slider Content';
 $string['addtext'] = 'Add Text';
 $string['addtextdesc'] = 'Here you may add the text to be displayed on the front page, preferably in HTML.';
+$string['frontpagestaticcontentselect'] = 'Select media type';
+$string['frontpagestaticcontentselectdesc'] = 'You may choose between displaying an image or a video next to the text.';
+$string['mediavideo'] = 'Video';
+$string['mediaimage'] = 'Image';
+$string['uploadimage'] = 'Upload Image';
+$string['uploadimagedesc'] = 'Here you can upload your image for the header.';
 $string['uploadvideo'] = 'Upload Video';
-$string['uploadvideodesc'] = 'Here You can upload your own video';
+$string['uploadvideodesc'] = 'Here you can upload your own video';
 $string['video'] = 'iframe Embedded code';
 $string['videodesc'] = ' Here, you may insert the iframe Embedded code of the video that is to be embedded.';
 $string['videotype'] = 'Select video type';
 $string['videotypedesc'] = 'You may choose between iframe and manual upload.';
 $string['iframe'] = 'iframe';
 $string['upload'] = 'upload';
-$string['frontpagevideoalignment'] = 'Video position';
-$string['frontpagevideoalignmentdesc'] = 'Here, you may choose your video’s position i.e. either to the left side of the text or right side of the text.';
-$string['videoleft'] = 'Left';
-$string['videoright'] = 'Right';
+$string['frontpagemediaalignment'] = 'Media position';
+$string['frontpagemediaalignmentdesc'] = 'Here, you may choose your media’s position i.e. either to the left side of the text or right side of the text.';
+$string['medialeft'] = 'Left';
+$string['mediaright'] = 'Right';
 $string['slidercount'] = 'No of slides';
 $string['slidercountdesc'] = '';
 $string['one'] = '1';
@@ -187,6 +193,7 @@ $string['courselinkimage'] = 'Link to course {$a}';
 $string['userimage'] = 'User profile image';
 $string['newslink'] = 'See all announcements';
 $string['nonewsitems'] = 'Your site currently has no news items. Click here to add some!';
+$string['staticimagealt'] = 'Header static content image';
 
 /*******************************Featured content****************************/
 
