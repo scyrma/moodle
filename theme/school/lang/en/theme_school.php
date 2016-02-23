@@ -82,6 +82,22 @@ $string['leftfootnotelinkdescsection5'] = 'You may insert the link to be redirec
 $string['leftfootnotesectionlink6'] = 'Footnote section 6 link (left)';
 $string['leftfootnotelinkdescsection6'] = 'You may insert the link to be redirected at, for the above text.';
 
+/*contact*/
+$string['contactinformation'] = 'Contact information';
+$string['contactinformationdesc'] = 'You may provide your public contact information for display within the site footer.';
+$string['contactus'] = 'Contact us';
+$string['facebook'] = 'Facebook Link';
+$string['facebookdesc'] = 'The link to your public Facebook page.';
+$string['twitter'] = 'Twitter Link';
+$string['twitterdesc'] = 'The link to your public Twitter page.';
+$string['googleplus'] = 'Google Plus Link';
+$string['googleplusdesc'] = 'The link to your public Google Plus page.';
+$string['youtube'] = 'YouTube Link';
+$string['youtubedesc'] = 'The link to your public YouTube page.';
+$string['contactaddress'] = 'Your contact address';
+$string['contactphone'] = 'Your contact phone number';
+$string['contactemail'] = 'Your contact email address';
+
 /*font*/
 
 $string['fontselectdesc'] = 'You may choose from the ‘Standard’ fonts or add your customised fonts by selecting ‘Custom’ font.';
