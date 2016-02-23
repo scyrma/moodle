@@ -593,4 +593,37 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
         return $html;
     }
+
+    public function theme_footer() {
+        $context = array(
+            'coursefooter' => $this->course_footer(),
+            'doclinks' => $this->page_doc_link(),
+            'logininfo' => $this->login_info(),
+            'standardfooterhtml' => $this->standard_footer_html(),
+        );
+
+        $leftfootnote = get_config('theme_school', 'leftfootnote');
+        if (!empty($leftfootnote)) {
+            $context['leftfootnote'] = $leftfootnote;
+        }
+
+        $footnote = get_config('theme_school', 'footnote');
+        if (!empty($footnote)) {
+            $context['footnote'] = format_text($footnote);
+        }
+
+        $footnotelinks = array();
+        for ($i = 1; $i <= 6; $i++) {
+            $text = get_config('theme_school', sprintf('leftfootnotesection%d', $i));
+            $url = get_config('theme_school', sprintf('leftfootnotesectionlink%d', $i));
+
+            if (!empty($text) && !empty($url)) {
+                $footnotelinks[] = array('text' => $text, 'url' => $url);
+            }
+        }
+
+        $context['footnotelinks'] = $footnotelinks;
+
+        return $this->render_from_template('theme_school/footer', $context);
+    }
 }
