@@ -190,41 +190,61 @@ if (is_siteadmin()) {
         $setting->set_updatedcallback('theme_reset_all_caches');
         $temp->add($setting);
 
-        $name = 'theme_school/videotype';
-        $title = get_string('videotype', 'theme_school');
-        $description = get_string('videotypedesc', 'theme_school');
-        $setting = new admin_setting_configselect($name, $title, $description, 0,
-        array(
-            0 => get_string('iframe', 'theme_school'),
-            1 => get_string('upload', 'theme_school'),
+        $name = 'theme_school/frontpagestaticcontentselect';
+        $title = get_string('frontpagestaticcontentselect', 'theme_school');
+        $description = get_string('frontpagestaticcontentselectdesc', 'theme_school');
+        $setting = new admin_setting_configselect($name, $title, $description, 0, array(
+            0 => get_string('mediaimage', 'theme_school'),
+            1 => get_string('mediavideo', 'theme_school'),
         ));
         $temp->add($setting);
-        if (get_config('theme_school', 'videotype') === "0") {
-            $name = 'theme_school/video';
-            $title = get_string('video', 'theme_school');
-            $description = get_string('videodesc', 'theme_school');
-            $default = '';
-            $setting = new admin_setting_configtext($name, $title, $description, $default);
+
+        if (!get_config('theme_school', 'frontpagestaticcontentselect')) {
+            // image.
+            $name = 'theme_school/frontpagemediaimage';
+            $title = get_string('uploadimage', 'theme_school');
+            $description = get_string('uploadimagedesc', 'theme_school');
+            $setting = new admin_setting_configstoredfile($name, $title, $description, 'frontpagemediaimage');
             $setting->set_updatedcallback('theme_reset_all_caches');
             $temp->add($setting);
-        } elseif (get_config('theme_school', 'videotype') === "1") {
-            $name = 'theme_school/uploadvideo';
-            $title = get_string('uploadvideo','theme_school');
-            $description = get_string('uploadvideodesc', 'theme_school');
-            $setting = new admin_setting_configstoredfile($name, $title, $description, 'uploadvideo', $itemid = 0, array(
-			'accepted_types' => '.mp4'
-			));
-            $setting->set_updatedcallback('theme_reset_all_caches');
+        } else {
+            // video.
+            $name = 'theme_school/videotype';
+            $title = get_string('videotype', 'theme_school');
+            $description = get_string('videotypedesc', 'theme_school');
+            $setting = new admin_setting_configselect($name, $title, $description, 0,
+            array(
+                0 => get_string('iframe', 'theme_school'),
+                1 => get_string('upload', 'theme_school'),
+            ));
             $temp->add($setting);
+            if (get_config('theme_school', 'videotype') === "0") {
+                $name = 'theme_school/video';
+                $title = get_string('video', 'theme_school');
+                $description = get_string('videodesc', 'theme_school');
+                $default = '';
+                $setting = new admin_setting_configtext($name, $title, $description, $default);
+                $setting->set_updatedcallback('theme_reset_all_caches');
+                $temp->add($setting);
+            } elseif (get_config('theme_school', 'videotype') === "1") {
+                $name = 'theme_school/uploadvideo';
+                $title = get_string('uploadvideo','theme_school');
+                $description = get_string('uploadvideodesc', 'theme_school');
+                $setting = new admin_setting_configstoredfile($name, $title, $description, 'uploadvideo', $itemid = 0, array(
+                'accepted_types' => '.mp4'
+                ));
+                $setting->set_updatedcallback('theme_reset_all_caches');
+                $temp->add($setting);
+            }
         }
 
-        $name = 'theme_school/frontpagevideoalignment';
-        $title = get_string('frontpagevideoalignment', 'theme_school');
-        $description = get_string('frontpagevideoalignmentdesc', 'theme_school');
+        $name = 'theme_school/frontpagemediaalignment';
+        $title = get_string('frontpagemediaalignment', 'theme_school');
+        $description = get_string('frontpagemediaalignmentdesc', 'theme_school');
         $setting = new admin_setting_configselect($name, $title, $description, 1,
         array(
-            0 => get_string('videoleft', 'theme_school'),
-            1 => get_string('videoright', 'theme_school'),
+            0 => get_string('medialeft', 'theme_school'),
+            1 => get_string('mediaright', 'theme_school'),
         ));
         $temp->add($setting);
     } else if (get_config('theme_school', 'frontpageimagecontent') === "1"){
