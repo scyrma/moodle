@@ -1,0 +1,35 @@
+<div class="news-updates">
+    <div class="container">
+        <div class="news-icon">
+            <div class="news-icon-container">
+                <div class="left"></div>
+                <div class="middle">
+                    <i class="fa fa-bullhorn"></i>
+                </div>
+                <div class="right"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span3">
+                <h3>{{heading}}</h3>
+                <p>
+                    <a href="{{{linkurl}}}" class="btn-see-all">
+                        {{linktext}}
+                        <i class="fa fa-chevron-circle-right"></i>
+                    </a>
+                </p>
+            </div>
+            {{#newsitems}}
+                <div class="span3">
+                    <p><a href="{{{linkurl}}}">{{title}}</a></p>
+                    <h5>{{modified}}</h5>
+                </div>
+            {{/newsitems}}
+            {{^newsitems}}
+                <div class="span9">
+                    <a href="{{{linkurl}}}">{{#str}} nonewsitems, theme_school {{/str}}</a>
+                </div>
+            {{/newsitems}}
+        </div>
+    </div>
+</div>
