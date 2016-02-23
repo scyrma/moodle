@@ -1,7 +1,24 @@
 <footer>
     <div class="container-fluid">
-        <div class="row">
-            <div class="span9">
+        <div class="row-fluid">
+            {{#hascontacts}}
+                <div class="span4 contact-info">
+                    <h4>{{#str}} contactus, theme_school {{/str}}</h4>
+                    <ul id="contact-list">
+                        {{#address}}<li><i class="fa fa-map-marker"></i>{{.}}</li>{{/address}}
+                        {{#phone}}<li><i class="fa fa-phone"></i>{{.}}</li>{{/phone}}
+                        {{#email}}<li><i class="fa fa-envelope-o"></i>{{.}}</li>{{/email}}
+                    </ul>
+                    <ul id="social-list">
+                        {{#facebookurl}}<li><a href="{{{.}}}" title="{{#str}} facebook, theme_school {{/str}}"><i class="fa fa-facebook"></i></a></li>{{/facebookurl}}
+                        {{#twitterurl}}<li><a href="{{{.}}}" title="{{#str}} twitter, theme_school {{/str}}"><i class="fa fa-twitter"></i></a></li>{{/twitterurl}}
+                        {{#googleplusurl}}<li><a href="{{{.}}}" title="{{#str}} googleplus, theme_school {{/str}}"><i class="fa fa-google-plus"></i></a></li>{{/googleplusurl}}
+                        {{#youtubeurl}}<li><a href="{{{.}}}" title="{{#str}} youtube, theme_school {{/str}}"><i class="fa fa-youtube"></i></a></li>{{/youtubeurl}}
+                    </ul>
+                </div>
+            {{/hascontacts}}
+
+            <div class="{{#hascontacts}}span4{{/hascontacts}}{{^hascontacts}}span8{{/hascontacts}}">
                 {{#leftfootnote}}
                     <p>{{{.}}}</p>
                 {{/leftfootnote}}
@@ -13,7 +30,7 @@
                 </p>
             </div>
 
-            <div class="span3 right">
+            <div class="span4 right">
                 <div id="course-footer">{{{coursefooter}}}</div>
                 <p class="helplink">{{{doclinks}}}</p>
 
