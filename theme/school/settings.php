@@ -2,7 +2,7 @@
 defined('MOODLE_INTERNAL') || die;
 $settings = null;
 if (is_siteadmin()) {
-    $ADMIN->add('themes', new admin_category('theme_school', 'school'));
+    $ADMIN->add('themes', new admin_category('theme_school', get_string('configtitle', 'theme_school')));
     $temp = new admin_settingpage('theme_school_general',  get_string('generalsettings', 'theme_school'));
 
     $name = 'theme_school/logoorsitename';
