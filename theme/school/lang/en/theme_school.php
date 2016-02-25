@@ -2,27 +2,20 @@
 
 $string['choosereadme'] = '
 <div class="clearfix">
-<div class="well">
-<h2>School</h2>
-<p><img class=img-polaroid src="tikli/pix/screenshot.jpg" /></p>
-</div>
-<div class="well">
-<h3>Theme Credits</h3>
-<p>Authors: Ensine Knowledge System PVT LTD.<br>
-Contact: tikli@dualcube.com<br>
-Website: <a href="https://dualcube.com/">https://dualcube.com/</a>
-</p>
-</div></div>';
+    <div class="well">
+        <h2>School</h2>
+        <h3>Theme Credits</h3>
+        <p>Author: Ryan Wyllie<br>
+        based on Tikli from DualCube, by permission from the author.
+        </p>
+    </div>
+</div>';
 
 $string['generalsettings' ] = 'General Settings';
-$string['navsettings'] = 'Nav Settings';
-$string['usernavsettings'] = 'User Nav Settings';
 $string['colorsettings'] = 'Colour Settings';
 $string['fontsettings' ] = 'Font Settings';
 $string['frontpagesettings'] = 'Frontpage Settings';
 $string['configtitle'] = 'School';
-$string['msgsent'] = 'Message sent';
-$string['emptynameemail'] = 'Please enter name and email address.';
 $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
 $string['slidernext'] = 'Next slide';
@@ -30,61 +23,48 @@ $string['sliderprev'] = 'Previous slide';
 
 /*logo*/
 $string['logo'] = 'Logo';
-$string['logodesc'] = 'You may add the logo to be displayed on the header. Note- Preferred aspect ratio is 6:1. In case you wish to customise, you can do so from the     custom CSS box below.';
-$string['logoorsitename'] = 'Choose site logo format';
-$string['logoorsitenamedesc'] = 'You may customise how the site header logo looks like. The options available are: Logo - Only the logo will be shown; Sitename - Only the sitename will be shown; Icon+sitename - An icon along with the sitename will be shown.';
-$string['onlylogo'] = 'Logo Only';
-$string['onlysitename'] = 'Sitename Only';
-$string['iconsitename'] = 'Icon and sitename both';
-$string['logoicon'] = 'Logoicon';
-$string['logoicondesc'] = 'You may add the logo icon to be displayed.';
+$string['logodesc'] = 'Image to be displayed instead of the site name, if configured (see Header display format). Note: Preferred aspect ratio is 6:1.';
+$string['logoorsitename'] = 'Header display format';
+$string['logoorsitenamedesc'] = 'Decides what is displayed within the navbar and front page. Logo - Only the logo will be shown; Site name - Only the site name will be shown; Icon+sitename - An icon will be shown next to the site name.';
+$string['onlylogo'] = 'Logo';
+$string['onlysitename'] = 'Site name';
+$string['iconsitename'] = 'Icon and site name';
+$string['logoicon'] = 'Icon';
+$string['logoicondesc'] = 'The icon image to be displayed next to the site name, if configured (see Header display format).';
 $string['pluginname'] = 'School';
 
 /*favicon*/
 $string['favicon'] = 'Favicon';
-$string['favicondesc'] = 'Your site’s “favourite icon”. Here, you may insert the favicon for your site.';
-$string['enablehomedesc'] = 'Enable Home Desc';
+$string['favicondesc'] = 'Replace the default favicon with a custom favicon.';
 
 /*custom css*/
 $string['customcss'] = 'Custom CSS';
-$string['customcssdesc'] = 'You may customise the CSS from the text box above. The changes will be reflected on all the pages of your site.';
+$string['customcssdesc'] = 'Additional CSS to enhance the default theme styling. The CSS will be applied to all pages within this site.';
 
 /*footnotes*/
-$string['rightfootnote'] = 'Insert Right Footnote';
-$string['rightfootnotedesc'] = 'You may insert a footnote to be displayed on the right side of the footer throughout the site.';
+$string['rightfootnote'] = 'Right footnote';
+$string['rightfootnotedesc'] = 'Text to be displayed on the right side of the footer throughout the site.';
 
-$string['leftfootnote'] = 'Insert left Footnote';
-$string['leftfootnotedesc'] = 'You may insert a footnote to be displayed on the left side of the footer throughout the site.';
+$string['leftfootnote'] = 'Left footnote';
+$string['leftfootnotedesc'] = 'Text to be displayed on the left side of the footer throughout the site.';
 
-$string['leftfootnotesection1'] = 'Insert footnote section 1 (left)';
-$string['leftfootnotedescsection1'] = 'You may insert a text to be displayed.';
-$string['leftfootnotesection2'] = 'Insert footnote section 2 (left)';
-$string['leftfootnotedescsection2'] = 'You may insert a text to be displayed.';
-$string['leftfootnotesection3'] = 'Insert footnote section 3 (left)';
-$string['leftfootnotedescsection3'] = 'You may insert a text to be displayed.';
-$string['leftfootnotesection4'] = 'Insert footnote section 4 (left)';
-$string['leftfootnotedescsection4'] = 'You may insert a text to be displayed.';
-$string['leftfootnotesection5'] = 'Insert footnote section 5 (left)';
-$string['leftfootnotedescsection5'] = 'You may insert a text to be displayed.';
-$string['leftfootnotesection6'] = 'Insert footnote section 6 (left)';
-$string['leftfootnotedescsection6'] = 'You may insert a text to be displayed.';
+$string['leftfootnotesection1'] = 'Left footnote link 1 display text';
+$string['leftfootnotesection2'] = 'Left footnote link 2 display text';
+$string['leftfootnotesection3'] = 'Left footnote link 3 display text';
+$string['leftfootnotesection4'] = 'Left footnote link 4 display text';
+$string['leftfootnotesection5'] = 'Left footnote link 5 display text';
+$string['leftfootnotesection6'] = 'Left footnote link 6 display text';
 
-$string['leftfootnotesectionlink1'] = 'Footnote section 1 link (left)';
-$string['leftfootnotelinkdescsection1'] = 'You may insert the link to be redirected at, for the above text.';
-$string['leftfootnotesectionlink2'] = 'Footnote section 2 link (left)';
-$string['leftfootnotelinkdescsection2'] = 'You may insert the link to be redirected at, for the above text.';
-$string['leftfootnotesectionlink3'] = 'Footnote section 3 link (left)';
-$string['leftfootnotelinkdescsection3'] = 'You may insert the link to be redirected at, for the above text.';
-$string['leftfootnotesectionlink4'] = 'Footnote section 4 link (left)';
-$string['leftfootnotelinkdescsection4'] = 'You may insert the link to be redirected at, for the above text.';
-$string['leftfootnotesectionlink5'] = 'Footnote section 5 link (left)';
-$string['leftfootnotelinkdescsection5'] = 'You may insert the link to be redirected at, for the above text.';
-$string['leftfootnotesectionlink6'] = 'Footnote section 6 link (left)';
-$string['leftfootnotelinkdescsection6'] = 'You may insert the link to be redirected at, for the above text.';
+$string['leftfootnotesectionlink1'] = 'Left footnote link 1 URL';
+$string['leftfootnotesectionlink2'] = 'Left footnote link 2 URL';
+$string['leftfootnotesectionlink3'] = 'Left footnote link 3 URL';
+$string['leftfootnotesectionlink4'] = 'Left footnote link 4 URL';
+$string['leftfootnotesectionlink5'] = 'Left footnote link 5 URL';
+$string['leftfootnotesectionlink6'] = 'Left footnote link 6 URL';
 
 /*contact*/
 $string['contactinformation'] = 'Contact information';
-$string['contactinformationdesc'] = 'You may provide your public contact information for display within the site footer.';
+$string['contactinformationdesc'] = 'Your public contact information for display within the site footer.';
 $string['contactus'] = 'Contact us';
 $string['facebook'] = 'Facebook Link';
 $string['facebookdesc'] = 'The link to your public Facebook page.';
@@ -101,14 +81,14 @@ $string['contactemail'] = 'Your contact email address';
 /*font*/
 
 $string['fontselectdesc'] = 'You may choose from the ‘Standard’ fonts or add your customised fonts by selecting ‘Custom’ font.';
-$string['fonttypestandard'] = 'Font Type Standard';
-$string['fonttypecustom'] = 'Font Type Custom';
+$string['fonttypestandard'] = 'Standard font';
+$string['fonttypecustom'] = 'Custom font';
 $string['fontselect'] = 'Select Font';
-$string['fontnameheading'] = 'Fontname For Heading';
-$string['fontnameheadingdesc'] = 'You may add the font name for the headings in your site i.e. site headings will be displayed in this font.';
+$string['fontnameheading'] = 'Header font';
+$string['fontnameheadingdesc'] = 'The font name for the site header and nav bar.';
 
-$string['fontnamebody'] = 'Fontname For Body';
-$string['fontnamebodydesc'] = 'You may add the font name for the body of your site  i.e. the body of the site will be displayed in this font.';
+$string['fontnamebody'] = 'Body font';
+$string['fontnamebodydesc'] = 'The font name for the site body.';
 
 $string['fontfiles'] = 'Font files';
 $string['fontfilesdesc'] = 'Upload your font files here.';
@@ -155,50 +135,45 @@ $string['mainlinkcolourdesc'] = 'This is the colour of links within the main con
 
 $string['frontpageimagecontent'] = 'Header content';
 $string['frontpageimagecontentdesc'] = ' This section relates to the top portion of your frontpage.';
-$string['frontpageimagecontentstyle'] = 'Style';
-$string['frontpageimagecontentstyledesc'] = 'You can choose between Static content & Slider content.';
+$string['frontpageimagecontentstyle'] = 'Display style';
 $string['staticcontent'] = 'Static Content';
 $string['slidercontent'] = 'Slider Content';
-$string['addtext'] = 'Add Text';
-$string['addtextdesc'] = 'Here you may add the text to be displayed on the front page, preferably in HTML.';
-$string['frontpagestaticcontentselect'] = 'Select media type';
-$string['frontpagestaticcontentselectdesc'] = 'You may choose between displaying an image or a video next to the text.';
+$string['addtext'] = 'Static content text';
+$string['addtextdesc'] = 'Here you may add the text to be displayed on the front page, if static content is selected (see Display style).';
+$string['frontpagestaticcontentselect'] = 'Static content media type';
 $string['mediavideo'] = 'Video';
 $string['mediaimage'] = 'Image';
-$string['uploadimage'] = 'Upload Image';
-$string['uploadimagedesc'] = 'Here you can upload your image for the header.';
-$string['uploadvideo'] = 'Upload Video';
-$string['uploadvideodesc'] = 'Here you can upload your own video';
-$string['video'] = 'iframe Embedded code';
-$string['videodesc'] = ' Here, you may insert the iframe Embedded code of the video that is to be embedded.';
-$string['videotype'] = 'Select video type';
-$string['videotypedesc'] = 'You may choose between iframe and manual upload.';
-$string['iframe'] = 'iframe';
+$string['uploadimage'] = 'Static content image';
+$string['uploadimagedesc'] = 'The image to be displayed in the static content area, if selected (see Static content media type).';
+$string['uploadvideo'] = 'Upload static content video';
+$string['uploadvideodesc'] = 'Upload a video to be displayed in the static content area, if selected (see Static content media type and static content video type). The video must be in mp4 format.';
+$string['video'] = 'Static content embedded video';
+$string['videodesc'] = 'The embedded video HTML for use within the static content area, if selected (see Static content media type and static content video type).';
+$string['videotype'] = 'Static content video type';
+$string['iframe'] = 'embedded';
 $string['upload'] = 'upload';
-$string['frontpagemediaalignment'] = 'Media position';
-$string['frontpagemediaalignmentdesc'] = 'Here, you may choose your media’s position i.e. either to the left side of the text or right side of the text.';
+$string['frontpagemediaalignment'] = 'Static content media position';
+$string['frontpagemediaalignmentdesc'] = 'Choose your media\'s position either to the left or right side of the static content text.';
 $string['medialeft'] = 'Left';
 $string['mediaright'] = 'Right';
-$string['slidercount'] = 'No of slides';
-$string['slidercountdesc'] = '';
+$string['slidercount'] = 'Number of slides';
+$string['slidercountdesc'] = 'Note: you must click the "save changes" after changing this setting in order to render the correct number of slide configurations.';
 $string['one'] = '1';
 $string['two'] = '2';
 $string['three'] = '3';
 $string['four'] = '4';
 $string['five'] = '5';
-$string['slideimage'] = 'Upload image for slide {$a}';
-$string['slideimagedesc'] = 'You may insert the necessary images for the slider content.';
-$string['slidertext'] = 'Add text for slide {$a}';
-$string['slidertextdesc'] = 'You may insert the text content of your slider. You can use HTML.';
-$string['slidertitle'] = 'Add a title for slide {$a}';
+$string['slideimage'] = 'Image for slide {$a}';
+$string['slidertext'] = 'Text for slide {$a}';
+$string['slidertitle'] = 'Title for slide {$a}';
 $string['slidertitledesc'] = 'You may insert the text content of your slider.';
-$string['sliderurl'] = 'Text button link for slide {$a}';
-$string['sliderbuttontext'] = 'Add Text button on for slide {$a}';
-$string['sliderbuttontextdesc'] = 'You may insert a text button on your slider.';
-$string['sliderurldesc'] = 'You may insert the link of the page where the user will be redirected at once they click on the text button.';
-$string['slideinterval'] = 'Slide interval';
-$string['slideintervaldesc'] = 'You may set the transition time between the slides. In case if there is only a single slide, this option will have no effect.';
-$string['sliderautoplay'] = 'Set Slider Autoplay';
+$string['sliderurl'] = 'Button URL for slide {$a}';
+$string['sliderbuttontext'] = 'Button text for slide {$a}';
+$string['sliderbuttontextdesc'] = 'Text to be displayed within the button for slide {$a}';
+$string['sliderurldesc'] = 'The URL to navigate the user to when they click on the button for slide {$a}';
+$string['slideinterval'] = 'Slider content slide interval';
+$string['slideintervaldesc'] = 'You may set the transition time (in milliseconds) between the slides for the slider content, if selected (see Display style). If there is only a single slide, this option will have no effect.';
+$string['sliderautoplay'] = 'Slider content autoplay';
 $string['sliderautoplaydesc'] = 'Select ‘yes’ if you want automatic transition in your slideshow.';
 $string['true'] = 'Yes';
 $string['false'] = 'No';
@@ -213,40 +188,14 @@ $string['staticimagealt'] = 'Header static content image';
 
 /**********************************Testimonials*************************************/
 $string['feedback'] = 'Testimonials';
-$string['feedbackdesc'] = '';
-
-$string['feedbackheading'] = 'Add heading';
-$string['feedbackheadingdesc'] = 'You may enter your heading.';
-
-$string['feedbacksubheading'] = 'Add sub heading';
-$string['feedbacksubheadingdesc'] = 'You may enter your sub heading.';
-
-$string['feedbackiframe'] = 'Iframe Embedded code';
-$string['feedbackiframedesc'] = 'Here, you may insert the iframe Embedded code of the video that is to be embedded.';
-
-$string['feedbackbrieftext'] = 'Add brief text';
-$string['feedbackbrieftextdesc'] = 'You may enter your brief description.';
-
-$string['feedbackslidecount'] = 'No of slides for testimonial.';
-$string['feedbackslidecountdesc'] = '';
-
-$string['feedbackslideimage'] = 'Upload user image';
-$string['feedbackslideimagedesc'] = '';
-
-$string['feedbackslidename'] = 'Enter user name';
-$string['feedbackslidenamedesc'] = '';
-
-$string['feedbackslidereview'] = 'Enter user details';
-$string['feedbackslidereviewdesc'] = '';
-
-$string['quicklinksheading'] = 'Enter heading text for Quick Links';
-$string['quicklinksheadingdesc'] = 'You may add heading text for Quick Links section.';
-$string['quicklinksheadingvalue'] = 'Quick links';
-$string['quicklinkscolumns'] = 'Enter number of columns for Quick Links section';
-$string['quicklinkscolumnsdesc'] = 'You may add the required number of columns that the Quick Links section will have.';
-
-$string['quicklinksrows'] = 'Enter number of rows for column ';
-$string['quicklinksrowsdesc'] = 'You may add the required number of rows that column 1 in Quick Links section will have.';
+$string['feedbackheading'] = 'Section heading';
+$string['feedbacksubheading'] = 'Section sub heading';
+$string['feedbackiframe'] = 'Embedded video';
+$string['feedbackiframedesc'] = 'You may provide HTML to embed a video in the testimonial section.';
+$string['feedbackbrieftext'] = 'Section text';
+$string['feedbackslideimage'] = 'User image for testimonial {$a}';
+$string['feedbackslidename'] = 'User name for testimonial {$a}';
+$string['feedbackslidereview'] = 'Text for testimonial {$a}';
 
 $string['text'] = 'Enter Text';
 $string['textdesc'] = 'Enter text for the link where the user will be redirected.';
@@ -255,17 +204,11 @@ $string['linkdesc'] = 'Enter the link address where the user will be redirected.
 $string['columnheading'] = 'Enter Column heading';
 $string['columnheadingdesc'] = '';
 
-$string['coursequicklinks'] = 'Course quick links';
-$string['coursequicklinksdesc'] = '';
-
+$string['coursequicklinks'] = 'Course section';
+$string['coursequicklinksdesc'] = 'Custom content to be displayed above the course list on the front page.';
 $string['coursesectionheading'] = 'Course section heading';
-$string['coursesectionheadingdesc'] = '';
-
 $string['coursesectionsubheading'] = 'Course section sub heading';
-$string['coursesectionsubheadingdesc'] = '';
-
 $string['coursesectionoverview'] = 'Course section overview';
-$string['coursesectionoverviewdesc'] = '';
 
 /* coursecategory page */
 $string['listview'] = 'List view';
