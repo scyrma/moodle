@@ -89,24 +89,6 @@ function theme_school_set_logo($css, $logo) {
     return $css;
 }
 
-function theme_school_set_pagebackgroundstyle($css, $style) {
-    $tagattach = '[[setting:backgroundattach]]';
-    $tagrepeat = '[[setting:backgroundrepeat]]';
-    $tagsize = '[[setting:backgroundsize]]';
-    $replacementattach = 'fixed';
-    $replacementrepeat = 'no-repeat';
-    $replacementsize = 'cover';
-    if ($style === 'tiled') {
-        $replacementrepeat = 'repeat';
-        $replacementsize = 'initial';
-    } else if ($style === 'stretch') {
-        $replacementattach = 'scroll';
-    }
-    $css = str_replace($tagattach, $replacementattach, $css);
-    $css = str_replace($tagrepeat, $replacementrepeat, $css);
-    $css = str_replace($tagsize, $replacementsize, $css);
-    return $css;
-}
 /**
  * Adds the font to CSS.
  *
