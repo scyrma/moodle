@@ -1,17 +1,18 @@
 @import "../../bootstrapbase/less/moodle.less";
 @import "font-awesome/font-awesome.less";
 
-@primaryColour: #3498db;
-@primaryFontColour: #ffffff;
-@primaryLinkColour: #ffffff;
-@secondaryColour: #f39c11;
+@primaryColour: #f8f8f8;
+@primaryFontColour: #373737;
+@primaryLinkColour: #f98012;
+@secondaryColour: #f98012;
 @secondaryFontColour: #ffffff;
 @secondaryLinkColour: #ffffff;
-@footerColour: #242b32;
-@footerFontColour: #bdc3c7;
-@footerLinkColour: #3498db;
-@mainLinkColour: #3498db;
-@blockLinkColour: #3498db;
+@footerColour: #333333;
+@footerFontColour: #aaaaaa;
+@footerLinkColour: #f98012;
+@mainLinkColour: #36a0bd;
+@blockLinkColour: #36a0bd;
+@backgroundColour: #ffffff;
 
 /*
 Description:
@@ -149,7 +150,7 @@ body {
 	font-family: 'OpenSans', sans-serif;
 	font-weight: normal;
 	font-size: 14px;
-    background-color: #f7f7ff;
+    background-color: @backgroundColour;
 }
 
 a:hover {
@@ -603,7 +604,7 @@ img {
 /* 3 - END of header ---------------------------------------------------------- */
 /* 4 - BEGIN of .content ---------------------------------------------------------- */
 .news-updates {
-	background: #f7f7ff;
+	background: @backgroundColour;
 	color: #757575;
 	font-family: "Raleway";
 	line-height: 18px;
@@ -655,7 +656,7 @@ img {
             width: 30px;
             position: absolute;
             border-top-right-radius: 150%;
-            background-color: #f7f7ff;
+            background-color: @backgroundColour;
         }
 
         .middle {
@@ -687,7 +688,7 @@ img {
             width: 30px;
             position: absolute;
             border-top-left-radius: 150%;
-            background-color: #f7f7ff;
+            background-color: @backgroundColour;
             right: 0;
         }
     }
@@ -739,7 +740,7 @@ i img {
 }
 
 .popular-courses {
-	background: #f7f7ff;
+	background: @backgroundColour;
 	text-align: center;
 	padding: 100px 0 25px;
 }
@@ -907,7 +908,7 @@ i img {
 	bottom: -4px;
 	height: 45px;
 	width: 45px;
-	background-color: #f7f7ff;
+	background-color: @backgroundColour;
 
     .plus-container {
         position: relative;
@@ -917,9 +918,9 @@ i img {
         .plus {
             height: 100%;
             width: 100%;
-            background-color: @primaryColour;
+            background-color: @secondaryColour;
             border-top-left-radius: 3px;
-            color: @primaryFontColour;
+            color: @secondaryFontColour;
             font-size: 32px;
             box-sizing: border-box;
             padding-left: 6px;
@@ -934,13 +935,13 @@ i img {
             top: 0;
             left: 0;
             border-left: 42px solid transparent;
-            border-bottom: 42px solid #f7f7ff;
+            border-bottom: 42px solid @backgroundColour;
         }
     }
 }
 
 .popular-courses .course-item .btn-plus {
-	background: #f7f7ff;
+	background: @backgroundColour;
 }
 
 
@@ -1445,7 +1446,7 @@ header.navbar {
 #region-main {
 	border: none;
 	padding: 26px 30px 25px;
-	background: #f7f7ff;
+	background: @backgroundColour;
 	box-sizing: border-box;
 	min-height: 700px;
 }
@@ -1583,7 +1584,7 @@ header.navbar {
 }
 
 .block.active .header {
-	background: #f7f7ff;
+	background: @backgroundColour;
 	color: #e74c3c;
 	box-shadow: inset -8px 0px 12px -11px #474747;
 }
@@ -2164,7 +2165,7 @@ header.navbar {
 }
 
 #region-main .view-toggle a.active {
-    color: @primaryLinkColour;
+    color: @secondaryLinkColour;
 }
 
 .region-main-header .view-toggle a:active {
@@ -2414,8 +2415,8 @@ header.navbar {
         vertical-align: middle;
 
         &.active {
-            background-color: @primaryColour;
-            color: @primaryFontColour;
+            background-color: @secondaryColour;
+            color: @secondaryLinkColour;
         }
     }
 
@@ -2452,10 +2453,10 @@ header.navbar {
     box-sizing: border-box;
     padding: 10px;
     margin: 1%;
-    background-color: #e8e9f3;
+    background-color: #efefef;
     border-radius: 2px;
     vertical-align: top;
-    box-shadow: 0px 2px 2px 0px #d9d9e0;
+    box-shadow: 0px 2px 2px 0px darken(#efefef, 10%);
 }
 
 .category {
@@ -6499,7 +6500,6 @@ div.minicalendarblock caption a {
     border: none!important;
     background-image: none!important;
     box-shadow: none!important;
-    color: #FFF!important;
     margin: 3px 3px 0 0!important;
     padding-left: 2px!important;
     text-shadow: none!important;
@@ -6579,17 +6579,17 @@ div.minicalendarblock caption a {
 }
 
 #page .search-wr .coursesearchform button[type="submit"] {
-	background-color: #a2a2af;
+	background-color: darken(#efefef, 30%);
 }
 
 #page .search-wr .coursesearchform input[type="text"],
 #page .search-wr .adminsearchform input[type="text"] {
-	background: #e8e9f3;
+	background: #efefef;
 }
 
 .coursesearchform input[type="text"],
 .adminsearchform input[type="text"] {
-	border-color: #a2a2af;
+	border-color: darken(#efefef, 30%);
 }
 
 
@@ -7337,7 +7337,7 @@ ul.dropdown-menu li.dropdown-submenu:hover>a {
 
 .view-toggle .btn-view-list.active,
 .view-toggle .btn-view-grid.active {
-  background-color: @primaryColour;
+    background-color: @secondaryColour;
 }
 
 .breadcrumb a:hover,
@@ -7352,20 +7352,17 @@ ul.dropdown-menu li.dropdown-submenu:hover>a {
 
 #region-main a,
 .moodle-dialogue-ft a,
-.course-item h6 a {
-    color: @mainLinkColour;
-}
-
+.userbutton > span:last-child span,
+.usermenu .menu a:hover,
+.usermenu .userbutton span span:hover,
+.course-item h6 a,
 .popular-courses-nav a,
 .btn-view-all,
-.usermenu .userbutton span span:hover,
 .navbar .dropdown-menu li a:hover,
 .popular-courses-nav a:hover,
 .btn-see-all:hover,
-.btn-see-all:focus,
-.userbutton > span:last-child span,
-.usermenu .menu a:hover {
-  color: @primaryColour;
+.btn-see-all:focus {
+    color: @mainLinkColour;
 }
 
 footer a,
@@ -7396,10 +7393,10 @@ footer a:focus {
 #page td.submit input,
 #page #id_saveanddisplay,
 .mdl-align .btn-primary {
-    background-color: @primaryColour;
-    border-color: darken(@primaryColour, 10%);
-    box-shadow: 0 2px 0 0 darken(@primaryColour, 10%);
-    color: @primaryFontColour;
+    background-color: @secondaryColour;
+    border-color: darken(@secondaryColour, 10%);
+    box-shadow: 0 2px 0 0 darken(@secondaryColour, 10%);
+    color: @secondaryFontColour;
 }
 
 #block-region-side-post .block .minicalendar th {
@@ -7415,10 +7412,6 @@ footer a:focus {
 .navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
   box-shadow: none!important;
-}
-
-.view-toggle .btn-view-list.active {
-  background-color: @primaryColour;
 }
 
 header.navbar,
@@ -7790,7 +7783,7 @@ footer span {
 
 .students-area {
     padding: 100px 0;
-    background: #f7f7ff;
+    background: @backgroundColour;
 }
 
 .students-area-feedback h2 {
