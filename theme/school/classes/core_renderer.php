@@ -362,14 +362,19 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
         $categories = array_values(array_filter($categories, $filter));
         $categorydetails = $this->serialise_categories($categories);
+        $heading = get_config('theme_school', 'coursesectionheading');
+        $subheading = get_config('theme_school', 'coursesectionsubheading');
+        $overview = get_config('theme_school', 'coursesectionoverview');
+        $hastext = !empty($heading) || !empty($subheading) || !empty($overview);
 
         $context = array(
             'courses' => $coursedetails,
             'categories' => $categorydetails,
             'categoriesurl' => $categoriesurl->out(),
-            'heading' => get_config('theme_school', 'coursesectionheading'),
-            'subheading' => get_config('theme_school', 'coursesectionsubheading'),
-            'overview' => get_config('theme_school', 'coursesectionoverview'),
+            'hastext' => $hastext,
+            'heading' => $heading,
+            'subheading' => $subheading,
+            'overview' => $overview,
             'imageurls' => array(
                 'sliderprev' => $this->get_theme_source_img('i-arr-l-1.png'),
                 'slidernext' => $this->get_theme_source_img('i-arr-r-1.png'),
