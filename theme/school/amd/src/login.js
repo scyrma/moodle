@@ -1,7 +1,7 @@
 define(['jquery', 'core/str'], function($, str) {
     return {
         init: function() {
-            strings = [
+            var strings = [
                 {
                     key: 'username',
                     component: 'core',
@@ -17,5 +17,5 @@ define(['jquery', 'core/str'], function($, str) {
                 $('#password').attr('placeholder', results[1]);
             });
         }
-    }
+    };
 });
