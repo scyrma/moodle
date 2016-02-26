@@ -1467,7 +1467,7 @@ header.navbar {
 }
 
 #page.container-fluid {
-	padding: 80px 0 0 0!important;
+	padding: 80px 0 0 0;
 	max-width: 100%;
 }
 
@@ -1594,6 +1594,10 @@ header.navbar {
 }
 
 .block {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+
     &[data-dockable="1"] {
         .header {
             .block_action {
@@ -3141,7 +3145,7 @@ body.login-pagebg #region-main {
 	font-size: 30px;
 	font-weight: 100;
 	line-height: 31px;
-	color: #FFFFFF;
+	color: @primaryFontColour;
 	margin: 0;
 	padding: 60px 0 16px!important;
 	text-align: center;
@@ -3251,7 +3255,7 @@ body.login-pagebg #region-main {
 	font-size: 12px;
 	line-height: 32px;
 	font-weight: 400;
-	color: #FFFFFF;
+	color: @primaryFontColour;
 	padding: 15px 0 0;
 }
 
@@ -4392,9 +4396,6 @@ div[class*="span"] {
 	.landing-page .logo-img img {
 	   width: 139px;
 	}
-	.navbar .nav {
-	   width: 57%;
-	}
 
    .mobile-top-head .navbar .nav > li > a {
      margin-top: 36px;
@@ -4685,9 +4686,6 @@ footer p {
 /* ----------------------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------------- */
 @media (max-width:1024px){
-	.navbar .nav {
-	   width: 43%;
-	}
 	.navbar .nav > li > a {
 	   padding: 13px 15px !important;
 	}
@@ -4706,7 +4704,7 @@ footer p {
 	padding: 10px;
 }
 #page.container-fluid {
-	padding: 0!important;
+	padding-top: 160px;
 }
 
 .welcome-block p {
@@ -4913,6 +4911,11 @@ footer .container-fluid .span3 {
 }
 /* ----------------------------------------------------------------------------------- */
 @media screen and (max-width: 767px) {
+body {
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .div_to_hold {
     float: left;
     margin: 2%;
@@ -5891,6 +5894,11 @@ form.logselecform select.select {
 	box-shadow: none!important;
 	background: none!important;
 	border: none;
+    color: @mainLinkColour;
+
+    &:hover, &:focus, &:active, &.active {
+        color: lighten(@mainLinkColour, 10%);
+    }
 }
 
 .navbar-inner .btn.btn-navbar {
@@ -6847,11 +6855,6 @@ footer span {
 
 }
 
-@media screen and (min-width: 979px) and (max-width: 1280px) {
-	#page-content {
-    	margin-top: 12px;
-	}
-}
 @media screen and (max-width: 979px) {
 
 #page-content .row-fluid #region-main {
@@ -6868,6 +6871,7 @@ footer span {
     left: -500px;
     position: fixed;
     top: 0;
+    padding-top: 160px;
 }
 .dir-rtl #block-region-side-pre {
 	right: -500px;
@@ -7458,7 +7462,7 @@ a.click {
 }
 
 .loginbox .error {
-  color: rgba(255, 255, 255, 0.8) !important;
+  color: @primaryFontColour;
 }
 
 #block-region-side-post .calendar_filters.filters a,
