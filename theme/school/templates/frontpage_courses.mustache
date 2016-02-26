@@ -1,12 +1,14 @@
 <div class="popular-courses">
     <div class="container-fluid">
         <div class="container nheading">
-            <div class="span5 popular-course-nheading">
-              {{#heading}}<h4>{{.}}</h4>{{/heading}}
-              {{#subheading}}<h2>{{.}}</h2>{{/subheading}}
-              {{#overview}}<p>{{{.}}}</p>{{/overview}}
-            </div>
-            <div class="span7 popular-course-links">
+            {{#hastext}}
+                <div class="span5 popular-course-nheading">
+                  {{#heading}}<h4>{{.}}</h4>{{/heading}}
+                  {{#subheading}}<h2>{{.}}</h2>{{/subheading}}
+                  {{#overview}}<p>{{{.}}}</p>{{/overview}}
+                </div>
+            {{/hastext}}
+            <div class="{{#hastext}}span7{{/hastext}} popular-course-links">
                 <ul>
                     {{#categories}}
                         <li><a href="{{{url}}}" title="{{name}}">{{name}}</a></li>
