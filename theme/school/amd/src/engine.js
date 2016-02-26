@@ -31,7 +31,7 @@
         $(".adminsearchform").submit(function(){
             if ($('.adminsearchform input[type="text"]').val().length < 1 ) {
                 return false;
-            };
+            }
         });
     };
 
@@ -55,8 +55,13 @@
     };
 
     var initNavBar = function() {
-        $('html').click(function() {
+        $('html').click(function(e) {
             $('.menulist').removeClass('usermenu-show active-drop-user-menuinner');
+
+            var parentMenu = $(e.target).closest('.nav-collapse');
+            if (!parentMenu.length) {
+                $('.nav-collapse').removeClass('in').removeAttr('style');
+            }
         });
 
         $('.menulist').css('display', 'none');
@@ -67,7 +72,7 @@
             e.stopPropagation();
         });
 
-        $(".btn-navbar").on("click",function() {
+        $(".btn-navbar").on("click",function(e) {
             if ($('#custommenu').val() == "nologinselfreg"){
                 $('.nav-collapse').toggleClass('in').removeAttr('style').addClass("inner-active-drop-nologin-selfreg");
             } else {
@@ -75,6 +80,7 @@
             }
 
             $('.usermenu-show').removeClass('usermenu-show');
+            e.stopPropagation();
         });
     };
 
@@ -86,5 +92,5 @@
             initBlockPanels();
             initNavBar();
         }
-    }
+    };
 });
