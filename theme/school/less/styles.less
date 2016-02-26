@@ -350,9 +350,22 @@ img {
 	padding: 0;
 }
 
-.landing-page .navbar {
-	margin-bottom: 0;
-	height: 160px;
+.landing-page {
+    .mobile-top-head {
+        .navbar {
+            margin-bottom: 0;
+            position: relative;
+            height: 80px;
+            float: right;
+
+            .nav {
+                & > li {
+                    line-height: 80px;
+                    margin-right: 15px;
+                }
+            }
+        }
+    }
 }
 
 .navbar-inner .logo-wr {
@@ -370,7 +383,7 @@ img {
 .landing-page .logo-img {
 	box-shadow: none;
 	float: left;
-    margin: 10% 0 0 10%;
+    margin-top: 20px;
     padding: 5%;
     text-align: center;
 }
@@ -379,7 +392,6 @@ img {
     padding: 0;
 	min-width: 250px;
 	margin-left: 0;
-	padding-left: 30px;
 	box-sizing: border-box;
 }
 
@@ -470,16 +482,12 @@ img {
     float: right;
     margin: 0;
 	z-index: 1111;
+    min-width: 220px;
+    padding: 9px 15px 10px;
 }
 
 .landing-page .usermenu .menubar a {
 	background: none;
-}
-
-.landing-page .usermenu {
-    margin: 20px 20px 0 0;
-    min-width: 220px;
-    padding: 9px 15px 10px;
 }
 
 .landing-page .userbutton > span:last-child {
@@ -515,7 +523,6 @@ img {
 }
 
 .btn.btn-navbar.active-drop + .nav-collapse .nav {
-	margin-right: 122px !important;
     margin-top: 0 !important;
     width: 200px!important;
 	background-color: #FFF!important;
@@ -528,8 +535,8 @@ img {
 
 .landing-page .navbar .nav a {
 	font-weight: normal;
-	padding-top: 6px;
-	padding-bottom: 6px;
+    padding: 0 !important;
+    margin: 0;
 }
 
 .btn.btn-navbar.active-drop + .nav-collapse .nav > li > a {
@@ -563,23 +570,26 @@ img {
     box-shadow: 4px 4px 9px -3px rgba(0, 0, 0, 0.2);
 }
 
-.landing-page .navbar .btn {
-    margin-top: 20px !important;
-}
-
 .landing-page .mobile-top-head {
-    min-height: 160px;
+    min-height: 80px;
+    line-height: 80px;
+    margin-bottom: 80px;
+    box-sizing: border-box;
+    padding-top: 20px;
+    padding-right: 20px;
 }
 
 .welcome-block {
 	color: @primaryFontColour;
-	padding: 0 0 91px;
+	padding: 0 130px 91px 130px;
 	line-height: 24px;
 }
 
 .welcome-block h2 {
 	padding: 0 0 22px;
 	font-weight: 600;
+    font-size: 38px;
+    line-height: 45px;
 }
 
 .welcome-block p {
@@ -4397,12 +4407,6 @@ div[class*="span"] {
 	.landing-page .logo-img img {
 	   width: 139px;
 	}
-
-   .mobile-top-head .navbar .nav > li > a {
-     margin-top: 36px;
-     padding: 1px 15px !important;
-   }
-
 }
 
 /* ----------------------------------------------------------------------------------- */
@@ -4705,9 +4709,6 @@ footer p {
 .btn-see-all, body .btn-see-all {
 	font-size: 10px;
 }
-.welcome-block {
-    padding: 80px 0 91px;
-}
 
 header.navbar {
 	min-height: 160px;
@@ -4905,19 +4906,41 @@ body {
     width: 72%;
 }
 
-.landing-page .btn.btn-navbar + .nav-collapse .nav {
-	margin-top: 160px !important;
-}
-
 .landing-page .logo-img.text,
 .landing-page .logo-img.icontext {
     text-align: left;
+    padding-left: 30px;
 }
 
 
-.mobile-top-head {
-    background: rgba(0, 0, 0, .2);
-    height: 160px;
+.landing-page {
+    .mobile-top-head {
+        height: 160px;
+        padding-top: 0;
+        padding-right: 0;
+        margin-bottom: 0;
+        border-bottom: solid 1px rgba(0, 0, 0, 0.1);
+
+        .navbar {
+            margin-top: 80px;
+            float: left;
+
+            .btn {
+                top: 0;
+            }
+
+            .nav-collapse {
+                left: 0;
+                right: auto;
+            }
+
+            .nav {
+                & > li {
+                    margin-right: 0;
+                }
+            }
+        }
+    }
 }
 
 .mobile-top-head .nav-collapse .nav {
@@ -5000,7 +5023,6 @@ body {
 .landing-page .navbar .btn {
     border-right: solid 1px rgba(0, 0, 0, .1);
     margin-top: 0 !important;
-    padding: 16px 22px 16px 30px !important;
     position: absolute;
     left: 0;
     z-index: 11111;
@@ -5503,7 +5525,7 @@ footer .container-fluid {
 
 /* ----------------------------------------------------------------------------------- */
 @media screen and (max-width: 479px) {
-	.nav-collapse.inner-active-drop-nologin-selfreg.collapse.in {
+	.nav-collapse.inner-active-drop-nologin-selfreg.collapse {
     	margin-top: 60px;
 	}
 }
@@ -5861,6 +5883,8 @@ form.logselecform select.select {
 
 .navbar .nav li.dropdown > .dropdown-toggle .caret {
     border-top-color: @primaryLinkColour !important;
+    vertical-align: middle;
+    margin: 0 0 0 5px;
 }
 
 /*bootstrap default menu and dropdown end */
@@ -6727,6 +6751,7 @@ header.navbar,
     border-bottom: 270px solid transparent;
     border-left: 315px solid @secondaryColour;
     position: absolute;
+    top: -20px;
     z-index: -1;
 }
 
@@ -6833,7 +6858,12 @@ footer span {
 .nav-collapse .dropdown-menu {
     background-color: #fff!important;
 }
-
+.navbar .nav-collapse {
+    border-top: medium none !important;
+    position: absolute;
+    top: 80px;
+    right: 0;
+}
 .navbar .nav > li > a {
 	padding: 11px 15px!important;
 	margin-top: 0;
@@ -6902,6 +6932,17 @@ footer span {
     border-top-color: #888 !important;
 }
 
+.landing-page {
+    .mobile-top-head {
+        .navbar {
+            .nav {
+                & > li {
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}
 
 }
 
@@ -7168,15 +7209,13 @@ footer span {
 }
 /* 11 - END of RTL language fixing ------------------------------------ */
 /*custom_menu submenu css fix*/
-.navbar .nav-collapse.in .nav .divider, .navbar .nav-collapse.in .nav .dropdown-menu .divider {
+.navbar .nav-collapse .nav .divider, .navbar .nav-collapse .nav .dropdown-menu .divider {
     display: none !important;
 }
-.navbar .nav-collapse.in {
-    border-top: medium none !important;
-}
+
 .btn.btn-navbar.active-drop + .nav-collapse .nav {
-    margin-right: 85px !important;
     width: 237px !important;
+    text-align: center;
 }
 
 .dropdown-menu li {
