@@ -28,7 +28,7 @@ $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
             <?php echo $OUTPUT->user_menu(); ?>
 
             <?php if (isloggedin() && !empty($CFG->custommenuitems)) { ?>
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <a class="btn btn-navbar">
                     <i class="fa fa-arrow-circle-down"></i>
                 </a>
                 <div class="nav-collapse collapse">
