@@ -1,4 +1,10 @@
-define(['jquery', 'theme_school/jquery-bxslider', 'theme_school/jquery-cslider', 'theme_school/modernizr.custom.28468'], function($) {
+define([
+        'jquery',
+        'theme_school/jquery-bxslider',
+        'theme_school/jquery-cslider',
+        'theme_school/modernizr.custom.28468'
+    ], function($) {
+
     var initCourseSlider = function() {
         var minSlides,
             width = $(window).width();
@@ -8,7 +14,7 @@ define(['jquery', 'theme_school/jquery-bxslider', 'theme_school/jquery-cslider',
         } else {
             minSlides = 4;
         }
-        sliderCourses = $('.popular-courses-slider').bxSlider({
+        $('.popular-courses-slider').bxSlider({
             speed: 1500,
             nextSelector: '#slider-next',
             prevSelector: '#slider-prev',
