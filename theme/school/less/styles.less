@@ -963,7 +963,7 @@ i img {
 }
 
 .frontpage-course-list-all .course-item {
-	background: #e8e9f3;
+	background: #efefef;
 }
 
 
@@ -1019,7 +1019,7 @@ i img {
 
 .btn-togle-details {
 	display: none;
-    background-color: #c8c9d4;
+    background-color: darken(#efefef, 30%);
     text-align: center;
     font-size: 44px;
     line-height: 70px;
@@ -1068,7 +1068,7 @@ i img {
 
 .course-items-list-view .for-list-view-wr {
 	padding: 17px 24px;
-	background: #c8c9d4;
+	background: #c8c8c8;
 	display: none;
 	clear: both;
 }
@@ -2117,7 +2117,7 @@ header.navbar {
 .view-toggle .btn-view-grid,
 .view-toggle .btn-view-list {
 	position: relative;
-    background-color: #a2a2af;
+    background-color: darken(#efefef, 30%);
 }
 
 .view-toggle .btn-view-list:before {
@@ -2370,12 +2370,13 @@ header.navbar {
 }
 
 #page .btn-show-more {
-	color: #62626c;
+	/*color: #626262;*/
+    color: #fff;
 }
 
 .btn-show-more span {
 	display: block;
-	background: #c6c6d1;
+	background: darken(#efefef, 30%);
 	border-radius: 3px;
 	padding: 0 20px;
 }
@@ -2408,7 +2409,7 @@ header.navbar {
 
     #category-picker-filter {
         display: inline-block;
-        background-color: #a2a2af;
+        background-color: darken(#efefef, 30%);
         color: #fff;
         height: 37px;
         width: 37px;
@@ -2431,8 +2432,8 @@ header.navbar {
 
         select {
             height: 38px;
-            background-color: #e8e9f3;
-            border-color: #a2a2af;
+            background-color: #efefef;
+            border-color: darken(#efefef, 20%);
         }
     }
 }
@@ -4477,10 +4478,6 @@ h2 {
 #region-main {
 	padding: 26px 15px 40px;
 }
-.breadcrumb,
-.breadcrumb-button .singlebutton form div input[type="submit"] {
-	font-size: 12px;
-}
 
 .view-toggle {
 	margin: 0 0 0 3px;
@@ -4618,14 +4615,7 @@ h2 {
 footer p {
 	font-size: 10px;
 }
-.coursesearchform,
-.adminsearchform {
-	width: 70%;
-	width: ~"-webkit-calc(100% - 85px)";
-	width: ~"-moz-calc(100% - 85px)";
-	width: ~"calc(100% - 85px)";
-	border-radius: 5px;
-}
+
 .coursesearchform input[type="text"],
 .adminsearchform input[type="text"] {
 	border-color: transparent;
@@ -4676,10 +4666,6 @@ footer p {
 .breadcrumb-button .singlebutton div input {
 	padding: 7px 14px;
 	margin-top: 2px;
-}
-
-.region-main-header .search-wr {
-    float: none;
 }
 
 }
@@ -4795,13 +4781,12 @@ footer {
 }
 .course-items-list-view .course-item h6 {
 	font-size: 11px;
-	float: right;
 	padding: 4px 10px 0 0;
 }
 .coursesearchform,
 .adminsearchform {
 	border-radius: 4px;
-	height: 37px;
+	height: 38px;
 	overflow: hidden;
 	box-sizing: border-box;
 }
@@ -4853,12 +4838,10 @@ footer {
 	width: auto;
 	font-size: 14px;
 	line-height: 40px;
-	float: right;
 	width: 75%;
 }
 .course-items-list-view .course-item h6 {
 	font-size: 11px;
-	float: right;
 	padding: 0;
 	height: 10px;
 	line-height: 10px;
@@ -5085,28 +5068,6 @@ footer .right {
 	padding: 0 0 0;
 	display: block;
 }
-.course-items-list-view .btn-togle-details {
-	width: 48px;
-	height: 46px;
-	margin: 0 20px 0 0;
-	background-size: 25px;
-    font-size: 40px;
-    line-height: 50px;
-}
-.course-items-list-view .course-item h5 {
-	width: auto;
-	font-size: 17px;
-	line-height: 46px;
-	float: left;
-}
-.course-items-list-view .course-item h6 {
-	font-size: 13px;
-	float: right;
-	padding: 4px 45px 0 0;
-	height: 46px;
-	line-height: 40px;
-	width: auto;
-}
 .col-2 > .span3, #page-content.col-2 .quiz-score {
 	padding: 0 0 0;
 }
@@ -5307,28 +5268,6 @@ footer span {
 }
 footer .container-fluid {
 	padding: 0 15px 0;
-}
-/* *** */
-.course-items-list-view .btn-togle-details {
-	width: 40px;
-	height: 66px;
-	margin: 0;
-}
-.course-items-list-view .course-item h5 {
-	width: auto;
-	font-size: 14px;
-	line-height: 40px;
-	float: right;
-	width: 75%;
-}
-.course-items-list-view .course-item h6 {
-	font-size: 11px;
-	float: right;
-	padding: 0;
-	height: 10px;
-	line-height: 10px;
-	width: 75%;
-
 }
 .btn-show-more {
 	font-size: 11px;
@@ -6743,11 +6682,6 @@ footer a:focus,
 .navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
 	box-shadow: none!important;
-}
-
-.view-toggle .btn-view-list.active,
-.view-toggle .btn-view-grid.active {
-	background-color: #1abc9c;
 }
 
 header.navbar,
