@@ -19,9 +19,7 @@
             {{/hascontacts}}
 
             <div class="{{#hascontacts}}span4{{/hascontacts}}{{^hascontacts}}span8{{/hascontacts}}">
-                {{#leftfootnote}}
-                    <p>{{{.}}}</p>
-                {{/leftfootnote}}
+                {{{leftfootnote}}}
                 <p class="foot-note-links">
                     {{#footnotelinks}}
                         <a href="{{{url}}}">{{text}}</a>
@@ -32,7 +30,7 @@
 
             <div class="span4 right">
                 <div id="course-footer">{{{coursefooter}}}</div>
-                <p class="helplink">{{{doclinks}}}</p>
+                {{#doclinks}}<p class="helplink">{{{.}}}</p>{{/doclinks}}
 
                 {{#footnote}}<div class="footnote text-center">{{{.}}}</div>{{/footnote}}
                 {{{logininfo}}}
