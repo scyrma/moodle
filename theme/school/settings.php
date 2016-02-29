@@ -355,7 +355,7 @@ if (is_siteadmin()) {
         $title = get_string('slidertext', 'theme_school', $slidecounts);
         $description = '';
         $default = '';
-        $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+        $setting = new admin_setting_configtextarea($name, $title, $description, $default);
         $setting->set_updatedcallback('theme_reset_all_caches');
         $temp->add($setting);
 
