@@ -375,10 +375,6 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'heading' => $heading,
             'subheading' => $subheading,
             'overview' => $overview,
-            'imageurls' => array(
-                'sliderprev' => $this->get_theme_source_img('i-arr-l-1.png'),
-                'slidernext' => $this->get_theme_source_img('i-arr-r-1.png'),
-            )
         );
 
         return $this->render_from_template('theme_school/frontpage_courses', $context);

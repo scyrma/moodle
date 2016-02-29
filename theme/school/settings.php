@@ -540,7 +540,7 @@ if (is_siteadmin()) {
     $name = 'theme_school/primarycolour';
     $title = get_string('primarycolour', 'theme_school');
     $description = get_string('primarycolourdesc', 'theme_school');
-    $default = '#3498db';
+    $default = '#f8f8f8';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -548,7 +548,7 @@ if (is_siteadmin()) {
     $name = 'theme_school/primaryfontcolour';
     $title = get_string('primaryfontcolour', 'theme_school');
     $description = get_string('primaryfontcolourdesc', 'theme_school');
-    $default = '#ffffff';
+    $default = '#373737';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -556,7 +556,7 @@ if (is_siteadmin()) {
     $name = 'theme_school/primarylinkcolour';
     $title = get_string('primarylinkcolour', 'theme_school');
     $description = get_string('primarylinkcolourdesc', 'theme_school');
-    $default = '#ffffff';
+    $default = '#f98012';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -566,7 +566,7 @@ if (is_siteadmin()) {
     $name = 'theme_school/secondarycolour';
     $title = get_string('secondarycolour', 'theme_school');
     $description = get_string('secondarycolourdesc', 'theme_school');
-    $default = '#f39c11';
+    $default = '#f98012';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -592,7 +592,7 @@ if (is_siteadmin()) {
     $name = 'theme_school/footercolour';
     $title = get_string('footercolour', 'theme_school');
     $description = get_string('footercolourdesc', 'theme_school');
-    $default = '#242b32';
+    $default = '#333333';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -600,7 +600,7 @@ if (is_siteadmin()) {
     $name = 'theme_school/footerfontcolour';
     $title = get_string('footerfontcolour', 'theme_school');
     $description = get_string('footerfontcolourdesc', 'theme_school');
-    $default = '#bdc3c7';
+    $default = '#aaaaaa';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -608,7 +608,7 @@ if (is_siteadmin()) {
     $name = 'theme_school/footerlinkcolour';
     $title = get_string('footerlinkcolour', 'theme_school');
     $description = get_string('footerlinkcolourdesc', 'theme_school');
-    $default = '#3498db';
+    $default = '#f98012';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -618,7 +618,7 @@ if (is_siteadmin()) {
     $name = 'theme_school/blocklinkcolour';
     $title = get_string('blocklinkcolour', 'theme_school');
     $description = get_string('blocklinkcolourdesc', 'theme_school');
-    $default = '#3498db';
+    $default = '#36a0bd';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -628,7 +628,7 @@ if (is_siteadmin()) {
     $name = 'theme_school/mainlinkcolour';
     $title = get_string('mainlinkcolour', 'theme_school');
     $description = get_string('mainlinkcolourdesc', 'theme_school');
-    $default = '#3498db';
+    $default = '#36a0bd';
     $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, null, false);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);

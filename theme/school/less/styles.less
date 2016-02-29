@@ -362,6 +362,7 @@ img {
                 & > li {
                     line-height: 80px;
                     margin-right: 15px;
+                    margin-left: 15px;
                 }
             }
         }
@@ -384,8 +385,8 @@ img {
 	box-shadow: none;
 	float: left;
     margin-top: 20px;
-    padding: 5%;
     text-align: center;
+    box-sizing: border-box;
 }
 
 .landing-page .logo-img.text {
@@ -447,10 +448,11 @@ img {
 	background: rgba(0, 0, 0, .3);
 	float: right;
 	border-radius: 4px;
-	margin: 42px 44px 0 2px;
+	margin-top: 21px;
 	height: 34px;
 	padding: 4px 4px 0;
 	overflow: hidden;
+    line-height: 31px;
 }
 
 .navbar-inner .logining-wr {
@@ -458,8 +460,6 @@ img {
 }
 
 .logining-wr a {
-	font-size: 13px;
-	line-height: 31px;
 	height: 31px;
 	font-weight: 800;
 	color: @primaryLinkColour;
@@ -467,12 +467,11 @@ img {
 	display: inline-block;
 	border-radius: 3px;
 	padding: 0 10px;
-	box-shadow: none!important;
 }
 
 .logining-wr a:first-child {
 	padding: 0 15px;
-	color: @primaryLinkColour !important;
+	color: @primaryLinkColour;
 }
 
 .landing-page .usermenu {
@@ -579,10 +578,11 @@ img {
     padding-right: 20px;
 }
 
-.welcome-block {
+.welcome-block, .welcome-block-slider {
 	color: @primaryFontColour;
 	padding: 0 130px 91px 130px;
 	line-height: 24px;
+    overflow: hidden;
 }
 
 .welcome-block h2 {
@@ -665,6 +665,7 @@ img {
             height: 30px;
             width: 30px;
             position: absolute;
+            right: 0;
             border-top-right-radius: 150%;
             background-color: @backgroundColour;
         }
@@ -672,6 +673,7 @@ img {
         .middle {
             position: absolute;
             top: 0;
+            left: 0;
             width: 70px;
             height: 100%;
             background-color: @primaryColour;
@@ -753,6 +755,11 @@ i img {
 	background: @backgroundColour;
 	text-align: center;
 	padding: 100px 0 25px;
+
+    .popular-course-nheading, .popular-course-links {
+        box-sizing: border-box;
+        padding: 10px;
+    }
 }
 .nheading {
 	margin-bottom: 95px;
@@ -771,8 +778,9 @@ i img {
 .popular-courses-nav span {
 	display: block;
 	cursor: pointer;
-	text-indent: -9999px;
 	width: 38px;
+    text-align: center;
+    font-size: 30px;
 	height: 69px;
 	overflow: hidden;
 	position: relative;
@@ -4331,20 +4339,15 @@ div[class*="span"] {
 	margin: 0;
 	box-sizing: border-box;
 }
-/*
-.span6 {
-	width: 50%;
+
+.dir-rtl {
+    &.landing-page {
+        .mobile-top-head {
+            padding-right: 0;
+            padding-left: 20px;
+        }
+    }
 }
-.span3 {
-	width: 25%;
-}
-.span4 {
-	width: 33.3%;
-}
-.span9 {
-	width: 75%;
-}
-*/
 
 }
 
@@ -4938,6 +4941,23 @@ body {
                 & > li {
                     margin-right: 0;
                 }
+            }
+        }
+    }
+}
+
+.dir-rtl {
+    &.landing-page {
+        .mobile-top-head {
+            padding-right: 0;
+            padding-left: 0;
+        }
+
+        .logo-img {
+            &.text, &.icontext {
+                text-align: right;
+                padding-left: 0;
+                padding-right: 30px;
             }
         }
     }
@@ -5819,10 +5839,6 @@ form.logselecform select.select {
 
 /*bootstrap default menu and dropdown start */
 
-.navbar .nav > li > a, .logining-wr a {
-	background: none!important;
-}
-
 .navbar .nav > li > a {
 	text-transform: uppercase;
 	text-shadow: none !important;
@@ -6498,11 +6514,6 @@ div.minicalendarblock caption a {
     color: #333;
 }
 
-.logining-wr a:first-child {
-    color: #ffffff;
-}
-
-
 #block-region-side-pre .block .content {
     color: #333;
 }
@@ -6672,18 +6683,9 @@ footer a:focus,
 	color: #e74c3c;
 }
 
-.logining-wr a:last-child {
-	color: #ff6a5b;
-}
-
 .loginbox .loginform .form-input input {
 	border: 1px solid #eee;
 
-}
-
-.logining-wr a:first-child {
-    background: #1abc9c!important;
-    box-shadow: 1px 1px 0 0 #0a5948!important;
 }
 
 #page input.form-submit,
@@ -6938,6 +6940,7 @@ footer span {
             .nav {
                 & > li {
                     margin-right: 0;
+                    margin-left: 0;
                 }
             }
         }
@@ -7026,9 +7029,7 @@ footer span {
     border-left: 1px solid rgba(0, 0, 0, 0.1);
     float: right;
 }
-.dir-rtl .btn.btn-navbar.active-drop + .nav-collapse .nav {
-	margin-left: 85px !important;
-}
+
 .dir-rtl .btn.btn-navbar.active-drop-nologin-selfreg + .nav-collapse .nav {
     margin-left: 104px !important;
 }
@@ -7110,36 +7111,6 @@ footer span {
 .dir-rtl .course-items-list-view .course-item h6 {
 	text-align: right;
 }
-/*.dir-rtl .top-social-icons {
-    float: right !important;
-}
-
-.dir-rtl .foot-custom-links {
-	float: right;
-}
-
-.dir-rtl .usermenu {
-    float: left !important;
-}
-
-.dir-rtl .singleselect form div:after {
-	display: none !important;
-}
-
-.dir-rtl .offset1.home-contact-form {
-    float: left;
-    text-align: left;
-}
-
-
-
-.dir-rtl .logining-wr form {
-	float: left !important;
-}
-.dir-rtl .logo-wr {
-	background-position: left !important;
-}
-*/
 
 .dir-rtl .block_adminblock .content .singleselect form div:after,
 .dir-rtl #region-main .langmenu div:after {
@@ -7149,7 +7120,6 @@ footer span {
 .dir-rtl .adminsearchform input[type="submit"] {
 	margin-right: -43px;
 }
-
 
 .dir-rtl .usermenu.dropdown i.fa {
 	margin-left: 0;
@@ -7204,6 +7174,55 @@ footer span {
 .dir-rtl .breadcrumb span.arrow {
 	transform: rotateY(180deg);
 }
+
+.dir-rtl {
+    &.landing-page {
+        .usermenu {
+            float: left;
+            border-right: solid 1px rgba(0, 0, 0, 0.1);
+            border-left: 0;
+        }
+
+        .mobile-top-head {
+            .navbar {
+                float: left;
+            }
+        }
+
+        .logo-wr {
+            &:before {
+                border-right: 315px solid @secondaryColour;
+                border-left: 0;
+            }
+        }
+
+        .logo-img {
+            &.text {
+                float: right;
+            }
+        }
+    }
+
+    .course-item {
+        .btn-plus {
+            .plus-container {
+                position: absolute;
+                right: 1px;
+
+                .plus {
+                    text-align: right;
+                    padding-right: 6px;
+                }
+
+                .cutoff {
+                    border-left: 0;
+                    border-right: 42px solid transparent;
+                }
+            }
+        }
+    }
+}
+
 .nav-collapse.collapse {
     height: 0;
 }
@@ -7350,17 +7369,13 @@ footer a:focus {
     color: @footerLinkColour;
 }
 
-.logining-wr a:last-child {
-  color: @primaryColour;
-}
-
 .loginbox .loginform .form-input input {
   border: 1px solid @primaryColour;
 }
 
 .logining-wr a:first-child {
-  background: @primaryColour!important;
-  box-shadow: 1px 1px 0 0 #0a5948!important;
+  background: @primaryColour;
+  box-shadow: 1px 1px 0 0 #0a5948;
 }
 
 #page input.form-submit,
