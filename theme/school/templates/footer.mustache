@@ -38,4 +38,22 @@
             </div>
         </div>
     </div><!-- END of .container-fluid -->
+    {{#showportallink}}
+        <div class="portal-links-container">
+            <ul class="portal-links">
+                <li><span class="portal-link-title">Link 1</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
+                <li><span class="portal-link-title">Link 2</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
+                <li><span class="portal-link-title">Link 3</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
+                <li class="primary-link">
+                    <span class="portal-link-title">Your Portal</span>
+                    <div class="portal-link-icon">
+                        <a href="http://www.google.com">
+                            <img class="no-hover" src="{{{cloudimgurl}}}"/>
+                            <i class="fa fa-external-link hover"></i>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    {{/showportallink}}
 </footer><!-- END of footer -->
