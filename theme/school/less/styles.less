@@ -120,18 +120,6 @@ Description:
 	font-style: normal;
 }
 
-/* BEGIN of CSS RESET */
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video {
-    /*
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-    */
-}
-
 /* HTML5 display-role reset for older browsers */
 
 article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section {
@@ -590,6 +578,35 @@ img {
 	padding: 0 130px 10px 130px;
 	line-height: 24px;
     overflow: hidden;
+
+    .da-slider {
+        .da-arrows {
+            display: inline-block;
+            font: normal normal normal 14px/1 FontAwesome;
+            font-size: 20px;
+            text-align: center;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+
+            .da-arrows-prev:after {
+                background: none;
+                content: "\f137";
+            }
+            .da-arrows-next:after {
+                background: none;
+                content: "\f138";
+            }
+            span {
+                &:hover:after {
+                    box-shadow: none;
+                }
+                &:after {
+                    box-shadow: none;
+                }
+            }
+        }
+    }
 }
 
 .welcome-block {
@@ -4339,14 +4356,8 @@ div[class*="span"] {
 /* ----------------------------------------------------------------------------------- */
 
 @media screen and (max-width: 1280px) {
-
 	.popular-courses-slider .course-item {
 	    min-height: 230px;
-	}
-
-
-	.landing-page .logo-img img {
-	   width: 139px;
 	}
 }
 
@@ -4623,13 +4634,6 @@ footer p {
 }
 /* ----------------------------------------------------------------------------------- */
 /* ----------------------------------------------------------------------------------- */
-@media screen and (max-width: 990px) {
-	.landing-page .logo-img img {
-   		width: 138px;
-	}
-}
-/* ----------------------------------------------------------------------------------- */
-/* ----------------------------------------------------------------------------------- */
 @media screen and (max-width: 979px) {
 .static-content-align {
 	padding: 10px;
@@ -4820,11 +4824,6 @@ footer .container-fluid .span3 {
 }
 
 }
-@media (max-width:900px) and (min-width:801px){
-.landing-page .logo-img img {
-   width: 112px;
-}
-}
 /* ----------------------------------------------------------------------------------- */
 @media screen and (max-width: 800px) {
 .div_to_hold {
@@ -4950,7 +4949,8 @@ body {
 }
 
 
-.welcome-block {
+.welcome-block,
+.welcome-block-slider {
 	padding: 15px 15px 25px;
 	text-align: center;
 }
@@ -7433,7 +7433,7 @@ footer span {
   color: darken(@footerFontColour, 10%);
 }
 
-.da-dots span.da-dots-current:after {
+.welcome-block-slider .da-dots span.da-dots-current:after {
   background: @secondaryColour;
 }
 

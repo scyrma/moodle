@@ -177,7 +177,7 @@ function theme_school_pluginfile($course, $cm, $context, $filearea, $args, $forc
             return $theme->setting_file_serve('uploadvideo', $args, $forcedownload, $options);
         } else if ($filearea === 'logobackgroundimage') {
             return $theme->setting_file_serve('logobackgroundimage', $args, $forcedownload, $options);
-        } else if (preg_match("/^fontfile(eot|otf|svg|ttf|woff|woff2)(heading|body)$/", $filearea)) { // http://www.regexr.com/.
+        } else if (preg_match("/^fontfile(eot|otf|svg|ttf|woff|wofftwo)(heading|body)$/", $filearea)) { // http://www.regexr.com/.
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
         } else if (preg_match("/^(marketing|slide)[1-9][0-9]*image$/", $filearea)) {
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
