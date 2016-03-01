@@ -642,6 +642,11 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $context['hascontacts'] = !empty($context['facebookurl']) || !empty($context['twitterurl']) || !empty($context['googleplusurl'])
             || !empty($context['youtubeurl']) || !empty($context['address']) || !empty($context['phone']) || !empty($context['email']);
 
+        if (is_siteadmin()) {
+            $context['showportallink'] = true;
+            $context['cloudimgurl'] = $this->get_theme_source_img('cloud-logo-inverted.png');
+        }
+
         return $this->render_from_template('theme_school/footer', $context);
     }
 }
