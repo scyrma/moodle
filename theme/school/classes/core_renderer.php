@@ -603,6 +603,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function theme_footer() {
+        global $USER;
+
         $context = array(
             'coursefooter' => $this->course_footer(),
             'doclinks' => $this->page_doc_link(),
@@ -642,9 +644,11 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $context['hascontacts'] = !empty($context['facebookurl']) || !empty($context['twitterurl']) || !empty($context['googleplusurl'])
             || !empty($context['youtubeurl']) || !empty($context['address']) || !empty($context['phone']) || !empty($context['email']);
 
-        if (is_siteadmin()) {
+        if ($USER->auth === 'moodlecloud') {
+            $url = new moodle_url('/auth/moodlecloud/portal.php');
             $context['showportallink'] = true;
             $context['cloudimgurl'] = $this->get_theme_source_img('cloud-logo-inverted.png');
+            $context['cloudportalurl'] = $url->out();
         }
 
         return $this->render_from_template('theme_school/footer', $context);
