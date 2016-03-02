@@ -170,6 +170,13 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             }
         }
 
+        if (isset($user->auth) && $user->auth === 'moodlecloud') {
+            $url = new moodle_url('/auth/moodlecloud/portal.php');
+            $data['showportallink'] = true;
+            $data['cloudimgurl'] = $this->get_theme_source_img('cloud-logo.png');
+            $data['cloudportalurl'] = $url->out();
+        }
+
         return $this->render_from_template('theme_school/usermenu', $data);
     }
 
@@ -644,7 +651,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $context['hascontacts'] = !empty($context['facebookurl']) || !empty($context['twitterurl']) || !empty($context['googleplusurl'])
             || !empty($context['youtubeurl']) || !empty($context['address']) || !empty($context['phone']) || !empty($context['email']);
 
-        if ($USER->auth === 'moodlecloud') {
+        if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
             $url = new moodle_url('/auth/moodlecloud/portal.php');
             $context['showportallink'] = true;
             $context['cloudimgurl'] = $this->get_theme_source_img('cloud-logo-inverted.png');
