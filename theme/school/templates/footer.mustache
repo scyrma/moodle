@@ -1,0 +1,59 @@
+<footer>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            {{#hascontacts}}
+                <div class="span4 contact-info">
+                    <h4>{{#str}} contactus, theme_school {{/str}}</h4>
+                    <ul id="contact-list">
+                        {{#address}}<li><i class="fa fa-map-marker"></i>{{.}}</li>{{/address}}
+                        {{#phone}}<li><i class="fa fa-phone"></i>{{.}}</li>{{/phone}}
+                        {{#email}}<li><i class="fa fa-envelope-o"></i>{{.}}</li>{{/email}}
+                    </ul>
+                    <ul id="social-list">
+                        {{#facebookurl}}<li><a href="{{{.}}}" title="{{#str}} facebook, theme_school {{/str}}"><i class="fa fa-facebook"></i></a></li>{{/facebookurl}}
+                        {{#twitterurl}}<li><a href="{{{.}}}" title="{{#str}} twitter, theme_school {{/str}}"><i class="fa fa-twitter"></i></a></li>{{/twitterurl}}
+                        {{#googleplusurl}}<li><a href="{{{.}}}" title="{{#str}} googleplus, theme_school {{/str}}"><i class="fa fa-google-plus"></i></a></li>{{/googleplusurl}}
+                        {{#youtubeurl}}<li><a href="{{{.}}}" title="{{#str}} youtube, theme_school {{/str}}"><i class="fa fa-youtube"></i></a></li>{{/youtubeurl}}
+                    </ul>
+                </div>
+            {{/hascontacts}}
+
+            <div class="{{#hascontacts}}span4{{/hascontacts}}{{^hascontacts}}span8{{/hascontacts}}">
+                {{{leftfootnote}}}
+                <p class="foot-note-links">
+                    {{#footnotelinks}}
+                        <a href="{{{url}}}">{{text}}</a>
+                        <span>|</span>
+                    {{/footnotelinks}}
+                </p>
+            </div>
+
+            <div class="span4 right">
+                <div id="course-footer">{{{coursefooter}}}</div>
+                {{#doclinks}}<p class="helplink">{{{.}}}</p>{{/doclinks}}
+
+                {{#footnote}}<div class="footnote text-center">{{{.}}}</div>{{/footnote}}
+                {{{logininfo}}}
+                {{{standardfooterhtml}}}
+            </div>
+        </div>
+    </div><!-- END of .container-fluid -->
+    {{#showportallink}}
+        <div class="portal-links-container">
+            <ul class="portal-links">
+                <li><span class="portal-link-title">Link 1</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
+                <li><span class="portal-link-title">Link 2</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
+                <li><span class="portal-link-title">Link 3</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
+                <li class="primary-link">
+                    <span class="portal-link-title">Your Portal</span>
+                    <div class="portal-link-icon">
+                        <a href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
+                            <img class="no-hover" src="{{{cloudimgurl}}}"/>
+                            <i class="fa fa-external-link hover"></i>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    {{/showportallink}}
+</footer><!-- END of footer -->

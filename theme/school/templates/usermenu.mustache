@@ -1,0 +1,35 @@
+<div class="usermenu">
+<div>
+    <ul class="menubar menubars">
+    <li>
+        <div class="clickable">
+            <span class="userbutton">
+                <span>
+                    <span class="avatar current">
+                        {{{ user_profile_picture }}}
+                    </span>
+                </span>
+                <span>
+                    {{ firstname }}
+
+                    {{#showportallink}}
+                        <a class="portal-link" href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
+                            <img src="{{{cloudimgurl}}}"/>
+                        </a>
+                    {{/showportallink}}
+                    <span>
+                        {{ lastname }}
+                        <i class="fa fa-chevron-circle-down"></i>
+                    </span>
+                </span>
+            </span>
+        </div>
+    </li>
+    </ul>
+    <ul class="menu menulist">
+        {{# menuitems }}
+            {{> theme_school/usermenu_item_link }}
+        {{/ menuitems }}
+    </ul>
+</div>
+</div>
