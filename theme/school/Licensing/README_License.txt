@@ -1,10 +1,14 @@
-This theme or plugin is comprised of two parts.
+This file is part of Moodle - http://moodle.org/
 
-(1) the PHP code and integrated HTML are licensed under the General Public
-License (GPL). You will find a copy of the GPL in the same directory as this
-text file.
+Moodle is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-(2) All other parts, but not limited to the CSS code, images, and design are
-licensed according to the license purchased from Envato.
+Moodle is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-Read more about licensing here: http://themeforest.net/licenses
+You should have received a copy of the GNU General Public License
+along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
