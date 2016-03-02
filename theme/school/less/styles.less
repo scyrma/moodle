@@ -150,13 +150,11 @@ a {
     }
     &:active {
     	opacity: 0.65;
-    	outline: none;
     	color: inherit;
     	text-decoration: none;
     }
     &:focus,
     &:visited {
-    	outline: none;
     	color: inherit;
     	text-decoration: none;
     }
@@ -1016,6 +1014,7 @@ body .btn-see-all {
     	bottom: 0;
         a {
         	padding: 0 8px 0 0;
+            display: inline-block;
         }
     }
     p {
@@ -1089,6 +1088,13 @@ body .btn-see-all {
 	display: none;
 }
 
+.course-items-grid-view {
+    .for-list-view {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+}
+
 .course-items-list-view {
     .course-item {
         .course-item-cont .img-wr {
@@ -1141,6 +1147,10 @@ body .btn-see-all {
             content: "";
             display: block;
             clear: both;
+        }
+
+        .course-summary {
+            padding: 15px;
         }
     }
 }
