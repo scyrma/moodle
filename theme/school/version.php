@@ -1,8 +1,8 @@
 <?php
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2016022500;
-$plugin->release   = '2.0.3';
+$plugin->version   = 2016030200;
+$plugin->release   = '1.0.0';
 $plugin->requires  = 2014051200;
 $plugin->component = 'theme_school';
 $plugin->dependencies = array(
