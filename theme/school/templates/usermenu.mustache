@@ -2,28 +2,28 @@
 <div>
     <ul class="menubar menubars">
     <li>
-        <a href="javascript:void(0);">
-        <span class="userbutton">
-            <span>
-                <span class="avatar current">
-                    {{{ user_profile_picture }}}
-                </span>
-            </span>
-            <span>
-                {{ firstname }}
-
-                {{#showportallink}}
-                    <a href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
-                        <img src="{{{cloudimgurl}}}"/>
-                    </a>
-                {{/showportallink}}
+        <div class="clickable">
+            <span class="userbutton">
                 <span>
-                    {{ lastname }}
-                    <i class="fa fa-chevron-circle-down"></i>
+                    <span class="avatar current">
+                        {{{ user_profile_picture }}}
+                    </span>
+                </span>
+                <span>
+                    {{ firstname }}
+
+                    {{#showportallink}}
+                        <a class="portal-link" href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
+                            <img src="{{{cloudimgurl}}}"/>
+                        </a>
+                    {{/showportallink}}
+                    <span>
+                        {{ lastname }}
+                        <i class="fa fa-chevron-circle-down"></i>
+                    </span>
                 </span>
             </span>
-        </span>
-        </a>
+        </div>
     </li>
     </ul>
     <ul class="menu menulist">
