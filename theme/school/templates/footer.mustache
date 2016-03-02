@@ -30,6 +30,13 @@
 
             <div class="span4 right">
                 <div id="course-footer">{{{coursefooter}}}</div>
+                {{#showportallink}}
+                    <div class="portal-link-footer">
+                        <a href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
+                            <img src="{{{cloudimgurl}}}"/>
+                        </a>
+                    </div>
+                {{/showportallink}}
                 {{#doclinks}}<p class="helplink">{{{.}}}</p>{{/doclinks}}
 
                 {{#footnote}}<div class="footnote text-center">{{{.}}}</div>{{/footnote}}
@@ -41,19 +48,19 @@
     {{#showportallink}}
         <div class="portal-links-container">
             <ul class="portal-links">
-                <li><span class="portal-link-title">Link 1</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
-                <li><span class="portal-link-title">Link 2</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
-                <li><span class="portal-link-title">Link 3</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
-                <li class="primary-link">
-                    <span class="portal-link-title">Your Portal</span>
-                    <div class="portal-link-icon">
-                        <a href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
-                            <img class="no-hover" src="{{{cloudimgurl}}}"/>
-                            <i class="fa fa-external-link hover"></i>
-                        </a>
-                    </div>
-                </li>
+                <li class="hover-title"><span class="portal-link-title">Link 1</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
+                <li class="hover-title"><span class="portal-link-title">Link 2</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
+                <li class="hover-title"><span class="portal-link-title">Link 3</span><div class="portal-link-icon"><a href="http://www.google.com"><i class="fa fa-external-link"></i><a></div></li>
             </ul>
+            <div class="primary-link hover-title">
+                <span class="portal-link-title">Your Portal</span>
+                <div class="portal-link-icon">
+                    <a href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
+                        <img class="no-hover" src="{{{cloudinvertedimgurl}}}"/>
+                        <i class="fa fa-external-link hover"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     {{/showportallink}}
 </footer><!-- END of footer -->
