@@ -11,6 +11,12 @@
             </span>
             <span>
                 {{ firstname }}
+
+                {{#showportallink}}
+                    <a href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
+                        <img src="{{{cloudimgurl}}}"/>
+                    </a>
+                {{/showportallink}}
                 <span>
                     {{ lastname }}
                     <i class="fa fa-chevron-circle-down"></i>
