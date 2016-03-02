@@ -654,7 +654,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
             $url = new moodle_url('/auth/moodlecloud/portal.php');
             $context['showportallink'] = true;
-            $context['cloudimgurl'] = $this->get_theme_source_img('cloud-logo-inverted.png');
+            $context['cloudimgurl'] = $this->get_theme_source_img('cloud-logo.png');
+            $context['cloudinvertedimgurl'] = $this->get_theme_source_img('cloud-logo-inverted.png');
             $context['cloudportalurl'] = $url->out();
         }
 
