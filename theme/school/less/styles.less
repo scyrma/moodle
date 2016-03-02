@@ -331,6 +331,10 @@ img {
     display: none;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 /* 2 - END of Tags styles and General styles ---------------------------------------------------------- */
 /* 3 - BEGIN of header ---------------------------------------------------------- */
 
@@ -1426,6 +1430,7 @@ span {
     }
     .userbutton {
     	height: 81px;
+        position: relative;
         span {
             &:hover {
             	color: #000;
@@ -1433,6 +1438,15 @@ span {
             }
             &:active {
             	text-decoration: none;
+            }
+        }
+        .portal-link {
+            position: absolute;
+            top: 10px;
+            right: 86px;
+            height: 20px;
+            &:hover {
+                opacity: 0.5;
             }
         }
     }
@@ -1457,7 +1471,7 @@ span {
 	border: none;
 }
 
-.usermenu .menubar a {
+.usermenu .menubar .clickable {
 	background: #FFFFFF;
 	line-height: 32px;
 	height: 32px;
