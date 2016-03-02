@@ -26,6 +26,8 @@ require_once($CFG->dirroot . '/mod/forum/lib.php');
 
 class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
+    const NUMBER_OF_IMAGES = 20;
+
     private function serialise_courses($courses) {
         global $DB, $CFG;
 
@@ -74,7 +76,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             }
 
             if (empty($imageurl)) {
-                $imagenumber = $course->id % 20;
+                $imagenumber = ($course->id % self::NUMBER_OF_IMAGES) + 1;
                 $imageurl = sprintf("%s/theme/school/pix/custom/course/%s.jpg", $CFG->wwwroot, $imagenumber);
             }
 
