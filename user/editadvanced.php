@@ -201,11 +201,6 @@ if ($usernew = $userform->get_data()) {
         $usercreated = true;
     } else {
         $usernew = file_postupdate_standard_editor($usernew, 'description', $editoroptions, $usercontext, 'user', 'profile', 0);
-        // Pass a true old $user here.
-        if (!$authplugin->user_update($user, $usernew)) {
-            // Auth update failed.
-            print_error('cannotupdateuseronexauth', '', '', $user->auth);
-        }
         user_update_user($usernew, false, false);
 
         // Set new password if specified.
