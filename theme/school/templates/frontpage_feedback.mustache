@@ -26,9 +26,9 @@
                     {{#brieftext}}{{{.}}}{{/brieftext}}
             </div>
             {{#hasslides}}
-            <div class="span7">
+            <div class="span7 masonry-2-col">
                 {{#slides}}
-                    <div class="grid-testimo">
+                    <div class="grid-testimo {{#imageurl}}with-image{{/imageurl}}">
                         <div class="blog_box">
                             {{#imageurl}}<div class="blog_box_bloger"><img src="{{{.}}}" alt="{{#str}} userimage, theme_school {{/str}}"></div>{{/imageurl}}
                             <div class="testimonial-name">{{{name}}}</div>
