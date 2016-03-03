@@ -150,13 +150,11 @@ a {
     }
     &:active {
     	opacity: 0.65;
-    	outline: none;
     	color: inherit;
     	text-decoration: none;
     }
     &:focus,
     &:visited {
-    	outline: none;
     	color: inherit;
     	text-decoration: none;
     }
@@ -342,6 +340,8 @@ img {
 .landing-page {
     header {
 	   color: @primaryFontColour;
+       min-height: 250px;
+       padding-top: 20px;
     }
     .logo-wr {
     	width: 348px;
@@ -569,10 +569,8 @@ img {
     .mobile-top-head {
         min-height: 80px;
         line-height: 80px;
-        margin-bottom: 80px;
         box-sizing: border-box;
-        padding-top: 20px;
-        padding-right: 20px;
+        margin-right: 20px;
     }
 }
 
@@ -582,6 +580,7 @@ img {
 	padding: 0 130px 10px 130px;
 	line-height: 24px;
     overflow: hidden;
+    margin-top: 80px;
 
     .da-slider {
         .da-arrows {
@@ -608,6 +607,13 @@ img {
                 &:after {
                     box-shadow: none;
                 }
+            }
+        }
+        .da-slide {
+            p {
+                top: 125px;
+                height: 100px;
+                overflow: auto;
             }
         }
     }
@@ -1016,6 +1022,7 @@ body .btn-see-all {
     	bottom: 0;
         a {
         	padding: 0 8px 0 0;
+            display: inline-block;
         }
     }
     p {
@@ -1089,6 +1096,13 @@ body .btn-see-all {
 	display: none;
 }
 
+.course-items-grid-view {
+    .for-list-view {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+}
+
 .course-items-list-view {
     .course-item {
         .course-item-cont .img-wr {
@@ -1141,6 +1155,10 @@ body .btn-see-all {
             content: "";
             display: block;
             clear: both;
+        }
+
+        .course-summary {
+            padding: 15px;
         }
     }
 }
@@ -1215,106 +1233,45 @@ footer {
     	padding: 0 0 6px;
     }
 
-    .portal-links-container {
+    #portal-link-container {
         position: fixed;
-        bottom: 50px;
-        right: 50px;
+        bottom: 50%;
+        right: 0;
         z-index: 9999;
 
-        .portal-links {
-            list-style: none;
-            margin: 0;
-            text-align: right;
+        .hover-title {
+            box-sizing: border-box;
 
-            .primary-link {
-                display: block;
-                margin-right: 0;
-                margin-bottom: 0;
-
-                .portal-link-icon {
-                    height: 60px;
-                    width: 60px;
-                    font-size: 30px;
-                    line-height: 65px;
-
-                    img {
-                        height: 30px;
-                        margin-top: -13px;
-                    }
-                }
-            }
-
-
-            li {
+            .title {
                 display: none;
-                box-sizing: border-box;
-                margin-bottom: 10px;
-                margin-right: 10px;
+                padding: 5px;
+                background-color: @secondaryColour;
+                color: @secondaryFontColour;
+                border-radius: 3px;
+            }
 
-                .portal-link-title {
-                    display: none;
-                    padding: 5px;
-                    text-transform: uppercase;
-                    background-color: @secondaryColour;
-                    color: @secondaryFontColour;
-                    border-radius: 3px;
-                }
-
-                &:hover, &:focus {
-                    .portal-link-title {
-                        display: inline-block;
-                    }
-                    .portal-link-icon {
-                        .no-hover {
-                            display: none;
-                        }
-                        .hover {
-                            display: inline-block;
-                        }
-                    }
-                }
-
-                .portal-link-icon {
-                    height: 40px;
-                    width: 40px;
-                    margin: 0;
-                    border-radius: 50%;
-                    background-color: @secondaryColour;
-                    text-align: center;
-                    line-height: 45px;
-                    font-size: 20px;
+            &:hover, &:focus {
+                .title {
                     display: inline-block;
-                    vertical-align: middle;
-                    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
-
-                    a {
-                        color: @secondaryLinkColour;
-                    }
-
-                    .no-hover {
-                        display: inline-block;
-                    }
-                    .hover {
-                        display: none;
-                    }
                 }
             }
-        }
 
-        &:hover, &:focus {
-            .portal-links {
-                li {
-                    display: block;
-                    &.primary-link {
-                        .portal-link-icon {
-                            .no-hover {
-                                display: none;
-                            }
-                            .hover {
-                                display: inline-block;
-                            }
-                        }
-                    }
+            .portal-link-icon {
+                height: 60px;
+                width: 60px;
+                margin: 0;
+                border-radius: 50%;
+                background-color: @secondaryColour;
+                text-align: center;
+                line-height: 60px;
+                font-size: 20px;
+                display: inline-block;
+                vertical-align: middle;
+                box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+
+                img {
+                    height: 30px;
+                    margin-top: -4px;
                 }
             }
         }
@@ -1396,7 +1353,6 @@ span {
     > span:last-child {
 	   padding: 12px 20px 10px;
         span {
-        	text-transform: uppercase;
         	font-size: 13px;
         	line-height: 17px;
         	font-weight: 600;
@@ -1472,7 +1428,6 @@ span {
 }
 
 .usermenu .menubar .clickable {
-	background: #FFFFFF;
 	line-height: 32px;
 	height: 32px;
 	font-weight: 600;
@@ -4971,6 +4926,9 @@ body {
 }
 
 .landing-page {
+    header {
+        padding-top: 0;
+    }
     .logo-img.text,
     .logo-img.icontext {
         text-align: left;
@@ -7776,6 +7734,12 @@ footer span {
     color: transparent;
 }
 
+.with-image {
+    .blog_box {
+        margin-top: 40px;
+    }
+}
+
 .blog_box {
     background: #efefef none repeat scroll 0 0;
     border-radius: 10px;
@@ -7783,7 +7747,6 @@ footer span {
     box-shadow: 1px 3px 1px #e4e4eb;
     font-size: 14px;
     line-height: 19px;
-    margin-top: 40px;
     padding: 15px;
     position: relative;
     text-align: center;
@@ -7837,6 +7800,15 @@ footer span {
 .students-area {
     padding: 100px 0;
     background: @backgroundColour;
+
+    .masonry-2-col {
+        -webkit-column-count: 2;
+        -moz-column-count: 2;
+        column-count: 2;
+        -webkit-column-gap: 0;
+        -moz-column-gap: 0;
+        column-gap: 0;
+    }
 }
 
 .students-area-feedback h2 {

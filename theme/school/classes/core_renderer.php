@@ -1,10 +1,32 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package   theme_school
+ * @copyright 2016 Moodle, moodle.org
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 require_once($CFG->dirroot . '/theme/bootstrapbase/renderers.php');
 require_once($CFG->dirroot . '/lib/coursecatlib.php');
 require_once($CFG->dirroot . '/mod/forum/lib.php');
 
 class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
+
+    const NUMBER_OF_IMAGES = 20;
 
     private function serialise_courses($courses) {
         global $DB, $CFG;
@@ -54,7 +76,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             }
 
             if (empty($imageurl)) {
-                $imagenumber = $course->id % 20;
+                $imagenumber = ($course->id % self::NUMBER_OF_IMAGES) + 1;
                 $imageurl = sprintf("%s/theme/school/pix/custom/course/%s.jpg", $CFG->wwwroot, $imagenumber);
             }
 
@@ -654,7 +676,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
             $url = new moodle_url('/auth/moodlecloud/portal.php');
             $context['showportallink'] = true;
-            $context['cloudimgurl'] = $this->get_theme_source_img('cloud-logo-inverted.png');
+            $context['cloudimgurl'] = $this->get_theme_source_img('cloud-logo.png');
+            $context['cloudinvertedimgurl'] = $this->get_theme_source_img('cloud-logo-inverted.png');
             $context['cloudportalurl'] = $url->out();
         }
 
