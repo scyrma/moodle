@@ -422,11 +422,16 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     public function frontpage_feedback() {
         global $PAGE;
 
+        $heading = get_config('theme_school', 'feedbackheading');
+        $subheading = get_config('theme_school', 'feedbacksubheading');
+        $iframe = get_config('theme_school', 'feedbackiframe');
+        $brieftext = get_config('theme_school', 'feedbackbrieftext');
+
         $context = array(
-            'heading' => get_config('theme_school', 'feedbackheading'),
-            'subheading' => get_config('theme_school', 'feedbacksubheading'),
-            'iframe' => get_config('theme_school', 'feedbackiframe'),
-            'brieftext' => get_config('theme_school', 'feedbackbrieftext'),
+            'heading' => $heading,
+            'subheading' => $subheading,
+            'iframe' => $iframe,
+            'brieftext' => $brieftext,
             'slides' => array(),
         );
 
@@ -451,7 +456,19 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             $context['slides'][] = $slide;
         }
 
-        $context['hasslides'] = !empty($context['slides']);
+        $hasslides = !empty($context['slides']);
+        $hastext = true;
+        if (empty($heading) && empty($subheading) && empty($iframe) && empty($brieftext)) {
+            $hastext = false;
+        }
+
+        if (!$hastext && !$hasslides) {
+            // We have nothing to display.
+            return "";
+        }
+
+        $context['hasslides'] = $hasslides;
+        $context['hastext'] = $hastext;
 
         return $this->render_from_template('theme_school/frontpage_feedback', $context);
     }
