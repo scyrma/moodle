@@ -1,17 +1,18 @@
 @import "../../bootstrapbase/less/moodle.less";
 @import "font-awesome/font-awesome.less";
 
-@primaryColour: #f8f8f8;
-@primaryFontColour: #373737;
-@primaryLinkColour: #f98012;
-@secondaryColour: #f98012;
-@secondaryFontColour: #ffffff;
-@secondaryLinkColour: #ffffff;
-@footerColour: #333333;
+@primaryColour: #f15a23;
+@primaryFontColour: #fff;
+@primaryLinkColour: #fff;
+@secondaryColour: #3a3a3a;
+@secondaryFontColour: #fff;
+@secondaryLinkColour: #fff;
+@footerColour: #3a3a3a;
 @footerFontColour: #aaaaaa;
-@footerLinkColour: #f98012;
-@mainLinkColour: #36a0bd;
-@blockLinkColour: #36a0bd;
+@footerLinkColour: #f15a23;
+@blockLinkColour: #f15a23;
+@mainFontColour: #555;
+@mainLinkColour: #f15a23;
 @backgroundColour: #ffffff;
 
 /*
@@ -132,6 +133,7 @@ article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section {
 /* 2 - BEGIN of Tags and General styles ---------------------------------------------------------- */
 
 body {
+    color: @mainFontColour;
 	min-height: 400px;
 	max-width: 2800px;
 	margin: 0 auto;
@@ -619,14 +621,14 @@ img {
 /* 4 - BEGIN of .content ---------------------------------------------------------- */
 .news-updates {
 	background: #efefef;
-	color: #757575;
+    color: 666;
 	font-family: "Raleway";
 	line-height: 18px;
 	padding: 35px 0 37px;
 	overflow: hidden;
 	width: 100%;
     h3 {
-    	color: #242b32;
+        color: #444;
     	font-size: 24px;
     	line-height: 24px;
     	font-weight: 100;
@@ -896,16 +898,11 @@ body .btn-see-all {
     h5 {
     	font-size: 18px;
     	font-weight: 600;
-    	color: #071013;
     	margin: 0;
-        a {
-        	color: #071013;
-        }
     }
     h6 {
     	font-size: 13px;
     	font-weight: 600;
-    	color: #071013;
     	margin: 0;
     }
     .btn-plus {
@@ -6480,8 +6477,17 @@ div.minicalendarblock caption a {
 
 /*Primary Color Customisation  */
 
-#block-region-side-pre .block .content {
+#block-region-side-pre .dimmed_text {
+	color: #fff;
+}
+
+#block-region-side-post .dimmed_text {
     color: #333;
+}
+
+#block-region-side-pre .block .content,
+#block-region-side-post .block .content {
+    color: #444;
 }
 
 /* Buttons start */
@@ -6749,12 +6755,9 @@ header.navbar,
 
 /*Secondary Color Customisation*/
 
-#block-region-side-pre {
-	background: #e6e6e6;
-}
-
+#block-region-side-pre,
 #block-region-side-post {
-	background: #e6e6e6;
+	background: #efefef;
 }
 
 footer {
@@ -7444,13 +7447,6 @@ a.click {
 }
 
 /*Secondary Color Customisation in blue section*/
-#block-region-side-pre {
-  background: #e6e6e6;
-}
-
-#block-region-side-post {
-  background: #e6e6e6;
-}
 
 footer {
   background: @footerColour;
@@ -7686,7 +7682,7 @@ footer span {
 }
 
 .blog_box {
-    background: #efefef none repeat scroll 0 0;
+    background: #fff none repeat scroll 0 0;
     border-radius: 10px;
     /*color: #858485;*/
     box-shadow: 1px 3px 1px #e4e4eb;
@@ -7715,11 +7711,12 @@ footer span {
     }
 
     .testimonial-name {
+        color: @mainFontColour;
         margin-top: 30px;
     }
 
     .testimonial-text {
-        color: #111;
+        color: @mainFontColour;
         margin-top: 28px;
         max-height: 250px;
         overflow-y: auto;
@@ -7744,8 +7741,8 @@ footer span {
 
 .students-area {
     padding: 100px 0;
-    background: @backgroundColour;
-
+    background: #efefef;
+    color: #444;
     .masonry-2-col {
         -webkit-column-count: 2;
         -moz-column-count: 2;
@@ -7758,7 +7755,6 @@ footer span {
 
 .students-area-feedback h2 {
     font-size: 35px;
-    color: #858587;
     line-height: normal;
     padding-bottom: 40px;
     font-weight: 200;
