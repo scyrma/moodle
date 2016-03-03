@@ -24,14 +24,16 @@
                   {{#overview}}<p>{{{.}}}</p>{{/overview}}
                 </div>
             {{/hastext}}
-            <div class="{{#hastext}}span7{{/hastext}} popular-course-links">
-                <ul>
-                    {{#categories}}
-                        <li><a href="{{{url}}}" title="{{name}}">{{name}}</a></li>
-                    {{/categories}}
-                    <li><a class="viewmore" href="{{{categoriesurl}}}">{{#str}}viewallcategories, theme_school{{/str}}</a></li>
-                </ul>
-            </div>
+            {{#hascategories}}
+                <div class="{{#hastext}}span7{{/hastext}} popular-course-links">
+                    <ul>
+                        {{#categories}}
+                            <li><a href="{{{url}}}" title="{{name}}">{{name}}</a></li>
+                        {{/categories}}
+                        <li><a class="viewmore" href="{{{categoriesurl}}}">{{#str}}viewallcategories, theme_school{{/str}}</a></li>
+                    </ul>
+                </div>
+            {{/hascategories}}
         </div>
 
         <div class="course-items">
@@ -50,7 +52,7 @@
                             </div>
                             <a href="{{{url}}}" class="btn-plus">
                                 <div class="plus-container">
-                                    <div class="plus">&#43;</div>
+                                    <div class="plus"></div>
                                     <div class="cutoff"></div>
                                 </div>
                             </a>
