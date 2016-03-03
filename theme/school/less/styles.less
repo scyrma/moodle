@@ -1204,47 +1204,25 @@ footer {
     	padding: 0 0 6px;
     }
 
-    #portal-link-container {
+    #portal-link {
         position: fixed;
-        bottom: 50%;
-        right: 0;
-        z-index: 9999;
+        top: 50%;
+        right: -46px;
+        background-color: #f98012;
+        color: #fff;
+        padding: 5px;
+        font-size: 15px;
+        .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+        .rotate(270deg);
+        .opacity(80);
+        .border-radius(5px 5px 0 0);
 
-        .hover-title {
-            box-sizing: border-box;
+        img {
+            height: 20px;
+        }
 
-            .title {
-                display: none;
-                padding: 5px;
-                background-color: @secondaryColour;
-                color: @secondaryFontColour;
-                border-radius: 3px;
-            }
-
-            &:hover, &:focus {
-                .title {
-                    display: inline-block;
-                }
-            }
-
-            .portal-link-icon {
-                height: 60px;
-                width: 60px;
-                margin: 0;
-                border-radius: 50%;
-                background-color: @secondaryColour;
-                text-align: center;
-                line-height: 60px;
-                font-size: 20px;
-                display: inline-block;
-                vertical-align: middle;
-                box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
-
-                img {
-                    height: 30px;
-                    margin-top: -4px;
-                }
-            }
+        &:hover {
+            .opacity(100);
         }
     }
 }
