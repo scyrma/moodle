@@ -482,30 +482,12 @@ img {
     .usermenu {
         background: none;
     	border-left: solid 1px rgba(0, 0, 0, .1);
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
         box-shadow: none;
-        float: right;
-        margin: 0;
     	z-index: 1111;
-        min-width: 220px;
-        padding: 9px 15px 10px;
         .menubar a {
         	background: none;
-        }
-    }
-    .userbutton {
-        .avatar img {
-            border-radius: 50%;
-            border: solid 3px rgba(0, 0, 0, .25);
-            height: 55px;
-            width: 55px;
-        }
-        > span:last-child {
-            padding-left: 0;
-        	padding-top: 5px;
-            span,
-            span:hover {
-                color: #222;
-            }
         }
     }
 }
@@ -552,17 +534,6 @@ img {
 }
 
 .landing-page {
-    .userbutton > span:last-child i {
-    	float: none;
-    	height: 20px;
-    	width: 20px;
-    	margin-left: 15px;
-    	margin-top: -10px;
-        .chevron.bottom:before {
-            top: -0.1em;
-            left: 0.45em;
-        }
-    }
     .usermenu .menu {
         box-shadow: 4px 4px 9px -3px rgba(0, 0, 0, 0.2);
     }
@@ -1330,13 +1301,15 @@ footer {
 .usermenu {
 	float: right;
 	margin: 0;
+    height: 80px;
 	min-width: 235px;
 	box-sizing: border-box;
 	position: relative;
 	background: #FFFFFF;
-	-webkit-box-shadow: -5px 0px 17px -3px #474747;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-	-moz-box-shadow:    -5px 0px 17px -3px #474747;  /* Firefox 3.5 - 3.6 */
-	box-shadow:         -5px 0px 17px -3px #474747;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+	-webkit-box-shadow: -5px -1px 17px -5px rgba(0, 0, 0, 0.5);  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+	-moz-box-shadow:    -5px -1px 17px -5px rgba(0, 0, 0, 0.5);  /* Firefox 3.5 - 3.6 */
+	box-shadow:         -5px -1px 17px -5px rgba(0, 0, 0, 0.5);  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+    padding: 10px 10px 10px 20px;
 }
 
 span {
@@ -1361,9 +1334,25 @@ span {
         }
         i {
         	display: inline-block;
-        	line-height: 17px;
-        	float: right;
-            font-size: 20px;
+            font-size: 17px;
+            line-height: 17px;
+            float: none;
+            margin-left: 15px;
+            vertical-align: bottom;
+        }
+    }
+    .avatar img {
+        border-radius: 50%;
+        border: solid 3px rgba(0, 0, 0, .25);
+        height: 55px;
+        width: 55px;
+    }
+    > span:last-child {
+        padding-left: 0;
+        padding-top: 5px;
+        span,
+        span:hover {
+            color: #222;
         }
     }
 }
@@ -1396,24 +1385,10 @@ span {
             	text-decoration: none;
             }
         }
-        .portal-link {
-            position: absolute;
-            top: 10px;
-            right: 86px;
-            height: 20px;
-            &:hover {
-                opacity: 0.5;
-            }
-        }
     }
     span {
     	display: block;
     }
-}
-
-.userbutton .avatar img {
-	width: 82px;
-	height: 80px;
 }
 
 .usermenu img {
