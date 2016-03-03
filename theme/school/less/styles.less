@@ -7723,6 +7723,12 @@ footer span {
     color: transparent;
 }
 
+.with-image {
+    .blog_box {
+        margin-top: 40px;
+    }
+}
+
 .blog_box {
     background: #efefef none repeat scroll 0 0;
     border-radius: 10px;
@@ -7730,7 +7736,6 @@ footer span {
     box-shadow: 1px 3px 1px #e4e4eb;
     font-size: 14px;
     line-height: 19px;
-    margin-top: 40px;
     padding: 15px;
     position: relative;
     text-align: center;
@@ -7784,6 +7789,15 @@ footer span {
 .students-area {
     padding: 100px 0;
     background: @backgroundColour;
+
+    .masonry-2-col {
+        -webkit-column-count: 2;
+        -moz-column-count: 2;
+        column-count: 2;
+        -webkit-column-gap: 0;
+        -moz-column-gap: 0;
+        column-gap: 0;
+    }
 }
 
 .students-area-feedback h2 {
