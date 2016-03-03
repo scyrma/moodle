@@ -55,13 +55,9 @@
         </div>
     </div><!-- END of .container-fluid -->
     {{#showportallink}}
-        <div id="portal-link-container">
-            <div class="hover-title">
-                <span class="title">{{#str}} yourportal, theme_school {{/str}}</span>
-                <a class="portal-link-icon" href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
-                    <img src="{{{cloudinvertedimgurl}}}"/>
-                </a>
-            </div>
-        </div>
+        <a id="portal-link" href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
+            <img src="{{{cloudinvertedimgurl}}}"/>
+            {{#str}} yourportal, theme_school {{/str}}
+        </a>
     {{/showportallink}}
 </footer><!-- END of footer -->
