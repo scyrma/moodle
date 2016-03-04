@@ -931,6 +931,10 @@ body .btn-see-all {
     	font-size: 18px;
     	font-weight: 600;
     	margin: 0;
+
+        a, a:hover, a:visited, a:focus {
+            color: @mainFontColour;
+        }
     }
     h6 {
     	font-size: 13px;
@@ -4294,10 +4298,8 @@ table.flexible {
 .students-area-feedback {
     h2 {
         font-size: 35px;
-        color: #858587;
         line-height: normal;
         padding-bottom: 40px;
-        font-weight: 200;
     }
     h3 {
         padding-bottom: 40px;
@@ -4399,6 +4401,11 @@ div[class*="span"] {
             padding-right: 0;
             padding-left: 20px;
             margin-right: 0;
+
+            .logo-wr:before {
+                right: 0;
+                left: auto;
+            }
         }
 
         #frontpage-edit-button {
@@ -6802,6 +6809,7 @@ header.navbar,
         border-left: 315px solid @secondaryColour;
         position: absolute;
         top: -20px;
+        left: 0;
         z-index: -1;
     }
 }
