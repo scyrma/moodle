@@ -482,6 +482,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $videosrc = $this->page->theme->setting_file_url('uploadvideo', 'uploadvideo');
         $imageurl = $this->page->theme->setting_file_url('frontpagemediaimage', 'frontpagemediaimage');
         $ismediaimage = get_config('theme_school', 'frontpagestaticcontentselect') ? false : true;
+        $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school_frontpage'));
 
         if (empty($text) && empty($iframehtml) && empty($videosrc) && empty($imageurl)) {
             // No content configured.
@@ -492,6 +493,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'text' => $text,
             'mediaalignleft' => get_config('theme_school', 'frontpagemediaalignment') == 1 ? false : true,
             'mediaimage' => $ismediaimage,
+            'isadmin' => is_siteadmin(),
+            'frontpagesettingsurl' => $frontpagesettingsurl->out(),
         );
 
         if ($ismediaimage) {
@@ -512,6 +515,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     public function frontpage_header_content_slider() {
         global $PAGE, $CFG;
         $numberofslides = get_config('theme_school', 'slidercount');
+        $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school_frontpage'));
 
         if (empty($numberofslides)) {
             return "";
@@ -520,7 +524,9 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $context = array(
             'slides' => array(),
             'slideinterval' => get_config('theme_school', 'slideinterval'),
-            'slideautoplay' => get_config('theme_school', 'sliderautoplay')
+            'slideautoplay' => get_config('theme_school', 'sliderautoplay'),
+            'isadmin' => is_siteadmin(),
+            'frontpagesettingsurl' => $frontpagesettingsurl->out(),
         );
 
         for ($slidecount = 1; $slidecount <= $numberofslides; $slidecount++) {
