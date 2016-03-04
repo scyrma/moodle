@@ -14,6 +14,11 @@
     You should have received a copy of the GNU General Public License
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
+{{#isadmin}}
+    <div id="frontpage-edit-button">
+        <a class="btn btn-primary" href="{{{frontpagesettingsurl}}}">{{#str}} updatemymoodleon {{/str}}</a>
+    </div>
+{{/isadmin}}
 <div class="welcome-block-slider">
     <div id="da-slider" class="da-slider">
         {{#slides}}
