@@ -38,6 +38,11 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
+    // Copied from the admin front page settings. The user should be able to modify these settings on
+    // either page.
+    $temp->add(new admin_setting_sitesettext('fullname', new lang_string('fullsitename'), '', NULL)); // no default
+    $temp->add(new admin_setting_sitesettext('shortname', new lang_string('shortsitename'), '', NULL)); // no default
+
     // Logo file setting.
     $name = 'theme_school/logo';
     $title = get_string('logo','theme_school');
