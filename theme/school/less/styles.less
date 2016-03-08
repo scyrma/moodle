@@ -2353,14 +2353,17 @@ header.navbar {
 #tag-search-box {
     #searchform_button {
     	float: none;
-    	border-radius: 4px!important;
-    	width: 50px;
-    	height: 29px;
-    	background-position: -90px -372px;
-    	vertical-align: top;
+        text-indent: 0;
+        border: none;
+        vertical-align: top;
+        height: 36px;
     }
     #searchform_search {
-    	margin-right: 2px;
+        height: 38px;
+        box-sizing: border-box;
+        margin-bottom: 0;
+        .border-top-right-radius(0);
+        .border-bottom-right-radius(0);
     }
 }
 
