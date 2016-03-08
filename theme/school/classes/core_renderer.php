@@ -27,6 +27,7 @@ require_once($CFG->dirroot . '/mod/forum/lib.php');
 class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
     const NUMBER_OF_IMAGES = 20;
+    const MAX_CATEGORY_COUNT = 11;
 
     private function serialise_courses($courses) {
         global $DB, $CFG;
@@ -384,12 +385,20 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $categoriesurl = new \moodle_url('/course/index.php');
         $category = coursecat::get(0);
         $categories = array_values($category->get_children());
-
         $filter = function($category) {
             return $category->visible && $category->coursecount;
         };
 
-        $categories = array_values(array_filter($categories, $filter));
+        // Need to slice in code rather than with limit on the get_children call because we need to ensure
+        // the limit search could return invalid results (invisible categories) and we could end up with
+        // too few categories to display.
+        $categories = array_slice(array_values(array_filter($categories, $filter)), 0, self::MAX_CATEGORY_COUNT);
+
+        if (count($categories) == 1) {
+            // Don't show the categories list if there is only one.
+            $categories = array();
+        }
+
         $categorydetails = $this->serialise_categories($categories);
         $heading = get_config('theme_school', 'coursesectionheading');
         $subheading = get_config('theme_school', 'coursesectionsubheading');
@@ -401,6 +410,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'categories' => $categorydetails,
             'categoriesurl' => $categoriesurl->out(),
             'hastext' => $hastext,
+            'hascategories' => !empty($categories),
             'heading' => $heading,
             'subheading' => $subheading,
             'overview' => $overview,
@@ -412,11 +422,16 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     public function frontpage_feedback() {
         global $PAGE;
 
+        $heading = get_config('theme_school', 'feedbackheading');
+        $subheading = get_config('theme_school', 'feedbacksubheading');
+        $iframe = get_config('theme_school', 'feedbackiframe');
+        $brieftext = get_config('theme_school', 'feedbackbrieftext');
+
         $context = array(
-            'heading' => get_config('theme_school', 'feedbackheading'),
-            'subheading' => get_config('theme_school', 'feedbacksubheading'),
-            'iframe' => get_config('theme_school', 'feedbackiframe'),
-            'brieftext' => get_config('theme_school', 'feedbackbrieftext'),
+            'heading' => $heading,
+            'subheading' => $subheading,
+            'iframe' => $iframe,
+            'brieftext' => $brieftext,
             'slides' => array(),
         );
 
@@ -441,7 +456,19 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             $context['slides'][] = $slide;
         }
 
-        $context['hasslides'] = !empty($context['slides']);
+        $hasslides = !empty($context['slides']);
+        $hastext = true;
+        if (empty($heading) && empty($subheading) && empty($iframe) && empty($brieftext)) {
+            $hastext = false;
+        }
+
+        if (!$hastext && !$hasslides) {
+            // We have nothing to display.
+            return "";
+        }
+
+        $context['hasslides'] = $hasslides;
+        $context['hastext'] = $hastext;
 
         return $this->render_from_template('theme_school/frontpage_feedback', $context);
     }
@@ -455,16 +482,21 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $videosrc = $this->page->theme->setting_file_url('uploadvideo', 'uploadvideo');
         $imageurl = $this->page->theme->setting_file_url('frontpagemediaimage', 'frontpagemediaimage');
         $ismediaimage = get_config('theme_school', 'frontpagestaticcontentselect') ? false : true;
+        $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school_frontpage'));
+        $hascontent = true;
 
         if (empty($text) && empty($iframehtml) && empty($videosrc) && empty($imageurl)) {
             // No content configured.
-            return "";
+            $hascontent = false;
         }
 
         $context = array(
             'text' => $text,
             'mediaalignleft' => get_config('theme_school', 'frontpagemediaalignment') == 1 ? false : true,
             'mediaimage' => $ismediaimage,
+            'isadmin' => is_siteadmin(),
+            'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'hascontent' => $hascontent,
         );
 
         if ($ismediaimage) {
@@ -485,15 +517,20 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     public function frontpage_header_content_slider() {
         global $PAGE, $CFG;
         $numberofslides = get_config('theme_school', 'slidercount');
+        $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school_frontpage'));
+        $hascontent = true;
 
         if (empty($numberofslides)) {
-            return "";
+            $hascontent = false;;
         }
 
         $context = array(
             'slides' => array(),
             'slideinterval' => get_config('theme_school', 'slideinterval'),
-            'slideautoplay' => get_config('theme_school', 'sliderautoplay')
+            'slideautoplay' => get_config('theme_school', 'sliderautoplay'),
+            'isadmin' => is_siteadmin(),
+            'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'hascontent' => $hascontent,
         );
 
         for ($slidecount = 1; $slidecount <= $numberofslides; $slidecount++) {
@@ -518,13 +555,10 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function frontpage_header_content() {
-        switch(get_config('theme_school', 'frontpageimagecontent')) {
-            case 0:
-                return $this->frontpage_header_content_static();
-            case 1:
-                return $this->frontpage_header_content_slider();
-            default:
-                return "";
+        if (empty(get_config('theme_school', 'frontpageimagecontent'))) {
+            return $this->frontpage_header_content_static();
+        } else {
+            return $this->frontpage_header_content_slider();
         }
     }
 

@@ -14,25 +14,32 @@
     You should have received a copy of the GNU General Public License
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
-<div class="welcome-block-slider">
-    <div id="da-slider" class="da-slider">
-        {{#slides}}
-            <div class="da-slide" data-interval="{{slideinterval}}" data-autoplay="{{slideautoplay}}">
-                <h2>{{title}}</h2>
-                <p>{{text}}</p>
-                {{#linkurl}}
-                    <a class="da-link" href="{{{.}}}">{{linktext}}</a>
-                {{/linkurl}}
-                <div class="da-img">
-                    {{#imageurl}}
-                        <img src="{{{.}}}" alt="" />
-                    {{/imageurl}}
-                </div>
-            </div>
-            <nav class="da-arrows">
-                <span class="da-arrows-prev"></span>
-                <span class="da-arrows-next"></span>
-            </nav>
-        {{/slides}}
+{{#isadmin}}
+    <div id="frontpage-edit-button">
+        <a class="btn btn-primary" href="{{{frontpagesettingsurl}}}">{{#str}} updatemymoodleon {{/str}}</a>
     </div>
-</div>
+{{/isadmin}}
+{{#hascontent}}
+    <div class="welcome-block-slider">
+        <div id="da-slider" class="da-slider">
+            {{#slides}}
+                <div class="da-slide" data-interval="{{slideinterval}}" data-autoplay="{{slideautoplay}}">
+                    <h2>{{title}}</h2>
+                    <p>{{text}}</p>
+                    {{#linkurl}}
+                        <a class="da-link" href="{{{.}}}">{{linktext}}</a>
+                    {{/linkurl}}
+                    <div class="da-img">
+                        {{#imageurl}}
+                            <img src="{{{.}}}" alt="" />
+                        {{/imageurl}}
+                    </div>
+                </div>
+                <nav class="da-arrows">
+                    <span class="da-arrows-prev"></span>
+                    <span class="da-arrows-next"></span>
+                </nav>
+            {{/slides}}
+        </div>
+    </div>
+{{/hascontent}}
