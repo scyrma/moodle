@@ -527,7 +527,9 @@ img {
 
 .btn.btn-navbar.active-drop {
 	background: #FFF !important;
+    color: @mainLinkColour;
     &:hover {
+        color: lighten(@mainLinkColour, 10%);
     	opacity: 1!important;
         .fa {
         	opacity: .9!important;
@@ -2279,7 +2281,7 @@ header.navbar {
 	box-sizing: border-box;
 	font-size: 13px;
 	font-family: "OpenSans";
-	height: 39px;
+	height: 38px;
 	line-height: normal;
 }
 
@@ -2309,11 +2311,17 @@ header.navbar {
     #tag-search-box #searchform_button  {
         background-color: transparent;
     }
+
+    .adminsearchform input[type="submit"] {
+        height: 36px;
+    }
 }
 
 .adminsearchform div:after,
 .block_blog_menu .blogsearchform div:after,
-#tag-search-box #searchform_button:before {
+#tag-search-box #searchform_button:before,
+#block-region-side-pre #searchform_button:before,
+#block-region-side-post #searchform_button:before {
     content: "\f002";
     font: normal normal normal 14px/1 FontAwesome;
     display: inline-block;
@@ -2323,6 +2331,7 @@ header.navbar {
     -moz-osx-font-smoothing: grayscale;
 	border-radius: 0 4px 4px 0!important;
     position: absolute;
+    top: 0;
     right: 0;
     font-size: 25px;
     line-height: 40px;
@@ -2366,10 +2375,9 @@ header.navbar {
         width: 246px !important;
     }
     #searchform_button {
-    	background-image: url([[pix:theme|custom/red-orange/b-sprite]])!important;
-    	background-position: -95px -368px;
-    	text-indent: -9999px;
     	margin: 0;
+        position: relative;
+        overflow: hidden;
     }
 }
 
@@ -3469,6 +3477,7 @@ body.login-pagebg {
         -webkit-column-gap: 0;
         -moz-column-gap: 0;
         column-gap: 0;
+        min-height: 100%;
     }
 }
 
@@ -4013,7 +4022,6 @@ footer {
 	box-sizing: border-box;
     input[type="text"] {
         font-size: 13px;
-    	height: 36px;
     	position: relative;
         &:focus {
         	opacity: 1;
@@ -5115,12 +5123,12 @@ form.logselecform select.select {
     	box-shadow: none!important;
     	background: none!important;
     	border: none;
-        color: @mainLinkColour;
+        color: @secondaryLinkColour;
         &:hover,
         &:focus,
         &:active,
         &.active {
-            color: lighten(@mainLinkColour, 10%);
+            color: lighten(@secondaryLinkColour, 10%);
         }
     }
 }
@@ -5132,6 +5140,7 @@ form.logselecform select.select {
     .btn.btn-navbar {
     	float: left;
     	border-right: solid 1px rgba(0, 0, 0, .1);
+        color: @secondaryLinkColour;
     }
 }
 
@@ -5553,7 +5562,6 @@ input[type="color"]:focus,
     select {
         border-color: rgba(0, 0, 0, .4);
         height: 38px;
-        line-height: 38px;
         max-width: 100%!important;
         padding: 5px;
     }
@@ -5581,9 +5589,9 @@ input[type="color"]:focus,
 #page #notice .singlebutton + .singlebutton input,
 .forumpost .options .commands a {
 	 text-shadow: none;
-	 border-radius: 3px;
 	 background-image: none;
-     background-repeat: none;
+     background-repeat: no-repeat;
+	 .border-radius(3px);
 }
 
 #page {
@@ -6135,6 +6143,7 @@ footer {
             float: left;
             position: absolute;
             top: 160px;
+            left: 0;
             width: 200px;
             z-index: 11111;
             .nav {
@@ -6620,6 +6629,7 @@ footer {
   box-shadow: 1px 1px 0 0 #0a5948;
 }
 
+#page button,
 #page input.form-submit,
 #page input#id_submitbutton,
 #page input#id_submitbutton2,
@@ -6629,8 +6639,8 @@ footer {
 .btn-primary {
     background-color: @secondaryColour;
     border-color: darken(@secondaryColour, 30%);
-    box-shadow: 0 2px 0 0 darken(@secondaryColour, 30%);
     color: @secondaryFontColour;
+    .box-shadow(0 2px 0 0 darken(@secondaryColour, 30%));
 }
 
 .btn-primary:hover {
