@@ -19,25 +19,27 @@
         <a class="btn btn-primary" href="{{{frontpagesettingsurl}}}">{{#str}} updatemymoodleon {{/str}}</a>
     </div>
 {{/isadmin}}
-<div class="welcome-block-slider">
-    <div id="da-slider" class="da-slider">
-        {{#slides}}
-            <div class="da-slide" data-interval="{{slideinterval}}" data-autoplay="{{slideautoplay}}">
-                <h2>{{title}}</h2>
-                <p>{{text}}</p>
-                {{#linkurl}}
-                    <a class="da-link" href="{{{.}}}">{{linktext}}</a>
-                {{/linkurl}}
-                <div class="da-img">
-                    {{#imageurl}}
-                        <img src="{{{.}}}" alt="" />
-                    {{/imageurl}}
+{{#hascontent}}
+    <div class="welcome-block-slider">
+        <div id="da-slider" class="da-slider">
+            {{#slides}}
+                <div class="da-slide" data-interval="{{slideinterval}}" data-autoplay="{{slideautoplay}}">
+                    <h2>{{title}}</h2>
+                    <p>{{text}}</p>
+                    {{#linkurl}}
+                        <a class="da-link" href="{{{.}}}">{{linktext}}</a>
+                    {{/linkurl}}
+                    <div class="da-img">
+                        {{#imageurl}}
+                            <img src="{{{.}}}" alt="" />
+                        {{/imageurl}}
+                    </div>
                 </div>
-            </div>
-            <nav class="da-arrows">
-                <span class="da-arrows-prev"></span>
-                <span class="da-arrows-next"></span>
-            </nav>
-        {{/slides}}
+                <nav class="da-arrows">
+                    <span class="da-arrows-prev"></span>
+                    <span class="da-arrows-next"></span>
+                </nav>
+            {{/slides}}
+        </div>
     </div>
-</div>
+{{/hascontent}}
