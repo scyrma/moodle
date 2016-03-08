@@ -19,36 +19,38 @@
         <a class="btn btn-primary" href="{{{frontpagesettingsurl}}}">{{#str}} updatemymoodleon {{/str}}</a>
     </div>
 {{/isadmin}}
-<div class="welcome-block">
-    <div class="container">
-        <div class="row">
-            {{^mediaalignleft}}
-                <div class="span6 static-content-align">{{{text}}}</div>
-            {{/mediaalignleft}}
-            {{#mediaimage}}
-                    <div class="span6 static-content-align">
-                        <img src="{{{imageurl}}}" alt="{{#str}} staticimagealt, theme_school {{/str}}" />
-                    </div>
-            {{/mediaimage}}
-            {{^mediaimage}}
-                {{#iframevideo}}
-                    {{#iframehtml}}
-                        <div class="span6 static-content-align">{{{.}}}</div>
-                    {{/iframehtml}}
-                {{/iframevideo}}
-                {{^iframevideo}}
-                    {{#videosrc}}
+{{#hascontent}}
+    <div class="welcome-block">
+        <div class="container">
+            <div class="row">
+                {{^mediaalignleft}}
+                    <div class="span6 static-content-align">{{{text}}}</div>
+                {{/mediaalignleft}}
+                {{#mediaimage}}
                         <div class="span6 static-content-align">
-                            <video width="560" height="315" controls>
-                                <source src="{{{.}}}" type="video/mp4">
-                            </video>
+                            <img src="{{{imageurl}}}" alt="{{#str}} staticimagealt, theme_school {{/str}}" />
                         </div>
-                    {{/videosrc}}
-                {{/iframevideo}}
-            {{/mediaimage}}
-            {{#mediaalignleft}}
-                <div class="span6 static-content-align">{{{text}}}</div>
-            {{/mediaalignleft}}
+                {{/mediaimage}}
+                {{^mediaimage}}
+                    {{#iframevideo}}
+                        {{#iframehtml}}
+                            <div class="span6 static-content-align">{{{.}}}</div>
+                        {{/iframehtml}}
+                    {{/iframevideo}}
+                    {{^iframevideo}}
+                        {{#videosrc}}
+                            <div class="span6 static-content-align">
+                                <video width="560" height="315" controls>
+                                    <source src="{{{.}}}" type="video/mp4">
+                                </video>
+                            </div>
+                        {{/videosrc}}
+                    {{/iframevideo}}
+                {{/mediaimage}}
+                {{#mediaalignleft}}
+                    <div class="span6 static-content-align">{{{text}}}</div>
+                {{/mediaalignleft}}
+            </div>
         </div>
     </div>
-</div>
+{{/hascontent}}
