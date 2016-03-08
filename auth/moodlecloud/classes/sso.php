@@ -11,7 +11,7 @@ class sso {
     public static function require_login() {
         global $DB;
 
-        $token = optional_param('publictoken', '', PARAM_ALPHANUMEXT);
+        $token = optional_param('mcssotoken', '', PARAM_ALPHANUMEXT);
         // Only allow users with moodlecloud auth to log in.
         $admin = $DB->get_record('user', array('auth' => 'moodlecloud'));
 
