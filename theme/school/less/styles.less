@@ -944,7 +944,7 @@ body .btn-see-all {
     h5 {
     	font-size: 18px;
     	font-weight: 600;
-    	margin: 0;
+    	margin: 0 20px 0 0;
 
         a, a:hover, a:visited, a:focus {
             color: @mainFontColour;
@@ -1136,15 +1136,13 @@ body .btn-see-all {
         }
         h5 {
             float: left;
-            width: 35%;
             font-size: 21px;
             line-height: 65px;
         }
         h6 {
             font-size: 14px;
-            line-height: 61px;
+            line-height: 55px;
             padding: 4px 5px 0;
-            height: 65px;
             box-sizing: border-box;
             float: left;
             width: auto;
@@ -1178,6 +1176,9 @@ body .btn-see-all {
         .course-summary {
             padding: 15px;
         }
+    }
+    .abc {
+        display: inline-block;
     }
 }
 
@@ -3528,13 +3529,6 @@ body.login-pagebg {
     	/*line-height: 26px;*/
     	font-size: 16px;
     }
-    h5 {
-    	width: 23%;
-    }
-}
-
-#page .course-items-list-view .course-item h5 a {
-	color: #222;
 }
 
 .top-banner-progress {
@@ -3754,7 +3748,6 @@ h2 {
             }
         }
         h5 {
-            width: 45%;
             font-size: 15px;
         }
         h6 {
@@ -4037,17 +4030,12 @@ footer {
             width: 100%;
         }
         h5 {
-        	width: auto;
         	font-size: 14px;
-        	line-height: 40px;
-        	width: 75%;
         }
         h6 {
         	font-size: 11px;
         	padding: 0;
         	height: 10px;
-        	line-height: 10px;
-        	width: 75%;
         }
         p {
             font-size: 12px;
@@ -6558,28 +6546,19 @@ ul.dropdown-menu li.dropdown-submenu:hover>a {
     }
 }
 
-.course-items-grid-view .abc {
-	overflow-y: scroll;
-    height: 56px;
+.course-items-grid-view {
+    .abc {
+        h6 {
+            line-height: 20px;
+        }
+    }
+    .course-summary {
+        padding-top: 15px;
+    }
 }
 
 
 /*********************************************************** COLOUR CHANGE ***********************************************************/
-
-.course-items-grid-view {
-    .abc::-webkit-scrollbar-track {
-    	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    	border-radius: 10px;
-    }
-    .abc::-webkit-scrollbar {
-    	width: 12px;
-    }
-    .abc::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-      background-color: @secondaryColour;
-    }
-}
 
 .landing-page .nav-collapse {
     z-index: 9999;
