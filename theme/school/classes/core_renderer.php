@@ -483,10 +483,11 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $imageurl = $this->page->theme->setting_file_url('frontpagemediaimage', 'frontpagemediaimage');
         $ismediaimage = get_config('theme_school', 'frontpagestaticcontentselect') ? false : true;
         $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school_frontpage'));
+        $hascontent = true;
 
         if (empty($text) && empty($iframehtml) && empty($videosrc) && empty($imageurl)) {
             // No content configured.
-            return "";
+            $hascontent = false;
         }
 
         $context = array(
@@ -495,6 +496,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'mediaimage' => $ismediaimage,
             'isadmin' => is_siteadmin(),
             'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'hascontent' => $hascontent,
         );
 
         if ($ismediaimage) {
@@ -516,9 +518,10 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         global $PAGE, $CFG;
         $numberofslides = get_config('theme_school', 'slidercount');
         $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school_frontpage'));
+        $hascontent = true;
 
         if (empty($numberofslides)) {
-            return "";
+            $hascontent = false;;
         }
 
         $context = array(
@@ -527,6 +530,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'slideautoplay' => get_config('theme_school', 'sliderautoplay'),
             'isadmin' => is_siteadmin(),
             'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'hascontent' => $hascontent,
         );
 
         for ($slidecount = 1; $slidecount <= $numberofslides; $slidecount++) {
@@ -551,13 +555,10 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function frontpage_header_content() {
-        switch(get_config('theme_school', 'frontpageimagecontent')) {
-            case 0:
-                return $this->frontpage_header_content_static();
-            case 1:
-                return $this->frontpage_header_content_slider();
-            default:
-                return "";
+        if (empty(get_config('theme_school', 'frontpageimagecontent'))) {
+            return $this->frontpage_header_content_static();
+        } else {
+            return $this->frontpage_header_content_slider();
         }
     }
 
