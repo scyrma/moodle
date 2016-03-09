@@ -144,6 +144,7 @@ body {
 }
 
 a {
+    color: @mainLinkColour;
     &:hover {
     	opacity: 0.8;
     	text-decoration: none;
@@ -501,26 +502,13 @@ img {
                 color: @primaryLinkColour;
                 background: none;
             }
-            .userbutton {
-                > span:last-child {
-                    span {
-                        color: @primaryLinkColour;
-                    }
-                }
-            }
+        }
+        &:hover {
+            color: @mainFontColour;
+            background-color: #fff;
         }
         &.active-drop-user-menu {
             color: @mainFontColour;
-
-            .menubar {
-                .userbutton {
-                    > span:last-child {
-                        span {
-                            color: @mainFontColour;
-                        }
-                    }
-                }
-            }
         }
     }
 }
@@ -569,9 +557,6 @@ img {
 }
 
 .landing-page {
-    .usermenu .menu {
-        box-shadow: 4px 4px 9px -3px rgba(0, 0, 0, 0.2);
-    }
     .mobile-top-head {
         min-height: 80px;
         line-height: 80px;
@@ -1334,9 +1319,7 @@ footer {
 	box-sizing: border-box;
 	position: relative;
 	background: #FFFFFF;
-	-webkit-box-shadow: -5px -1px 17px -5px rgba(0, 0, 0, 0.5);  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-	-moz-box-shadow:    -5px -1px 17px -5px rgba(0, 0, 0, 0.5);  /* Firefox 3.5 - 3.6 */
-	box-shadow:         -5px -1px 17px -5px rgba(0, 0, 0, 0.5);  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+    .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
     padding: 10px 10px 10px 20px;
     color: @mainFontColour;
 }
@@ -1379,10 +1362,6 @@ span {
     > span:last-child {
         padding-left: 0;
         padding-top: 5px;
-        span,
-        span:hover {
-            color: #222;
-        }
     }
 }
 
@@ -1390,17 +1369,6 @@ span {
     ul {
     	list-style: none;
     	margin: 0;
-    }
-    a {
-    	color: #000000;
-    	text-transform: none;
-    	font-size: 14px;
-    	line-height: 24px;
-    	font-weight: 800;
-    	display: block;
-        &:hover {
-        	text-decoration: none;
-        }
     }
     .userbutton {
     	height: 81px;
@@ -1413,9 +1381,6 @@ span {
             	text-decoration: none;
             }
         }
-    }
-    span {
-    	display: block;
     }
 }
 
@@ -1469,10 +1434,7 @@ span {
         opacity: 0;
         transition: opacity .4s;
         display: none;
-        color: #000000;
-        -webkit-box-shadow: -7px 7px 17px -3px #474747;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-        -moz-box-shadow:    -7px 7px 17px -3px #474747;  /* Firefox 3.5 - 3.6 */
-        box-shadow:         -7px 7px 17px -3px #474747;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
+        .box-shadow(4px 4px 9px -3px rgba(0, 0, 0, 0.2));
         li {
             &:first-child {
             	border-bottom: 1px solid #e3e3ec;
@@ -1483,9 +1445,6 @@ span {
             	padding: 3px 0;
             }
         }
-        span {
-        	display: inline-block;
-        }
         i {
         	font-size: 20px;
         	margin: 0 0 0 3px;
@@ -1493,11 +1452,11 @@ span {
         	text-align: center;
         }
         a {
-        	font-size: 14px;
+            color: @mainFontColour;
         	line-height: 35px;
         	padding: 0 7px 0;
-        	font-weight: 400;
             &:hover {
+                color: @mainLinkColour;
             	opacity: 1;
             }
         }
@@ -4162,8 +4121,8 @@ body {
     header {
         padding-top: 0;
         min-height: 0;
-
         .usermenu {
+            color: @mainFontColour;
             background-color: #fff;
             .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
         }
@@ -5310,20 +5269,6 @@ form#displayoptions {
     }
 }
 
-.usermenu .menu {
-    position: absolute;
-    z-index: 10;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    background: #FFFFFF;
-    transition: opacity .4s;
-    color: #000000;
-    -webkit-box-shadow: -7px 7px 10px -3px #474747;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
-    -moz-box-shadow:    -7px 7px 10px -3px #474747;  /* Firefox 3.5 - 3.6 */
-    box-shadow:         -7px 7px 10px -3px #474747;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */
-}
-
 .active-drop-user-menu {
 	border-top: none!important;
 	opacity: 1;
@@ -5939,15 +5884,12 @@ footer a:active,
 footer a:focus,
 .popular-courses-nav a,
 .btn-view-all,
-.usermenu .userbutton span span:hover,
 .navbar .dropdown-menu li a:hover,
 .breadcrumb a:hover,
 .popular-courses-nav a:hover,
 .btn-see-all:hover,
 .btn-see-all:focus,
 .breadcrumb a,
-.userbutton > span:last-child span,
-.usermenu .menu a:hover,
 .course-item h6 a  {
     color: #e74c3c;
 }
@@ -6600,9 +6542,6 @@ ul.dropdown-menu li.dropdown-submenu:hover>a {
 
 #region-main a,
 .moodle-dialogue-ft a,
-.userbutton > span:last-child span,
-.usermenu .menu a:hover,
-.usermenu .userbutton span span:hover,
 .course-item h6 a,
 .popular-courses-nav a,
 .btn-view-all,
