@@ -57,10 +57,9 @@ echo $OUTPUT->doctype();?>
 		</header><!-- END of header -->
 
 		<div class="content">
+            <?php echo $OUTPUT->skip_link_target('maincontent'); ?>
             <?php echo $OUTPUT->frontpage_news_and_updates(); ?>
-
             <?php echo $OUTPUT->frontpage_courses(); ?>
-
             <?php echo $OUTPUT->frontpage_feedback(); ?>
 		</div><!-- END of .content -->
 		<?php
