@@ -66,9 +66,9 @@
 
         $('.menulist').css('display', 'none');
         $('.usermenu').on("click",function(e) {
-            $('.menulist').addClass('usermenu-show active-drop-user-menuinner');
-            $('.nav-collapse').removeClass('in').removeAttr('style');
-            $('.btn-navbar').addClass('collapsed');
+            $('.menulist').toggleClass('usermenu-show active-drop-user-menuinner');
+            $('.nav-collapse').toggleClass('in').removeAttr('style');
+            $('.btn-navbar').toggleClass('collapsed');
             e.stopPropagation();
         });
 

@@ -37,11 +37,11 @@ define([
         });
 
         $('.menu').css('display', 'none');
-        $('.menubar').on("click", function(e) {
-            $('.menu').addClass('usermenu-show');
-            $('.usermenu').addClass('active-drop-user-menu');
-            $('.nav-collapse').removeClass('in').removeAttr('style');
-            $('.btn-navbar').addClass('collapsed');
+        $('.usermenu').on("click", function(e) {
+            $('.menu').toggleClass('usermenu-show');
+            $('.usermenu').toggleClass('active-drop-user-menu');
+            $('.nav-collapse').toggleClass('in').removeAttr('style');
+            $('.btn-navbar').toggleClass('collapsed');
             e.stopPropagation();
         });
 
