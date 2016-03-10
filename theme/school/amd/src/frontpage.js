@@ -5,6 +5,32 @@ define([
         'theme_school/modernizr.custom.28468'
     ], function($) {
 
+    var toggleUserMenu = function(e) {
+        $('.menu').toggleClass('usermenu-show');
+        $('.nav-collapse').toggleClass('in').removeAttr('style');
+        $('.btn-navbar').toggleClass('collapsed');
+        var userMenu = $('.usermenu');
+
+        if (userMenu.attr('aria-expanded') == "false") {
+            userMenu.attr('aria-expanded', "true");
+        } else {
+            userMenu.attr('aria-expanded', "false");
+        }
+
+        userMenu.toggleClass('active-drop-user-menu');
+        e.stopPropagation();
+    };
+
+    var toggleCustomMenu = function() {
+        if ($('#custommenu').val() == "nologin") {
+            $(".btn-navbar").toggleClass("active-drop active-drop-nologin");
+        } else if ($('#custommenu').val() == "nologinselfreg"){
+            $(".btn-navbar").toggleClass("active-drop active-drop-nologin-selfreg");
+        } else {
+            $(".btn-navbar").toggleClass("active-drop");
+        }
+    };
+
     var initCourseSlider = function() {
         var minSlides,
             width = $(window).width();
@@ -38,24 +64,27 @@ define([
 
         $('.menu').css('display', 'none');
         $('.usermenu').on("click", function(e) {
-            $('.menu').toggleClass('usermenu-show');
-            $('.usermenu').toggleClass('active-drop-user-menu');
-            $('.nav-collapse').toggleClass('in').removeAttr('style');
-            $('.btn-navbar').toggleClass('collapsed');
-            e.stopPropagation();
+            toggleUserMenu(e);
+        });
+
+        $('.usermenu').on("keypress", function(e) {
+            if (!e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+                if (e.keyCode == 13 || e.keyCode == 32) {
+                    toggleUserMenu(e);
+                }
+            }
         });
 
         $(".btn-navbar").on("click", function() {
-            if ($('#custommenu').val() == "nologin") {
-                $(this).toggleClass("active-drop active-drop-nologin");
-            } else if ($('#custommenu').val() == "nologinselfreg"){
-                $(this).toggleClass("active-drop active-drop-nologin-selfreg");
-            } else {
-                $(this).toggleClass("active-drop");
-            }
-            $('.menu').removeClass('usermenu-show');
-            $('.usermenu').removeClass('active-drop-user-menu');
+            toggleCustomMenu();
+        });
 
+        $('.btn-navbar').on("keypress", function(e) {
+            if (!e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+                if (e.keyCode == 13 || e.keyCode == 32) {
+                    toggleCustomMenu();
+                }
+            }
         });
     };
 
