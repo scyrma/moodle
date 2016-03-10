@@ -370,6 +370,10 @@ img {
             padding: 10px 20px;
         }
     }
+
+    #maincontent {
+        height: 0;
+    }
 }
 
 .navbar-inner .logo-wr {
@@ -494,9 +498,10 @@ img {
                 background: none;
             }
         }
-        &:hover {
+        &:hover, &:focus {
             color: @mainFontColour;
             background-color: #fff;
+            outline: none;
         }
         &.active-drop-user-menu {
             color: @mainFontColour;
