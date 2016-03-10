@@ -35,7 +35,6 @@ if (is_siteadmin()) {
         'logo' => get_string('onlylogo', 'theme_school'),
         'iconsitename' => get_string('iconsitename', 'theme_school')
     ));
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     // Copied from the admin front page settings. The user should be able to modify these settings on
@@ -48,7 +47,6 @@ if (is_siteadmin()) {
     $title = get_string('logo','theme_school');
     $description = get_string('logodesc', 'theme_school');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'logo');
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     // Logo file setting.
@@ -56,7 +54,6 @@ if (is_siteadmin()) {
     $title = get_string('logoicon','theme_school');
     $description = get_string('logoicondesc', 'theme_school');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'icon');
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     //custom favicon temp
@@ -64,7 +61,6 @@ if (is_siteadmin()) {
     $title = get_string('favicon', 'theme_school');
     $description = get_string('favicondesc', 'theme_school');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'faviconurl');
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     // Custom CSS file.
@@ -82,7 +78,6 @@ if (is_siteadmin()) {
     $description = get_string('rightfootnotedesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnote';
@@ -90,7 +85,6 @@ if (is_siteadmin()) {
     $description = get_string('leftfootnotedesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesection1';
@@ -98,7 +92,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesectionlink1';
@@ -106,7 +99,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesection2';
@@ -114,7 +106,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesectionlink2';
@@ -122,7 +113,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesection3';
@@ -130,7 +120,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesectionlink3';
@@ -138,7 +127,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesection4';
@@ -146,7 +134,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesectionlink4';
@@ -154,7 +141,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesection5';
@@ -162,7 +148,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesectionlink5';
@@ -170,7 +155,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesection6';
@@ -178,7 +162,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesectionlink6';
@@ -186,7 +169,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     // Contact information.
@@ -198,7 +180,6 @@ if (is_siteadmin()) {
     $description = get_string('facebookdesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/twitter';
@@ -206,7 +187,6 @@ if (is_siteadmin()) {
     $description = get_string('twitterdesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/googleplus';
@@ -214,7 +194,6 @@ if (is_siteadmin()) {
     $description = get_string('googleplusdesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/youtube';
@@ -222,7 +201,6 @@ if (is_siteadmin()) {
     $description = get_string('youtubedesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/contactaddress';
@@ -230,7 +208,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/contactphone';
@@ -238,7 +215,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/contactemail';
@@ -246,7 +222,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $ADMIN->add('theme_school', $temp);
@@ -271,7 +246,6 @@ if (is_siteadmin()) {
     $description = get_string('addtextdesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/frontpagestaticcontentselect';
@@ -298,7 +272,6 @@ if (is_siteadmin()) {
     $title = get_string('uploadimage', 'theme_school');
     $description = get_string('uploadimagedesc', 'theme_school');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'frontpagemediaimage');
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     // video.
@@ -317,7 +290,6 @@ if (is_siteadmin()) {
     $description = get_string('videodesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/uploadvideo';
@@ -326,7 +298,6 @@ if (is_siteadmin()) {
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'uploadvideo', $itemid = 0, array(
     'accepted_types' => '.mp4'
     ));
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/slideinterval';
@@ -334,7 +305,6 @@ if (is_siteadmin()) {
     $description = get_string('slideintervaldesc', 'theme_school');
     $default = 5000;
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/sliderautoplay';
@@ -366,7 +336,6 @@ if (is_siteadmin()) {
 
         $description = '';
         $setting = new admin_setting_configstoredfile($name, $title, $description, 'slideimage'.$slidecounts);
-        $setting->set_updatedcallback('theme_reset_all_caches');
         $temp->add($setting);
 
         $name = 'theme_school/slidertitle'.$slidecounts;
@@ -374,7 +343,6 @@ if (is_siteadmin()) {
         $description = '';
         $default = '';
         $setting = new admin_setting_configtext($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
         $temp->add($setting);
 
         $name = 'theme_school/slidertext'.$slidecounts;
@@ -382,7 +350,6 @@ if (is_siteadmin()) {
         $description = '';
         $default = '';
         $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
         $temp->add($setting);
 
         $name = 'theme_school/sliderbuttontext'.$slidecounts;
@@ -390,7 +357,6 @@ if (is_siteadmin()) {
         $description = get_string('sliderbuttontextdesc', 'theme_school', $slidecounts);
         $default = '';
         $setting = new admin_setting_configtext($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
         $temp->add($setting);
 
         $name = 'theme_school/sliderurl'.$slidecounts;
@@ -398,7 +364,6 @@ if (is_siteadmin()) {
         $description = get_string('sliderurldesc', 'theme_school', $slidecounts);
         $default = '';
         $setting = new admin_setting_configtext($name, $title, $description, $default);
-        $setting->set_updatedcallback('theme_reset_all_caches');
         $temp->add($setting);
     }
 
@@ -410,7 +375,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/coursesectionsubheading';
@@ -418,7 +382,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/coursesectionoverview';
@@ -426,7 +389,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $temp->add(new admin_setting_heading('theme_school_feedbacksection', get_string('feedback', 'theme_school'),
@@ -437,7 +399,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbacksubheading';
@@ -445,7 +406,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackiframe';
@@ -453,7 +413,6 @@ if (is_siteadmin()) {
     $description = get_string('feedbackiframedesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackbrieftext';
@@ -461,14 +420,12 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslideimage_1';
     $title = get_string('feedbackslideimage', 'theme_school', '1');
     $description = '';
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_1');
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidename_1';
@@ -476,7 +433,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidereview_1';
@@ -484,14 +440,12 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslideimage_2';
     $title = get_string('feedbackslideimage', 'theme_school', '2');
     $description = '';
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_2');
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidename_2';
@@ -499,7 +453,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidereview_2';
@@ -507,14 +460,12 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslideimage_3';
     $title = get_string('feedbackslideimage', 'theme_school', '3');
     $description = '';
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_3');
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidename_3';
@@ -522,7 +473,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidereview_3';
@@ -530,14 +480,12 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslideimage_4';
     $title = get_string('feedbackslideimage', 'theme_school', '4');
     $description = '';
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_4');
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidename_4';
@@ -545,7 +493,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidereview_4';
@@ -553,7 +500,6 @@ if (is_siteadmin()) {
     $description = '';
     $default = '';
     $setting = new admin_setting_configtextarea($name, $title, $description, $default);
-    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $ADMIN->add('theme_school', $temp);
@@ -694,12 +640,6 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    if (floatval($CFG->version) >= 2014111005.01) {
-        $woff2 = true;
-    } else {
-        $woff2 = false;
-    }
-
     // This is the descriptor for the font files
     $name = 'theme_school/fontfiles';
     $heading = get_string('fontfiles', 'theme_school');
@@ -732,15 +672,13 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    if ($woff2) {
-        // WOFF2 Font.
-        $name = 'theme_school/fontfilewofftwoheading';
-        $title = get_string('fontfilewofftwoheading', 'theme_school');
-        $description = '';
-        $setting = new admin_setting_configstoredfile($name, $title, $description, 'fontfilewofftwoheading');
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
-    }
+    // WOFF2 Font.
+    $name = 'theme_school/fontfilewofftwoheading';
+    $title = get_string('fontfilewofftwoheading', 'theme_school');
+    $description = '';
+    $setting = new admin_setting_configstoredfile($name, $title, $description, 'fontfilewofftwoheading');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
     // EOT Font.
     $name = 'theme_school/fontfileeotheading';
@@ -783,15 +721,13 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    if ($woff2) {
-        // WOFF2 Font.
-        $name = 'theme_school/fontfilewofftwobody';
-        $title = get_string('fontfilewofftwobody', 'theme_school');
-        $description = '';
-        $setting = new admin_setting_configstoredfile($name, $title, $description, 'fontfilewofftwobody');
-        $setting->set_updatedcallback('theme_reset_all_caches');
-        $temp->add($setting);
-    }
+    // WOFF2 Font.
+    $name = 'theme_school/fontfilewofftwobody';
+    $title = get_string('fontfilewofftwobody', 'theme_school');
+    $description = '';
+    $setting = new admin_setting_configstoredfile($name, $title, $description, 'fontfilewofftwobody');
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
     // EOT Font.
     $name = 'theme_school/fontfileeotbody';
