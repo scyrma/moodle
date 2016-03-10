@@ -40,6 +40,8 @@ $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
 $string['slidernext'] = 'Next slide';
 $string['sliderprev'] = 'Previous slide';
+$string['courseslidernext'] = 'Next slide of courses';
+$string['coursesliderprev'] = 'Previous slide of courses';
 $string['cloudportallink'] = 'MoodleCloud portal link';
 $string['yourportal'] = 'Your portal';
 
