@@ -484,10 +484,12 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $ismediaimage = get_config('theme_school', 'frontpagestaticcontentselect') ? false : true;
         $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school_frontpage'));
         $hascontent = true;
+        $hasmedia = true;
 
         if (empty($text) && empty($iframehtml) && empty($videosrc) && empty($imageurl)) {
             // No content configured.
             $hascontent = false;
+            $hasmedia = false;
         }
 
         $context = array(
@@ -501,15 +503,29 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
         if ($ismediaimage) {
             $context['imageurl'] = $imageurl;
+
+            if (empty($imageurl)) {
+                $hasmedia = false;
+            }
         } else {
             if(get_config('theme_school', 'videotype') === "0") {
                 $context['iframevideo'] = true;
                 $context['iframehtml'] = $iframehtml;
+
+                if (empty($iframehtml)) {
+                    $hasmedia = false;
+                }
             } else {
                 $context['iframevideo'] = false;
                 $context['videosrc'] = $videosrc;
+
+                if (empty($videosrc)) {
+                    $hasmedia = false;
+                }
             }
         }
+
+        $context['hasmedia'] = $hasmedia;
 
         return $this->render_from_template('theme_school/frontpage_header_content_static', $context);
     }
