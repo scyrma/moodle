@@ -333,8 +333,7 @@ if (is_siteadmin()) {
     for($slidecounts = 1; $slidecounts <= get_config('theme_school', 'slidercount'); $slidecounts = $slidecounts + 1) {
         $name = 'theme_school/slideimage'.$slidecounts;
         $title = get_string('slideimage', 'theme_school', $slidecounts);
-
-        $description = '';
+        $description = get_string('slideimagedesc', 'theme_school', $slidecounts);
         $setting = new admin_setting_configstoredfile($name, $title, $description, 'slideimage'.$slidecounts);
         $temp->add($setting);
 
