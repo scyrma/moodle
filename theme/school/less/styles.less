@@ -356,9 +356,7 @@ img {
 
             .nav {
                 & > li {
-                    line-height: 80px;
-                    margin-right: 15px;
-                    margin-left: 15px;
+                    line-height: 40px;
                 }
             }
         }
@@ -508,45 +506,67 @@ img {
 
 .btn.btn-navbar.active-drop {
 	background: #FFF !important;
-    color: @mainLinkColour;
+    color: @primaryColour;
     &:hover {
-        color: lighten(@mainLinkColour, 10%);
     	opacity: 1!important;
         .fa {
         	opacity: .9!important;
         }
     }
-}
-
-.btn.btn-navbar.active-drop + .nav-collapse .nav {
-    margin-top: 0 !important;
-    width: 200px!important;
-	background-color: #FFF!important;
-	z-index: 1111;
-}
-
-.btn.btn-navbar.active-drop + .navbar .nav li.dropdown > .dropdown-toggle .caret {
-    border-top-color: #555 !important;
+    + .navbar .nav li.dropdown > .dropdown-toggle .caret {
+        border-top-color: #555 !important;
+    }
+    + .nav-collapse .nav {
+        margin-top: 0 !important;
+        width: 200px!important;
+    	background-color: #FFF!important;
+    	z-index: 1111;
+        > li {
+        	border-bottom: solid 1px rgba(0, 0, 0, .1);
+            > a {
+                color: @mainFontColour!important;
+                font-size: 14px;
+                text-transform: capitalize;
+                .caret {
+                    border-top-color: @mainFontColour!important;
+                }
+                &:hover {
+                    color: @mainLinkColour!important;
+                    background-color: transparent;
+                    .caret {
+                        border-top-color: @mainLinkColour!important;
+                    }
+                }
+            }
+            ul.dropdown-menu {
+            	border-top: solid 1px rgba(0, 0, 0, .1)!important;
+                li {
+                    a {
+                        color: @mainFontColour;
+                        &:hover {
+                            color: @mainLinkColour;
+                        }
+                    }
+                    &.dropdown-submenu a {
+                        background-color: transparent;
+                        &::after {
+                            border-top-color: @mainFontColour;
+                        }
+                        &:hover {
+                            &::after {
+                                border-top-color: @mainLinkColour;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 .landing-page .navbar .nav a {
 	font-weight: normal;
-    padding: 0 !important;
     margin: 0;
-}
-
-.btn.btn-navbar.active-drop + .nav-collapse .nav > li > a {
-	color: #000!important;
-	font-size: 14px;
-	text-transform: capitalize;
-}
-
-.btn.btn-navbar.active-drop + .nav-collapse .nav > li  {
-	border-bottom: solid 1px rgba(0, 0, 0, .1);
-}
-
-.btn.btn-navbar.active-drop + .nav-collapse .nav > li ul.dropdown-menu {
-	border-top: solid 1px rgba(0, 0, 0, .1)!important;
 }
 
 .landing-page {
@@ -4184,14 +4204,6 @@ body {
         min-width: 200px;
         z-index: 1111;
     	float: left!important;
-        li {
-           border-bottom: 1px solid #e3e3ec !important;
-        }
-        a {
-            color: #222!important;
-        	text-transform: capitalize;
-        	font-size: 14px;
-        }
     }
     li.dropdown ul.dropdown-menu {
        border-top: 1px solid #e3e3ec !important;
@@ -5082,13 +5094,7 @@ form.logselecform select.select {
     	box-shadow: none!important;
     	background: none!important;
     	border: none;
-        color: @secondaryLinkColour;
-        &:hover,
-        &:focus,
-        &:active,
-        &.active {
-            color: lighten(@secondaryLinkColour, 10%);
-        }
+        color: @primaryLinkColour;
     }
 }
 
@@ -5110,17 +5116,23 @@ form.logselecform select.select {
 }
 
 .navbar .dropdown-menu li a {
-	color: #000;
+	color: @mainFontColour;
     &:hover {
+        color: @mainLinkColour!important;
     	background: none!important;
     }
 }
 
 
-.navbar .nav li.dropdown > .dropdown-toggle .caret {
-    border-top-color: @primaryLinkColour !important;
-    vertical-align: middle;
-    margin: 0 0 0 5px;
+.navbar .nav li.dropdown {
+    &.open > .dropdown-toggle {
+        background-color: transparent;
+    }
+    > .dropdown-toggle .caret {
+        border-top-color: @primaryLinkColour !important;
+        vertical-align: middle;
+        margin: 0 0 0 5px;
+    }
 }
 
 /*bootstrap default menu and dropdown end */
@@ -5881,7 +5893,6 @@ footer a:active,
 footer a:focus,
 .popular-courses-nav a,
 .btn-view-all,
-.navbar .dropdown-menu li a:hover,
 .breadcrumb a:hover,
 .popular-courses-nav a:hover,
 .btn-see-all:hover,
@@ -6059,7 +6070,8 @@ footer {
         right: 0;
     }
     .nav > li > a {
-    	padding: 11px 15px!important;
+    	padding: 0 15px!important;
+        line-height: 50px;
     	margin-top: 0;
     }
 }
@@ -6432,16 +6444,14 @@ footer {
 
 .btn.btn-navbar.active-drop + .nav-collapse .nav {
     width: 237px !important;
-    text-align: center;
 }
 
 .dropdown-menu {
     li {
+        line-height: 50px;
         border-bottom: 1px solid #e3e3ec;
-        padding-bottom: 6px !important;
         padding-left: 5%;
         padding-right: 5%;
-        padding-top: 6px !important;
         word-wrap: break-word;
         box-sizing: border-box;
 
@@ -6457,12 +6467,25 @@ footer {
     }
 }
 
-.dropdown-submenu > a:after {
+.dropdown-submenu > a::after {
     display: inline-block;
+    border-left-color: @mainFontColour;
 }
 
-ul.dropdown-menu li.dropdown-submenu:hover>a {
+ul.dropdown-menu li.dropdown-submenu:hover >a {
+    color: @mainLinkColour;
     background: none !important;
+    &::after {
+        border-left-color: @mainLinkColour;
+    }
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus,
+.dropdown-submenu:hover > a,
+.dropdown-submenu:focus > a {
+    background-color: transparent;
+    background-image: none;
 }
 
 .btn.btn-navbar {
@@ -6542,7 +6565,6 @@ ul.dropdown-menu li.dropdown-submenu:hover>a {
 .course-item h6 a,
 .popular-courses-nav a,
 .btn-view-all,
-.navbar .dropdown-menu li a:hover,
 .popular-courses-nav a:hover,
 .btn-see-all:hover,
 .btn-see-all:focus {
@@ -6996,6 +7018,20 @@ footer {
             &:hover {
                 opacity: 0.8;
             }
+        }
+    }
+}
+
+@media (min-width:980px) {
+    .navbar .nav > li > .dropdown-menu {
+        right: 0;
+        left: auto;
+        &::before {
+            border: 0
+        }
+        &::after {
+            left: auto;
+            right: 10px;
         }
     }
 }
