@@ -317,13 +317,6 @@ img {
     }
 }
 
-.landing-page {
-    ul,
-    ol {
-        margin: 0px !important;
-    }
-}
-
 .landing-page *[role="main"],
 .course-category *[role="main"] {
     display: none;
@@ -572,6 +565,10 @@ img {
 	line-height: 24px;
     overflow: hidden;
     margin-top: 80px;
+
+    a {
+        color: @primaryLinkColour;
+    }
 
     .da-slider {
         .da-arrows {
@@ -1338,7 +1335,7 @@ span {
     > span:last-child {
 	   padding: 12px 20px 10px;
         span {
-        	font-size: 13px;
+        	font-size: 14px;
         	line-height: 17px;
         	font-weight: 600;
         	display: block;
@@ -6571,7 +6568,6 @@ footer {
   box-shadow: 1px 1px 0 0 #0a5948;
 }
 
-#page button,
 #page input.form-submit,
 #page input#id_submitbutton,
 #page input#id_submitbutton2,
@@ -6585,12 +6581,28 @@ footer {
     .box-shadow(0 2px 0 0 darken(@secondaryColour, 30%));
 }
 
-.btn-primary:hover {
-    background-color: lighten(@secondaryColour, 10%);
-    border-color: darken(@secondaryColour, 20%);
-    box-shadow: 0 2px 0 0 darken(@secondaryColour, 20%);
-    color: @secondaryFontColour;
-    .opacity(100);
+.btn-primary {
+    &:hover {
+        background-color: lighten(@secondaryColour, 10%);
+        border-color: darken(@secondaryColour, 20%);
+        color: @secondaryFontColour;
+        .box-shadow(0 2px 0 0 darken(@secondaryColour, 20%));
+        .opacity(100);
+    }
+    &:active {
+        background-color: @secondaryColour;
+        border-color: darken(@secondaryColour, 20%);
+        color: @secondaryFontColour;
+        .box-shadow(inset 0 2px 0 0 darken(@secondaryColour, 20%));
+        .opacity(100);
+    }
+    &:focus {
+        background-color: @secondaryColour;
+        border-color: darken(@secondaryColour, 20%);
+        color: @secondaryFontColour;
+        .box-shadow(0 2px 0 0 darken(@secondaryColour, 20%));
+        .opacity(100);
+    }
 }
 
 #block-region-side-post .block .minicalendar th {
