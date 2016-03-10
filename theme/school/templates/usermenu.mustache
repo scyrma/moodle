@@ -14,32 +14,30 @@
     You should have received a copy of the GNU General Public License
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
-<div class="usermenu">
-<div>
+<div class="usermenu" tabindex="0" role="menu" aria-label="{{#str}} usermenu {{/str}}" aria-expanded="false" aria-controls="user-menu-items">
     <ul class="menubar menubars">
-    <li>
-        <div class="clickable">
-            <span class="userbutton">
-                <span>
-                    <span class="avatar current">
-                        {{{ user_profile_picture }}}
-                    </span>
-                </span>
-                <span>
-                    {{ firstname }}
+        <li>
+            <div class="clickable">
+                <span class="userbutton">
                     <span>
-                        {{ lastname }}
-                        <i class="fa fa-chevron-circle-down"></i>
+                        <span class="avatar current">
+                            {{{ user_profile_picture }}}
+                        </span>
+                    </span>
+                    <span>
+                        {{ firstname }}
+                        <span>
+                            {{ lastname }}
+                            <i class="fa fa-chevron-circle-down"></i>
+                        </span>
                     </span>
                 </span>
-            </span>
-        </div>
-    </li>
+            </div>
+        </li>
     </ul>
-    <ul class="menu menulist">
+    <ul id="user-menu-items" class="menu menulist">
         {{# menuitems }}
             {{> theme_school/usermenu_item_link }}
         {{/ menuitems }}
     </ul>
-</div>
 </div>
