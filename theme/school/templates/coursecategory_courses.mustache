@@ -64,13 +64,13 @@
                                 <a href="{{{url}}}"><img src="{{{imageurl}}}" title="{{#str}} courseimage, theme_school, {{name}} {{/str}}"></a>
                             </div>
                             <div class="course-item-cont">
-                                <a href="javascript:void(0);" class="btn-togle-details">
+                                <a href="javascript:void(0);" class="btn-togle-details" aria-expanded="false" aria-label="{{#str}} togglecoursedetails, theme_school, {{name}} {{/str}}">
                                     <i class="fa fa-plus-square-o closed"></i>
                                     <i class="fa fa-minus-square-o open"></i>
                                 </a>
                                 <h5><a href="{{{url}}}">{{name}}</a></h5>
                                 {{#contacts}}
-                                    <div class="abc"><h6>{{rolename}} : <a href="{{{profileurl}}}">{{name}}</a></h6></div>
+                                    <div class="abc"><h6>{{rolename}} : <a href="{{{profileurl}}}" aria-label="{{rolename}} {{name}}">{{name}}</a></h6></div>
                                 {{/contacts}}
                                 <div class="for-list-view-wr">
                                     <div class="for-list-view">
@@ -78,19 +78,19 @@
                                             <a href="{{{url}}}"><img src="{{{imageurl}}}" alt="{{#str}} courseimage, theme_school, {{name}} {{/str}}"></a>
                                         </div>
                                         <div class="course-summary">{{{summary}}}</div>
-                                        <a href="{{{url}}}" class="btn-plus">
+                                        <div class="btn-plus">
                                             <div class="plus-container">
                                                 <div class="plus"></div>
                                                 <div class="cutoff"></div>
                                             </div>
-                                        </a>
+                                        </div>
                                     </div>
                                 </div>
                                 <h4>
-                                    <a href="{{{url}}}" data-toggle="tooltip" title="{{name}}" alt="{{#str}} viewcourse, theme_school, {{name}} {{/str}}">
+                                    <a href="{{{url}}}" data-toggle="tooltip" title="{{name}}" title="{{#str}} viewcourse, theme_school, {{name}} {{/str}}" aria-label="{{#str}} viewcourse, theme_school, {{name}} {{/str}}">
                                         <i class="fa fa-arrow-circle-o-right"></i>
                                     </a>
-                                    <a href="{{{enrolledusersurl}}}" data-toggle="tooltip" title="{{#str}} enrolusers, enrol {{/str}}" alt="{{#str}} viewcourseusers, theme_school, {{name}} {{/str}}">
+                                    <a href="{{{enrolledusersurl}}}" data-toggle="tooltip" title="{{#str}} enrolusers, enrol {{/str}}" aria-label="{{#str}} enrolusers, enrol {{/str}}">
                                         <i class="fa fa-users"></i>
                                     </a>
                                 </h4>
