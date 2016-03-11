@@ -18,6 +18,12 @@
         $('.btn-togle-details').click(function(){
             $(this).toggleClass('active');
             $(this).parents('.course-item-cont').find('.for-list-view-wr').slideToggle('active');
+
+            if ($(this).attr('aria-expanded') == 'true') {
+                $(this).attr('aria-expanded', 'false');
+            } else {
+                $(this).attr('aria-expanded', 'true');
+            }
         });
 
         $('#category-picker-filter').on('click', function() {
