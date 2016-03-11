@@ -43,7 +43,7 @@ $string['sliderprev'] = 'Previous slide';
 $string['courseslidernext'] = 'Next slide of courses';
 $string['coursesliderprev'] = 'Previous slide of courses';
 $string['cloudportallink'] = 'MoodleCloud portal link';
-$string['yourportal'] = 'Your portal';
+$string['yourportal'] = 'Portal';
 
 /*logo*/
 $string['logo'] = 'Logo';
