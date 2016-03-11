@@ -1045,9 +1045,10 @@ body .btn-see-all {
     }
     h4 {
     	float: left;
-    	padding: 0 0 18px;
     	position: absolute;
     	bottom: 0;
+        height: 42px;
+        line-height: 42px;
         a {
         	padding: 0 8px 0 0;
             display: inline-block;
@@ -1266,11 +1267,13 @@ footer {
     #portal-link {
         position: fixed;
         top: 50%;
-        right: -46px;
+        right: -29px;
         background-color: #f98012;
         color: #fff;
-        padding: 5px;
+        padding-left: 5px;
+        padding-right: 5px;
         font-size: 15px;
+        line-height: 30px;
         .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
         .rotate(270deg);
         .opacity(80);
@@ -1278,6 +1281,7 @@ footer {
 
         img {
             height: 20px;
+            vertical-align: text-bottom;
         }
 
         &:hover {
@@ -2270,6 +2274,7 @@ header.navbar {
 
 .adminsearchform input[type="submit"],
 .block_blog_menu .blogsearchform input[type="submit"],
+#dockeditempanel #searchform_button,
 #tag-search-box #searchform_button  {
 	cursor: pointer;
 	font-size: 16px;
@@ -2288,21 +2293,10 @@ header.navbar {
     z-index: 2;
 }
 
-#page {
-    .adminsearchform input[type="submit"],
-    .block_blog_menu .blogsearchform input[type="submit"],
-    #tag-search-box #searchform_button  {
-        background-color: transparent;
-    }
-
-    .adminsearchform input[type="submit"] {
-        height: 36px;
-    }
-}
-
 .adminsearchform div:after,
 .block_blog_menu .blogsearchform div:after,
 #tag-search-box #searchform_button:before,
+#dockeditempanel #searchform_button:before,
 #block-region-side-pre #searchform_button:before,
 #block-region-side-post #searchform_button:before {
     content: "\f002";
@@ -2333,7 +2327,7 @@ header.navbar {
 	background-position: -95px -368px;
 }
 
-#tag-search-box {
+#tag-search-box, #dockeditempanel {
     #searchform_button {
     	float: none;
         text-indent: 0;
@@ -2350,16 +2344,20 @@ header.navbar {
     }
 }
 
-#page .adminsearchform input[type="submit"]:hover {
-	background-color: rgba(255, 255, 255, 0.2);
+#page, #dockeditempanel {
+    .adminsearchform input[type="submit"]:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
 }
 
 #block-region-side-post,
-#block-region-side-pre {
+#block-region-side-pre,
+#dockeditempanel {
     .adminsearchform {
         float: left;
         width: 246px !important;
     }
+
     #searchform_button {
     	margin: 0;
         position: relative;
@@ -5759,6 +5757,7 @@ div.minicalendarblock caption a {
 #page input[type="reset"],
 #block-region-side-post #searchform_button,
 #block-region-side-pre #searchform_button,
+#dockeditempanel #searchform_button,
 #page #livelogs-pause-button,
 #page #notice .singlebutton + .singlebutton input,
 #dockeditempanel .adminsearchform input[type="submit"],
@@ -5767,6 +5766,18 @@ div.minicalendarblock caption a {
     background-color: #4f4f4f;
     border-color: rgba(0, 0, 0, 0.4);
 	box-shadow: 0 2px 0 0 rgba(0, 0, 0, .8);
+}
+
+#page, #dockeditempanel {
+    .adminsearchform input[type="submit"],
+    .block_blog_menu .blogsearchform input[type="submit"],
+    #tag-search-box #searchform_button  {
+        background-color: transparent;
+    }
+
+    .adminsearchform input[type="submit"] {
+        height: 36px;
+    }
 }
 
 .btn-primary {
