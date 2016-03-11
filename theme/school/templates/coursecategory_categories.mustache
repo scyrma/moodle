@@ -32,7 +32,7 @@
     <div id="category-list-container" class="container-fluid">
         <div class="row-fluid">
             {{#categories}}
-                <a href="{{{url}}}" class="grid-item category">
+                <a href="{{{url}}}" class="grid-item category" aria-label="{{#str}} coursecatname, theme_school, {{name}} {{/str}}">
                     <h3 class="name">{{name}}</h3>
                     <ul>
                         <li title="{{#str}} numberofcourses {{/str}}">
