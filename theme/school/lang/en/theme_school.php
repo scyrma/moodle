@@ -26,7 +26,7 @@ $string['choosereadme'] = '
         <h2>School</h2>
         <h3>Theme Credits</h3>
         <p>Author: Ryan Wyllie<br>
-        based on Tikli from DualCube, by permission from the author.
+        Based on Tikli from DualCube, by permission from the author.
         </p>
     </div>
 </div>';
@@ -40,19 +40,21 @@ $string['region-side-post'] = 'Right';
 $string['region-side-pre'] = 'Left';
 $string['slidernext'] = 'Next slide';
 $string['sliderprev'] = 'Previous slide';
+$string['courseslidernext'] = 'Next slide of courses';
+$string['coursesliderprev'] = 'Previous slide of courses';
 $string['cloudportallink'] = 'MoodleCloud portal link';
-$string['yourportal'] = 'Your portal';
+$string['yourportal'] = 'Portal';
 
 /*logo*/
 $string['logo'] = 'Logo';
-$string['logodesc'] = 'Image to be displayed instead of the site name, if configured (see Header display format). Note: Preferred aspect ratio is 6:1.';
+$string['logodesc'] = 'If logo is the selected display format then this image will be displayed instead of the site name. Note: Preferred aspect ratio is 6:1 with a height of 80 pixels.';
 $string['logoorsitename'] = 'Header display format';
 $string['logoorsitenamedesc'] = 'Decides what is displayed within the navbar and front page. Logo - Only the logo will be shown; Site name - Only the site name will be shown; Icon+sitename - An icon will be shown next to the site name.';
 $string['onlylogo'] = 'Logo';
 $string['onlysitename'] = 'Site name';
 $string['iconsitename'] = 'Icon and site name';
 $string['logoicon'] = 'Icon';
-$string['logoicondesc'] = 'The icon image to be displayed next to the site name, if configured (see Header display format).';
+$string['logoicondesc'] = 'If icon+sitename is the selected display format then this image will be displayed next to the site name. Note: Recommended image height is 80 pixels.';
 $string['pluginname'] = 'School';
 
 /*favicon*/
@@ -161,16 +163,16 @@ $string['frontpageimagecontentstyle'] = 'Display style';
 $string['staticcontent'] = 'Static Content';
 $string['slidercontent'] = 'Slider Content';
 $string['addtext'] = 'Static content text';
-$string['addtextdesc'] = 'Here you may add the text to be displayed on the front page, if static content is selected (see Display style).';
+$string['addtextdesc'] = 'If static content is the selected display style then you may add the text to be displayed on the front page.';
 $string['frontpagestaticcontentselect'] = 'Static content media type';
 $string['mediavideo'] = 'Video';
 $string['mediaimage'] = 'Image';
 $string['uploadimage'] = 'Static content image';
-$string['uploadimagedesc'] = 'The image to be displayed in the static content area, if selected (see Static content media type).';
+$string['uploadimagedesc'] = 'The image to be displayed in the static content area.';
 $string['uploadvideo'] = 'Upload static content video';
-$string['uploadvideodesc'] = 'Upload a video to be displayed in the static content area, if selected (see Static content media type and static content video type). The video must be in mp4 format.';
+$string['uploadvideodesc'] = 'Upload a video to be displayed in the static content area. The video must be in mp4 format.';
 $string['video'] = 'Static content embedded video';
-$string['videodesc'] = 'The embedded video HTML for use within the static content area, if selected (see Static content media type and static content video type).';
+$string['videodesc'] = 'The embedded video HTML for use within the static content area.';
 $string['videotype'] = 'Static content video type';
 $string['iframe'] = 'embedded';
 $string['upload'] = 'upload';
@@ -186,6 +188,7 @@ $string['three'] = '3';
 $string['four'] = '4';
 $string['five'] = '5';
 $string['slideimage'] = 'Image for slide {$a}';
+$string['slideimagedesc'] = 'Recommended image height is 350 pixels.';
 $string['slidertext'] = 'Text for slide {$a}';
 $string['slidertitle'] = 'Title for slide {$a}';
 $string['slidertitledesc'] = 'You may insert the text content of your slider.';
@@ -242,3 +245,5 @@ $string['viewcourseusers'] = 'View enrolled users for course {$a}';
 $string['nocourses'] = 'There are no courses in this category';
 $string['filtersubcategories'] = 'Filter down to subcategories';
 $string['numberofsubcategories'] = 'Number of subcategories';
+$string['coursecatname'] = 'Course category {$a}';
+$string['togglecoursedetails'] = 'Toggle course {$a} details';
