@@ -1661,8 +1661,8 @@ header.navbar {
                     position: absolute;
                     margin-left: 2px;
                     border: 1px solid;
-                    border-radius: 3px;
                     line-height: 21px;
+                    .border-radius(3px);
                 }
 
                 &:after {
@@ -1681,8 +1681,8 @@ header.navbar {
                     left: 39px;
                     margin-left: 2px;
                     border: 1px solid;
-                    border-radius: 3px;
                     line-height: 21px;
+                    .border-radius(3px);
                 }
             }
         }
@@ -1918,8 +1918,71 @@ header.navbar {
 	border-color: rgba(255, 255, 255, .2);
 }
 
-.course-content ul li.section.main {
-    border-bottom-width: 1px!important;
+.course-content {
+    ul li.section.main {
+        border-bottom-width: 1px!important;
+    }
+
+    #changenumsections {
+        a {
+            .opacity(99);
+
+            &:hover {
+                .opacity(80);
+            }
+            &:first-child {
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+        }
+
+        .increase-sections {
+            position: relative;
+
+            &:after {
+                content: "\f067";
+                display: inline-block;
+                font: normal normal normal 14px/1 FontAwesome;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                box-sizing: border-box;
+                width: 21px;
+                height: 21px;
+                text-align: center;
+                position: absolute;
+                left: 0;
+                top: 0;
+                border: 1px solid;
+                line-height: 21px;
+                z-index: -1;
+                .border-radius(3px);
+            }
+        }
+        .reduce-sections {
+            position: relative;
+
+            &:after {
+                content: "\f068";
+                display: inline-block;
+                font: normal normal normal 14px/1 FontAwesome;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                box-sizing: border-box;
+                width: 21px;
+                height: 21px;
+                text-align: center;
+                position: absolute;
+                left: 0;
+                top: 0;
+                border: 1px solid;
+                line-height: 21px;
+                z-index: -1;
+                .border-radius(3px);
+            }
+        }
+    }
 }
 
 .block {
