@@ -1654,9 +1654,13 @@ header.navbar {
                 border-color: @primaryFontColour;
                 min-width: 47px;
 
-                img {
+                img, input {
                     margin: 0 0 0 2px;
                     vertical-align: middle;
+                    height: 0;
+                    width: 0;
+                    padding: 10px;
+                    box-sizing: border-box;
                 }
 
                 &:before {
@@ -1713,6 +1717,9 @@ header.navbar {
         .commands {
             .moveto {
                 position: relative;
+                height: 21px;
+                width: 21px;
+                display: inline-block;
 
                 &::before {
                     content: "\f054";
@@ -1737,10 +1744,17 @@ header.navbar {
                 &:hover::before {
                     opacity: 0.8;
                 }
+
+                img {
+                    display: none;
+                }
             }
 
             .hidepanelicon {
                 position: relative;
+                height: 21px;
+                width: 21px;
+                display: inline-block;
 
                 &::before {
                     content: "\f00d";
@@ -1765,14 +1779,22 @@ header.navbar {
                 &:hover::before {
                     opacity: 0.8;
                 }
+
+                img {
+                    display: none;
+                }
             }
         }
     }
 
     .block-control-actions {
         .menubar {
-            span[data-draggroups="block"] {
+            span[data-draggroups="block"],
+            .editing_move.menu-action {
                 position: relative;
+                width: 20px;
+                height: 20px;
+                display: inline-block;
 
                 &:before {
                     content: "\f047";
@@ -1791,10 +1813,17 @@ header.navbar {
                     cursor: move;
                     color: @primaryFontColour;
                 }
+
+                img {
+                    display: none;
+                }
             }
 
             .toggle-display {
                 position: relative;
+                width: 30px;
+                height: 20px;
+                display: inline-block;
 
                 &:before {
                     content: "\f013 \f0d7";
@@ -1813,6 +1842,10 @@ header.navbar {
                     color: @primaryFontColour;
                     letter-spacing: 3px;
                 }
+
+                img {
+                    display: none;
+                }
             }
         }
     }
@@ -1823,13 +1856,14 @@ header.navbar {
         .block-control-actions {
             .menubar {
                 span[data-draggroups="block"]:before {
-                    color: #333;
+                    color: @mainFontColour;
                 }
             }
 
-            .toggle-display {
+            .toggle-display,
+            .editing_move.menu-action {
                 &:before {
-                    color: #333;
+                    color: @mainFontColour;
                 }
             }
         }
@@ -1938,6 +1972,9 @@ header.navbar {
 
     #changenumsections {
         a {
+            width: 21px;
+            height: 21px;
+            display: inline-block;
             .opacity(99);
 
             &:hover {
@@ -1946,6 +1983,9 @@ header.navbar {
             &:first-child {
                 margin-left: 5px;
                 margin-right: 5px;
+            }
+            img {
+                display: none;
             }
         }
 
