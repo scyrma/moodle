@@ -1351,107 +1351,67 @@ footer {
     .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
     padding: 10px 10px 10px 20px;
     color: @mainFontColour;
-}
 
-span {
-    &.avatar {
-    	display: inline-block;
-    	float: right;
-    }
-    &.userbutton > span:first-child {
-    	float: right;
-    }
-}
-
-.userbutton {
-    > span:last-child {
-	   padding: 12px 20px 10px;
-        span {
-        	font-size: 14px;
-        	line-height: 17px;
-        	font-weight: 600;
-        	display: block;
-        	width: 116px;
-        }
-        i {
-        	display: inline-block;
-            font-size: 17px;
-            line-height: 17px;
-            float: none;
-            margin-left: 15px;
-            vertical-align: bottom;
-        }
-    }
-    .avatar img {
-        border-radius: 50%;
-        border: solid 3px rgba(0, 0, 0, .25);
-        height: 55px;
-        width: 55px;
-    }
-    > span:last-child {
-        padding-left: 0;
-        padding-top: 5px;
-    }
-}
-
-.usermenu {
     ul {
-    	list-style: none;
-    	margin: 0;
+        margin: 0;
+        list-style: none;
     }
     .userbutton {
-    	height: 81px;
+        height: 81px;
         position: relative;
-        span {
-            &:hover {
-            	text-decoration: none;
-            }
-            &:active {
-            	text-decoration: none;
+
+        .name {
+            float: left;
+            margin-top: 5px;
+            line-height: 25px;
+        }
+        .avatar {
+            display: inline-block;
+            float: right;
+            img {
+                border-radius: 50%;
+                border: solid 3px rgba(0, 0, 0, .25);
+                height: 55px;
+                width: 55px;
+                vertical-align: middle;
+                margin: 0;
+                display: block;
             }
         }
+        .dropdown-icon-container {
+            float: right;
+            margin-left: 10px;
+            margin-right: 10px;
+            font-size: 1.5em;
+            line-height: 60px;
+        }
     }
-}
-
-.usermenu img {
-	vertical-align: middle;
-	margin: 0;
-	display: block;
-}
-
-.navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
-	box-shadow: none;
-	border: none;
-}
-
-.usermenu .menubar .clickable {
-	line-height: 32px;
-	height: 32px;
-	font-weight: 600;
-	padding: 0 0 0;
-	position: relative;
-}
-
-.admin-option .usermenu .menubar a {
-	background: #0691c6;
-}
-
-.usermenu {
-    .menubar a:after {
-    	content: none;
-    	display: block;
-    	width: 0;
-    	height: 0;
-    	position: absolute;
-    	right: 10px;
-    	top: 12px;
-    	border: 5px solid transparent;
-    	border-top: 8px solid #FFFFFF;
+    .menubar {
+        .clickable {
+            line-height: 32px;
+            height: 32px;
+            font-weight: 600;
+            padding: 0 0 0;
+            position: relative;
+        }
+        a:after {
+            content: none;
+            display: block;
+            width: 0;
+            height: 0;
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            border: 5px solid transparent;
+            border-top: 8px solid #FFFFFF;
+        }
     }
-    &:hover .menu {
-    	opacity: 1;
-    	display: block;
-    	border-top: 1px solid #e3e3ec;
+    &:hover {
+        .menu {
+            opacity: 1;
+            display: block;
+            border-top: 1px solid #e3e3ec;
+        }
     }
     .menu {
         position: absolute;
@@ -1490,6 +1450,15 @@ span {
             }
         }
     }
+}
+
+.navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
+	box-shadow: none;
+	border: none;
+}
+
+.admin-option .usermenu .menubar a {
+	background: #0691c6;
 }
 
 #page-header {
@@ -5352,7 +5321,6 @@ form#displayoptions {
 .moodle-dialogue-base .moodle-dialogue .moodle-dialogue-bd,
 .moodle-dialogue-bd {
     text-align: left;
-	padding: 1.25em 1.75em 1.75em 1.75em!important;
 	background: #fafafa!important;
 }
 
@@ -6346,6 +6314,17 @@ footer {
     	margin-right: -43px;
     }
     .usermenu {
+        padding: 10px 20px 10px 10px;
+
+        .name {
+            float: right;
+        }
+        .avatar {
+            float: left;
+        }
+        .dropdown-icon-container {
+            float: left;
+        }
         &.dropdown {
             i.fa {
             	margin-left: 0;
