@@ -10,6 +10,7 @@
 @footerColour: #3a3a3a;
 @footerFontColour: #aaaaaa;
 @footerLinkColour: #f15a23;
+@blockColour: #efefef;
 @blockLinkColour: #f15a23;
 @mainFontColour: #555;
 @mainLinkColour: #f15a23;
@@ -492,16 +493,28 @@ img {
         box-shadow: none;
     	z-index: 1111;
         color: @primaryFontColour;
+        cursor: pointer;
         .menubar {
             a {
                 color: @primaryLinkColour;
                 background: none;
             }
         }
+        .userbutton {
+            .dropdown-icon-container {
+                color: @primaryFontColour;
+            }
+        }
         &:hover, &:focus {
             color: @mainFontColour;
             background-color: #fff;
             outline: none;
+
+            .userbutton {
+                .dropdown-icon-container {
+                    color: @primaryColour;
+                }
+            }
         }
         &.active-drop-user-menu {
             color: @mainFontColour;
@@ -1350,107 +1363,68 @@ footer {
     .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
     padding: 10px 10px 10px 20px;
     color: @mainFontColour;
-}
 
-span {
-    &.avatar {
-    	display: inline-block;
-    	float: right;
-    }
-    &.userbutton > span:first-child {
-    	float: right;
-    }
-}
-
-.userbutton {
-    > span:last-child {
-	   padding: 12px 20px 10px;
-        span {
-        	font-size: 14px;
-        	line-height: 17px;
-        	font-weight: 600;
-        	display: block;
-        	width: 116px;
-        }
-        i {
-        	display: inline-block;
-            font-size: 17px;
-            line-height: 17px;
-            float: none;
-            margin-left: 15px;
-            vertical-align: bottom;
-        }
-    }
-    .avatar img {
-        border-radius: 50%;
-        border: solid 3px rgba(0, 0, 0, .25);
-        height: 55px;
-        width: 55px;
-    }
-    > span:last-child {
-        padding-left: 0;
-        padding-top: 5px;
-    }
-}
-
-.usermenu {
     ul {
-    	list-style: none;
-    	margin: 0;
+        margin: 0;
+        list-style: none;
     }
     .userbutton {
-    	height: 81px;
+        height: 81px;
         position: relative;
-        span {
-            &:hover {
-            	text-decoration: none;
-            }
-            &:active {
-            	text-decoration: none;
+
+        .name {
+            float: left;
+            margin-top: 5px;
+            line-height: 25px;
+        }
+        .avatar {
+            display: inline-block;
+            float: right;
+            img {
+                border-radius: 50%;
+                border: solid 3px rgba(0, 0, 0, .25);
+                height: 55px;
+                width: 55px;
+                vertical-align: middle;
+                margin: 0;
+                display: block;
             }
         }
+        .dropdown-icon-container {
+            float: right;
+            margin-left: 10px;
+            margin-right: 10px;
+            font-size: 1.5em;
+            line-height: 60px;
+            color: @primaryColour;
+        }
     }
-}
-
-.usermenu img {
-	vertical-align: middle;
-	margin: 0;
-	display: block;
-}
-
-.navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
-	box-shadow: none;
-	border: none;
-}
-
-.usermenu .menubar .clickable {
-	line-height: 32px;
-	height: 32px;
-	font-weight: 600;
-	padding: 0 0 0;
-	position: relative;
-}
-
-.admin-option .usermenu .menubar a {
-	background: #0691c6;
-}
-
-.usermenu {
-    .menubar a:after {
-    	content: none;
-    	display: block;
-    	width: 0;
-    	height: 0;
-    	position: absolute;
-    	right: 10px;
-    	top: 12px;
-    	border: 5px solid transparent;
-    	border-top: 8px solid #FFFFFF;
+    .menubar {
+        .clickable {
+            line-height: 32px;
+            height: 32px;
+            font-weight: 600;
+            padding: 0 0 0;
+            position: relative;
+        }
+        a:after {
+            content: none;
+            display: block;
+            width: 0;
+            height: 0;
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            border: 5px solid transparent;
+            border-top: 8px solid #FFFFFF;
+        }
     }
-    &:hover .menu {
-    	opacity: 1;
-    	display: block;
-    	border-top: 1px solid #e3e3ec;
+    &:hover {
+        .menu {
+            opacity: 1;
+            display: block;
+            border-top: 1px solid #e3e3ec;
+        }
     }
     .menu {
         position: absolute;
@@ -1491,8 +1465,17 @@ span {
     }
 }
 
+.navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
+	box-shadow: none;
+	border: none;
+}
+
+.admin-option .usermenu .menubar a {
+	background: #0691c6;
+}
+
 #page-header {
-	background: #efefef;
+	background: @blockColour;
 	padding: 0 15px;
     .navbar {
     	padding: 8px 0 0;
@@ -1524,15 +1507,6 @@ header.navbar {
 	box-sizing: border-box;
 	min-height: 700px;
 }
-
-#block-region-side-pre {
-	box-shadow: -8px 0 12px -11px rgba(0, 0, 0, 0.5) inset;
-	margin: 0;
-	padding: 0;
-	/*padding-bottom: 99999px;
-	margin-bottom: -99999px;*/
-}
-
 
 #page-content {
 	margin: 0 auto;
@@ -1621,27 +1595,30 @@ header.navbar {
 
 #block-region-side-pre,
 #block-region-side-post {
+    padding: 0;
+    margin: 0;
     .block {
-    	background: none;
-    	border: none!important;
-    	border-radius: 0!important;
-    	padding: 0!important;
+        background: none;
+    	border: none;
+    	border-radius: 0;
+    	padding: 0;
+        margin: 0;
     	clear: both;
     }
-}
-
-#block-region-side-pre {
-    .block {
-    	margin-bottom: -1px;
-        .header {
-        	padding: 12px 0;
-        	box-shadow: inset -8px 0px 12px -11px rgba(0, 0, 0, 0.3);
+    .header {
+        padding: 12px 0;
+        h2 {
+            text-shadow: none;
         }
     }
 }
 
-#block-region-side-post .block {
-    margin-bottom: 0;
+#block-region-side-pre {
+    box-shadow: -8px 0 12px -11px rgba(0, 0, 0, 0.5) inset;
+}
+
+#block-region-side-post {
+    box-shadow: 8px 0 10px -12px rgba(0, 0, 0, 0.5) inset;
 }
 
 .block {
@@ -1677,9 +1654,13 @@ header.navbar {
                 border-color: @primaryFontColour;
                 min-width: 47px;
 
-                img {
+                img, input {
                     margin: 0 0 0 2px;
                     vertical-align: middle;
+                    height: 0;
+                    width: 0;
+                    padding: 10px;
+                    box-sizing: border-box;
                 }
 
                 &:before {
@@ -1697,8 +1678,8 @@ header.navbar {
                     position: absolute;
                     margin-left: 2px;
                     border: 1px solid;
-                    border-radius: 3px;
                     line-height: 21px;
+                    .border-radius(3px);
                 }
 
                 &:after {
@@ -1717,8 +1698,8 @@ header.navbar {
                     left: 39px;
                     margin-left: 2px;
                     border: 1px solid;
-                    border-radius: 3px;
                     line-height: 21px;
+                    .border-radius(3px);
                 }
             }
         }
@@ -1736,8 +1717,11 @@ header.navbar {
         .commands {
             .moveto {
                 position: relative;
+                height: 21px;
+                width: 21px;
+                display: inline-block;
 
-                &:before {
+                &::before {
                     content: "\f054";
                     display: inline-block;
                     font: normal normal normal 14px/1 FontAwesome;
@@ -1754,18 +1738,25 @@ header.navbar {
                     border: 1px solid;
                     border-radius: 3px;
                     line-height: 21px;
-                    color: @blockLinkColour;
+                    color: @primaryLinkColour;
                 }
 
-                &:hover:before {
+                &:hover::before {
                     opacity: 0.8;
+                }
+
+                img {
+                    display: none;
                 }
             }
 
             .hidepanelicon {
                 position: relative;
+                height: 21px;
+                width: 21px;
+                display: inline-block;
 
-                &:before {
+                &::before {
                     content: "\f00d";
                     display: inline-block;
                     font: normal normal normal 14px/1 FontAwesome;
@@ -1782,11 +1773,15 @@ header.navbar {
                     border: 1px solid;
                     border-radius: 3px;
                     line-height: 19px;
-                    color: @blockLinkColour;
+                    color: @primaryLinkColour;
                 }
 
-                &:hover:before {
+                &:hover::before {
                     opacity: 0.8;
+                }
+
+                img {
+                    display: none;
                 }
             }
         }
@@ -1794,8 +1789,12 @@ header.navbar {
 
     .block-control-actions {
         .menubar {
-            span[data-draggroups="block"] {
+            span[data-draggroups="block"],
+            .editing_move.menu-action {
                 position: relative;
+                width: 20px;
+                height: 20px;
+                display: inline-block;
 
                 &:before {
                     content: "\f047";
@@ -1814,10 +1813,17 @@ header.navbar {
                     cursor: move;
                     color: @primaryFontColour;
                 }
+
+                img {
+                    display: none;
+                }
             }
 
             .toggle-display {
                 position: relative;
+                width: 30px;
+                height: 20px;
+                display: inline-block;
 
                 &:before {
                     content: "\f013 \f0d7";
@@ -1836,6 +1842,10 @@ header.navbar {
                     color: @primaryFontColour;
                     letter-spacing: 3px;
                 }
+
+                img {
+                    display: none;
+                }
             }
         }
     }
@@ -1846,13 +1856,14 @@ header.navbar {
         .block-control-actions {
             .menubar {
                 span[data-draggroups="block"]:before {
-                    color: #333;
+                    color: @mainFontColour;
                 }
             }
 
-            .toggle-display {
+            .toggle-display,
+            .editing_move.menu-action {
                 &:before {
-                    color: #333;
+                    color: @mainFontColour;
                 }
             }
         }
@@ -1954,8 +1965,77 @@ header.navbar {
 	border-color: rgba(255, 255, 255, .2);
 }
 
-.course-content ul li.section.main {
-    border-bottom-width: 1px!important;
+.course-content {
+    ul li.section.main {
+        border-bottom-width: 1px!important;
+    }
+
+    #changenumsections {
+        a {
+            width: 21px;
+            height: 21px;
+            display: inline-block;
+            .opacity(99);
+
+            &:hover {
+                .opacity(80);
+            }
+            &:first-child {
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+            img {
+                display: none;
+            }
+        }
+
+        .increase-sections {
+            position: relative;
+
+            &:after {
+                content: "\f067";
+                display: inline-block;
+                font: normal normal normal 14px/1 FontAwesome;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                box-sizing: border-box;
+                width: 21px;
+                height: 21px;
+                text-align: center;
+                position: absolute;
+                left: 0;
+                top: 0;
+                border: 1px solid;
+                line-height: 21px;
+                z-index: -1;
+                .border-radius(3px);
+            }
+        }
+        .reduce-sections {
+            position: relative;
+
+            &:after {
+                content: "\f068";
+                display: inline-block;
+                font: normal normal normal 14px/1 FontAwesome;
+                text-rendering: auto;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                box-sizing: border-box;
+                width: 21px;
+                height: 21px;
+                text-align: center;
+                position: absolute;
+                left: 0;
+                top: 0;
+                border: 1px solid;
+                line-height: 21px;
+                z-index: -1;
+                .border-radius(3px);
+            }
+        }
+    }
 }
 
 .block {
@@ -1990,31 +2070,18 @@ header.navbar {
 }
 
 #block-region-side-post {
-	margin: 0;
 	float: right;
-	padding: 0 0 0;
-	box-shadow: 8px 0 10px -12px rgba(0, 0, 0, 0.5) inset;
     .header {
     	background: #a9a9a9;
     	color: #FFFFFF;
-    	padding: 12px 0;
         h2 {
             color: #FFFFFF;
-            text-shadow: none;
         }
     }
     .active .header {
         border: none;
         background: #4c5f65;
     }
-    .block {
-    	padding: 0 0 0;
-    }
-}
-
-#block-region-side-pre .header h2 {
-    color: @primaryFontColour;
-    text-shadow: none;
 }
 
 .newsbox {
@@ -5370,7 +5437,6 @@ form#displayoptions {
 .moodle-dialogue-base .moodle-dialogue .moodle-dialogue-bd,
 .moodle-dialogue-bd {
     text-align: left;
-	padding: 1.25em 1.75em 1.75em 1.75em!important;
 	background: #fafafa!important;
 }
 
@@ -5399,24 +5465,27 @@ form#displayoptions {
 
 /* Docced view start*/
 
-#dock #dockeditempanel {
-    .dockeditempanel_content {
-        background-color: #f6f6f6;
-        border-color: rgba(0, 0, 0, 0.1);
-        border-radius: 3px;
-        -webkit-box-shadow: 0px 3px 0px 0px rgba(0,0,0,0.35);
-    	-moz-box-shadow: 0px 3px 0px 0px rgba(0,0,0,0.35);
-    	box-shadow: 0px 3px 0px 0px rgba(0,0,0,0.35);
-    }
-    .dockeditempanel_hd {
-        border-bottom: 1px solid #e6e6e6;
-        padding: 0.5em  .5em 1em 2em;
-        h2 {
-            font-weight: normal;
-            text-shadow: none;
-            text-transform: none;
-            color: #555;
-            float: left;
+#dock {
+    width: 38px;
+    #dockeditempanel {
+        padding-left: 0;
+        .dockeditempanel_content {
+            background-color: @blockColour;
+            padding-top: 0;
+            border: none;
+            border-radius: 0;
+            -webkit-box-shadow: -5px -1px 17px -5px rgba(0, 0, 0, 0.5);
+            -moz-box-shadow: -5px -1px 17px -5px rgba(0, 0, 0, 0.5);
+            box-shadow: -5px -1px 17px -5px rgba(0, 0, 0, 0.5);
+        }
+        .dockeditempanel_hd {
+            border-bottom: 1px solid #e6e6e6;
+            padding: 12px .5em 12px 2em;
+            h2 {
+                font-size: 14px;
+                text-shadow: none;
+                float: left;
+            }
         }
     }
 }
@@ -5695,17 +5764,33 @@ div.minicalendarblock caption a {
 /*dock view start*/
 
 .buttons_container {
-    margin-top: 148px;
+    margin-top: 154px;
 }
 
 #dock .dockedtitle {
-    border: none!important;
-    background-image: none!important;
-    box-shadow: none!important;
-    margin: 3px 3px 0 0!important;
-    padding-left: 2px!important;
-    text-shadow: none!important;
-	border-radius: 0!important;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    background-image: none;
+    box-shadow: none;
+    margin: 0;
+    padding-left: 2px;
+    text-shadow: none;
+	border-radius: 0;
+}
+
+body.has_dock {
+    #page {
+        padding-left: 38px;
+        padding-right: 0;
+    }
+    #page-header {
+        margin-left: -38px;
+        padding-left: 53px;
+    }
+    footer {
+        margin-left: -38px;
+        padding-left: 38px;
+    }
 }
 
 #page #page-content + #dock {
@@ -5934,13 +6019,6 @@ footer a:focus,
     }
 }
 
-header.navbar,
-#block-region-side-pre .block .header,
-.navbar-fixed-top .navbar-inner,
-.navbar-static-top .navbar-inner {
-    background: #e74c3c;
-}
-
 .landing-page {
     .logo-img {
         background: #16a085;
@@ -5996,7 +6074,7 @@ header.navbar,
 
 #block-region-side-post,
 #block-region-side-pre {
-    background: #e6e6e6;
+    background: @blockColour;
     .moodle-actionmenu {
         .toggle-display:hover,
         .menu-action-text:hover {
@@ -6352,6 +6430,17 @@ footer {
     	margin-right: -43px;
     }
     .usermenu {
+        padding: 10px 20px 10px 10px;
+
+        .name {
+            float: right;
+        }
+        .avatar {
+            float: left;
+        }
+        .dropdown-icon-container {
+            float: left;
+        }
         &.dropdown {
             i.fa {
             	margin-left: 0;
@@ -6558,9 +6647,34 @@ ul.dropdown-menu li.dropdown-submenu:hover >a {
     z-index: 9999;
 }
 
-#dock .dockedtitle {
-    background-color: @primaryColour;
-    opacity: 0.8;
+#dock {
+    .dockedtitle {
+        color: #fff;
+        background-color: #a9a9a9;
+        &:hover {
+            color: @primaryLinkColour;
+            background-color: @primaryColour;
+        }
+    }
+    #dockeditempanel {
+        background-color: @blockColour;
+        .dockeditempanel_hd {
+            background-color: @primaryColour;
+            h2 {
+                color: @primaryLinkColour;
+            }
+        }
+    }
+}
+
+#block-region-side-pre {
+    .header {
+        color: @primaryLinkColour;
+        background: @primaryColour;
+        h2 {
+            color: @primaryLinkColour;
+        }
+    }
 }
 
 .view-toggle {
@@ -6665,7 +6779,6 @@ footer {
 }
 
 header.navbar,
-#block-region-side-pre .block .header,
 .navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
   background: @primaryColour;
