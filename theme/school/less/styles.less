@@ -2359,7 +2359,7 @@ header.navbar {
 	padding: 0 10px 0;
 	box-sizing: border-box;
 	box-shadow: none;
-	border-radius: 3px 0 0 3px;
+	border-radius: 4px 0 0 4px;
 	outline: none;
 	border: 1px solid rgba(0, 0, 0, .5);
 	border-right: 0;
@@ -2386,7 +2386,7 @@ header.navbar {
 	line-height: 38px;
 	margin: 0!important;
 	padding: 0;
-	border-radius: 0 4px 4px 0!important;
+	border-radius: 0 4px 4px 0;
 	width: 38px;
 	height: 38px;
 	overflow: hidden;
@@ -2410,7 +2410,7 @@ header.navbar {
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-	border-radius: 0 4px 4px 0!important;
+	border-radius: 0 4px 4px 0;
     position: absolute;
     top: 0;
     right: 0;
@@ -2460,11 +2460,12 @@ header.navbar {
     	margin: 0;
         position: relative;
         overflow: hidden;
+        border-radius: 0 4px 4px 0;
     }
 }
 
 #searchform_button {
-    border-radius: 0 3px 3px 0 !important;
+    border-radius: 0 4px 4px 0;
     width: 38px;
 	height: 38px;
 	margin-top: -12px!important;
@@ -3673,9 +3674,15 @@ div[class*="span"] {
             float: left;
         }
     }
+    #block-region-side-pre {
+        .box-shadow(8px 0 10px -12px rgba(0, 0, 0, 0.5) inset);
+    }
+    #block-region-side-post {
+        .box-shadow(-8px 0 12px -11px rgba(0, 0, 0, 0.5) inset);
+    }
 }
 
-}
+} /* End of min-width: 768px */
 
 /* ----------------------------------------------------------------------------------- */
 
@@ -5107,9 +5114,11 @@ footer {
     }
 }
 
-.block_recent_activity .activitydate,
-.block_recent_activity .activityhead {
-    text-align: left!important;
+.block_recent_activity {
+    .activitydate,
+    .activityhead {
+        text-align: left;
+    }
 }
 
 .box.generalbox form table {
@@ -5303,10 +5312,12 @@ form#displayoptions {
     }
 }
 
-.block.block_section_links .content .inline-list li a{
-	padding: 2px 5px;
-	border: solid 1px rgba(0, 0, 0, .1);
-
+.block.block_section_links .content .inline-list {
+    margin-bottom: 10px;
+    li a {
+    	padding: 2px 5px;
+    	border: solid 1px rgba(0, 0, 0, .1);
+    }
 }
 
 #block-region-side-pre .profilepicture,
@@ -5505,9 +5516,7 @@ form#displayoptions {
             padding-top: 0;
             border: none;
             border-radius: 0;
-            -webkit-box-shadow: -5px -1px 17px -5px rgba(0, 0, 0, 0.5);
-            -moz-box-shadow: -5px -1px 17px -5px rgba(0, 0, 0, 0.5);
-            box-shadow: -5px -1px 17px -5px rgba(0, 0, 0, 0.5);
+            .box-shadow(0 -5px 17px -5px rgba(0, 0, 0, 0.5));
         }
         .dockeditempanel_hd {
             border-bottom: 1px solid #e6e6e6;
@@ -5767,8 +5776,7 @@ div.minicalendarblock caption a {
         text-shadow: none;
     }
     .filters.calendar_filters {
-        margin-left: 15px;
-        margin-bottom: 15px;
+        margin: 0 15px 15px;
     }
 }
 
@@ -5885,9 +5893,21 @@ body.has_dock {
 	box-shadow: 0 2px 0 0 rgba(0, 0, 0, .8);
 }
 
+#page,
+#dockeditempanel {
+    .block_blog_menu .blogsearchform input[type="submit"] {
+        border-radius: 0 4px 4px 0;
+    }
+}
+
+#page {
+    .block_blog_menu .blogsearchform input[type="submit"] {
+        height: 36px;
+    }
+}
+
 #page, #dockeditempanel {
     .adminsearchform input[type="submit"],
-    .block_blog_menu .blogsearchform input[type="submit"],
     #tag-search-box #searchform_button  {
         background-color: transparent;
 
@@ -6474,9 +6494,8 @@ footer {
             }
         }
     }
-    .block_adminblock .content .singleselect form div:after,
     #region-main .langmenu div:after {
-    	background: none;
+        background: none;
     }
     .adminsearchform input[type="submit"] {
     	margin-right: -43px;
@@ -6587,6 +6606,111 @@ footer {
                     border-right: 42px solid transparent;
                 }
             }
+        }
+    }
+    #dock {
+        #dockeditempanel {
+            .dockeditempanel_hd {
+                padding-right: 2em;
+                padding-left: .5em;
+                h2 {
+                    float: right;
+                }
+            }
+        }
+    }
+    #block-region-side-post,
+    #block-region-side-pre {
+        .block {
+            .content {
+                fieldset {
+                    text-align: right;
+                }
+            }
+        }
+    }
+    .block {
+        .unlist,
+        .inline-list {
+            margin-right: 0;
+        }
+        .comment-area .fd {
+            text-align: left;
+        }
+        &.block_recent_activity {
+            .activitydate,
+            .activityhead {
+                text-align: right;
+            }
+        }
+        &.block_messages .content {
+            text-align: right;
+        }
+        &.block_course_summary .editbutton {
+            text-align: left;
+        }
+        &.block_adminblock .content .singleselect form div::after {
+            right: auto;
+            left: 2px;
+        }
+    }
+    .block.block_search_forums,
+    #dockeditempanel {
+        #searchform_search {
+            border-radius: 0 4px 4px 0;
+            border-right: 1px solid rgba(0, 0, 0, .4);
+            border-left: none;
+        }
+    }
+    #block-region-side-post,
+    #block-region-side-pre,
+    #dockeditempanel {
+        #searchform_button {
+            border-radius: 4px 0 0 4px;
+            &::before {
+                border-radius: 4px 0 0 4px;
+            }
+        }
+    }
+    #page,
+    #dockeditempanel {
+        .block_blog_menu .blogsearchform,
+        .adminsearchform {
+            input[type="submit"] {
+                border-radius: 4px 0 0 4px;
+            }
+            input[type="text"] {
+                float: right;
+                border-radius: 0 4px 4px 0;
+                border-right: 1px solid rgba(0, 0, 0, .4);
+                border-left: none;
+            }
+        }
+        .adminsearchform {
+            float: right;
+            div::after {
+                right: auto;
+                left: 0;
+                border-radius: 4px 0 0 4px;
+            }
+        }
+    }
+    &.has_dock {
+        #page {
+            padding-left: 0;
+            padding-right: 38px;
+        }
+        #page-header {
+            margin-left: 0;
+            padding-left: 15px;
+            margin-right: -38px;
+            padding-right: 53px;
+        }
+        footer {
+            margin-left: 0;
+            padding-left: 0;
+            margin-right: -38px;
+            padding-right: 38px;
         }
     }
 }
