@@ -19,18 +19,16 @@
         <li>
             <div class="clickable">
                 <span class="userbutton">
-                    <span>
-                        <span class="avatar current">
-                            {{{ user_profile_picture }}}
-                        </span>
-                    </span>
-                    <span>
-                        {{ firstname }}
-                        <span>
-                            {{ lastname }}
-                            <i class="fa fa-chevron-circle-down"></i>
-                        </span>
-                    </span>
+                    <div class="name">
+                        {{ firstname }}</br>
+                        {{ lastname }}
+                    </div>
+                    <div class="avatar current">
+                        {{{ user_profile_picture }}}
+                    </div>
+                    <div class="dropdown-icon-container">
+                        <i class="fa fa-chevron-circle-down"></i>
+                    </div>
                 </span>
             </div>
         </li>
