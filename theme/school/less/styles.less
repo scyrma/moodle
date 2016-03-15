@@ -493,16 +493,28 @@ img {
         box-shadow: none;
     	z-index: 1111;
         color: @primaryFontColour;
+        cursor: pointer;
         .menubar {
             a {
                 color: @primaryLinkColour;
                 background: none;
             }
         }
+        .userbutton {
+            .dropdown-icon-container {
+                color: @primaryFontColour;
+            }
+        }
         &:hover, &:focus {
             color: @mainFontColour;
             background-color: #fff;
             outline: none;
+
+            .userbutton {
+                .dropdown-icon-container {
+                    color: @primaryColour;
+                }
+            }
         }
         &.active-drop-user-menu {
             color: @mainFontColour;
@@ -1384,6 +1396,7 @@ footer {
             margin-right: 10px;
             font-size: 1.5em;
             line-height: 60px;
+            color: @primaryColour;
         }
     }
     .menubar {
