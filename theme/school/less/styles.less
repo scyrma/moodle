@@ -327,6 +327,10 @@ img {
     cursor: pointer;
 }
 
+.blogsearchform {
+    position: relative;
+}
+
 /* 2 - END of Tags styles and General styles ---------------------------------------------------------- */
 /* 3 - BEGIN of header ---------------------------------------------------------- */
 
@@ -1254,6 +1258,39 @@ body .btn-see-all {
 	line-height: 20px;
 	text-transform: uppercase;
 	font-weight: 400;
+}
+
+.jschooser {
+    .choosercontainer {
+        #chooseform {
+            .alloptions {
+                background-color: #ccc;
+                .box-shadow(none);
+
+                background:
+                    /* Shadow covers */
+                    linear-gradient(white 30%, rgba(255,255,255,0)),
+                    linear-gradient(rgba(255,255,255,0), white 70%) 0 100%,
+
+                    /* Shadows */
+                    radial-gradient(50% 0, farthest-side, rgba(0,0,0,.2), rgba(0,0,0,0)),
+                    radial-gradient(50% 100%,farthest-side, rgba(0,0,0,.2), rgba(0,0,0,0)) 0 100%;
+                background:
+                    /* Shadow covers */
+                    linear-gradient(white 30%, rgba(255,255,255,0)),
+                    linear-gradient(rgba(255,255,255,0), white 70%) 0 100%,
+
+                    /* Shadows */
+                    radial-gradient(farthest-side at 50% 0, rgba(0,0,0,.2), rgba(0,0,0,0)),
+                    radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,.2), rgba(0,0,0,0)) 0 100%;
+                background-repeat: no-repeat;
+                background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+
+                /* Opera doesn't support this in the shorthand */
+                background-attachment: local, local, scroll, scroll;
+            }
+        }
+    }
 }
 
 /* 4 - END of .content ---------------------------------------------------------- */
@@ -2408,12 +2445,6 @@ header.navbar {
         margin-bottom: 0;
         .border-top-right-radius(0);
         .border-bottom-right-radius(0);
-    }
-}
-
-#page, #dockeditempanel {
-    .adminsearchform input[type="submit"]:hover {
-        background-color: rgba(255, 255, 255, 0.2);
     }
 }
 
@@ -5846,6 +5877,7 @@ body.has_dock {
 #page #livelogs-pause-button,
 #page #notice .singlebutton + .singlebutton input,
 #dockeditempanel .adminsearchform input[type="submit"],
+#dockeditempanel .blogsearchform input[type="submit"],
 .forumpost .options .commands a,
 #tag-search-box #searchform_button  {
     background-color: #4f4f4f;
@@ -5858,10 +5890,16 @@ body.has_dock {
     .block_blog_menu .blogsearchform input[type="submit"],
     #tag-search-box #searchform_button  {
         background-color: transparent;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
     }
 
-    .adminsearchform input[type="submit"] {
-        height: 36px;
+    .adminsearchform, .blogsearchform {
+        input[type="submit"] {
+            height: 36px;
+        }
     }
 }
 
@@ -6284,6 +6322,20 @@ footer {
     }
 }
 
+}
+
+@media screen and (min-width: 980px) and (max-width: 1199px) {
+    .chooserdialogue-course-modchooser {
+        /* This needs !important to override the inline JS styles */
+        width: 740px !important;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .chooserdialogue-course-modchooser {
+        /* This needs !important to override the inline JS styles */
+        width: 840px !important;
+    }
 }
 
 @media screen and (min-width: 1600px) {
