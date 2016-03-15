@@ -21,9 +21,9 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
-$settings = null;
+
 if (is_siteadmin()) {
-    $ADMIN->add('themes', new admin_category('theme_school', get_string('configtitle', 'theme_school')));
+    $settings = new theme_school_admin_settingpage_tabs('theme_school', get_string('configtitle', 'theme_school'));
     $temp = new admin_settingpage('theme_school_general',  get_string('generalsettings', 'theme_school'));
 
     $name = 'theme_school/logoorsitename';
@@ -224,7 +224,7 @@ if (is_siteadmin()) {
     $setting = new admin_setting_configtext($name, $title, $description, $default);
     $temp->add($setting);
 
-    $ADMIN->add('theme_school', $temp);
+    $settings->add($temp);
 
 
     //frontpage temp
@@ -501,7 +501,7 @@ if (is_siteadmin()) {
     $setting = new admin_setting_configtextarea($name, $title, $description, $default);
     $temp->add($setting);
 
-    $ADMIN->add('theme_school', $temp);
+    $settings->add($temp);
 
     $temp = new admin_settingpage('theme_school_colors',  get_string('colorsettings', 'theme_school'));
 
@@ -604,7 +604,7 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    $ADMIN->add('theme_school', $temp);
+    $settings->add($temp);
 
     /*font*/
 
@@ -744,5 +744,5 @@ if (is_siteadmin()) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    $ADMIN->add('theme_school', $temp);
+    $settings->add($temp);
 }
