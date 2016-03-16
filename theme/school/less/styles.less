@@ -194,8 +194,8 @@ img {
 }
 
 .clear {
-    &:before,
-    &:after {
+    &::before,
+    &::after {
     	content: "";
     	display: block;
     	clear: both;
@@ -626,19 +626,19 @@ img {
         .da-arrows {
             .fonticon();
             font-size: 20px;
-            .da-arrows-prev:after {
+            .da-arrows-prev::after {
                 background: none;
                 content: "\f137";
             }
-            .da-arrows-next:after {
+            .da-arrows-next::after {
                 background: none;
                 content: "\f138";
             }
             span {
-                &:hover:after {
+                &:hover::after {
                     box-shadow: none;
                 }
-                &:after {
+                &::after {
                     box-shadow: none;
                 }
             }
@@ -741,7 +741,7 @@ img {
                 background-color: @primaryColour;
             }
 
-            .left:before {
+            .left::before {
                 content: "";
                 height: 30px;
                 width: 30px;
@@ -775,7 +775,7 @@ img {
                 background-color: @primaryColour;
             }
 
-            .right:before {
+            .right::before {
                 content: "";
                 height: 30px;
                 width: 30px;
@@ -910,7 +910,7 @@ body .btn-see-all {
 	font-family: 'Raleway';
 	text-align: center;
 	margin: 0 -1% 0 -1%;
-    :after {
+    ::after {
     	content: "";
     	display: block;
     	clear: both;
@@ -1200,7 +1200,7 @@ body .btn-see-all {
         border-radius: 3px;
         overflow: hidden;
         box-shadow: 1px 1px 1px 0px #939393;
-        &:after {
+        &::after {
             content: "";
             display: block;
             clear: both;
@@ -1448,7 +1448,7 @@ footer {
             padding: 0 0 0;
             position: relative;
         }
-        a:after {
+        a::after {
             content: none;
             display: block;
             width: 0;
@@ -1702,8 +1702,8 @@ header.navbar {
                     padding: 10px;
                     box-sizing: border-box;
                 }
-                &:before,
-                &:after {
+                &::before,
+                &::after {
                     .fonticon();
                     z-index: -1;
                     width: 21px;
@@ -1715,11 +1715,11 @@ header.navbar {
                     .border-radius(3px);
                 }
 
-                &:before {
+                &::before {
                     content: "\f068";
                 }
 
-                &:after {
+                &::after {
                     content: "\f053";
                     left: 39px;
                 }
@@ -1728,7 +1728,7 @@ header.navbar {
 
         &.hidden {
             .header {
-                .block_action:before {
+                .block_action::before {
                     content: "\f067";
                 }
             }
@@ -1785,7 +1785,7 @@ header.navbar {
                 position: relative;
                 height: 20px;
                 display: inline-block;
-                &:before {
+                &::before {
                     .fonticon();
                     height: 20px;
                     position: absolute;
@@ -1800,7 +1800,7 @@ header.navbar {
             span[data-draggroups="block"],
             .editing_move.menu-action {
                 width: 20px;
-                &:before {
+                &::before {
                     content: "\f047";
                     width: 20px;
                     cursor: move;
@@ -1808,7 +1808,7 @@ header.navbar {
             }
             .toggle-display {
                 width: 30px;
-                &:before {
+                &::before {
                     content: "\f013 \f0d7";
                     width: 30px;
                     letter-spacing: 3px;
@@ -1822,14 +1822,14 @@ header.navbar {
     .block {
         .block-control-actions {
             .menubar {
-                span[data-draggroups="block"]:before {
+                span[data-draggroups="block"]::before {
                     color: @mainFontColour;
                 }
             }
 
             .toggle-display,
             .editing_move.menu-action {
-                &:before {
+                &::before {
                     color: @mainFontColour;
                 }
             }
@@ -1843,11 +1843,11 @@ header.navbar {
             .block_action {
                 float: left;
 
-                &:before {
+                &::before {
                     left: 39px;
                 }
 
-                &:after {
+                &::after {
                     content: "\f054";
                     left: 15px;
                 }
@@ -1858,7 +1858,7 @@ header.navbar {
     .dockeditempanel_hd {
         .commands {
             .moveto {
-                &:before {
+                &::before {
                     content: "\f053";
                 }
             }
@@ -1868,13 +1868,13 @@ header.navbar {
     .block {
         .block-control-actions {
             .menubar {
-                span[data-draggroups="block"]:before {
+                span[data-draggroups="block"]::before {
                     text-align: right;
                 }
             }
 
             .toggle-display {
-                &:before {
+                &::before {
                     text-align: right;
                 }
             }
@@ -1959,7 +1959,7 @@ header.navbar {
         .increase-sections,
         .reduce-sections {
             position: relative;
-            &:after {
+            &::after {
                 .fonticon();
                 width: 21px;
                 height: 21px;
@@ -1973,12 +1973,12 @@ header.navbar {
             }
         }
         .increase-sections {
-            &:after {
+            &::after {
                 content: "\f067";
             }
         }
         .reduce-sections {
-            &:after {
+            &::after {
                 content: "\f068";
             }
         }
@@ -2030,7 +2030,7 @@ header.navbar {
             span[data-draggroups="block"],
             .editing_move.menu-action,
             .toggle-display {
-                &:before {
+                &::before {
                     color: #fff;
                 }
             }
@@ -2156,7 +2156,7 @@ header.navbar {
     	font-size: 0;
     	display: inline-block;
 
-        &:before {
+        &::before {
             .fonticon();
             content: "\f105";
             font-size: 20px;
@@ -2201,7 +2201,7 @@ header.navbar {
         background-color: darken(#efefef, 30%);
     }
     .btn-view-list {
-        &:before {
+        &::before {
         	content: "";
         	position: absolute;
         	display: block;
@@ -2209,7 +2209,7 @@ header.navbar {
         	height: 0;
         	opacity: 0;
         }
-        &:after {
+        &::after {
         	content: "";
         	position: absolute;
         	display: block;
@@ -2222,7 +2222,7 @@ header.navbar {
         }
     }
     .btn-view-grid {
-        &:before {
+        &::before {
             content: "";
             position: absolute;
             display: block;
@@ -2230,7 +2230,7 @@ header.navbar {
             height: 0;
             opacity: 0;
         }
-        &:after {
+        &::after {
             content: "";
             position: absolute;
             display: block;
@@ -2314,12 +2314,12 @@ header.navbar {
     z-index: 2;
 }
 
-.adminsearchform div:after,
-.block_blog_menu .blogsearchform div:after,
-#tag-search-box #searchform_button:before,
-#dockeditempanel #searchform_button:before,
-#block-region-side-pre #searchform_button:before,
-#block-region-side-post #searchform_button:before {
+.adminsearchform div::after,
+.block_blog_menu .blogsearchform div::after,
+#tag-search-box #searchform_button::before,
+#dockeditempanel #searchform_button::before,
+#block-region-side-pre #searchform_button::before,
+#block-region-side-post #searchform_button::before {
     .fonticon();
     content: "\f002";
     font-size: inherit;
@@ -2412,7 +2412,7 @@ header.navbar {
 .btn-show-more-wr {
 	position: relative;
 	margin-top: 15px;
-    &:after {
+    &::after {
     	content: "";
     	display: block;
     	width: 100%;
@@ -2999,7 +2999,7 @@ a:hover,
 .forumpost {
     .header {
 	   margin: 0 0 0;
-        &.clearfix:after {
+        &.clearfix::after {
     	   content: none;
         }
     }
@@ -3212,7 +3212,7 @@ body.login-pagebg {
     	padding: 0!important;
     	margin: 0!important;
     	/*text-align: center;*/
-        &:after {
+        &::after {
         	content: "";
         	display: block;
         	clear: both;
@@ -3297,7 +3297,7 @@ body.login-pagebg {
     	padding: 15px 0 0;
     }
     input + label {
-        &:before {
+        &::before {
         	content: "";
         	display: inline-block;
         	width: 21px;
@@ -3308,7 +3308,7 @@ body.login-pagebg {
             line-height: 21px;
             border-radius: 3px;
         }
-        &:after {
+        &::after {
         	content: "";
         	display: inline-block;
         	position: absolute;
@@ -3317,7 +3317,7 @@ body.login-pagebg {
         	vertical-align: middle;
         }
     }
-    input:checked + label:before {
+    input:checked + label::before {
         content: '\2714';
     }
 }
@@ -3418,11 +3418,11 @@ body.login-pagebg {
                     display: inline-block;
                     position: relative;
 
-                    &:hover:after {
+                    &:hover::after {
                         opacity: 0.7;
                     }
 
-                    &:after {
+                    &::after {
                         .fonticon();
                         content: "\f078";
                         height: 34px;
@@ -3569,7 +3569,7 @@ div[class*="span"] {
             padding-left: 20px;
             margin-right: 0;
 
-            .logo-wr:before {
+            .logo-wr::before {
                 right: 0;
                 left: auto;
             }
@@ -3666,7 +3666,7 @@ div[class*="span"] {
             left: -15px;
             width: 15px;
             height: 15px;
-            &:before {
+            &::before {
                 height: 15px;
                 width: 15px;
             }
@@ -3682,7 +3682,7 @@ div[class*="span"] {
             right: 12px;
             width: 15px;
             height: 15px;
-            &:before {
+            &::before {
                 height: 15px;
                 width: 15px;
                 right: -4px;
@@ -4262,7 +4262,7 @@ body {
     	height: 80px;
     	max-width: 100%;
         width: 100%;
-        &:before {
+        &::before {
             display: none;
         }
     }
@@ -4895,23 +4895,23 @@ footer {
         &.list-style-3 li,
         &.list-style-4 li {
             list-style: none;
-            &:before {
+            &::before {
             	display: inline-block;
                 margin: 0 0 0 -18px;
             	font-family: FontAwesome;
                 padding-right: 6px;
             }
         }
-        &.list-style-1 li:before {
+        &.list-style-1 li::before {
             content: "\f061";
         }
-        &.list-style-2 li:before {
+        &.list-style-2 li::before {
             content: "\f00c";
         }
-        &.list-style-3 li:before {
+        &.list-style-3 li::before {
             content: "\f105";
         }
-        &.list-style-4 li:before {
+        &.list-style-4 li::before {
             content: "\f138";
         }
     }
@@ -4921,7 +4921,7 @@ footer {
         margin-bottom: 20px;
         padding: 10px 0 0 15px;
         border-radius: 3px;
-        &:before {
+        &::before {
             color: #bbb;
             content: "\f10e";
             float: left;
@@ -5237,8 +5237,8 @@ form#displayoptions {
 .block ul li a,
 .block ul li a:hover,
 .block ul li a.active,
-.dropdown-menu a:before,
-.dropdown-menu a:hover:before,
+.dropdown-menu a::before,
+.dropdown-menu a:hover::before,
 .left-menu-open,
 .left-menu-close  {
 	transition: all 0.4s ease 0s;
@@ -5512,11 +5512,11 @@ input[type="color"]:focus,
             }
 
             div {
-                &:hover:after {
+                &:hover::after {
                     opacity: 0.8;
                 }
 
-                &:after {
+                &::after {
                     .fonticon();
                     content: "\f078";
                     height: 34px;
@@ -5980,7 +5980,7 @@ footer a:focus,
     .logo-img {
         background: #16a085;
     }
-    .logo-wr:before {
+    .logo-wr::before {
         content: "";
         font-size: 0;
         height: 0;
@@ -6393,7 +6393,7 @@ footer {
             }
         }
     }
-    #region-main .langmenu div:after {
+    #region-main .langmenu div::after {
         background: none;
     }
     .adminsearchform input[type="submit"] {
@@ -6433,7 +6433,7 @@ footer {
     .dropdown.open .dropdown-menu li {
         text-align: right;
     }
-    .rememberpass input + label:before {
+    .rememberpass input + label::before {
         margin: 0 10px;
     }
     .moodle-dialogue-hd,
@@ -6478,7 +6478,7 @@ footer {
         }
 
         .logo-wr {
-            &:before {
+            &::before {
                 border-right: 315px solid @secondaryColour;
                 border-left: 0;
             }
@@ -6886,7 +6886,7 @@ header.navbar,
 }
 
 
-.loginpanel h2:before,
+.loginpanel h2::before,
 a.click {
   background: @secondaryColour no-repeat scroll center center;
 }
@@ -6945,7 +6945,7 @@ footer {
 }
 
 
-.welcome-block-slider .da-dots span.da-dots-current:after {
+.welcome-block-slider .da-dots span.da-dots-current::after {
   background: @secondaryColour;
 }
 
@@ -7219,7 +7219,7 @@ footer {
             &.viewmore {
                 color: @mainLinkColour;
             }
-            &.viewmore:after {
+            &.viewmore::after {
                 content: ">";
                 margin-left: 10px;
             }
