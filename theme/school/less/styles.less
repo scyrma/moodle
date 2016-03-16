@@ -1688,7 +1688,6 @@ header.navbar {
                 float: right;
                 position: relative;
                 z-index: 1;
-                border-color: @primaryFontColour;
                 min-width: 47px;
 
                 img, input {
@@ -1848,7 +1847,7 @@ header.navbar {
                     left: 0;
                     line-height: 20px;
                     cursor: move;
-                    color: @primaryFontColour;
+                    color: @primaryLinkColour;
                 }
 
                 img {
@@ -1876,7 +1875,7 @@ header.navbar {
                     position: absolute;
                     left: 0;
                     line-height: 20px;
-                    color: @primaryFontColour;
+                    color: @primaryLinkColour;
                     letter-spacing: 3px;
                 }
 
@@ -2113,6 +2112,17 @@ header.navbar {
     	color: #FFFFFF;
         h2 {
             color: #FFFFFF;
+        }
+    }
+    .block-control-actions {
+        .menubar {
+            span[data-draggroups="block"],
+            .editing_move.menu-action,
+            .toggle-display {
+                &:before {
+                    color: #fff;
+                }
+            }
         }
     }
     .active .header {
