@@ -624,14 +624,8 @@ img {
 
     .da-slider {
         .da-arrows {
-            display: inline-block;
-            font: normal normal normal 14px/1 FontAwesome;
+            .fonticon();
             font-size: 20px;
-            text-align: center;
-            text-rendering: auto;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-
             .da-arrows-prev:after {
                 background: none;
                 content: "\f137";
@@ -1708,19 +1702,12 @@ header.navbar {
                     padding: 10px;
                     box-sizing: border-box;
                 }
-
-                &:before {
-                    content: "\f068";
-                    display: inline-block;
-                    font: normal normal normal 14px/1 FontAwesome;
-                    text-rendering: auto;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
-                    box-sizing: border-box;
+                &:before,
+                &:after {
+                    .fonticon();
                     z-index: -1;
                     width: 21px;
                     height: 21px;
-                    text-align: center;
                     position: absolute;
                     margin-left: 2px;
                     border: 1px solid;
@@ -1728,24 +1715,13 @@ header.navbar {
                     .border-radius(3px);
                 }
 
+                &:before {
+                    content: "\f068";
+                }
+
                 &:after {
                     content: "\f053";
-                    display: inline-block;
-                    font: normal normal normal 14px/1 FontAwesome;
-                    text-rendering: auto;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
-                    box-sizing: border-box;
-                    z-index: -1;
-                    width: 21px;
-                    height: 21px;
-                    text-align: center;
-                    position: absolute;
                     left: 39px;
-                    margin-left: 2px;
-                    border: 1px solid;
-                    line-height: 21px;
-                    .border-radius(3px);
                 }
             }
         }
@@ -1761,23 +1737,16 @@ header.navbar {
 
     .dockeditempanel_hd {
         .commands {
-            .moveto {
+            .moveto,
+            .hidepanelicon {
                 position: relative;
                 height: 21px;
                 width: 21px;
                 display: inline-block;
-
                 &::before {
-                    content: "\f054";
-                    display: inline-block;
-                    font: normal normal normal 14px/1 FontAwesome;
-                    text-rendering: auto;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
-                    box-sizing: border-box;
+                    .fonticon();
                     width: 21px;
                     height: 21px;
-                    text-align: center;
                     position: absolute;
                     left: 0;
                     margin-left: 2px;
@@ -1786,48 +1755,23 @@ header.navbar {
                     line-height: 21px;
                     color: @primaryLinkColour;
                 }
-
                 &:hover::before {
                     opacity: 0.8;
                 }
-
                 img {
                     display: none;
                 }
             }
-
+            .moveto {
+                &::before {
+                    content: "\f054";
+                    line-height: 21px;
+                }
+            }
             .hidepanelicon {
-                position: relative;
-                height: 21px;
-                width: 21px;
-                display: inline-block;
-
                 &::before {
                     content: "\f00d";
-                    display: inline-block;
-                    font: normal normal normal 14px/1 FontAwesome;
-                    text-rendering: auto;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
-                    box-sizing: border-box;
-                    width: 21px;
-                    height: 21px;
-                    text-align: center;
-                    position: absolute;
-                    left: 0;
-                    margin-left: 2px;
-                    border: 1px solid;
-                    border-radius: 3px;
                     line-height: 19px;
-                    color: @primaryLinkColour;
-                }
-
-                &:hover::before {
-                    opacity: 0.8;
-                }
-
-                img {
-                    display: none;
                 }
             }
         }
@@ -1836,61 +1780,38 @@ header.navbar {
     .block-control-actions {
         .menubar {
             span[data-draggroups="block"],
-            .editing_move.menu-action {
+            .editing_move.menu-action,
+            .toggle-display {
                 position: relative;
-                width: 20px;
                 height: 20px;
                 display: inline-block;
-
                 &:before {
-                    content: "\f047";
-                    display: inline-block;
-                    font: normal normal normal 14px/1 FontAwesome;
-                    text-rendering: auto;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
-                    box-sizing: border-box;
-                    width: 20px;
+                    .fonticon();
                     height: 20px;
-                    text-align: left;
                     position: absolute;
                     left: 0;
                     line-height: 20px;
-                    cursor: move;
                     color: @primaryLinkColour;
                 }
-
                 img {
                     display: none;
                 }
             }
-
+            span[data-draggroups="block"],
+            .editing_move.menu-action {
+                width: 20px;
+                &:before {
+                    content: "\f047";
+                    width: 20px;
+                    cursor: move;
+                }
+            }
             .toggle-display {
-                position: relative;
                 width: 30px;
-                height: 20px;
-                display: inline-block;
-
                 &:before {
                     content: "\f013 \f0d7";
-                    display: inline-block;
-                    font: normal normal normal 14px/1 FontAwesome;
-                    text-rendering: auto;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
-                    box-sizing: border-box;
                     width: 30px;
-                    height: 20px;
-                    text-align: center;
-                    position: absolute;
-                    left: 0;
-                    line-height: 20px;
-                    color: @primaryLinkColour;
                     letter-spacing: 3px;
-                }
-
-                img {
-                    display: none;
                 }
             }
         }
@@ -2035,20 +1956,13 @@ header.navbar {
             }
         }
 
-        .increase-sections {
+        .increase-sections,
+        .reduce-sections {
             position: relative;
-
             &:after {
-                content: "\f067";
-                display: inline-block;
-                font: normal normal normal 14px/1 FontAwesome;
-                text-rendering: auto;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-                box-sizing: border-box;
+                .fonticon();
                 width: 21px;
                 height: 21px;
-                text-align: center;
                 position: absolute;
                 left: 0;
                 top: 0;
@@ -2058,27 +1972,14 @@ header.navbar {
                 .border-radius(3px);
             }
         }
+        .increase-sections {
+            &:after {
+                content: "\f067";
+            }
+        }
         .reduce-sections {
-            position: relative;
-
             &:after {
                 content: "\f068";
-                display: inline-block;
-                font: normal normal normal 14px/1 FontAwesome;
-                text-rendering: auto;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-                box-sizing: border-box;
-                width: 21px;
-                height: 21px;
-                text-align: center;
-                position: absolute;
-                left: 0;
-                top: 0;
-                border: 1px solid;
-                line-height: 21px;
-                z-index: -1;
-                .border-radius(3px);
             }
         }
     }
@@ -2256,12 +2157,8 @@ header.navbar {
     	display: inline-block;
 
         &:before {
+            .fonticon();
             content: "\f105";
-            font: normal normal normal 14px/1 FontAwesome;
-            display: inline-block;
-            text-rendering: auto;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
             font-size: 20px;
             line-height: 24px;
         }
@@ -2423,13 +2320,9 @@ header.navbar {
 #dockeditempanel #searchform_button:before,
 #block-region-side-pre #searchform_button:before,
 #block-region-side-post #searchform_button:before {
+    .fonticon();
     content: "\f002";
-    font: normal normal normal 14px/1 FontAwesome;
-    display: inline-block;
     font-size: inherit;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 	border-radius: 0 4px 4px 0;
     position: absolute;
     top: 0;
@@ -2441,8 +2334,6 @@ header.navbar {
     width: 38px;
     background-color: #4f4f4f;
     z-index: 1;
-    box-sizing: border-box;
-    text-align: center;
 }
 
 .adminsearchform input[type="submit"]:focus,
@@ -3532,6 +3423,7 @@ body.login-pagebg {
                     }
 
                     &:after {
+                        .fonticon();
                         content: "\f078";
                         height: 34px;
                         pointer-events: none;
@@ -3540,13 +3432,6 @@ body.login-pagebg {
                         right: 2px;
                         height: 26px;
                         width: 26px;
-                        display: inline-block;
-                        font: normal normal normal 14px/1 FontAwesome;
-                        text-rendering: auto;
-                        -webkit-font-smoothing: antialiased;
-                        -moz-osx-font-smoothing: grayscale;
-                        box-sizing: border-box;
-                        text-align: center;
                         line-height: 26px;
                         background-color: #fff;
                     }
@@ -5632,6 +5517,7 @@ input[type="color"]:focus,
                 }
 
                 &:after {
+                    .fonticon();
                     content: "\f078";
                     height: 34px;
                     pointer-events: none;
@@ -5639,13 +5525,6 @@ input[type="color"]:focus,
                     top: 2px;
                     right: 2px;
                     width: 34px;
-                    display: inline-block;
-                    font: normal normal normal 14px/1 FontAwesome;
-                    text-rendering: auto;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
-                    box-sizing: border-box;
-                    text-align: center;
                     line-height: 34px;
                     background-color: #fff;
                 }
