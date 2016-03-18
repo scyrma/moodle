@@ -360,7 +360,7 @@ img {
     	z-index: 2;
     	max-width: 24%;
     	margin: 0;
-    	padding: 0;
+    	padding: 0 20px;
     }
     .mobile-top-head {
         .navbar {
@@ -401,6 +401,10 @@ img {
 	text-align: center;
 	line-height: 80px;
 	float: left;
+    padding: 0 20px;
+    .logo-img h1 {
+        height: 80px;
+    }
 }
 
 .landing-page {
@@ -408,19 +412,25 @@ img {
     	box-shadow: none;
     	float: left;
         margin-top: 20px;
-        text-align: center;
         box-sizing: border-box;
+        h1 {
+            padding: 0;
+            line-height: 36px;
+            margin-bottom: 20px;
+            margin-top: 20px;
+            margin-right: 20px;
+            max-height: 76px;
+        }
     }
     .logo-img.text {
-        padding: 0;
     	min-width: 250px;
     	margin-left: 0;
     	box-sizing: border-box;
     }
     .logo-img.icontext {
-        padding: 0;
+        max-height: 140px;
+        overflow: hidden;
     	min-width: 250px;
-    	margin-left: 10px;
     }
 }
 
@@ -428,9 +438,9 @@ img {
     h1 {
     	margin: 0;
     	font-weight: 600;
-        line-height: 40px;
+        line-height: 75px;
         font-size: 32px;
-        padding: 20px;
+        overflow: hidden;
     }
     &:hover {
     	text-decoration: none;
@@ -449,13 +459,10 @@ img {
 
 .logo-img {
     .logoicon {
-	   float: left;
         img {
-        	float: left;
+            float: left;
+            margin-right: 10px;
         }
-    }
-    span {
-        float: left;
     }
     img {
     	max-height: 78px;
@@ -4185,10 +4192,15 @@ body {
             .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
         }
     }
-    .logo-img.text,
-    .logo-img.icontext {
-        text-align: left;
-        padding-left: 30px;
+    .logo-img {
+        &.text,
+        &.icontext {
+            text-align: left;
+        }
+        h1 {
+            margin: 0;
+            line-height: 75px;
+        }
     }
     .mobile-top-head {
         height: 160px;
@@ -4229,10 +4241,9 @@ body {
         }
 
         .logo-img {
-            &.text, &.icontext {
+            &.text,
+            &.icontext {
                 text-align: right;
-                padding-left: 0;
-                padding-right: 30px;
             }
         }
     }
@@ -4288,13 +4299,15 @@ body {
     	height: 80px;
     	max-width: 100%;
         width: 100%;
+        padding-left: 0;
+        padding-right: 0;
         &::before {
             display: none;
         }
     }
     .logo-img {
-    	margin: 0 0 0 25px;
-    	padding: 0;
+    	padding: 0 20px;
+        margin: 0;
     	line-height: 80px;
     }
     .usermenu {
@@ -5341,7 +5354,7 @@ form#displayoptions {
 /*-- menu to arrow left --*/
 
 .menu-toggle {
-	background: none!important;
+	background: none;
 	border-radius: 0;
 	float: left;
 	display: none;
@@ -6160,6 +6173,7 @@ footer {
     .side-pre-menu {
         float: right;
         margin-top: -80px;
+        background-color: @secondaryColour;
     	border-left: solid 1px rgba(0, 0, 0, .1);
     	width: 82px;
     }
@@ -6170,7 +6184,6 @@ footer {
     .logo-wr {
         text-align: left;
         width: 100%;
-    	padding-left: 20px;
     }
     .nav-collapse{
         &.collapse {
@@ -6523,9 +6536,21 @@ footer {
 
         .logo-img {
             float: right;
+            h1 {
+                margin-right: 0;
+                margin-left: 20px;
+            }
         }
     }
-
+    .logo-img {     // Course page
+        .logoicon {
+            img {
+                float: right;
+                margin-right: 0;
+                margin-left: 10px;
+            }
+        }
+    }
     .course-item {
         .btn-plus {
             .plus-container {
