@@ -1562,6 +1562,7 @@ header.navbar {
 
 }
 
+#page-login-index #page,
 #page.container-fluid {
 	padding: 80px 0 0 0;
 	max-width: 100%;
@@ -3411,20 +3412,21 @@ body.login-pagebg {
 
 .login-logo {
     .logo-wr {
-        width: 280px;
+        max-width: 554px;
+        min-width: 280px;
+        padding: 20px;
         margin-left: auto;
         margin-right: auto;
         margin-bottom: -1px;
         background-color: @secondaryColour;
-        text-align: center;
-
+        box-sizing: border-box;
         a {
-            * {
-                opacity: 0.5;
-
-                &:hover {
-                    opacity: 1;
-                }
+            &:hover {
+                opacity: .8;
+            }
+            h1 {
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
         }
     }
@@ -4385,7 +4387,7 @@ footer {
     }
 }
 #region-main {
-	padding: 18px 15px 40px 90px;
+	padding: 18px 15px 40px;
 	min-height: 500px;
 }
 #block-region-side-post {
@@ -4529,6 +4531,9 @@ body {
 }
 
 #page-login-index {
+    #page {
+        padding: 0;
+    }
     #region-main {
         padding: 0;
     }
@@ -4541,6 +4546,8 @@ body {
 
 .login-logo .logo-wr {
     width: 100%;
+    min-width: 100%;
+    max-width: 100%;
 }
 
 .loginpanel {
@@ -4869,7 +4876,7 @@ footer {
 }
 .loginbox {
 	/*padding: 50px 0 0;*/
-	margin: 10px 0 0;
+	margin: 0;
     h2 {
     	padding: 30px 0 16px;
     }
