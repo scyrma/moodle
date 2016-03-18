@@ -6177,9 +6177,15 @@ footer {
     	border-left: solid 1px rgba(0, 0, 0, .1);
     	width: 82px;
     }
-    .menu-toggle span {
-        margin-left: 4px;
-        margin-right: 4px;
+    .menu-toggle {
+        &:hover {
+            opacity: 1;
+            background-color: lighten(@secondaryColour, 5%);
+        }
+        span {
+            margin-left: 4px;
+            margin-right: 4px;
+        }
     }
     .logo-wr {
         text-align: left;
