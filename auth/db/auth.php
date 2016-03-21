@@ -654,6 +654,9 @@ class auth_plugin_db extends auth_plugin_base {
      * @return void
      */
      function validate_form($form, &$err) {
+         // START MOODLECLOUD HACK.
+         return;
+         // START MOODLECLOUD HACK.
         if ($form->passtype === 'internal') {
             $this->config->changepasswordurl = '';
             set_config('changepasswordurl', '', 'auth/db');
@@ -748,6 +751,9 @@ class auth_plugin_db extends auth_plugin_base {
      * @return void
      */
     function config_form($config, $err, $user_fields) {
+         // START MOODLECLOUD HACK.
+         return;
+         // END MOODLECLOUD HACK.
         include 'config.html';
     }
 
@@ -758,6 +764,9 @@ class auth_plugin_db extends auth_plugin_base {
      * @return bool always true or exception
      */
     function process_config($config) {
+         // START MOODLECLOUD HACK.
+         return true;
+         // END MOODLECLOUD HACK.
         // set to defaults if undefined
         if (!isset($config->host)) {
             $config->host = 'localhost';
