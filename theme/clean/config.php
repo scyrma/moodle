@@ -30,6 +30,12 @@
 
 $THEME->name = 'clean';
 
+// START MOODLECLOUD HACK.
+// We don't want the base theme to be shown on the theme selection screen, by setting
+// this to true it will only be shown if theme designer mode is switched on.
+$THEME->hidefromselector = true;
+// END MOODLECLOUD HACK.
+
 /////////////////////////////////
 // The only thing you need to change in this file when copying it to
 // create a new theme is the name above. You also need to change the name
