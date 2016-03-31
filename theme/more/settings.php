@@ -33,7 +33,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($ADMIN->fulltree) {
+// START MOODLECLOUD HACK.
+if ($ADMIN->fulltree && get_config('theme_clean', 'hidefromselector')) {
+// END MOODLECLOUD HACK.
 
     // @textColor setting.
     $name = 'theme_more/textcolor';
@@ -182,4 +184,8 @@ if ($ADMIN->fulltree) {
     $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $settings->add($setting);
+// START MOODLECLOUD HACK.
+} else {
+    $settings = null;
+// END MOODLECLOUD HACK.
 }
