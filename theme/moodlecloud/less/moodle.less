@@ -17,3 +17,29 @@
 .nav-header {
     text-shadow: none;
 }
+
+#portal-link {
+    position: fixed;
+    top: 50%;
+    right: -29px;
+    background-color: #f98012;
+    color: #fff;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 15px;
+    line-height: 30px;
+    text-decoration: none;
+    .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+    .rotate(270deg);
+    .opacity(80);
+    .border-radius(5px 5px 0 0);
+
+    img {
+        height: 20px;
+        vertical-align: text-bottom;
+    }
+
+    &:hover {
+        .opacity(100);
+    }
+}

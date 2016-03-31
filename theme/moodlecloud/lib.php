@@ -258,3 +258,21 @@ function theme_moodlecloud_get_ad($context) {
         }
     }
 }
+
+function theme_moodlecloud_portal_link() {
+    global $USER, $OUTPUT;
+
+    if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
+        $url = new moodle_url('/auth/moodlecloud/portal.php');
+        $title = get_string('cloudportallink', 'theme_moodlecloud');
+        $alt = get_string('cloudlogo', 'theme_moodlecloud');
+        $text = get_string('yourportal', 'theme_moodlecloud');
+        $imageurl = $OUTPUT->pix_url('moodlecloud-logo-inverted', 'theme');
+        $imghtml = html_writer::img($imageurl, $alt);
+
+        return html_writer::link($url->out(), sprintf("%s %s", $imghtml, $text),
+            array('id' => 'portal-link', 'title' => $title));
+    } else {
+        return '';
+    }
+}

@@ -104,6 +104,8 @@ echo $OUTPUT->doctype() ?>
 </div>
 </div>
 
+<?php echo theme_moodlecloud_portal_link() ?>
+
 <footer id="page-footer">
     <div id="course-footer"><?php echo $OUTPUT->course_footer(); ?></div>
     <p class="helplink">
