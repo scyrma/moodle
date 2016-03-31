@@ -47,6 +47,7 @@ if (is_siteadmin()) {
     $title = get_string('logo','theme_school');
     $description = get_string('logodesc', 'theme_school');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'logo');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     // Logo file setting.
@@ -54,6 +55,7 @@ if (is_siteadmin()) {
     $title = get_string('logoicon','theme_school');
     $description = get_string('logoicondesc', 'theme_school');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'icon');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     //custom favicon temp
@@ -61,6 +63,7 @@ if (is_siteadmin()) {
     $title = get_string('favicon', 'theme_school');
     $description = get_string('favicondesc', 'theme_school');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'faviconurl');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     // Custom CSS file.
@@ -272,6 +275,7 @@ if (is_siteadmin()) {
     $title = get_string('uploadimage', 'theme_school');
     $description = get_string('uploadimagedesc', 'theme_school');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'frontpagemediaimage');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     // video.
@@ -298,6 +302,7 @@ if (is_siteadmin()) {
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'uploadvideo', $itemid = 0, array(
     'accepted_types' => '.mp4'
     ));
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/slideinterval';
@@ -335,6 +340,7 @@ if (is_siteadmin()) {
         $title = get_string('slideimage', 'theme_school', $slidecounts);
         $description = get_string('slideimagedesc', 'theme_school', $slidecounts);
         $setting = new admin_setting_configstoredfile($name, $title, $description, 'slideimage'.$slidecounts);
+        $setting->set_updatedcallback('theme_reset_all_caches');
         $temp->add($setting);
 
         $name = 'theme_school/slidertitle'.$slidecounts;
@@ -425,6 +431,7 @@ if (is_siteadmin()) {
     $title = get_string('feedbackslideimage', 'theme_school', '1');
     $description = '';
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_1');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidename_1';
@@ -445,6 +452,7 @@ if (is_siteadmin()) {
     $title = get_string('feedbackslideimage', 'theme_school', '2');
     $description = '';
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_2');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidename_2';
@@ -465,6 +473,7 @@ if (is_siteadmin()) {
     $title = get_string('feedbackslideimage', 'theme_school', '3');
     $description = '';
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_3');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidename_3';
@@ -485,6 +494,7 @@ if (is_siteadmin()) {
     $title = get_string('feedbackslideimage', 'theme_school', '4');
     $description = '';
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'feedbackslideimage_4');
+    $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidename_4';
