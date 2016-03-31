@@ -211,19 +211,11 @@ if ($usernew = $userform->get_data()) {
         }
     }
 
-    $authplugin = get_auth_plugin($user->auth);
-
     $usernew->timemodified = time();
 
     // Description editor element may not exist!
     if (isset($usernew->description_editor) && isset($usernew->description_editor['format'])) {
         $usernew = file_postupdate_standard_editor($usernew, 'description', $editoroptions, $personalcontext, 'user', 'profile', 0);
-    }
-
-    // Pass a true old $user here.
-    if (!$authplugin->user_update($user, $usernew)) {
-        // Auth update failed.
-        print_error('cannotupdateprofile');
     }
 
     // Update user with new profile data.
