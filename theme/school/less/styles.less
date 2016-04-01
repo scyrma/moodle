@@ -352,13 +352,12 @@ img {
        padding-top: 20px;
     }
     .logo-wr {
-    	width: 348px;
     	height: 295px;
     	float: left;
     	background-size: 100%;
     	position: absolute;
     	z-index: 2;
-    	max-width: 24%;
+    	max-width: 400px;
     	margin: 0;
     	padding: 0 20px;
     }
@@ -402,6 +401,7 @@ img {
 	line-height: 80px;
 	float: left;
     padding: 0 20px;
+    max-width: 500px;
     .logo-img h1 {
         height: 80px;
     }
@@ -449,11 +449,23 @@ img {
 }
 
 .landing-page {
-    .logo-img img {
-	   max-width: 250px;
-    }
     .logo-img:hover {
     	opacity: 1;
+    }
+    .logo-img {
+        .logoicon {
+            img {
+                vertical-align: middle;
+                float: left;
+                margin-right: 10px;
+            }
+            & + span {
+                text-overflow: clip;
+                white-space: normal;
+                max-width: none;
+                display: inline;
+            }
+        }
     }
 }
 
@@ -462,6 +474,13 @@ img {
         img {
             float: left;
             margin-right: 10px;
+        }
+        & + span {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 400px;
+            display: block;
         }
     }
     img {
@@ -1531,7 +1550,7 @@ footer {
 }
 
 header.navbar {
-	min-height: 80px;
+	height: 80px;
 }
 
 #page-header .main-menu {
@@ -3945,9 +3964,6 @@ footer p {
 .col-2 #block-region-side-post .block-quizbar .content > div {
 	padding: 20px 0 9px 0;
 }
-.landing-page .logo-wr {
-	max-width: 25%;
-}
 .breadcrumb-button .singlebutton div input {
 	padding: 7px 14px;
 	margin-top: 2px;
@@ -4000,7 +4016,7 @@ body .btn-see-all {
 }
 
 header.navbar {
-    min-height: 160px;
+    height: 160px;
 }
 
 .welcome-block {
@@ -4492,10 +4508,6 @@ footer {
 
 .popular-courses .course-items {
     margin: -2% 0.75% 0 0.15%;
-}
-
-.landing-page .logo-wr {
-    max-width: 34%;
 }
 
 }
@@ -6134,6 +6146,7 @@ footer {
     position: fixed;
     top: 0;
     padding-top: 160px;
+    overflow-y: auto;
 }
 .dir-rtl #block-region-side-pre {
 	right: -500px;
@@ -6197,6 +6210,20 @@ footer {
     .logo-wr {
         text-align: left;
         width: 100%;
+        max-width: none;
+
+        .logoicon {
+            img {
+                float: left;
+                margin-right: 10px;
+            }
+            & + span {
+                text-overflow: clip;
+                white-space: normal;
+                max-width: none;
+                display: inline;
+            }
+        }
     }
     .nav-collapse{
         &.collapse {

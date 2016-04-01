@@ -320,6 +320,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $logo = $PAGE->theme->setting_file_url('logo', 'logo');
         $iconlogo = $PAGE->theme->setting_file_url('icon', 'icon');
         $configsetting = get_config('theme_school', 'logoorsitename');
+        $sitename = ($PAGE->pagelayout == 'frontpage') ? $SITE->fullname : $SITE->shortname;
 
         if ($configsetting === "logo" && !empty($logo)) {
             $context = array(
@@ -331,13 +332,13 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             $context = array(
                 'href' => $CFG->wwwroot,
                 'src' => $iconlogo,
-                'sitename' => $SITE->fullname
+                'sitename' => $sitename
             );
             return $this->render_from_template('theme_school/logo_icon', $context);
         } else {
             $context = array(
                 'href' => $CFG->wwwroot,
-                'sitename' => $SITE->fullname
+                'sitename' => $sitename
             );
             return $this->render_from_template('theme_school/logo_sitename', $context);
         }
