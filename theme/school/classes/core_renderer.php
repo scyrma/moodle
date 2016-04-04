@@ -733,4 +733,12 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
         return $this->render_from_template('theme_school/footer', $context);
     }
+
+    public function custom_menu($custommenuitems = '') {
+        global $CFG;
+
+        if (isloggedin() && !empty($CFG->custommenuitems)) {
+            return $this->render_from_template('theme_school/custom_menu', array('menuhtml' => parent::custom_menu()));
+        }
+    }
 }

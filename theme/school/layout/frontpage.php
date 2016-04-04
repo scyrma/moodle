@@ -37,20 +37,11 @@ echo $OUTPUT->doctype();?>
 	<body class="landing-page">
         <?php echo $OUTPUT->standard_top_of_body_html() ?>
 
-		<header><div class="mobile-top-head">
-            <?php echo $OUTPUT->logo(); ?>
-            <?php echo $OUTPUT->user_menu(); ?>
-			<?php if (!empty($CFG->custommenuitems)) { ?>
-			<div class="navbar">
-      			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        			<i class="fa fa-arrow-circle-down"></i>
-      			</a>
-      			<div class="nav-collapse collapse">
-      				<?php echo $OUTPUT->custom_menu(); ?>
-      			</div>
-      		<?php } ?>
-      		</div>
-
+        <header>
+            <div class="mobile-top-head">
+                <?php echo $OUTPUT->logo(); ?>
+                <?php echo $OUTPUT->user_menu(); ?>
+                <?php echo $OUTPUT->custom_menu() ?>
 			</div>
 
             <?php echo $OUTPUT->frontpage_header_content(); ?>
