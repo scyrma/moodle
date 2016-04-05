@@ -62,15 +62,17 @@
 
     var initNavBar = function() {
         $('html').click(function(e) {
-            $('.menulist').removeClass('usermenu-show active-drop-user-menuinner');
+            var userMenu = $(e.target).closest('.usermenu');
+
+            // If we didn't click in the user menu.
+            if (!userMenu.length) {
+                $('.menulist').removeClass('usermenu-show active-drop-user-menuinner');
+            }
         });
 
         $('.menulist').css('display', 'none');
         $('.usermenu').on("click",function(e) {
             $('.menulist').toggleClass('usermenu-show active-drop-user-menuinner');
-            $('.nav-collapse').removeClass('in').removeAttr('style');
-            $('.btn-navbar').addClass('collapsed');
-            e.stopPropagation();
         });
     };
 
