@@ -19,7 +19,6 @@ define([
         }
 
         userMenu.toggleClass('active-drop-user-menu');
-        e.stopPropagation();
     };
 
     var initCourseSlider = function() {
@@ -48,9 +47,14 @@ define([
     };
 
     var initNavBar = function() {
-        $('html').click(function() {
-            $('.menu').removeClass('usermenu-show');
-            $('.usermenu').removeClass('active-drop-user-menu');
+        $('html').click(function(e) {
+            var userMenu = $(e.target).closest('.usermenu');
+
+            // If we didn't click in the user menu then close it.
+            if (!userMenu.length) {
+                $('.menu').removeClass('usermenu-show');
+                $('.usermenu').removeClass('active-drop-user-menu');
+            }
         });
 
         $('.menu').css('display', 'none');
