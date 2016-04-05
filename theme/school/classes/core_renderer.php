@@ -110,6 +110,40 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         return array_map($serialiser, $categories);
     }
 
+    private function get_course_category_button_urls($coursecategory, $context) {
+        global $CFG, $DB;
+
+        $urls = array();
+        $issystemcontext = $context->contextlevel == CONTEXT_SYSTEM;
+
+        if (has_capability('moodle/course:create', $context)) {
+            $categoryid = $coursecategory->id;
+            if ($issystemcontext) {
+                $categoryid = $CFG->defaultrequestcategory;
+            }
+
+            $addcourseurl = new \moodle_url('/course/edit.php', array('category' => $categoryid, 'returnto' => 'category'));
+            $urls['addcourse'] = $addcourseurl->out();
+        }
+
+        if (!empty($CFG->enablecourserequests)) {
+            if (!has_capability('moodle/course:create', $context) && has_capability('moodle/course:request', $context)) {
+                $requestcourseurl = new moodle_url('/course/request.php');
+                $urls['requestcourseurl'] = $requestcourseurl->out();
+            }
+
+            if ($issystemcontext &&
+                has_capability('moodle/site:approvecourse', $context) &&
+                $DB->record_exists('course_request', array())) {
+
+                $pendingcoursesurl = new moodle_url('/course/pending.php');
+                $urls['pendingcoursesurl'] = $pendingcoursesurl->out();
+            }
+        }
+
+        return $urls;
+    }
+
     public function full_header() {
         $html = html_writer::start_tag('header', array('id' => 'page-header', 'class' => 'clearfix'));
         $html .= html_writer::start_div('clearfix', array('id' => 'page-navbar'));
@@ -586,20 +620,23 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $childcategories = array_values($category->get_children());
         $moodlecontext = get_category_or_system_context($category->id);
         $coursesearchurl = new \moodle_url('/course/search.php');
-        $addcourseurl = new \moodle_url('/course/edit.php', array('category' => $CFG->defaultrequestcategory, 'returnto' => 'topcat'));
         $context = array(
             'categories' => $this->serialise_categories($childcategories),
             'showaddcourse' => has_capability('moodle/course:create', $moodlecontext),
             'urls' => array(
                 'coursesearch' => $coursesearchurl->out(),
-                'addcourse' => $addcourseurl->out(),
             ),
         );
+
+        $urls = $this->get_course_category_button_urls($category, $moodlecontext);
+        $context['urls'] = array_merge($context['urls'], $urls);
 
         return $this->render_from_template('theme_school/coursecategory_categories', $context);
     }
 
     public function coursecategory_courses($coursecategory) {
+        global $CFG, $DB;
+
         $categorypickers = array();
         if ($coursecategory->id) {
             $html = html_writer::start_tag('div', array('class' => 'categorypicker'));
@@ -640,7 +677,6 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         }
 
         $coursesearchurl = new \moodle_url('/course/search.php');
-        $addcourseurl = new \moodle_url('/course/edit.php', array('category' => $coursecategory->id, 'returnto' => 'category'));
         $moodlecontext = get_category_or_system_context($coursecategory->id);
 
         $context = array(
@@ -650,10 +686,11 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'categorypickers' => $categorypickers,
             'urls' => array(
                 'coursesearch' => $coursesearchurl->out(),
-                'addcourse' => $addcourseurl->out(),
             ),
-            'showaddcourse' => has_capability('moodle/course:create', $moodlecontext),
         );
+
+        $urls = $this->get_course_category_button_urls($coursecategory, $moodlecontext);
+        $context['urls'] = array_merge($context['urls'], $urls);
 
         return $this->render_from_template('theme_school/coursecategory_courses', $context);
     }
