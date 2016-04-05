@@ -355,7 +355,7 @@ img {
     	height: 295px;
     	float: left;
     	background-size: 100%;
-    	position: relative;
+    	position: absolute;
     	z-index: 2;
     	max-width: 400px;
     	margin: 0;
@@ -374,10 +374,21 @@ img {
     #maincontent {
         height: 0;
     }
+    #custom-menu {
+        &.button-mode {
+            float: right;
+
+            .custom-menu-toggle {
+                float: right;
+            }
+        }
+    }
 }
 
 .customMenuButtonMode() {
     float: left;
+    width: 80px;
+    overflow: visible;
 
     .custom-menu-toggle {
         display: block;
@@ -399,6 +410,7 @@ img {
             overflow: hidden;
             transition: max-height 0.15s ease-out;
             color: @mainFontColour;
+            line-height: 20px;
 
             li {
                 box-sizing: border-box;
@@ -4150,6 +4162,15 @@ footer p {
 #custom-menu {
     .customMenuButtonMode();
 }
+.landing-page {
+    #custom-menu {
+        float: right;
+
+        .custom-menu-toggle {
+            float: right;
+        }
+    }
+}
 
 .static-content-align {
 	padding: 10px;
@@ -4426,6 +4447,13 @@ body {
                 text-align: right;
             }
         }
+        #custom-menu {
+            float: right;
+
+            .custom-menu-toggle {
+                float: right;
+            }
+        }
     }
 }
 
@@ -4458,6 +4486,7 @@ body {
         width: 100%;
         padding-left: 0;
         padding-right: 0;
+        position: relative;
         &::before {
             display: none;
         }
@@ -4482,6 +4511,14 @@ body {
         left: 0;
         z-index: 11111;
     	top: 80px;
+    }
+    #custom-menu,
+    #custom-menu.button-mode {
+        float: left;
+
+        .custom-menu-toggle {
+            float: left;
+        }
     }
 }
 
