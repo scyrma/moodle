@@ -1,4 +1,4 @@
-﻿define(['jquery', 'theme_bootstrapbase/bootstrap'], function($) {
+﻿define(['jquery', 'theme_bootstrapbase/bootstrap', 'theme_school/custom_menu'], function($, bootstrap, customMenu) {
 
     var initCourses = function() {
         $('.btn-view-list').click(function(){
@@ -62,31 +62,17 @@
 
     var initNavBar = function() {
         $('html').click(function(e) {
-            $('.menulist').removeClass('usermenu-show active-drop-user-menuinner');
+            var userMenu = $(e.target).closest('.usermenu');
 
-            var parentMenu = $(e.target).closest('.nav-collapse');
-            if (!parentMenu.length) {
-                $('.nav-collapse').removeClass('in').removeAttr('style');
+            // If we didn't click in the user menu.
+            if (!userMenu.length) {
+                $('.menulist').removeClass('usermenu-show active-drop-user-menuinner');
             }
         });
 
         $('.menulist').css('display', 'none');
         $('.usermenu').on("click",function(e) {
             $('.menulist').toggleClass('usermenu-show active-drop-user-menuinner');
-            $('.nav-collapse').toggleClass('in').removeAttr('style');
-            $('.btn-navbar').toggleClass('collapsed');
-            e.stopPropagation();
-        });
-
-        $(".btn-navbar").on("click",function(e) {
-            if ($('#custommenu').val() == "nologinselfreg"){
-                $('.nav-collapse').toggleClass('in').removeAttr('style').addClass("inner-active-drop-nologin-selfreg");
-            } else {
-                $('.nav-collapse').toggleClass('in').removeAttr('style');
-            }
-
-            $('.usermenu-show').removeClass('usermenu-show');
-            e.stopPropagation();
         });
     };
 
@@ -97,6 +83,7 @@
             initTooltips();
             initBlockPanels();
             initNavBar();
+            customMenu.init();
         }
     };
 });

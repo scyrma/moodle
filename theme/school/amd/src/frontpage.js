@@ -2,8 +2,9 @@ define([
         'jquery',
         'theme_school/jquery-bxslider',
         'theme_school/jquery-cslider',
-        'theme_school/modernizr.custom.28468'
-    ], function($) {
+        'theme_school/modernizr.custom.28468',
+        'theme_school/custom_menu'
+    ], function($, bxslider, cslider, modernizer, customMenu) {
 
     var toggleUserMenu = function(e) {
         $('.menu').toggleClass('usermenu-show');
@@ -18,17 +19,6 @@ define([
         }
 
         userMenu.toggleClass('active-drop-user-menu');
-        e.stopPropagation();
-    };
-
-    var toggleCustomMenu = function() {
-        if ($('#custommenu').val() == "nologin") {
-            $(".btn-navbar").toggleClass("active-drop active-drop-nologin");
-        } else if ($('#custommenu').val() == "nologinselfreg"){
-            $(".btn-navbar").toggleClass("active-drop active-drop-nologin-selfreg");
-        } else {
-            $(".btn-navbar").toggleClass("active-drop");
-        }
     };
 
     var initCourseSlider = function() {
@@ -57,9 +47,14 @@ define([
     };
 
     var initNavBar = function() {
-        $('html').click(function() {
-            $('.menu').removeClass('usermenu-show');
-            $('.usermenu').removeClass('active-drop-user-menu');
+        $('html').click(function(e) {
+            var userMenu = $(e.target).closest('.usermenu');
+
+            // If we didn't click in the user menu then close it.
+            if (!userMenu.length) {
+                $('.menu').removeClass('usermenu-show');
+                $('.usermenu').removeClass('active-drop-user-menu');
+            }
         });
 
         $('.menu').css('display', 'none');
@@ -71,18 +66,6 @@ define([
             if (!e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
                 if (e.keyCode == 13 || e.keyCode == 32) {
                     toggleUserMenu(e);
-                }
-            }
-        });
-
-        $(".btn-navbar").on("click", function() {
-            toggleCustomMenu();
-        });
-
-        $('.btn-navbar').on("keypress", function(e) {
-            if (!e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
-                if (e.keyCode == 13 || e.keyCode == 32) {
-                    toggleCustomMenu();
                 }
             }
         });
@@ -103,6 +86,7 @@ define([
             initCourseSlider();
             initNavBar();
             initPage();
+            customMenu.init();
         }
     };
 });
