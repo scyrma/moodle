@@ -922,6 +922,47 @@ img {
     }
 }
 
+.da-slide {
+    h2,
+    p,
+    .da-link,
+    .da-img {
+        overflow: hidden;
+    }
+    h2 {
+        width: 45%!important;
+    }
+    .da-link {
+        max-width: 45%;
+    }
+}
+
+.dir-rtl {
+    .da-slide {
+        h2,
+        p,
+        .da-link,
+        .da-img {
+            left: auto!important;
+        }
+    }
+    .da-slide-current {
+        h2,
+        p,
+        .da-link {
+            right: 10%;
+            left: auto!important;
+            text-align: right;
+        }
+        .da-img {
+            right: 60%;
+            left: auto;
+        }
+    }
+}
+
+@import "cssliderstyle.less";
+
 .navbar {
     .brand {
         line-height: 80px;
