@@ -260,18 +260,22 @@ function theme_moodlecloud_get_ad($context) {
 }
 
 function theme_moodlecloud_portal_link() {
-    global $USER, $OUTPUT;
+    global $USER, $CFG;
 
     if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
         $url = new moodle_url('/auth/moodlecloud/portal.php');
         $title = get_string('cloudportallink', 'theme_moodlecloud');
         $alt = get_string('cloudlogo', 'theme_moodlecloud');
         $text = get_string('yourportal', 'theme_moodlecloud');
-        $imageurl = $OUTPUT->pix_url('moodlecloud-logo-inverted', 'theme');
+        $devicetype = core_useragent::get_device_type();
+        $themename = core_useragent::get_device_type_cfg_var_name($devicetype);
+        $theme = theme_config::load($themename);
+        $imageurl = $theme->pix_url('moodlecloud-logo-inverted', 'theme');
         $imghtml = html_writer::img($imageurl, $alt);
-
-        return html_writer::link($url->out(), sprintf("%s %s", $imghtml, $text),
+        $linkhtml = html_writer::link($url->out(), sprintf("%s %s", $imghtml, $text),
             array('id' => 'portal-link', 'title' => $title));
+
+        return html_writer::div($linkhtml, '', array('id' => 'portal-link-container'));
     } else {
         return '';
     }
