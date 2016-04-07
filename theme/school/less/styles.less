@@ -1686,6 +1686,10 @@ footer {
     	padding: 0 38px 0;
     	max-width: 100%;
     }
+    .span4 {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
     span {
     	margin: 0 11px 0;
     }
@@ -1699,6 +1703,7 @@ footer {
 }
 
 .foot-note-links {
+    display: inline-block;
     span:last-child {
         display: none;
     }
@@ -4375,9 +4380,6 @@ header.navbar {
 .block-links-connect .vertical-aligned {
 	padding: 0 0 0 10px;
 }
-footer {
-	font-size: 10px;
-}
 .navbar-fixed-top {
 	margin: 0!important;
 }
@@ -4941,6 +4943,13 @@ footer {
     }
     .container-fluid {
     	padding: 0 15px 0;
+    }
+}
+.dir-rtl footer {
+    .foot-note-links {
+        span {
+            margin: 0 5px 0;
+        }
     }
 }
 .btn-show-more {
@@ -6643,12 +6652,30 @@ footer {
             content: "\f10d";
         }
     }
-    footer .container-fluid {
-        .span9 {
-        	float: right;
+    footer {
+        .span4 {
+            float: right;
+            &:first-child {
+                margin: auto;
+            }
         }
-        .span3 {
-        	width: auto;
+        .foot-note-links {
+            a,
+            span {
+                float: right;
+            }
+        }
+        .footnote.text-center,
+        .logininfo {
+            text-align: left;
+        }
+        .container-fluid {
+            .span9 {
+                float: right;
+            }
+            .span3 {
+                width: auto;
+            }
         }
     }
     .course-item .btn-plus {
@@ -7520,9 +7547,17 @@ footer {
     width: 100% !important;
 }
 
-.dir-rtl .news-updates .news-icon {
-    right: auto;
-    left: 22px;
+.dir-rtl {
+    .news-updates .news-icon {
+        right: auto;
+        left: 22px;
+    }
+    footer {
+        .footnote.text-center,
+        .logininfo {
+            text-align: center;
+        }
+    }
 }
 
 }
