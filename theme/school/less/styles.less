@@ -1084,6 +1084,7 @@ img {
     p {
         i {
             margin-left: 5px;
+            margin-right: 5px;
             font-size: 16px;
             vertical-align: middle;
         }
@@ -6582,9 +6583,21 @@ footer {
     .loginbox .loginform .form-input {
     	margin: 0 auto !important;
     }
-    .news-updates i img  {
-    	transform: rotate( -180deg );
-    	margin-right: 5px;
+    .news-updates {
+        .news-icon {
+            left: auto;
+            right: -134px;
+        }
+        .span3 {
+            float: right;
+        }
+        .fa-chevron-circle-right::before {
+            content: "\f137";
+        }
+        i img  {
+        	transform: rotate( -180deg );
+        	margin-right: 5px;
+        }
     }
     .logining-wr {
     	margin-left: 44px;
@@ -7417,6 +7430,13 @@ footer {
 
 /*Popular-course*/
 
+
+@media screen and (max-width: 1199px) {
+    .dir-rtl .news-updates .news-icon {
+        right: -82px;
+    }
+}
+
 @media screen and (max-width: 979px) {
 
 .students-area {
@@ -7450,6 +7470,10 @@ footer {
     }
 }
 
+.dir-rtl .news-updates .news-icon {
+    right: -66px;
+}
+
 }
 
 @media screen and (max-width: 767px) {
@@ -7459,6 +7483,11 @@ footer {
 
 .contact-home-area .text-field-home {
     width: 100% !important;
+}
+
+.dir-rtl .news-updates .news-icon {
+    right: auto;
+    left: 22px;
 }
 
 }
