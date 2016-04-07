@@ -1131,6 +1131,19 @@ body .btn-see-all {
         box-sizing: border-box;
         padding: 10px;
     }
+    .popular-course-links {
+        ul {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        li {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: @mainLinkColour;
+            padding: 0 5px;
+            box-sizing: border-box;
+        }
+    }
 }
 .nheading {
 	margin-bottom: 80px;
@@ -6604,6 +6617,16 @@ footer {
         margin-right: 2px;
         float: left;
     }
+    .popular-courses {
+        .popular-course-nheading,
+        .popular-course-links li {
+            float: right;
+            text-align: right;
+        }
+        .popular-courses-nav {
+            text-align: left;
+        }
+    }
     .popular-courses-slider .course-item-cont {
     	text-align: right;
     }
@@ -7420,6 +7443,7 @@ footer {
             &.viewmore::after {
                 content: ">";
                 margin-left: 10px;
+                margin-right: 10px;
             }
             &:hover {
                 opacity: 0.8;
