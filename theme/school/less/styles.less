@@ -3844,7 +3844,7 @@ body.login-pagebg {
 
 .students-area-feedback {
     h2 {
-        font-size: 35px;
+        font-size: 30px;
         line-height: normal;
         padding-bottom: 40px;
     }
@@ -6630,6 +6630,19 @@ footer {
     .popular-courses-slider .course-item-cont {
     	text-align: right;
     }
+    .students-area {
+        .students-area-feedback {
+            float: right;
+        }
+    }
+    .testimonial-text {
+        .fa-quote-left::before {
+            content: "\f10e";
+        }
+        .fa-quote-right::before {
+            content: "\f10d";
+        }
+    }
     footer .container-fluid {
         .span9 {
         	float: right;
@@ -7393,11 +7406,9 @@ footer {
         overflow-y: auto;
 
         .fa {
-            &.fa-quote-left {
-                margin-right: 0.5em;
-            }
-
+            &.fa-quote-left,
             &.fa-quote-right {
+                margin-right: 0.5em;
                 margin-left: 0.5em;
             }
         }
