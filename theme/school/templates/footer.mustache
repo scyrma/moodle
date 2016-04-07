@@ -55,9 +55,11 @@
         </div>
     </div><!-- END of .container-fluid -->
     {{#showportallink}}
-        <a id="portal-link" href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
-            <img src="{{{cloudinvertedimgurl}}}"/>
-            {{#str}} yourportal, theme_school {{/str}}
-        </a>
+        <div id="portal-link-container">
+            <a id="portal-link" href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
+                <img src="{{{cloudinvertedimgurl}}}"/>
+                {{#str}} yourportal, theme_school {{/str}}
+            </a>
+        </div>
     {{/showportallink}}
 </footer><!-- END of footer -->
