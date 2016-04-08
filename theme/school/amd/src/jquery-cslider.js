@@ -162,11 +162,70 @@ define(['jquery'], function($) {
 			
 		},
 		_updatePage			: function() {
-		
+            var _self = this;
 			this.$pages.removeClass( 'da-dots-current' );
+            this.$slides.each(function(index, slide) {
+                _self._ariaHideSlide(slide);
+            });
+
 			this.$pages.eq( this.current ).addClass( 'da-dots-current' );
-		
+			this._ariaShowSlide(this.$slides.eq( this.current ));
 		},
+        _ariaHideSlide: function(slide) {
+            slide = $(slide);
+
+            if (slide.attr('aria-hidden') != 'true') {
+                slide.attr('aria-hidden', 'true').attr('tabindex', '-1').removeAttr('aria-live');
+                slide.find('*').each(function(index, child) {
+                    child = $(child);
+
+                    var existingIndex = child.attr('tabindex');
+                    if (typeof existingIndex == 'undefined' || existingIndex == '') {
+                        existingIndex = 'null';
+                    }
+
+                    child.attr('data-old-tabindex', existingIndex);
+                    child.attr('tabindex', '-1');
+                });
+            }
+        },
+        _ariaShowSlide: function(slide) {
+            slide = $(slide);
+            if (slide.attr('aria-hidden') != 'false') {
+                slide.attr('aria-hidden', 'false').attr('tabindex', '0');
+                slide.find('*').each(function(index, child) {
+                    child = $(child);
+                    var existingIndex = child.attr('data-old-tabindex');
+                    if (existingIndex == 'null') {
+                        child.removeAttr('tabindex');
+                    } else {
+                        child.attr('tabindex', existingIndex);
+                    }
+
+                    child.removeAttr('data-old-tabindex');
+                });
+            }
+        },
+        _nextSlide: function() {
+            if( this.options.autoplay ) {
+                clearTimeout( this.slideshow );
+                this.options.autoplay	= autoplayset;
+            }
+
+            var page = ( this.current < this.slidesCount - 1 ) ? page = this.current + 1 : page = 0;
+            this._navigate( page, 'next' );
+            this.$slides.eq( this.current ).attr('aria-live', 'assertive');
+        },
+        _previousSlide: function() {
+            if( this.options.autoplay ) {
+                clearTimeout( this.slideshow );
+                this.options.autoplay	= autoplayset;
+            }
+
+            var page = ( this.current > 0 ) ? page = this.current - 1 : page = this.slidesCount - 1;
+            this._navigate( page, 'prev' );
+            this.$slides.eq( this.current ).attr('aria-live', 'assertive');
+        },
 		_startSlideshow		: function() {
 		
 			var _self	= this;
@@ -185,6 +244,9 @@ define(['jquery'], function($) {
 			}, this.options.interval );
 		
 		},
+        _stopSlideshow: function() {
+            clearTimeout(this.slideshow);
+        },
 		page				: function( idx ) {
 			
 			if( idx >= this.slidesCount || idx < 0 ) {
@@ -207,6 +269,16 @@ define(['jquery'], function($) {
 			
 			var _self = this;
 			
+            _self.$el.focusin(function(e) {
+                _self._stopSlideshow();
+            });
+
+            _self.$el.focusout(function(e) {
+                if (!_self.$el.find(e.relatedTarget).length) {
+                    _self._startSlideshow();
+                }
+            });
+
 			this.$pages.on( 'click.cslider', function( event ) {
 				
 				_self.page( $(this).index() );
@@ -215,34 +287,28 @@ define(['jquery'], function($) {
 			});
 			
 			this.$navNext.on( 'click.cslider', function( event ) {
-				
-				if( _self.options.autoplay ) {
-				
-					clearTimeout( _self.slideshow );
-					_self.options.autoplay	= autoplayset;
-				
-				}
-				
-				var page = ( _self.current < _self.slidesCount - 1 ) ? page = _self.current + 1 : page = 0;
-				_self._navigate( page, 'next' );
+				_self._nextSlide();
 				return false;
-				
 			});
+            this.$navNext.keypress(function(e) {
+                if (e.keyCode == 13 || e.keyCode == 32) {
+                    if (!e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                        _self._nextSlide();
+                    }
+                }
+            });
 			
 			this.$navPrev.on( 'click.cslider', function( event ) {
-				
-				if( _self.options.autoplay ) {
-				
-					clearTimeout( _self.slideshow );
-					_self.options.autoplay	= autoplayset;
-				
-				}
-				
-				var page = ( _self.current > 0 ) ? page = _self.current - 1 : page = _self.slidesCount - 1;
-				_self._navigate( page, 'prev' );
+				_self._previousSlide();
 				return false;
-				
 			});
+            this.$navPrev.keypress(function(e) {
+                if (e.keyCode == 13 || e.keyCode == 32) {
+                    if (!e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                        _self._previousSlide();
+                    }
+                }
+            });
 			
 			if( this.cssTransitions ) {
 			

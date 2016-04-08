@@ -210,6 +210,9 @@ $string['userimage'] = 'User profile image';
 $string['newslink'] = 'See all announcements';
 $string['nonewsitems'] = 'Your site currently has no news items. Click here to add some!';
 $string['staticimagealt'] = 'Header static content image';
+$string['headercarousel'] = 'Header carousel';
+$string['previouscarouselitem'] = 'Previous carousel item';
+$string['nextcarouselitem'] = 'Next carousel item';
 
 /**********************************Testimonials*************************************/
 $string['feedback'] = 'Testimonials';

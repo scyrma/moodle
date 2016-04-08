@@ -871,13 +871,25 @@ img {
         .da-arrows {
             .fonticon();
             font-size: 20px;
-            .da-arrows-prev::after {
-                background: none;
-                content: "\f137";
+            .da-arrows-prev {
+                .opacity(35);
+                &::after {
+                    background: none;
+                    content: "\f137";
+                }
+                &:hover, &:focus {
+                    .opacity(100);
+                }
             }
-            .da-arrows-next::after {
-                background: none;
-                content: "\f138";
+            .da-arrows-next {
+                .opacity(35);
+                &::after {
+                    background: none;
+                    content: "\f138";
+                }
+                &:hover, &:focus {
+                    .opacity(100);
+                }
             }
             span {
                 &:hover::after {
@@ -897,6 +909,13 @@ img {
             .da-img {
                 height: 350px;
                 line-height: 350px;
+            }
+        }
+        &:hover, &:focus, &:active {
+            .da-arrows {
+                span {
+                    .opacity(100);
+                }
             }
         }
     }
