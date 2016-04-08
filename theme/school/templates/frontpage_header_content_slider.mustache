@@ -21,9 +21,14 @@
 {{/isadmin}}
 {{#hascontent}}
     <div class="welcome-block-slider">
-        <div id="da-slider" class="da-slider">
+        <div id="da-slider" class="da-slider" role="list" aria-label="{{#str}} headercarousel, theme_school {{/str}}">
             {{#slides}}
-                <div class="da-slide" data-interval="{{slideinterval}}" data-autoplay="{{slideautoplay}}">
+                <div class="da-slide"
+                    data-interval="{{slideinterval}}"
+                    data-autoplay="{{slideautoplay}}"
+                    role="listitem"
+                    aria-label="{{title}}">
+
                     <h2>{{title}}</h2>
                     <p>{{text}}</p>
                     {{#linkurl}}
@@ -35,11 +40,11 @@
                         {{/imageurl}}
                     </div>
                 </div>
-                <nav class="da-arrows">
-                    <span class="da-arrows-prev"></span>
-                    <span class="da-arrows-next"></span>
-                </nav>
             {{/slides}}
+            <nav class="da-arrows">
+                <span class="da-arrows-prev" role="button" aria-label="{{#str}} previouscarouselitem, theme_school {{/str}}" tabindex="0"></span>
+                <span class="da-arrows-next" role="button" aria-label="{{#str}} nextcarouselitem, theme_school {{/str}}" tabindex="0"></span>
+            </nav>
         </div>
     </div>
 {{/hascontent}}
