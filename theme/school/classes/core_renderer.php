@@ -382,7 +382,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $forum = forum_get_course_forum(SITEID, 'news');
         $cm = get_coursemodule_from_instance('forum', $forum->id, $forum->course, false, MUST_EXIST);
         $discussions = forum_get_discussions($cm, "", false, -1, 3);
-        $linkurl = new \moodle_url('mod/forum/view.php', array('id' => $forum->id));
+        $linkurl = new \moodle_url('mod/forum/view.php', array('f' => $forum->id));
 
         if (empty($discussions) && !forum_user_can_post_discussion($forum, null, -1, $cm)) {
             return "";
