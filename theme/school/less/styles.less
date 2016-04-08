@@ -1062,6 +1062,7 @@ img {
     p {
         i {
             margin-left: 5px;
+            margin-right: 5px;
             font-size: 16px;
             vertical-align: middle;
         }
@@ -1107,6 +1108,19 @@ body .btn-see-all {
     .popular-course-nheading, .popular-course-links {
         box-sizing: border-box;
         padding: 10px;
+    }
+    .popular-course-links {
+        ul {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        li {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: @mainLinkColour;
+            padding: 0 5px;
+            box-sizing: border-box;
+        }
     }
 }
 .nheading {
@@ -1650,6 +1664,10 @@ footer {
     	padding: 0 38px 0;
     	max-width: 100%;
     }
+    .span4 {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
     span {
     	margin: 0 11px 0;
     }
@@ -1663,6 +1681,7 @@ footer {
 }
 
 .foot-note-links {
+    display: inline-block;
     span:last-child {
         display: none;
     }
@@ -3808,7 +3827,7 @@ body.login-pagebg {
 
 .students-area-feedback {
     h2 {
-        font-size: 35px;
+        font-size: 30px;
         line-height: normal;
         padding-bottom: 40px;
     }
@@ -4339,9 +4358,6 @@ header.navbar {
 .block-links-connect .vertical-aligned {
 	padding: 0 0 0 10px;
 }
-footer {
-	font-size: 10px;
-}
 .navbar-fixed-top {
 	margin: 0!important;
 }
@@ -4641,6 +4657,7 @@ body {
     	padding: 0 0 0;
     }
     .span3 {
+        width: 100%;
     	padding: 0 0 10px 0;
     }
     h3 {
@@ -4904,6 +4921,13 @@ footer {
     }
     .container-fluid {
     	padding: 0 15px 0;
+    }
+}
+.dir-rtl footer {
+    .foot-note-links {
+        span {
+            margin: 0 5px 0;
+        }
     }
 }
 .btn-show-more {
@@ -6559,24 +6583,77 @@ footer {
     .loginbox .loginform .form-input {
     	margin: 0 auto !important;
     }
-    .news-updates i img  {
-    	transform: rotate( -180deg );
-    	margin-right: 5px;
+    .news-updates {
+        .news-icon {
+            left: auto;
+            right: -134px;
+        }
+        .span3 {
+            float: right;
+        }
+        .fa-chevron-circle-right::before {
+            content: "\f137";
+        }
+        i img  {
+        	transform: rotate( -180deg );
+        	margin-right: 5px;
+        }
     }
     .logining-wr {
     	margin-left: 44px;
         margin-right: 2px;
         float: left;
     }
+    .popular-courses {
+        .popular-course-nheading,
+        .popular-course-links li {
+            float: right;
+            text-align: right;
+        }
+        .popular-courses-nav {
+            text-align: left;
+        }
+    }
     .popular-courses-slider .course-item-cont {
     	text-align: right;
     }
-    footer .container-fluid {
-        .span9 {
-        	float: right;
+    .students-area {
+        .students-area-feedback {
+            float: right;
         }
-        .span3 {
-        	width: auto;
+    }
+    .testimonial-text {
+        .fa-quote-left::before {
+            content: "\f10e";
+        }
+        .fa-quote-right::before {
+            content: "\f10d";
+        }
+    }
+    footer {
+        .span4 {
+            float: right;
+            &:first-child {
+                margin: auto;
+            }
+        }
+        .foot-note-links {
+            a,
+            span {
+                float: right;
+            }
+        }
+        .footnote.text-center,
+        .logininfo {
+            text-align: left;
+        }
+        .container-fluid {
+            .span9 {
+                float: right;
+            }
+            .span3 {
+                width: auto;
+            }
         }
     }
     .course-item .btn-plus {
@@ -7334,11 +7411,9 @@ footer {
         overflow-y: auto;
 
         .fa {
-            &.fa-quote-left {
-                margin-right: 0.5em;
-            }
-
+            &.fa-quote-left,
             &.fa-quote-right {
+                margin-right: 0.5em;
                 margin-left: 0.5em;
             }
         }
@@ -7384,6 +7459,7 @@ footer {
             &.viewmore::after {
                 content: ">";
                 margin-left: 10px;
+                margin-right: 10px;
             }
             &:hover {
                 opacity: 0.8;
@@ -7393,6 +7469,13 @@ footer {
 }
 
 /*Popular-course*/
+
+
+@media screen and (max-width: 1199px) {
+    .dir-rtl .news-updates .news-icon {
+        right: -82px;
+    }
+}
 
 @media screen and (max-width: 979px) {
 
@@ -7427,6 +7510,10 @@ footer {
     }
 }
 
+.dir-rtl .news-updates .news-icon {
+    right: -66px;
+}
+
 }
 
 @media screen and (max-width: 767px) {
@@ -7436,6 +7523,19 @@ footer {
 
 .contact-home-area .text-field-home {
     width: 100% !important;
+}
+
+.dir-rtl {
+    .news-updates .news-icon {
+        right: auto;
+        left: 22px;
+    }
+    footer {
+        .footnote.text-center,
+        .logininfo {
+            text-align: center;
+        }
+    }
 }
 
 }
