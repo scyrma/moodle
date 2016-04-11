@@ -388,8 +388,14 @@ img {
 
     .custom-menu-toggle {
         display: block;
+        height: 80px;
+        width: 80px;
+        line-height: 80px;
+        font-size: 60px;
+        text-align: center;
         float: left;
         transition: background-color 0.1s ease 0.15s, color 0.1s ease 0.15s;
+        color: @primaryFontColour;
     }
     .menu-list-container {
         min-width: 200px;
@@ -398,37 +404,38 @@ img {
             position: absolute;
             border-top: none;
             top: 80px;
-            right: 0;
+            left: 0;
             background-color: #fff;
             z-index: 9999;
             margin: 0;
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.15s ease-out;
-            color: @mainFontColour;
             line-height: 20px;
-
+            .box-shadow(0 4px 9px -3px rgba(0, 0, 0, 0.2));
+            .dropdown-menu li {
+                border-bottom-color: transparent;
+            }
             li {
                 box-sizing: border-box;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
                 width: 100%;
                 line-height: 20px;
-                padding: 6px 0 6px 20px;
-
-                &:last-child {
-                    border-bottom: 1px solid transparent;
-                }
+                padding-left: 10px;
+                padding-right: 10px;
                 &.dropdown {
+                    li {
+                        padding: 0;
+                    }
                     > .dropdown-toggle {
                         .caret {
                             border-top-color: @mainFontColour;
                             border-bottom-color: @mainFontColour;
                         }
-                    }
-
-                    &.open {
-                        .caret {
-                            display: none;
+                        &:hover {
+                            .caret {
+                                border-top-color: @mainLinkColour;
+                                border-bottom-color: @mainLinkColour;
+                            }
                         }
                     }
                 }
@@ -439,7 +446,7 @@ img {
                     .box-shadow(none);
 
                     li {
-                        padding-left: 5%;
+                        padding-left: 20px;
                     }
                     &::before, &::after {
                         display: none;
@@ -464,19 +471,17 @@ img {
                             float: none;
                         }
                     }
-                    &:hover {
-                        a::after {
-                            display: none;
-                        }
-                    }
                 }
                 a {
                     color: @mainFontColour;
                     text-transform: none;
-                    padding: 0;
+                    padding: 8px 10px 8px 10px;
 
-                    &:hover, &:focus {
-                        color: @primaryColour;
+                    &:hover {
+                        color: @mainLinkColour;
+                        &::after {
+                            border-top-color: @mainLinkColour;
+                        }
                     }
                 }
             }
@@ -508,13 +513,15 @@ img {
 
     .menu-list-container {
         .nav {
+            left: auto;
+            right: 0;
             li {
-                padding: 6px 20px 6px 0;
-
+                padding-left: 10px;
+                padding-right: 10px;
                 .dropdown-menu {
                     li {
                         padding-left: 0;
-                        padding-right: 5%;
+                        padding-right: 20px;
                     }
                 }
             }
@@ -540,20 +547,12 @@ img {
 
     .custom-menu-toggle {
         display: none;
-        float: right;
-        height: 80px;
-        width: 80px;
-        line-height: 80px;
-        font-size: 60px;
-        text-align: center;
-        color: @primaryFontColour;
     }
     .menu-list-container {
         position: relative;
 
         .nav {
             text-align: left;
-            color: @primaryFontColour;
             margin-bottom: 0;
 
             .divider {
@@ -575,10 +574,9 @@ img {
             }
             li {
                 word-wrap: break-word;
-
                 &.dropdown {
                     li {
-                        padding: 6px 20px 6px 20px;
+                        padding: 8px 20px;
                     }
 
                     &.open {
@@ -609,20 +607,17 @@ img {
 
                 li {
                     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-
                     &:last-child {
                         border-bottom: 1px solid transparent;
                     }
                 }
                 & > li {
                     & > a {
-                        padding: 0;
-
                         &:hover, &:focus {
                             background-color: transparent;
                             background-image: none;
                             background-repeat: none;
-                            color: @primaryColour;
+                            color: @mainLinkColour;
                         }
                     }
                 }
@@ -630,6 +625,10 @@ img {
         }
 
         .dropdown-submenu {
+            > a::after {
+                border-left-color: @mainFontColour;
+                border-right-color: @mainFontColour;
+            }
             .dropdown-menu {
                 .border-radius(0);
                 margin: 0;
@@ -639,8 +638,12 @@ img {
                     background-color: transparent;
                     background-image: none;
                     background-repeat: no-repeat;
-                    color: @primaryColour;
+                    color: @mainLinkColour;
                 }
+            }
+            &:hover > a::after {
+                border-left-color: @mainLinkColour;
+                border-right-color: @mainLinkColour;
             }
         }
     }
