@@ -316,7 +316,11 @@ define(['jquery'], function($) {
 					
 					this.$el.on( 'webkitAnimationEnd.cslider animationend.cslider OAnimationEnd.cslider', function( event ) {
 						
-						if( event.originalEvent.animationName === 'toRightAnim4' || event.originalEvent.animationName === 'toLeftAnim4' ) {
+						if(
+                            event.originalEvent.animationName === 'toRightAnim4' ||
+                            event.originalEvent.animationName === 'rtlToRightAnim4' ||
+                            event.originalEvent.animationName === 'toLeftAnim4' ||
+                            event.originalEvent.animationName === 'rtlToLeftAnim4') {
 							
 							_self.isAnimating	= false;
 						
