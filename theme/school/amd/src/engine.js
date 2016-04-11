@@ -52,12 +52,6 @@
            $('#block-region-side-pre').toggleClass('left-menu-open');
            $('.nav-collapse').toggleClass('zindexclass');
         });
-
-        $('document').ready(function() {
-            var outerHeight = $('#region-main').outerHeight();
-            $('#block-region-side-post').css('min-height', outerHeight+'px');
-            $('#block-region-side-pre').css('min-height', outerHeight+'px');
-        });
     };
 
     var initNavBar = function() {
