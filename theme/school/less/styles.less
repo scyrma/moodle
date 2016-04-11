@@ -871,13 +871,25 @@ img {
         .da-arrows {
             .fonticon();
             font-size: 20px;
-            .da-arrows-prev::after {
-                background: none;
-                content: "\f137";
+            .da-arrows-prev {
+                .opacity(35);
+                &::after {
+                    background: none;
+                    content: "\f137";
+                }
+                &:hover, &:focus {
+                    .opacity(100);
+                }
             }
-            .da-arrows-next::after {
-                background: none;
-                content: "\f138";
+            .da-arrows-next {
+                .opacity(35);
+                &::after {
+                    background: none;
+                    content: "\f138";
+                }
+                &:hover, &:focus {
+                    .opacity(100);
+                }
             }
             span {
                 &:hover::after {
@@ -897,6 +909,13 @@ img {
             .da-img {
                 height: 350px;
                 line-height: 350px;
+            }
+        }
+        &:hover, &:focus, &:active {
+            .da-arrows {
+                span {
+                    .opacity(100);
+                }
             }
         }
     }
@@ -922,6 +941,47 @@ img {
     }
 }
 
+.da-slide {
+    h2,
+    p,
+    .da-link,
+    .da-img {
+        overflow: hidden;
+    }
+    h2 {
+        width: 45%!important;
+    }
+    .da-link {
+        max-width: 45%;
+    }
+}
+
+.dir-rtl {
+    .da-slide {
+        h2,
+        p,
+        .da-link,
+        .da-img {
+            left: auto!important;
+        }
+    }
+    .da-slide-current {
+        h2,
+        p,
+        .da-link {
+            right: 10%;
+            left: auto!important;
+            text-align: right;
+        }
+        .da-img {
+            right: 60%;
+            left: auto;
+        }
+    }
+}
+
+@import "cssliderstyle.less";
+
 .navbar {
     .brand {
         line-height: 80px;
@@ -933,6 +993,15 @@ img {
     .navbar-text {
         line-height: 80px;
         color: @secondaryFontColour;
+    }
+}
+
+#page-navbar {
+    .breadcrumb-button {
+        height: 68px;
+        line-height: 68px;
+        box-sizing: border-box;
+        margin-top: 0;
     }
 }
 
@@ -1034,6 +1103,7 @@ img {
     p {
         i {
             margin-left: 5px;
+            margin-right: 5px;
             font-size: 16px;
             vertical-align: middle;
         }
@@ -1079,6 +1149,19 @@ body .btn-see-all {
     .popular-course-nheading, .popular-course-links {
         box-sizing: border-box;
         padding: 10px;
+    }
+    .popular-course-links {
+        ul {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        li {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: @mainLinkColour;
+            padding: 0 5px;
+            box-sizing: border-box;
+        }
     }
 }
 .nheading {
@@ -1540,6 +1623,77 @@ body .btn-see-all {
 /* 4 - END of .content ---------------------------------------------------------- */
 /* 5 - BEGIN of footer ---------------------------------------------------------- */
 
+#portal-link-container {
+    position: fixed;
+    top: 45%;
+    right: 0;
+    left: auto;
+    width: 30px;
+    line-height: 30px;
+    background-color: #f98012;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    display: inline-block;
+    overflow: hidden;
+    .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+    .opacity(80);
+    .border-radius(5px 0 0 5px);
+
+    &:hover {
+        .opacity(100);
+    }
+    #portal-link {
+        color: #fff;
+        font-size: 15px;
+        text-decoration: none;
+        display: inline-block;
+        white-space: nowrap;
+        -webkit-transform: translate(0,100%) rotate(-90deg);
+           -moz-transform: translate(0,100%) rotate(-90deg);
+            -ms-transform: translate(0,100%) rotate(-90deg);
+             -o-transform: translate(0,100%) rotate(-90deg);
+                transform: translate(0,100%) rotate(-90deg);
+        -webkit-transform-origin: 0 0;
+           -moz-transform-origin: 0 0;
+            -ms-transform-origin: 0 0;
+             -o-transform-origin: 0 0;
+                transform-origin: 0 0;
+        img {
+            height: 20px;
+            width: 33px;
+            display: inline-block;
+            vertical-align: sub;
+        }
+        &::after {
+            content: '';
+            float: left;
+            margin-top: 100%;
+        }
+    }
+}
+
+.dir-rtl {
+    #portal-link-container {
+        left: 0;
+        right: auto;
+        .box-shadow(5px 1px 17px -5px rgba(0, 0, 0, 0.5));
+        .border-radius(0 5px 5px 0);
+
+        #portal-link {
+            -webkit-transform: translate(0,100%) rotate(90deg);
+               -moz-transform: translate(0,100%) rotate(90deg);
+                -ms-transform: translate(0,100%) rotate(90deg);
+                 -o-transform: translate(0,100%) rotate(90deg);
+                    transform: translate(0,100%) rotate(90deg);
+            -webkit-transform-origin: 100% 0;
+               -moz-transform-origin: 100% 0;
+                -ms-transform-origin: 100% 0;
+                 -o-transform-origin: 100% 0;
+                    transform-origin: 100% 0;
+        }
+    }
+}
+
 footer {
 	min-height: 40px;
 	font-size: 13px;
@@ -1551,36 +1705,15 @@ footer {
     	padding: 0 38px 0;
     	max-width: 100%;
     }
+    .span4 {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
     span {
     	margin: 0 11px 0;
     }
     p {
     	padding: 0 0 6px;
-    }
-
-    #portal-link {
-        position: fixed;
-        top: 50%;
-        right: -29px;
-        background-color: #f98012;
-        color: #fff;
-        padding-left: 5px;
-        padding-right: 5px;
-        font-size: 15px;
-        line-height: 30px;
-        .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
-        .rotate(270deg);
-        .opacity(80);
-        .border-radius(5px 5px 0 0);
-
-        img {
-            height: 20px;
-            vertical-align: text-bottom;
-        }
-
-        &:hover {
-            .opacity(100);
-        }
     }
 }
 
@@ -1589,6 +1722,7 @@ footer {
 }
 
 .foot-note-links {
+    display: inline-block;
     span:last-child {
         display: none;
     }
@@ -3080,14 +3214,6 @@ a:hover,
 	margin: 0;
 }
 
-.breadcrumb-nav + .breadcrumb-button {
-	margin-top: 0;
-    padding: 22px 0;
-}
-.breadcrumb-nav + .breadcrumb-button .forumsearch{
-	margin-top: 0;
-}
-
 .breadcrumb-button .singlebutton div input {
 	margin-bottom: 0px!important;
 	padding: 10px 20px;
@@ -3742,7 +3868,7 @@ body.login-pagebg {
 
 .students-area-feedback {
     h2 {
-        font-size: 35px;
+        font-size: 30px;
         line-height: normal;
         padding-bottom: 40px;
     }
@@ -4273,9 +4399,6 @@ header.navbar {
 .block-links-connect .vertical-aligned {
 	padding: 0 0 0 10px;
 }
-footer {
-	font-size: 10px;
-}
 .navbar-fixed-top {
 	margin: 0!important;
 }
@@ -4575,6 +4698,7 @@ body {
     	padding: 0 0 0;
     }
     .span3 {
+        width: 100%;
     	padding: 0 0 10px 0;
     }
     h3 {
@@ -4838,6 +4962,13 @@ footer {
     }
     .container-fluid {
     	padding: 0 15px 0;
+    }
+}
+.dir-rtl footer {
+    .foot-note-links {
+        span {
+            margin: 0 5px 0;
+        }
     }
 }
 .btn-show-more {
@@ -5324,7 +5455,7 @@ form.logselecform select.select {
 
 #block-region-side-pre .dimmed_text,
 #block-region-side-post .dimmed_text {
-    opacity: 0.4;
+    opacity: 0.5;
 }
 
 .userlist {
@@ -5879,8 +6010,7 @@ div.minicalendarblock caption a {
     }
 }
 
-#block-region-side-post .block .calendartable .calendar-controls span.current,
-#block-region-side-pre .block .calendartable .calendar-controls span.current {
+.block .calendar-controls .current {
     padding: 15px 0;
     box-sizing: border-box;
     width: 65%;
@@ -5960,19 +6090,6 @@ body.has_dock {
 
 /*Primary Color Customisation  */
 
-#block-region-side-pre .dimmed_text {
-	color: #fff;
-}
-
-#block-region-side-post .dimmed_text {
-    color: #333;
-}
-
-#block-region-side-pre .block .content,
-#block-region-side-post .block .content {
-    color: #444;
-}
-
 /* Buttons start */
 
 #page button,
@@ -6023,6 +6140,7 @@ body.has_dock {
 
 #page, #dockeditempanel {
     .adminsearchform input[type="submit"],
+    .blogsearchform input[type="submit"],
     #tag-search-box #searchform_button  {
         background-color: transparent;
 
@@ -6073,11 +6191,6 @@ button.atto_title_button img.icon:last-child {
 /* Buttons ends */
 
 /* Calendar start*/
-
-.block .calendartable .calendar-controls a,
-div.minicalendarblock caption a {
-	color: #FFF;
-}
 
 #block-region-side-post .block .minicalendar th,
 #block-region-side-pre .block .minicalendar th,
@@ -6512,24 +6625,77 @@ footer {
     .loginbox .loginform .form-input {
     	margin: 0 auto !important;
     }
-    .news-updates i img  {
-    	transform: rotate( -180deg );
-    	margin-right: 5px;
+    .news-updates {
+        .news-icon {
+            left: auto;
+            right: -134px;
+        }
+        .span3 {
+            float: right;
+        }
+        .fa-chevron-circle-right::before {
+            content: "\f137";
+        }
+        i img  {
+        	transform: rotate( -180deg );
+        	margin-right: 5px;
+        }
     }
     .logining-wr {
     	margin-left: 44px;
         margin-right: 2px;
         float: left;
     }
+    .popular-courses {
+        .popular-course-nheading,
+        .popular-course-links li {
+            float: right;
+            text-align: right;
+        }
+        .popular-courses-nav {
+            text-align: left;
+        }
+    }
     .popular-courses-slider .course-item-cont {
     	text-align: right;
     }
-    footer .container-fluid {
-        .span9 {
-        	float: right;
+    .students-area {
+        .students-area-feedback {
+            float: right;
         }
-        .span3 {
-        	width: auto;
+    }
+    .testimonial-text {
+        .fa-quote-left::before {
+            content: "\f10e";
+        }
+        .fa-quote-right::before {
+            content: "\f10d";
+        }
+    }
+    footer {
+        .span4 {
+            float: right;
+            &:first-child {
+                margin: auto;
+            }
+        }
+        .foot-note-links {
+            a,
+            span {
+                float: right;
+            }
+        }
+        .footnote.text-center,
+        .logininfo {
+            text-align: left;
+        }
+        .container-fluid {
+            .span9 {
+                float: right;
+            }
+            .span3 {
+                width: auto;
+            }
         }
     }
     .course-item .btn-plus {
@@ -6933,21 +7099,21 @@ footer {
         border-color: darken(@secondaryColour, 20%);
         color: @secondaryFontColour;
         .box-shadow(0 2px 0 0 darken(@secondaryColour, 20%));
-        .opacity(100);
+        .opacity(80);
     }
     &:active {
         background-color: @secondaryColour;
         border-color: darken(@secondaryColour, 20%);
         color: @secondaryFontColour;
         .box-shadow(inset 0 2px 0 0 darken(@secondaryColour, 20%));
-        .opacity(100);
+        .opacity(80);
     }
     &:focus {
         background-color: @secondaryColour;
         border-color: darken(@secondaryColour, 20%);
         color: @secondaryFontColour;
         .box-shadow(0 2px 0 0 darken(@secondaryColour, 20%));
-        .opacity(100);
+        .opacity(80);
     }
 }
 
@@ -7287,11 +7453,9 @@ footer {
         overflow-y: auto;
 
         .fa {
-            &.fa-quote-left {
-                margin-right: 0.5em;
-            }
-
+            &.fa-quote-left,
             &.fa-quote-right {
+                margin-right: 0.5em;
                 margin-left: 0.5em;
             }
         }
@@ -7337,6 +7501,7 @@ footer {
             &.viewmore::after {
                 content: ">";
                 margin-left: 10px;
+                margin-right: 10px;
             }
             &:hover {
                 opacity: 0.8;
@@ -7346,6 +7511,13 @@ footer {
 }
 
 /*Popular-course*/
+
+
+@media screen and (max-width: 1199px) {
+    .dir-rtl .news-updates .news-icon {
+        right: -82px;
+    }
+}
 
 @media screen and (max-width: 979px) {
 
@@ -7380,6 +7552,10 @@ footer {
     }
 }
 
+.dir-rtl .news-updates .news-icon {
+    right: -66px;
+}
+
 }
 
 @media screen and (max-width: 767px) {
@@ -7389,6 +7565,19 @@ footer {
 
 .contact-home-area .text-field-home {
     width: 100% !important;
+}
+
+.dir-rtl {
+    .news-updates .news-icon {
+        right: auto;
+        left: 22px;
+    }
+    footer {
+        .footnote.text-center,
+        .logininfo {
+            text-align: center;
+        }
+    }
 }
 
 }
