@@ -1391,7 +1391,6 @@ body .btn-see-all {
     	line-height: 20px;
     }
     h4 {
-    	float: left;
     	position: absolute;
     	bottom: 0;
         height: 42px;
@@ -1399,10 +1398,10 @@ body .btn-see-all {
         a {
         	padding: 0 8px 0 0;
             display: inline-block;
+            float: left;
         }
     }
     p {
-    /*	padding: 5px 0 10px;*/
     	line-height: 17px;
     	font-size: 12px;
     }
@@ -1488,22 +1487,23 @@ body .btn-see-all {
         	width: 35%;
         }
         h4 {
-        	position: absolute;
-        	right: 20px;
-        	top: 23px;
+        	position: relative;
+            display: inline-block;
+            line-height: 66px;
+            float: right;
+            height: auto;
         }
         h5 {
             float: left;
             font-size: 21px;
-            line-height: 65px;
+            line-height: 66px;
             margin: 0 20px 0 0;
         }
         h6 {
             font-size: 14px;
-            line-height: 55px;
-            padding: 4px 5px 0;
+            line-height: 66px;
+            padding: 0 5px;
             box-sizing: border-box;
-            float: left;
             width: auto;
         }
         p {
@@ -4151,13 +4151,6 @@ h2 {
         margin: 0 0 15px;
         max-width: 100%;
         width: 100%;
-        h4 {
-        	right: 6px;
-        	top: 23px;
-            a {
-            	padding: 0 1px 0 0;
-            }
-        }
         h5 {
             font-size: 15px;
         }
@@ -4797,12 +4790,11 @@ footer {
 	max-width: 100%;
 	width: 92%;
 }
-.course-items-list-view .course-item h4 {
-	right: 4px;
-	top: 18px;
-	padding: 0;
-    img {
-    	width: 13px;
+.course-items-list-view {
+    .course-item {
+	    .abc {
+            display: none;
+        }
     }
 }
 #block-region-side-post .block .content {
@@ -5087,11 +5079,6 @@ footer {
 }
 #region-main .forumpost.firstpost {
 	padding: 8px 0 0 0;
-}
-.course-items-list-view .course-item h4 {
-	right: 4px;
-	top: 38px;
-	padding: 0;
 }
 .theme-table {
     td:first-child,

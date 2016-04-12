@@ -72,6 +72,14 @@
                                 {{#contacts}}
                                     <div class="abc"><h6>{{rolename}} : <a href="{{{profileurl}}}" aria-label="{{rolename}} {{name}}">{{name}}</a></h6></div>
                                 {{/contacts}}
+                                <h4>
+                                    <a href="{{{url}}}" data-toggle="tooltip" title="{{name}}" title="{{#str}} viewcourse, theme_school, {{name}} {{/str}}" aria-label="{{#str}} viewcourse, theme_school, {{name}} {{/str}}">
+                                        <i class="fa fa-arrow-circle-o-right"></i>
+                                    </a>
+                                    <a href="{{{enrolledusersurl}}}" data-toggle="tooltip" title="{{#str}} enrolusers, enrol {{/str}}" aria-label="{{#str}} enrolusers, enrol {{/str}}">
+                                        <i class="fa fa-users"></i>
+                                    </a>
+                                </h4>
                                 <div class="for-list-view-wr">
                                     <div class="for-list-view">
                                         <div class="img-wr">
@@ -86,14 +94,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <h4>
-                                    <a href="{{{url}}}" data-toggle="tooltip" title="{{name}}" title="{{#str}} viewcourse, theme_school, {{name}} {{/str}}" aria-label="{{#str}} viewcourse, theme_school, {{name}} {{/str}}">
-                                        <i class="fa fa-arrow-circle-o-right"></i>
-                                    </a>
-                                    <a href="{{{enrolledusersurl}}}" data-toggle="tooltip" title="{{#str}} enrolusers, enrol {{/str}}" aria-label="{{#str}} enrolusers, enrol {{/str}}">
-                                        <i class="fa fa-users"></i>
-                                    </a>
-                                </h4>
                             </div>
                         </div>
                     {{/courses}}
