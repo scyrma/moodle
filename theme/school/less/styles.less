@@ -189,8 +189,12 @@ img {
     box-sizing: border-box;
 }
 
-#page h2 {
-	padding-bottom: 0;
+#page {
+    overflow: hidden;
+
+    h2 {
+        padding-bottom: 0;
+    }
 }
 
 .clear {
@@ -2014,8 +2018,8 @@ header.navbar {
 
 #block-region-side-pre,
 #block-region-side-post {
-    padding: 0;
-    margin: 0;
+    margin: 0 0 -99999px 0;
+    padding: 0 0 99999px 0;
     .block {
         background: none;
     	border: none;
@@ -2276,9 +2280,6 @@ header.navbar {
         }
         .footer {
             display: inline-block;
-        }
-        &:nth-last-child(2) {
-            .box-shadow(0 -8px 10px -12px rgba(0, 0, 0, 0.5) inset);
         }
     }
 }
