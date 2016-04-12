@@ -46,11 +46,14 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
             $courseinfo = array(
                 'url' => $url->out(),
-                'enrolledusersurl' => $enrolledusersurl->out(),
                 'name' => $name,
                 'summary' => $summary,
                 'contacts' => array(),
             );
+
+            if (has_capability('moodle/course:enrolreview', context_course::instance($course->id))) {
+                $courseinfo['enrolledusersurl'] = $enrolledusersurl->out();
+            }
 
             if ($course->has_course_contacts()) {
                 foreach ($course->get_course_contacts() as $userid => $coursecontact) {
@@ -102,7 +105,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
                 'name' => $category->name,
                 'url' => $url->out(),
                 'description' => $helper->get_category_formatted_description($category),
-                'coursecount' => $category->coursecount,
+                'coursecount' => $category->get_courses_count(),
                 'subcategorycount' => $category->get_children_count(),
             );
         };
