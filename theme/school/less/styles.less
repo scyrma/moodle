@@ -1790,16 +1790,19 @@ footer {
     }
     .userbutton {
         height: 81px;
-        position: relative;
 
         .name {
-            float: left;
-            margin-top: 5px;
             line-height: 25px;
+            margin-top: 5px;
+            margin-right: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .avatar {
-            display: inline-block;
-            float: right;
+            position: absolute;
+            right: 10px;
+            top: 10px;
             img {
                 border-radius: 50%;
                 border: solid 3px rgba(0, 0, 0, .25);
@@ -1813,12 +1816,12 @@ footer {
             }
         }
         .dropdown-icon-container {
-            float: right;
-            margin-left: 10px;
-            margin-right: 10px;
+            color: @primaryColour;
             font-size: 1.5em;
             line-height: 60px;
-            color: @primaryColour;
+            position: absolute;
+            right: 80px;
+            top: 10px;
         }
     }
     .menubar {
@@ -1827,7 +1830,6 @@ footer {
             height: 32px;
             font-weight: 600;
             padding: 0 0 0;
-            position: relative;
         }
         a::after {
             content: none;
