@@ -1269,13 +1269,20 @@ body .btn-see-all {
 	float: left;
 }
 
-.popular-courses-slider .course-item {
-	min-height: 270px;
-	max-width: 100%;
+.popular-courses-slider {
+    margin-left: 0;
+    li {
+        list-style-type: none;
+    }
+    .course-item {
+    	min-height: 270px;
+    	max-width: 100%;
+    }
 }
 
 .bx-viewport .course-item {
-	margin: 0 13px 26px;
+	margin: 0 auto 26px;
+    width: 92%;
 }
 
 .course-item .img-wr {
@@ -1303,14 +1310,16 @@ body .btn-see-all {
 }
 
 .popular-courses-slider .course-item-cont {
-	padding: 28px 29px;
+    overflow: hidden;
 }
 
 .course-item {
     h5 {
     	font-size: 18px;
     	font-weight: 600;
-    	margin: 0 20px 10px 0;
+        margin-top: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         a, a:hover, a:visited, a:focus {
             color: @mainFontColour;
@@ -1320,6 +1329,8 @@ body .btn-see-all {
     	font-size: 13px;
     	font-weight: 600;
     	margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .btn-plus {
     	position: absolute;
@@ -4115,7 +4126,7 @@ div[class*="span"] {
 	padding: 20px 10px 40px;
 }
 .bx-viewport .course-item {
-	margin: 0 5px 13px;
+    margin: 0 auto 13px;
 }
 .course-item h5 {
 	font-size: 15px;
@@ -4803,7 +4814,6 @@ footer {
 }
 .course-items .course-item {
 	max-width: 100%;
-	width: 92%;
 }
 .course-items-list-view {
     .course-item {
@@ -6563,6 +6573,9 @@ footer {
 }
 
 @media screen and (min-width: 1200px) {
+    .popular-courses-slider .course-item-cont {
+        padding: 28px 29px;
+    }
     .chooserdialogue-course-modchooser {
         /* This needs !important to override the inline JS styles */
         width: 840px !important;
