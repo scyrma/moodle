@@ -862,80 +862,26 @@ img {
 
 .welcome-block,
 .welcome-block-slider {
-	color: @primaryFontColour;
-	padding: 0 130px 10px 130px;
-	line-height: 24px;
+    color: @primaryFontColour;
+    line-height: 24px;
+    padding-bottom: 10px;
     overflow: hidden;
     margin-top: 80px;
-
     a {
         color: @primaryLinkColour;
-    }
-
-    .da-slider {
-        .da-arrows {
-            .fonticon();
-            font-size: 20px;
-            .da-arrows-prev {
-                .opacity(35);
-                &::after {
-                    background: none;
-                    content: "\f137";
-                }
-                &:hover, &:focus {
-                    .opacity(100);
-                }
-            }
-            .da-arrows-next {
-                .opacity(35);
-                &::after {
-                    background: none;
-                    content: "\f138";
-                }
-                &:hover, &:focus {
-                    .opacity(100);
-                }
-            }
-            span {
-                &:hover::after {
-                    box-shadow: none;
-                }
-                &::after {
-                    box-shadow: none;
-                }
-            }
-        }
-        .da-slide {
-            p {
-                top: 125px;
-                height: 135px;
-                overflow: auto;
-            }
-            .da-img {
-                height: 350px;
-                line-height: 350px;
-            }
-        }
-        &:hover, &:focus, &:active {
-            .da-arrows {
-                span {
-                    .opacity(100);
-                }
-            }
-        }
     }
 }
 
 .welcome-block {
     h2 {
-    	padding: 0 0 22px;
-    	font-weight: 600;
+        padding: 0 0 22px;
+        font-weight: 600;
         font-size: 38px;
         line-height: 45px;
     }
     p {
-    	max-width: 93%;
-    	padding: 0 0 28px;
+        max-width: 93%;
+        padding: 0 0 28px;
     }
     iframe,
     img {
@@ -946,20 +892,73 @@ img {
     }
 }
 
-.da-slide {
-    h2,
-    p,
-    .da-link,
-    .da-img {
-        overflow: hidden;
+.welcome-block-slider {
+    .da-slider {
+        width: 100%;
+        max-width: 1875px;
+        .da-arrows {
+            .fonticon();
+            font-size: 20px;
+            .da-arrows-prev,
+            .da-arrows-next {
+                .opacity(35);
+                &::after {
+                    background: none;
+                }
+                &:hover, &:focus {
+                    .opacity(100);
+                }
+            }
+            .da-arrows-prev {
+                &::after {
+                    content: "\f137";
+                }
+            }
+            .da-arrows-next {
+                &::after {
+                    content: "\f138";
+                }
+            }
+            span {
+                &:hover::after,
+                &::after {
+                    box-shadow: none;
+                }
+            }
+        }
+        &:hover, &:focus, &:active {
+            .da-arrows {
+                span {
+                    .opacity(100);
+                }
+            }
+        }
     }
-    h2 {
-        width: 45%!important;
-    }
-    .da-link {
-        max-width: 45%;
+    .da-slide {
+        h2,
+        p,
+        .da-link,
+        .da-img {
+            overflow: hidden;
+        }
+        h2 {
+            width: 45%;
+            height: 85px;
+        }
+        p {
+            top: 147px;
+            height: 105px;
+        }
+        .da-link {
+            max-width: 45%;
+        }
+        .da-img {
+            height: 350px;
+            line-height: 350px;
+        }
     }
 }
+
 
 .dir-rtl {
     .da-slide {
@@ -4072,6 +4071,14 @@ div[class*="span"] {
 	.popular-courses-slider .course-item {
 	    min-height: 230px;
 	}
+}
+
+/* ----------------------------------------------------------------------------------- */
+
+@media screen and (max-width: 1279px) {
+    .welcome-block-slider .da-slide h2 {
+        line-height: 26px;
+    }
 }
 
 /* ----------------------------------------------------------------------------------- */
@@ -7610,6 +7617,12 @@ footer {
 }
 
 @media screen and (max-width: 767px) {
+
+.welcome-block-slider .da-slide h2 {
+    font-size: 14px;
+    line-height: 20px!important;
+}
+
 .home-contact-form {
     padding-right: 0;
 }
