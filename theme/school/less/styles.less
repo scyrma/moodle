@@ -1,5 +1,6 @@
 @import "../../bootstrapbase/less/moodle.less";
 @import "font-awesome/font-awesome.less";
+@import "cssliderstyle.less";
 
 @primaryColour: #f15a23;
 @primaryFontColour: #fff;
@@ -859,132 +860,6 @@ img {
         margin-right: 20px;
     }
 }
-
-.welcome-block,
-.welcome-block-slider {
-    color: @primaryFontColour;
-    line-height: 24px;
-    padding-bottom: 10px;
-    overflow: hidden;
-    margin-top: 80px;
-    a {
-        color: @primaryLinkColour;
-    }
-}
-
-.welcome-block {
-    h2 {
-        padding: 0 0 22px;
-        font-weight: 600;
-        font-size: 38px;
-        line-height: 45px;
-    }
-    p {
-        max-width: 93%;
-        padding: 0 0 28px;
-    }
-    iframe,
-    img {
-        display: block;
-        margin: 0 auto;
-        max-width: 94%;
-        border: 0px;
-    }
-}
-
-.welcome-block-slider {
-    .da-slider {
-        width: 100%;
-        max-width: 1875px;
-        .da-arrows {
-            .fonticon();
-            font-size: 20px;
-            .da-arrows-prev,
-            .da-arrows-next {
-                .opacity(35);
-                &::after {
-                    background: none;
-                }
-                &:hover, &:focus {
-                    .opacity(100);
-                }
-            }
-            .da-arrows-prev {
-                &::after {
-                    content: "\f137";
-                }
-            }
-            .da-arrows-next {
-                &::after {
-                    content: "\f138";
-                }
-            }
-            span {
-                &:hover::after,
-                &::after {
-                    box-shadow: none;
-                }
-            }
-        }
-        &:hover, &:focus, &:active {
-            .da-arrows {
-                span {
-                    .opacity(100);
-                }
-            }
-        }
-    }
-    .da-slide {
-        h2,
-        p,
-        .da-link,
-        .da-img {
-            overflow: hidden;
-        }
-        h2 {
-            width: 45%;
-            height: 85px;
-        }
-        p {
-            top: 147px;
-            height: 105px;
-        }
-        .da-link {
-            max-width: 45%;
-        }
-        .da-img {
-            height: 350px;
-            line-height: 350px;
-        }
-    }
-}
-
-
-.dir-rtl {
-    .da-slide {
-        h2,
-        p,
-        .da-link,
-        .da-img {
-            left: auto!important;
-        }
-    }
-    .da-slide-current {
-        h2,
-        p,
-        .da-link {
-            right: 10%;
-            left: auto!important;
-            text-align: right;
-        }
-        .da-img {
-            right: 60%;
-            left: auto;
-        }
-    }
-}
-
-@import "cssliderstyle.less";
 
 .navbar {
     .brand {
@@ -4071,14 +3946,6 @@ div[class*="span"] {
 	.popular-courses-slider .course-item {
 	    min-height: 230px;
 	}
-}
-
-/* ----------------------------------------------------------------------------------- */
-
-@media screen and (max-width: 1279px) {
-    .welcome-block-slider .da-slide h2 {
-        line-height: 26px;
-    }
 }
 
 /* ----------------------------------------------------------------------------------- */
@@ -7617,11 +7484,6 @@ footer {
 }
 
 @media screen and (max-width: 767px) {
-
-.welcome-block-slider .da-slide h2 {
-    font-size: 14px;
-    line-height: 20px!important;
-}
 
 .home-contact-form {
     padding-right: 0;
