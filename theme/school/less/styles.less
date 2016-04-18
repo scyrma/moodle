@@ -1,5 +1,6 @@
 @import "../../bootstrapbase/less/moodle.less";
 @import "font-awesome/font-awesome.less";
+@import "cssliderstyle.less";
 
 @primaryColour: #f15a23;
 @primaryFontColour: #fff;
@@ -859,133 +860,6 @@ img {
         margin-right: 20px;
     }
 }
-
-.welcome-block,
-.welcome-block-slider {
-	color: @primaryFontColour;
-	padding: 0 130px 10px 130px;
-	line-height: 24px;
-    overflow: hidden;
-    margin-top: 80px;
-
-    a {
-        color: @primaryLinkColour;
-    }
-
-    .da-slider {
-        .da-arrows {
-            .fonticon();
-            font-size: 20px;
-            .da-arrows-prev {
-                .opacity(35);
-                &::after {
-                    background: none;
-                    content: "\f137";
-                }
-                &:hover, &:focus {
-                    .opacity(100);
-                }
-            }
-            .da-arrows-next {
-                .opacity(35);
-                &::after {
-                    background: none;
-                    content: "\f138";
-                }
-                &:hover, &:focus {
-                    .opacity(100);
-                }
-            }
-            span {
-                &:hover::after {
-                    box-shadow: none;
-                }
-                &::after {
-                    box-shadow: none;
-                }
-            }
-        }
-        .da-slide {
-            p {
-                top: 125px;
-                height: 135px;
-                overflow: auto;
-            }
-            .da-img {
-                height: 350px;
-                line-height: 350px;
-            }
-        }
-        &:hover, &:focus, &:active {
-            .da-arrows {
-                span {
-                    .opacity(100);
-                }
-            }
-        }
-    }
-}
-
-.welcome-block {
-    h2 {
-    	padding: 0 0 22px;
-    	font-weight: 600;
-        font-size: 38px;
-        line-height: 45px;
-    }
-    p {
-    	max-width: 93%;
-    	padding: 0 0 28px;
-    }
-    iframe,
-    img {
-        display: block;
-        margin: 0 auto;
-        max-width: 94%;
-        border: 0px;
-    }
-}
-
-.da-slide {
-    h2,
-    p,
-    .da-link,
-    .da-img {
-        overflow: hidden;
-    }
-    h2 {
-        width: 45%!important;
-    }
-    .da-link {
-        max-width: 45%;
-    }
-}
-
-.dir-rtl {
-    .da-slide {
-        h2,
-        p,
-        .da-link,
-        .da-img {
-            left: auto!important;
-        }
-    }
-    .da-slide-current {
-        h2,
-        p,
-        .da-link {
-            right: 10%;
-            left: auto!important;
-            text-align: right;
-        }
-        .da-img {
-            right: 60%;
-            left: auto;
-        }
-    }
-}
-
-@import "cssliderstyle.less";
 
 .navbar {
     .brand {
@@ -4693,7 +4567,6 @@ body {
         position: absolute;
         right: 0;
         top: 80px;
-        width: 220px;
         .userbutton {
             .dropdown-icon-container {
                 color: @primaryColour;
@@ -7610,6 +7483,7 @@ footer {
 }
 
 @media screen and (max-width: 767px) {
+
 .home-contact-form {
     padding-right: 0;
 }
