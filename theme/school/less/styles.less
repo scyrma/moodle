@@ -5981,9 +5981,6 @@ body.has_dock {
         margin-left: -38px;
         padding-left: 38px;
     }
-    .left-menu-open {
-        margin-left: 38px!important;
-    }
 }
 
 #page #page-content + #dock {
@@ -6892,10 +6889,6 @@ footer {
             margin-right: -38px;
             padding-right: 38px;
         }
-        .left-menu-open {
-            margin-right: 38px!important;
-            margin-left: 0px!important
-        }
     }
     #portal-link {
         display: table;
@@ -7459,7 +7452,11 @@ footer {
 .buttons_container {
     margin-top: 160px;
 }
-
+body.has_dock {
+    .left-menu-open {
+        margin-left: 38px!important;
+    }
+}
 .students-area {
     padding: 50px 37px;
 }
@@ -7491,10 +7488,16 @@ footer {
     }
 }
 
-.dir-rtl .news-updates .news-icon {
-    right: -66px;
-}
-
+.dir-rtl {
+    &.has_dock {
+        .left-menu-open {
+            margin-right: 38px!important;
+            margin-left: 0px!important
+        }
+    }
+    .news-updates .news-icon {
+        right: -66px;
+    }
 }
 
 @media screen and (max-width: 767px) {
