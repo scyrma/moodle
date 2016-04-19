@@ -6321,8 +6321,8 @@ footer {
 #block-region-side-pre {
     left: -500px;
     position: fixed;
-    top: 0;
-    padding-top: 160px;
+    top: 160px;
+    padding-top: 0;
     overflow-y: auto;
 }
 .dir-rtl #block-region-side-pre {
@@ -6337,15 +6337,14 @@ footer {
 }
 
 .left-menu-open {
-    height: 100%;
+    height: auto;
     left: 0 !important;
+    bottom: 0;
     margin-bottom: 0 !important;
     /*overflow: auto;*/
     padding-bottom: 0 !important;
     position: absolute;
-	top: 148px;
 	z-index: 1111;
-
 }
 .dir-rtl .left-menu-open {
 	right: 0 !important;
