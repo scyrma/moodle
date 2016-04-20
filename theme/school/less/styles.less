@@ -5678,6 +5678,11 @@ form#displayoptions {
             }
         }
     }
+   .controls img {
+        background-color: #a9a9a9;
+        padding: 1px;
+        border-radius: 6px;
+    }
 }
 
 /* Docced view end */
@@ -5975,9 +5980,6 @@ body.has_dock {
     footer {
         margin-left: -38px;
         padding-left: 38px;
-    }
-    .left-menu-open {
-        margin-left: 38px!important;
     }
 }
 
@@ -6319,8 +6321,8 @@ footer {
 #block-region-side-pre {
     left: -500px;
     position: fixed;
-    top: 0;
-    padding-top: 160px;
+    top: 160px;
+    padding-top: 0;
     overflow-y: auto;
 }
 .dir-rtl #block-region-side-pre {
@@ -6335,15 +6337,14 @@ footer {
 }
 
 .left-menu-open {
-    height: 100%;
+    height: auto;
     left: 0 !important;
+    bottom: 0;
     margin-bottom: 0 !important;
     /*overflow: auto;*/
     padding-bottom: 0 !important;
     position: absolute;
-	top: 148px;
 	z-index: 1111;
-
 }
 .dir-rtl .left-menu-open {
 	right: 0 !important;
@@ -6886,10 +6887,6 @@ footer {
             padding-left: 0;
             margin-right: -38px;
             padding-right: 38px;
-        }
-        .left-menu-open {
-            margin-right: 38px!important;
-            margin-left: 0px!important
         }
     }
     #portal-link {
@@ -7454,7 +7451,11 @@ footer {
 .buttons_container {
     margin-top: 160px;
 }
-
+body.has_dock {
+    .left-menu-open {
+        margin-left: 38px!important;
+    }
+}
 .students-area {
     padding: 50px 37px;
 }
@@ -7486,10 +7487,16 @@ footer {
     }
 }
 
-.dir-rtl .news-updates .news-icon {
-    right: -66px;
-}
-
+.dir-rtl {
+    &.has_dock {
+        .left-menu-open {
+            margin-right: 38px!important;
+            margin-left: 0px!important
+        }
+    }
+    .news-updates .news-icon {
+        right: -66px;
+    }
 }
 
 @media screen and (max-width: 767px) {
