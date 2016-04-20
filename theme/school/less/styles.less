@@ -2657,12 +2657,21 @@ header.navbar {
 	margin-top: -12px!important;
 }
 
-.block_search_forums #searchform_search {
-    height: 30px;
-    width: 75%!important;
-	border-radius: 4px 0 0 4px;
-	border-right: none;
-	border-color: rgba(0, 0, 0, .4);
+.block_search_forums {
+    #searchform_search {
+        height: 38px;
+        width: ~"-webkit-calc(100% - 38px)";
+        width: ~"-moz-calc(100% - 38px)";
+        width: ~"calc(100% - 38px)";
+        max-width: 100%;
+        border-radius: 4px 0 0 4px;
+        border-right: none;
+        border-color: rgba(0, 0, 0, .4);
+        box-sizing: border-box;
+    }
+    #searchform_button {
+        height: 36px;
+    }
 }
 
 .block_blog_menu,
