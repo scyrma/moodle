@@ -2273,13 +2273,17 @@ header.navbar {
     }
 }
 
-.block_navigation .block_tree li.item_with_icon > p img {
-	vertical-align: middle;
-	position: relative;
-	left: 0;
-	top: 0;
-	width: auto;
-	height: auto;
+.block_navigation .block_tree {
+    li.item_with_icon > p img {
+    	position: relative;
+    	left: 0;
+    	top: 0;
+    	width: auto;
+    	height: auto;
+    }
+    .tree_item {
+        background-position: 0 2px;
+    }
 }
 
 .block {
@@ -2542,6 +2546,7 @@ header.navbar {
 	line-height: 35px;
 	float: right;
 	position: relative;
+    width: 100%;
 }
 
 .adminsearchform input[type="text"],
@@ -2639,7 +2644,6 @@ header.navbar {
 #dockeditempanel {
     .adminsearchform {
         float: left;
-        width: 246px !important;
     }
 
     #searchform_button {
@@ -2657,12 +2661,21 @@ header.navbar {
 	margin-top: -12px!important;
 }
 
-.block_search_forums #searchform_search {
-    height: 30px;
-    width: 75%!important;
-	border-radius: 4px 0 0 4px;
-	border-right: none;
-	border-color: rgba(0, 0, 0, .4);
+.block_search_forums {
+    #searchform_search {
+        height: 38px;
+        width: ~"-webkit-calc(100% - 38px)";
+        width: ~"-moz-calc(100% - 38px)";
+        width: ~"calc(100% - 38px)";
+        max-width: 100%;
+        border-radius: 4px 0 0 4px;
+        border-right: none;
+        border-color: rgba(0, 0, 0, .4);
+        box-sizing: border-box;
+    }
+    #searchform_button {
+        height: 36px;
+    }
 }
 
 .block_blog_menu,
@@ -2670,6 +2683,9 @@ header.navbar {
     .footer {
     	padding: 12px 0 0 0!important;
     	width: 100%;
+    }
+    #adminsearchquery {
+        max-width: 100%;
     }
 }
 
@@ -6032,14 +6048,16 @@ body.has_dock {
 
 #page,
 #dockeditempanel {
-    .block_blog_menu .blogsearchform input[type="submit"] {
-        border-radius: 0 4px 4px 0;
+    .block_blog_menu .blogsearchform {
+        input[name="search"] {
+            max-width: 100%;
+        }
+        input[type="submit"] {
+            border-radius: 0 4px 4px 0;
+        }
     }
-}
-
-#page {
-    .block_blog_menu .blogsearchform input[type="submit"] {
-        height: 36px;
+    .block_activity_results {
+        text-align: left;
     }
 }
 
@@ -6861,14 +6879,17 @@ footer {
                 border-right: 1px solid rgba(0, 0, 0, .4);
                 border-left: none;
             }
-        }
-        .adminsearchform {
-            float: right;
             div::after {
                 right: auto;
                 left: 0;
                 border-radius: 4px 0 0 4px;
             }
+        }
+        .adminsearchform {
+            float: right;
+        }
+        .block_activity_results {
+            text-align: right;
         }
     }
     &.has_dock {
