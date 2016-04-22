@@ -375,15 +375,6 @@ img {
     #maincontent {
         height: 0;
     }
-    #custom-menu {
-        &.button-mode {
-            float: right;
-
-            .custom-menu-toggle {
-                float: right;
-            }
-        }
-    }
 }
 
 .customMenuButtonMode() {
@@ -3897,10 +3888,6 @@ div[class*="span"] {
                 left: auto;
             }
         }
-
-        #frontpage-edit-button {
-            float: left;
-        }
     }
     #block-region-side-pre {
         .box-shadow(8px 0 10px -12px rgba(0, 0, 0, 0.5) inset);
@@ -4248,16 +4235,6 @@ footer p {
     }
 }
 
-.landing-page {
-    #custom-menu {
-        float: right;
-
-        .custom-menu-toggle {
-            float: right;
-        }
-    }
-}
-
 .static-content-align {
 	padding: 10px;
 }
@@ -4530,12 +4507,14 @@ body {
                 text-align: right;
             }
         }
-        #custom-menu {
-            float: right;
 
-            .custom-menu-toggle {
-                float: right;
-            }
+        #custom-menu,
+        #custom-menu.button-mode {
+            float: right;
+        }
+        .usermenu {
+            right: auto;
+            left: 0;
         }
     }
 }
@@ -4605,10 +4584,6 @@ body {
     #custom-menu,
     #custom-menu.button-mode {
         float: left;
-
-        .custom-menu-toggle {
-            float: left;
-        }
     }
 }
 
@@ -6786,6 +6761,9 @@ footer {
                 margin-right: 0;
                 margin-left: 20px;
             }
+        }
+        #frontpage-edit-button {
+            float: left;
         }
     }
     .logo-img {     // Course page
