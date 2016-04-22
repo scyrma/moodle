@@ -1736,13 +1736,14 @@ footer {
         position: absolute;
         z-index: 10;
         top: 100%;
-        left: 0;
+        left: -1px;
         width: 100%;
         background: #FFFFFF;
         opacity: 0;
         transition: opacity .4s;
         display: none;
         .box-shadow(4px 4px 9px -3px rgba(0, 0, 0, 0.2));
+        border-left: 1px solid rgba(0, 0, 0, 0);
         li {
             &:first-child {
             	border-bottom: 1px solid #e3e3ec;
@@ -4495,6 +4496,11 @@ body {
 
 .dir-rtl {
     &.landing-page {
+        header {
+            .usermenu {
+                .box-shadow(5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+            }
+        }
         .mobile-top-head {
             padding-right: 0;
             padding-left: 0;
@@ -4506,11 +4512,6 @@ body {
             &.icontext {
                 text-align: right;
             }
-        }
-
-        #custom-menu,
-        #custom-menu.button-mode {
-            float: right;
         }
         .usermenu {
             right: auto;
@@ -4562,11 +4563,7 @@ body {
     	line-height: 80px;
     }
     .usermenu {
-        border: medium none;
         margin: 0;
-        position: absolute;
-        right: 0;
-        top: 80px;
         .userbutton {
             .dropdown-icon-container {
                 color: @primaryColour;
@@ -4580,10 +4577,6 @@ body {
         left: 0;
         z-index: 11111;
     	top: 80px;
-    }
-    #custom-menu,
-    #custom-menu.button-mode {
-        float: left;
     }
 }
 
@@ -5544,7 +5537,6 @@ form#displayoptions {
 	border-top: none!important;
 	opacity: 1;
 	background: #FFF!important;
-	border-left: 0!important;
 }
 
 .usermenu-show {
@@ -6669,7 +6661,11 @@ footer {
     }
     .usermenu {
         padding: 10px 20px 10px 10px;
-
+        .box-shadow(5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+        .menu {
+            left: auto;
+            right: -1px;
+        }
         .name {
             margin-right: 0;
             margin-left: 100px;
@@ -6740,6 +6736,7 @@ footer {
             float: left;
             border-right: solid 1px rgba(0, 0, 0, 0.1);
             border-left: 0;
+            box-shadow: none;
         }
 
         .mobile-top-head {
