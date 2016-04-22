@@ -2280,9 +2280,14 @@ header.navbar {
     	top: 0;
     	width: auto;
     	height: auto;
+        float: left;
     }
     .tree_item {
-        background-position: 0 2px;
+        background-position: left 2px;
+        &.hasicon .item-content-wrap {
+            display: block;
+            overflow: hidden;
+        }
     }
 }
 
@@ -6543,6 +6548,14 @@ footer {
         .collapsed .tree_item.branch
         .tree_item.branch {
             background-position: center right !important;
+        }
+    }
+    .block_navigation .block_tree {
+        li.item_with_icon > p img {
+            float: right;
+        }
+        .tree_item {
+            background-position: right 2px;
         }
     }
     .loginbox .loginform .form-input {
