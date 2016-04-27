@@ -46,11 +46,14 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
             $courseinfo = array(
                 'url' => $url->out(),
-                'enrolledusersurl' => $enrolledusersurl->out(),
                 'name' => $name,
                 'summary' => $summary,
                 'contacts' => array(),
             );
+
+            if (has_capability('moodle/course:enrolreview', context_course::instance($course->id))) {
+                $courseinfo['enrolledusersurl'] = $enrolledusersurl->out();
+            }
 
             if ($course->has_course_contacts()) {
                 foreach ($course->get_course_contacts() as $userid => $coursecontact) {
@@ -102,7 +105,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
                 'name' => $category->name,
                 'url' => $url->out(),
                 'description' => $helper->get_category_formatted_description($category),
-                'coursecount' => $category->coursecount,
+                'coursecount' => $category->get_courses_count(),
                 'subcategorycount' => $category->get_children_count(),
             );
         };
@@ -142,17 +145,6 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         }
 
         return $urls;
-    }
-
-    public function full_header() {
-        $html = html_writer::start_tag('header', array('id' => 'page-header', 'class' => 'clearfix'));
-        $html .= html_writer::start_div('clearfix', array('id' => 'page-navbar'));
-        $html .= html_writer::tag('nav', $this->navbar(), array('class' => 'breadcrumb-nav'));
-        $html .= html_writer::div($this->page_heading_button(), 'breadcrumb-button');
-        $html .= html_writer::end_div();
-        $html .= html_writer::tag('div', $this->course_header(), array('id' => 'course-header'));
-        $html .= html_writer::end_tag('header');
-        return $html;
     }
 
     public function favicon() {
