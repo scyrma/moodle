@@ -2826,7 +2826,7 @@ header.navbar {
     box-shadow: 0px 2px 2px 0px darken(#efefef, 10%);
 }
 
-.category {
+#category-list-container .category {
     min-height: 200px;
     border: 1px solid transparent;
 
@@ -3766,7 +3766,7 @@ body.login-pagebg {
 }
 
 .students-area {
-    padding: 70px 0;
+    padding: 70px 5px;
     background: #efefef;
     color: #444;
     .container .testimonials-container {
@@ -3784,6 +3784,7 @@ body.login-pagebg {
 }
 
 .students-area-feedback {
+    padding: 10px;
     h2 {
         font-size: 30px;
         line-height: normal;
@@ -4016,7 +4017,7 @@ div[class*="span"] {
 .course-item h5 {
 	font-size: 15px;
 }
-.category {
+#category-list-container .category {
     .name {
         font-size: 15px;
     }
@@ -4822,6 +4823,9 @@ h2 {
 }
 .popular-courses {
 	padding: 30px 0 30px;
+    .nheading {
+        margin-bottom: 30px;
+    }
     h3 {
         font-size: 16px;
         line-height: 20px;
@@ -4829,7 +4833,6 @@ h2 {
     }
 }
 .popular-courses-nav {
-	padding: 0 0 30px;
     > div {
         display: inline-block;
         margin: 0;
@@ -4847,6 +4850,21 @@ h2 {
 }
 .course-item {
     max-width: 100%;
+}
+.students-area {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+.students-area-feedback {
+    h2 {
+        padding-bottom: 0;
+    }
+    h3 {
+        padding-bottom: 0;
+    }
+    p {
+        padding-bottom: 0;
+    }
 }
 footer {
     span {
@@ -5363,6 +5381,9 @@ form.logselecform select.select {
 
 .preferences-groups .preferences-group ul li {
 	padding: 2px 0;
+    img {
+        margin-right: 8px;
+    }
 }
 
 .box.generalbox.boxaligncenter.boxwidthnormal {
@@ -6905,6 +6926,12 @@ footer {
     .accesshide {
         right: -10000px;
     }
+    .preferences-groups .preferences-group ul li {
+        img {
+            margin-right: 0;
+            margin-left: 8px;
+        }
+    }
 }
 
 .nav-collapse.collapse {
@@ -7405,8 +7432,7 @@ footer {
 
     h2 {
         font-size: 30px;
-        font-weight: bold;
-        line-height: 42px;
+        line-height: normal;
     }
     h4 {
         font-size: 18px;
