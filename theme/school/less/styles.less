@@ -1782,10 +1782,32 @@ footer {
 }
 
 #page-header {
-	background: @blockColour;
-	padding: 0 15px;
+    #page-navbar {
+        background: @blockColour;
+        padding: 0 15px;
+    }
     .navbar {
     	padding: 8px 0 0;
+    }
+    .page-context-header {
+        background: lighten(@blockColour, 4%);
+        padding: 10px 15px;
+    }
+}
+
+.page-context-header {
+    .page-header-image {
+        margin-bottom: 0;
+    }
+    .userpicture {
+        border-radius: 50%;
+        border: solid 3px rgba(0, 0, 0, 0.25);
+        height: 55px;
+        width: 55px;
+        vertical-align: middle;
+    }
+    .page-header-headings {
+        margin-top: 0;
     }
 }
 
