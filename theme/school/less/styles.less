@@ -868,13 +868,14 @@ img {
 
 #page-navbar {
     .breadcrumb-button {
-        line-height: 68px;
         box-sizing: border-box;
         margin-top: 0;
+        text-align: right;
 
         .singlebutton {
             float: none;
             display: inline-block;
+            margin-top: 10px;
         }
     }
 }
@@ -1784,7 +1785,7 @@ footer {
 #page-header {
     #page-navbar {
         background: @blockColour;
-        padding: 0 15px;
+        padding: 6px 15px 19px;
     }
     .navbar {
     	padding: 8px 0 0;
@@ -2431,7 +2432,7 @@ header.navbar {
 
 .breadcrumb-nav {
 	margin: 0!important;
-	padding: 22px 0;
+    padding: 16px 0 3px;
 }
 
 .breadcrumb {
@@ -4941,7 +4942,13 @@ footer {
 	padding: 30% 0 4px;
 }
 .breadcrumb {
-	font-size: 9px;
+	font-size: 12px;
+    li {
+        line-height: normal;
+    }
+    span.arrow::before {
+        font-size: 14px;
+    }
 }
 .forum-header {
 	font-size: 15px;
@@ -5997,7 +6004,7 @@ body.has_dock {
         padding-right: 0;
     }
     #page-header {
-        margin-left: -38px;
+        margin-left: -53px;
         padding-left: 53px;
     }
     footer {
@@ -6763,6 +6770,11 @@ footer {
     .breadcrumb span.arrow {
     	transform: rotateY(180deg);
     }
+    #page-navbar {
+        .breadcrumb-button {
+            text-align: left;
+        }
+    }
     &.landing-page {
         .usermenu {
             float: left;
@@ -6919,8 +6931,8 @@ footer {
         }
         #page-header {
             margin-left: 0;
-            padding-left: 15px;
-            margin-right: -38px;
+            padding-left: 0;
+            margin-right: -53px;
             padding-right: 53px;
         }
         footer {
