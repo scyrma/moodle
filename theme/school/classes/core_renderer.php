@@ -147,6 +147,22 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         return $urls;
     }
 
+    public function full_header() {
+        global $PAGE;
+        $html = html_writer::start_tag('header', array('id' => 'page-header', 'class' => 'clearfix'));
+        $html .= html_writer::start_div('clearfix', array('id' => 'page-navbar'));
+        $html .= html_writer::tag('nav', $this->navbar(), array('class' => 'breadcrumb-nav'));
+        $html .= html_writer::div($this->page_heading_button(), 'breadcrumb-button');
+        $html .= html_writer::end_div();
+        if ($PAGE->context->contextlevel == CONTEXT_USER) {
+            // Only display the context header for username, avatar and message button
+            $html .= $this->context_header();
+        }
+        $html .= html_writer::tag('div', $this->course_header(), array('id' => 'course-header'));
+        $html .= html_writer::end_tag('header');
+        return $html;
+    }
+
     public function favicon() {
         global $PAGE, $CFG;
         $favicon = $PAGE->theme->setting_file_url('faviconurl', 'faviconurl');
