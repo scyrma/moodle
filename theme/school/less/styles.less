@@ -868,13 +868,14 @@ img {
 
 #page-navbar {
     .breadcrumb-button {
-        line-height: 68px;
         box-sizing: border-box;
         margin-top: 0;
+        text-align: right;
 
         .singlebutton {
             float: none;
             display: inline-block;
+            margin-top: 10px;
         }
     }
 }
@@ -1782,10 +1783,32 @@ footer {
 }
 
 #page-header {
-	background: @blockColour;
-	padding: 0 15px;
+    #page-navbar {
+        background: @blockColour;
+        padding: 6px 15px 19px;
+    }
     .navbar {
     	padding: 8px 0 0;
+    }
+    .page-context-header {
+        background: lighten(@blockColour, 4%);
+        padding: 10px 15px;
+    }
+}
+
+.page-context-header {
+    .page-header-image {
+        margin-bottom: 0;
+    }
+    .userpicture {
+        border-radius: 50%;
+        border: solid 3px rgba(0, 0, 0, 0.25);
+        height: 55px;
+        width: 55px;
+        vertical-align: middle;
+    }
+    .page-header-headings {
+        margin-top: 0;
     }
 }
 
@@ -2409,7 +2432,7 @@ header.navbar {
 
 .breadcrumb-nav {
 	margin: 0!important;
-	padding: 22px 0;
+    padding: 16px 0 3px;
 }
 
 .breadcrumb {
@@ -3427,7 +3450,7 @@ a:hover,
 
 .mform fieldset.collapsible legend a.fheader {
     padding-left: 42px;
-    background-position: 20px center
+    background-position: 20px center;
 }
 
 /* 8 - END of forum pages ---------------------------------------------------------- */
@@ -4021,10 +4044,6 @@ div[class*="span"] {
     .name {
         font-size: 15px;
     }
-}
-h2 {
-	font-size: 38px;
-	line-height: 45px;
 }
 #region-main {
 	padding: 26px 15px 40px;
@@ -4817,10 +4836,6 @@ body {
 	width: 86%;
 	margin: 2%;
 }
-h2 {
-	font-size: 26px;
-	line-height: 30px;
-}
 .popular-courses {
 	padding: 30px 0 30px;
     .nheading {
@@ -4927,7 +4942,13 @@ footer {
 	padding: 30% 0 4px;
 }
 .breadcrumb {
-	font-size: 9px;
+	font-size: 12px;
+    li {
+        line-height: normal;
+    }
+    span.arrow::before {
+        font-size: 14px;
+    }
 }
 .forum-header {
 	font-size: 15px;
@@ -5983,7 +6004,7 @@ body.has_dock {
         padding-right: 0;
     }
     #page-header {
-        margin-left: -38px;
+        margin-left: -53px;
         padding-left: 53px;
     }
     footer {
@@ -6749,6 +6770,11 @@ footer {
     .breadcrumb span.arrow {
     	transform: rotateY(180deg);
     }
+    #page-navbar {
+        .breadcrumb-button {
+            text-align: left;
+        }
+    }
     &.landing-page {
         .usermenu {
             float: left;
@@ -6905,8 +6931,8 @@ footer {
         }
         #page-header {
             margin-left: 0;
-            padding-left: 15px;
-            margin-right: -38px;
+            padding-left: 0;
+            margin-right: -53px;
             padding-right: 53px;
         }
         footer {
@@ -7488,9 +7514,6 @@ body.has_dock {
         margin-left: 38px!important;
     }
 }
-.students-area {
-    padding: 50px 37px;
-}
 .contact-home-area {
     padding: 50px 37px;
 }
@@ -7502,11 +7525,10 @@ body.has_dock {
 
 .students-area-feedback {
     h2 {
-        font-size: 18px;
         padding-bottom: 20px;
     }
     h3 {
-        padding-bottom: 20px
+        padding-bottom: 20px;
     }
 }
 
@@ -7523,12 +7545,14 @@ body.has_dock {
     &.has_dock {
         .left-menu-open {
             margin-right: 38px!important;
-            margin-left: 0px!important
+            margin-left: 0px!important;
         }
     }
     .news-updates .news-icon {
         right: -66px;
     }
+}
+
 }
 
 @media screen and (max-width: 767px) {
