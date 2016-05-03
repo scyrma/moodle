@@ -4444,10 +4444,6 @@ footer .container-fluid {
     	text-align: center;
     }
 }
-.footnote.text-center {
-    text-align: center;
-}
-
 .students-area {
     .masonry-2-col {
         -webkit-column-count: 1;
@@ -6640,7 +6636,8 @@ footer {
         }
     }
     footer {
-        .span4 {
+        .span4,
+        .span6 {
             float: right;
             &:first-child {
                 margin-left: @fluidGridGutterWidth;
@@ -6666,6 +6663,22 @@ footer {
             }
             .span3 {
                 width: auto;
+            }
+        }
+    }
+    .contact-info {
+        #contact-list {
+            li {
+                i {
+                    margin-right: 0;
+                    margin-left: 0.5em;
+                }
+            }
+        }
+        #social-list {
+            li {
+                margin-right: 0;
+                margin-left: 1em;
             }
         }
     }
@@ -7577,16 +7590,35 @@ body.has_dock {
 .contact-home-area .text-field-home {
     width: 100% !important;
 }
-
+.footnote.text-center {
+    text-align: center;
+}
+.contact-info {
+    #social-list {
+        li {
+            margin-right: .5em;
+            margin-left: .5em;
+        }
+    }
+}
 .dir-rtl {
     .news-updates .news-icon {
         right: auto;
         left: 22px;
     }
     footer {
+        .helplink,
         .footnote.text-center,
         .logininfo {
             text-align: center;
+        }
+    }
+    .contact-info {
+        #social-list {
+            li {
+                margin-right: .5em;
+                margin-left: .5em;
+            }
         }
     }
 }
