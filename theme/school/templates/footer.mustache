@@ -18,7 +18,7 @@
     <div class="container-fluid">
         <div class="row-fluid">
             {{#hascontacts}}
-                <div class="span4 contact-info">
+                <div class="contact-info {{#hasleftfootnotes}}span4{{/hasleftfootnotes}}{{^hasleftfootnotes}}span6{{/hasleftfootnotes}}">
                     <h4>{{#str}} contactus, theme_school {{/str}}</h4>
                     <ul id="contact-list">
                         {{#address}}<li><i class="fa fa-map-marker"></i>{{.}}</li>{{/address}}
@@ -34,17 +34,27 @@
                 </div>
             {{/hascontacts}}
 
-            <div class="{{#hascontacts}}span4{{/hascontacts}}{{^hascontacts}}span8{{/hascontacts}}">
-                {{{leftfootnote}}}
-                <p class="foot-note-links">
-                    {{#footnotelinks}}
-                        <a href="{{{url}}}">{{text}}</a>
-                        <span>|</span>
-                    {{/footnotelinks}}
-                </p>
-            </div>
+            {{#hasleftfootnotes}}
+                <div class="{{#hascontacts}}span4{{/hascontacts}}{{^hascontacts}}span6{{/hascontacts}}">
+                    {{{leftfootnote}}}
+                    <p class="foot-note-links">
+                        {{#footnotelinks}}
+                            <a href="{{{url}}}">{{text}}</a>
+                            <span>|</span>
+                        {{/footnotelinks}}
+                    </p>
+                </div>
+            {{/hasleftfootnotes}}
 
-            <div class="span4 right">
+            <div class="right 
+                {{#hasleftfootnotes}}
+                    {{#hascontacts}}span4{{/hascontacts}}
+                    {{^hascontacts}}span6{{/hascontacts}}
+                {{/hasleftfootnotes}}
+                {{^hasleftfootnotes}}
+                    {{#hascontacts}}span6{{/hascontacts}}
+                    {{^hascontacts}}span12{{/hascontacts}}
+                {{/hasleftfootnotes}}">
                 <div id="course-footer">{{{coursefooter}}}</div>
                 {{#footnote}}<div class="footnote text-center">{{{.}}}</div>{{/footnote}}
                 {{#doclinks}}<p class="helplink">{{{.}}}</p>{{/doclinks}}
