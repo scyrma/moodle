@@ -759,6 +759,9 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
         $context['footnotelinks'] = $footnotelinks;
 
+        // Determine whether the 2nd column has content or not.
+        $context['hasleftfootnotes'] = !empty($footnotelinks) || !empty(strip_tags($leftfootnote));
+
         $context['facebookurl'] = get_config('theme_school', 'facebook');
         $context['twitterurl'] = get_config('theme_school', 'twitter');
         $context['googleplusurl'] = get_config('theme_school', 'googleplus');
