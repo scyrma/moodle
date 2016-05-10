@@ -3509,60 +3509,29 @@ body.login-pagebg {
 }
 
 .loginbox {
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 40px;
-    overflow: visible;
+    overflow: hidden;
     margin: 0;
     h2 {
-    	font-size: 30px;
     	font-weight: 100;
-    	line-height: 31px;
-    	color: @primaryFontColour;
-    	margin: 0;
-    	padding: 60px 0 16px!important;
-    	text-align: center;
-    	font-family: "OpenSans";
     	text-transform: uppercase;
-        span {
-        	color: #FFFFFF;
-        }
+        margin: 0 0 25px;
+        padding: 60px 0 0;
     }
     .subcontent {
-    	padding: 0!important;
-    	margin: 0!important;
-    	/*text-align: center;*/
-        &::after {
-        	content: "";
-        	display: block;
-        	clear: both;
-        }
+    	padding: 0;
     }
     .loginform {
-    	margin-top: 16px;
-    	text-align: left;
         .form-label {
         	display: none;
         }
         .form-input {
-        	float: none!important;
+        	float: none;
         	margin: 0 auto;
             input {
-            	background: #FFFFFF;
-            	outline: none;
-            	border-radius: 4px;
             	padding: 0 14px 0;
-            	font-size: 11px;
-            	font-weight: 400;
-            	display: block;
             	box-sizing: border-box;
-            	margin: 0 auto 10px;
-            	color: #333;
             	height: 39px;
-            	line-height: normal;
             	width: 100%!important;
-            	font-family: 'OpenSans', sans-serif;
                 &:-ms-input-placeholder,
                 &::-webkit-input-placeholder,
                 &::-moz-placeholder {
@@ -3572,24 +3541,10 @@ body.login-pagebg {
             }
         }
     }
-    label {
-        display: block;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 40px;
-        color: #939393;
-        margin: 0;
-        padding: 0 0 0;
-    }
     input[type="submit"] {
     	border: none;
-    	color: #FFFFFF;
     	margin-top: 10px;
     	padding: 10px 20px!important;
-    	font-weight: 600;
-    	font-family: "Raleway";
-    	box-shadow: 0 2px 0 0 rgba(0, 0, 0, .9);
-    	text-shadow: none;
     	text-transform: uppercase;
     }
 }
@@ -3627,21 +3582,9 @@ body.login-pagebg {
 }
 
 .rememberpass {
-	float: none;
+    margin: 10px 0;
     input {
-    	float: none;
-    	display: inline-block;
-    	margin: 0 0 0;
     	display: none;
-    }
-    label {
-    	float: none;
-    	display: inline-block;
-    	font-size: 12px;
-    	line-height: 32px;
-    	font-weight: 400;
-    	color: @primaryFontColour;
-    	padding: 15px 0 0;
     }
     input + label {
         &::before {
@@ -3650,18 +3593,10 @@ body.login-pagebg {
         	width: 21px;
         	height: 21px;
         	vertical-align: middle;
-        	margin: 0 18px 0 0;
+            margin-right: 18px;
             background-color: darken(@primaryColour, 10%);
             line-height: 21px;
             border-radius: 3px;
-        }
-        &::after {
-        	content: "";
-        	display: inline-block;
-        	position: absolute;
-        	width: 0;
-        	height: 0;
-        	vertical-align: middle;
         }
     }
     input:checked + label::before {
@@ -3669,33 +3604,14 @@ body.login-pagebg {
     }
 }
 
-.loginbox .loginpanel .desc {
-	margin: 0!important;
-	font-size: 12px;
-}
-
-.forgetpass {
-	clear: both;
-	float: none;
-	width: auto;
-	text-align: center;
-	padding: 0;
-	margin: 0 auto;
-}
-
 #page .loginbox {
     a {
-    	padding: 0 0 0;
-    	margin: 0 0 0;
-    	font-size: 12px;
-    	font-weight: 400;
-    	line-height: 31px;
-        color: @secondaryLinkColour;
-        opacity: 0.5;
-    	text-decoration: none;
-    }
-    .forgetpass a {
         color: @primaryLinkColour;
+        opacity: 0.5;
+    }
+    .forgetpass {
+        margin-top: 15px;
+        margin-bottom: 5px;
     }
 }
 
@@ -6274,11 +6190,6 @@ footer a:focus,
         left: 0;
         z-index: -1;
     }
-}
-
-.landing-page header,
-.loginpanel {
-    background: #E74C3C;
 }
 
 .navbar-inner {
