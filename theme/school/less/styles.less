@@ -6513,8 +6513,16 @@ footer {
             background-position: right 2px;
         }
     }
-    .loginbox .loginform .form-input {
-    	margin: 0 auto !important;
+    .loginbox {
+        .loginform .form-input {
+        	margin: 0 auto;
+        }
+        &.twocolumns {
+            .loginpanel,
+            .signuppanel {
+                float: none;
+            }
+        }
     }
     .news-updates {
         .news-icon {
