@@ -278,11 +278,11 @@ img {
 }
 
 #block-region-side-post {
-	width: 270px;
-	width: 16.5%;
-	width: ~"-webkit-calc(270px)";
-	width: ~"-moz-calc(270px)";
-	width: ~"calc(270px)";
+    width: 270px;
+    width: 16.5%;
+    width: ~"-webkit-calc(270px)";
+    width: ~"-moz-calc(270px)";
+    width: ~"calc(270px)";
 }
 #region-main-box {
 	width: 81.5%;
@@ -340,6 +340,13 @@ img {
 
 .blogsearchform {
     position: relative;
+}
+
+:target::before {
+    content: "";
+    display: block;
+    height: 80px;
+    margin: -80px 0 0;
 }
 
 /* 2 - END of Tags styles and General styles ---------------------------------------------------------- */
@@ -868,13 +875,14 @@ img {
 
 #page-navbar {
     .breadcrumb-button {
-        line-height: 68px;
         box-sizing: border-box;
         margin-top: 0;
+        text-align: right;
 
         .singlebutton {
             float: none;
             display: inline-block;
+            margin-top: 10px;
         }
     }
 }
@@ -1782,10 +1790,32 @@ footer {
 }
 
 #page-header {
-	background: @blockColour;
-	padding: 0 15px;
+    #page-navbar {
+        background: @blockColour;
+        padding: 6px 15px 19px;
+    }
     .navbar {
     	padding: 8px 0 0;
+    }
+    .page-context-header {
+        background: lighten(@blockColour, 4%);
+        padding: 10px 15px;
+    }
+}
+
+.page-context-header {
+    .page-header-image {
+        margin-bottom: 0;
+    }
+    .userpicture {
+        border-radius: 50%;
+        border: solid 3px rgba(0, 0, 0, 0.25);
+        height: 55px;
+        width: 55px;
+        vertical-align: middle;
+    }
+    .page-header-headings {
+        margin-top: 0;
     }
 }
 
@@ -1903,8 +1933,8 @@ header.navbar {
 
 #block-region-side-pre,
 #block-region-side-post {
-    margin: 0 0 -99999px 0;
-    padding: 0 0 99999px 0;
+    padding: 0;
+    margin: 0;
     .block {
         background: none;
     	border: none;
@@ -2409,7 +2439,7 @@ header.navbar {
 
 .breadcrumb-nav {
 	margin: 0!important;
-	padding: 22px 0;
+    padding: 16px 0 3px;
 }
 
 .breadcrumb {
@@ -3427,7 +3457,12 @@ a:hover,
 
 .mform fieldset.collapsible legend a.fheader {
     padding-left: 42px;
-    background-position: 20px center
+    background-position: 20px center;
+}
+
+.path-mod-attendance .userpicture {
+    max-width: inherit;
+    max-height: inherit;
 }
 
 /* 8 - END of forum pages ---------------------------------------------------------- */
@@ -3474,60 +3509,32 @@ body.login-pagebg {
 }
 
 .loginbox {
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 40px;
-    overflow: visible;
+    overflow: hidden;
     margin: 0;
     h2 {
-    	font-size: 30px;
     	font-weight: 100;
-    	line-height: 31px;
-    	color: @primaryFontColour;
-    	margin: 0;
-    	padding: 60px 0 16px!important;
-    	text-align: center;
-    	font-family: "OpenSans";
     	text-transform: uppercase;
-        span {
-        	color: #FFFFFF;
-        }
+        margin: 0 0 25px;
+        padding: 60px 0 0;
     }
     .subcontent {
-    	padding: 0!important;
-    	margin: 0!important;
-    	/*text-align: center;*/
-        &::after {
-        	content: "";
-        	display: block;
-        	clear: both;
-        }
+    	padding: 0;
+    }
+    .guestsub {
+        margin: 0;
     }
     .loginform {
-    	margin-top: 16px;
-    	text-align: left;
         .form-label {
         	display: none;
         }
         .form-input {
-        	float: none!important;
+        	float: none;
         	margin: 0 auto;
             input {
-            	background: #FFFFFF;
-            	outline: none;
-            	border-radius: 4px;
             	padding: 0 14px 0;
-            	font-size: 11px;
-            	font-weight: 400;
-            	display: block;
             	box-sizing: border-box;
-            	margin: 0 auto 10px;
-            	color: #333;
             	height: 39px;
-            	line-height: normal;
             	width: 100%!important;
-            	font-family: 'OpenSans', sans-serif;
                 &:-ms-input-placeholder,
                 &::-webkit-input-placeholder,
                 &::-moz-placeholder {
@@ -3537,29 +3544,30 @@ body.login-pagebg {
             }
         }
     }
-    label {
-        display: block;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 40px;
-        color: #939393;
-        margin: 0;
-        padding: 0 0 0;
-    }
     input[type="submit"] {
     	border: none;
-    	color: #FFFFFF;
     	margin-top: 10px;
     	padding: 10px 20px!important;
-    	font-weight: 600;
-    	font-family: "Raleway";
-    	box-shadow: 0 2px 0 0 rgba(0, 0, 0, .9);
-    	text-shadow: none;
     	text-transform: uppercase;
+    }
+    &.twocolumns {
+        text-align: center;
+        margin: 0 auto;
+        display: table;
+        .loginpanel,
+        .signuppanel {
+            float: none;
+            display: inline-block;
+        }
+        .signuppanel {
+            background-color: @blockColour;
+            padding: 0 20px 20px;
+        }
     }
 }
 
-.loginpanel {
+.loginpanel,
+.signuppanel {
     margin: 0 auto;
     max-width: 554px;
     position: relative;
@@ -3592,21 +3600,9 @@ body.login-pagebg {
 }
 
 .rememberpass {
-	float: none;
+    margin: 10px 0;
     input {
-    	float: none;
-    	display: inline-block;
-    	margin: 0 0 0;
     	display: none;
-    }
-    label {
-    	float: none;
-    	display: inline-block;
-    	font-size: 12px;
-    	line-height: 32px;
-    	font-weight: 400;
-    	color: @primaryFontColour;
-    	padding: 15px 0 0;
     }
     input + label {
         &::before {
@@ -3615,18 +3611,10 @@ body.login-pagebg {
         	width: 21px;
         	height: 21px;
         	vertical-align: middle;
-        	margin: 0 18px 0 0;
+            margin-right: 18px;
             background-color: darken(@primaryColour, 10%);
             line-height: 21px;
             border-radius: 3px;
-        }
-        &::after {
-        	content: "";
-        	display: inline-block;
-        	position: absolute;
-        	width: 0;
-        	height: 0;
-        	vertical-align: middle;
         }
     }
     input:checked + label::before {
@@ -3634,43 +3622,20 @@ body.login-pagebg {
     }
 }
 
-.loginbox .loginpanel .desc {
-	margin: 0!important;
-	font-size: 12px;
-}
-
-.forgetpass {
-	clear: both;
-	float: none;
-	width: auto;
-	text-align: center;
-	padding: 0;
-	margin: 0 auto;
-}
-
 #page .loginbox {
     a {
-    	padding: 0 0 0;
-    	margin: 0 0 0;
-    	font-size: 12px;
-    	font-weight: 400;
-    	line-height: 31px;
-        color: @secondaryLinkColour;
-        opacity: 0.5;
-    	text-decoration: none;
-    }
-    .forgetpass a {
         color: @primaryLinkColour;
+        opacity: 0.5;
+    }
+    .forgetpass {
+        margin-top: 15px;
+        margin-bottom: 5px;
     }
 }
 
 .guestform input[type="submit"] {
 	font-weight: 400;
 	margin: 20px 0 25px 0;
-}
-
-.signuppanel {
-	display: none!important;
 }
 
 .signup-link {
@@ -3877,6 +3842,14 @@ div[class*="span"] {
 	margin: 0;
 	box-sizing: border-box;
 }
+.loginbox {
+    &.twocolumns {
+        .loginpanel,
+        .signuppanel {
+            display: table-cell;
+        }
+    }
+}
 
 .dir-rtl {
     &.landing-page {
@@ -4021,10 +3994,6 @@ div[class*="span"] {
     .name {
         font-size: 15px;
     }
-}
-h2 {
-	font-size: 38px;
-	line-height: 45px;
 }
 #region-main {
 	padding: 26px 15px 40px;
@@ -4273,6 +4242,13 @@ header.navbar {
     height: 160px;
 }
 
+:target::before {
+    content: "";
+    display: block;
+    height: 160px;
+    margin: -160px 0 0;
+}
+
 .welcome-block {
     iframe {
         max-width: 100%;
@@ -4412,10 +4388,6 @@ footer .container-fluid {
     	text-align: center;
     }
 }
-.footnote.text-center {
-    text-align: center;
-}
-
 .students-area {
     .masonry-2-col {
         -webkit-column-count: 1;
@@ -4796,7 +4768,8 @@ body {
     max-width: 100%;
 }
 
-.loginpanel {
+.loginpanel,
+.signuppanel {
     max-width: 100%;
 
 }
@@ -4816,10 +4789,6 @@ body {
 .div_to_hold {
 	width: 86%;
 	margin: 2%;
-}
-h2 {
-	font-size: 26px;
-	line-height: 30px;
 }
 .popular-courses {
 	padding: 30px 0 30px;
@@ -4927,7 +4896,13 @@ footer {
 	padding: 30% 0 4px;
 }
 .breadcrumb {
-	font-size: 9px;
+	font-size: 12px;
+    li {
+        line-height: normal;
+    }
+    span.arrow::before {
+        font-size: 14px;
+    }
 }
 .forum-header {
 	font-size: 15px;
@@ -5983,7 +5958,7 @@ body.has_dock {
         padding-right: 0;
     }
     #page-header {
-        margin-left: -38px;
+        margin-left: -53px;
         padding-left: 53px;
     }
     footer {
@@ -6238,11 +6213,6 @@ footer a:focus,
         left: 0;
         z-index: -1;
     }
-}
-
-.landing-page header,
-.loginpanel {
-    background: #E74C3C;
 }
 
 .navbar-inner {
@@ -6543,8 +6513,16 @@ footer {
             background-position: right 2px;
         }
     }
-    .loginbox .loginform .form-input {
-    	margin: 0 auto !important;
+    .loginbox {
+        .loginform .form-input {
+        	margin: 0 auto;
+        }
+        &.twocolumns {
+            .loginpanel,
+            .signuppanel {
+                float: none;
+            }
+        }
     }
     .news-updates {
         .news-icon {
@@ -6606,7 +6584,8 @@ footer {
         }
     }
     footer {
-        .span4 {
+        .span4,
+        .span6 {
             float: right;
             &:first-child {
                 margin-left: @fluidGridGutterWidth;
@@ -6632,6 +6611,22 @@ footer {
             }
             .span3 {
                 width: auto;
+            }
+        }
+    }
+    .contact-info {
+        #contact-list {
+            li {
+                i {
+                    margin-right: 0;
+                    margin-left: 0.5em;
+                }
+            }
+        }
+        #social-list {
+            li {
+                margin-right: 0;
+                margin-left: 1em;
             }
         }
     }
@@ -6748,6 +6743,11 @@ footer {
     }
     .breadcrumb span.arrow {
     	transform: rotateY(180deg);
+    }
+    #page-navbar {
+        .breadcrumb-button {
+            text-align: left;
+        }
     }
     &.landing-page {
         .usermenu {
@@ -6905,8 +6905,8 @@ footer {
         }
         #page-header {
             margin-left: 0;
-            padding-left: 15px;
-            margin-right: -38px;
+            padding-left: 0;
+            margin-right: -53px;
             padding-right: 53px;
         }
         footer {
@@ -7488,9 +7488,6 @@ body.has_dock {
         margin-left: 38px!important;
     }
 }
-.students-area {
-    padding: 50px 37px;
-}
 .contact-home-area {
     padding: 50px 37px;
 }
@@ -7502,11 +7499,10 @@ body.has_dock {
 
 .students-area-feedback {
     h2 {
-        font-size: 18px;
         padding-bottom: 20px;
     }
     h3 {
-        padding-bottom: 20px
+        padding-bottom: 20px;
     }
 }
 
@@ -7523,12 +7519,14 @@ body.has_dock {
     &.has_dock {
         .left-menu-open {
             margin-right: 38px!important;
-            margin-left: 0px!important
+            margin-left: 0px!important;
         }
     }
     .news-updates .news-icon {
         right: -66px;
     }
+}
+
 }
 
 @media screen and (max-width: 767px) {
@@ -7540,16 +7538,35 @@ body.has_dock {
 .contact-home-area .text-field-home {
     width: 100% !important;
 }
-
+.footnote.text-center {
+    text-align: center;
+}
+.contact-info {
+    #social-list {
+        li {
+            margin-right: .5em;
+            margin-left: .5em;
+        }
+    }
+}
 .dir-rtl {
     .news-updates .news-icon {
         right: auto;
         left: 22px;
     }
     footer {
+        .helplink,
         .footnote.text-center,
         .logininfo {
             text-align: center;
+        }
+    }
+    .contact-info {
+        #social-list {
+            li {
+                margin-right: .5em;
+                margin-left: .5em;
+            }
         }
     }
 }
