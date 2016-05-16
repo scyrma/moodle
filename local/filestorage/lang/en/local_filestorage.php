@@ -23,4 +23,4 @@
  */
 
 $string['pluginname'] = 'Local Storage';
-$string['quotahit'] = 'Unfortunately this site has now reached it\'s file quota. For more information on this limitation, please visit <a href="{$a->helpurl}" target="_blank">{$a->helpurl}</a>.';
+$string['quotahit'] = 'This site has reached its file quota. To get more more space, upgrade your plan at moodlecloud.com';
