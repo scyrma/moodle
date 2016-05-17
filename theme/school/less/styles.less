@@ -3284,11 +3284,10 @@ a:hover,
 #region-main .forumpost {
 	display: block;
 	position: relative;
-	margin: 0 0 0;
-	padding: 35px 0 0;
-	border: none;
-	border-bottom: 1px solid #D5D5D5;
-	border-left: 1px solid #D5D5D5;
+	margin: -1px 0 0;
+	padding: 0;
+	border: 1px solid #D5D5D5;
+    border-right: none;
 	max-width: 100%;
 	min-height: 20px;
 	background-color: transparent;
@@ -3303,13 +3302,16 @@ a:hover,
 
 .forumpost,
 #region-main .firstpost {
-	padding: 50px 0 0 20px;
-	border-left: none;
+    margin-top: 50px;
 }
 
 .forumpost {
     .header {
 	   margin: 0 0 0;
+       padding-top: 10px;
+       padding-right: 10px;
+       box-sizing: border-box;
+       background-color: @blockColour;
         &.clearfix::after {
     	   content: none;
         }
@@ -3329,9 +3331,6 @@ a:hover,
         .picture {
             padding: 0 20px 0;
         }
-    }
-    &.firstpost .row .picture {
-        padding: 0 30px 0;
     }
     .content {
     	background: transparent;
@@ -3375,6 +3374,7 @@ a:hover,
     	font-size: 13px;
     	line-height: 18px;
     	font-weight: 400;
+        overflow: hidden;
         a {
         	color: #e74c3c;
         	font-weight: 800;
@@ -3391,6 +3391,8 @@ a:hover,
     .maincontent {
     	width: 100%;
     	position: relative;
+        padding: 0 10px;
+        box-sizing: border-box;
     }
 }
 
@@ -3406,13 +3408,11 @@ a:hover,
 
 .forumpost {
     .content .posting.fullpost {
-    	margin-top: 8px;
+        margin-top: 30px;
         p {
         	color: #4c5f65;
-        	font-size: 13px;
         	line-height: 22px;
         	font-weight: 400;
-        	margin: 0 0 0;
         }
     }
     .row .options {
@@ -3420,6 +3420,7 @@ a:hover,
     }
     .options .commands {
     	text-align: right;
+        visibility: hidden;
         a {
         	font-family: "Raleway";
         	padding: 2px 16px 0;
@@ -3431,17 +3432,15 @@ a:hover,
         	text-align: center;
         	display: inline-block;
         	cursor: pointer;
+            visibility: visible;
         }
     }
 }
 
 .path-mod-forum .indent,
 .indent {
-	margin-left: 3%;
 	margin-left: 58px;
 	margin-bottom: -1px;
-	border-left: 1px solid #D5D5D5;
-	border-bottom: 1px solid #D5D5D5;
 }
 
 .path-mod-forum .indent,
@@ -3878,18 +3877,8 @@ div[class*="span"] {
 @media screen and (max-width: 1499px) {
 
 .forumpost {
-    .subject {
-    	font-size: 13px;
-    }
-    .content .posting.fullpost p {
-    	font-size: 12px;
-    	line-height: 18px;
-    }
     .row .picture {
     	padding: 0 10px 0;
-    }
-    &.firstpost .row .picture {
-    	padding: 0 20px 0;
     }
 }
 
@@ -4115,12 +4104,10 @@ div[class*="span"] {
 }
 .path-mod-forum .indent,
 .indent {
-	margin-left: 3%;
 	margin-left: 30px;
 }
 .forumpost .subject {
 	clear: right;
-	padding: 15px 0 0;
 }
 .no-overflow {
 	clear: right;
@@ -4682,6 +4669,7 @@ footer {
 }
 #page-content .row-fluid #region-main {
     padding-left: 0;
+    padding-right: 0;
     width:100%;
 }
 .news-updates .news-updates-extraclass {
@@ -4924,11 +4912,9 @@ footer {
     	float: none;
     	display: block;
     }
-    .content .posting.fullpost p {
-    	padding: 0 10px 0;
-    }
 }
-.path-mod-forum .indent, .indent {
+.path-mod-forum .indent,
+.indent {
 	margin-left: 3%;
 }
 .forumpost {
@@ -4936,7 +4922,6 @@ footer {
     	max-width: 45px;
     }
     .author {
-        font-size: 12px;
         span {
         	font-size: 9px;
         }
@@ -4944,22 +4929,9 @@ footer {
     .content .posting.fullpost {
     	margin-top: 0;
     }
-    &.firstpost .row {
-        .picture {
-        	padding: 0 20px 0;
-        	width: 100%;
-        	box-sizing: border-box;
-        }
-        .topic {
-        	text-align: center;
-        }
-    }
     .post-date {
         float: none;
     }
-}
-#region-main .forumpost.firstpost {
-	padding: 8px 0 0 0;
 }
 .theme-table {
     td:first-child,
