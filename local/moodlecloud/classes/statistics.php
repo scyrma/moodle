@@ -120,7 +120,7 @@ class statistics {
         $where = '';
         $params = array();
         if ($excludedraft) {
-            $where = 'WHERE filearea <> ?';
+            $where = 'AND filearea <> ?';
             $params[] = 'draft';
         }
         $sql = <<<EOF
@@ -130,6 +130,7 @@ FROM (
     SELECT DISTINCT
         filesize
     FROM {files}
+    WHERE referencefileid IS NULL
     {$where}
     GROUP BY filesize, contenthash
 ) AS f;
