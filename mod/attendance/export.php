@@ -39,7 +39,7 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/attendance:export', $context);
 
-$att = new attendance($att, $cm, $course, $context);
+$att = new mod_attendance_structure($att, $cm, $course, $context);
 
 $PAGE->set_url($att->url_export());
 $PAGE->set_title($course->shortname. ": ".$att->name);
@@ -53,11 +53,11 @@ $mform = new mod_attendance_export_form($att->url_export(), $formparams);
 
 if ($formdata = $mform->get_data()) {
 
-    $pageparams = new att_page_with_filter_controls();
+    $pageparams = new mod_attendance_page_with_filter_controls();
     $pageparams->init($cm);
     $pageparams->page = 0;
     $pageparams->group = $formdata->group;
-    $pageparams->set_current_sesstype($formdata->group ? $formdata->group : att_page_with_filter_controls::SESSTYPE_ALL);
+    $pageparams->set_current_sesstype($formdata->group ? $formdata->group : mod_attendance_page_with_filter_controls::SESSTYPE_ALL);
     if (isset($formdata->includeallsessions)) {
         if (isset($formdata->includenottaken)) {
             $pageparams->view = ATT_VIEW_ALL;
@@ -110,7 +110,11 @@ if ($formdata = $mform->get_data()) {
             foreach ($reportdata->sessions as $sess) {
                 $text = userdate($sess->sessdate, get_string('strftimedmyhm', 'attendance'));
                 $text .= ' ';
-                $text .= $sess->groupid ? $reportdata->groups[$sess->groupid]->name : get_string('commonsession', 'attendance');
+                if (!empty($sess->groupid) && empty($reportdata->groups[$sess->groupid])) {
+                    $text .= get_string('deletedgroup', 'attendance');
+                } else {
+                    $text .= $sess->groupid ? $reportdata->groups[$sess->groupid]->name : get_string('commonsession', 'attendance');
+                }
                 $data->tabhead[] = $text;
                 if (isset($formdata->includeremarks)) {
                     $data->tabhead[] = ''; // Space for the remarks.
@@ -119,10 +123,9 @@ if ($formdata = $mform->get_data()) {
         } else {
             print_error('sessionsnotfound', 'attendance', $att->url_manage());
         }
-        if ($reportdata->gradable) {
-            $data->tabhead[] = get_string('grade');
-            $data->tabhead[] = get_string('percentage', 'attendance');
-        }
+        $data->tabhead[] = get_string('takensessions', 'attendance');
+        $data->tabhead[] = get_string('points', 'attendance');
+        $data->tabhead[] = get_string('percentage', 'attendance');
 
         $i = 0;
         $data->table = array();
@@ -154,16 +157,13 @@ if ($formdata = $mform->get_data()) {
             }
             $cellsgenerator = new user_sessions_cells_text_generator($reportdata, $user);
             $data->table[$i] = array_merge($data->table[$i], $cellsgenerator->get_cells(isset($formdata->includeremarks)));
-            if ($reportdata->gradable) {
-                $data->table[$i][] = format_float($reportdata->grades[$user->id]).' / '.
-                    format_float($reportdata->maxgrades[$user->id]);
-                if ($reportdata->maxgrades[$user->id]) {
-                    $percent = $reportdata->grades[$user->id] * 100.0 / $reportdata->maxgrades[$user->id];
-                } else {
-                    $percent = 0.0;
-                }
-                $data->table[$i][] = $percent;
-            }
+
+            $usersummary = $reportdata->summary->get_taken_sessions_summary_for($user->id);
+            $data->table[$i][] = $usersummary->numtakensessions;
+            $data->table[$i][] = format_float($usersummary->takensessionspoints, 1, true, true) . ' / ' .
+                                    format_float($usersummary->takensessionsmaxpoints, 1, true, true);
+            $data->table[$i][] = format_float($usersummary->takensessionspercentage * 100);
+
             $i++;
         }
 
