@@ -109,11 +109,18 @@ class block_xp_report_table extends table_sql {
 
         // Define SQL.
         $this->sql = new stdClass();
-        $this->sql->fields = user_picture::fields('u') . ', COALESCE(x.lvl, 1) AS lvl, x.xp';
-        $this->sql->from = "{user} u LEFT JOIN {block_xp} x ON (x.userid = u.id AND x.courseid = :courseid)";
+        $this->sql->fields = user_picture::fields('u') . ', COALESCE(x.lvl, 1) AS lvl, x.xp, ' .
+            context_helper::get_preload_record_columns_sql('ctx');
+        $this->sql->from = "{user} u
+                       JOIN {context} ctx
+                         ON ctx.instanceid = u.id
+                        AND ctx.contextlevel = :contextlevel
+                  LEFT JOIN {block_xp} x
+                         ON (x.userid = u.id AND x.courseid = :courseid)";
         $this->sql->where = "u.id $insql";
         $this->sql->params = array_merge($inparams, array(
-            'courseid' => $courseid
+            'courseid' => $courseid,
+            'contextlevel' => CONTEXT_USER
         ));
 
         // Define various table settings.
@@ -156,7 +163,13 @@ class block_xp_report_table extends table_sql {
      * @return string Output produced.
      */
     protected function col_progress($row) {
-        $progress = $this->xpmanager->get_progress_for_user($row->id);
+        static $fields = null;
+        if ($fields === null) {
+            $fields = array_flip(block_xp_ladder_table::$xpfields);
+        }
+
+        $record = (object) array_intersect_key((array) $row, $fields);
+        $progress = $this->xpmanager->get_progress_for_user($row->id, $record);
         return $this->xpoutput->progress_bar($progress);
     }
 
@@ -178,7 +191,41 @@ class block_xp_report_table extends table_sql {
      */
     protected function col_userpic($row) {
         global $OUTPUT;
+        context_helper::preload_from_record($row);
         return $OUTPUT->user_picture($row);
     }
 
+    /**
+     * Construct the ORDER BY clause.
+     *
+     * We override this to ensure that XP set to null appears at the bottom, not the top.
+     *
+     * @param array $cols The columns.
+     * @param array $textsortcols The text columns.
+     * @return string
+     */
+    public static function construct_order_by($cols, $textsortcols = array()) {
+        $newcols = array();
+
+        // We use a foreach to maintain the order in which the fields were defined.
+        foreach ($cols as $field => $sortorder) {
+            if ($field == 'xp') {
+                $field = 'COALESCE(xp, 0)';
+            }
+            $newcols[$field] = $sortorder;
+        }
+
+        return parent::construct_order_by($newcols, $textsortcols);
+    }
+
+    /**
+     * Get SQL sort.
+     *
+     * Must be overridden because otherwise it calls the parent 'construct_order_by()'.
+     *
+     * @return string
+     */
+    public function get_sql_sort() {
+        return static::construct_order_by($this->get_sort_columns(), array());
+    }
 }
