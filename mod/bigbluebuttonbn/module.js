@@ -308,6 +308,9 @@ M.mod_bigbluebuttonbn.broker_waitModerator = function(join_url) {
 
 M.mod_bigbluebuttonbn.broker_joinNow = function(join_url, status_message, can_tag) {
     if( can_tag ) {
+        var panelContent = Y.one('#panelContent');
+        panelContent.removeClass('hidden');
+
         bigbluebuttonbn_dataSource.sendRequest({
             request : 'action=meeting_info&id=' + bigbluebuttonbn.meetingid + '&bigbluebuttonbn=' + bigbluebuttonbn.bigbluebuttonbnid,
             callback : {
@@ -383,6 +386,7 @@ M.mod_bigbluebuttonbn.broker_manageRecording = function(action, recordingid, mee
                                             btn_action.setAttribute('title', bigbluebuttonbn.locales.unpublish);
                                             link_action_current_onclick = link_action_current_onclick.replace('publish', 'unpublish');
                                             link_action.setAttribute('onclick', link_action_current_onclick);
+                                            Y.one('#playbacks-' + recordingid).show();
                                             console.info(action + " completed");
                                         } else {
                                             console.info(action + " in process");
@@ -397,6 +401,7 @@ M.mod_bigbluebuttonbn.broker_manageRecording = function(action, recordingid, mee
                                             btn_action.setAttribute('title', bigbluebuttonbn.locales.publish);
                                             link_action_current_onclick = link_action_current_onclick.replace('unpublish', 'publish');
                                             link_action.setAttribute('onclick', link_action_current_onclick);
+                                            Y.one('#playbacks-' + recordingid).hide();
                                             console.info(action + " completed");
                                         } else {
                                             console.info(action + " in process");
