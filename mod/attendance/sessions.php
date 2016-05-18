@@ -28,13 +28,13 @@ require_once(dirname(__FILE__).'/add_form.php');
 require_once(dirname(__FILE__).'/update_form.php');
 require_once(dirname(__FILE__).'/duration_form.php');
 
-$pageparams = new att_sessions_page_params();
+$pageparams = new mod_attendance_sessions_page_params();
 
 $id                     = required_param('id', PARAM_INT);
 $pageparams->action     = required_param('action', PARAM_INT);
 
 if (optional_param('deletehiddensessions', false, PARAM_TEXT)) {
-    $pageparams->action = att_sessions_page_params::ACTION_DELETE_HIDDEN;
+    $pageparams->action = mod_attendance_sessions_page_params::ACTION_DELETE_HIDDEN;
 }
 
 if (empty($pageparams->action)) {
@@ -53,7 +53,7 @@ require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/attendance:manageattendances', $context);
 
-$att = new attendance($att, $cm, $course, $context, $pageparams);
+$att = new mod_attendance_structure($att, $cm, $course, $context, $pageparams);
 
 $PAGE->set_url($att->url_sessions(array('action' => $pageparams->action)));
 $PAGE->set_title($course->shortname. ": ".$att->name);
@@ -62,26 +62,36 @@ $PAGE->set_cacheable(true);
 $PAGE->set_button($OUTPUT->update_module_button($cm->id, 'attendance'));
 $PAGE->navbar->add($att->name);
 
+$currenttab = attendance_tabs::TAB_ADD;
 $formparams = array('course' => $course, 'cm' => $cm, 'modcontext' => $context, 'att' => $att);
 switch ($att->pageparams->action) {
-    case att_sessions_page_params::ACTION_ADD:
-        $url = $att->url_sessions(array('action' => att_sessions_page_params::ACTION_ADD));
+    case mod_attendance_sessions_page_params::ACTION_ADD:
+        $url = $att->url_sessions(array('action' => mod_attendance_sessions_page_params::ACTION_ADD));
         $mform = new mod_attendance_add_form($url, $formparams);
+
+        if ($mform->is_cancelled()) {
+            redirect($att->url_manage());
+        }
 
         if ($formdata = $mform->get_data()) {
             $sessions = construct_sessions_data_for_add($formdata);
             $att->add_sessions($sessions);
-            $message = count($sessions) == 1 ? get_string('sessiongenerated', 'attendance') : get_string('sessionsgenerated', 'attendance', count($sessions));
+            if (count($sessions) == 1) {
+                $message = get_string('sessiongenerated', 'attendance');
+            } else {
+                $message = get_string('sessionsgenerated', 'attendance', count($sessions));
+            }
+
             mod_attendance_notifyqueue::notify_success($message);
             // Redirect to the sessions tab always showing all sessions.
             $SESSION->attcurrentattview[$cm->course] = ATT_VIEW_ALL;
             redirect($att->url_manage());
         }
         break;
-    case att_sessions_page_params::ACTION_UPDATE:
+    case mod_attendance_sessions_page_params::ACTION_UPDATE:
         $sessionid = required_param('sessionid', PARAM_INT);
 
-        $url = $att->url_sessions(array('action' => att_sessions_page_params::ACTION_UPDATE, 'sessionid' => $sessionid));
+        $url = $att->url_sessions(array('action' => mod_attendance_sessions_page_params::ACTION_UPDATE, 'sessionid' => $sessionid));
         $formparams['sessionid'] = $sessionid;
         $mform = new mod_attendance_update_form($url, $formparams);
 
@@ -95,16 +105,15 @@ switch ($att->pageparams->action) {
             mod_attendance_notifyqueue::notify_success(get_string('sessionupdated', 'attendance'));
             redirect($att->url_manage());
         }
+        $currenttab = attendance_tabs::TAB_UPDATE;
         break;
-    case att_sessions_page_params::ACTION_DELETE:
+    case mod_attendance_sessions_page_params::ACTION_DELETE:
         $sessionid = required_param('sessionid', PARAM_INT);
         $confirm   = optional_param('confirm', null, PARAM_INT);
 
         if (isset($confirm) && confirm_sesskey()) {
             $att->delete_sessions(array($sessionid));
-            if ($att->grade > 0) {
-                att_update_all_users_grades($att->id, $att->course, $att->context, $cm);
-            }
+            attendance_update_users_grade($att);
             redirect($att->url_manage(), get_string('sessiondeleted', 'attendance'));
         }
 
@@ -123,7 +132,7 @@ switch ($att->pageparams->action) {
         echo $OUTPUT->confirm($message, $att->url_sessions($params), $att->url_manage());
         echo $OUTPUT->footer();
         exit;
-    case att_sessions_page_params::ACTION_DELETE_SELECTED:
+    case mod_attendance_sessions_page_params::ACTION_DELETE_SELECTED:
         $confirm    = optional_param('confirm', null, PARAM_INT);
 
         if (isset($confirm) && confirm_sesskey()) {
@@ -131,9 +140,7 @@ switch ($att->pageparams->action) {
             $sessionsids = explode('_', $sessionsids);
 
             $att->delete_sessions($sessionsids);
-            if ($att->grade > 0) {
-                att_update_all_users_grades($att->id, $att->course, $att->context, $cm);
-            }
+            attendance_update_users_grade($att);
             redirect($att->url_manage(), get_string('sessiondeleted', 'attendance'));
         }
         $sessid = optional_param_array('sessid', '', PARAM_SEQUENCE);
@@ -160,13 +167,13 @@ switch ($att->pageparams->action) {
         echo $OUTPUT->confirm($message, $att->url_sessions($params), $att->url_manage());
         echo $OUTPUT->footer();
         exit;
-    case att_sessions_page_params::ACTION_CHANGE_DURATION:
+    case mod_attendance_sessions_page_params::ACTION_CHANGE_DURATION:
         $sessid = optional_param_array('sessid', '', PARAM_SEQUENCE);
         $ids = optional_param('ids', '', PARAM_ALPHANUMEXT);
 
         $slist = !empty($sessid) ? implode('_', $sessid) : '';
 
-        $url = $att->url_sessions(array('action' => att_sessions_page_params::ACTION_CHANGE_DURATION));
+        $url = $att->url_sessions(array('action' => mod_attendance_sessions_page_params::ACTION_CHANGE_DURATION));
         $formparams['ids'] = $slist;
         $mform = new mod_attendance_duration_form($url, $formparams);
 
@@ -186,7 +193,7 @@ switch ($att->pageparams->action) {
         }
 
         break;
-    case att_sessions_page_params::ACTION_DELETE_HIDDEN:
+    case mod_attendance_sessions_page_params::ACTION_DELETE_HIDDEN:
         $confirm  = optional_param('confirm', null, PARAM_INT);
         if ($confirm && confirm_sesskey()) {
             $sessions = $att->get_hidden_sessions();
@@ -208,7 +215,7 @@ switch ($att->pageparams->action) {
 }
 
 $output = $PAGE->get_renderer('mod_attendance');
-$tabs = new attendance_tabs($att, attendance_tabs::TAB_ADD);
+$tabs = new attendance_tabs($att, $currenttab);
 echo $output->header();
 echo $output->heading(get_string('attendanceforthecourse', 'attendance').' :: ' .format_string($course->fullname));
 echo $output->render($tabs);
@@ -220,20 +227,20 @@ echo $OUTPUT->footer();
 function construct_sessions_data_for_add($formdata) {
     global $CFG;
 
-    $duration = $formdata->durtime['hours'] * HOURSECS + $formdata->durtime['minutes'] * MINSECS;
+    $sesstarttime = $formdata->sestime['starthour'] * HOURSECS + $formdata->sestime['startminute'] * MINSECS;
+    $sesendtime = $formdata->sestime['endhour'] * HOURSECS + $formdata->sestime['endminute'] * MINSECS;
+    $sessiondate = $formdata->sessiondate + $sesstarttime;
+    $duration = $sesendtime - $sesstarttime;
     $now = time();
 
     $sessions = array();
     if (isset($formdata->addmultiply)) {
-        $startdate = $formdata->sessiondate;
-        $starttime = $startdate - usergetmidnight($startdate);
+        $startdate = $sessiondate;
         $enddate = $formdata->sessionenddate + DAYSECS; // Because enddate in 0:0am.
 
         if ($enddate < $startdate) {
             return null;
         }
-
-        $days = (int)ceil(($enddate - $startdate) / DAYSECS);
 
         // Getting first day of week.
         $sdate = $startdate;
@@ -252,7 +259,8 @@ function construct_sessions_data_for_add($formdata) {
                 $dinfo = usergetdate($sdate);
                 if (isset($formdata->sdays) && array_key_exists($wdaydesc[$dinfo['wday']], $formdata->sdays)) {
                     $sess = new stdClass();
-                    $sess->sessdate = usergetmidnight($sdate) + $starttime;
+                    $sess->sessdate = make_timestamp($dinfo['year'], $dinfo['mon'], $dinfo['mday'],
+                                                     $formdata->sestime['starthour'], $formdata->sestime['startminute']);
                     $sess->duration = $duration;
                     $sess->descriptionitemid = $formdata->sdescription['itemid'];
                     $sess->description = $formdata->sdescription['text'];
@@ -273,7 +281,7 @@ function construct_sessions_data_for_add($formdata) {
         }
     } else {
         $sess = new stdClass();
-        $sess->sessdate = $formdata->sessiondate;
+        $sess->sessdate = $sessiondate;
         $sess->duration = $duration;
         $sess->descriptionitemid = $formdata->sdescription['itemid'];
         $sess->description = $formdata->sdescription['text'];
@@ -291,7 +299,7 @@ function construct_sessions_data_for_add($formdata) {
 }
 
 function fill_groupid($formdata, &$sessions, $sess) {
-    if ($formdata->sessiontype == attendance::SESSION_COMMON) {
+    if ($formdata->sessiontype == mod_attendance_structure::SESSION_COMMON) {
         $sess = clone $sess;
         $sess->groupid = 0;
         $sessions[] = $sess;
