@@ -74,7 +74,7 @@ Feature: Test the various new features in the attendance module
 
     And I follow "Add"
     And I set the following fields to these values:
-      | Create multiple sessions | 0 |
+      | id_addmultiply | 0 |
     And I click on "submitbutton" "button"
 
     When I follow "Take attendance"
@@ -127,7 +127,7 @@ Feature: Test the various new features in the attendance module
     And I follow "Test attendance"
     And I follow "Add"
     And I set the following fields to these values:
-      | Create multiple sessions | 0 |
+      | id_addmultiply | 0 |
     And I click on "submitbutton" "button"
 
     And I follow "Export"
@@ -166,17 +166,19 @@ Feature: Test the various new features in the attendance module
 
     And I follow "Add"
     And I set the following fields to these values:
-      | Create multiple sessions | 0                      |
-      | Use status set           | Status set 1 (P L E A) |
-      | id_sessiondate_hour      | 10                     |
-      | id_sessiondate_minute    | 0                      |
+      | id_addmultiply            | 0                      |
+      | Status set                | Status set 1 (P L E A) |
+      | id_sestime_starthour      | 10                     |
+      | id_sestime_startminute    | 0                      |
+      | id_sestime_endhour        | 11 |
     And I click on "submitbutton" "button"
     And I follow "Add"
     And I set the following fields to these values:
-      | Create multiple sessions | 0                    |
-      | Use status set           | Status set 2 (G O B) |
-      | id_sessiondate_hour      | 11                   |
-      | id_sessiondate_minute    | 0                    |
+      | id_addmultiply            | 0                    |
+      | Status set                | Status set 2 (G O B) |
+      | id_sestime_starthour      | 12                   |
+      | id_sestime_startminute    | 0                    |
+      | id_sestime_endhour        | 13 |
     And I click on "submitbutton" "button"
 
     When I click on "Take attendance" "link" in the "10:00" "table_row"
@@ -186,7 +188,7 @@ Feature: Test the various new features in the attendance module
     And "Set status for all users to «Absent»" "link" should exist
 
     When I follow "Sessions"
-    And I click on "Take attendance" "link" in the "11:00" "table_row"
+    And I click on "Take attendance" "link" in the "12:00" "table_row"
     Then "Set status for all users to «Great»" "link" should exist
     And "Set status for all users to «OK»" "link" should exist
     And "Set status for all users to «Bad»" "link" should exist
@@ -197,7 +199,7 @@ Feature: Test the various new features in the attendance module
     And I follow "Test attendance"
     And I follow "Add"
     And I set the following fields to these values:
-      | Create multiple sessions | 0 |
+      | id_addmultiply | 0 |
     And I click on "submitbutton" "button"
     And I click on "Take attendance" "link"
 

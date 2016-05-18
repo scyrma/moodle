@@ -54,26 +54,26 @@ class mod_attendance_add_form extends moodleform {
                 $mform->addElement('static', 'sessiontypedescription', get_string('sessiontype', 'attendance'),
                                   get_string('commonsession', 'attendance'));
                 $mform->addHelpButton('sessiontypedescription', 'sessiontype', 'attendance');
-                $mform->addElement('hidden', 'sessiontype', attendance::SESSION_COMMON);
+                $mform->addElement('hidden', 'sessiontype', mod_attendance_structure::SESSION_COMMON);
                 $mform->setType('sessiontype', PARAM_INT);
                 break;
             case SEPARATEGROUPS:
                 $mform->addElement('static', 'sessiontypedescription', get_string('sessiontype', 'attendance'),
                                   get_string('groupsession', 'attendance'));
                 $mform->addHelpButton('sessiontypedescription', 'sessiontype', 'attendance');
-                $mform->addElement('hidden', 'sessiontype', attendance::SESSION_GROUP);
+                $mform->addElement('hidden', 'sessiontype', mod_attendance_structure::SESSION_GROUP);
                 $mform->setType('sessiontype', PARAM_INT);
                 break;
             case VISIBLEGROUPS:
                 $radio = array();
                 $radio[] = &$mform->createElement('radio', 'sessiontype', '',
-                                                  get_string('commonsession', 'attendance'), attendance::SESSION_COMMON);
+                                                  get_string('commonsession', 'attendance'), mod_attendance_structure::SESSION_COMMON);
                 $radio[] = &$mform->createElement('radio', 'sessiontype', '',
-                                                  get_string('groupsession', 'attendance'), attendance::SESSION_GROUP);
+                                                  get_string('groupsession', 'attendance'), mod_attendance_structure::SESSION_GROUP);
                 $mform->addGroup($radio, 'sessiontype', get_string('sessiontype', 'attendance'), ' ', false);
                 $mform->setType('sessiontype', PARAM_INT);
                 $mform->addHelpButton('sessiontype', 'sessiontype', 'attendance');
-                $mform->setDefault('sessiontype', attendance::SESSION_COMMON);
+                $mform->setDefault('sessiontype', mod_attendance_structure::SESSION_COMMON);
                 break;
         }
         if ($groupmode == SEPARATEGROUPS or $groupmode == VISIBLEGROUPS) {
@@ -89,7 +89,7 @@ class mod_attendance_add_form extends moodleform {
                 }
                 $select = &$mform->addElement('select', 'groups', get_string('groups', 'group'), $selectgroups);
                 $select->setMultiple(true);
-                $mform->disabledIf('groups', 'sessiontype', 'neq', attendance::SESSION_GROUP);
+                $mform->disabledIf('groups', 'sessiontype', 'neq', mod_attendance_structure::SESSION_GROUP);
             } else {
                 if ($groupmode == VISIBLEGROUPS) {
                     $mform->updateElementAttr($radio, array('disabled' => 'disabled'));
@@ -102,28 +102,35 @@ class mod_attendance_add_form extends moodleform {
             }
         }
 
-        $mform->addElement('checkbox', 'addmultiply', '', get_string('createmultiplesessions', 'attendance'));
-        $mform->addHelpButton('addmultiply', 'createmultiplesessions', 'attendance');
+        attendance_form_sessiondate_selector($mform);
+
+        // Select which status set to use.
+        $maxstatusset = attendance_get_max_statusset($this->_customdata['att']->id);
+        if ($maxstatusset > 0) {
+            $opts = array();
+            for ($i = 0; $i <= $maxstatusset; $i++) {
+                $opts[$i] = attendance_get_setname($this->_customdata['att']->id, $i);
+            }
+            $mform->addElement('select', 'statusset', get_string('usestatusset', 'mod_attendance'), $opts);
+        } else {
+            $mform->addElement('hidden', 'statusset', 0);
+            $mform->setType('statusset', PARAM_INT);
+        }
 
         // Students can mark own attendance.
         $mform->addElement('checkbox', 'studentscanmark', '', get_string('studentscanmark', 'attendance'));
         $mform->addHelpButton('studentscanmark', 'studentscanmark', 'attendance');
 
-        $mform->addElement('date_time_selector', 'sessiondate', get_string('sessiondate', 'attendance'));
+        $mform->addElement('editor', 'sdescription', get_string('description', 'attendance'), array('rows' => 1, 'columns' => 80),
+                            array('maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $modcontext));
+        $mform->setType('sdescription', PARAM_RAW);
 
-        for ($i = 0; $i <= 23; $i++) {
-            $hours[$i] = sprintf("%02d", $i);
-        }
-        for ($i = 0; $i < 60; $i += 5) {
-            $minutes[$i] = sprintf("%02d", $i);
-        }
-        $durtime = array();
-        $durtime[] =& $mform->createElement('select', 'hours', get_string('hour', 'form'), $hours, false, true);
-        $durtime[] =& $mform->createElement('select', 'minutes', get_string('minute', 'form'), $minutes, false, true);
-        $mform->addGroup($durtime, 'durtime', get_string('duration', 'attendance'), array(' '), true);
+        // For multiple sessions.
 
-        $mform->addElement('date_selector', 'sessionenddate', get_string('sessionenddate', 'attendance'));
-        $mform->disabledIf('sessionenddate', 'addmultiply', 'notchecked');
+        $mform->addElement('header', 'headeraddmultiplesessions', get_string('addmultiplesessions', 'attendance'));
+
+        $mform->addElement('checkbox', 'addmultiply', '', get_string('repeatasfollows', 'attendance'));
+        $mform->addHelpButton('addmultiply', 'createmultiplesessions', 'attendance');
 
         $sdays = array();
         if ($CFG->calendar_startwday === '0') { // Week start from sunday.
@@ -138,7 +145,7 @@ class mod_attendance_add_form extends moodleform {
         if ($CFG->calendar_startwday !== '0') { // Week start from sunday.
             $sdays[] =& $mform->createElement('checkbox', 'Sun', '', get_string('sunday', 'calendar'));
         }
-        $mform->addGroup($sdays, 'sdays', get_string('sessiondays', 'attendance'), array('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'), true);
+        $mform->addGroup($sdays, 'sdays', get_string('repeaton', 'attendance'), array('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'), true);
         $mform->disabledIf('sdays', 'addmultiply', 'notchecked');
 
         $period = array(1 => 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -146,25 +153,11 @@ class mod_attendance_add_form extends moodleform {
         $periodgroup = array();
         $periodgroup[] =& $mform->createElement('select', 'period', '', $period, false, true);
         $periodgroup[] =& $mform->createElement('static', 'perioddesc', '', get_string('week', 'attendance'));
-        $mform->addGroup($periodgroup, 'periodgroup', get_string('period', 'attendance'), array(' '), false);
+        $mform->addGroup($periodgroup, 'periodgroup', get_string('repeatevery', 'attendance'), array(' '), false);
         $mform->disabledIf('periodgroup', 'addmultiply', 'notchecked');
 
-        // Select which status set to use.
-        $maxstatusset = attendance_get_max_statusset($this->_customdata['att']->id);
-        if ($maxstatusset > 0) {
-            $opts = array();
-            for ($i = 0; $i <= $maxstatusset; $i++) {
-                $opts[$i] = att_get_setname($this->_customdata['att']->id, $i);
-            }
-            $mform->addElement('select', 'statusset', get_string('usestatusset', 'mod_attendance'), $opts);
-        } else {
-            $mform->addElement('hidden', 'statusset', 0);
-            $mform->setType('statusset', PARAM_INT);
-        }
-
-        $mform->addElement('editor', 'sdescription', get_string('description', 'attendance'), null,
-            array('maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $modcontext));
-        $mform->setType('sdescription', PARAM_RAW);
+        $mform->addElement('date_selector', 'sessionenddate', get_string('repeatuntil', 'attendance'));
+        $mform->disabledIf('sessionenddate', 'addmultiply', 'notchecked');
 
         $mform->addElement('hidden', 'coursestartdate', $course->startdate);
         $mform->setType('coursestartdate', PARAM_INT);
@@ -172,8 +165,7 @@ class mod_attendance_add_form extends moodleform {
         $mform->addElement('hidden', 'previoussessiondate', 0);
         $mform->setType('previoussessiondate', PARAM_INT);
 
-        $submitstring = get_string('addsession', 'attendance');
-        $this->add_action_buttons(false, $submitstring);
+        $this->add_action_buttons(true, get_string('add', 'attendance'));
     }
 
     /**
@@ -184,12 +176,18 @@ class mod_attendance_add_form extends moodleform {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
+        $sesstarttime = $data['sestime']['starthour'] * HOURSECS + $data['sestime']['startminute'] * MINSECS;
+        $sesendtime = $data['sestime']['endhour'] * HOURSECS + $data['sestime']['endminute'] * MINSECS;
+        if ($sesendtime < $sesstarttime) {
+            $errors['sestime'] = get_string('invalidsessionendtime', 'attendance');
+        }
+
         if (!empty($data['addmultiply']) && $data['sessiondate'] != 0 && $data['sessionenddate'] != 0 &&
-                   $data['sessionenddate'] < $data['sessiondate']) {
+                $data['sessionenddate'] < $data['sessiondate']) {
             $errors['sessionenddate'] = get_string('invalidsessionenddate', 'attendance');
         }
 
-        if ($data['sessiontype'] == attendance::SESSION_GROUP and empty($data['groups'])) {
+        if ($data['sessiontype'] == mod_attendance_structure::SESSION_GROUP and empty($data['groups'])) {
             $errors['groups'] = get_string('errorgroupsnotselected', 'attendance');
         }
 

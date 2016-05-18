@@ -15,17 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Class definition for mod_attendance_manage_page_params
  *
- * @package    mod_attendance
- * @copyright  2011 Artem Andreev <andreev.artem@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   mod_attendance
+ * @copyright  2016 Dan Marsden http://danmarsden.com
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version  = 2016031501;
-$plugin->requires = 2015051100;
-$plugin->release = '3.1.0.1';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->cron     = 0;
-$plugin->component = 'mod_attendance';
+/**
+ * stores constants/data passed depending on view.
+ *
+ * @copyright  2016 Dan Marsden http://danmarsden.com
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class mod_attendance_manage_page_params extends mod_attendance_page_with_filter_controls {
+    public function  __construct() {
+        $this->selectortype = mod_attendance_page_with_filter_controls::SELECTOR_SESS_TYPE;
+    }
 
+    public function get_significant_params() {
+        return array();
+    }
+}
