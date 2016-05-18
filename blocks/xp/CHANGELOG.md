@@ -1,6 +1,31 @@
 Changelog
 =========
 
+v2.1.2
+------
+
+- Fixed a bug causing a blank ladder on older PHP versions
+- Fixed a bug where some settings where not backed up
+- Fixed a bug where some rules filters were not restored
+- Other minor bug fixes and improvements
+
+v2.1.1
+------
+
+- Fixed a bug where new settings were not saved on new installs
+
+v2.1.0
+------
+
+- Level up notification always appears on the right course
+- Ladder option to only display neighbours in the ranking
+- Ladder option to hide the rank, or display a relative rank
+- Ladder option to hide other participants identity
+- Ladder opens on the page where the current user is located
+- Performance improvements on ladder and report
+- Fixed a bug where some students with 0 XP would appear at the top of the report
+- Minor usability improvements
+
 v2.0.1
 ------
 
