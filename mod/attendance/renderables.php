@@ -43,6 +43,7 @@ class attendance_tabs implements renderable {
     const TAB_EXPORT        = 4;
     const TAB_PREFERENCES   = 5;
     const TAB_TEMPORARYUSERS = 6; // Tab for managing temporary users.
+    const TAB_UPDATE        = 7;
 
     public $currenttab;
 
@@ -55,7 +56,7 @@ class attendance_tabs implements renderable {
      * @param attendance $att instance
      * @param $currenttab - one of attendance_tabs constants
      */
-    public function  __construct(attendance $att, $currenttab=null) {
+    public function  __construct(mod_attendance_structure $att, $currenttab=null) {
         $this->att = $att;
         $this->currenttab = $currenttab;
     }
@@ -74,31 +75,36 @@ class attendance_tabs implements renderable {
         );
         if (has_any_capability($capabilities, $context)) {
             $toprow[] = new tabobject(self::TAB_SESSIONS, $this->att->url_manage()->out(),
-                get_string('sessions', 'attendance'));
+                            get_string('sessions', 'attendance'));
         }
 
         if (has_capability('mod/attendance:manageattendances', $context)) {
             $toprow[] = new tabobject(self::TAB_ADD,
-                                     $this->att->url_sessions()->out(true, array('action' => att_sessions_page_params::ACTION_ADD)),
-                        get_string('add', 'attendance'));
+                            $this->att->url_sessions()->out(true, array('action' => mod_attendance_sessions_page_params::ACTION_ADD)),
+                            get_string('addsession', 'attendance'));
         }
         if (has_capability('mod/attendance:viewreports', $context)) {
             $toprow[] = new tabobject(self::TAB_REPORT, $this->att->url_report()->out(),
-                        get_string('report', 'attendance'));
+                            get_string('report', 'attendance'));
         }
 
         if (has_capability('mod/attendance:export', $context)) {
             $toprow[] = new tabobject(self::TAB_EXPORT, $this->att->url_export()->out(),
-                        get_string('export', 'attendance'));
+                            get_string('export', 'attendance'));
         }
 
         if (has_capability('mod/attendance:changepreferences', $context)) {
             $toprow[] = new tabobject(self::TAB_PREFERENCES, $this->att->url_preferences()->out(),
-                        get_string('settings', 'attendance'));
+                            get_string('settings', 'attendance'));
         }
         if (has_capability('mod/attendance:managetemporaryusers', $context)) {
             $toprow[] = new tabobject(self::TAB_TEMPORARYUSERS, $this->att->url_managetemp()->out(),
-                                      get_string('tempusers', 'attendance'));
+                            get_string('tempusers', 'attendance'));
+        }
+        if ($this->currenttab == self::TAB_UPDATE && has_capability('mod/attendance:manageattendances', $context)) {
+            $toprow[] = new tabobject(self::TAB_UPDATE,
+                            $this->att->url_sessions()->out(true, array('action' => mod_attendance_sessions_page_params::ACTION_UPDATE)),
+                            get_string('changesession', 'attendance'));
         }
 
         return array($toprow);
@@ -122,9 +128,9 @@ class attendance_filter_controls implements renderable {
     private $urlpath;
     private $urlparams;
 
-    private $att;
+    public $att;
 
-    public function __construct(attendance $att, $report = false) {
+    public function __construct(mod_attendance_structure $att, $report = false) {
         global $PAGE;
 
         $this->pageparams = $att->pageparams;
@@ -132,13 +138,12 @@ class attendance_filter_controls implements renderable {
         $this->cm = $att->cm;
 
         // This is a report control only if $reports is true and the attendance block can be graded.
-        $this->reportcontrol = $report && ($att->grade > 0);
+        $this->reportcontrol = $report;
 
         $this->curdate = $att->pageparams->curdate;
 
         $date = usergetdate($att->pageparams->curdate);
         $mday = $date['mday'];
-        $wday = $date['wday'];
         $mon = $date['mon'];
         $year = $date['year'];
 
@@ -225,7 +230,7 @@ class attendance_manage_data implements renderable {
      *
      * @param attendance $att instance
      */
-    public function __construct(attendance $att) {
+    public function __construct(mod_attendance_structure $att) {
 
         $this->sessions = $att->get_filtered_sessions();
 
@@ -270,7 +275,7 @@ class attendance_take_data implements renderable {
     private $urlparams;
     private $att;
 
-    public function  __construct(attendance $att) {
+    public function  __construct(mod_attendance_structure $att) {
         if ($att->pageparams->grouptype) {
             $this->users = $att->get_users($att->pageparams->grouptype, $att->pageparams->page);
         } else {
@@ -331,17 +336,9 @@ class attendance_user_data implements renderable {
 
     public $pageparams;
 
-    public $stat;
-
     public $statuses;
 
-    public $gradable;
-
-    public $grade;
-
-    public $maxgrade;
-
-    public $decimalpoints;
+    public $summary;
 
     public $filtercontrols;
 
@@ -354,27 +351,16 @@ class attendance_user_data implements renderable {
     private $urlpath;
     private $urlparams;
 
-    public function  __construct(attendance $att, $userid) {
-        global $CFG, $USER;
-
+    public function  __construct(mod_attendance_structure $att, $userid) {
         $this->user = $att->get_user($userid);
 
         $this->pageparams = $att->pageparams;
 
-        if (!$this->decimalpoints = grade_get_setting($att->course->id, 'decimalpoints')) {
-            $this->decimalpoints = $CFG->grade_decimalpoints;
-        }
-
-        if ($this->pageparams->mode == att_view_page_params::MODE_THIS_COURSE) {
+        if ($this->pageparams->mode == mod_attendance_view_page_params::MODE_THIS_COURSE) {
             $this->statuses = $att->get_statuses(true, true);
 
-            $this->stat = $att->get_user_stat($userid);
-
-            $this->gradable = $att->grade > 0;
-            if ($this->gradable) {
-                $this->grade = $att->get_user_grade($userid);
-                $this->maxgrade = $att->get_user_max_grade($userid);
-            }
+            $this->summary = new mod_attendance_summary($att->id, array($userid), $att->pageparams->startdate,
+                                                        $att->pageparams->enddate);
 
             $this->filtercontrols = new attendance_filter_controls($att);
 
@@ -382,42 +368,17 @@ class attendance_user_data implements renderable {
 
             $this->groups = groups_get_all_groups($att->course->id);
         } else {
-            $this->coursesatts = att_get_user_courses_attendances($userid);
+            $this->coursesatts = attendance_get_user_courses_attendances($userid);
             $this->statuses = array();
-            $this->stat = array();
-            $this->gradable = array();
-            $this->grade = array();
-            $this->maxgrade = array();
+            $this->summary = array();
             foreach ($this->coursesatts as $atid => $ca) {
                 // Check to make sure the user can view this cm.
                 if (!get_fast_modinfo($ca->courseid)->instances['attendance'][$ca->attid]->uservisible) {
                     unset($this->courseatts[$atid]);
                     continue;
                 }
-                $statuses = att_get_statuses($ca->attid);
-                $usertakensessionscount = att_get_user_taken_sessions_count($ca->attid, $ca->coursestartdate, $userid, $att->cm);
-                $userstatusesstat = att_get_user_statuses_stat($ca->attid, $ca->coursestartdate, $userid, $att->cm);
-
-                $this->statuses[$ca->attid] = $statuses;
-
-                $this->stat[$ca->attid]['completed'] = $usertakensessionscount;
-                $this->stat[$ca->attid]['statuses'] = $userstatusesstat;
-
-                $this->gradable[$ca->attid] = $ca->attgrade > 0;
-
-                if ($this->gradable[$ca->attid]) {
-                    $this->grade[$ca->attid] = att_get_user_grade($userstatusesstat, $statuses);
-                    // For getting sessions count implemented simplest method - taken sessions.
-                    // It can have error if users don't have attendance info for some sessions.
-                    // In the future we can implement another methods:
-                    // * all sessions between user start enrolment date and now;
-                    // * all sessions between user start and end enrolment date.
-                    $this->maxgrade[$ca->attid] = att_get_user_max_grade($usertakensessionscount, $statuses);
-                } else {
-                    // For more comfortable and universal work with arrays.
-                    $this->grade[$ca->attid] = null;
-                    $this->maxgrade[$ca->attid] = null;
-                }
+                $this->statuses[$ca->attid] = attendance_get_statuses($ca->attid);
+                $this->summary[$ca->attid] = new mod_attendance_summary($ca->attid, array($userid));
             }
         }
         $this->urlpath = $att->url_view()->out_omit_querystring();
@@ -444,25 +405,15 @@ class attendance_report_data implements renderable {
     // Includes disablrd/deleted statuses.
     public $allstatuses;
 
-    public $gradable;
-
-    public $decimalpoints;
-
     public $usersgroups = array();
 
     public $sessionslog = array();
 
-    public $usersstats = array();
-
-    public $grades = array();
-
-    public $maxgrades = array();
+    public $summary = array();
 
     public $att;
 
-    public function  __construct(attendance $att) {
-        global $CFG;
-
+    public function  __construct(mod_attendance_structure $att) {
         $currenttime = time();
         if ($att->pageparams->view == ATT_VIEW_NOTPRESENT) {
             $att->pageparams->enddate = $currenttime;
@@ -487,32 +438,21 @@ class attendance_report_data implements renderable {
         $this->statuses = $att->get_statuses(true, true);
         $this->allstatuses = $att->get_statuses(false, true);
 
-        $this->gradable = $att->grade > 0;
-
-        if (!$this->decimalpoints = grade_get_setting($att->course->id, 'decimalpoints')) {
-            $this->decimalpoints = $CFG->grade_decimalpoints;
+        if ($att->pageparams->view == ATT_VIEW_SUMMARY) {
+            $this->summary = new mod_attendance_summary($att->id);
+        } else {
+            $this->summary = new mod_attendance_summary($att->id, array_keys($this->users),
+                                                        $att->pageparams->startdate, $att->pageparams->enddate);
         }
 
-        $maxgrade = att_get_user_max_grade(count($this->sessions), $this->statuses);
-
         foreach ($this->users as $key => $user) {
-            $grade = 0;
-            if ($this->gradable) {
-                $grade = $att->get_user_grade($user->id, array('enddate' => $currenttime));
-                $totalgrade = $att->get_user_grade($user->id);
-            }
-
-            if ($att->pageparams->view != ATT_VIEW_NOTPRESENT || $grade < $maxgrade) {
+            $usersummary = $this->summary->get_taken_sessions_summary_for($user->id);
+            if ($att->pageparams->view != ATT_VIEW_NOTPRESENT ||
+                    $usersummary->takensessionspoints < $usersummary->takensessionsmaxpoints ||
+                    $usersummary->takensessionsmaxpoints == 0) {
                 $this->usersgroups[$user->id] = groups_get_all_groups($att->course->id, $user->id);
 
                 $this->sessionslog[$user->id] = $att->get_user_filtered_sessions_log($user->id);
-
-                $this->usersstats[$user->id] = $att->get_user_statuses_stat($user->id);
-
-                if ($this->gradable) {
-                    $this->grades[$user->id] = $totalgrade;
-                    $this->maxgrades[$user->id] = $att->get_user_max_grade($user->id);;
-                }
             } else {
                 unset($this->users[$key]);
             }
@@ -544,12 +484,12 @@ class attendance_preferences_data implements renderable {
 
     public $errors;
 
-    public function __construct(attendance $att, $errors) {
+    public function __construct(mod_attendance_structure $att, $errors) {
         $this->statuses = $att->get_statuses(false);
         $this->errors = $errors;
 
         foreach ($this->statuses as $st) {
-            $st->haslogs = att_has_logs_for_status ($st->id);
+            $st->haslogs = attendance_has_logs_for_status($st->id);
         }
 
         $this->att = $att;
@@ -570,7 +510,7 @@ class attendance_set_selector implements renderable {
 
     private $att;
 
-    public function __construct(attendance $att, $maxstatusset) {
+    public function __construct(mod_attendance_structure $att, $maxstatusset) {
         $this->att = $att;
         $this->maxstatusset = $maxstatusset;
     }
@@ -590,7 +530,7 @@ class attendance_set_selector implements renderable {
     }
 
     public function get_status_name($statusset) {
-        return att_get_setname($this->att->id, $statusset, true);
+        return attendance_get_setname($this->att->id, $statusset, true);
     }
 }
 
