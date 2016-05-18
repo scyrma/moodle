@@ -39,11 +39,26 @@ class block_xp_manager {
     /** Default coef for XP algo. */
     const DEFAULT_COEF = 1.3;
 
-    /** User preference key storing if we should notify a user for his level up */
-    const USERPREF_NOTIFY = 'block_xp_notify_level_up';
+    /** User preference key storing if we should notify a user for his level up. It should be prepended to the course ID. */
+    const USERPREF_NOTIFY = 'block_xp_notify_level_up_';
 
     /** User preference key storing if they dismissed the like notice */
     const USERPREF_NOTICES = 'block_xp_notices';
+
+    /** No ranking. */
+    const RANK_OFF = 0;
+
+    /** Ranking enabled. */
+    const RANK_ON = 1;
+
+    /** Relative ranking. Difference in XP between row and point of reference. */
+    const RANK_REL = 2;
+
+    /** Hide identity. */
+    const IDENTITY_OFF = 0;
+
+    /** Identity displayed. */
+    const IDENTITY_ON = 1;
 
     /** @var array Array of singletons. */
     protected static $instances;
@@ -71,6 +86,9 @@ class block_xp_manager {
         'maxactionspertime' => 10,           // Max actions during timepermaxactions.
         'timeformaxactions' => 60,           // Time during which max actions cannot be reached.
         'timebetweensameactions' => 180,     // Time between similar actions.
+        'identitymode' => self::IDENTITY_ON, // Identity mode.
+        'rankmode' => self::RANK_ON,         // Rank mode.
+        'neighbours' => 0,                   // Number of neighbours to show on ladder, 0 means everyone.
     );
 
     /** @var context The context related to this manager.*/
@@ -474,11 +492,16 @@ class block_xp_manager {
      * Get progress renderable of user.
      *
      * @param int $userid The user ID.
+     * @param stdClass $record The prefetched record, if any.
      * @return block_xp_progress The progress renderable.
      */
-    public function get_progress_for_user($userid) {
+    public function get_progress_for_user($userid, stdClass $record = null) {
         global $DB;
-        $record = $DB->get_record('block_xp', array('courseid' => $this->courseid, 'userid' => $userid));
+
+        if (!$record) {
+            $record = $DB->get_record('block_xp', array('courseid' => $this->courseid, 'userid' => $userid));
+        }
+
         if (!$record) {
             $record = new stdClass();
             $record->xp = 0;
@@ -524,6 +547,24 @@ class block_xp_manager {
             return $levels[$level];
         }
         return false;
+    }
+
+    /**
+     * Check if the user has levelled up since the last time we reset the status.
+     *
+     * See {@link self::update_user_level()} for when the flag is set.
+     *
+     * @param int $userid The user that may have levelled up.
+     * @param boolean $reset The reset flag, when true the levelled up flag will be reset.
+     * @return boolean
+     */
+    public function has_levelled_up($userid, $reset = true) {
+        $prefkey = self::USERPREF_NOTIFY . $this->courseid;
+        $levelledup = get_user_preferences($prefkey, false, $userid);
+        if ($levelledup && $reset) {
+            unset_user_preference($prefkey);
+        }
+        return $levelledup;
     }
 
     /**
@@ -752,7 +793,7 @@ class block_xp_manager {
 
         if ($level > $lvl && $this->get_config('enablelevelupnotif')) {
             // Level up, and we want to notify the user.
-            set_user_preference(self::USERPREF_NOTIFY, 1, $userid);
+            set_user_preference(self::USERPREF_NOTIFY . $this->courseid, 1, $userid);
         }
     }
 
