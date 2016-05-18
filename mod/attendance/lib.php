@@ -227,11 +227,11 @@ function attendance_user_outline($course, $user, $mod, $attendance) {
         $result->time = 0;
     }
     if (has_capability('mod/attendance:canbelisted', $mod->context, $user->id)) {
-        $statuses = att_get_statuses($attendance->id);
-        $grade = att_get_user_grade(att_get_user_statuses_stat($attendance->id, $course->startdate,
-                                                               $user->id, $mod), $statuses);
-        $maxgrade = att_get_user_max_grade(att_get_user_taken_sessions_count($attendance->id, $course->startdate,
-                                                                             $user->id, $mod), $statuses);
+        $statuses = attendance_get_statuses($attendance->id);
+        $grade = attendance_get_user_grade(attendance_get_user_statuses_stat($attendance->id, $course->startdate,
+                                                                      $user->id, $mod), $statuses);
+        $maxgrade = attendance_get_user_max_grade(attendance_get_user_taken_sessions_count($attendance->id, $course->startdate,
+                                                                                    $user->id, $mod), $statuses);
 
         $result->info = $grade.' / '.$maxgrade;
     }
@@ -250,7 +250,7 @@ function attendance_user_complete($course, $user, $mod, $attendance) {
     require_once($CFG->libdir.'/gradelib.php');
 
     if (has_capability('mod/attendance:canbelisted', $mod->context, $user->id)) {
-        echo construct_full_user_stat_html_table($attendance, $course, $user, $mod);
+        echo construct_full_user_stat_html_table($attendance, $user);
     }
 }
 
@@ -276,7 +276,7 @@ function attendance_grade_item_update($attendance, $grades=null) {
     if (!isset($attendance->courseid)) {
         $attendance->courseid = $attendance->course;
     }
-    if (! $course = $DB->get_record('course', array('id' => $attendance->course))) {
+    if (!$DB->get_record('course', array('id' => $attendance->course))) {
         error("Course is misconfigured");
     }
 
@@ -284,7 +284,6 @@ function attendance_grade_item_update($attendance, $grades=null) {
         $params = array('itemname' => $attendance->name, 'idnumber' => $attendance->cmidnumber);
     } else {
         // MDL-14303.
-        $cm = get_coursemodule_from_instance('attendance', $attendance->id);
         $params = array('itemname' => $attendance->name/*, 'idnumber'=>$attendance->id*/);
     }
 
@@ -324,10 +323,6 @@ function attendance_grade_item_delete($attendance) {
 
     return grade_update('mod/attendance', $attendance->courseid, 'mod', 'attendance',
                         $attendance->id, 0, null, array('deleted' => 1));
-}
-
-function attendance_get_participants($attendanceid) {
-    return false;
 }
 
 /**
@@ -398,16 +393,4 @@ function attendance_pluginfile($course, $cm, $context, $filearea, $args, $forced
         return false;
     }
     send_stored_file($file, 0, 0, true);
-}
-
-// Count the number of status sets that exist for this instance.
-function attendance_get_max_statusset($attendanceid) {
-    global $DB;
-
-    $max = $DB->get_field_sql('SELECT MAX(setnumber) FROM {attendance_statuses} WHERE attendanceid = ? AND deleted = 0',
-                              array($attendanceid));
-    if ($max) {
-        return $max;
-    }
-    return 0;
 }
