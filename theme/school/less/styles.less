@@ -1516,47 +1516,36 @@ body .btn-see-all {
     position: fixed;
     top: 45%;
     right: 0;
-    left: auto;
-    width: 30px;
-    line-height: 30px;
-    background-color: #f98012;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    display: inline-block;
-    overflow: hidden;
-    .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
-    .opacity(80);
-    .border-radius(5px 0 0 5px);
-
-    &:hover {
-        .opacity(100);
-    }
     #portal-link {
         color: #fff;
         font-size: 15px;
         text-decoration: none;
         display: inline-block;
         white-space: nowrap;
-        -webkit-transform: translate(0,100%) rotate(-90deg);
-           -moz-transform: translate(0,100%) rotate(-90deg);
-            -ms-transform: translate(0,100%) rotate(-90deg);
-             -o-transform: translate(0,100%) rotate(-90deg);
-                transform: translate(0,100%) rotate(-90deg);
-        -webkit-transform-origin: 0 0;
-           -moz-transform-origin: 0 0;
-            -ms-transform-origin: 0 0;
-             -o-transform-origin: 0 0;
-                transform-origin: 0 0;
+        line-height: 30px;
+        background-color: #f98012;
+        padding: 0 5px;
+        .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+        .opacity(80);
+        .border-radius(5px 5px 0 0);
+        -webkit-transform: rotate(-90deg);
+           -moz-transform: rotate(-90deg);
+            -ms-transform: rotate(-90deg);
+             -o-transform: rotate(-90deg);
+                transform: rotate(-90deg);
+        -webkit-transform-origin: 100% 100%;
+           -moz-transform-origin: 100% 100%;
+            -ms-transform-origin: 100% 100%;
+             -o-transform-origin: 100% 100%;
+                transform-origin: 100% 100%;
         img {
             height: 20px;
             width: 33px;
             display: inline-block;
             vertical-align: sub;
         }
-        &::after {
-            content: '';
-            float: left;
-            margin-top: 100%;
+         &:hover {
+            .opacity(100);
         }
     }
 }
@@ -1565,20 +1554,17 @@ body .btn-see-all {
     #portal-link-container {
         left: 0;
         right: auto;
-        .box-shadow(5px 1px 17px -5px rgba(0, 0, 0, 0.5));
-        .border-radius(0 5px 5px 0);
-
         #portal-link {
-            -webkit-transform: translate(0,100%) rotate(90deg);
-               -moz-transform: translate(0,100%) rotate(90deg);
-                -ms-transform: translate(0,100%) rotate(90deg);
-                 -o-transform: translate(0,100%) rotate(90deg);
-                    transform: translate(0,100%) rotate(90deg);
-            -webkit-transform-origin: 100% 0;
-               -moz-transform-origin: 100% 0;
-                -ms-transform-origin: 100% 0;
-                 -o-transform-origin: 100% 0;
-                    transform-origin: 100% 0;
+            -webkit-transform: rotate(90deg);
+               -moz-transform: rotate(90deg);
+                -ms-transform: rotate(90deg);
+                 -o-transform: rotate(90deg);
+                    transform: rotate(90deg);
+            -webkit-transform-origin: 0 100%;
+               -moz-transform-origin: 0 100%;
+                -ms-transform-origin: 0 100%;
+                 -o-transform-origin: 0 100%;
+                    transform-origin: 0 100%;
         }
     }
 }
