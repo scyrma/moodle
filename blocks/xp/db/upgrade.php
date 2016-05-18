@@ -212,6 +212,104 @@ function xmldb_block_xp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2015030903, 'xp');
     }
 
+    if ($oldversion < 2016021500) {
+
+        // We changed the way the "Level up" notifications are triggered, so we'll remove the old flags from the database.
+        $DB->delete_records('user_preferences', array('name' => 'block_xp_notify_level_up'));
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2016021500, 'xp');
+    }
+
+    if ($oldversion < 2016021501) {
+
+        // Define field identitymode to be added to block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('identitymode', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'timebetweensameactions');
+
+        // Conditionally launch add field identitymode.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2016021501, 'xp');
+    }
+
+    if ($oldversion < 2016021502) {
+
+        // Define field rankmode to be added to block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('rankmode', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'identitymode');
+
+        // Conditionally launch add field rankmode.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2016021502, 'xp');
+    }
+
+    if ($oldversion < 2016021503) {
+
+        // Define field neighbours to be added to block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('neighbours', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'rankmode');
+
+        // Conditionally launch add field neighbours.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2016021503, 'xp');
+    }
+
+    if ($oldversion < 2016022401) {
+
+        // Define field identitymode to be added to block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('identitymode', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'timebetweensameactions');
+
+        // Conditionally launch add field identitymode.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2016022401, 'xp');
+    }
+
+    if ($oldversion < 2016022402) {
+
+        // Define field rankmode to be added to block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('rankmode', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '1', 'identitymode');
+
+        // Conditionally launch add field rankmode.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2016022402, 'xp');
+    }
+
+    if ($oldversion < 2016022403) {
+
+        // Define field neighbours to be added to block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('neighbours', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'rankmode');
+
+        // Conditionally launch add field neighbours.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2016022403, 'xp');
+    }
 
     return true;
 
