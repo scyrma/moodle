@@ -2281,6 +2281,10 @@ header.navbar {
 }
 
 .block_navigation .block_tree {
+    p.hasicon {
+        text-indent: 0;
+        padding-left: 0;
+    }
     li.item_with_icon > p img {
     	position: relative;
     	left: 0;
@@ -2295,6 +2299,14 @@ header.navbar {
             display: block;
             overflow: hidden;
         }
+    }
+}
+
+.block_settings .block_tree p.hasicon {
+    text-indent: 0;
+    position: relative;
+    img {
+        top: -1px;
     }
 }
 
