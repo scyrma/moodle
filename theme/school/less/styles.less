@@ -821,7 +821,9 @@ img {
     	z-index: 1111;
         color: @primaryFontColour;
         cursor: pointer;
-        .menubar {
+        .menubar,
+        .login {
+            color: inherit;
             a {
                 color: @primaryLinkColour;
                 background: none;
@@ -836,9 +838,13 @@ img {
             color: @mainFontColour;
             background-color: #fff;
             outline: none;
-
             .userbutton {
                 .dropdown-icon-container {
+                    color: @primaryColour;
+                }
+            }
+            .login {
+                a {
                     color: @primaryColour;
                 }
             }
@@ -1658,7 +1664,6 @@ footer {
     .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
     padding: 10px 10px 10px 20px;
     color: @mainFontColour;
-
     ul {
         margin: 0;
         list-style: none;
@@ -1723,6 +1728,19 @@ footer {
             opacity: 1;
             display: block;
             border-top: 1px solid #e3e3ec;
+        }
+    }
+    .login {
+        color: inherit;
+        line-height: normal;
+        display: block;
+        margin-top: 10px;
+        a {
+            color: @primaryColour;
+            &:hover,
+            &:focus {
+                color: @primaryColour;
+            }
         }
     }
     .menu {
@@ -4416,6 +4434,11 @@ body {
             color: @mainFontColour;
             background-color: #fff;
             .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+            .login {
+                a {
+                    color: @primaryColour;
+                }
+            }
         }
     }
     .logo-img {
