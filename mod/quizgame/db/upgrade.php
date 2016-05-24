@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -26,7 +25,7 @@
  * here will all be database-neutral, using the functions defined in DLL libraries.
  *
  * @package    mod_quizgame
- * @copyright  2011 Your Name
+ * @copyright  2014 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,11 +40,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_quizgame_upgrade($oldversion) {
     global $DB;
 
-    $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
-
-    // if ($oldversion < YYYYMMDD00) { //New version in version.php
-    //
-    // }
+    $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
 
     if ($oldversion < 2014091101) {
 
