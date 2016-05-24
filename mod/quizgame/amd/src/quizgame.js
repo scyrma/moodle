@@ -1,5 +1,31 @@
-M.mod_quizgame = (function(){
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * This class manages the confirmation pop-up (also called the pre-flight check)
+ * that is sometimes shown when a use clicks the start attempt button.
+ *
+ * This is also responsible for opening the pop-up window, if the quiz requires to be in one.
+ *
+ * @module    mod_quizgame/quizgame
+ * @class     quizgame
+ * @package   mod_quizgame
+ * @copyright 2016 John Okely <john@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+define(['jquery'], function($) {
     var stage;
     var score = 0;
     var particles = [];
@@ -33,10 +59,13 @@ M.mod_quizgame = (function(){
     var currentPointsLeft = 0;
     var context;
     var inFullscreen = 0;
+    $('#mod_quizgame_fullscreen_button').on('click', function () {
+        fullscreen();
+    });
 
     function playSound(soundName) {
         if (document.getElementById("mod_quizgame_sound_on").checked) {
-            var soundElement = document.getElementById("mod_quizgame_sound_"+soundName);
+            var soundElement = document.getElementById("mod_quizgame_sound_" + soundName);
             soundElement.currentTime = 0;
             soundElement.play();
         }
@@ -113,10 +142,10 @@ M.mod_quizgame = (function(){
         context.textAlign = 'center';
 
         if (questions !== null && questions.length > 0) {
-            context.fillText(M.util.get_string('spacetostart', 'mod_quizgame'), displayRect.width/2, displayRect.height/2);
+            context.fillText(M.util.get_string('spacetostart', 'mod_quizgame'), displayRect.width / 2, displayRect.height / 2);
             menuEvents();
         } else {
-            context.fillText(M.util.get_string('emptyquiz', 'mod_quizgame'), displayRect.width/2, displayRect.height/2);
+            context.fillText(M.util.get_string('emptyquiz', 'mod_quizgame'), displayRect.width / 2, displayRect.height / 2);
         }
     }
 
@@ -154,7 +183,7 @@ M.mod_quizgame = (function(){
         interval = setInterval(function() {
                 draw(context, displayRect, gameObjects, particles, question);
                 update(displayRect, gameObjects, particles);
-            }, 40);
+        }, 40);
 
         startGame();
     }
@@ -170,8 +199,8 @@ M.mod_quizgame = (function(){
         mouseDown = false;
 
         player = new Player("pix/ship.png", 0, 0);
-        player.x = displayRect.width/2;
-        player.y = displayRect.height/2;
+        player.x = displayRect.width / 2;
+        player.y = displayRect.height / 2;
         gameObjects.push(player);
 
         planet = new Planet("pix/planet.png", 0, 0);
@@ -208,7 +237,7 @@ M.mod_quizgame = (function(){
 
         if (questions[level].type == 'multichoice') {
             questions[level].answers.forEach(function(answer) {
-                var enemy = new MultiEnemy(Math.random()*bounds.width, -Math.random()*bounds.height/2, answer.text, answer.fraction);
+                var enemy = new MultiEnemy(Math.random() * bounds.width, -Math.random() * bounds.height / 2, answer.text, answer.fraction);
                 if (answer.fraction < 1) {
                     currentTeam.push(enemy);
                     if (answer.fraction > 0) {
@@ -219,12 +248,12 @@ M.mod_quizgame = (function(){
             });
         } else if (questions[level].type == 'match') {
             var i = 0;
-            var fraction = 1/questions[level].stems.length;
+            var fraction = 1 / questions[level].stems.length;
             currentPointsLeft += 1;
             questions[level].stems.forEach(function(stem) {
                 i++;
-                var question = new MatchEnemy(Math.random()*bounds.width, -Math.random()*bounds.height/2, stem.question, fraction, -i, true);
-                var answer = new MatchEnemy(Math.random()*bounds.width, -Math.random()*bounds.height/2, stem.answer, fraction, i);
+                var question = new MatchEnemy(Math.random() * bounds.width, -Math.random() * bounds.height / 2, stem.question, fraction, -i, true);
+                var answer = new MatchEnemy(Math.random() * bounds.width, -Math.random() * bounds.height / 2, stem.answer, fraction, i);
                 currentTeam.push(question);
                 currentTeam.push(answer);
                 gameObjects.push(question);
@@ -251,12 +280,12 @@ M.mod_quizgame = (function(){
             context.textAlign = 'left';
             context.fillText(M.util.get_string('score', 'mod_quizgame', {"score": Math.round(score), "lives": player.lives}), 5, 20);
             context.textAlign = 'center';
-            context.fillText(question, displayRect.width/2, 20);
+            context.fillText(question, displayRect.width / 2, 20);
         } else {
             context.fillStyle = '#FFFFFF';
             context.font = "18px Audiowide";
             context.textAlign = 'center';
-            context.fillText(M.util.get_string('endofgame', 'mod_quizgame', Math.round(player.lastScore)), displayRect.width/2, displayRect.height/2);
+            context.fillText(M.util.get_string('endofgame', 'mod_quizgame', Math.round(player.lastScore)), displayRect.width / 2, displayRect.height / 2);
         }
     }
 
@@ -273,7 +302,7 @@ M.mod_quizgame = (function(){
         }
         for (i = 0; i < objects.length; i++) {
             objects[i].update(bounds);
-            for (var j = i+1; j < objects.length; j++) {
+            for (var j = i + 1; j < objects.length; j++) {
                 collide(objects[i], objects[j]);
             }
             if (!objects[i].alive) {
@@ -297,14 +326,14 @@ M.mod_quizgame = (function(){
         return this.top + this.height;
     };
     Rectangle.prototype.Contains = function (point) {
-        return point.x > this.left && 
-            point.x < this.right() && 
+        return point.x > this.left &&
+            point.x < this.right() &&
             point.y > this.top &&
             point.y < this.bottom();
     };
     Rectangle.prototype.Intersect = function (rectangle) {
-        var retval = !(rectangle.left > this.right() || 
-            rectangle.right() < this.left || 
+        var retval = !(rectangle.left > this.right() ||
+            rectangle.right() < this.left ||
             rectangle.top > this.bottom() ||
             rectangle.bottom() < this.top);
         return retval;
@@ -330,8 +359,8 @@ M.mod_quizgame = (function(){
         return this.image;
     };
     GameObject.prototype.update = function () {
-        this.velocity.x += this.direction.x*this.movespeed.x;
-        this.velocity.y += this.direction.y*this.movespeed.y;
+        this.velocity.x += this.direction.x * this.movespeed.x;
+        this.velocity.y += this.direction.y * this.movespeed.y;
         this.x += this.velocity.x;
         this.y += this.velocity.y;
         this.velocity.y *= this.decay;
@@ -373,15 +402,15 @@ M.mod_quizgame = (function(){
             }
         }
         GameObject.prototype.update.call(this, bounds);
-        if (this.x < bounds.x-this.image.width) {
+        if (this.x < bounds.x - this.image.width) {
             this.x = bounds.width;
         } else if (this.x > bounds.width) {
-            this.x = bounds.x-this.image.width;
+            this.x = bounds.x - this.image.width;
         }
         if (this.y < bounds.y) {
             this.y = bounds.y;
-        } else if (this.y > bounds.height-this.image.height) {
-            this.y = bounds.height-this.image.height;
+        } else if (this.y > bounds.height - this.image.height) {
+            this.y = bounds.height - this.image.height;
         }
     };
     Player.prototype.Shoot = function () {
@@ -392,7 +421,7 @@ M.mod_quizgame = (function(){
     Player.prototype.die = function() {
         GameObject.prototype.die.call(this);
         playSound("explosion");
-        spray(this.x+this.image.width/2, this.y+this.image.height/2, 200, "#FFCC00");
+        spray(this.x + this.image.width / 2, this.y + this.image.height / 2, 200, "#FFCC00");
         this.lastScore = score;
         endGame();
     };
@@ -400,10 +429,10 @@ M.mod_quizgame = (function(){
     {
         if (shot.alive) {
             if (this.lives <= 1) {
-                this.die()
+                this.die();
             } else {
                 this.lives--;
-                spray(this.x+this.image.width/2, this.y+this.image.height/2, 100, "#FFCC00");
+                spray(this.x + this.image.width / 2, this.y + this.image.height / 2, 100, "#FFCC00");
             }
         }
     };
@@ -421,7 +450,7 @@ M.mod_quizgame = (function(){
     function Enemy(src, x, y, text, fraction) {
         GameObject.call(this, src, x, y);
         this.xspeed = enemySpeed;
-        this.yspeed = enemySpeed*(2+Math.random())/4;
+        this.yspeed = enemySpeed * (2 + Math.random()) / 4;
         this.movespeed.x = 0;
         this.movespeed.y = 0;
         this.direction.y = 1;
@@ -429,15 +458,15 @@ M.mod_quizgame = (function(){
         this.fraction = fraction;
         this.movementClock = 0;
         this.shotFrequency = 80;
-        this.shotClock = (1+Math.random())*this.shotFrequency;
+        this.shotClock = (1 + Math.random()) * this.shotFrequency;
         this.level = level;
     }
     Enemy.prototype = Object.create(GameObject.prototype);
     Enemy.prototype.update = function (bounds) {
 
-        if (this.y < bounds.height/10 || this.y > bounds.height*9/10) {
-            this.movespeed.x = this.xspeed*1;
-            this.movespeed.y = this.yspeed*5;
+        if (this.y < bounds.height / 10 || this.y > bounds.height * 9 / 10) {
+            this.movespeed.x = this.xspeed * 1;
+            this.movespeed.y = this.yspeed * 5;
         } else {
             this.movespeed.x = this.xspeed;
             this.movespeed.y = this.yspeed;
@@ -448,33 +477,33 @@ M.mod_quizgame = (function(){
         this.movementClock--;
 
         if (this.movementClock <= 0) {
-            this.direction.x = Math.floor(Math.random()*3)-1;
-            this.movementClock = (2+Math.random())*30;
+            this.direction.x = Math.floor(Math.random() * 3) - 1;
+            this.movementClock = (2 + Math.random()) * 30;
         }
 
         this.shotClock -= enemySpeed;
 
         if (this.shotClock <= 0) {
-            if (this.y < bounds.height*0.6) {
+            if (this.y < bounds.height * 0.6) {
                 playSound("enemylaser");
                 var laser = new Laser(this.x, this.y);
                 laser.direction.y = 1;
                 laser.friendly = false;
                 gameObjects.unshift(laser);
-                this.shotClock = (1+Math.random())*this.shotFrequency;
+                this.shotClock = (1 + Math.random()) * this.shotFrequency;
             }
         }
-        
-        if (this.x < bounds.x-this.image.width) {
+
+        if (this.x < bounds.x - this.image.width) {
             this.x = bounds.width;
         } else if (this.x > bounds.width) {
-            this.x = bounds.x-this.image.width;
+            this.x = bounds.x - this.image.width;
         }
-        if (this.y > bounds.height+this.image.height && this.alive) {
+        if (this.y > bounds.height + this.image.height && this.alive) {
             this.alive = false;
             if (this.fraction > 0) {
                 currentPointsLeft -= this.fraction;
-                score -= 1000*this.fraction;
+                score -= 1000 * this.fraction;
             }
             if (currentPointsLeft <= 0 && this.level == level && player.alive) {
                 nextLevel();
@@ -487,11 +516,11 @@ M.mod_quizgame = (function(){
         context.fillStyle = '#FFFFFF';
         context.font = "15px Audiowide";
         context.textAlign = 'center';
-        context.fillText(this.text, this.x + this.image.width/2, this.y-5);
+        context.fillText(this.text, this.x + this.image.width / 2, this.y - 5);
     };
     Enemy.prototype.die = function() {
         GameObject.prototype.die.call(this);
-        spray(this.x+this.image.width, this.y+this.image.height, 50+(this.fraction*150), "#FF0000");
+        spray(this.x + this.image.width, this.y + this.image.height, 50 + (this.fraction * 150), "#FF0000");
         score += this.fraction * 1000;
         playSound("explosion");
     };
@@ -509,10 +538,10 @@ M.mod_quizgame = (function(){
         }
         if (this.fraction >= 1 || (this.fraction > 0 && currentPointsLeft <= 0)) {
             currentTeam.forEach(function (enemy) {
-                    if (enemy.alive) {
-                        enemy.die();
-                    }
-                });
+                if (enemy.alive) {
+                    enemy.die();
+                }
+            });
             currentTeam = [];
             nextLevel();
         }
@@ -522,7 +551,7 @@ M.mod_quizgame = (function(){
             shot.die();
             this.die();
         } else {
-            score += (this.fraction-0.5) * 600;
+            score += (this.fraction - 0.5) * 600;
             shot.deflect();
         }
     };
@@ -580,7 +609,7 @@ M.mod_quizgame = (function(){
             this.loadImage("pix/enemychoiceselected.png");
         }
         this.hightlighted = true;
-    }
+    };
     MatchEnemy.prototype.unhightlight = function() {
         if (this.hightlighted) {
             if (this.stem) {
@@ -590,7 +619,7 @@ M.mod_quizgame = (function(){
             }
         }
         this.hightlighted = false;
-    }
+    };
 
     function Laser(x, y, friendly, laserSpeed) {
         GameObject.call(this, friendly ? "pix/laser.png" : "pix/enemylaser.png", x, y);
@@ -601,9 +630,9 @@ M.mod_quizgame = (function(){
     Laser.prototype = Object.create(GameObject.prototype);
     Laser.prototype.update = function (bounds) {
         GameObject.prototype.update.call(this, bounds);
-        if (this.x < bounds.x-this.image.width ||
+        if (this.x < bounds.x - this.image.width ||
             this.x > bounds.width ||
-            this.y < bounds.y-this.image.height ||
+            this.y < bounds.y - this.image.height ||
             this.y > bounds.height) {
             this.alive = false;
         }
@@ -629,14 +658,14 @@ M.mod_quizgame = (function(){
     Particle.prototype = Object.create(GameObject.prototype);
     Particle.prototype.update = function (bounds) {
         GameObject.prototype.update.call(this, bounds);
-        if (this.x < bounds.x-this.width ||
+        if (this.x < bounds.x - this.width ||
             this.x > bounds.width ||
-            this.y < bounds.y-this.height ||
+            this.y < bounds.y - this.height ||
             this.y > bounds.height) {
             this.alive = false;
         }
         this.aliveTime++;
-        if (this.aliveTime > (Math.random()*15)+5) {
+        if (this.aliveTime > (Math.random() * 15) + 5) {
             this.alive = false;
         }
     };
@@ -650,11 +679,11 @@ M.mod_quizgame = (function(){
     };
 
     function Star(bounds) {
-        GameObject.call(this, null, Math.random()*bounds.width, 0);
+        GameObject.call(this, null, Math.random() * bounds.width, 0);
         this.width = 2;
         this.height = 2;
         this.direction.y = 1;
-        this.movespeed.y = 0.2+(Math.random()/2);
+        this.movespeed.y = 0.2 + (Math.random() / 2);
         this.aliveTime = 0;
     }
     Star.prototype = Object.create(GameObject.prototype);
@@ -704,11 +733,11 @@ M.mod_quizgame = (function(){
 
     function spray(x, y, num, colour) {
         for (var i = 0; i < num; i++) {
-            particles.push(new Particle(x, y, {x: (Math.random()-0.5)*16, y: ((Math.random()-0.5)*16)+3}, colour));
+            particles.push(new Particle(x, y, {x: (Math.random() - 0.5) * 16, y: ((Math.random() - 0.5) * 16) + 3}, colour));
         }
     }
 
-    // input
+    // Input.
 
     var canShoot = true;
 
@@ -756,7 +785,7 @@ M.mod_quizgame = (function(){
 
     function mousedown(e) {
         if (e.target === stage) {
-            playerWasClicked = player.getRect().Contains({x: e.offsetX, y: e.offsetY});
+            var playerWasClicked = player.getRect().Contains({x: e.offsetX, y: e.offsetY});
             if (playerWasClicked && player.alive) {
                 player.Shoot();
             }
@@ -833,10 +862,7 @@ M.mod_quizgame = (function(){
             showMenu();
         }, 500);
     }
-    return {
-        initialize: doInitialize,
-        goFullscreen: fullscreen
-    };
-})();
-
-M.mod_quizgame.initialize();
+  return {
+    init: doInitialize,
+  };
+});
