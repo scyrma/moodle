@@ -5,7 +5,13 @@ define('CLI_SCRIPT', true);
 require_once(dirname(dirname(dirname(__DIR__))) . '/config.php');
 require_once($CFG->dirroot . '/' . $CFG->admin . '/registration/lib.php');
 require_once($CFG->dirroot . '/course/publish/lib.php');
+require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->dirroot . "/webservice/xmlrpc/lib.php");
+
+@ini_set('display_errors', '1');
+@ini_set('log_errors', '1');
+$CFG->debug = (E_ALL | E_STRICT);
+$CFG->debugdisplay = 1;
 
 $huburl = HUB_MOODLEORGHUBURL;
 
