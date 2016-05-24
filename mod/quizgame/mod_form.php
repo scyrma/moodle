@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,7 +21,7 @@
  * visit: http://docs.moodle.org/en/Development:lib/formslib.php
  *
  * @package    mod_quizgame
- * @copyright  2011 Your Name
+ * @copyright  2014 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,6 +32,8 @@ require_once($CFG->dirroot.'/lib/questionlib.php');
 
 /**
  * Module instance settings form
+ * @copyright  2014 John Okely <john@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_quizgame_mod_form extends moodleform_mod {
 
@@ -40,16 +41,15 @@ class mod_quizgame_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
-        global $CFG;
+        global $CFG, $COURSE;
 
         $mform = $this->_form;
 
-        //-------------------------------------------------------------------------------
-        // Adding the "general" fieldset, where all the common settings are showed
+        // Adding the "general" fieldset, where all the common settings are showed.
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
-        // Adding the standard "name" field
-        $mform->addElement('text', 'name', get_string('quizgamename', 'quizgame'), array('size'=>'64'));
+        // Adding the standard "name" field.
+        $mform->addElement('text', 'name', get_string('quizgamename', 'quizgame'), array('size' => '64'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -59,31 +59,22 @@ class mod_quizgame_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'quizgamename', 'quizgame');
 
-        // Adding the standard "intro" and "introformat" fields
+        // Adding the standard "intro" and "introformat" fields.
         if ($CFG->branch >= 29) {
             $this->standard_intro_elements();
         } else {
             $this->add_intro_editor();
         }
 
-        $context = $this->context->get_parent_context();
+        $context = context_course::instance($COURSE->id);
         $categories = question_category_options(array($context), false, 0);
 
-        $mform->addElement('selectgroups', 'questioncategory', get_string('category', 'question'), $categories);
+        $mform->addElement('selectgroups', 'questioncategory', get_string('questioncategory', 'quizgame'), $categories);
+        $mform->addHelpButton('questioncategory', 'questioncategory', 'quizgame');
 
-        //-------------------------------------------------------------------------------
-        // Adding the rest of quizgame settings, spreeading all them into this fieldset
-        /* or adding more fieldsets ('header' elements) if needed for better logic
-        $mform->addElement('static', 'label1', 'quizgamesetting1', 'Your quizgame fields go here. Replace me!');
-
-        $mform->addElement('header', 'quizgamefieldset', get_string('quizgamefieldset', 'quizgame'));
-        $mform->addElement('static', 'label2', 'quizgamesetting2', 'Your quizgame fields go here. Replace me!');
-        */
-        //-------------------------------------------------------------------------------
-        // add standard elements, common to all modules
+        // Add standard elements, common to all modules.
         $this->standard_coursemodule_elements();
-        //-------------------------------------------------------------------------------
-        // add standard buttons, common to all modules
+        // Add standard buttons, common to all modules.
         $this->add_action_buttons();
     }
 }
