@@ -3574,6 +3574,7 @@ body.login-pagebg {
         .signuppanel {
             float: none;
             display: inline-block;
+            padding-bottom: 25px;
         }
         .signuppanel {
             background-color: @blockColour;
@@ -3583,8 +3584,10 @@ body.login-pagebg {
 }
 
 .loginpanel,
-.signuppanel {
+.signuppanel,
+#notice {
     margin: 0 auto;
+    padding-bottom: 25px;
     max-width: 554px;
     position: relative;
 }
@@ -3598,7 +3601,7 @@ body.login-pagebg {
             line-height: 20px;
             overflow: visible;
             margin: 0 auto;
-            max-width: 554px;
+            width: 100%;
             position: relative;
             background-color: @primaryColour;
             color: @primaryFontColour;
@@ -3606,10 +3609,6 @@ body.login-pagebg {
 
             p {
                 padding: 40px 10px 40px 10px;
-            }
-
-            .buttons {
-                padding-bottom: 30px;
             }
         }
     }
@@ -3651,7 +3650,7 @@ body.login-pagebg {
 
 .guestform input[type="submit"] {
 	font-weight: 400;
-	margin: 20px 0 25px 0;
+	margin: 20px 0 0;
 }
 
 .signup-link {
@@ -4778,7 +4777,8 @@ body {
 }
 
 .loginpanel,
-.signuppanel {
+.signuppanel,
+#notice {
     max-width: 100%;
 
 }
