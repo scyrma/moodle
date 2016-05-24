@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Contains functions to be run when the module is uninstalled.
+ *
  * @see uninstall_plugin()
  *
  * @package    mod_quizgame
- * @copyright  2011 Your Name <your@email.adress>
+ * @copyright  2014 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
