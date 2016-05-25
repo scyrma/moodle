@@ -821,7 +821,9 @@ img {
     	z-index: 1111;
         color: @primaryFontColour;
         cursor: pointer;
-        .menubar {
+        .menubar,
+        .login {
+            color: inherit;
             a {
                 color: @primaryLinkColour;
                 background: none;
@@ -836,9 +838,13 @@ img {
             color: @mainFontColour;
             background-color: #fff;
             outline: none;
-
             .userbutton {
                 .dropdown-icon-container {
+                    color: @primaryColour;
+                }
+            }
+            .login {
+                a {
                     color: @primaryColour;
                 }
             }
@@ -1658,7 +1664,6 @@ footer {
     .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
     padding: 10px 10px 10px 20px;
     color: @mainFontColour;
-
     ul {
         margin: 0;
         list-style: none;
@@ -1723,6 +1728,19 @@ footer {
             opacity: 1;
             display: block;
             border-top: 1px solid #e3e3ec;
+        }
+    }
+    .login {
+        color: inherit;
+        line-height: normal;
+        display: block;
+        margin-top: 10px;
+        a {
+            color: @primaryColour;
+            &:hover,
+            &:focus {
+                color: @primaryColour;
+            }
         }
     }
     .menu {
@@ -3556,6 +3574,7 @@ body.login-pagebg {
         .signuppanel {
             float: none;
             display: inline-block;
+            padding-bottom: 25px;
         }
         .signuppanel {
             background-color: @blockColour;
@@ -3565,8 +3584,10 @@ body.login-pagebg {
 }
 
 .loginpanel,
-.signuppanel {
+.signuppanel,
+#notice {
     margin: 0 auto;
+    padding-bottom: 25px;
     max-width: 554px;
     position: relative;
 }
@@ -3580,7 +3601,7 @@ body.login-pagebg {
             line-height: 20px;
             overflow: visible;
             margin: 0 auto;
-            max-width: 554px;
+            width: 100%;
             position: relative;
             background-color: @primaryColour;
             color: @primaryFontColour;
@@ -3588,10 +3609,6 @@ body.login-pagebg {
 
             p {
                 padding: 40px 10px 40px 10px;
-            }
-
-            .buttons {
-                padding-bottom: 30px;
             }
         }
     }
@@ -3633,7 +3650,7 @@ body.login-pagebg {
 
 .guestform input[type="submit"] {
 	font-weight: 400;
-	margin: 20px 0 25px 0;
+	margin: 20px 0 0;
 }
 
 .signup-link {
@@ -4416,6 +4433,11 @@ body {
             color: @mainFontColour;
             background-color: #fff;
             .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+            .login {
+                a {
+                    color: @primaryColour;
+                }
+            }
         }
     }
     .logo-img {
@@ -4755,7 +4777,8 @@ body {
 }
 
 .loginpanel,
-.signuppanel {
+.signuppanel,
+#notice {
     max-width: 100%;
 
 }
