@@ -397,7 +397,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         }
 
         $context = array(
-            'heading' => $forum->name,
+            'heading' => format_string($forum->name),
             'linkurl' => $linkurl->out(),
             'linktext' => get_string('newslink', 'theme_school'),
             'newsitems' => array()
@@ -406,7 +406,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         foreach ($discussions as $discussion) {
             $linkurl = new \moodle_url('mod/forum/discuss.php', array('d' => $discussion->id));
             $context['newsitems'][] = array(
-                'title' => $discussion->name,
+                'title' => format_string($discussion->name),
                 'modified' => userdate($discussion->timemodified),
                 'linkurl' => $linkurl->out(),
             );
