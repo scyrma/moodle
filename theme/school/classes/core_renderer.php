@@ -404,7 +404,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         );
 
         foreach ($discussions as $discussion) {
-            $linkurl = new \moodle_url('mod/forum/discuss.php', array('d' => $discussion->id));
+            $linkurl = new \moodle_url('mod/forum/discuss.php', array('d' => $discussion->discussion));
             $context['newsitems'][] = array(
                 'title' => format_string($discussion->name),
                 'modified' => userdate($discussion->timemodified),
