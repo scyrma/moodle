@@ -5828,20 +5828,15 @@ input[type="color"]:focus,
     .block.block_calendar_month .content {
     	padding: 0!important;
     }
-    div.minicalendarblock:first-child {
-    	margin-top: -18px;
-    }
-}
-
-#block-region-side-post div.minicalendarblock {
-    margin: -12px;
-}
-
-#block-region-side-pre div.minicalendarblock {
-    margin-left: -12px;
-    margin-right: -12px;
-    &:last-child {
-    	margin-bottom: -19px;
+    div.minicalendarblock {
+        margin-left: -12px;
+        margin-right: -12px;
+        &:first-child {
+            margin-top: -18px;
+        }
+        &:last-child {
+            margin-bottom: -19px;
+        }
     }
 }
 
