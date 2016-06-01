@@ -1274,9 +1274,6 @@ body .btn-see-all {
 }
 
 .frontpage-course-list-all {
-    .course-item {
-    	background: #efefef;
-    }
     .course-item-cont {
     	padding: 15px 15px 28px;
     }
@@ -1297,10 +1294,6 @@ body .btn-see-all {
             display: inline-block;
             float: left;
         }
-    }
-    p {
-    	line-height: 17px;
-    	font-size: 12px;
     }
 }
 
@@ -1377,11 +1370,11 @@ body .btn-see-all {
 
 .course-items-list-view {
     .course-item {
+        background-color: #efefef;
         .course-item-cont .img-wr {
-        	margin: 0;
+        	margin: 0 0 15px;
         	display: table-cell;
-        	vertical-align: middle;
-        	width: 35%;
+        	vertical-align: top;
         }
         h4 {
         	position: relative;
@@ -1403,15 +1396,10 @@ body .btn-see-all {
             box-sizing: border-box;
             width: auto;
         }
-        p {
-            background: #FFFFFF;
-            vertical-align: top;
-            padding: 0 15px 0 20px;
-        }
     }
     .for-list-view-wr {
-        padding: 17px 24px;
-        background: #c8c8c8;
+        padding: 15px;
+        background-color: #fff;
         display: none;
         clear: both;
     }
@@ -1422,15 +1410,14 @@ body .btn-see-all {
         box-sizing: border-box;
         border-radius: 3px;
         overflow: hidden;
-        box-shadow: 1px 1px 1px 0px #939393;
+        .box-shadow(none);
         &::after {
             content: "";
             display: block;
             clear: both;
         }
-
         .course-summary {
-            padding: 15px;
+            overflow: hidden;
         }
     }
     .abc {
@@ -3812,21 +3799,11 @@ body.login-pagebg {
         font-size: 14px;
         line-height: 34px;
     }
-    p {
-    /*	padding: 17px 0 29px;
-    	line-height: 20px;*/
-    	font-size: 13px;
-    }
 }
 .course-items-list-view .course-item {
 	margin: 0 0 15px;
 	max-width: 100%;
 	width: 100%;
-    p {
-    	padding: 0 30px 0 45px;
-    	/*line-height: 26px;*/
-    	font-size: 16px;
-    }
 }
 
 .top-banner-progress {
@@ -4040,13 +4017,6 @@ div[class*="span"] {
         h6 {
             font-size: 11px;
         }
-        p {
-        	line-height: 13px;
-        	font-size: 11px;
-        }
-    }
-    .for-list-view-wr {
-    	padding: 20px 10px;
     }
 }
 
@@ -4330,11 +4300,6 @@ header.navbar {
         	font-size: 11px;
         	padding: 0;
         	height: 10px;
-        }
-        p {
-            font-size: 12px;
-            padding: 0 30px;
-            /*line-height: 18px;*/
         }
     }
     .for-list-view {
@@ -5129,6 +5094,8 @@ footer {
             }
         }
     }
+.welcome-block iframe {
+	height: 184px;
 }
 .loginbox {
 	/*padding: 50px 0 0;*/
@@ -6400,12 +6367,12 @@ footer {
 	}
 }
 
-@media (min-width: 640px) and (max-width: 1199px) {
+@media (min-width: 640px) {
 
 .course-items-list-view .course-item .course-item-cont .img-wr {
 	width: 35%;
 	float: left;
-	margin-right: 15px;
+    margin: 0 24px 0 0;
 }
 
 }
@@ -6452,7 +6419,8 @@ footer {
     	max-height: 190px;
     }
     #region-main .course-items-list-view .course-item {
-        width: 49%;
+        width: 47%;
+        margin-left: 2%;
     }
 }
 
