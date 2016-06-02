@@ -381,6 +381,14 @@ img {
     #maincontent {
         height: 0;
     }
+
+    .welcome-block {
+        .iframe-video {
+            iframe {
+                max-height: 301px;
+            }
+        }
+    }
 }
 
 .customMenuButtonMode() {
@@ -4216,6 +4224,17 @@ footer p {
 .welcome-block p {
 	padding: 0 0 25px;
 }
+
+.landing-page {
+    .welcome-block {
+        .iframe-video {
+            iframe {
+                max-width: 100%;
+                max-height: 421px;
+            }
+        }
+    }
+}
 .news-updates {
     .span3 {
     	padding: 0 10px 0 0;
@@ -4250,11 +4269,6 @@ header.navbar {
 }
 
 .welcome-block {
-    iframe {
-        max-width: 100%;
-        height: auto;
-        min-height: 300px;
-    }
     p {
     	max-width: 100%;
     }
@@ -4820,11 +4834,14 @@ body {
         height: 50px;
     }
 }
-.welcome-block iframe {
-    max-width: 100%;
-    height: auto;
-    min-height: 184px;
-    height: 184px;
+.landing-page {
+    .welcome-block {
+        .iframe-video {
+            iframe {
+                max-height: 310px;
+            }
+        }
+    }
 }
 .course-item {
     max-width: 100%;
@@ -5104,8 +5121,14 @@ footer {
 .course-items-list-view .course-item p {
 	padding: 0 13px;
 }
-.welcome-block iframe {
-	height: 184px;
+.landing-page {
+    .welcome-block {
+        .iframe-video {
+            iframe {
+                max-height: 225px;
+            }
+        }
+    }
 }
 .loginbox {
 	/*padding: 50px 0 0;*/
