@@ -553,7 +553,14 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         } else {
             if(get_config('theme_school', 'videotype') === "0") {
                 $context['iframevideo'] = true;
-                $context['iframehtml'] = $iframehtml;
+
+                // If we've been given a URL instead of the embedded HTML then let's roll with it.
+                // The media formatter should handle embedding it for us.
+                if (clean_param($iframehtml, PARAM_URL)) {
+                    $context['iframehtml'] = format_text(html_writer::link($iframehtml, get_string('video', 'theme_school')), FORMAT_HTML);
+                } else {
+                    $context['iframehtml'] = $iframehtml;
+                }
 
                 if (empty($iframehtml)) {
                     $hasmedia = false;
