@@ -1219,7 +1219,7 @@ body .btn-see-all {
     .btn-plus {
     	position: absolute;
     	z-index: 2;
-    	right: -3px;
+    	right: -5px;
     	bottom: -4px;
     	height: 45px;
     	width: 45px;
@@ -1228,7 +1228,7 @@ body .btn-see-all {
         .plus-container {
             position: relative;
             height: 42px;
-            width: 42px;
+            width: 41px;
 
             .plus {
                 height: 100%;
@@ -1247,8 +1247,8 @@ body .btn-see-all {
                 width: 0;
                 z-index: 2;
                 position: absolute;
-                top: 0;
-                left: 0;
+                right: 0;
+                bottom: 0;
                 border-left: 42px solid transparent;
                 border-bottom: 42px solid @backgroundColour;
             }
@@ -1398,7 +1398,7 @@ body .btn-see-all {
         }
     }
     .for-list-view-wr {
-        padding: 15px;
+        padding: 15px 15px 35px;
         background-color: #fff;
         display: none;
         clear: both;
@@ -2499,7 +2499,6 @@ header.navbar {
 
 .view-toggle {
 	float: right;
-	margin: 0 0 0 13px;
     a {
     	display: inline-block;
     	overflow: hidden;
@@ -6375,6 +6374,11 @@ footer {
     margin: 0 24px 0 0;
 }
 
+.dir-rtl .course-items-list-view .course-item .course-item-cont .img-wr {
+    float: right;
+    margin: 0 0 0 24px;
+}
+
 }
 
 @media screen and (max-width: 360px) {
@@ -6421,6 +6425,13 @@ footer {
     #region-main .course-items-list-view .course-item {
         width: 47%;
         margin-left: 2%;
+    }
+}
+
+.dir-rtl.content-only {
+    #region-main .course-items-list-view .course-item {
+        margin-left: auto;
+        margin-right: 2%;
     }
 }
 
@@ -6607,8 +6618,8 @@ footer {
         }
     }
     .course-item .btn-plus {
-    	left: -3px !important;
-    	right: initial;
+    	left: -5px;
+    	right: auto;
         img {
         	transform: rotateY(180deg);
         }
@@ -6626,10 +6637,11 @@ footer {
         .btn-togle-details {
         	float: right !important;
         	margin: 0;
+            border-radius: 0 4px 4px 0;
         }
         .course-item {
             h4 {
-            	right: initial;
+                float: left;
                 left: 10px;
             }
             h5{
@@ -6774,16 +6786,12 @@ footer {
     .course-item {
         .btn-plus {
             .plus-container {
-                position: absolute;
-                right: 1px;
-
                 .plus {
                     text-align: right;
                     padding-right: 6px;
+                    border-radius: 0 3px 0 0;
                 }
-
                 .cutoff {
-                    border-left: 0;
                     border-right: 42px solid transparent;
                 }
             }
