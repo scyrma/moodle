@@ -64,8 +64,8 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
         global $DB;
 
         // Fetch the user by username.
-        $user = $DB->get_record('user', array('username' => $username));
-        if ($user && $user->auth === 'moodlecloud') {
+        $user = $DB->get_record('user', array('username' => $username, 'auth' => 'moodlecloud'));
+        if (!empty($user)) {
             return auth_moodlecloud\helper::call('login', array(
                     'username'          => $username,
                     'password'          => $password,
