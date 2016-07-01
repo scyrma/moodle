@@ -22,58 +22,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-/**
- * Class school_admin_setting_confightmleditor
- *
- * Replaces admin_setting_confightmleditor in this file, to disable 'autosave' on editor.
- */
-class school_admin_setting_confightmleditor extends admin_setting_configtext {
-    private $rows;
-    private $cols;
-
-    /**
-     * @param string $name
-     * @param string $visiblename
-     * @param string $description
-     * @param mixed $defaultsetting string or array
-     * @param mixed $paramtype
-     */
-    public function __construct($name, $visiblename, $description, $defaultsetting, $paramtype=PARAM_RAW, $cols='60', $rows='8') {
-        $this->rows = $rows;
-        $this->cols = $cols;
-        parent::__construct($name, $visiblename, $description, $defaultsetting, $paramtype);
-        editors_head_setup();
-    }
-
-    /**
-     * Returns an XHTML string for the editor
-     *
-     * @param string $data
-     * @param string $query
-     * @return string XHTML string for the editor
-     */
-    public function output_html($data, $query='') {
-        $default = $this->get_defaultsetting();
-
-        $defaultinfo = $default;
-        if (!is_null($default) and $default !== '') {
-            $defaultinfo = "\n".$default;
-        }
-
-        $editor = editors_get_preferred_editor(FORMAT_HTML);
-        $editor->set_text($data);
-        $editor->use_editor($this->get_id(), array('noclean'=>true,
-            // MOODLECLOUD SPECIFIC CHANGE
-            'autosave'=>false,
-            // END MOODLECLOUD
-        ));
-
-        return format_admin_setting($this, $this->visiblename,
-            '<div class="form-textarea"><textarea rows="'. $this->rows .'" cols="'. $this->cols .'" id="'. $this->get_id() .'" name="'. $this->get_full_name() .'" spellcheck="true">'. s($data) .'</textarea></div>',
-            $this->description, true, '', $defaultinfo, $query);
-    }
-}
-
 if (is_siteadmin()) {
     $settings = new theme_school_admin_settingpage_tabs('theme_school', get_string('configtitle', 'theme_school'));
     $temp = new admin_settingpage('theme_school_general',  get_string('generalsettings', 'theme_school'));
@@ -132,14 +80,14 @@ if (is_siteadmin()) {
     $title = get_string('rightfootnote', 'theme_school');
     $description = get_string('rightfootnotedesc', 'theme_school');
     $default = '';
-    $setting = new school_admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new theme_school_admin_setting_confightmleditor($name, $title, $description, $default);
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnote';
     $title = get_string('leftfootnote', 'theme_school');
     $description = get_string('leftfootnotedesc', 'theme_school');
     $default = '';
-    $setting = new school_admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new theme_school_admin_setting_confightmleditor($name, $title, $description, $default);
     $temp->add($setting);
 
     $name = 'theme_school/leftfootnotesection1';
@@ -300,7 +248,7 @@ if (is_siteadmin()) {
     $title = get_string('addtext', 'theme_school');
     $description = get_string('addtextdesc', 'theme_school');
     $default = '';
-    $setting = new school_admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new theme_school_admin_setting_confightmleditor($name, $title, $description, $default);
     $temp->add($setting);
 
     $name = 'theme_school/frontpagestaticcontentselect';
@@ -445,7 +393,7 @@ if (is_siteadmin()) {
     $title = get_string('coursesectionoverview', 'theme_school');
     $description = '';
     $default = '';
-    $setting = new school_admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new theme_school_admin_setting_confightmleditor($name, $title, $description, $default);
     $temp->add($setting);
 
     $temp->add(new admin_setting_heading('theme_school_feedbacksection', get_string('feedback', 'theme_school'),
@@ -476,7 +424,7 @@ if (is_siteadmin()) {
     $title = get_string('feedbackbrieftext', 'theme_school');
     $description = '';
     $default = '';
-    $setting = new school_admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new theme_school_admin_setting_confightmleditor($name, $title, $description, $default);
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslideimage_1';
@@ -490,7 +438,7 @@ if (is_siteadmin()) {
     $title = get_string('feedbackslidename', 'theme_school', '1');
     $description = '';
     $default = '';
-    $setting = new school_admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new theme_school_admin_setting_confightmleditor($name, $title, $description, $default);
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidereview_1';
@@ -511,7 +459,7 @@ if (is_siteadmin()) {
     $title = get_string('feedbackslidename', 'theme_school', '2');
     $description = '';
     $default = '';
-    $setting = new school_admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new theme_school_admin_setting_confightmleditor($name, $title, $description, $default);
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidereview_2';
@@ -532,7 +480,7 @@ if (is_siteadmin()) {
     $title = get_string('feedbackslidename', 'theme_school', '3');
     $description = '';
     $default = '';
-    $setting = new school_admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new theme_school_admin_setting_confightmleditor($name, $title, $description, $default);
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidereview_3';
@@ -553,7 +501,7 @@ if (is_siteadmin()) {
     $title = get_string('feedbackslidename', 'theme_school', '4');
     $description = '';
     $default = '';
-    $setting = new school_admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new theme_school_admin_setting_confightmleditor($name, $title, $description, $default);
     $temp->add($setting);
 
     $name = 'theme_school/feedbackslidereview_4';
