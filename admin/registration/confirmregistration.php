@@ -35,7 +35,11 @@
  */
 
 require('../../config.php');
+// START MOODLECLOUD HACK.
+if (false) {
 require_once($CFG->libdir . '/adminlib.php');
+}
+// END MOODLECLOUD HACK.
 require_once($CFG->dirroot . '/' . $CFG->admin . '/registration/lib.php');
 
 $newtoken = optional_param('newtoken', '', PARAM_ALPHANUM);
@@ -44,8 +48,11 @@ $hubname = optional_param('hubname', '', PARAM_TEXT);
 $token = optional_param('token', '', PARAM_TEXT);
 $error = optional_param('error', '', PARAM_ALPHANUM);
 
+// START MOODLECLOUD HACK.
+if (false) {
 admin_externalpage_setup('registrationhubs');
-
+}
+// END MOODLECLOUD HACK.
 if (!empty($error) and $error == 'urlalreadyexist') {
     throw new moodle_exception('urlalreadyregistered', 'hub',
             $CFG->wwwroot . '/' . $CFG->admin . '/registration/index.php');
