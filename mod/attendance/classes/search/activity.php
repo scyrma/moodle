@@ -15,16 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Search area for mod_attendance activities.
  *
  * @package    mod_attendance
- * @copyright  2011 Artem Andreev <andreev.artem@gmail.com>
+ * @copyright  2016 Dan Marsden
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version  = 2016052201;
-$plugin->requires = 2016052300;
-$plugin->release = '3.1.1.0';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->cron     = 0;
-$plugin->component = 'mod_attendance';
+namespace mod_attendance\search;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Search area for mod_attendance activities.
+ *
+ * @package    mod_attendance
+ * @copyright  2016 Dan Marsden
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class activity extends \core_search\area\base_activity {
+}
