@@ -1184,6 +1184,10 @@ abstract class restore_dbops {
 
             // BEGIN MOODLECLOUD HACK.
             local_moodlecloud\restrictions\userquota::site_is_over_user_quota();
+            // prevent import from creating a second moodlecloud admin
+            if ($user->auth == 'moodlecloud') {
+                $user->auth = 'manual';
+            }
             // END MOODLECLOUD HACK.
 
             // Done, let's create the user and annotate its id
