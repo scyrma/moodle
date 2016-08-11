@@ -469,7 +469,9 @@ class file_system extends \file_system {
                     SELECT DISTINCT
                                     filesize
                                FROM {files}
-                              WHERE filearea <> 'draft'
+                              WHERE filearea <> 'draft' AND
+                                     component <> 'tool_recyclebin' AND
+                                     referencefileid IS NULL
                            GROUP BY filesize, contenthash
               ) AS f");
     }
