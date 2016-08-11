@@ -131,6 +131,7 @@ FROM (
         filesize
     FROM {files}
     WHERE referencefileid IS NULL
+       AND component <> 'tool_recyclebin'
     {$where}
     GROUP BY filesize, contenthash
 ) AS f;
