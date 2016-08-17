@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="span3">
+            <div class="span{{columnspan}}">
                 <h3>{{heading}}</h3>
                 <p>
                     <a href="{{{linkurl}}}" title="{{linktext}}">
@@ -36,7 +36,7 @@
                 </p>
             </div>
             {{#newsitems}}
-                <div class="span3">
+                <div class="span{{columnspan}}">
                     <p><a href="{{{linkurl}}}">{{title}}</a></p>
                     <h5>{{modified}}</h5>
                 </div>

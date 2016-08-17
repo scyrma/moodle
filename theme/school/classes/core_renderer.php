@@ -412,6 +412,26 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             );
         }
 
+        // get the number of news items and work out the Bootstrap column span to use
+        $noofnewsitems = (isset($context['newsitems']) ? count($context['newsitems']) : 0);
+        if ($noofnewsitems <= 3) {
+            switch ($noofnewsitems) :
+                case 3:
+                    $context['columnspan'] = 3;
+                    break;
+                case 2:
+                    $context['columnspan'] = 4;
+                    break;
+                case 1:
+                case 0:
+                    $context['columnspan'] = 6;
+                    break;
+                default:
+                    $context['columnspan'] = 3;
+                    break;
+            endswitch;
+        }
+
         return $this->render_from_template('theme_school/frontpage_news_and_updates', $context);
     }
 
