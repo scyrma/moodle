@@ -811,8 +811,9 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
     public function custom_menu($custommenuitems = '') {
         global $CFG;
-
-        if (isloggedin() && (!empty($CFG->custommenuitems) || $CFG->langmenu)) {
+        // show the custom menu for school sites regardless if the user is logged in or not and let the
+        // Moodle permissions code handle whether or not to display the page to the user
+        if (!empty($CFG->custommenuitems) || $CFG->langmenu) {
             return $this->render_from_template('theme_school/custom_menu', array('menuhtml' => parent::custom_menu()));
         }
     }
