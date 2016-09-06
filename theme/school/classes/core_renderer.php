@@ -630,7 +630,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
                 $context['slides'][] = array(
                     'imageurl' => $imageurl,
                     'title' => $title,
-                    'text' => $text,
+                    'text' => format_string($text),
                     'linkurl' => $linkurl,
                     'linktext' => $linktext
                 );
