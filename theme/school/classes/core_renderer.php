@@ -474,8 +474,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'categoriesurl' => $categoriesurl->out(),
             'hastext' => $hastext,
             'hascategories' => !empty($categories),
-            'heading' => $heading,
-            'subheading' => $subheading,
+            'heading' => format_string($heading),
+            'subheading' => format_string($subheading),
             'overview' => $overview,
         );
 
@@ -491,8 +491,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $brieftext = get_config('theme_school', 'feedbackbrieftext');
 
         $context = array(
-            'heading' => $heading,
-            'subheading' => $subheading,
+            'heading' => format_string($heading),
+            'subheading' => format_string($subheading),
             'iframe' => $iframe,
             'brieftext' => $brieftext,
             'slides' => array(),
@@ -629,10 +629,10 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             if (!empty($text) || !empty($linkurl) || !empty($imageurl)) {
                 $context['slides'][] = array(
                     'imageurl' => $imageurl,
-                    'title' => $title,
+                    'title' => format_string($title),
                     'text' => format_string($text),
                     'linkurl' => $linkurl,
-                    'linktext' => $linktext
+                    'linktext' => format_string($linktext)
                 );
             }
         }
