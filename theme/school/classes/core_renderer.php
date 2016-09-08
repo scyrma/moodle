@@ -508,7 +508,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
             $slide = array(
                 'name' => $name,
-                'text' => $text,
+                'text' => format_string($text),
             );
 
             $hasimg = get_config('theme_school', 'feedbackslideimage_'.$slidenumber);
