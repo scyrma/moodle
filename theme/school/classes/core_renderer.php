@@ -546,6 +546,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $imageurl = $this->page->theme->setting_file_url('frontpagemediaimage', 'frontpagemediaimage');
         $ismediaimage = get_config('theme_school', 'frontpagestaticcontentselect') ? false : true;
         $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school', 'activetab' => 'theme_school_frontpage'));
+        $frontpagesiteadminurl = new \moodle_url('/admin/');
         $hascontent = true;
         $hasmedia = true;
 
@@ -561,6 +562,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'mediaimage' => $ismediaimage,
             'isadmin' => is_siteadmin(),
             'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'frontpagesiteadminurl' => $frontpagesiteadminurl->out(),
             'hascontent' => $hascontent,
         );
 
@@ -604,6 +606,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         global $PAGE, $CFG;
         $numberofslides = get_config('theme_school', 'slidercount');
         $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school', 'activetab' => 'theme_school_frontpage'));
+        $frontpagesiteadminurl = new \moodle_url('/admin');
         $hascontent = true;
 
         if (empty($numberofslides)) {
@@ -616,6 +619,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'slideautoplay' => get_config('theme_school', 'sliderautoplay'),
             'isadmin' => is_siteadmin(),
             'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'frontpagesiteadminurl' => $frontpagesiteadminurl->out(),
             'hascontent' => $hascontent,
         );
 
