@@ -1703,6 +1703,7 @@ $string['schedule'] = 'Schedule';
 $string['since'] = 'Since';
 $string['sincelast'] = 'since last login';
 $string['site'] = 'Site';
+$string['siteadministration'] = 'Site administration';
 $string['sitedefault'] = 'Site default';
 $string['siteerrors'] = 'Site errors';
 $string['sitefiles'] = 'Site files';
