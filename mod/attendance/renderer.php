@@ -320,7 +320,9 @@ class mod_attendance_renderer extends plugin_renderer_base {
             }
 
             $options = array(mod_attendance_sessions_page_params::ACTION_DELETE_SELECTED => get_string('delete'),
-                mod_attendance_sessions_page_params::ACTION_CHANGE_DURATION => get_string('changeduration', 'attendance'));
+                mod_attendance_sessions_page_params::ACTION_CHANGE_DURATION => get_string('changeduration', 'attendance'),
+                mod_attendance_sessions_page_params::ACTION_CREATE_CAL_EVENTS => get_string('createcalevents', 'attendance'),
+                mod_attendance_sessions_page_params::ACTION_DELETE_CAL_EVENTS => get_string('deletecalevents', 'attendance'));
 
             $controls = html_writer::select($options, 'action');
             $attributes = array(
@@ -624,14 +626,13 @@ class mod_attendance_renderer extends plugin_renderer_base {
 
         if ($data->pageparams->sort == ATT_SORT_LASTNAME) {
             $firstname = html_writer::link($data->url(array('sort' => ATT_SORT_FIRSTNAME)), get_string('firstname'));
-        } else {
+            $lastname = get_string('lastname');
+        } else if ($data->pageparams->sort == ATT_SORT_FIRSTNAME) {
             $firstname = get_string('firstname');
-        }
-
-        if ($data->pageparams->sort == ATT_SORT_FIRSTNAME) {
             $lastname = html_writer::link($data->url(array('sort' => ATT_SORT_LASTNAME)), get_string('lastname'));
         } else {
-            $lastname = get_string('lastname');
+            $firstname = html_writer::link($data->url(array('sort' => ATT_SORT_FIRSTNAME)), get_string('firstname'));
+            $lastname = html_writer::link($data->url(array('sort' => ATT_SORT_LASTNAME)), get_string('lastname'));
         }
 
         if ($CFG->fullnamedisplay == 'lastname firstname') {
