@@ -474,8 +474,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'categoriesurl' => $categoriesurl->out(),
             'hastext' => $hastext,
             'hascategories' => !empty($categories),
-            'heading' => $heading,
-            'subheading' => $subheading,
+            'heading' => format_string($heading),
+            'subheading' => format_string($subheading),
             'overview' => $overview,
         );
 
@@ -491,8 +491,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $brieftext = get_config('theme_school', 'feedbackbrieftext');
 
         $context = array(
-            'heading' => $heading,
-            'subheading' => $subheading,
+            'heading' => format_string($heading),
+            'subheading' => format_string($subheading),
             'iframe' => $iframe,
             'brieftext' => $brieftext,
             'slides' => array(),
@@ -508,7 +508,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
             $slide = array(
                 'name' => $name,
-                'text' => $text,
+                'text' => format_string($text),
             );
 
             $hasimg = get_config('theme_school', 'feedbackslideimage_'.$slidenumber);
@@ -546,6 +546,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $imageurl = $this->page->theme->setting_file_url('frontpagemediaimage', 'frontpagemediaimage');
         $ismediaimage = get_config('theme_school', 'frontpagestaticcontentselect') ? false : true;
         $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school', 'activetab' => 'theme_school_frontpage'));
+        $frontpagesiteadminurl = new \moodle_url('/admin/');
         $hascontent = true;
         $hasmedia = true;
 
@@ -561,6 +562,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'mediaimage' => $ismediaimage,
             'isadmin' => is_siteadmin(),
             'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'frontpagesiteadminurl' => $frontpagesiteadminurl->out(),
             'hascontent' => $hascontent,
         );
 
@@ -604,6 +606,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         global $PAGE, $CFG;
         $numberofslides = get_config('theme_school', 'slidercount');
         $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school', 'activetab' => 'theme_school_frontpage'));
+        $frontpagesiteadminurl = new \moodle_url('/admin');
         $hascontent = true;
 
         if (empty($numberofslides)) {
@@ -616,6 +619,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'slideautoplay' => get_config('theme_school', 'sliderautoplay'),
             'isadmin' => is_siteadmin(),
             'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'frontpagesiteadminurl' => $frontpagesiteadminurl->out(),
             'hascontent' => $hascontent,
         );
 
@@ -629,10 +633,10 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             if (!empty($text) || !empty($linkurl) || !empty($imageurl)) {
                 $context['slides'][] = array(
                     'imageurl' => $imageurl,
-                    'title' => $title,
-                    'text' => $text,
+                    'title' => format_string($title),
+                    'text' => format_string($text),
                     'linkurl' => $linkurl,
-                    'linktext' => $linktext
+                    'linktext' => format_string($linktext)
                 );
             }
         }
@@ -811,8 +815,9 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
     public function custom_menu($custommenuitems = '') {
         global $CFG;
-
-        if (isloggedin() && (!empty($CFG->custommenuitems) || $CFG->langmenu)) {
+        // show the custom menu for school sites regardless if the user is logged in or not and let the
+        // Moodle permissions code handle whether or not to display the page to the user
+        if (!empty($CFG->custommenuitems) || $CFG->langmenu) {
             return $this->render_from_template('theme_school/custom_menu', array('menuhtml' => parent::custom_menu()));
         }
     }

@@ -798,6 +798,20 @@ img {
 	padding: 4px;
 	overflow: hidden;
     line-height: 34px;
+    a {
+        color: @primaryLinkColour;
+        text-transform: uppercase;
+        display: inline-block;
+        border-radius: 3px;
+        padding: 0 10px;
+        &:first-child {
+            background-color: @secondaryColour;
+            border-color: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 2px 0 0 rgba(0, 0, 0, .8);
+            padding: 5px 20px;
+            color: #ffffff;
+        }
+    }
 }
 
 .navbar-inner .logining-wr {
@@ -894,6 +908,9 @@ img {
             float: none;
             display: inline-block;
             margin-top: 10px;
+            input {
+                background-color: @secondaryColour;
+            }
         }
     }
 }
@@ -2682,6 +2699,10 @@ header.navbar {
     #searchform_button {
         height: 36px;
     }
+}
+
+#loginbtn, #guestloginbtn {
+    background-color: @secondaryColour !important;
 }
 
 .block_blog_menu,
