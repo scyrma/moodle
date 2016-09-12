@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+require_once(dirname(__FILE__) . '/upgradelib.php');
+
 /**
  * upgrade processes for this module.
  *
@@ -156,6 +158,38 @@ function xmldb_attendance_upgrade($oldversion=0) {
 
         // Attendance savepoint reached.
         upgrade_mod_savepoint(true, 2015040503, 'attendance');
+    }
+
+    if ($oldversion < 2016052202) {
+        // Adding field to store calendar event ids.
+        $table = new xmldb_table('attendance_sessions');
+        $field = new xmldb_field('caleventid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', null);
+
+        // Conditionally launch add field statusset.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Creating events for all existing sessions.
+        attendance_upgrade_create_calendar_events();
+
+        // Attendance savepoint reached.
+        upgrade_mod_savepoint(true, 2016052202, 'attendance');
+    }
+
+    if ($oldversion < 2016082900) {
+
+        // Define field timemodified to be added to attendance.
+        $table = new xmldb_table('attendance');
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'grade');
+
+        // Conditionally launch add field timemodified.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Attendance savepoint reached.
+        upgrade_mod_savepoint(true, 2016082900, 'attendance');
     }
 
     return $result;
