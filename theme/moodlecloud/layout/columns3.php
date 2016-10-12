@@ -113,13 +113,13 @@ echo $OUTPUT->doctype() ?>
     </p>
     <?php
     echo theme_moodlecloud_get_ad($OUTPUT->page->context);
+    echo theme_moodlecloud_get_gatc();
     echo $html->footnote;
     echo $OUTPUT->login_info();
     echo $OUTPUT->home_link();
     echo $OUTPUT->standard_footer_html();
+    echo $OUTPUT->standard_end_of_body_html();
     ?>
-
-    <?php echo $OUTPUT->standard_end_of_body_html() ?>
 </footer>
 </body>
 </html>
