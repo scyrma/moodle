@@ -259,6 +259,22 @@ function theme_moodlecloud_get_ad($context) {
     }
 }
 
+function theme_moodlecloud_get_gatc() {
+    global $OUTPUT;
+
+    // we need the global and region property as well as the plan to output
+    if ((defined('MOODLECLOUD_GA_GLOBAL_PROPERTY') && MOODLECLOUD_GA_GLOBAL_PROPERTY) &&
+        (defined('MOODLECLOUD_GA_REGION_PROPERTY') && MOODLECLOUD_GA_REGION_PROPERTY) &&
+        (defined('MOODLECLOUD_GA_PLAN') && MOODLECLOUD_GA_PLAN)
+    ) {
+        return $OUTPUT->render_from_template('theme_moodlecloud/google_analytics', array(
+            'ga_global_property' => MOODLECLOUD_GA_GLOBAL_PROPERTY,
+            'ga_region_property' => MOODLECLOUD_GA_REGION_PROPERTY,
+            'ga_plan' => MOODLECLOUD_GA_PLAN
+        ));
+    }
+}
+
 function theme_moodlecloud_portal_link() {
     global $USER, $CFG;
 
