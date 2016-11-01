@@ -320,9 +320,7 @@ class mod_attendance_renderer extends plugin_renderer_base {
             }
 
             $options = array(mod_attendance_sessions_page_params::ACTION_DELETE_SELECTED => get_string('delete'),
-                mod_attendance_sessions_page_params::ACTION_CHANGE_DURATION => get_string('changeduration', 'attendance'),
-                mod_attendance_sessions_page_params::ACTION_CREATE_CAL_EVENTS => get_string('createcalevents', 'attendance'),
-                mod_attendance_sessions_page_params::ACTION_DELETE_CAL_EVENTS => get_string('deletecalevents', 'attendance'));
+                mod_attendance_sessions_page_params::ACTION_CHANGE_DURATION => get_string('changeduration', 'attendance'));
 
             $controls = html_writer::select($options, 'action');
             $attributes = array(
@@ -815,7 +813,8 @@ class mod_attendance_renderer extends plugin_renderer_base {
                 $cell->colspan = 2;
                 $row->cells[] = $cell;
             } else {
-                if (!empty($sess->studentscanmark)) { // Student can mark their own attendance.
+                if (!empty(get_config('attendance', 'studentscanmark')) && !empty($sess->studentscanmark)) {
+                    // Student can mark their own attendance.
                     // URL to the page that lets the student modify their attendance.
                     $url = new moodle_url('/mod/attendance/attendance.php',
                             array('sessid' => $sess->id, 'sesskey' => sesskey()));
@@ -899,34 +898,38 @@ class mod_attendance_renderer extends plugin_renderer_base {
         $table->align[] = 'center';
         $table->size[] = '1px';
 
-        $table->head[] = get_string('points', 'attendance');
-        $table->align[] = 'center';
-        $table->size[] = '1px';
+        if (!empty($reportdata->att->grade)) {
+            $table->head[] = get_string('points', 'attendance');
+            $table->align[] = 'center';
+            $table->size[] = '1px';
 
-        $table->head[] = get_string('percentage', 'attendance');
-        $table->align[] = 'center';
-        $table->size[] = '1px';
+            $table->head[] = get_string('percentage', 'attendance');
+            $table->align[] = 'center';
+            $table->size[] = '1px';
+        }
 
         if ($reportdata->pageparams->view == ATT_VIEW_SUMMARY) {
             $table->head[] = get_string('sessionstotal', 'attendance');
             $table->align[] = 'center';
             $table->size[] = '1px';
 
-            $table->head[] = get_string('pointsallsessions', 'attendance');
-            $table->align[] = 'center';
-            $table->size[] = '1px';
+            if (!empty($reportdata->att->grade)) {
+                $table->head[] = get_string('pointsallsessions', 'attendance');
+                $table->align[] = 'center';
+                $table->size[] = '1px';
 
-            $table->head[] = get_string('percentageallsessions', 'attendance');
-            $table->align[] = 'center';
-            $table->size[] = '1px';
+                $table->head[] = get_string('percentageallsessions', 'attendance');
+                $table->align[] = 'center';
+                $table->size[] = '1px';
 
-            $table->head[] = get_string('maxpossiblepoints', 'attendance');
-            $table->align[] = 'center';
-            $table->size[] = '1px';
+                $table->head[] = get_string('maxpossiblepoints', 'attendance');
+                $table->align[] = 'center';
+                $table->size[] = '1px';
 
-            $table->head[] = get_string('maxpossiblepercentage', 'attendance');
-            $table->align[] = 'center';
-            $table->size[] = '1px';
+                $table->head[] = get_string('maxpossiblepercentage', 'attendance');
+                $table->align[] = 'center';
+                $table->size[] = '1px';
+            }
         }
 
         if ($bulkmessagecapability) { // Display the table header for bulk messaging.
@@ -950,19 +953,23 @@ class mod_attendance_renderer extends plugin_renderer_base {
                 $usersummary = $reportdata->summary->get_taken_sessions_summary_for($user->id);
             }
             $row->cells[] = $usersummary->numtakensessions;
-            $row->cells[] = format_float($usersummary->takensessionspoints, 1, true, true) . ' / ' .
-                                format_float($usersummary->takensessionsmaxpoints, 1, true, true);
-            $row->cells[] = format_float($usersummary->takensessionspercentage * 100) . '%';
+            if (!empty($reportdata->att->grade)) {
+                $row->cells[] = format_float($usersummary->takensessionspoints, 1, true, true) . ' / ' .
+                    format_float($usersummary->takensessionsmaxpoints, 1, true, true);
+                $row->cells[] = format_float($usersummary->takensessionspercentage * 100) . '%';
+            }
 
             if ($reportdata->pageparams->view == ATT_VIEW_SUMMARY) {
                 $row->cells[] = $usersummary->numallsessions;
-                $row->cells[] = format_float($usersummary->takensessionspoints, 1, true, true) . ' / ' .
-                                format_float($usersummary->allsessionsmaxpoints, 1, true, true);
-                $row->cells[] = format_float($usersummary->allsessionspercentage * 100) . '%';
+                if (!empty($reportdata->att->grade)) {
+                    $row->cells[] = format_float($usersummary->takensessionspoints, 1, true, true) . ' / ' .
+                        format_float($usersummary->allsessionsmaxpoints, 1, true, true);
+                    $row->cells[] = format_float($usersummary->allsessionspercentage * 100) . '%';
 
-                $row->cells[] = format_float($usersummary->maxpossiblepoints, 1, true, true) . ' / ' .
-                                format_float($usersummary->allsessionsmaxpoints, 1, true, true);
-                $row->cells[] = format_float($usersummary->maxpossiblepercentage * 100) . '%';
+                    $row->cells[] = format_float($usersummary->maxpossiblepoints, 1, true, true) . ' / ' .
+                        format_float($usersummary->allsessionsmaxpoints, 1, true, true);
+                    $row->cells[] = format_float($usersummary->maxpossiblepercentage * 100) . '%';
+                }
             }
 
             if ($bulkmessagecapability) { // Create the checkbox for bulk messaging.
