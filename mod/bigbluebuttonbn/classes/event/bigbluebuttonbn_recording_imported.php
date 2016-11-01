@@ -11,7 +11,7 @@
 namespace mod_bigbluebuttonbn\event;
 defined('MOODLE_INTERNAL') || die();
 
-class bigbluebuttonbn_recording_deleted extends \core\event\base {
+class bigbluebuttonbn_recording_imported extends \core\event\base {
     /**
      * Init method.
      *
@@ -29,7 +29,7 @@ class bigbluebuttonbn_recording_deleted extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('event_recording_deleted', 'mod_bigbluebuttonbn');
+        return get_string('event_recording_imported', 'mod_bigbluebuttonbn');
     }
 
     /**
@@ -40,7 +40,7 @@ class bigbluebuttonbn_recording_deleted extends \core\event\base {
     public function get_description() {
         $rid = isset($this->other['rid'])? $this->other['rid']: '';
         $a = (object) array('userid' => $this->userid, 'recordingid' => $rid, 'courseid' => $this->contextinstanceid);
-        return get_string('event_recording_deleted_description', 'bigbluebuttonbn', $a);
+        return get_string('event_recording_imported_description', 'bigbluebuttonbn', $a);
     }
 
     /**
@@ -49,8 +49,8 @@ class bigbluebuttonbn_recording_deleted extends \core\event\base {
      * @return array
      */
     protected function get_legacy_logdata() {
-        return(array($this->courseid, 'bigbluebuttonbn', 'recording deleted',
-                'view.php?pageid=' . $this->objectid, get_string('event_recording_deleted', 'bigbluebuttonbn'), $this->contextinstanceid));
+        return(array($this->courseid, 'bigbluebuttonbn', 'recording imported',
+                'view.php?pageid=' . $this->objectid, get_string('event_recording_imported', 'bigbluebuttonbn'), $this->contextinstanceid));
     }
 
     /**
