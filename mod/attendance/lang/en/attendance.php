@@ -77,8 +77,6 @@ $string['commonsessions'] = 'All students';
 $string['confirmdeleteuser'] = 'Are you sure you want to delete user \'{$a->fullname}\' ({$a->email})?<br/>All of their attendance records will be permanently deleted.';
 $string['countofselected'] = 'Count of selected';
 $string['copyfrom'] = 'Copy attendance data from';
-$string['createcalevents'] = 'Create calendar events';
-$string['createcheckcalevents'] = 'Are you sure you want to create the calendar events for the following sessions?';
 $string['createmultiplesessions'] = 'Create multiple sessions';
 $string['createmultiplesessions_help'] = 'This function allows you to create multiple sessions in one simple step.
 The sessions begin on the date of the base session and continue until the \'repeat until\' date.
@@ -92,8 +90,6 @@ $string['days'] = 'Days';
 $string['defaults'] = 'Defaults';
 $string['defaultdisplaymode'] = 'Default display mode';
 $string['delete'] = 'Delete';
-$string['deletecalevents'] = 'Delete calendar events';
-$string['deletecheckcalevents'] = 'Are you absolutely sure you want to delete the calendar events for the following sessions?';
 $string['deletelogs'] = 'Delete attendance data';
 $string['deleteselected'] = 'Delete selected';
 $string['deletesession'] = 'Delete session';
@@ -306,6 +302,7 @@ $string['eventstatusupdated'] = 'Status updated';
 $string['eventstatusadded'] = 'Status added';
 
 $string['studentscanmark'] = 'Allow students to record own attendance';
+$string['studentscanmark_desc'] = 'If checked, teachers will be able to allow students to mark their own attendance.';
 $string['studentscanmark_help'] = 'If checked students will be able to change their own attendance status for the session.';
 $string['set_by_student'] = 'Self-recorded';
 $string['attendance_already_submitted'] = 'You may not self register attendance that has already been set.';
