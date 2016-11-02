@@ -67,12 +67,14 @@ class cache_config_writer extends cache_config {
      * infinite loop situations caused by the cache throwing exceptions during its initialisation.
      */
     protected function config_save() {
+        global $CFG;
         // START MOODLECLOUD HACK.
         // Return early without ever changing the configuration. This is always managed by centrally and shared amongst
         // all sites.
-        return;
+        if (empty($CFG->mc_force_cache_generation)) {
+            return;
+        }
         // END MOODLECLOUD HACK.
-        global $CFG;
         static $confighash = '';
         $cachefile = static::get_config_file_path();
         $directory = dirname($cachefile);
