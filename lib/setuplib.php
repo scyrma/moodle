@@ -423,15 +423,20 @@ function default_error_handler($errno, $errstr, $errfile, $errline, $errcontext)
 
     // START MOODLECLOUD HACK.
     if (error_reporting() !== 0 && strpos($errfile, 'local/logging') === false) {
-        // Do not log issues with the logging itself, or if the errors are surpressed.
-        $exception = array('exceptions' => array(
-                'errno'         => $errno,
-                'errstr'        => $errstr,
-                'errfile'       => $errfile,
-                'errline'       => $errline,
+        $logerror = true;
+        $logerror = $logerror && strpos($errfile, '/typo3/') === false;
+
+        if ($logerror) {
+            // Do not log issues with the logging itself, or if the errors are surpressed.
+            $exception = array('exceptions' => array(
+                'errno' => $errno,
+                'errstr' => $errstr,
+                'errfile' => $errfile,
+                'errline' => $errline,
                 // Note: Do not include the errcontext here - things get circular.
             ));
-        local_logging\logger::log($errstr, $exception, 'exceptions', \Monolog\Logger::ERROR);
+            local_logging\logger::log($errstr, $exception, 'exceptions', \Monolog\Logger::ERROR);
+        }
     }
     // END MOODLECLOUD HACK.
 
