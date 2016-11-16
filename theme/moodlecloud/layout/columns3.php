@@ -43,7 +43,6 @@ if (right_to_left()) {
     $sidepre = 'span4 pull-right';
     $sidepost = 'span3 desktop-first-column';
 }
-
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
@@ -72,7 +71,10 @@ echo $OUTPUT->doctype() ?>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <?php echo $OUTPUT->user_menu(); ?>
+            <?php
+            echo $OUTPUT->user_menu();
+            echo $OUTPUT->navbar_plugin_output();
+            ?>
             <div class="nav-collapse collapse">
                 <?php echo $OUTPUT->custom_menu(); ?>
                 <ul class="nav pull-right">
