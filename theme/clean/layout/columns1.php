@@ -79,6 +79,7 @@ echo $OUTPUT->doctype() ?>
         echo $OUTPUT->login_info();
         echo $OUTPUT->home_link();
         echo $OUTPUT->standard_footer_html();
+        echo theme_clean_get_gatc();
         ?>
     </footer>
 
