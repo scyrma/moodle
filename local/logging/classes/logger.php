@@ -109,7 +109,6 @@ class logger {
             }
             $eventdata['wwwroot'] = $CFG->wwwroot;
 
-
             if (!isset($loglevel)) {
                 // Default to the INFO level.
                 $loglevel = \Monolog\Logger::INFO;
