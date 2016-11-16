@@ -52,5 +52,15 @@ $templatecontext = [
 ];
 
 $templatecontext['flatnavigation'] = $PAGE->flatnav;
-echo $OUTPUT->render_from_template('theme_boost/columns2', $templatecontext);
 
+// add the Google Analytics Tracking Code to the footer (if we have the settings)
+if ((defined('MOODLECLOUD_GA_GLOBAL_PROPERTY') && MOODLECLOUD_GA_GLOBAL_PROPERTY) &&
+    (defined('MOODLECLOUD_GA_REGION_PROPERTY') && MOODLECLOUD_GA_REGION_PROPERTY) &&
+    (defined('MOODLECLOUD_PLAN') && MOODLECLOUD_PLAN)
+) {
+    $templatecontext['ga_global_property'] = MOODLECLOUD_GA_GLOBAL_PROPERTY;
+    $templatecontext['ga_region_property'] = MOODLECLOUD_GA_REGION_PROPERTY;
+    $templatecontext['ga_plan'] = MOODLECLOUD_PLAN;
+}
+
+echo $OUTPUT->render_from_template('theme_boost/columns2', $templatecontext);
