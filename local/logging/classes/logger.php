@@ -26,7 +26,7 @@ namespace local_logging;
 
 require_once(dirname(__DIR__) . '/vendor/autoload.php');
 
-use Monolog\Formatter\LogglyFormatter;
+use Monolog\Formatter\LineFormatter;
 use local_logging\monolog\fluenthandler as FluentHandler;
 
 defined('MOODLE_INTERNAL') || die();
@@ -47,13 +47,21 @@ class logger {
 
         if (!isset($loggers[$channel])) {
             // Setup the logger.
-            $logger[$channel] = new \Monolog\Logger($channel);
+            $loggers[$channel] = new \Monolog\Logger($channel);
 
             $handler = new FluentHandler();
-            $logger[$channel]->pushHandler($handler);
+
+            if ($channel === 'exceptions') {
+                // Provide stacktraces with exceptions.
+                $formatter = new LineFormatter();
+                $formatter->includeStacktraces();
+                $handler->setFormatter($formatter);
+            }
+
+            $loggers[$channel]->pushHandler($handler);
         }
 
-        return $logger[$channel];
+        return $loggers[$channel];
     }
 
     /**
@@ -69,7 +77,7 @@ class logger {
 
         if ($logger = self::get_logger($channel)) {
             if (!isset($eventdata['userid'])) {
-               $eventdata['userid'] = $USER->id ?: null;
+               $eventdata['userid'] = isset($USER->id) ? $USER->id : null;
             }
             if (isset($_SERVER['REQUEST_URI'])) {
                 $eventdata['uri'] = $_SERVER['REQUEST_URI'];
@@ -81,10 +89,26 @@ class logger {
                 $eventdata['cliargs'] = $_SERVER['argv'];
             }
 
-            $eventdata['moodleversion'] = $CFG->version;
+            if (defined('CLI_SCRIPT') && CLI_SCRIPT) {
+                $eventdata['type'] = 'CLI';
+            } else if (defined('AJAX_SCRIPT') && AJAX_SCRIPT) {
+                $eventdata['type'] = 'AJAX';
+            } else if (isset($_SERVER) && isset($_SERVER['SERVER_ADDR'])) {
+                $eventdata['type'] = 'HTTP';
+            } else {
+                $eventdata['type'] = 'Unknown';
+            }
+
+            if (function_exists('getremoteaddr')) {
+                // Add the IP address of the client.
+                $eventdata['ipaddress'] = getremoteaddr();
+            }
+
+            if (isset($CFG->moodlecloudversion)) {
+                $eventdata['moodlecloudversion'] = $CFG->moodlecloudversion;
+            }
             $eventdata['wwwroot'] = $CFG->wwwroot;
 
-            // TODO add the Amazon Instance tag and other associated info.
 
             if (!isset($loglevel)) {
                 // Default to the INFO level.
