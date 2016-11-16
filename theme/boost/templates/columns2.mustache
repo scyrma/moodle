@@ -91,8 +91,49 @@
     </div>
     {{> theme_boost/nav-drawer }}
 </div>
+<footer id="page-footer" class="p-y-1 bg-inverse">
+    <div class="container">
+        <div id="course-footer">{{{ output.course_footer }}}</div>
 
-{{> theme_boost/footer }}
+        {{# output.page_doc_link }}
+            <p class="helplink">{{{ output.page_doc_link }}}</p>
+        {{/ output.page_doc_link }}
+
+        {{{ output.login_info }}}
+        <div class="tool_usertours-resettourcontainer"></div>
+        {{{ output.home_link }}}
+        <nav class="nav navbar-nav hidden-lg-up">
+            {{# output.custom_menu_flat }}
+                <ul class="list-unstyled p-t-1">
+                    {{> theme_boost/custom_menu_footer }}
+                </ul>
+            {{/ output.custom_menu_flat }}
+        </nav>
+        {{{ output.standard_footer_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+    {{#ga_global_property}}
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+            {{#ga_global_property}}ga('create', '{{{.}}}', 'auto', 'mcglobal');{{/ga_global_property}}
+            {{#ga_region_property}}ga('create', '{{{.}}}', 'auto', 'mcregion');{{/ga_region_property}}
+
+            {{! Custom Dimension (dimension1) for the Plan (e.g. free.0, school_250.0 etc...)}}
+            {{#ga_plan}}
+            ga('mcglobal.set', 'dimension1', '{{{.}}}');
+            ga('mcregion.set', 'dimension1', '{{{.}}}');
+            {{/ga_plan}}
+
+            {{! Send pageviews for both the region and global/rollup properties }}
+            ga('mcglobal.send', 'pageview');
+            ga('mcregion.send', 'pageview');
+        </script>
+    {{/ga_global_property}}
+</footer>
 
 </body>
 </html>
