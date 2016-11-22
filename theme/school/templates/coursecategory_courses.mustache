@@ -60,9 +60,9 @@
                 <div class="course-items course-items-grid-view">
                     {{#courses}}
                         <div class="course-item">
-                            <div class="img-wr">
-                                <a href="{{{url}}}"><img src="{{{imageurl}}}" title="{{#str}} courseimage, theme_school, {{name}} {{/str}}"></a>
-                            </div>
+                            <a href="{{{url}}}" title="{{#str}} courseimage, theme_school, {{name}} {{/str}}">
+                                <div class="img-wr" style="background-image: url('{{{imageurl}}}');"></div>
+                            </a>
                             <div class="course-item-cont">
                                 <a href="javascript:void(0);" class="btn-togle-details" aria-expanded="false" aria-label="{{#str}} togglecoursedetails, theme_school, {{name}} {{/str}}">
                                     <i class="fa fa-plus-square-o closed"></i>
