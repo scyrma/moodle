@@ -44,7 +44,13 @@
 
     {{$togglelabel}}{{#str}} showmessagewindownonew, message {{/str}}{{/togglelabel}}
     {{$togglecontent}}
-        {{#pix}} t/message, core, {{#str}} togglemessagemenu, message {{/str}} {{/pix}}
+        {{! the conversation icon }}
+        <div class="hidden-on-school">
+            {{#pix}} t/message, core, {{#str}} togglemessagemenu, message {{/str}} {{/pix}}
+        </div>
+
+        <i class="fa fa-comment"></i>
+
         <div class="count-container {{^unreadcount}}hidden{{/unreadcount}}" data-region="count-container">{{unreadcount}}</div>
     {{/togglecontent}}
 

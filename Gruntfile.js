@@ -149,6 +149,14 @@ module.exports = function(grunt) {
                 files: ["theme/bootstrapbase/less/**/*.less"],
                 tasks: ["css"]
             },
+            school: {
+                files: ["theme/school/less/*.less"],
+                tasks: ["less"]
+            },
+            scss: {
+                files: ["theme/*/scss/*/*.scss"],
+                tasks: ["less"]
+            },
             yui: {
                 files: ['**/yui/src/**/*.js'],
                 tasks: ['yui']
