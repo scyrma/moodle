@@ -7725,6 +7725,12 @@ body.path-question-type .mform fieldset.hidden {
   float: right;
   position: relative;
 }
+.popover-region.collapsed .popover-region-toggle {
+  height: 42px;
+  line-height: 42px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
 .popover-region.collapsed .popover-region-toggle:before,
 .popover-region.collapsed .popover-region-toggle:after {
   display: none;
@@ -8054,6 +8060,7 @@ body.path-question-type .mform fieldset.hidden {
 }
 .popover-region-messages .content-item-body p {
   margin: 0;
+  line-height: 20px;
 }
 .popover-region-messages .unread-count-container {
   display: none;
