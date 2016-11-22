@@ -47,7 +47,7 @@ $isregistration = $DB->get_record('config', array('name'=>'registerauth'));
             </button>
 
             <?php echo $OUTPUT->user_menu(); ?>
-
+            <?php echo $OUTPUT->navbar_plugin_output(); ?>
             <?php echo $OUTPUT->custom_menu() ?>
         </nav>
     </header>
