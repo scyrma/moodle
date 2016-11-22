@@ -19,8 +19,8 @@
         <div class="container nheading">
             {{#hastext}}
                 <div class="span5 popular-course-nheading">
-                  {{#heading}}<h4>{{.}}</h4>{{/heading}}
-                  {{#subheading}}<h2>{{.}}</h2>{{/subheading}}
+                  {{#heading}}<h2>{{.}}</h2>{{/heading}}
+                  {{#subheading}}<h4>{{.}}</h4>{{/subheading}}
                   {{#overview}}<p>{{{.}}}</p>{{/overview}}
                 </div>
             {{/hastext}}
@@ -41,9 +41,9 @@
                 {{#courses}}
                     <li>
                         <div class="course-item">
-                            <div class="img-wr">
-                                <a href="{{{url}}}"><img src="{{{imageurl}}}" title="{{#str}} courseimage, theme_school, {{name}} {{/str}}"></a>
-                            </div>
+                            <a href="{{{url}}}" title="{{#str}} courseimage, theme_school, {{name}} {{/str}}">
+                                <div class="img-wr" style="background-image: url('{{{imageurl}}}');"></div>
+                            </a>
                             <div class="course-item-cont">
                                 <h5><a href="{{{url}}}">{{name}}</a></h5>
                                 {{#contacts}}

@@ -7,6 +7,12 @@ define([
     ], function($, bxslider, cslider, modernizer, customMenu) {
 
     var toggleUserMenu = function(e) {
+
+        // don't open the user menu if the user has selected the messaging notifications
+        if ($(e.target).attr('class') == 'smallicon') {
+            return;
+        }
+
         $('.menu').toggleClass('usermenu-show');
         $('.nav-collapse').toggleClass('in').removeAttr('style');
         $('.btn-navbar').toggleClass('collapsed');

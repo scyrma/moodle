@@ -179,7 +179,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         return $userpic;
     }
 
-    public function user_menu_logged_in($user) {
+    public function user_menu_logged_in($user, $navbar = null) {
         // Get some navigation opts.
         $opts = user_get_user_navigation_info($user, $this->page);
 
@@ -242,6 +242,15 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             $data['cloudportalurl'] = $url->out();
         }
 
+        if ($navbar) {
+            $data['navbar'] = $navbar;
+        }
+
+//        echo "<pre>";
+//        print_r($data);
+//        echo "</pre>";
+//        die;
+
         return $this->render_from_template('theme_school/usermenu', $data);
     }
 
@@ -289,7 +298,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         return $this->render_from_template('theme_school/usermenu_login', $data);
     }
 
-    public function user_menu($user = null, $withlinks = null) {
+    public function user_menu($user = null, $withlinks = null, $navbar = null) {
         global $USER, $CFG;
         require_once($CFG->dirroot . '/user/lib.php');
 
@@ -311,7 +320,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         if (isguestuser()) {
             return $this->user_menu_guest($withlinks);
         } else {
-            return $this->user_menu_logged_in($user);
+            return $this->user_menu_logged_in($user, $navbar);
         }
     }
 
@@ -412,6 +421,26 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             );
         }
 
+        // get the number of news items and work out the Bootstrap column span to use
+        $noofnewsitems = (isset($context['newsitems']) ? count($context['newsitems']) : 0);
+        if ($noofnewsitems <= 3) {
+            switch ($noofnewsitems) :
+                case 3:
+                    $context['columnspan'] = 3;
+                    break;
+                case 2:
+                    $context['columnspan'] = 4;
+                    break;
+                case 1:
+                case 0:
+                    $context['columnspan'] = 6;
+                    break;
+                default:
+                    $context['columnspan'] = 3;
+                    break;
+            endswitch;
+        }
+
         return $this->render_from_template('theme_school/frontpage_news_and_updates', $context);
     }
 
@@ -454,8 +483,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'categoriesurl' => $categoriesurl->out(),
             'hastext' => $hastext,
             'hascategories' => !empty($categories),
-            'heading' => $heading,
-            'subheading' => $subheading,
+            'heading' => format_string($heading),
+            'subheading' => format_string($subheading),
             'overview' => $overview,
         );
 
@@ -471,8 +500,8 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $brieftext = get_config('theme_school', 'feedbackbrieftext');
 
         $context = array(
-            'heading' => $heading,
-            'subheading' => $subheading,
+            'heading' => format_string($heading),
+            'subheading' => format_string($subheading),
             'iframe' => $iframe,
             'brieftext' => $brieftext,
             'slides' => array(),
@@ -488,7 +517,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
 
             $slide = array(
                 'name' => $name,
-                'text' => $text,
+                'text' => format_string($text),
             );
 
             $hasimg = get_config('theme_school', 'feedbackslideimage_'.$slidenumber);
@@ -510,6 +539,16 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             return "";
         }
 
+        if (get_config('theme_school', 'feedbackvideotype') === "0") {
+            // If we've been given a URL instead of the embedded HTML then let's roll with it.
+            // The media formatter should handle embedding it for us.
+            if (clean_param($iframe, PARAM_URL)) {
+                $context['iframe'] = format_text(html_writer::link($iframe, get_string('video', 'theme_school')), FORMAT_HTML);
+            } else {
+                $context['iframe'] = $iframe;
+            }
+        }
+
         $context['hasslides'] = $hasslides;
         $context['hastext'] = $hastext;
 
@@ -526,6 +565,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $imageurl = $this->page->theme->setting_file_url('frontpagemediaimage', 'frontpagemediaimage');
         $ismediaimage = get_config('theme_school', 'frontpagestaticcontentselect') ? false : true;
         $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school', 'activetab' => 'theme_school_frontpage'));
+        $frontpagesiteadminurl = new \moodle_url('/admin/');
         $hascontent = true;
         $hasmedia = true;
 
@@ -541,6 +581,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'mediaimage' => $ismediaimage,
             'isadmin' => is_siteadmin(),
             'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'frontpagesiteadminurl' => $frontpagesiteadminurl->out(),
             'hascontent' => $hascontent,
         );
 
@@ -584,6 +625,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         global $PAGE, $CFG;
         $numberofslides = get_config('theme_school', 'slidercount');
         $frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'theme_school', 'activetab' => 'theme_school_frontpage'));
+        $frontpagesiteadminurl = new \moodle_url('/admin');
         $hascontent = true;
 
         if (empty($numberofslides)) {
@@ -596,6 +638,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             'slideautoplay' => get_config('theme_school', 'sliderautoplay'),
             'isadmin' => is_siteadmin(),
             'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+            'frontpagesiteadminurl' => $frontpagesiteadminurl->out(),
             'hascontent' => $hascontent,
         );
 
@@ -609,10 +652,10 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             if (!empty($text) || !empty($linkurl) || !empty($imageurl)) {
                 $context['slides'][] = array(
                     'imageurl' => $imageurl,
-                    'title' => $title,
-                    'text' => $text,
+                    'title' => format_string($title),
+                    'text' => format_string($text),
                     'linkurl' => $linkurl,
-                    'linktext' => $linktext
+                    'linktext' => format_string($linktext)
                 );
             }
         }
@@ -786,13 +829,24 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
             $context['cloudportalurl'] = $url->out();
         }
 
+        // add the Google Analytics Tracking Code to the footer (if we have the settings)
+        if ((defined('MOODLECLOUD_GA_GLOBAL_PROPERTY') && MOODLECLOUD_GA_GLOBAL_PROPERTY) &&
+            (defined('MOODLECLOUD_GA_REGION_PROPERTY') && MOODLECLOUD_GA_REGION_PROPERTY) &&
+            (defined('MOODLECLOUD_PLAN') && MOODLECLOUD_PLAN)
+        ) {
+            $context['ga_global_property'] = MOODLECLOUD_GA_GLOBAL_PROPERTY;
+            $context['ga_region_property'] = MOODLECLOUD_GA_REGION_PROPERTY;
+            $context['ga_plan'] = MOODLECLOUD_PLAN;
+        }
+
         return $this->render_from_template('theme_school/footer', $context);
     }
 
     public function custom_menu($custommenuitems = '') {
         global $CFG;
-
-        if (isloggedin() && (!empty($CFG->custommenuitems) || $CFG->langmenu)) {
+        // show the custom menu for school sites regardless if the user is logged in or not and let the
+        // Moodle permissions code handle whether or not to display the page to the user
+        if (!empty($CFG->custommenuitems) || $CFG->langmenu) {
             return $this->render_from_template('theme_school/custom_menu', array('menuhtml' => parent::custom_menu()));
         }
     }
