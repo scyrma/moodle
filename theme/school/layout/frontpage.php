@@ -39,9 +39,12 @@ echo $OUTPUT->doctype();?>
 
         <header>
             <div class="mobile-top-head">
-                <?php echo $OUTPUT->logo(); ?>
-                <?php echo $OUTPUT->user_menu(); ?>
-                <?php echo $OUTPUT->custom_menu() ?>
+            <?php
+                echo $OUTPUT->logo();
+                echo $OUTPUT->user_menu();
+                echo $OUTPUT->navbar_plugin_output();
+                echo $OUTPUT->custom_menu();
+            ?>
 			</div>
 
             <?php echo $OUTPUT->frontpage_header_content(); ?>
