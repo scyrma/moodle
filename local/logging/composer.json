@@ -1,6 +1,0 @@
-{
-    "require": {
-        "monolog/monolog": "~1.13",
-        "fluent/logger": "0.3.*"
-    }
-}
