@@ -157,6 +157,7 @@ $string['mainlinkcolourdesc'] = 'This is the colour of links within the main con
 
 /*theme_school_frontpage*/
 
+$string['siteadministration'] = 'Site administration';
 $string['frontpageimagecontent'] = 'Header content';
 $string['frontpageimagecontentdesc'] = ' This section relates to the top portion of your frontpage.';
 $string['frontpageimagecontentstyle'] = 'Display style';
