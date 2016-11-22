@@ -65,8 +65,11 @@
         });
 
         $('.menulist').css('display', 'none');
-        $('.usermenu').on("click",function(e) {
-            $('.menulist').toggleClass('usermenu-show active-drop-user-menuinner');
+        $('.usermenu').on("click", function(e) {
+            // don't open the user menu if the user has selected the messaging notifications
+            if ($(e.target).attr('class') != 'smallicon') {
+                $('.menulist').toggleClass('usermenu-show active-drop-user-menuinner');
+            }
         });
     };
 
