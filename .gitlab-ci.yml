@@ -1,19 +1,9 @@
 before_script:
-  - export PROJECT_DIR=`pwd`
-  - apt-get -y --no-install-recommends --force-yes -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confnew' install python-setuptools
-  - git clone https://github.com/s3tools/s3cmd /tmp/s3cmd
-  - cd /tmp/s3cmd && python setup.py install && cd $PROJECT_DIR
-  - echo "[default]" > ~/.s3cfg
-  - echo "access_key =" >> ~/.s3cfg
-  - echo "secret_key =" >> ~/.s3cfg
-  - echo "security_token =" >> ~/.s3cfg
   - ssh-keyscan -t rsa git.in.moodle.com >> ~/.ssh/known_hosts
   - s3cmd get s3://moodlecloud-ci/moodlecloud-cibot.pem ~/.ssh/id_rsa
   - chmod 600 ~/.ssh/id_rsa
   - git config --global user.email "noreply@moodlecloud.com"
   - git config --global user.name "MoodleCloud Git Octopus"
-  - git clone https://github.com/lesfurets/git-octopus /tmp/git-octopus
-  - cd /tmp/git-octopus && make install && cd $PROJECT_DIR
 
 variables:
   MOODLE_VERSION: "3.2"
@@ -28,7 +18,7 @@ stages:
 merge_free:
   stage: build
   tags:
-    - php
+    - git-octopus
   script:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
@@ -42,7 +32,7 @@ merge_free:
 merge_school:
   stage: build
   tags:
-    - php
+    - git-octopus
   script:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
@@ -56,7 +46,7 @@ merge_school:
 merge_testing_school:
   stage: build
   tags:
-    - php
+    - git-octopus
   script:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
