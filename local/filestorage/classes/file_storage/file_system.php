@@ -294,7 +294,19 @@ class file_system extends \file_system {
      * @return resource file handle
      */
     public function get_content_file_handle($file, $type = stored_file::FILE_HANDLE_FOPEN) {
-        return self::get_file_handle_for_path($this->get_presigned_url($file->get_contenthash()), $type);
+
+        switch ($type) {
+            case stored_file::FILE_HANDLE_FOPEN:
+                self::$client->registerStreamWrapper();
+                // Binary reading.
+                $context = stream_context_create([
+                    's3' => ['seekable' => true]
+                ]);
+                return fopen('s3://'.self::$bucket.'/'.$file->get_contenthash(), 'rb', false, $context);
+                break;
+            default:
+                return self::get_file_handle_for_path($this->get_presigned_url($file->get_contenthash()), $type);
+        }
     }
 
     /**
