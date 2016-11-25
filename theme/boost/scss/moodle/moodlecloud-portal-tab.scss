@@ -1,0 +1,55 @@
+#portal-link-container {
+    position: fixed;
+    top: 45%;
+    right: 0;
+    #portal-link {
+        color: #fff;
+        font-size: 15px;
+        text-decoration: none;
+        display: inline-block;
+        white-space: nowrap;
+        line-height: 30px;
+        background-color: #f98012;
+        padding: 0 5px;
+        @include box-shadow($modal-content-xs-box-shadow);
+        opacity: 0.8;
+        -webkit-transform: rotate(-90deg);
+        -moz-transform: rotate(-90deg);
+        -ms-transform: rotate(-90deg);
+        -o-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+        -webkit-transform-origin: 100% 100%;
+        -moz-transform-origin: 100% 100%;
+        -ms-transform-origin: 100% 100%;
+        -o-transform-origin: 100% 100%;
+        transform-origin: 100% 100%;
+        img {
+            height: 20px;
+            width: 33px;
+            display: inline-block;
+            vertical-align: sub;
+        }
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.dir-rtl {
+    #portal-link-container {
+        left: 0;
+        right: auto;
+        #portal-link {
+            -webkit-transform: rotate(90deg);
+            -moz-transform: rotate(90deg);
+            -ms-transform: rotate(90deg);
+            -o-transform: rotate(90deg);
+            transform: rotate(90deg);
+            -webkit-transform-origin: 0 100%;
+            -moz-transform-origin: 0 100%;
+            -ms-transform-origin: 0 100%;
+            -o-transform-origin: 0 100%;
+            transform-origin: 0 100%;
+        }
+    }
+}
