@@ -302,7 +302,7 @@ class file_system extends \file_system {
                 $context = stream_context_create([
                     's3' => ['seekable' => true]
                 ]);
-                return fopen('s3://'.self::$bucket.'/'.$file->get_contenthash(), 'rb', false, $context);
+                return fopen('s3://'.self::$bucket.'/'.$file->get_contenthash(), 'r', false, $context);
                 break;
             default:
                 return self::get_file_handle_for_path($this->get_presigned_url($file->get_contenthash()), $type);
