@@ -302,7 +302,16 @@ class file_system extends \file_system {
                 $context = stream_context_create([
                     's3' => ['seekable' => true]
                 ]);
-                return fopen('s3://'.self::$bucket.'/'.$file->get_contenthash(), 'r', false, $context);
+                $tmps3filepath = 's3://'.self::$bucket.'/'.$this->get_contentpath_from_hash($file->get_contenthash());
+                $tmphandle = fopen($tmps3filepath, 'r', false, $context);
+                if ($tmphandle) {
+                    while (!feof($tmphandle)) {
+                        fread($tmphandle, 8192);
+                    }
+                }else {
+                    error_log("Failed to open the filehandle to S3: $tmps3filepath");
+                }
+                return $tmphandle;
                 break;
             default:
                 return self::get_file_handle_for_path($this->get_presigned_url($file->get_contenthash()), $type);
