@@ -112,6 +112,14 @@
         {{{ output.standard_footer_html }}}
         {{{ output.standard_end_of_body_html }}}
     </div>
+    {{#showportallink}}
+        <div id="portal-link-container">
+            <a id="portal-link" href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_boost {{/str}}">
+                <img src="{{{cloudinvertedimgurl}}}"/>
+                {{#str}} yourportal, theme_boost {{/str}}
+            </a>
+        </div>
+    {{/showportallink}}
     {{#ga_global_property}}
         <script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
