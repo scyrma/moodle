@@ -63,4 +63,17 @@ if ((defined('MOODLECLOUD_GA_GLOBAL_PROPERTY') && MOODLECLOUD_GA_GLOBAL_PROPERTY
     $templatecontext['ga_plan'] = MOODLECLOUD_PLAN;
 }
 
+// MoodleCloud Portal SSO Tab
+if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
+    $url = new moodle_url('/auth/moodlecloud/portal.php');
+    $templatecontext['showportallink'] = true;
+    $templatecontext['cloudportalurl'] = $url->out();
+
+    $devicetype = core_useragent::get_device_type();
+    $themename = core_useragent::get_device_type_cfg_var_name($devicetype);
+    $theme = theme_config::load($themename);
+
+    $templatecontext['cloudinvertedimgurl'] = $theme->pix_url('cloud-logo-inverted', 'theme');
+}
+
 echo $OUTPUT->render_from_template('theme_boost/columns2', $templatecontext);
