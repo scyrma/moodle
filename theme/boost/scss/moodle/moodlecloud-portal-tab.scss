@@ -1,3 +1,6 @@
+// enabling drop shadows here because they are used
+$enable-shadows: true;
+
 #portal-link-container {
     position: fixed;
     top: 45%;
@@ -11,7 +14,7 @@
         line-height: 30px;
         background-color: #f98012;
         padding: 0 5px;
-        @include box-shadow($modal-content-xs-box-shadow);
+        @include box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
         opacity: 0.8;
         -webkit-transform: rotate(-90deg);
         -moz-transform: rotate(-90deg);
