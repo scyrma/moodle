@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
+defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/formslib.php');
 
 /**
@@ -61,7 +61,6 @@ class mod_attendance_update_form extends moodleform {
         $endhour = floor($endtime / HOURSECS);
         $endminute = floor(($endtime - $endhour * HOURSECS) / MINSECS);
 
-        $sesendtime = $sess->sessdate + $sess->duration;
         $data = array('sessiondate' => $sess->sessdate,
                 'sestime' => array('starthour' => $starthour, 'startminute' => $startminute,
                                    'endhour' => $endhour, 'endminute' => $endminute),
