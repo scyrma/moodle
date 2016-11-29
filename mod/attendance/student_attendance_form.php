@@ -14,17 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/formslib.php');
 
 class mod_attendance_student_attendance_form extends moodleform {
     public function definition() {
-        global $CFG, $USER;
+        global $USER;
 
         $mform  =& $this->_form;
 
-        $course = $this->_customdata['course'];
-        $cm = $this->_customdata['cm'];
-        $modcontext = $this->_customdata['modcontext'];
         $attforsession = $this->_customdata['session'];
         $attblock = $this->_customdata['attendance'];
 
