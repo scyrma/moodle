@@ -16,6 +16,7 @@ Feature: Test the calendar related features in the attendance module
     And I log in as "teacher1"
     And I follow "Course 1"
     And I turn editing mode on
+    And I add the "Upcoming events" block
     And I add a "Attendance" to section "1" and I fill the form with:
       | Name | Test attendance |
     And I log out
