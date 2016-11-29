@@ -297,19 +297,27 @@ class file_system extends \file_system {
 
         switch ($type) {
             case stored_file::FILE_HANDLE_FOPEN:
+                /**
+                 * Open a seekable S3 stream using the AWS SDK.
+                 * In order to allow previously read data to be recalled, data is buffered in a PHP
+                 * temp stream using a stream decorator. When the amount of cached data exceeds 2MB,
+                 * the data in the temp stream will transfer from memory to disk. Keep this in mind
+                 * when downloading large files from Amazon S3 using the seekable stream context setting.
+                 */
                 self::$client->registerStreamWrapper();
-                // Binary reading.
                 $context = stream_context_create([
                     's3' => ['seekable' => true]
                 ]);
-                $tmps3filepath = 's3://'.self::$bucket.'/'.$this->get_contentpath_from_hash($file->get_contenthash());
+                $tmps3filepath = 's3://'. self::$bucket .'/'. $this->get_contentpath_from_hash($file->get_contenthash());
                 $tmphandle = fopen($tmps3filepath, 'r', false, $context);
                 if ($tmphandle) {
+                    // S3 seekable streams allow you to seek only to bytes that were previously read.
+                    // Read the entirety of the file before returning the handle to Moodle for seeking.
                     while (!feof($tmphandle)) {
                         fread($tmphandle, 8192);
                     }
-                }else {
-                    error_log("Failed to open the filehandle to S3: $tmps3filepath");
+                } else {
+                    error_log('Failed to open the filehandle to S3: '. $tmps3filepath);
                 }
                 return $tmphandle;
                 break;
