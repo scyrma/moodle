@@ -1,9 +1,11 @@
 before_script:
-  - ssh-keyscan -t rsa git.in.moodle.com >> ~/.ssh/known_hosts
-  - s3cmd get s3://moodlecloud-ci/moodlecloud-cibot.pem ~/.ssh/id_rsa
+  - if [ ! -e /cache/known_hosts ]; then ssh-keyscan -t rsa git.in.moodle.com staging.gl.moodlecloud.com > /cache/known_hosts; fi
+  - if [ ! -e /cache/id_rsa ]; then s3cmd get s3://moodlecloud-ci/moodlecloud-cibot.pem /cache/id_rsa; fi
+  - if [ ! -e /cache/gitconfig ]; then git config --global user.email "noreply@moodlecloud.com"; git config --global user.name "MoodleCloud Git Octopus"; cp ~/.gitconfig /cache/gitconfig; fi
+  - cp /cache/id_rsa ~/.ssh/id_rsa
   - chmod 600 ~/.ssh/id_rsa
-  - git config --global user.email "noreply@moodlecloud.com"
-  - git config --global user.name "MoodleCloud Git Octopus"
+  - cp /cache/known_hosts ~/.ssh/known_hosts
+  - cp /cache/gitconfig ~/.gitconfig
 
 variables:
   MOODLE_VERSION: "3.2"
@@ -14,6 +16,7 @@ variables:
 
 stages:
  - build
+ - deploy
 
 merge_free:
   stage: build
@@ -56,3 +59,10 @@ merge_testing_school:
     - git push $PUSH_REPO +HEAD:SCHOOL-$MOODLE_VERSION/octopus-testing
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
   allow_failure: false
+
+deploy_staging:
+  stage: deploy
+  tags:
+    - git-octopus
+  script:
+    - ssh cibot@staging.gl.moodlecloud.com "sudo /opt/deploy_moodle_chef.sh"
