@@ -130,7 +130,7 @@
             {{#ga_global_property}}ga('create', '{{{.}}}', 'auto', 'mcglobal');{{/ga_global_property}}
             {{#ga_region_property}}ga('create', '{{{.}}}', 'auto', 'mcregion');{{/ga_region_property}}
 
-            {{! Custom Dimension (dimension1) for the Plan (e.g. free.0, school_250.0 etc...)}}
+            {{! Custom Dimension (dimension1) for the Plan }}
             {{#ga_plan}}
             ga('mcglobal.set', 'dimension1', '{{{.}}}');
             ga('mcregion.set', 'dimension1', '{{{.}}}');
