@@ -856,14 +856,18 @@ class mod_attendance_renderer extends plugin_renderer_base {
             $table->attributes['class'] .= ' summaryreport';
         }
 
+        $colclass = null;
+
         // User picture.
         $table->head[] = '';
         $table->align[] = 'left';
         $table->size[] = '1px';
+        $table->colclasses[] = $colclass;
 
         $table->head[] = $this->construct_fullname_head($reportdata);
         $table->align[] = 'left';
         $table->size[] = '';
+        $table->colclasses[] = $colclass;
         $sessionstats = array();
 
         foreach ($reportdata->sessions as $sess) {
@@ -892,44 +896,65 @@ class mod_attendance_renderer extends plugin_renderer_base {
             $table->head[] = $sesstext;
             $table->align[] = 'center';
             $table->size[] = '1px';
+            $table->colclasses[] = $colclass;
+        }
+
+        $setnumber = -1;
+        foreach ($reportdata->statuses as $sts) {
+            if ($sts->setnumber != $setnumber) {
+                $colclass = empty($colclass) ? 'columncontrast' : null;
+                $setnumber = $sts->setnumber;
+            }
+
+            $table->head[] = $sts->acronym;
+            $table->align[] = 'center';
+            $table->size[] = '1px';
+            $table->colclasses[] = $colclass;
         }
 
         $table->head[] = get_string('takensessions', 'attendance');
         $table->align[] = 'center';
         $table->size[] = '1px';
+        $colclass = empty($colclass) ? 'columncontrast' : null;
+        $table->colclasses[] = $colclass;
 
-        if (!empty($reportdata->att->grade)) {
-            $table->head[] = get_string('points', 'attendance');
-            $table->align[] = 'center';
-            $table->size[] = '1px';
+        $table->head[] = get_string('points', 'attendance');
+        $table->align[] = 'center';
+        $table->size[] = '1px';
+        $table->colclasses[] = $colclass;
 
-            $table->head[] = get_string('percentage', 'attendance');
-            $table->align[] = 'center';
-            $table->size[] = '1px';
-        }
+        $table->head[] = get_string('percentage', 'attendance');
+        $table->align[] = 'center';
+        $table->size[] = '1px';
+        $table->colclasses[] = $colclass;
 
         if ($reportdata->pageparams->view == ATT_VIEW_SUMMARY) {
             $table->head[] = get_string('sessionstotal', 'attendance');
             $table->align[] = 'center';
             $table->size[] = '1px';
+            $colclass = empty($colclass) ? 'columncontrast' : null;
+            $table->colclasses[] = $colclass;
 
-            if (!empty($reportdata->att->grade)) {
-                $table->head[] = get_string('pointsallsessions', 'attendance');
-                $table->align[] = 'center';
-                $table->size[] = '1px';
+            $table->head[] = get_string('pointsallsessions', 'attendance');
+            $table->align[] = 'center';
+            $table->size[] = '1px';
+            $table->colclasses[] = $colclass;
 
-                $table->head[] = get_string('percentageallsessions', 'attendance');
-                $table->align[] = 'center';
-                $table->size[] = '1px';
+            $table->head[] = get_string('percentageallsessions', 'attendance');
+            $table->align[] = 'center';
+            $table->size[] = '1px';
+            $table->colclasses[] = $colclass;
 
-                $table->head[] = get_string('maxpossiblepoints', 'attendance');
-                $table->align[] = 'center';
-                $table->size[] = '1px';
+            $table->head[] = get_string('maxpossiblepoints', 'attendance');
+            $table->align[] = 'center';
+            $table->size[] = '1px';
+            $colclass = empty($colclass) ? 'columncontrast' : null;
+            $table->colclasses[] = $colclass;
 
-                $table->head[] = get_string('maxpossiblepercentage', 'attendance');
-                $table->align[] = 'center';
-                $table->size[] = '1px';
-            }
+            $table->head[] = get_string('maxpossiblepercentage', 'attendance');
+            $table->align[] = 'center';
+            $table->size[] = '1px';
+            $table->colclasses[] = $colclass;
         }
 
         if ($bulkmessagecapability) { // Display the table header for bulk messaging.
@@ -952,24 +977,29 @@ class mod_attendance_renderer extends plugin_renderer_base {
             } else {
                 $usersummary = $reportdata->summary->get_taken_sessions_summary_for($user->id);
             }
-            $row->cells[] = $usersummary->numtakensessions;
-            if (!empty($reportdata->att->grade)) {
-                $row->cells[] = format_float($usersummary->takensessionspoints, 1, true, true) . ' / ' .
-                    format_float($usersummary->takensessionsmaxpoints, 1, true, true);
-                $row->cells[] = format_float($usersummary->takensessionspercentage * 100) . '%';
+
+            foreach ($reportdata->statuses as $sts) {
+                if (isset($usersummary->userstakensessionsbyacronym[$sts->setnumber][$sts->acronym])) {
+                    $row->cells[] = $usersummary->userstakensessionsbyacronym[$sts->setnumber][$sts->acronym];
+                } else {
+                    $row->cells[] = 0;
+                }
             }
+
+            $row->cells[] = $usersummary->numtakensessions;
+            $row->cells[] = format_float($usersummary->takensessionspoints, 1, true, true) . ' / ' .
+                                format_float($usersummary->takensessionsmaxpoints, 1, true, true);
+            $row->cells[] = format_float($usersummary->takensessionspercentage * 100) . '%';
 
             if ($reportdata->pageparams->view == ATT_VIEW_SUMMARY) {
                 $row->cells[] = $usersummary->numallsessions;
-                if (!empty($reportdata->att->grade)) {
-                    $row->cells[] = format_float($usersummary->takensessionspoints, 1, true, true) . ' / ' .
-                        format_float($usersummary->allsessionsmaxpoints, 1, true, true);
-                    $row->cells[] = format_float($usersummary->allsessionspercentage * 100) . '%';
+                $row->cells[] = format_float($usersummary->takensessionspoints, 1, true, true) . ' / ' .
+                                format_float($usersummary->allsessionsmaxpoints, 1, true, true);
+                $row->cells[] = format_float($usersummary->allsessionspercentage * 100) . '%';
 
-                    $row->cells[] = format_float($usersummary->maxpossiblepoints, 1, true, true) . ' / ' .
-                        format_float($usersummary->allsessionsmaxpoints, 1, true, true);
-                    $row->cells[] = format_float($usersummary->maxpossiblepercentage * 100) . '%';
-                }
+                $row->cells[] = format_float($usersummary->maxpossiblepoints, 1, true, true) . ' / ' .
+                                format_float($usersummary->allsessionsmaxpoints, 1, true, true);
+                $row->cells[] = format_float($usersummary->maxpossiblepercentage * 100) . '%';
             }
 
             if ($bulkmessagecapability) { // Create the checkbox for bulk messaging.
@@ -980,37 +1010,46 @@ class mod_attendance_renderer extends plugin_renderer_base {
             $table->data[] = $row;
         }
 
-        // Calculate the sum of statuses for each user.
-        $statrow = new html_table_row();
-        $statrow->cells[] = '';
-        $statrow->cells[] = get_string('summary');
-        foreach ($reportdata->sessions as $sess) {
-            $sessionstats = array();
-            foreach ($reportdata->statuses as $status) {
-                if ($status->setnumber == $sess->statusset) {
-                    $status->count = 0;
-                    $sessionstats[$status->id] = $status;
-                }
-            }
-
-            foreach ($reportdata->users as $user) {
-                if (!empty($reportdata->sessionslog[$user->id][$sess->id])) {
-                    $statusid = $reportdata->sessionslog[$user->id][$sess->id]->statusid;
-                    if (isset($sessionstats[$statusid]->count)) {
-                        $sessionstats[$statusid]->count++;
+        if ($reportdata->pageparams->view != ATT_VIEW_SUMMARY) {
+            // Calculate the sum of statuses for each user.
+            $statrow = new html_table_row();
+            $statrow->cells[] = '';
+            $statrow->cells[] = get_string('summary');
+            foreach ($reportdata->sessions as $sess) {
+                $sessionstats = array();
+                foreach ($reportdata->statuses as $status) {
+                    if ($status->setnumber == $sess->statusset) {
+                        $status->count = 0;
+                        $sessionstats[$status->id] = $status;
                     }
                 }
-            }
 
-            $statsoutput = '<br/>';
-            foreach ($sessionstats as $status) {
-                $statsoutput .= "$status->description: {$status->count}<br/>";
+                foreach ($reportdata->users as $user) {
+                    if (!empty($reportdata->sessionslog[$user->id][$sess->id])) {
+                        $statusid = $reportdata->sessionslog[$user->id][$sess->id]->statusid;
+                        if (isset($sessionstats[$statusid]->count)) {
+                            $sessionstats[$statusid]->count++;
+                        }
+                    }
+                }
+
+                $statsoutput = '';
+                foreach ($sessionstats as $status) {
+                    $statsoutput .= "$status->description: {$status->count}<br/>";
+                }
+                $cell = new html_table_cell($statsoutput);
+                $cell->style = 'white-space:nowrap;';
+                $statrow->cells[] = $cell;
             }
-            $cell = new html_table_cell($statsoutput);
-            $cell->style = 'white-space:nowrap;';
-            $statrow->cells[] = $cell;
+            foreach ($reportdata->statuses as $sts) {
+                $statrow->cells[] = '';
+            }
+            $statrow->cells[] = '';
+            $statrow->cells[] = '';
+            $statrow->cells[] = '';
+            $statrow->cells[] = '';
+            $table->data[] = $statrow;
         }
-        $table->data[] = $statrow;
 
         if ($bulkmessagecapability) { // Require that the user can bulk message users.
             // Display check boxes that will allow the user to send a message to the students that have been checked.
