@@ -1612,6 +1612,10 @@ body.jsenabled .formlisting {
     display: block;
 }
 
+body {
+    -ms-overflow-style: scrollbar;
+}
+
 /* Badges styles */
 table.collection {
     @extend .table;
