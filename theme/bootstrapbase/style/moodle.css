@@ -4089,6 +4089,9 @@ body.jsenabled .formlistingradio {
 body.jsenabled .formlisting {
   display: block;
 }
+body {
+  -ms-overflow-style: scrollbar;
+}
 /* Badges styles */
 table.collection {
   width: 100%;
