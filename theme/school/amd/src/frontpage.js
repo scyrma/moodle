@@ -50,7 +50,7 @@ define([
             onSliderLoad: function() {
                 $('.popular-courses-slider').css('visibility', 'visible');
             }
-    });
+        });
 
         $(".bx-prev, .bx-next").html("");
     };
