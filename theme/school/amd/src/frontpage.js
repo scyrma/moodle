@@ -47,7 +47,10 @@ define([
             adaptiveHeight: true,
             auto: false,
             pause: 7000,
-        });
+            onSliderLoad: function() {
+                $('.popular-courses-slider').css('visibility', 'visible');
+            }
+    });
 
         $(".bx-prev, .bx-next").html("");
     };
