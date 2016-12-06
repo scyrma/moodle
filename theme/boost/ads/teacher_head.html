@@ -1,0 +1,48 @@
+<script type="text/javascript">
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+  (function() {
+    var gads = document.createElement('script');
+    gads.async = true;
+    gads.type = 'text/javascript';
+    var useSSL = 'https:' == document.location.protocol;
+    gads.src = (useSSL ? 'https:' : 'http:') + '//www.googletagservices.com/tag/js/gpt.js';
+    var node = document.getElementsByTagName('script')[0];
+    node.parentNode.insertBefore(gads, node);
+  })();
+var resizeTimer;
+function resizer() {
+  if (window.adslot) {
+    googletag.pubads().refresh([window.adslot]);
+  }
+}
+window.addEventListener("resize", function() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(resizer, 250);
+});
+</script>
+<script type="text/javascript">
+  googletag.cmd.push(function() {
+    var mapping = googletag.sizeMapping()
+        // Desktop and Tablet (Landscape)
+        .addSize([768, 200], [728, 90])
+
+        // Tablet (Portrait)
+        .addSize([508, 200], [468,60])
+
+        // Mobile
+        .addSize([0, 0], [320,50])
+
+        .build();
+    window.adslot = googletag
+        .defineSlot('/23455367/free_moodle_teacher_site', [[320, 50], [468, 60], [728, 90]], 'div-gpt-ad-1438829909760-0')
+        .defineSizeMapping(mapping)
+        .addService(googletag.pubads());
+
+    // Fetch all ads in a single request.
+    googletag.pubads().enableSingleRequest();
+
+    // Start ad fetching.
+    googletag.enableServices();
+  });
+</script>
