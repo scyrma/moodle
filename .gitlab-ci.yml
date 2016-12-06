@@ -6,13 +6,11 @@ before_script:
   - chmod 600 ~/.ssh/id_rsa
   - cp /cache/known_hosts ~/.ssh/known_hosts
   - cp /cache/gitconfig ~/.gitconfig
+  - export SHORT_VERSION=`echo $MOODLE_VERSION |sed -e 's/\.//'`
 
 variables:
   MOODLE_VERSION: "3.2"
   PUSH_REPO: "git@git.in.moodle.com:hosting/moodle.git"
-  FREE_BRANCHES: "origin/CLOUD-$MOODLE_VERSION/FEATURE-bbb origin/CLOUD-$MOODLE_VERSION/FEATURE-cache origin/CLOUD-$MOODLE_VERSION/FEATURE-crontest origin/CLOUD-$MOODLE_VERSION/FEATURE-email-sender origin/CLOUD-$MOODLE_VERSION/FEATURE-moodlecloud origin/CLOUD-$MOODLE_VERSION/FEATURE-noupgrade origin/CLOUD-$MOODLE_VERSION/FEATURE-S3 origin/CLOUD-$MOODLE_VERSION/FEATURE-logging origin/CLOUD-$MOODLE_VERSION/FEATURE-user_update"
-  SCHOOL_BRANCHES: "origin/CLOUD-$MOODLE_VERSION/FEATURE-bbb origin/CLOUD-$MOODLE_VERSION/FEATURE-cache origin/CLOUD-$MOODLE_VERSION/FEATURE-crontest origin/CLOUD-$MOODLE_VERSION/FEATURE-email-sender origin/CLOUD-$MOODLE_VERSION/FEATURE-moodlecloud origin/CLOUD-$MOODLE_VERSION/FEATURE-noupgrade origin/CLOUD-$MOODLE_VERSION/FEATURE-S3 origin/CLOUD-$MOODLE_VERSION/FEATURE-logging origin/CLOUD-$MOODLE_VERSION/FEATURE-user_update origin/CLOUD-$MOODLE_VERSION/FEATURE-atto_chemistry origin/CLOUD-$MOODLE_VERSION/FEATURE-atto_count origin/CLOUD-$MOODLE_VERSION/FEATURE-block_xp origin/CLOUD-$MOODLE_VERSION/FEATURE-checklist origin/CLOUD-$MOODLE_VERSION/FEATURE-mod_attendance origin/CLOUD-$MOODLE_VERSION/FEATURE-mod_choicegroup origin/CLOUD-$MOODLE_VERSION/FEATURE-mod_quizgame origin/CLOUD-$MOODLE_VERSION/FEATURE-theme_school"
-  TESTING_BRANCHES: "origin/CLOUD-$MOODLE_VERSION/FEATURE-bbb origin/CLOUD-$MOODLE_VERSION/FEATURE-cache origin/CLOUD-$MOODLE_VERSION/FEATURE-crontest origin/CLOUD-$MOODLE_VERSION/FEATURE-email-sender origin/CLOUD-$MOODLE_VERSION/FEATURE-moodlecloud origin/CLOUD-$MOODLE_VERSION/FEATURE-noupgrade origin/CLOUD-$MOODLE_VERSION/FEATURE-S3 origin/CLOUD-$MOODLE_VERSION/FEATURE-logging origin/CLOUD-$MOODLE_VERSION/FEATURE-user_update origin/CLOUD-$MOODLE_VERSION/FEATURE-atto_chemistry origin/CLOUD-$MOODLE_VERSION/FEATURE-atto_count origin/CLOUD-$MOODLE_VERSION/FEATURE-block_xp origin/CLOUD-$MOODLE_VERSION/FEATURE-checklist origin/CLOUD-$MOODLE_VERSION/FEATURE-mod_attendance origin/CLOUD-$MOODLE_VERSION/FEATURE-mod_choicegroup origin/CLOUD-$MOODLE_VERSION/FEATURE-mod_quizgame origin/CLOUD-$MOODLE_VERSION/FEATURE-theme_school origin/CLOUD-$MOODLE_VERSION/FEATURE-wiris origin/CLOUD-$MOODLE_VERSION/FEATURE-mod_customcert"
 
 stages:
  - build
@@ -26,6 +24,7 @@ merge_free:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+    - export FREE_BRANCHES=`eval "echo \\$$(echo FREE_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
     - git octopus $FREE_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
     - git push --force origin +HEAD:FREE-$MOODLE_VERSION/octopus-staging
@@ -40,6 +39,7 @@ merge_school:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+    - export SCHOOL_BRANCHES=`eval "echo \\$$(echo SCHOOL_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
     - git octopus $SCHOOL_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
     - git push $PUSH_REPO +HEAD:SCHOOL-$MOODLE_VERSION/octopus-staging
@@ -54,6 +54,7 @@ merge_testing_school:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+    - export TESTING_BRANCHES=`eval "echo \\$$(echo TESTING_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
     - git octopus $TESTING_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
     - git push $PUSH_REPO +HEAD:SCHOOL-$MOODLE_VERSION/octopus-testing
