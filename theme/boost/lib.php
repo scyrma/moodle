@@ -106,3 +106,44 @@ function theme_boost_get_pre_scss($theme) {
 
     return $scss;
 }
+
+/**
+ * Partners ads for teachers and admins, adsense for students.
+ */
+function theme_boost_get_ad($context) {
+    global $PAGE, $SESSION;
+
+    // These strings are used by the JS checker.
+    $PAGE->requires->strings_for_js(array(
+        'adunblock_title',
+        'adunblock_message',
+    ), 'theme_moodlecloud');
+
+    $adconfig = array(
+        'id'            => 'moodlecloud_ad',
+        'data-notified' => isset($SESSION->theme_boost_adblock_notified),
+        'style'         => 'margin-left:auto;margin-right:auto;display:block !important;',
+    );
+
+    // do a capability check to see if this is a teacher. The same capability as is used with page_doc_link()
+    if (has_capability('moodle/site:doclinks', $context)) {
+        // User is an administrator of some kind.
+
+        if (defined('MOODLECLOUD_FEATURE_TEACHERADS_DISABLED') && MOODLECLOUD_FEATURE_TEACHERADS_DISABLED) {
+            // Teacher ads are disabled.
+            return '';
+        } else {
+            return html_writer::div(file_get_contents(__DIR__ . '/ads/teacher_body.html'), '', $adconfig);
+        }
+    } else {
+        // User is not an administrator.
+
+        if (defined('MOODLECLOUD_FEATURE_STUDENTADS_DISABLED') && MOODLECLOUD_FEATURE_STUDENTADS_DISABLED) {
+            // Student ads are disabled.
+            return '';
+        } else {
+            // Display the student ads.
+            return html_writer::div(file_get_contents(__DIR__ . '/ads/general_body.html'), '', $adconfig);
+        }
+    }
+}
