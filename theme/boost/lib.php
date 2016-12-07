@@ -158,6 +158,22 @@ function theme_boost_get_pre_scss($theme) {
 }
 
 /**
+ * The ads for teachers and admins require some JS to be added to the page header.
+ */
+function theme_boost_get_ad_header($context) {
+    // do a capability check to see if this is a teacher. The same capability as is used with page_doc_link().
+    // i.e. "is teacher?"
+    if (theme_boost_is_teacher($context)) {
+        if (defined('MOODLECLOUD_FEATURE_TEACHERADS_DISABLED') && MOODLECLOUD_FEATURE_TEACHERADS_DISABLED) {
+            // Teacher ads are disabled.
+            return '';
+        } else {
+            return file_get_contents(__DIR__ . '/ads/teacher_head.html');
+        }
+    }
+}
+
+/**
  * Partners ads for teachers and admins, adsense for students.
  */
 function theme_boost_get_ad($context) {
@@ -176,9 +192,9 @@ function theme_boost_get_ad($context) {
     );
 
     // do a capability check to see if this is a teacher. The same capability as is used with page_doc_link()
-    if (has_capability('moodle/site:doclinks', $context)) {
+    // i.e. "is teacher?"
+    if (theme_boost_is_teacher($context)) {
         // User is an administrator of some kind.
-
         if (defined('MOODLECLOUD_FEATURE_TEACHERADS_DISABLED') && MOODLECLOUD_FEATURE_TEACHERADS_DISABLED) {
             // Teacher ads are disabled.
             return '';
@@ -196,4 +212,31 @@ function theme_boost_get_ad($context) {
             return html_writer::div(file_get_contents(__DIR__ . '/ads/general_body.html'), '', $adconfig);
         }
     }
+}
+
+function theme_boost_get_footerlinks($context) {
+    global $OUTPUT;
+
+    $links = array();
+
+    if ($doclink = $OUTPUT->page_doc_link()) {
+        $links[] = $doclink;
+    }
+
+    if (theme_boost_is_teacher($context)) {
+        $title = get_string('supportforums', 'theme_boost');
+        $link = new moodle_url('https://moodle.org/community');
+        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
+    }
+    if (is_siteadmin()) {
+        $title = get_string('faq', 'theme_boost');
+        $link = new moodle_url('https://moodle.com/cloud/faq');
+        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
+    }
+    return implode(' | ', $links);
+}
+
+function theme_boost_is_teacher($context) {
+    // The same capability as is used with page_doc_link().
+    return has_capability('moodle/site:doclinks', $context);
 }
