@@ -76,4 +76,9 @@ if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
     $templatecontext['cloudinvertedimgurl'] = $theme->pix_url('cloud-logo-inverted', 'theme');
 }
 
+// MoodleCloud Google AdSense Banner Ads
+$templatecontext['moodlecloud_ad_header'] = theme_boost_get_ad_header($OUTPUT->page->context);
+$templatecontext['moodlecloud_ad'] = theme_boost_get_ad($OUTPUT->page->context);
+$templatecontext['footer_links'] = theme_boost_get_footerlinks($OUTPUT->page->context);
+
 echo $OUTPUT->render_from_template('theme_boost/columns2', $templatecontext);

@@ -24,6 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['adunblock_message'] = '
+    <p>We\'ve detected that your browser is blocking ads on this site.</p>
+    <p>MoodleCloud provides a Free plan to users and we depend on advertising to help pay for it.</p>
+    <p>The ads are quite unobtrusive. We\'d really appreciate it if you can change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://moodle.com/cloud/faq#adblock">our FAQ</a></p>
+    <p>Also, did you know these ads can be hidden from users on your site? Simply login to your portal and select the \'Hide ads from student view\' Add-on.</p>
+    <p>We appreciate your support.</p>
+    <p>Thanks, MoodleCloud team.</p>';
+$string['adunblock_title'] = 'Ad blocker detected :(';
 $string['advancedsettings'] = 'Advanced settings';
 $string['backgroundimage'] = 'Background image';
 $string['backgroundimage_desc'] = 'The image to display as a background of the site. The background image you upload here will override the background image in your theme preset files.';
@@ -32,10 +40,12 @@ $string['brandcolor_desc'] = 'The accent colour.';
 $string['bootswatch'] = 'Bootswatch';
 $string['bootswatch_desc'] = 'A bootswatch is a set of Bootstrap variables and css to style Bootstrap';
 $string['choosereadme'] = 'Boost is a modern highly-customisable theme. This theme is intended to be used directly, or as a parent theme when creating new themes utilising Bootstrap 4.';
+$string['cloudportallink'] = 'MoodleCloud portal link';
 $string['currentinparentheses'] = '(current)';
 $string['configtitle'] = 'Boost';
 $string['fontsize'] = 'Theme base fontsize';
 $string['fontsize_desc'] = 'Enter a fontsize in %';
+$string['faq'] = 'MoodleCloud FAQ';
 $string['generalsettings'] = 'General settings';
 $string['nobootswatch'] = 'None';
 $string['pluginname'] = 'Boost';
@@ -53,4 +63,5 @@ $string['privacy:metadata:preference:draweropennav'] = 'The user\'s preference f
 $string['privacy:drawernavclosed'] = 'The current preference for the navigation drawer is closed.';
 $string['privacy:drawernavopen'] = 'The current preference for the navigation drawer is open.';
 $string['cloudportallink'] = 'MoodleCloud portal link';
+$string['supportforums'] = 'Support Forums';
 $string['yourportal'] = 'Portal';
