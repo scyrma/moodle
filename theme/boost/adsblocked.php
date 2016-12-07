@@ -23,6 +23,6 @@
  */
 
 define('AJAX_SCRIPT', true);
-require_once(dirname(dirname(__DIR__)) . '/config.php');
+require_once(__DIR__ . '/../../config.php');
 
 $SESSION->theme_boost_adblock_notified = true;
