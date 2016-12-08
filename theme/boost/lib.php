@@ -173,7 +173,7 @@ function theme_boost_get_ad($context) {
     $PAGE->requires->strings_for_js(array(
         'adunblock_title',
         'adunblock_message',
-    ), 'theme_moodlecloud');
+    ), 'theme_boost');
 
     $adconfig = array(
         'id'            => 'moodlecloud_ad',
@@ -193,7 +193,6 @@ function theme_boost_get_ad($context) {
         }
     } else {
         // User is not an administrator.
-
         if (defined('MOODLECLOUD_FEATURE_STUDENTADS_DISABLED') && MOODLECLOUD_FEATURE_STUDENTADS_DISABLED) {
             // Student ads are disabled.
             return '';
