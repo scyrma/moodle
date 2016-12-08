@@ -27,8 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['adunblock_message'] = '
     <p>We\'ve detected that your browser is blocking ads on this site.</p>
     <p>MoodleCloud provides a Free plan to users and we depend on advertising to help pay for it.</p>
-    <p>The ads are quite unobtrusive. We\'d really appreciate it if you can change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://moodle.com/cloud/faq#adblock">our FAQ</a></p>
-    <p>Also, did you know these ads can be hidden from users on your site? Simply login to your portal and select the \'Hide ads from student view\' Add-on.</p>
+    <p>The ads are quite unobtrusive. We\'d really appreciate it if you can change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://moodle.com/cloud/faq#adblock">our FAQ</a></p>    
     <p>We appreciate your support.</p>
     <p>Thanks, MoodleCloud team.</p>';
 $string['adunblock_title'] = 'Ad blocker detected :(';
