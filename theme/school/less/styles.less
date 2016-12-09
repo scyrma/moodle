@@ -448,7 +448,7 @@ img {
 }
 
 .popover-region {
-    z-index: 11112;
+    z-index: inherit;
     .fa {
         line-height: 80px;
         font-size: 18px;
@@ -469,6 +469,10 @@ img {
 
 .popover-region-content-container, .popover-region-container {
     color: @mainFontColour;
+}
+
+.popover-region-container {
+    z-index: 13000;
 }
 
 .customMenuButtonMode() {
