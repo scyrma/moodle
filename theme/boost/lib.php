@@ -63,6 +63,8 @@ function theme_boost_get_main_scss_content($theme) {
         $scss .= file_get_contents($CFG->dirroot . '/theme/boost/scss/preset/default.scss');
     } else if ($filename == 'plain.scss') {
         $scss .= file_get_contents($CFG->dirroot . '/theme/boost/scss/preset/plain.scss');
+    } else if ($filename == 'moodlecloud.scss') {
+        $scss .= file_get_contents($CFG->dirroot . '/theme/boost/scss/preset/moodlecloud.scss');
     } else if ($filename && ($presetfile = $fs->get_file($context->id, 'theme_boost', 'preset', 0, '/', $filename))) {
         $scss .= $presetfile->get_content();
     } else {
