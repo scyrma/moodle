@@ -1,0 +1,95 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<footer>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            {{#hascontacts}}
+                <div class="contact-info {{#hasleftfootnotes}}span4{{/hasleftfootnotes}}{{^hasleftfootnotes}}span6{{/hasleftfootnotes}}">
+                    <h4>{{#str}} contactus, theme_school {{/str}}</h4>
+                    <ul id="contact-list">
+                        {{#address}}<li><i class="fa fa-map-marker"></i>{{.}}</li>{{/address}}
+                        {{#phone}}<li><i class="fa fa-phone"></i>{{.}}</li>{{/phone}}
+                        {{#email}}<li><i class="fa fa-envelope-o"></i>{{.}}</li>{{/email}}
+                    </ul>
+                    <ul id="social-list">
+                        {{#twitterurl}}<li><a href="{{{.}}}" title="{{#str}} twitter, theme_school {{/str}}"><i class="fa fa-twitter"></i></a></li>{{/twitterurl}}
+                        {{#youtubeurl}}<li><a href="{{{.}}}" title="{{#str}} youtube, theme_school {{/str}}"><i class="fa fa-youtube"></i></a></li>{{/youtubeurl}}
+                        {{#googleplusurl}}<li><a href="{{{.}}}" title="{{#str}} googleplus, theme_school {{/str}}"><i class="fa fa-google-plus"></i></a></li>{{/googleplusurl}}
+                        {{#facebookurl}}<li><a href="{{{.}}}" title="{{#str}} facebook, theme_school {{/str}}"><i class="fa fa-facebook"></i></a></li>{{/facebookurl}}
+                    </ul>
+                </div>
+            {{/hascontacts}}
+
+            {{#hasleftfootnotes}}
+                <div class="{{#hascontacts}}span4{{/hascontacts}}{{^hascontacts}}span6{{/hascontacts}}">
+                    {{{leftfootnote}}}
+                    <p class="foot-note-links">
+                        {{#footnotelinks}}
+                            <a href="{{{url}}}">{{text}}</a>
+                            <span>|</span>
+                        {{/footnotelinks}}
+                    </p>
+                </div>
+            {{/hasleftfootnotes}}
+
+            <div class="right 
+                {{#hasleftfootnotes}}
+                    {{#hascontacts}}span4{{/hascontacts}}
+                    {{^hascontacts}}span6{{/hascontacts}}
+                {{/hasleftfootnotes}}
+                {{^hasleftfootnotes}}
+                    {{#hascontacts}}span6{{/hascontacts}}
+                    {{^hascontacts}}span12{{/hascontacts}}
+                {{/hasleftfootnotes}}">
+                <div id="course-footer">{{{coursefooter}}}</div>
+                {{#footnote}}<div class="footnote text-center">{{{.}}}</div>{{/footnote}}
+                {{#doclinks}}<p class="helplink">{{{.}}}</p>{{/doclinks}}
+                {{{logininfo}}}
+                {{{standardfooterhtml}}}
+            </div>
+        </div>
+    </div><!-- END of .container-fluid -->
+    {{#showportallink}}
+        <div id="portal-link-container">
+            <a id="portal-link" href="{{{cloudportalurl}}}" title="{{#str}} cloudportallink, theme_school {{/str}}">
+                <img src="{{{cloudinvertedimgurl}}}"/>
+                {{#str}} yourportal, theme_school {{/str}}
+            </a>
+        </div>
+    {{/showportallink}}
+    {{#ga_global_property}}
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+            {{#ga_global_property}}ga('create', '{{{.}}}', 'auto', 'mcglobal');{{/ga_global_property}}
+            {{#ga_region_property}}ga('create', '{{{.}}}', 'auto', 'mcregion');{{/ga_region_property}}
+
+            {{! Custom Dimension (dimension1) for the Plan }}
+            {{#ga_plan}}
+            ga('mcglobal.set', 'dimension1', '{{{.}}}');
+            ga('mcregion.set', 'dimension1', '{{{.}}}');
+            {{/ga_plan}}
+
+                {{! Send pageviews for both the region and global/rollup properties }}
+            ga('mcglobal.send', 'pageview');
+            ga('mcregion.send', 'pageview');
+        </script>
+    {{/ga_global_property}}
+</footer><!-- END of footer -->

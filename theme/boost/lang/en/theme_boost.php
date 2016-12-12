@@ -24,12 +24,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['adunblock_message'] = '
+    <p>We\'ve detected that your browser is blocking ads on this site.</p>
+    <p>MoodleCloud provides a Free plan to users and we depend on advertising to help pay for it.</p>
+    <p>The ads are quite unobtrusive. We\'d really appreciate it if you can change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://moodle.com/cloud/faq#adblock">our FAQ</a></p>    
+    <p>We appreciate your support.</p>
+    <p>Thanks, MoodleCloud team.</p>';
+$string['adunblock_title'] = 'Ad blocker detected :(';
 $string['advancedsettings'] = 'Advanced settings';
 $string['brandcolor'] = 'Brand colour';
 $string['brandcolor_desc'] = 'The accent colour.';
 $string['choosereadme'] = 'Boost is a modern highly-customisable theme. This theme is intended to be used directly, or as a parent theme when creating new themes utilising Bootstrap 4.';
+$string['cloudportallink'] = 'MoodleCloud portal link';
 $string['currentinparentheses'] = '(current)';
 $string['configtitle'] = 'Boost';
+$string['faq'] = 'MoodleCloud FAQ';
 $string['generalsettings'] = 'General settings';
 $string['pluginname'] = 'Boost';
 $string['presetfiles'] = 'Additional theme preset files';
@@ -41,3 +50,5 @@ $string['rawscss_desc'] = 'Use this field to provide SCSS or CSS code which will
 $string['rawscsspre'] = 'Raw initial SCSS';
 $string['rawscsspre_desc'] = 'In this field you can provide initialising SCSS code, it will be injected before everything else. Most of the time you will use this setting to define variables.';
 $string['region-side-pre'] = 'Right';
+$string['supportforums'] = 'Support Forums';
+$string['yourportal'] = 'Portal';
