@@ -15,7 +15,8 @@ require(['core/str', 'jquery', 'core/config'], function(str, $, config) {
                 ]).done(function(strings) {
                     new M.core.alert({
                         'title': strings[0],
-                        message: strings[1]
+                        message: strings[1],
+                        width: '500px'
                     });
 
                     var settings = {
