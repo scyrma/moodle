@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once("HTML/QuickForm/text.php");
+require_once($CFG->dirroot . '/lib/form/editor.php');
 
 /**
  * Form element for handling the colour picker.
@@ -25,12 +25,7 @@ require_once("HTML/QuickForm/text.php");
  * @copyright  2013 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class MoodleQuickForm_customcert_colourpicker extends HTML_QuickForm_text {
-
-    /**
-     * The string for the help icon, if empty then no help icon will be displayed.
-     */
-    public $_helpbutton = '';
+class MoodleQuickForm_customcert_colourpicker extends MoodleQuickForm_editor {
 
     /**
      * Constructor for the colour picker.
@@ -39,7 +34,7 @@ class MoodleQuickForm_customcert_colourpicker extends HTML_QuickForm_text {
      * @param string $elementLabel
      * @param array $attributes
      */
-    function __construct($elementName = null, $elementLabel = null, $attributes = null) {
+    public function __construct($elementName = null, $elementLabel = null, $attributes = null) {
         parent::__construct($elementName, $elementLabel, $attributes);
     }
 
@@ -50,8 +45,22 @@ class MoodleQuickForm_customcert_colourpicker extends HTML_QuickForm_text {
      * @param string $elementLabel
      * @param array $attributes
      */
-    function MoodleQuickForm_customcert_colourpicker($elementName = null, $elementLabel = null, $attributes = null) {
+    public function MoodleQuickForm_customcert_colourpicker($elementName = null, $elementLabel = null, $attributes = null) {
         self::__construct($elementName, $elementLabel, $attributes);
+    }
+
+    /**
+     * Sets the value of the form element
+     */
+    public function setValue($value) {
+        $this->updateAttributes(array('value' => $value));
+    }
+
+    /**
+     * Gets the value of the form element
+     */
+    public function getValue() {
+        return $this->getAttribute('value');
     }
 
     /**
@@ -74,12 +83,10 @@ class MoodleQuickForm_customcert_colourpicker extends HTML_QuickForm_text {
         return $content;
     }
 
-    /**
-     * Return the html for the help button.
-     *
-     * @return string html for help button
-     */
-    public function getHelpButton(){
-        return $this->_helpbutton;
+    public function export_for_template(renderer_base $output) {
+        $context = $this->export_for_template_base($output);
+        $context['html'] = $this->toHtml();
+
+        return $context;
     }
 }
