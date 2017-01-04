@@ -316,7 +316,7 @@ function mod_customcert_output_fragment_editelement($args) {
     $element = $DB->get_record('customcert_elements', array('id' => $args['elementid']), '*', MUST_EXIST);
 
     $pageurl = new moodle_url('/mod/customcert/rearrange.php', array('pid' => $element->pageid));
-    $form = new \mod_customcert\edit_element_form($pageurl, array('element' => $element, 'rearrange' => true));
+    $form = new \mod_customcert\edit_element_form($pageurl, array('element' => $element));
 
     return $form->render();
 }
@@ -353,6 +353,22 @@ function customcert_extend_settings_navigation(settings_navigation $settings, na
     }
 
     return $customcertnode->trim_if_empty();
+}
+
+/**
+ * Add nodes to myprofile page.
+ *
+ * @param \core_user\output\myprofile\tree $tree Tree object
+ * @param stdClass $user user object
+ * @param bool $iscurrentuser
+ * @param stdClass $course Course object
+ * @return bool
+ */
+function mod_customcert_myprofile_navigation(core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course) {
+    $url = new moodle_url('/mod/customcert/my_certificates.php', array('userid' => $user->id));
+    $node = new core_user\output\myprofile\node('miscellaneous', 'mycustomcerts',
+        get_string('mycertificates', 'customcert'), null, $url);
+    $tree->add_node($node);
 }
 
 /**
