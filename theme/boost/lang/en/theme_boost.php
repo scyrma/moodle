@@ -32,6 +32,8 @@ $string['adunblock_message'] = '
     <p>Thanks, MoodleCloud team.</p>';
 $string['adunblock_title'] = 'Ad blocker detected :(';
 $string['advancedsettings'] = 'Advanced settings';
+$string['backgroundimage'] = 'Background image';
+$string['backgroundimage_desc'] = 'The image to display as a background of the site. The background image you upload here will override the background image in your theme preset files.';
 $string['brandcolor'] = 'Brand colour';
 $string['brandcolor_desc'] = 'The accent colour.';
 $string['choosereadme'] = 'Boost is a modern highly-customisable theme. This theme is intended to be used directly, or as a parent theme when creating new themes utilising Bootstrap 4.';
