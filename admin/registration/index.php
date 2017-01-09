@@ -45,6 +45,17 @@ $confirm = optional_param('confirm', 0, PARAM_INT);
 $huburl = optional_param('huburl', '', PARAM_URL);
 $cancel = optional_param('cancel', null, PARAM_ALPHA);
 
+// START MOODLECLOUD HACK.
+if ($huburl) {
+    $checkurl = rtrim($huburl, "/");
+    if ($checkurl == HUB_MOODLEORGHUBURL) {
+        $unregistration = 0;
+        $cleanregdata = 0;
+        $confirm = 0;
+    }
+}
+// END MOODLECLOUD HACK.
+
 $registrationmanager = new registration_manager();
 $publicationmanager = new course_publish_manager();
 $errormessage = '';
