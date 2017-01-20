@@ -496,6 +496,7 @@ class file_system extends \file_system {
             SELECT SUM(f.filesize)
               FROM (
                     SELECT DISTINCT
+                                    contenthash,
                                     filesize
                                FROM {files}
                               WHERE filearea <> 'draft' AND
