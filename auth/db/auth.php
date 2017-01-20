@@ -340,7 +340,8 @@ class auth_plugin_db extends auth_plugin_base {
                         $updateuser = new stdClass();
                         $updateuser->id   = $user->id;
                         $updateuser->suspended = 1;
-                        user_update_user($updateuser, false);
+                        $updateuser = $this->clean_data($updateuser);
+                        user_update_user($updateuser, false, true, false);
                         $trace->output(get_string('auth_dbsuspenduser', 'auth_db', array('name'=>$user->username, 'id'=>$user->id)), 1);
                     }
                 }
@@ -434,7 +435,8 @@ class auth_plugin_db extends auth_plugin_base {
                         $updateuser = new stdClass();
                         $updateuser->id = $olduser->id;
                         $updateuser->suspended = 0;
-                        user_update_user($updateuser);
+                        $updateuser = $this->clean_data($updateuser);
+                        user_update_user($updateuser, true, true, false);
                         $trace->output(get_string('auth_dbreviveduser', 'auth_db', array('name' => $username,
                             'id' => $olduser->id)), 1);
                         continue;
@@ -597,7 +599,8 @@ class auth_plugin_db extends auth_plugin_base {
         }
         if ($needsupdate) {
             require_once($CFG->dirroot . '/user/lib.php');
-            user_update_user($updateuser);
+            $updateuser = $this->clean_data($updateuser);
+            user_update_user($updateuser, true, true, false);
         }
         return $DB->get_record('user', array('id'=>$userid, 'deleted'=>0));
     }
@@ -670,6 +673,9 @@ class auth_plugin_db extends auth_plugin_base {
      * @return void
      */
      function validate_form($form, &$err) {
+         // START MOODLECLOUD HACK.
+         return;
+         // START MOODLECLOUD HACK.
         if ($form->passtype === 'internal') {
             $this->config->changepasswordurl = '';
             set_config('changepasswordurl', '', 'auth/db');
@@ -764,6 +770,9 @@ class auth_plugin_db extends auth_plugin_base {
      * @return void
      */
     function config_form($config, $err, $user_fields) {
+         // START MOODLECLOUD HACK.
+         return;
+         // END MOODLECLOUD HACK.
         include 'config.html';
     }
 
@@ -774,6 +783,9 @@ class auth_plugin_db extends auth_plugin_base {
      * @return bool always true or exception
      */
     function process_config($config) {
+         // START MOODLECLOUD HACK.
+         return true;
+         // END MOODLECLOUD HACK.
         // set to defaults if undefined
         if (!isset($config->host)) {
             $config->host = 'localhost';
