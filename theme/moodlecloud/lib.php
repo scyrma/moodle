@@ -289,7 +289,7 @@ function theme_moodlecloud_portal_link() {
         $imageurl = $theme->pix_url('moodlecloud-logo-inverted', 'theme');
         $imghtml = html_writer::img($imageurl, $alt);
         $linkhtml = html_writer::link($url->out(), sprintf("%s %s", $imghtml, $text),
-            array('id' => 'portal-link', 'title' => $title));
+            array('id' => 'portal-link', 'title' => $title, 'target' => '_blank'));
 
         return html_writer::div($linkhtml, '', array('id' => 'portal-link-container'));
     } else {
