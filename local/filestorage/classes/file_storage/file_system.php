@@ -316,6 +316,7 @@ class file_system extends \file_system {
                     while (!feof($tmphandle)) {
                         fread($tmphandle, 8192);
                     }
+                    fseek($tmphandle, 0);
                 } else {
                     error_log('Failed to open the filehandle to S3: '. $tmps3filepath);
                 }
