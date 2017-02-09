@@ -92,6 +92,7 @@ class file_storage {
         $this->tempdir         = $tempdir;
         $this->dirpermissions  = $dirpermissions;
         $this->filepermissions = $filepermissions;
+        $this->filesystem      = file_system::instance($filedir, $dirpermissions, $filepermissions, $this);
 
         // make sure the file pool directory exists
         if (!is_dir($this->filedir)) {
@@ -685,6 +686,7 @@ class file_storage {
             return false;
         }
     }
+
 
     /**
      * Fetch file using local file full pathname hash
@@ -1924,98 +1926,7 @@ class file_storage {
      * @return array (contenthash, filesize, newfile)
      */
     public function add_file_to_pool($pathname, $contenthash = NULL) {
-        global $CFG;
-
-        if (!is_readable($pathname)) {
-            throw new file_exception('storedfilecannotread', '', $pathname);
-        }
-
-        $filesize = filesize($pathname);
-        if ($filesize === false) {
-            throw new file_exception('storedfilecannotread', '', $pathname);
-        }
-
-        if (is_null($contenthash)) {
-            $contenthash = sha1_file($pathname);
-        } else if ($CFG->debugdeveloper) {
-            $filehash = sha1_file($pathname);
-            if ($filehash === false) {
-                throw new file_exception('storedfilecannotread', '', $pathname);
-            }
-            if ($filehash !== $contenthash) {
-                // Hopefully this never happens, if yes we need to fix calling code.
-                debugging("Invalid contenthash submitted for file $pathname", DEBUG_DEVELOPER);
-                $contenthash = $filehash;
-            }
-        }
-        if ($contenthash === false) {
-            throw new file_exception('storedfilecannotread', '', $pathname);
-        }
-
-        if ($filesize > 0 and $contenthash === sha1('')) {
-            // Did the file change or is sha1_file() borked for this file?
-            clearstatcache();
-            $contenthash = sha1_file($pathname);
-            $filesize = filesize($pathname);
-
-            if ($contenthash === false or $filesize === false) {
-                throw new file_exception('storedfilecannotread', '', $pathname);
-            }
-            if ($filesize > 0 and $contenthash === sha1('')) {
-                // This is very weird...
-                throw new file_exception('storedfilecannotread', '', $pathname);
-            }
-        }
-
-        $hashpath = $this->path_from_hash($contenthash);
-        $hashfile = "$hashpath/$contenthash";
-
-        $newfile = true;
-
-        if (file_exists($hashfile)) {
-            if (filesize($hashfile) === $filesize) {
-                return array($contenthash, $filesize, false);
-            }
-            if (sha1_file($hashfile) === $contenthash) {
-                // Jackpot! We have a sha1 collision.
-                mkdir("$this->filedir/jackpot/", $this->dirpermissions, true);
-                copy($pathname, "$this->filedir/jackpot/{$contenthash}_1");
-                copy($hashfile, "$this->filedir/jackpot/{$contenthash}_2");
-                throw new file_pool_content_exception($contenthash);
-            }
-            debugging("Replacing invalid content file $contenthash");
-            unlink($hashfile);
-            $newfile = false;
-        }
-
-        if (!is_dir($hashpath)) {
-            if (!mkdir($hashpath, $this->dirpermissions, true)) {
-                // Permission trouble.
-                throw new file_exception('storedfilecannotcreatefiledirs');
-            }
-        }
-
-        // Let's try to prevent some race conditions.
-
-        $prev = ignore_user_abort(true);
-        @unlink($hashfile.'.tmp');
-        if (!copy($pathname, $hashfile.'.tmp')) {
-            // Borked permissions or out of disk space.
-            ignore_user_abort($prev);
-            throw new file_exception('storedfilecannotcreatefile');
-        }
-        if (filesize($hashfile.'.tmp') !== $filesize) {
-            // This should not happen.
-            unlink($hashfile.'.tmp');
-            ignore_user_abort($prev);
-            throw new file_exception('storedfilecannotcreatefile');
-        }
-        rename($hashfile.'.tmp', $hashfile);
-        chmod($hashfile, $this->filepermissions); // Fix permissions if needed.
-        @unlink($hashfile.'.tmp'); // Just in case anything fails in a weird way.
-        ignore_user_abort($prev);
-
-        return array($contenthash, $filesize, $newfile);
+        return $this->filesystem->add_file_to_pool($pathname, $contenthash);
     }
 
     /**
@@ -2025,66 +1936,7 @@ class file_storage {
      * @return array (contenthash, filesize, newfile)
      */
     public function add_string_to_pool($content) {
-        global $CFG;
-
-        $contenthash = sha1($content);
-        $filesize = strlen($content); // binary length
-
-        $hashpath = $this->path_from_hash($contenthash);
-        $hashfile = "$hashpath/$contenthash";
-
-        $newfile = true;
-
-        if (file_exists($hashfile)) {
-            if (filesize($hashfile) === $filesize) {
-                return array($contenthash, $filesize, false);
-            }
-            if (sha1_file($hashfile) === $contenthash) {
-                // Jackpot! We have a sha1 collision.
-                mkdir("$this->filedir/jackpot/", $this->dirpermissions, true);
-                copy($hashfile, "$this->filedir/jackpot/{$contenthash}_1");
-                file_put_contents("$this->filedir/jackpot/{$contenthash}_2", $content);
-                throw new file_pool_content_exception($contenthash);
-            }
-            debugging("Replacing invalid content file $contenthash");
-            unlink($hashfile);
-            $newfile = false;
-        }
-
-        if (!is_dir($hashpath)) {
-            if (!mkdir($hashpath, $this->dirpermissions, true)) {
-                // Permission trouble.
-                throw new file_exception('storedfilecannotcreatefiledirs');
-            }
-        }
-
-        // Hopefully this works around most potential race conditions.
-
-        $prev = ignore_user_abort(true);
-
-        if (!empty($CFG->preventfilelocking)) {
-            $newsize = file_put_contents($hashfile.'.tmp', $content);
-        } else {
-            $newsize = file_put_contents($hashfile.'.tmp', $content, LOCK_EX);
-        }
-
-        if ($newsize === false) {
-            // Borked permissions most likely.
-            ignore_user_abort($prev);
-            throw new file_exception('storedfilecannotcreatefile');
-        }
-        if (filesize($hashfile.'.tmp') !== $filesize) {
-            // Out of disk space?
-            unlink($hashfile.'.tmp');
-            ignore_user_abort($prev);
-            throw new file_exception('storedfilecannotcreatefile');
-        }
-        rename($hashfile.'.tmp', $hashfile);
-        chmod($hashfile, $this->filepermissions); // Fix permissions if needed.
-        @unlink($hashfile.'.tmp'); // Just in case anything fails in a weird way.
-        ignore_user_abort($prev);
-
-        return array($contenthash, $filesize, $newfile);
+        return $this->filesystem->add_string_to_pool($content);
     }
 
     /**
@@ -2734,5 +2586,15 @@ class file_storage {
             WHERE referencefileid = :referencefileid', $params);
         $data = array('id' => $referencefileid, 'lastsync' => $lastsync);
         $DB->update_record('files_reference', (object)$data);
+    }
+
+    /**
+     * Synchronise the file directory.
+     *
+     * This calls the sync_filedir function on the file system.
+     * @param $debug bool
+     */
+    public function sync_filedir($debug = false) {
+        return $this->filesystem->sync_filedir();
     }
 }
