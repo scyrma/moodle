@@ -336,6 +336,11 @@ if ($hassiteconfig) {
     $plugins = core_plugin_manager::instance()->get_plugins_of_type('repository');
     core_collator::asort_objects_by_property($plugins, 'displayname');
     foreach ($plugins as $plugin) {
+// START MOODLECLOUD HACK.
+if (isset($CFG->moodlecloud_blocked_repositories) && isset($CFG->moodlecloud_blocked_repositories[$plugin->name])) {
+    continue;
+}
+// END MOODLECLOUD HACK.
         /** @var \core\plugininfo\repository $plugin */
         $plugin->load_settings($ADMIN, 'repositorysettings', $hassiteconfig);
     }
