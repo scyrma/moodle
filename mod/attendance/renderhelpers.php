@@ -46,7 +46,8 @@ class user_sessions_cells_generator {
     public function get_cells($remarks = false) {
         $this->init_cells();
         foreach ($this->reportdata->sessions as $sess) {
-            if (array_key_exists($sess->id, $this->reportdata->sessionslog[$this->user->id])) {
+            if (array_key_exists($sess->id, $this->reportdata->sessionslog[$this->user->id]) &&
+            !empty($this->reportdata->sessionslog[$this->user->id][$sess->id]->statusid)) {
                 $statusid = $this->reportdata->sessionslog[$this->user->id][$sess->id]->statusid;
                 if (array_key_exists($statusid, $this->reportdata->statuses)) {
                     $points = format_float($this->reportdata->statuses[$statusid]->grade, 1, true, true);
@@ -217,7 +218,7 @@ class user_sessions_cells_text_generator extends user_sessions_cells_generator {
     }
 }
 
-// Used to print simple time - 1am instead of 1:00am
+// Used to print simple time - 1am instead of 1:00am.
 function attendance_strftimehm($time) {
     $mins = userdate($time, '%M');
     if ($mins == '00') {
