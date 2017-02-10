@@ -206,8 +206,6 @@ function customcert_user_complete($course, $user, $mod, $customcert) {
         echo $OUTPUT->box_start();
         echo get_string('issued', 'customcert') . ": ";
         echo userdate($issue->timecreated);
-        customcert_print_user_files($customcert->id, $user->id);
-        echo '<br />';
         echo $OUTPUT->box_end();
     } else {
         print_string('notissuedyet', 'customcert');
@@ -349,6 +347,14 @@ function customcert_extend_settings_navigation(settings_navigation $settings, na
                 new moodle_url('/mod/customcert/edit.php', array('tid' => $templateid)),
                 navigation_node::TYPE_SETTING, null, 'mod_customcert_edit',
                 new pix_icon('t/edit', ''));
+        $customcertnode->add_node($node, $beforekey);
+    }
+
+    if (has_capability('mod/customcert:verifycertificate', $PAGE->cm->context)) {
+        $node = navigation_node::create(get_string('verifycertificate', 'customcert'),
+            new moodle_url('/mod/customcert/verify_certificate.php', array('contextid' => $PAGE->cm->context->id)),
+            navigation_node::TYPE_SETTING, null, 'mod_customcert_verify_certificate',
+            new pix_icon('t/check', ''));
         $customcertnode->add_node($node, $beforekey);
     }
 

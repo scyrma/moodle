@@ -15,19 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Code fragment to define the version of the customcert module
+ * This file contains the version information for the userpicture plugin.
  *
- * @package    mod_customcert
- * @copyright  2013 Mark Nelson <markn@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
+ * @package    customcertelement_userpicture
+ * @copyright  2017 Mark Nelson <markn@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-$plugin->version   = 2016120504; // The current module version (Date: YYYYMMDDXX).
+$plugin->version   = 2016120500; // The current module version (Date: YYYYMMDDXX).
 $plugin->requires  = 2016120500; // Requires this Moodle version (3.2).
-$plugin->cron      = 0; // Period for cron to check this module (secs).
-$plugin->component = 'mod_customcert';
-
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.2 release (Build: 2016120504)"; // User-friendly version number.
+$plugin->component = 'customcertelement_userpicture';
