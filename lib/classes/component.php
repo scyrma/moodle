@@ -664,6 +664,12 @@ $cache = '.var_export($cache, true).';
                 } else if (isset(self::$ignoreddirs[$pluginname])) {
                     continue;
                 }
+                // START MOODLECLOUD HACK.
+                if (isset($CFG->moodlecloud_blocked_plugins) && isset($CFG->moodlecloud_blocked_plugins[$plugintype."/".$pluginname])) {
+                    error_log("Blacklisted plugin $plugintype/$pluginname");
+                    continue;
+                }
+                // END MOODLECLOUD HACK.
                 if (!self::is_valid_plugin_name($plugintype, $pluginname)) {
                     // Always ignore plugins with problematic names here.
                     continue;
