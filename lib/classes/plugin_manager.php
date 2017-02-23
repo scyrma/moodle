@@ -1171,9 +1171,12 @@ class core_plugin_manager {
      * @return bool
      */
     public function can_uninstall_plugin($component) {
-// START MOODLECLOUD HACK.
-        return false;
-// END MOODLECLOUD HACK.
+        // START MOODLECLOUD HACK.
+        global $CFG;
+        if (empty($CFG->mc_force_plugin_uninstall)) {
+            return false;
+        }
+        // END MOODLECLOUD HACK.
 
         $pluginfo = $this->get_plugin_info($component);
 
