@@ -666,7 +666,6 @@ $cache = '.var_export($cache, true).';
                 }
                 // START MOODLECLOUD HACK.
                 if (isset($CFG->moodlecloud_blocked_plugins) && isset($CFG->moodlecloud_blocked_plugins[$plugintype."/".$pluginname])) {
-                    error_log("Blacklisted plugin $plugintype/$pluginname");
                     continue;
                 }
                 // END MOODLECLOUD HACK.
