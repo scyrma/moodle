@@ -46,6 +46,21 @@ merge_school:
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
   allow_failure: false
 
+merge_starter:
+  stage: build
+  tags:
+    - git-octopus
+  script:
+    - git remote set-url --push origin $PUSH_REPO
+    - git checkout CLOUD-$MOODLE_VERSION/base
+    - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+    - export STARTER_BRANCHES=`eval "echo \\$$(echo STARTER_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
+    - git octopus $STARTER_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
+    - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
+    - git push $PUSH_REPO +HEAD:STARTER-$MOODLE_VERSION/octopus-staging
+    - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+  allow_failure: false
+
 merge_testing_school:
   stage: build
   tags:
