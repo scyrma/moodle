@@ -1157,6 +1157,11 @@ $cache = '.var_export($cache, true).';
         $usecache = false;
         if (CACHE_DISABLE_ALL or (defined('IGNORE_COMPONENT_CACHE') and IGNORE_COMPONENT_CACHE)) {
             $usecache = true;
+            // START MOODLECLOUD HACK.
+            if (!empty($CFG->mc_force_plugin_uninstall)) {
+              self::fill_all_caches();
+            }
+            // END MOODLECLOUD HACK.
         }
 
         // Now all plugins.
