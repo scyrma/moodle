@@ -283,9 +283,7 @@ function theme_moodlecloud_portal_link() {
         $title = get_string('cloudportallink', 'theme_moodlecloud');
         $alt = get_string('cloudlogo', 'theme_moodlecloud');
         $text = get_string('yourportal', 'theme_moodlecloud');
-        $devicetype = core_useragent::get_device_type();
-        $themename = core_useragent::get_device_type_cfg_var_name($devicetype);
-        $theme = theme_config::load($themename);
+        $theme = theme_config::load('moodlecloud');
         $imageurl = $theme->pix_url('moodlecloud-logo-inverted', 'theme');
         $imghtml = html_writer::img($imageurl, $alt);
         $linkhtml = html_writer::link($url->out(), sprintf("%s %s", $imghtml, $text),
