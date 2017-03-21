@@ -68,11 +68,7 @@ if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
     $url = new moodle_url('/auth/moodlecloud/portal.php');
     $templatecontext['showportallink'] = true;
     $templatecontext['cloudportalurl'] = $url->out();
-
-    $devicetype = core_useragent::get_device_type();
-    $themename = core_useragent::get_device_type_cfg_var_name($devicetype);
-    $theme = theme_config::load($themename);
-
+    $theme = theme_config::load('boost');
     $templatecontext['cloudinvertedimgurl'] = $theme->pix_url('cloud-logo-inverted', 'theme');
 }
 
