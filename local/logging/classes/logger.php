@@ -123,6 +123,10 @@ class logger {
      */
     public static function is_logging($channel) {
         // TODO Check which channels are to be logged.
+        if ($channel == 'performance') {
+            // temporarily disable performance logs to save LE bandwidth
+            return false;
+        }
         return true;
     }
 }
