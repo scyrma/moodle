@@ -27,128 +27,165 @@ namespace local_filestorage\file_storage;
 
 require_once(dirname(dirname(__DIR__)) . '/vendor/autoload.php');
 
-use file_storage;
 use stored_file;
 
-use Aws\Common\Aws;
 use moodle_exception;
 use file_pool_content_exception;
-use Aws\S3\Exception\NoSuchKeyException;
+use local_filestorage\exception\quota_exception;
 
+use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 
 use local_logging\logger;
 
 defined('MOODLE_INTERNAL') || die();
 
-class file_system extends \file_system {
+require_once($CFG->libdir . '/filestorage/file_system.php');
+
+class file_system_s3 extends \file_system {
 
     /**
-     * @var $bucket The string name for the bucket.
+     * @var string $bucket The string name for the bucket.
      */
     protected static $bucket = null;
 
     /**
-     * @var $client The S3Client instance.
+     * @var S3Client $client The S3Client instance.
      */
     protected static $client = null;
 
-    public function __construct($filedir, $dirpermissions, $filepermissions, file_storage $fs = null) {
+    /** @var string $filedir */
+    protected static $filedir = null;
+
+    public function __construct() {
         global $CFG;
 
         if (!isset($CFG->s3bucket)) {
             throw new moodle_exception('S3 not configured');
         }
 
-        $s3filedir = make_localcache_directory(substr(md5(microtime()), 0, 8));
-        if (!$s3filedir) {
-            throw new moodle_exception('Unable to create a S3 cache directory');
-        }
-
-        if (strpos($s3filedir, $filedir)) {
-            throw new moodle_exception('The S3 cache directory is within filedir. Aborting before something dangerous happens');
-        }
-
-        \core_shutdown_manager::register_function(array($this, 'cleanup'), array($s3filedir));
-
-        // Set up the rest of the constructor.
-        parent::__construct($s3filedir, $dirpermissions, $filepermissions, $fs);
-
         // Attempt to connect to S3.
-        if (isset($CFG->awsconfig)) {
-            $aws = Aws::factory($CFG->awsconfig);
-        } else {
-            $aws = Aws::factory();
-        }
-        self::$client = $aws->get('S3');
+        self::$client = new S3Client($CFG->awsconfig);
         self::$bucket = $CFG->s3bucket;
+        self::$filedir = make_request_directory();
     }
 
     /**
-     * The shutdown handler for the S3 file storage system.
+     * Get the full path for the specified hash, including the path to the filedir.
      *
-     * This will remove the temporary filedir.
-     * This looks like a dangerous operation
+     * @param string $contenthash The content hash
+     * @param bool $fetchifnotfound
+     * @return string The full path to the content file
      */
-    public function cleanup($s3filedir) {
-        // Unlink the entire filedir.
-        remove_dir($s3filedir);
+    protected function get_local_path_from_hash($contenthash, $fetchifnotfound = false) {
+        $path = self::$filedir . DIRECTORY_SEPARATOR . $contenthash;
+
+        if ($fetchifnotfound && !is_readable($path)) {
+            // The S3 API cannot fetch to an empty file.
+            $this->fetch_local_copy($contenthash);
+        }
+
+        return $path;
     }
 
     /**
-     * Return the filedir. The filedir is specific to this request.
+     * Get the full path for the specified hash, including the path to the filedir.
      *
-     * @param string $contenthash
-     * @return string
+     * @param string $contenthash The content hash
+     * @return string The full path to the content file
      */
-    protected function get_fulldir_from_hash($contenthash) {
-        return $this->filedir;
+    public function get_remote_path_from_hash($contenthash) {
+        return $this->get_presigned_url($contenthash);
     }
 
     /**
-     * Return the filedir/$contenthash. The filedir is specific to this request.
+     * Get the content path for the specified content hash within filedir.
      *
-     * @param string $contenthash
-     * @return string
+     * This does not include the filedir, and is often used by file systems
+     * as the object key for storage and retrieval.
+     *
+     * @param string $contenthash The content hash
+     * @return string The filepath within filedir
      */
-    protected function get_fullpath_from_hash($contenthash) {
-        return $this->filedir . DIRECTORY_SEPARATOR . $contenthash;
+    protected function get_contentpath_from_hash($contenthash) {
+        return $this->get_contentdir_from_hash($contenthash) . "/$contenthash";
     }
 
     /**
-     * Ensure that the file really is available on the file system.
-     * Often, we want to perform operations on the file which involve file
-     * streams. In these instances the file may be elsewhere.
+     * Get the content directory for the specified content hash.
+     * This is the directory that the file will be in, but without the
+     * fulldir.
      *
-     * Use this function only when you really do need the file to exist on
-     * the local filesystem and cannot use a streamed copy instead.
+     * @param string $contenthash The content hash
+     * @return string The directory within filedir
+     */
+    protected function get_contentdir_from_hash($contenthash) {
+        $l1 = $contenthash[0] . $contenthash[1];
+        $l2 = $contenthash[2] . $contenthash[3];
+        return "$l1/$l2";
+    }
+
+    /**
+     * Determine whether the file is present on the local file system somewhere.
      *
      * @param stored_file $file The file to ensure is available.
      * @return bool
-     * @throws file_exception When the file could not be found at all.
      */
-    public function ensure_readable(stored_file $file) {
+    public function is_file_readable_by_storedfile(stored_file $file) {
         if ($file->is_directory()) {
             // We cannot store directories in S3, so we cannot fetch them.
             return true;
         }
 
-        $contenthash = $file->get_contenthash();
-        if ($file->get_filesize() === 0) {
-            // S3 Cannot deal with empty files - touch the target on the filesystem.
-            $target = $this->get_fullpath_from_hash($contenthash);
-            touch($target);
-            chmod($target, $this->filepermissions); // Fix permissions if needed.
+        return $this->is_file_readable_by_hash($file->get_contenthash());
+    }
+
+    /**
+     * Determine whether the file is available remotely.
+     *
+     * @param string $contenthash The contenthash of the file to check.
+     * @return bool
+     */
+    public function is_file_readable_by_hash($contenthash) {
+        if ($contenthash === sha1('')) {
+            // We cannot store directories in S3, so we cannot fetch them.
+            return true;
         }
 
-        $this->fetch_local_copy($contenthash);
-        return parent::ensure_readable($file);
+        if ($this->is_file_readable_locally_by_hash($contenthash, false)) {
+            return true;
+        }
+
+        return $this->is_file_readable_remotely_by_hash($contenthash);
+    }
+
+    public function is_file_readable_remotely_by_hash($contenthash) {
+
+        try {
+            // Fetch the head information.
+            // If no file exists at the specified key, then a NoSuchKeyException is thrown.
+            /** @noinspection PhpUnusedLocalVariableInspection */
+            $object = self::$client->headObject(array(
+                    'Bucket'        => self::$bucket,
+                    'Key'           => $contenthash,
+                ));
+            // A copy of this file is already present.
+            return true;
+        } catch (S3Exception $e) {
+            if ($e->getAwsErrorCode() !== 'NotFound') {
+                throw $e;
+            }
+            // Only catch the NoSuchKeyException exception.
+            // There is no key here.
+            return false;
+        }
     }
 
     /**
      * Handle readfile for a stored_file.
      *
      * @param stored_file $file The stored file.
+     * @return int|bool
      */
     public function readfile(stored_file $file) {
         return readfile_allow_large($this->get_presigned_url($file->get_contenthash()), $file->get_filesize());
@@ -158,15 +195,15 @@ class file_system extends \file_system {
      * Copy the content to the specified location.
      *
      * @param stored_file $file The file to copy.
-     * @param string $fullpath The full path to the new file.
+     * @param string $target The full path to the new file.
      * @return bool The result of the copy operation.
      */
-    public function copy_content_to(stored_file $file, $fullpath) {
-        if ($this->is_readable($file)) {
-            return parent::copy_content_to($file, $fullpath);
+    public function copy_content_from_storedfile(stored_file $file, $target) {
+        if ($source = $this->is_file_readable_locally_by_storedfile($file)) {
+            return copy($source, $target);
         } else {
             // No point downloading, then copying. Just perform a straight download to the target.
-            if ($this->fetch_local_copy($file->get_contenthash(), $fullpath)) {
+            if ($this->fetch_local_copy($file->get_contenthash(), $target)) {
                 return true;
             } else {
                 // Something went wrong and, for some reason, an exception was not thrown.
@@ -176,17 +213,24 @@ class file_system extends \file_system {
     }
 
     /**
+     * Remove a file.
+     *
+     * @param string $contenthash
+     */
+    public function remove_file($contenthash) {
+        // This S3 implementation uses a shared bucket.
+        // We do _NOT_ delete file content.
+        return;
+    }
+
+    /**
      * Get the content of the specified file.
      *
      * @param stored_file $file The file to retrieve content for.
      * @return string The file content.
      */
     public function get_content(stored_file $file) {
-        // TODO - do we want to ensure that this is readable?
-        // Need to audit where we call get_content and decide if it's
-        // something we should always stream from, or always save for.
-        $this->ensure_readable($file);
-        if ($this->is_readable($file)) {
+        if ($this->is_file_readable_locally_by_storedfile($file)) {
             // If a locally cached copy is available, return it rather than going to S3.
             return parent::get_content($file);
         } else {
@@ -214,7 +258,7 @@ class file_system extends \file_system {
      * @return string The path to the new file
      */
     protected function fetch_local_copy($contenthash, $newtarget = null) {
-        $target = $this->get_fullpath_from_hash($contenthash);
+        $target = $this->get_local_path_from_hash($contenthash, false);
         if ($newtarget === null || $newtarget === $target) {
             if (is_readable($target)) {
                 // The file is still available locally. Touch it to update the timestamp.
@@ -227,8 +271,10 @@ class file_system extends \file_system {
             $target = $newtarget;
         }
 
-        $temptarget = $target . '.tmp';
         // Attempt to fetch the file.
+        $temptarget = $target . '.tmp';
+        // The S3 API can only fetch to an existing file.
+        touch($temptarget);
         $key = $this->get_contentpath_from_hash($contenthash);
         try {
             $start = microtime();
@@ -247,9 +293,11 @@ class file_system extends \file_system {
 
             // Atomicity is nice.
             rename($temptarget, $target);
-            chmod($target, $this->filepermissions); // Fix permissions if needed.
             @unlink($temptarget); // Just in case anything fails in a weird way.
-        } catch (\Aws\S3\Exception\NoSuchKeyException $e) {
+        } catch (S3Exception $e) {
+            if ($e->getAwsErrorCode() !== 'NotFound') {
+                throw $e;
+            }
             debugging('File not found');
         }
 
@@ -264,7 +312,7 @@ class file_system extends \file_system {
      * @return string The pre-signed URL.
      */
     protected function get_presigned_url($contenthash) {
-        // Find the parth within the filedir to use.
+        // Find the path within the filedir to use.
         $subpath = $this->get_contentpath_from_hash($contenthash);
 
         // We generate a pre-signed URL for the file handle to use.
@@ -275,14 +323,14 @@ class file_system extends \file_system {
 
         // It doesn't matter how long this presigned URL lasts as it is disposed of almost immediately.
         // It must be a sufficient period of time to allow slow reads of large files.
-        $url = $command->createPresignedUrl('+1 day');
+        $url = self::$client->createPresignedRequest($command, '+1 day');
 
         self::log_statistic('generatedurl', array(
-                'logmessage'    => 'Generated pre-signed URL',
-                'contenthash'   => $contenthash,
-            ));
+            'logmessage'    => 'Generated pre-signed URL',
+            'contenthash'   => $contenthash,
+        ));
 
-        return $url;
+        return (string) $url->getUri();
     }
 
     /**
@@ -290,11 +338,11 @@ class file_system extends \file_system {
      *
      * When you want to modify a file, create a new file and delete the old one.
      *
+     * @param stored_file $file
      * @param int $type Type of file handle (FILE_HANDLE_xx constant)
      * @return resource file handle
      */
-    public function get_content_file_handle($file, $type = stored_file::FILE_HANDLE_FOPEN) {
-
+    public function get_content_file_handle(stored_file $file, $type = stored_file::FILE_HANDLE_FOPEN) {
         switch ($type) {
             case stored_file::FILE_HANDLE_FOPEN:
                 /**
@@ -328,24 +376,22 @@ class file_system extends \file_system {
     }
 
     /**
-     * Upload the entire moodle data directory to S3.
-     */
-    public function sync_filedir($debug = false) {
-        throw new moodle_exception('Sorry, but no');
-    }
-
-    /**
      * Add file content to sha1 pool.
      *
      * @param string $pathname path to file
      * @param string $contenthash sha1 hash of content if known (performance only)
      * @return array (contenthash, filesize, newfile)
      */
-    public function add_file_to_pool($pathname, $contenthash = NULL) {
-        $result = parent::add_file_to_pool($pathname, $contenthash);
-        self::check_file_within_quota($result);
+    public function add_file_from_path($pathname, $contenthash = NULL) {
+        $contenthash = sha1_file($pathname);
+        $filesize = filesize($pathname);
+        if ($filesize === 0) {
+            return [$contenthash, $filesize, true];
+        }
 
-        return $this->push_to_s3($result);
+        self::check_file_within_quota([$contenthash, $filesize, true]);
+
+        return $this->push_to_s3($pathname, $contenthash, $filesize);
     }
 
     /**
@@ -354,27 +400,40 @@ class file_system extends \file_system {
      * @param string $content file content - binary string
      * @return array (contenthash, filesize, newfile)
      */
-    public function add_string_to_pool($content) {
-        $result = parent::add_string_to_pool($content);
-        self::check_file_within_quota($result);
+    public function add_file_from_string($content) {
+        $contenthash = sha1($content);
+        $filesize = strlen($content);
+        if ($filesize === 0) {
+            return [$contenthash, 0, true];
+        }
 
-        return $this->push_to_s3($result);
+        if ($this->is_file_readable_remotely_by_hash($contenthash)) {
+            return [$contenthash, $filesize, true];
+        }
+
+        $filepath = $this->get_local_path_from_hash($contenthash, false);
+        file_put_contents($filepath, $content);
+
+        self::check_file_within_quota([$contenthash, $filesize, true]);
+
+        return $this->push_to_s3($filepath, $contenthash, $filesize);
     }
 
     /**
      * Push the newly added file to S3.
      *
-     * @param array $result The result from add_file_to_pool or add_string_to_pool.
+     * @param $sourcefile
+     * @param null $contenthash
+     * @param null $filesize
      * @return array $result The input is passed straight back out.
-     *
+     * @throws file_pool_content_exception
      */
-    private function push_to_s3($result) {
-        list($contenthash, $filesize, $newfile) = $result;
-
+    private function push_to_s3($sourcefile, $contenthash = null, $filesize = null) {
         // Note: We cannot rely on the result of $newfile as this only checks whether a file was present in filedir,
         // which may be empty.
-        $sourcefile = $this->get_fullpath_from_hash($contenthash);
         $key = $this->get_contentpath_from_hash($contenthash);
+
+        $result = [$contenthash, $filesize, true];
 
         if ($filesize === 0 || is_dir($sourcefile)) {
             // We cannot push empty files or directories.
@@ -387,7 +446,6 @@ class file_system extends \file_system {
         try {
             // Fetch the head information.
             // If no file exists at the specified key, then a NoSuchKeyException is thrown.
-            $start = microtime();
             $object = self::$client->headObject(array(
                     'Bucket'        => self::$bucket,
                     'Key'           => $key,
@@ -399,60 +457,29 @@ class file_system extends \file_system {
             if ($sizematch) {
                 // A copy of this file is already present, and it has a matching file size.
                 // No point in uploading it again so return early.
-                self::log_statistic('precheckmatch', array(
-                        'logmessage'    => 'New file matched existing file in S3',
-                        'contenthash'   => $contenthash,
-                        'filesize'      => $filesize,
-                        'time'          => microtime_diff($start, microtime()),
-                    ));
                 return $result;
             } else {
                 // There's already a key present, but it has a different file size.
                 // Better fail here for safety's sake.
                 throw new file_pool_content_exception($contenthash);
             }
-        } catch (NoSuchKeyException $e) {
+        } catch (S3Exception $e) {
+            if ($e->getAwsErrorCode() !== 'NotFound') {
+                throw $e;
+            }
             // Only catch the NoSuchKeyException exception.
             // There is no key here - upload the file.
-            self::log_statistic('precheckfail', array(
-                    'logmessage'    => 'Existing file not found when checking before upload',
-                    'contenthash'   => $contenthash,
-                    'filesize'      => $filesize,
-                    'time'          => microtime_diff($start, microtime()),
-                ));
 
             // We must use a file handle here. If we were to pass the path to the sourcefile to upload, the literal
             // string for the path would be saved as the file content.
             $fh = fopen($sourcefile, 'r');
 
-            $start = microtime();
             self::$client->upload(self::$bucket, $key, $fh);
-            self::log_statistic('uploaded', array(
-                    'logmessage'    => 'New file uploaded to S3',
-                    'contenthash'   => $contenthash,
-                    'filesize'      => $filesize,
-                    'time'          => microtime_diff($start, microtime()),
-                ));
 
             // Note: No need to fclose here. The AWS API does it as part of the upload.
         }
 
         return $result;
-    }
-
-    /**
-     * Returns information about image.
-     * Information is determined from the file content
-     *
-     * @param stored_file $file The file to inspect
-     * @return mixed array with width, height and mimetype; false if not an image
-     */
-    public function get_imageinfo($file) {
-        if (!$this->is_image($file)) {
-            return false;
-        }
-
-        return $this->get_imageinfo_from_path($this->get_presigned_url($file->get_contenthash()));
     }
 
     /**
@@ -468,7 +495,9 @@ class file_system extends \file_system {
     /**
      * Check whether a file is within the file system quota.
      *
+     * @param $result
      * @return void
+     * @throws quota_exception
      */
     protected function check_file_within_quota($result) {
         global $DB;
@@ -479,7 +508,7 @@ class file_system extends \file_system {
             if (!$DB->record_exists('files', array('contenthash' => $contenthash))) {
                 $current = self::unique_storage_size_used();
                 if (($current + $filesize) > FILESTORAGE_QUOTA) {
-                    throw new \local_filestorage\exception\quota_exception($current, $filesize);
+                    throw new quota_exception($current, $filesize);
                 }
             }
         }
@@ -493,6 +522,8 @@ class file_system extends \file_system {
     public static function unique_storage_size_used() {
         global $DB;
 
+        /** @noinspection SqlDialectInspection */
+        /** @noinspection SqlNoDataSourceInspection */
         return $DB->get_field_sql("
             SELECT SUM(f.filesize)
               FROM (
