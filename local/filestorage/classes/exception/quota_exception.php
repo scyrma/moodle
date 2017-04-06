@@ -11,9 +11,8 @@ class quota_exception extends \moodle_exception {
     /**
      * Constructor
      *
-     * @param string $errorcode error code
-     * @param stdClass $a Extra words and phrases that might be required in the error string
-     * @param string $debuginfo optional debugging information
+     * @param string $current
+     * @param string $filesize
      */
     function __construct($current, $filesize) {
         $a = new \stdClass();
