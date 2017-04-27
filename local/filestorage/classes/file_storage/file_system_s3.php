@@ -25,7 +25,7 @@
 
 namespace local_filestorage\file_storage;
 
-require_once(dirname(dirname(__DIR__)) . '/vendor/autoload.php');
+require_once(dirname(dirname(__DIR__)) . '/sdk/aws-autoloader.php');
 
 use stored_file;
 
