@@ -26,7 +26,7 @@ define('NO_DEBUG_DISPLAY', true);
 
 define('WS_SERVER', true);
 
-require('config.php');
+require('../../config.php');
 require_once("$CFG->dirroot/webservice/rest/locallib.php");
 
 if (isset($_POST['mcproxykey'])) {
