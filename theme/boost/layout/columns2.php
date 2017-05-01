@@ -69,7 +69,7 @@ if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
     $templatecontext['showportallink'] = true;
     $templatecontext['cloudportalurl'] = $url->out();
     $theme = theme_config::load('boost');
-    $templatecontext['cloudinvertedimgurl'] = $theme->pix_url('cloud-logo-inverted', 'theme');
+    $templatecontext['cloudinvertedimgurl'] = $theme->image_url('cloud-logo-inverted', 'theme');
 }
 
 // MoodleCloud Google AdSense Banner Ads
