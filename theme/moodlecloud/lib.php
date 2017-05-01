@@ -284,7 +284,7 @@ function theme_moodlecloud_portal_link() {
         $alt = get_string('cloudlogo', 'theme_moodlecloud');
         $text = get_string('yourportal', 'theme_moodlecloud');
         $theme = theme_config::load('moodlecloud');
-        $imageurl = $theme->pix_url('moodlecloud-logo-inverted', 'theme');
+        $imageurl = $theme->image_url('moodlecloud-logo-inverted', 'theme');
         $imghtml = html_writer::img($imageurl, $alt);
         $linkhtml = html_writer::link($url->out(), sprintf("%s %s", $imghtml, $text),
             array('id' => 'portal-link', 'title' => $title, 'target' => '_blank'));
