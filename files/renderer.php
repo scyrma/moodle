@@ -517,7 +517,7 @@ class core_files_renderer extends plugin_renderer_base {
         // START MOODLECLOUD HACK.
         if (defined('FILESTORAGE_QUOTA')) {
             $hasarealimit = true;
-            $areasize = max(0, FILESTORAGE_QUOTA - \local_filestorage\file_storage\file_system::unique_storage_size_used());
+            $areasize = max(0, FILESTORAGE_QUOTA - \local_filestorage\file_storage\file_system_s3::unique_storage_size_used());
             $strparam->areasize = display_size($areasize);
             if ($fm->options->maxbytes > $areasize) {
                 $maxbytes = $strparam->areasize;

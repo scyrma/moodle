@@ -17,8 +17,8 @@
 define('CLI_SCRIPT', true);
 require_once(dirname(dirname(dirname(__DIR__))) . '/config.php');
 
-if (!isset($CFG->filesystem_handler_class) ||
-    $CFG->filesystem_handler_class !== '\local_filestorage\file_storage\file_system' ||
+if (!isset($CFG->alternative_file_system_class) ||
+    $CFG->alternative_file_system_class !== '\local_filestorage\file_storage\file_system_s3' ||
     !isset($CFG->s3bucket)) {
     echo "S3 Is not configured.\n";
     exit(255);
