@@ -42,8 +42,8 @@ class backup_customcert_activity_structure_step extends backup_activity_structur
 
         // The instance.
         $customcert = new backup_nested_element('customcert', array('id'), array(
-            'templateid', 'name', 'intro', 'introformat', 'requiredtime', 'protection',
-            'timecreated', 'timemodified'));
+            'templateid', 'name', 'intro', 'introformat', 'requiredtime', 'emailstudents',
+            'emailteachers', 'emailothers', 'protection', 'timecreated', 'timemodified'));
 
         // The template.
         $template = new backup_nested_element('template', array('id'), array(
@@ -64,7 +64,7 @@ class backup_customcert_activity_structure_step extends backup_activity_structur
         // The issues.
         $issues = new backup_nested_element('issues');
         $issue = new backup_nested_element('issue', array('id'), array(
-            'customcertid', 'userid', 'timecreated', 'code'));
+            'customcertid', 'userid', 'timecreated', 'emailed', 'code'));
 
         // Build the tree.
         $customcert->add_child($issues);
@@ -93,6 +93,10 @@ class backup_customcert_activity_structure_step extends backup_activity_structur
 
         // Annotate the user id's where required.
         $issue->annotate_ids('user', 'userid');
+
+        // Define file annotations.
+        $customcert->annotate_files('mod_customcert', 'intro', null);
+        $customcert->annotate_files('mod_customcert', 'image', null, context_course::instance($this->get_courseid())->id);
 
         // Return the root element (customcert), wrapped into standard activity structure.
         return $this->prepare_activity_structure($customcert);
