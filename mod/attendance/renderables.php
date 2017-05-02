@@ -96,7 +96,7 @@ class attendance_tabs implements renderable {
 
         if (has_capability('mod/attendance:changepreferences', $context)) {
             $toprow[] = new tabobject(self::TAB_PREFERENCES, $this->att->url_preferences()->out(),
-                            get_string('settings', 'attendance'));
+                            get_string('statussetsettings', 'attendance'));
         }
         if (has_capability('mod/attendance:managetemporaryusers', $context)) {
             $toprow[] = new tabobject(self::TAB_TEMPORARYUSERS, $this->att->url_managetemp()->out(),
@@ -275,7 +275,7 @@ class attendance_take_data implements renderable {
 
     private $urlpath;
     private $urlparams;
-    private $att;
+    public $att;
 
     public function  __construct(mod_attendance_structure $att) {
         if ($att->pageparams->grouptype) {
@@ -503,6 +503,21 @@ class attendance_preferences_data implements renderable {
         }
 
         return $this->att->url_preferences($params);
+    }
+}
+
+class attendance_default_statusset implements renderable {
+    public $statuses;
+
+    public $errors;
+
+    public function __construct($statuses, $errors) {
+        $this->statuses = $statuses;
+        $this->errors = $errors;
+    }
+
+    public function url($params) {
+        return new moodle_url('/mod/attendance/defaultstatus.php', $params);
     }
 }
 
