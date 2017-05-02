@@ -68,10 +68,6 @@ $content-header-footer-height: $region-header-height + $region-footer-height;
         right: 8px;
         z-index: $region-container-z-index + 1;
     }
-
-    .fa {
-        display: none;
-    }
 }
 
 .count-container {
