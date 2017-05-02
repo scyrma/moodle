@@ -56,6 +56,12 @@ class mod_attendance_structure {
     /** @var int last time attendance was modified - used for global search */
     public $timemodified;
 
+    /** @var string required field for activity modules and searching */
+    public $intro;
+
+    /** @var int format of the intro (see above) */
+    public $introformat;
+
     /** current page parameters */
     public $pageparams;
 
@@ -580,8 +586,12 @@ class mod_attendance_structure {
     public function get_users($groupid = 0, $page = 1) {
         global $DB, $CFG;
 
-        // Fields we need from the user table.
-        $userfields = user_picture::fields('u', array('username' , 'idnumber' , 'institution' , 'department'));
+        $fields = array('username' , 'idnumber' , 'institution' , 'department');
+        // Get user identity fields if required - doesn't return original $fields array.
+        $extrafields = get_extra_user_fields($this->context, $fields);
+        $fields = array_merge($fields, $extrafields);
+
+        $userfields = user_picture::fields('u', $fields);
 
         if (empty($this->pageparams->sort)) {
             $this->pageparams->sort = ATT_SORT_DEFAULT;
@@ -954,107 +964,6 @@ class mod_attendance_structure {
             $event->trigger();
         }
         $sessions->close();
-    }
-
-    /**
-     * Remove a status variable from an attendance instance
-     *
-     * @param stdClass $status
-     */
-    public function remove_status($status) {
-        global $DB;
-
-        $DB->set_field('attendance_statuses', 'deleted', 1, array('id' => $status->id));
-        $event = \mod_attendance\event\status_removed::create(array(
-            'objectid' => $status->id,
-            'context' => $this->context,
-            'other' => array(
-                'acronym' => $status->acronym,
-                'description' => $status->description
-            )));
-        $event->add_record_snapshot('course_modules', $this->cm);
-        $event->add_record_snapshot('attendance_statuses', $status);
-        $event->trigger();
-    }
-
-    /**
-     * Add an attendance status variable
-     *
-     * @param string $acronym
-     * @param string $description
-     * @param int $grade
-     */
-    public function add_status($acronym, $description, $grade) {
-        global $DB;
-
-        if ($acronym && $description) {
-            $rec = new stdClass();
-            $rec->courseid = $this->course->id;
-            $rec->attendanceid = $this->id;
-            $rec->acronym = $acronym;
-            $rec->description = $description;
-            $rec->grade = $grade;
-            $rec->setnumber = $this->pageparams->statusset; // Save which set it is part of.
-            $rec->deleted = 0;
-            $rec->visible = 1;
-            $id = $DB->insert_record('attendance_statuses', $rec);
-            $rec->id = $id;
-
-            $event = \mod_attendance\event\status_added::create(array(
-                'objectid' => $this->id,
-                'context' => $this->context,
-                'other' => array('acronym' => $acronym, 'description' => $description, 'grade' => $grade)));
-            $event->add_record_snapshot('course_modules', $this->cm);
-            $event->add_record_snapshot('attendance_statuses', $rec);
-            $event->trigger();
-        } else {
-            print_error('cantaddstatus', 'attendance', $this->url_preferences());
-        }
-    }
-
-    /**
-     * Update status variable for a particular Attendance module instance
-     *
-     * @param stdClass $status
-     * @param string $acronym
-     * @param string $description
-     * @param int $grade
-     * @param bool $visible
-     */
-    public function update_status($status, $acronym, $description, $grade, $visible) {
-        global $DB;
-
-        if (isset($visible)) {
-            $status->visible = $visible;
-            $updated[] = $visible ? get_string('show') : get_string('hide');
-        } else if (empty($acronym) || empty($description)) {
-            return array('acronym' => $acronym, 'description' => $description);
-        }
-
-        $updated = array();
-
-        if ($acronym) {
-            $status->acronym = $acronym;
-            $updated[] = $acronym;
-        }
-        if ($description) {
-            $status->description = $description;
-            $updated[] = $description;
-        }
-        if (isset($grade)) {
-            $status->grade = $grade;
-            $updated[] = $grade;
-        }
-        $DB->update_record('attendance_statuses', $status);
-
-        $event = \mod_attendance\event\status_updated::create(array(
-            'objectid' => $this->id,
-            'context' => $this->context,
-            'other' => array('acronym' => $acronym, 'description' => $description, 'grade' => $grade,
-                'updated' => implode(' ', $updated))));
-        $event->add_record_snapshot('course_modules', $this->cm);
-        $event->add_record_snapshot('attendance_statuses', $status);
-        $event->trigger();
     }
 
     /**
