@@ -409,26 +409,38 @@ function bigbluebuttonbn_wrap_xml_load_file($url, $method=BIGBLUEBUTTONBN_METHOD
     }
 }
 
+function bigbluebuttonbn_get_user_roles($context, $userid) {
+    global $DB;
+
+    $user_roles = array();
+    $user_roles = get_user_roles($context, $userid);
+    if ($user_roles) {
+        $where = '';
+        foreach ($user_roles as $key => $value){
+            $where .= (empty($where) ? ' WHERE' : ' AND').' id='.$value->roleid;
+        }
+        $user_roles = $DB->get_records_sql('SELECT * FROM {role}'.$where);
+    }
+    return $user_roles;
+}
+
+function bigbluebuttonbn_get_guest_role(context $context = null) {
+    $guest_role = get_guest_role();
+    return array($guest_role->id => $guest_role);
+}
+
 function bigbluebuttonbn_get_role_name($role_shortname){
     $role = bigbluebuttonbn_get_db_moodle_roles($role_shortname);
-    if( $role != null && $role->name != "") {
-        $role_name = $role->name;
-    } else {
-        switch ($role_shortname) {
-            case 'manager':         $role_name = get_string('manager', 'role'); break;
-            case 'coursecreator':   $role_name = get_string('coursecreators'); break;
-            case 'editingteacher':  $role_name = get_string('defaultcourseteacher'); break;
-            case 'teacher':         $role_name = get_string('noneditingteacher'); break;
-            case 'student':         $role_name = get_string('defaultcoursestudent'); break;
-            case 'guest':           $role_name = get_string('guest'); break;
-            case 'user':            $role_name = get_string('authenticateduser'); break;
-            case 'frontpage':       $role_name = get_string('frontpageuser', 'role'); break;
-            // We should not get here, the role UI should require the name for custom roles!
-            default:                $role_name = $role_shortname; break;
-        }
+
+    if (!$role) {
+        return get_string('mod_form_field_participant_role_unknown', 'bigbluebuttonbn');
     }
 
-    return $role_name;
+    if ($role->name != "") {
+        return $role->name;
+    }
+
+    return role_get_name($role);
 }
 
 function bigbluebuttonbn_get_roles($rolename='all', $format='json'){
@@ -553,7 +565,7 @@ function bigbluebuttonbn_is_moderator($user, $roles, $participants) {
         foreach($participant_list as $participant){
             if( $participant->selectiontype == 'role' ) {
                 foreach( $roles as $role ) {
-                    $db_moodle_role = bigbluebuttonbn_moodle_db_role_lookup($db_moodle_roles, $role->roleid);
+                    $db_moodle_role = bigbluebuttonbn_moodle_db_role_lookup($db_moodle_roles, $role->id);
                     if( $participant->selectionid == $db_moodle_role->shortname ) {
                         if ( $participant->role == BIGBLUEBUTTONBN_ROLE_MODERATOR ) {
                             return true;
