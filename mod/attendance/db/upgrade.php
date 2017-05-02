@@ -46,7 +46,7 @@ function xmldb_attendance_upgrade($oldversion=0) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint($result, 2014112000, 'attendance');
+        upgrade_mod_savepoint(true, 2014112000, 'attendance');
     }
 
     if ($oldversion < 2014112001) {
@@ -85,7 +85,7 @@ function xmldb_attendance_upgrade($oldversion=0) {
         // Delete old capabilities.
         $DB->delete_records_select('capabilities', 'component = ?', array('mod_attforblock'));
 
-        upgrade_plugin_savepoint($result, 2014112001, 'mod', 'attendance');
+        upgrade_mod_savepoint(true, 2014112001, 'attendance');
     }
 
     if ($oldversion < 2015040501) {
@@ -212,6 +212,25 @@ function xmldb_attendance_upgrade($oldversion=0) {
             $dbman->add_field($table, $field);
         }
         upgrade_mod_savepoint(true, 2016121300, 'attendance');
+    }
+
+    if ($oldversion < 2016121305) {
+        // Define field timemodified to be added to attendance.
+        $table = new xmldb_table('attendance');
+
+        $fields = [];
+        $fields[] = new xmldb_field('intro', XMLDB_TYPE_TEXT, null, null, null, null, null, 'timemodified');
+        $fields[] = new xmldb_field('introformat', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0, 'intro');
+
+        // Conditionally launch add field.
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        // Attendance savepoint reached.
+        upgrade_mod_savepoint(true, 2016121305, 'attendance');
     }
 
     return $result;
