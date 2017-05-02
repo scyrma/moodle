@@ -14,7 +14,7 @@ function xmldb_bigbluebuttonbn_upgrade($oldversion=0) {
 
     global $CFG, $THEME, $DB;
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
-    
+
     $result = true;
 
     if ($result && $oldversion < 2012040200) {
@@ -40,7 +40,7 @@ function xmldb_bigbluebuttonbn_upgrade($oldversion=0) {
         // upgraded to the version 2012040200 so the next time this block is skipped
         upgrade_mod_savepoint(true, 2012040200, 'bigbluebuttonbn');
     }
-    
+
     if ($result && $oldversion < 2012062705) {
 
         // Define table bigbluebuttonbn_log to be created
@@ -279,6 +279,18 @@ function xmldb_bigbluebuttonbn_upgrade($oldversion=0) {
         }
 
         upgrade_mod_savepoint(true, 2016011305, 'bigbluebuttonbn');
+    }
+
+    if ($result && $oldversion < 2016051910) {
+        // Update the bigbluebuttonbn table
+        $table = new xmldb_table('bigbluebuttonbn');
+        //// Drop field newwindow
+        $field = new xmldb_field('newwindow');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field, $continue=true, $feedback=true);
+        }
+
+        upgrade_mod_savepoint(true, 2016051910, 'bigbluebuttonbn');
     }
 
     return $result;
