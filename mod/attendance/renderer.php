@@ -498,6 +498,7 @@ class mod_attendance_renderer extends plugin_renderer_base {
     }
 
     protected function render_attendance_take_list(attendance_take_data $takedata) {
+        global $PAGE, $CFG;
         $table = new html_table();
         $table->width = '0%';
         $table->head = array(
@@ -507,6 +508,15 @@ class mod_attendance_renderer extends plugin_renderer_base {
         $table->align = array('left', 'left');
         $table->size = array('20px', '');
         $table->wrap[1] = 'nowrap';
+        // Check if extra useridentity fields need to be added.
+        $extrasearchfields = array();
+        if (!empty($CFG->showuseridentity) && has_capability('moodle/site:viewuseridentity', $takedata->att->context)) {
+            $extrasearchfields = explode(',', $CFG->showuseridentity);
+        }
+        foreach ($extrasearchfields as $field) {
+            $table->head[] = get_string($field);
+            $table->align[] = 'left';
+        }
         foreach ($takedata->statuses as $st) {
             $table->head[] = html_writer::link("javascript:select_all_in(null, 'st" . $st->id . "', null);", $st->acronym,
                                                array('title' => get_string('setallstatusesto', 'attendance', $st->description)));
@@ -521,6 +531,9 @@ class mod_attendance_renderer extends plugin_renderer_base {
         // Show a 'select all' row of radio buttons.
         $row = new html_table_row();
         $row->cells[] = '';
+        foreach ($extrasearchfields as $field) {
+            $row->cells[] = '';
+        }
         $row->cells[] = html_writer::div(get_string('setallstatuses', 'attendance'), 'setallstatuses');
         foreach ($takedata->statuses as $st) {
             $attribs = array(
@@ -549,6 +562,9 @@ class mod_attendance_renderer extends plugin_renderer_base {
                 $fullname .= $ucdata['warning'];
             }
             $row->cells[] = $fullname;
+            foreach ($extrasearchfields as $field) {
+                $row->cells[] = $user->$field;
+            }
 
             if (array_key_exists('colspan', $ucdata)) {
                 $cell = new html_table_cell($ucdata['text']);
@@ -637,7 +653,7 @@ class mod_attendance_renderer extends plugin_renderer_base {
         if ($CFG->fullnamedisplay == 'lastname firstname') {
             $fullnamehead = "$lastname / $firstname";
         } else {
-            $fullnamehead = "$firstname / $lastname";
+            $fullnamehead = "$firstname / $lastname ";
         }
 
         return $fullnamehead;
@@ -695,6 +711,23 @@ class mod_attendance_renderer extends plugin_renderer_base {
         }
 
         return $celldata;
+    }
+
+    protected function render_mod_attendance_header(mod_attendance_header $header) {
+        if (!$header->should_render()) {
+            return '';
+        }
+
+        $attendance = $header->get_attendance();
+
+        $heading = format_string($header->get_title(), false, ['context' => $attendance->context]);
+        $o = $this->output->heading($heading);
+
+        $o .= $this->output->box_start('generalbox boxaligncenter', 'intro');
+        $o .= format_module_intro('attendance', $attendance, $attendance->cm->id);
+        $o .= $this->output->box_end();
+
+        return $o;
     }
 
     protected function render_attendance_user_data(attendance_user_data $userdata) {
@@ -851,6 +884,7 @@ class mod_attendance_renderer extends plugin_renderer_base {
         $table->attributes['class'] = 'generaltable attwidth attreport';
 
         $userrows = $this->get_user_rows($reportdata);
+
         if ($reportdata->pageparams->view == ATT_VIEW_SUMMARY) {
             $sessionrows = array();
         } else {
@@ -917,15 +951,22 @@ class mod_attendance_renderer extends plugin_renderer_base {
      */
     protected function get_user_rows(attendance_report_data $reportdata) {
         $rows = array();
+        $extrafields = get_extra_user_fields($reportdata->att->context);
+        $usercolspan = 1 + count($extrafields);
 
         $row = new html_table_row();
         $row->cells[] = $this->build_header_cell('');
-        $row->cells[] = $this->build_header_cell(get_string('users'), false, false);
+        $row->cells[] = $this->build_header_cell(get_string('users'), false, false, $usercolspan);
         $rows[] = $row;
 
         $row = new html_table_row();
         $row->cells[] = $this->build_header_cell('');
         $row->cells[] = $this->build_header_cell($this->construct_fullname_head($reportdata), false, false);
+
+        foreach ($extrafields as $field) {
+            $row->cells[] = $this->build_header_cell(get_string($field), false, false);
+        }
+
         $rows[] = $row;
 
         foreach ($reportdata->users as $user) {
@@ -933,13 +974,16 @@ class mod_attendance_renderer extends plugin_renderer_base {
             $row->cells[] = $this->build_data_cell($this->user_picture($user));
             $text = html_writer::link($reportdata->url_view(array('studentid' => $user->id)), fullname($user));
             $row->cells[] = $this->build_data_cell($text, false, false, null, null, false);
+            foreach ($extrafields as $field) {
+                $row->cells[] = $this->build_data_cell($user->$field, false, false);
+            }
             $rows[] = $row;
         }
 
         $row = new html_table_row();
         $row->cells[] = $this->build_data_cell('');
         $text = ($reportdata->pageparams->view == ATT_VIEW_SUMMARY) ? '' : get_string('summary');
-        $row->cells[] = $this->build_data_cell($text);
+        $row->cells[] = $this->build_data_cell($text, false, true, $usercolspan);
         $rows[] = $row;
 
         return $rows;
@@ -1386,7 +1430,7 @@ class mod_attendance_renderer extends plugin_renderer_base {
         return $this->output->url_select($opts, $selected, null);
     }
 
-    protected function render_attendance_preferences_data(attendance_preferences_data $prefdata) {
+    protected function render_attendance_preferences_data($prefdata) {
         $this->page->requires->js('/mod/attendance/module.js');
 
         $table = new html_table();
@@ -1402,7 +1446,7 @@ class mod_attendance_renderer extends plugin_renderer_base {
         foreach ($prefdata->statuses as $st) {
             $emptyacronym = '';
             $emptydescription = '';
-            if (array_key_exists($st->id, $prefdata->errors)) {
+            if (!empty(($prefdata->errors[$st->id]))) {
                 if (empty($prefdata->errors[$st->id]['acronym'])) {
                     $emptyacronym = $this->construct_notice(get_string('emptyacronym', 'mod_attendance'), 'notifyproblem');
                 }
@@ -1428,8 +1472,7 @@ class mod_attendance_renderer extends plugin_renderer_base {
         $table->data[$i][] = $this->construct_preferences_button(get_string('add', 'attendance'),
             mod_attendance_preferences_page_params::ACTION_ADD);
 
-        $o = html_writer::tag('h1', get_string('myvariables', 'attendance'));
-        $o .= html_writer::table($table);
+        $o = html_writer::table($table);
         $o .= html_writer::input_hidden_params($prefdata->url(array(), false));
         // We should probably rewrite this to use mforms but for now add sesskey.
         $o .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()))."\n";
@@ -1441,6 +1484,14 @@ class mod_attendance_renderer extends plugin_renderer_base {
         $o = $this->output->container($o, 'generalbox attwidth');
 
         return $o;
+    }
+
+    protected function render_attendance_default_statusset(attendance_default_statusset $prefdata) {
+        return $this->render_attendance_preferences_data($prefdata);
+    }
+
+    protected function render_attendance_pref($prefdata) {
+
     }
 
     private function construct_text_input($name, $size, $maxlength, $value='') {
@@ -1468,7 +1519,7 @@ class mod_attendance_renderer extends plugin_renderer_base {
                     $prefdata->url($params),
                     new pix_icon("t/show", get_string('show')));
         }
-        if (!$st->haslogs) {
+        if (empty($st->haslogs)) {
             $params['action'] = mod_attendance_preferences_page_params::ACTION_DELETE;
             $deleteicon = $OUTPUT->action_icon(
                     $prefdata->url($params),
