@@ -27,6 +27,9 @@ defined('MOODLE_INTERNAL') || die;
 if ($ADMIN->fulltree) {
     require_once(dirname(__FILE__).'/lib.php');
 
+    $tabmenu = attendance_print_settings_tabs();
+    $settings->add(new admin_setting_heading('attendance_header', '', $tabmenu));
+
     // Paging options.
     $options = array(
           0 => get_string('donotusepaging', 'attendance'),
@@ -44,4 +47,11 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox('attendance/studentscanmark',
         get_string('studentscanmark', 'attendance'), get_string('studentscanmark_desc', 'attendance'), 1));
+
+    $name = new lang_string('defaultsettings', 'mod_attendance');
+    $description = new lang_string('defaultsettings_help', 'mod_attendance');
+    $settings->add(new admin_setting_heading('defaultsettings', $name, $description));
+
+    $settings->add(new admin_setting_configtext('attendance/subnet',
+        get_string('requiresubnet', 'attendance'), get_string('requiresubnet_help', 'attendance'), '', PARAM_RAW));
 }
