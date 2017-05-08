@@ -48,6 +48,8 @@ class mod_attendance_add_form extends moodleform {
         $cm            = $this->_customdata['cm'];
         $modcontext    = $this->_customdata['modcontext'];
 
+        $pluginconfig = get_config('attendance');
+
         $mform->addElement('header', 'general', get_string('addsession', 'attendance'));
 
         $groupmode = groups_get_activity_groupmode($cm);
@@ -123,6 +125,25 @@ class mod_attendance_add_form extends moodleform {
         if (!empty(get_config('attendance', 'studentscanmark'))) {
             $mform->addElement('checkbox', 'studentscanmark', '', get_string('studentscanmark', 'attendance'));
             $mform->addHelpButton('studentscanmark', 'studentscanmark', 'attendance');
+            $mgroup = array();
+
+            $mgroup[] = & $mform->createElement('text', 'studentpassword', get_string('studentpassword', 'attendance'));
+            $mgroup[] = & $mform->createElement('checkbox', 'randompassword', '', get_string('randompassword', 'attendance'));
+            $mform->addGroup($mgroup, 'passwordgrp', get_string('passwordgrp', 'attendance'), array(' '), false);
+
+            $mform->setType('studentpassword', PARAM_TEXT);
+            $mform->disabledif('studentpassword', 'studentscanmark', 'notchecked');
+
+            $mform->addHelpButton('passwordgrp', 'passwordgrp', 'attendance');
+            $mform->disabledif('randompassword', 'studentscanmark', 'notchecked');
+            $mform->disabledif('studentpassword', 'randompassword', 'checked');
+            if (isset($pluginconfig->studentscanmark_default)) {
+                $mform->setDefault('studentscanmark', $pluginconfig->studentscanmark_default);
+            }
+            if (isset($pluginconfig->randompassword_default)) {
+                $mform->setDefault('randompassword', $pluginconfig->randompassword_default);
+            }
+
         } else {
             $mform->addElement('hidden', 'studentscanmark', '0');
             $mform->settype('studentscanmark', PARAM_INT);
@@ -221,6 +242,13 @@ class mod_attendance_add_form extends moodleform {
         return $errors;
     }
 
+    /**
+     * Check weekdays function.
+     * @param int $sessiondate
+     * @param int $sessionenddate
+     * @param int $sdays
+     * @return bool
+     */
     private function checkweekdays($sessiondate, $sessionenddate, $sdays) {
 
         $found = false;
