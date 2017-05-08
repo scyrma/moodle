@@ -14,9 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__) . '/upgradelib.php');
-
 /**
  * upgrade processes for this module.
  *
@@ -24,6 +21,9 @@ require_once(dirname(__FILE__) . '/upgradelib.php');
  * @copyright 2011 Artem Andreev <andreev.artem@gmail.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/upgradelib.php');
 
 /**
  * upgrade this attendance instance - this function could be skipped but it will be needed later
@@ -214,7 +214,7 @@ function xmldb_attendance_upgrade($oldversion=0) {
         upgrade_mod_savepoint(true, 2016121300, 'attendance');
     }
 
-    if ($oldversion < 2016121305) {
+    if ($oldversion < 2017020700) {
         // Define field timemodified to be added to attendance.
         $table = new xmldb_table('attendance');
 
@@ -230,7 +230,19 @@ function xmldb_attendance_upgrade($oldversion=0) {
         }
 
         // Attendance savepoint reached.
-        upgrade_mod_savepoint(true, 2016121305, 'attendance');
+        upgrade_mod_savepoint(true, 2017020700, 'attendance');
+    }
+
+    if ($oldversion < 2017042800) {
+        $table = new xmldb_table('attendance_sessions');
+
+        $field = new xmldb_field('studentpassword');
+        $field->set_attributes(XMLDB_TYPE_CHAR, '50', null, false, null, '', 'studentscanmark');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2017042800, 'attendance');
     }
 
     return $result;
