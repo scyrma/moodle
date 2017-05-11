@@ -199,7 +199,8 @@ class file_system_s3 extends \file_system {
      * @return bool The result of the copy operation.
      */
     public function copy_content_from_storedfile(stored_file $file, $target) {
-        if ($source = $this->is_file_readable_locally_by_storedfile($file)) {
+        if ($this->is_file_readable_locally_by_storedfile($file)) {
+            $source = $this->get_local_path_from_storedfile($file, true);
             return copy($source, $target);
         } else {
             // No point downloading, then copying. Just perform a straight download to the target.
