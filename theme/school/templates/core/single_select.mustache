@@ -83,35 +83,37 @@
 }}
 
 <div class="{{classes}}">
-    <form method="{{method}}" action="{{action}}" class="form-inline" id="{{formid}}">
-        {{#params}}
-            <input type="hidden" name="{{name}}" value="{{value}}">
-        {{/params}}
-        {{#label}}
-            <label for="{{id}}"{{#labelattributes}} {{name}}="{{value}}"{{/labelattributes}}>
-            {{{label}}}
-            </label>
-        {{/label}}
-        {{#helpicon}}
-            {{>core/help_icon}}
-        {{/helpicon}}
-        <select {{#attributes}}{{name}}="{{value}}" {{/attributes}} id="{{id}}" class="custom-select {{classes}}" name="{{name}}">
-        {{#options}}
-            {{#optgroup}}
-                <optgroup label="{{name}}">
-                    {{#options}}
-                        <option value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
-                    {{/options}}
-                </optgroup>
-            {{/optgroup}}
-            {{^optgroup}}
-                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
-            {{/optgroup}}
-        {{/options}}
-        </select>
-        <noscript>
-            <input type="submit" role="button" class="btn btn-secondary" value="{{#str}}go, core{{/str}}">
-        </noscript>
+    <form method="{{method}}" action="{{action}}" id="{{formid}}">
+        <div>
+            {{#params}}
+                <input type="hidden" name="{{name}}" value="{{value}}">
+            {{/params}}
+            {{#label}}
+                <label for="{{id}}"{{#labelattributes}} {{name}}="{{value}}"{{/labelattributes}}>
+                {{{label}}}
+                </label>
+            {{/label}}
+            {{#helpicon}}
+                {{>core/help_icon}}
+            {{/helpicon}}
+            <select {{#attributes}}{{name}}="{{value}}" {{/attributes}} id="{{id}}" class="custom-select {{classes}}" name="{{name}}">
+            {{#options}}
+                {{#optgroup}}
+                    <optgroup label="{{name}}">
+                        {{#options}}
+                            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
+                        {{/options}}
+                    </optgroup>
+                {{/optgroup}}
+                {{^optgroup}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
+                {{/optgroup}}
+            {{/options}}
+            </select>
+            <noscript>
+                <input type="submit" role="button" class="btn btn-secondary" value="{{#str}}go, core{{/str}}">
+            </noscript>
+        </div>
     </form>
 </div>
 {{#js}}
