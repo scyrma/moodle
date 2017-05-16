@@ -83,7 +83,7 @@ class register extends adhoc_task {
         set_config('site_country_'          . $cleanhuburl, $admin->country,            'hub');
 
         // By default set this to the current language.
-        set_config('site_language_'         . $cleanhuburl, current_language(),         'hub');
+        set_config('site_language_'         . $cleanhuburl, explode('_', current_language())[0], 'hub');
 
         // Add the new hub details to the database.
         $hub->id = $registrationmanager->add_registeredhub($hub);
