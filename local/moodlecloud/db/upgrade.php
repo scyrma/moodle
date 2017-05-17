@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,16 +15,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Version information.
- *
- * @package   local_moodlecloud
- * @copyright 2015 Andrew Nicols <andrew@nicols.co.uk>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017051700;       // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014110400;       // Requires this Moodle version
-$plugin->component = 'local_moodlecloud';  // Full name of the plugin (used for diagnostics)
+function xmldb_local_moodlecloud_upgrade($oldversion) {
+    global $CFG, $DB;
+
+    // Moodle v3.3.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2017051700) {
+
+        // Force replace the instances of the old course_overview by the new dashboard block of the same name
+        $DB->set_field('block_instances', 'blockname', 'myoverview', array('blockname' => 'course_overview'));
+
+        upgrade_plugin_savepoint(true, 2017051700, 'local', 'moodlecloud');
+    }
+
+    return true;
+}
