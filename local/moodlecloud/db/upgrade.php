@@ -31,5 +31,26 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017051700, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2017051701) {
+
+        if (isset($CFG->moodlecloud_blocked_plugins)) {
+            $CFG->mc_force_plugin_uninstall = true;
+            $progress = new null_progress_trace();
+            $manager = core_plugin_manager::instance();
+            foreach ($CFG->moodlecloud_blocked_plugins as $k => $mcblocked) {
+                if (!$mcblocked) {
+                    continue;
+                }
+
+                $plugin = str_replace_one('/', '_', $k);
+                $manager->uninstall_plugin($plugin, $progress);
+                $manager->reset_caches();
+                set_config('allversionshash', core_component::get_all_versions_hash());
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2017051701, 'local', 'moodlecloud');
+    }
+
     return true;
 }
