@@ -42,7 +42,7 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
                     continue;
                 }
 
-                $plugin = str_replace_one('/', '_', $k);
+                $plugin = str_replace('/', '_', $k);
                 $manager->uninstall_plugin($plugin, $progress);
                 $manager->reset_caches();
                 set_config('allversionshash', core_component::get_all_versions_hash());
