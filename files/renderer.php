@@ -511,6 +511,19 @@ class core_files_renderer extends plugin_renderer_base {
             'areasize' => display_size($fm->options->areamaxbytes));
         $hasmaxfiles = !empty($fm->options->maxfiles) && $fm->options->maxfiles > 0;
         $hasarealimit = !empty($fm->options->areamaxbytes) && $fm->options->areamaxbytes != -1;
+
+        // START MOODLECLOUD HACK.
+        if (defined('FILESTORAGE_QUOTA')) {
+            $hasarealimit = true;
+            $areasize = max(0, FILESTORAGE_QUOTA - \local_filestorage\file_storage\file_system::unique_storage_size_used());
+            $strparam->areasize = display_size($areasize);
+            if ($fm->options->maxbytes > $areasize) {
+                $maxbytes = $strparam->areasize;
+                $strparam->size = $maxbytes;
+            }
+        }
+        // END MOODLECLOUD HACK.
+
         if ($hasmaxfiles && $hasarealimit) {
             $maxsize = get_string('maxsizeandattachmentsandareasize', 'moodle', $strparam);
         } else if ($hasmaxfiles) {
