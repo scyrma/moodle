@@ -141,6 +141,26 @@ class file_system_s3 extends \file_system {
     }
 
     /**
+     * Determine whether the file is present on the local file system somewhere.
+     *
+     * @param stored_file $file The file to ensure is available.
+     * @return bool
+     */
+    public function is_file_readable_remotely_by_storedfile(stored_file $file) {
+        if (!$file->get_filesize()) {
+            // Files with empty size are either directories or empty.
+            // We handle these virtually.
+            return true;
+        }
+
+        if ($this->get_remote_path_from_storedfile($file)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Determine whether the file is available remotely.
      *
      * @param string $contenthash The contenthash of the file to check.
