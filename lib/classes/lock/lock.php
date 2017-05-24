@@ -111,7 +111,7 @@ class lock {
      * Print debugging if this lock falls out of scope before being released.
      */
     public function __destruct() {
-        if (!$this->released && defined('PHPUNIT_TEST')) {
+        if (!$this->released && PHPUNIT_TEST) {
             $key = $this->key;
             $this->release();
             throw new \coding_exception("A lock was created but not released at:\n" .
