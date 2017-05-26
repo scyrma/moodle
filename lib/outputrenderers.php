@@ -1329,6 +1329,8 @@ class core_renderer extends renderer_base {
         }
         $footer = str_replace($this->unique_performance_info_token, $performanceinfo, $footer);
 
+        // START MOODLECLOUD HACK.
+        /*
         // Only show notifications when we have a $PAGE context id.
         if (!empty($PAGE->context->id)) {
             $this->page->requires->js_call_amd('core/notification', 'init', array(
@@ -1336,6 +1338,8 @@ class core_renderer extends renderer_base {
                 \core\notification::fetch_as_array($this)
             ));
         }
+        */
+        // END MOODLECLOUD HACK.
         $footer = str_replace($this->unique_end_html_token, $this->page->requires->get_end_code(), $footer);
 
         $this->page->set_state(moodle_page::STATE_DONE);
