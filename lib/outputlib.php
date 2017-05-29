@@ -892,7 +892,7 @@ class theme_config {
 
         // START MOODLECLOUD HACK.
         $cache = cache::make('core', 'postprocessedcss');
-        $key = $this->name . '_' . SCSS_KEY;
+        $key = $this->name . '_' . self::SCSS_KEY;
 
         if ($processed = $cache->get($key)) {
             return $processed;
@@ -1229,7 +1229,7 @@ class theme_config {
 
         // START MOODLECLOUD HACK.
         $cache = cache::make('core', 'compiledscss');
-        $key = $this->name . '_' . SCSS_KEY;
+        $key = $this->name . '_' . self::SCSS_KEY;
 
         if ($compiled = $cache->get($key)) {
             return $compiled;
