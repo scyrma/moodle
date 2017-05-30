@@ -3,7 +3,7 @@
 namespace auth_moodlecloud;
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__DIR__) . '/vendor/autoload.php');
+require_once(dirname(dirname(dirname(__DIR__))) . '/local/filestorage/sdk/aws-autoloader.php');
 
 class helper {
 
@@ -52,10 +52,10 @@ class helper {
         $ssoserver  = get_config('auth_moodlecloud', 'ssoserver');
         $endpoint   = $ssoserver . '/api/v' . self::APIVERSION . '/' . $endpoint;
 
-        return self::get_client()->createRequest($method, $endpoint, $options);
+        return (new \GuzzleHttp\Psr7\Request($method, $endpoint, $options));
     }
 
-    public static function send(\GuzzleHttp\Message\Request $request) {
+    public static function send(\GuzzleHttp\Psr7\Request $request) {
         return self::get_client()->send($request);
     }
 
