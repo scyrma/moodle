@@ -32,7 +32,7 @@ class helper {
         return true;
     }
 
-    public static function createRequest($endpoint, $method = null, $options = null) {
+    public static function createRequest($endpoint, $method = null, $body = null) {
         if (!self::isConfigured()) {
             return null;
         }
@@ -41,26 +41,25 @@ class helper {
             $method = 'POST';
         }
 
-        if (null === $options) {
-            $options = array(
-                    'exceptions'    => false,
-                    'verify'        => false,
-                );
-        }
-
-
         $ssoserver  = get_config('auth_moodlecloud', 'ssoserver');
         $endpoint   = $ssoserver . '/api/v' . self::APIVERSION . '/' . $endpoint;
 
-        return (new \GuzzleHttp\Psr7\Request($method, $endpoint, $options));
+        return (new \GuzzleHttp\Psr7\Request($method, $endpoint, [], $body));
     }
 
-    public static function send(\GuzzleHttp\Psr7\Request $request) {
+    public static function send(\GuzzleHttp\Psr7\Request $request, $options = null) {
+
+        if (null === $options) {
+            $options = array(
+                'exceptions'    => false,
+                'verify'        => false,
+            );
+        }
+
         return self::get_client()->send($request);
     }
 
     public static function call($service, $parameters) {
-        global $CFG;
 
         $classname = '\\auth_moodlecloud\\services\\' . $service;
         if (!class_exists($classname)) {
@@ -71,26 +70,24 @@ class helper {
             return null;
         }
 
+        $postData = [];
+        // Set the wwwroot.
+        $postData['subdomain'] = get_config('auth_moodlecloud', 'ssoapisite');
+        // Authenticate to the API.
+        $postData['apikey'] = get_config('auth_moodlecloud', 'ssoapikey');
+
+        // And the rest of the parameters.
+        foreach ($parameters as $key => $value) {
+            $postData[$key] = $value;
+        }
+
         // Verify the parameters.
         $classname::verify_parameters($parameters);
 
         // Attempt to create the request.
-        $request = self::createRequest($classname::target());
+        $request = self::createRequest($classname::target(), 'POST', ['form_params' => $postData]);
         if (null === $request) {
             return;
-        }
-
-        $postBody = $request->getBody();
-
-        // Set the wwwroot.
-        $postBody->setField('subdomain', get_config('auth_moodlecloud', 'ssoapisite'));
-
-        // Authenticate to the API.
-        $postBody->setField('apikey', get_config('auth_moodlecloud', 'ssoapikey'));
-
-        // And the rest of the parameters.
-        foreach ($parameters as $key => $value) {
-            $postBody->setField($key, $value);
         }
 
         try {
