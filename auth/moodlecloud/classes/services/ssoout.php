@@ -29,9 +29,9 @@ class ssoout extends service {
         }
         else if ($response->getStatusCode() === 200) {
             // Data was returned successfully. Process it.
-            $responsedata = $response->json();
-            if (isset($responsedata['target'])) {
-                return $responsedata['target'];
+            $responsedata = json_decode($response->getBody());
+            if (isset($responsedata->target)) {
+                return $responsedata->target;
             }
         }
 
