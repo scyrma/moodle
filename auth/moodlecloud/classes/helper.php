@@ -32,33 +32,6 @@ class helper {
         return true;
     }
 
-    public static function createRequest($endpoint, $method = null, $body = null) {
-        if (!self::isConfigured()) {
-            return null;
-        }
-
-        if (null === $method) {
-            $method = 'POST';
-        }
-
-        $ssoserver  = get_config('auth_moodlecloud', 'ssoserver');
-        $endpoint   = $ssoserver . '/api/v' . self::APIVERSION . '/' . $endpoint;
-
-        return (new \GuzzleHttp\Psr7\Request($method, $endpoint, [], $body));
-    }
-
-    public static function send(\GuzzleHttp\Psr7\Request $request, $options = null) {
-
-        if (null === $options) {
-            $options = array(
-                'exceptions'    => false,
-                'verify'        => false,
-            );
-        }
-
-        return self::get_client()->send($request);
-    }
-
     public static function call($service, $parameters) {
 
         $classname = '\\auth_moodlecloud\\services\\' . $service;
@@ -84,14 +57,19 @@ class helper {
         // Verify the parameters.
         $classname::verify_parameters($parameters);
 
-        // Attempt to create the request.
-        $request = self::createRequest($classname::target(), 'POST', ['form_params' => $postData]);
-        if (null === $request) {
-            return;
-        }
+        $ssoserver  = get_config('auth_moodlecloud', 'ssoserver');
+        $request   = $ssoserver . '/api/v' . self::APIVERSION . '/' . $classname::target();
 
         try {
-            $response = self::send($request);
+            $response = self::get_client()->request(
+                'POST',
+                $request,
+                [
+                    'exceptions'  => false,
+                    'verify'      => false,
+                    'form_params' => $postData,
+                ]
+            );
         }
         catch (\GuzzleHttp\Exception\RequestException $e) {
             $response = null;
