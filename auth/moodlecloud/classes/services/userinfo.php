@@ -31,7 +31,7 @@ class userinfo extends service {
         }
         else if ($response->getStatusCode() === 200) {
             // Data was returned successfully. Process it.
-            $responsedata = $response->json();
+            $responsedata = json_decode($response->getBody());
             foreach ($responsedata as $key => $value) {
                 $data[$key] = $value;
             }
