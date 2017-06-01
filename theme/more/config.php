@@ -25,6 +25,12 @@
 $THEME->name = 'more';
 $THEME->parents = array('clean', 'bootstrapbase');
 
+// START MOODLECLOUD HACK.
+// We don't want the base theme to be shown on the theme selection screen, by setting
+// this to true it will only be shown if theme designer mode is switched on.
+$THEME->hidefromselector = true;
+// END MOODLECLOUD HACK.
+
 $THEME->doctype = 'html5';
 $THEME->sheets = array('custom');
 $THEME->lessfile = 'moodle';
