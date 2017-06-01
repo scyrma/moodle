@@ -22,5 +22,8 @@ body {
 
 #page-footer {
     min-height: $footer-min-height;
-    text-align: left;
+    text-align: center;
+    nav {
+        text-align: left;
+    }
 }

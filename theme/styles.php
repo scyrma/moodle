@@ -157,7 +157,10 @@ if ($type === 'editor') {
     if (in_array($type, ['less', 'scss']) && $cache) {
         $lockfactory = \core\lock\lock_config::get_lock_factory('core_theme_get_css_content');
         // We wait for the lock to be acquired, the timeout does not need to be strict here.
-        $lock = $lockfactory->get_lock($themename, rand(15, 30));
+        // BEGIN MOODLECLOUD HACK.
+        // We use a long timeout here because we don't want 2 processes to be compiling the SCSS simultaneously.
+        $lock = $lockfactory->get_lock($themename, 300);
+        // END MOODLECLOUD HACK.
         if (file_exists($candidatesheet)) {
             // The file was built while we waited for the lock, we release the lock and serve the file.
             if ($lock) {
