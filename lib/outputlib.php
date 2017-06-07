@@ -892,7 +892,7 @@ class theme_config {
 
         // START MOODLECLOUD HACK.
         $cache = cache::make('core', 'postprocessedcss');
-        $key = $this->name . '_' . self::SCSS_KEY;
+        $key = $this->name . '_' . self::SCSS_KEY . '_' . ($this->rtlmode ? 'rtl' : 'ltr');
 
         if ($processed = $cache->get($key)) {
             return $processed;
