@@ -27,11 +27,21 @@ require_once('../../config.php');
 $contextid = required_param('contextid', PARAM_INT);
 $code = optional_param('code', '', PARAM_ALPHANUM); // The code for the certificate we are verifying.
 
-// Need to be logged in.
-require_login();
+$context = context::instance_by_id($contextid);
 
-// Ok, now check the user has the ability to verify certificates.
-require_capability('mod/customcert:verifycertificate', context::instance_by_id($contextid));
+$cm = get_coursemodule_from_id('customcert', $context->instanceid, 0, false, MUST_EXIST);
+$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+$customcert = $DB->get_record('customcert', array('id' => $cm->instance), '*', MUST_EXIST);
+
+// Check if we are allowing anyone to verify, if so, no need to check login, or permissions.
+if (!$customcert->verifyany) {
+    // Need to be logged in.
+    require_login($course, false, $cm);
+    // Ok, now check the user has the ability to verify certificates.
+    require_capability('mod/customcert:verifycertificate', $context);
+} else {
+    $PAGE->set_cm($cm, $course);
+}
 
 // Set up the page.
 $pageurl = new moodle_url('/mod/customcert/verify_certificate.php', array('contextid' => $contextid));
@@ -40,7 +50,7 @@ if ($code) {
 }
 
 $PAGE->set_url($pageurl);
-$PAGE->set_context(context_system::instance());
+$PAGE->set_context($context);
 $PAGE->set_title(get_string('verifycertificate', 'customcert'));
 
 // The form we are using to verify these codes.
@@ -62,9 +72,10 @@ if ($form->get_data()) {
               JOIN {user} u
                 ON ci.userid = u.id
              WHERE ci.code = :code
+               AND c.id = :customcertid
                AND u.deleted = 0";
     // It is possible (though unlikely) that there is the same code for issued certificates.
-    if ($issues = $DB->get_records_sql($sql, array('code' => $code))) {
+    if ($issues = $DB->get_records_sql($sql, array('code' => $code, 'customcertid' => $customcert->id))) {
         $result->success = true;
         $result->issues = $issues;
     } else {
