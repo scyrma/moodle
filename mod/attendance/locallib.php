@@ -258,40 +258,33 @@ function attendance_update_users_grade($attendance, $userids=array()) {
 /**
  * Add an attendance status variable
  *
- * @param string $acronym
- * @param string $description
- * @param int $grade
- * @param int $attendanceid
- * @param int $setnumber
- * @param stdClass $context
- * @param stdClass $cm
+ * @param stdClass $status
  * @return bool
  */
-function attendance_add_status($acronym, $description, $grade, $attendanceid, $setnumber = 0, $context = null, $cm = null) {
+function attendance_add_status($status) {
     global $DB;
-    if (empty($context)) {
-        $context = context_system::instance();
+    if (empty($status->context)) {
+        $status->context = context_system::instance();
     }
-    if ($acronym && $description) {
-        $rec = new stdClass();
-        $rec->attendanceid = $attendanceid;
-        $rec->acronym = $acronym;
-        $rec->description = $description;
-        $rec->grade = $grade;
-        $rec->setnumber = $setnumber; // Save which set it is part of.
-        $rec->deleted = 0;
-        $rec->visible = 1;
-        $id = $DB->insert_record('attendance_statuses', $rec);
-        $rec->id = $id;
+
+    if (!empty($status->acronym) && !empty($status->description)) {
+        $status->deleted = 0;
+        $status->visible = 1;
+        $status->setunmarked = 0;
+
+        $id = $DB->insert_record('attendance_statuses', $status);
+        $status->id = $id;
 
         $event = \mod_attendance\event\status_added::create(array(
-            'objectid' => $attendanceid,
-            'context' => $context,
-            'other' => array('acronym' => $acronym, 'description' => $description, 'grade' => $grade)));
-        if (!empty($cm)) {
-            $event->add_record_snapshot('course_modules', $cm);
+            'objectid' => $status->attendanceid,
+            'context' => $status->context,
+            'other' => array('acronym' => $status->acronym,
+                             'description' => $status->description,
+                             'grade' => $status->grade)));
+        if (!empty($status->cm)) {
+            $event->add_record_snapshot('course_modules', $status->cm);
         }
-        $event->add_record_snapshot('attendance_statuses', $rec);
+        $event->add_record_snapshot('attendance_statuses', $status);
         $event->trigger();
         return true;
     } else {
@@ -336,9 +329,12 @@ function attendance_remove_status($status, $context = null, $cm = null) {
  * @param bool $visible
  * @param stdClass $context
  * @param stdClass $cm
+ * @param int $studentavailability
+ * @param bool $setunmarked
  * @return array
  */
-function attendance_update_status($status, $acronym, $description, $grade, $visible, $context = null, $cm = null) {
+function attendance_update_status($status, $acronym, $description, $grade, $visible,
+                                  $context = null, $cm = null, $studentavailability = null, $setunmarked = false) {
     global $DB;
 
     if (empty($context)) {
@@ -365,6 +361,21 @@ function attendance_update_status($status, $acronym, $description, $grade, $visi
     if (isset($grade)) {
         $status->grade = $grade;
         $updated[] = $grade;
+    }
+    if (isset($studentavailability)) {
+        if (empty($studentavailability)) {
+            if ($studentavailability !== '0') {
+                $studentavailability = null;
+            }
+        }
+
+        $status->studentavailability = $studentavailability;
+        $updated[] = $studentavailability;
+    }
+    if ($setunmarked) {
+        $status->setunmarked = 1;
+    } else {
+        $status->setunmarked = 0;
     }
     $DB->update_record('attendance_statuses', $status);
 
@@ -509,9 +520,10 @@ function attendance_exporttocsv($data, $filename) {
 /**
  * Get session data for form.
  * @param stdClass $formdata moodleform - attendance form.
+ * $param mod_attendance_structure $att - used to get attendance level subnet.
  * @return array.
  */
-function attendance_construct_sessions_data_for_add($formdata) {
+function attendance_construct_sessions_data_for_add($formdata, mod_attendance_structure $att) {
     global $CFG;
 
     $sesstarttime = $formdata->sestime['starthour'] * HOURSECS + $formdata->sestime['startminute'] * MINSECS;
@@ -559,6 +571,13 @@ function attendance_construct_sessions_data_for_add($formdata) {
                     $sess->timemodified = $now;
                     if (isset($formdata->studentscanmark)) { // Students will be able to mark their own attendance.
                         $sess->studentscanmark = 1;
+                        if (!empty($formdata->usedefaultsubnet)) {
+                            $sess->subnet = $att->subnet;
+                        } else {
+                            $sess->subnet = $formdata->subnet;
+                        }
+                        $sess->automark = $formdata->automark;
+                        $sess->automarkcompleted = 0;
                         if (!empty($formdata->randompassword)) {
                             $sess->studentpassword = attendance_random_string();
                         } else {
@@ -566,6 +585,9 @@ function attendance_construct_sessions_data_for_add($formdata) {
                         }
                     } else {
                         $sess->studentpassword = '';
+                        $sess->subnet = '';
+                        $sess->automark = 0;
+                        $sess->automarkcompleted = 0;
                     }
                     $sess->statusset = $formdata->statusset;
 
@@ -586,7 +608,10 @@ function attendance_construct_sessions_data_for_add($formdata) {
         $sess->descriptionformat = $formdata->sdescription['format'];
         $sess->timemodified = $now;
         $sess->studentscanmark = 0;
+        $sess->subnet = '';
         $sess->studentpassword = '';
+        $sess->automark = 0;
+        $sess->automarkcompleted = 0;
 
         if (isset($formdata->studentscanmark) && !empty($formdata->studentscanmark)) {
             // Students will be able to mark their own attendance.
@@ -595,6 +620,15 @@ function attendance_construct_sessions_data_for_add($formdata) {
                 $sess->studentpassword = attendance_random_string();
             } else {
                 $sess->studentpassword = $formdata->studentpassword;
+            }
+            if (!empty($formdata->usedefaultsubnet)) {
+                $sess->subnet = $att->subnet;
+            } else {
+                $sess->subnet = $formdata->subnet;
+            }
+
+            if (!empty($formdata->automark)) {
+                $sess->automark = $formdata->automark;
             }
         }
         $sess->statusset = $formdata->statusset;
@@ -624,4 +658,52 @@ function attendance_fill_groupid($formdata, &$sessions, $sess) {
             $sessions[] = $sess;
         }
     }
+}
+
+/**
+ * Generates a summary of points for the courses selected.
+ *
+ * @param array $courseids optional list of courses to return
+ * @param string $orderby - optional order by param
+ * @return stdClass
+ */
+function attendance_course_users_points($courseids = array(), $orderby = '') {
+    global $DB;
+
+    $where = '';
+    $params = array();
+    $where .= ' AND ats.sessdate < :enddate ';
+    $params['enddate'] = time();
+
+    $joingroup = 'LEFT JOIN {groups_members} gm ON (gm.userid = atl.studentid AND gm.groupid = ats.groupid)';
+    $where .= ' AND (ats.groupid = 0 or gm.id is NOT NULL)';
+
+    if (!empty($courseids)) {
+        list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
+        $where .= ' AND c.id ' . $insql;
+        $params = array_merge($params, $inparams);
+    }
+
+    $sql = "SELECT courseid, coursename, sum(points) / sum(maxpoints) as percentage FROM (
+SELECT a.id, a.course as courseid, c.fullname as coursename, atl.studentid AS userid, COUNT(DISTINCT ats.id) AS numtakensessions,
+                        SUM(stg.grade) AS points, SUM(stm.maxgrade) AS maxpoints
+                   FROM mdl_attendance_sessions ats
+                   JOIN mdl_attendance a ON a.id = ats.attendanceid
+                   JOIN mdl_course c ON c.id = a.course
+                   JOIN mdl_attendance_log atl ON (atl.sessionid = ats.id)
+                   JOIN mdl_attendance_statuses stg ON (stg.id = atl.statusid AND stg.deleted = 0 AND stg.visible = 1)
+                   JOIN (SELECT attendanceid, setnumber, MAX(grade) AS maxgrade
+                           FROM mdl_attendance_statuses
+                          WHERE deleted = 0
+                            AND visible = 1
+                         GROUP BY attendanceid, setnumber) stm
+                     ON (stm.setnumber = ats.statusset AND stm.attendanceid = ats.attendanceid)
+                  {$joingroup}
+                  WHERE ats.sessdate >= c.startdate
+                    AND ats.lasttaken != 0
+                    {$where}
+                GROUP BY a.id, a.course, c.fullname, atl.studentid
+                ) p GROUP by courseid, coursename {$orderby}";
+
+    return $DB->get_records_sql($sql, $params);
 }
