@@ -15,12 +15,13 @@ class getairnotifierkey extends adhoc_task {
 
         $registered = $DB->count_records('registration_hubs', array('huburl' => HUB_MOODLEORGHUBURL, 'confirmed' => 1));
 
+        // d4985ad12ce3099b040a4773724cc6b3 is the default airnotifierkey given to us by Juan
 
         // Check for valid DNS.
         if ($registered) {
             mtrace("Moodlecloud Airnotifier: site is registered on hub, proceeding");
             $airnotifierkey = $CFG->airnotifieraccesskey;
-            if (empty($airnotifierkey)) {
+            if (empty($airnotifierkey) || $airnotifierkey == "d4985ad12ce3099b040a4773724cc6b3") {
                 mtrace("Moodlecloud Airnotifier: site has no airnotifier key. Requesting");
                 // setup $USER as the site admin.
                 $USER = $DB->get_record('user', array('id' => 2, 'deleted' => 0), '*', MUST_EXIST);
@@ -31,6 +32,7 @@ class getairnotifierkey extends adhoc_task {
                     set_config('airnotifieraccesskey', $key);
                     $msg = get_string('keyretrievedsuccessfully', 'message_airnotifier');
                 } else {
+                    set_config('airnotifieraccesskey', 'd4985ad12ce3099b040a4773724cc6b3');
                     $msg = get_string('errorretrievingkey', 'message_airnotifier');
                     manager::queue_adhoc_task(new getairnotifierkey());
                 }
