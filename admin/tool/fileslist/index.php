@@ -38,6 +38,15 @@ global $DB;
 $PAGE->set_context(\context_system::instance());
 
 echo $OUTPUT->header();
+
+\html_writer::start_tag('div');
+if (defined('FILESTORAGE_QUOTA')) {
+    echo get_string('usedquota', 'tool_fileslist', (object)[
+        'percentage' => (\local_filestorage\file_storage\file_system_s3::unique_storage_size_used() / FILESTORAGE_QUOTA) * 100,
+        'total' => FILESTORAGE_QUOTA
+    ]);
+}
+
 echo $OUTPUT->render_from_template('tool_fileslist/main', []);
 echo $OUTPUT->footer();
 
