@@ -56,7 +56,7 @@ final class file_repository {
 
     public function get_valid_files() : collection {
         return $this->get(function(stdClass $filerecord) : bool {
-                return !!$filerecord->filesize && !!$filerecord->userid;
+                return !!$filerecord->filesize && !!$filerecord->userid && !$filerecord->referencefileid;
             }
         );
     }
