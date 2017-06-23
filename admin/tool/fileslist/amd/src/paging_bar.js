@@ -40,7 +40,12 @@ define(['jquery', 'tool_fileslist/fileslist', 'core/custom_interaction_events', 
         init: function(root, filesList) {
             registerEventListeners(root, filesList);
 
-            var numPages = Math.round(+filesList.attr('data-num-items')/+filesList.attr('data-limit'));
+            var numPages = Math.ceil(+filesList.attr('data-num-items')/+filesList.attr('data-limit'));
+
+            if (numPages === 1) {
+                return Templates.render('tool_fileslist/page-items');
+            }
+
             var pages = [{
                 active: false,
                 disabled: true,

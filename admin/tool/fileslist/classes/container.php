@@ -11,7 +11,7 @@ final class container {
     public static function get_file_repository() : file_repository {
         global $DB;
         return new file_repository(
-            new db_rows($DB, 'files'),
+            new db_rows($DB, 'files', 'filesize DESC'),
             new file_factory(
                 get_file_storage(),
                 function(int $uid) : stdClass {

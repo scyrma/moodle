@@ -33,10 +33,12 @@ final class db_rows extends IteratorIterator implements collection {
 
     private $db;
     private $table;
+    private $sortfield;
 
-    public function __construct(moodle_database $db, string $table) {
+    public function __construct(moodle_database $db, string $table, string $sortfield = null) {
         $this->db = $db;
         $this->table = $table;
+        $this->sortfield = $sortfield;
 
         parent::__construct(
             (function() : Iterator {
@@ -61,7 +63,7 @@ final class db_rows extends IteratorIterator implements collection {
         while ($records = $this->db->get_records(
             $this->table,
             null,
-            '',
+            $this->sortfield ?? '',
             '*',
             $start ?? 0,
             100
