@@ -40,7 +40,7 @@ final class file_factory {
                             ? ['/user/profile.php', ['id' => $storedfile->get_userid()]]
                             : ($acc->get(2) instanceof context_module || $acc->get(2) instanceof context_course
                                ? ['/course/view.php', ['id' => $acc->get(2)->get_course_context()->instanceid]]
-                               : ['#']
+                               : [null]
                             )
                         )
                     );
