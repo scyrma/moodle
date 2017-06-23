@@ -37,5 +37,4 @@ define(['tool_fileslist/file_repository', 'core/templates'], function(FileReposi
                 });
         }
     };
-
 });

@@ -25,4 +25,11 @@
 $string['pluginname'] = 'Files list';
 $string['files'] = 'Files';
 $string['fileslist:viewlist'] = 'View list of files';
-$string['usedquota'] = 'You have used {$a->percentage}% of your {$a->total} quota';
+$string['usedquotaconsiderupgrade'] = 'You have used {$a->percentage}% of your {$a->total} quota. Consider <a href="{$a->url}">upgrading your site</a>.';
+$string['filename'] = 'Filename';
+$string['size'] = 'Size';
+$string['type'] = 'Type';
+$string['user'] = 'User';
+$string['component'] = 'Component';
+$string['filearea'] = 'Filearea';
+$string['actions'] = 'Actions';
