@@ -39,7 +39,7 @@ $PAGE->set_context(\context_system::instance());
 
 echo $OUTPUT->header();
 
-\html_writer::start_tag('div');
+echo \html_writer::start_tag('div');
 (function($quota, $used) {
     echo get_string('usedquota', 'tool_fileslist', (object)[
         'percentage' => round(
@@ -58,11 +58,11 @@ echo $OUTPUT->header();
             return round($bytes, $precision) . ' ' . $units[$pow];
         })($quota)
     ]);
-    })(
-        ...defined('FILESTORAGE_QUOTA') ? [FILESTORAGE_QUOTA, \local_filestorage\file_storage\file_system_s3::unique_storage_size_used()]
-        : [209715200, 8388608]
-    );
-\html_writer::end_tag('div');
+})(
+    ...defined('FILESTORAGE_QUOTA') ? [FILESTORAGE_QUOTA, \local_filestorage\file_storage\file_system_s3::unique_storage_size_used()]
+    : [209715200, 8388608]
+);
+echo \html_writer::end_tag('div');
 
 echo $OUTPUT->render_from_template('tool_fileslist/main', []);
 echo $OUTPUT->footer();
