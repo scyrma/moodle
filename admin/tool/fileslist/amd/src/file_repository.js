@@ -14,7 +14,7 @@ define(['jquery', 'core/ajax'], function($, Ajax) {
                     cachedResponse = {
                         files: response.files
                             .filter(function(file) {
-                                return file.filearea != 'draft' && file.user.id > 2;
+                                return file.filearea != 'draft';
                             })
                             .sort(function(a,b) {
                                 return a.size < b.size;
