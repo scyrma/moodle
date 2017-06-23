@@ -10,7 +10,6 @@ define(['jquery', 'core/ajax'], function($, Ajax) {
                         args: []
                     }
                 ])[0].then(function(response) {
-                    window.console.log('miss');
                     cachedResponse = {
                         files: response.files
                             .filter(function(file) {
