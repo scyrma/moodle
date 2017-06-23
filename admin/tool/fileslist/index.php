@@ -41,7 +41,7 @@ echo $OUTPUT->header();
 
 echo \html_writer::start_tag('div');
 (function($quota, $used) {
-    echo get_string('usedquota', 'tool_fileslist', (object)[
+    echo get_string('usedquotaconsiderupgrade', 'tool_fileslist', (object)[
         'percentage' => round(
             ($used / $quota) * 100,
             0,
@@ -56,11 +56,12 @@ echo \html_writer::start_tag('div');
             $bytes /= (1 << (10 * $pow));
 
             return round($bytes, $precision) . ' ' . $units[$pow];
-        })($quota)
+        })($quota),
+        'url' => (object)['url' => (new \moodle_url('http://example.com'))->out()]
     ]);
 })(
     ...defined('FILESTORAGE_QUOTA') ? [FILESTORAGE_QUOTA, \local_filestorage\file_storage\file_system_s3::unique_storage_size_used()]
-    : [209715200, 8388608]
+                                    : [209715200, 8388608]
 );
 echo \html_writer::end_tag('div');
 
