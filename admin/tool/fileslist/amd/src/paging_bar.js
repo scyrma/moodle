@@ -40,13 +40,14 @@ define(['jquery', 'tool_fileslist/fileslist', 'core/custom_interaction_events', 
         init: function(root, filesList) {
             registerEventListeners(root, filesList);
 
+            var numPages = Math.round(+filesList.attr('data-num-items')/+filesList.attr('data-limit'));
             var pages = [{
                 active: false,
                 disabled: true,
                 number: 0,
                 label: '«'
             }];
-            for (var i = 0; i < Math.round(+filesList.attr('data-num-items')/+filesList.attr('data-limit')); i++) {
+            for (var i = 0; i < numPages; i++) {
                 pages.push({
                     active: i === 0,
                     disabled: false,
@@ -56,7 +57,7 @@ define(['jquery', 'tool_fileslist/fileslist', 'core/custom_interaction_events', 
             }
             pages.push({
                 active: false,
-                disabled: false,
+                disabled: numPages === 1 ? true : false,
                 number: 1,
                 label: '»'
             });
