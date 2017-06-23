@@ -25,3 +25,4 @@
 $string['pluginname'] = 'Files list';
 $string['files'] = 'Files';
 $string['fileslist:viewlist'] = 'View list of files';
+$string['usedquota'] = 'You have used {$a->percentage} of your {$a->total} quota';
