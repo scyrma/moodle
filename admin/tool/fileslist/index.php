@@ -41,30 +41,35 @@ echo $OUTPUT->header();
 
 echo \html_writer::start_tag('div');
 (function($quota, $used) {
-    echo get_string('usedquotaconsiderupgrade', 'tool_fileslist', (object)[
-        'percentage' => round(
-            ($used / $quota) * 100,
-            0,
-            PHP_ROUND_HALF_UP
-        ),
-        'total' => (function($bytes, $precision = 2) {
-            $units = array('B', 'KB', 'MB', 'GB', 'TB');
-
-            $bytes = max($bytes, 0);
-            $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-            $pow = min($pow, count($units) - 1);
-            $bytes /= (1 << (10 * $pow));
-
-            return round($bytes, $precision) . ' ' . $units[$pow];
-        })($quota),
-        'url' => (object)['url' => (new \moodle_url('http://example.com'))->out()]
-    ]);
+    $bytestohumanreadable = function(int $bytes) : string {
+        $index = floor(log($bytes, 1024));
+        return round($bytes/1024**$index, 2) . ' ' . ['B', 'KB', 'MB', 'GB'][$index];
+    };
+    echo get_string('usedquotaconsiderupgrade', 'tool_fileslist',
+                    (object)[
+                        'used' => $bytestohumanreadable($used),
+                        'percentage' => round(
+                            ($used / $quota) * 100,
+                            0,
+                            PHP_ROUND_HALF_UP
+                        ),
+                        'total' => $bytestohumanreadable($quota),
+                        'url' => (new \moodle_url('/auth/moodlecloud/portal.php'))->out()
+                    ]
+    );
 })(
     ...defined('FILESTORAGE_QUOTA') ? [FILESTORAGE_QUOTA, \local_filestorage\file_storage\file_system_s3::unique_storage_size_used()]
-                                    : [209715200, 8388608]
+                                    : [209715200, rand(0,209715200)]
 );
 echo \html_writer::end_tag('div');
 
-echo $OUTPUT->render_from_template('tool_fileslist/main', []);
+echo $OUTPUT->render_from_template(
+    'tool_fileslist/main',
+    [
+        'help' => [
+            'action' => $OUTPUT->help_icon('action', 'tool_fileslist')
+        ]
+    ]
+);
 echo $OUTPUT->footer();
 
