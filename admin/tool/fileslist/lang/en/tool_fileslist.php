@@ -23,7 +23,7 @@
  */
 
 $string['action'] = 'Action';
-$string['action_help'] = 'Some files (for example system files) are not actionable. Where the context is known a link will be available.';
+$string['action_help'] = 'Some files (for example system files) are not actionable. Where the context is known, a link will be available.';
 $string['component'] = 'Component';
 $string['filearea'] = 'Filearea';
 $string['filename'] = 'Filename';
