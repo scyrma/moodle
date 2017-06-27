@@ -14,18 +14,10 @@ define(['tool_fileslist/file_repository', 'core/templates'], function(FileReposi
                             files: response.files
                                 .slice(start, start + limit)
                                 .map(function(file) {
-                                    var bytes = file.size;
-                                    if(Math.abs(bytes) < 1024) {
-                                        file.sizeHumanReadable = bytes + ' B';
-                                        return file;
-                                    }
-                                    var units = ['kB','MB','GB','TB','PB','EB','ZB','YB'];
-                                    var u = -1;
-                                    do {
-                                        bytes /= 1024;
-                                        ++u;
-                                    } while(Math.abs(bytes) >= 1024 && u < units.length - 1);
-                                    file.sizeHumanReadable = bytes.toFixed(1)+' '+units[u];
+                                    var index = Math.floor(Math.log(file.size) / Math.log(1024));
+                                    file.sizeHumanReadable = Math.round((file.size/Math.pow(1024, index))*100)/100
+                                        + ' ' + ['B', 'KB', 'MB', 'GB'][index];
+
                                     return file;
                                 })
                         }
