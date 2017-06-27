@@ -58,7 +58,7 @@ echo \html_writer::start_tag('div');
                     ]
     );
 })(
-    ...defined('FILESTORAGE_QUOTA') ? [FILESTORAGE_QUOTA, \local_filestorage\file_storage\file_system_s3::unique_storage_size_used()]
+    ...defined('FILESTORAGE_QUOTA') ? [(int)FILESTORAGE_QUOTA, (int)\local_filestorage\file_storage\file_system_s3::unique_storage_size_used()]
                                     : [209715200, rand(0,209715200)]
 );
 echo \html_writer::end_tag('div');
