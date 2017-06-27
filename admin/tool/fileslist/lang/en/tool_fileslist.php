@@ -22,14 +22,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Files list';
-$string['files'] = 'Files';
-$string['fileslist:viewlist'] = 'View list of files';
-$string['usedquotaconsiderupgrade'] = 'You have used {$a->percentage}% of your {$a->total} quota. Consider <a href="{$a->url}">upgrading your site</a>.';
-$string['filename'] = 'Filename';
-$string['size'] = 'Size';
-$string['type'] = 'Type';
-$string['user'] = 'User';
+$string['action'] = 'Action';
+$string['action_help'] = 'Some files (for example system files) are not actionable. Where the context is known a link will be available.';
 $string['component'] = 'Component';
 $string['filearea'] = 'Filearea';
-$string['actions'] = 'Actions';
+$string['filename'] = 'Filename';
+$string['files'] = 'Files';
+$string['fileslist:viewlist'] = 'View list of files';
+$string['pluginname'] = 'Files list';
+$string['size'] = 'Size';
+$string['type'] = 'Type';
+$string['usedquotaconsiderupgrade'] = 'You have used {$a->used} ({$a->percentage}%) of your {$a->total} file storage quota. To get more file storage <a href="{$a->url}">upgrade to a larger plan</a>.';
+$string['user'] = 'User';
