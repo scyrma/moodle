@@ -40,25 +40,33 @@ final class db_rows extends IteratorIterator implements collection {
         $this->table = $table;
         $this->sortfield = $sortfield;
 
+        // See the comment on load_records for a bit more detail about
+        // what is going on here. See also the documentation for IteratorIterator
         parent::__construct(
+            // A function that yields returns an instance of Generator, which implements
+            // Iterator, so we can make an Iterator really easily using a self executing
+            // function and pass it to the IteratorIterator.
             (function() : Iterator {
                 foreach ($this->load_records() as $records) {
-                    foreach ($records as $record) {
-                        yield $record;
-                    }
+                    // See PHP "generator delegation" docs.
+                    yield from $records;
                 }
             })()
         );
     }
 
     public function get_count() : int {
-        return 7;
+        $this->db->count_records($this->table);
     }
 
-    public function get_all() : array{
-        return [];
-    }
-
+    // This method yields 100 records from the database at a time, what this means is
+    // that if the result of this function is used in a foreach loop, 100 DB records will
+    // be loaded on each iteration of the foreach loop.
+    //
+    // The intended way to use this is to iterate over this iterator, then yield
+    // each record in turn so that the consumer of this class can iterate over
+    // the records individually as if this was a regular flat collection of
+    // objects. PHP provides a class for doing exactly this, IteratorIterator.
     private function load_records(int $start = null) : Iterator {
         while ($records = $this->db->get_records(
             $this->table,
