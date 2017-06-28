@@ -40,27 +40,31 @@ $PAGE->set_context(\context_system::instance());
 echo $OUTPUT->header();
 
 echo \html_writer::start_tag('div');
-(function($quota, $used) {
-    $bytestohumanreadable = function(int $bytes) : string {
-        $index = floor(log($bytes, 1024));
-        return round($bytes/1024**$index, 2) . ' ' . ['B', 'KB', 'MB', 'GB'][$index];
-    };
-    echo get_string('usedquotaconsiderupgrade', 'tool_fileslist',
-                    (object)[
-                        'used' => $bytestohumanreadable($used),
-                        'percentage' => round(
-                            ($used / $quota) * 100,
-                            0,
-                            PHP_ROUND_HALF_UP
-                        ),
-                        'total' => $bytestohumanreadable($quota),
-                        'url' => (new \moodle_url('/auth/moodlecloud/portal.php'))->out()
-                    ]
-    );
-})(
-    ...defined('FILESTORAGE_QUOTA') ? [(int)FILESTORAGE_QUOTA, (int)\local_filestorage\file_storage\file_system_s3::unique_storage_size_used()]
-                                    : [209715200, rand(0,209715200)]
+
+// When developing locally, the quota stuff isn't available. So check for it here
+// and use it if present, otherwise just use 200MB and some random amount of usage between 0 and 200MB
+list($quota, $used) = defined('FILESTORAGE_QUOTA') ? [(int)FILESTORAGE_QUOTA, (int)\local_filestorage\file_storage\file_system_s3::unique_storage_size_used()]
+                                                   : [209715200, rand(0,209715200)];
+
+$bytestohumanreadable = function(int $bytes) : string {
+    $index = floor(log($bytes, 1024));
+    return round($bytes/1024**$index, 2) . ' ' . ['B', 'KB', 'MB', 'GB'][$index];
+};
+
+echo get_string('usedquotaconsiderupgrade',
+                'tool_fileslist',
+                (object)[
+                    'used' => $bytestohumanreadable($used),
+                    'percentage' => round(
+                        ($used / $quota) * 100,
+                        0,
+                        PHP_ROUND_HALF_UP
+                    ),
+                    'total' => $bytestohumanreadable($quota),
+                    'url' => (new \moodle_url('/auth/moodlecloud/portal.php'))->out()
+                ]
 );
+
 echo \html_writer::end_tag('div');
 
 echo $OUTPUT->render_from_template(
@@ -71,5 +75,6 @@ echo $OUTPUT->render_from_template(
         ]
     ]
 );
+
 echo $OUTPUT->footer();
 
