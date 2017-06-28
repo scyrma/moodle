@@ -30,5 +30,4 @@ use Iterator;
 
 interface collection extends Iterator {
     public function get_count() : int;
-    public function get_all() : array;
 }
