@@ -6,7 +6,7 @@ use core_user;
 use stdClass;
 
 final class container {
-    private static $usercache = [];
+    private static $usercache;
 
     public static function get_file_repository() : file_repository {
         global $DB;
@@ -15,9 +15,14 @@ final class container {
             new file_factory(
                 get_file_storage(),
                 function(int $uid) : stdClass {
-                    return self::$usercache[$uid] = self::$usercache[$uid] ?? core_user::get_user($uid);
+                    return self::get_userrecords()[$uid];
                 }
             )
         );
+    }
+
+    private static function get_userrecords() : array {
+        global $DB;
+        return self::$usercache = self::$usercache ?? ($DB->get_records_sql('SELECT DISTINCT u.* from {user} u INNER JOIN {files} f on u.id = f.userid'));
     }
 }
