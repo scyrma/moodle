@@ -1,3 +1,26 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * A javascript module to manage pagination of the files list.
+ *
+ * @module     tool_fileslist/paging_bar
+ * @package    tool_fileslist
+ * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 define(['jquery', 'tool_fileslist/fileslist', 'core/custom_interaction_events', 'core/templates'], function ($, FilesList, CustomEvents, Templates) {
     var SELECTORS = {
         PAGE_ITEM: '[data-region="page-item"]',
@@ -24,7 +47,7 @@ define(['jquery', 'tool_fileslist/fileslist', 'core/custom_interaction_events', 
                 $(e.currentTarget).parent().children(':first-child').addClass("disabled");
             }
 
-            if (num+1 == Math.round(+filesList.attr('data-num-items')/+filesList.attr('data-limit'))) {
+            if (num+1 == Math.ceil(+filesList.attr('data-num-items')/+filesList.attr('data-limit'))) {
                 $(e.currentTarget).parent().children(':last-child').addClass("disabled");
             } else {
                 $(e.currentTarget).parent().children(':last-child').removeClass("disabled");
@@ -34,7 +57,6 @@ define(['jquery', 'tool_fileslist/fileslist', 'core/custom_interaction_events', 
             data.originalEvent.preventDefault();
         });
     };
-
 
     return {
         init: function(root, filesList) {
