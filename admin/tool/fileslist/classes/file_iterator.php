@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Database row collection
+ * File iterator.
  *
- * @package    local_cloud
+ * @package    tool_fileslist
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,8 +26,24 @@ namespace tool_fileslist;
 
 defined('MOODLE_INTERNAL') || die();
 
-use Iterator;
+use IteratorIterator;
+use Traversable;
 
-interface collection extends Iterator {
-    public function get_count() : int;
+/**
+ * File iterator.
+ *
+ * No different to a regular iterator except that
+ * the current method has to return an instance of a file.
+ *
+ * @copyright 2017 Cameron Ball <cameron@cameron1729.xyz>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+final class file_iterator extends IteratorIterator {
+    public function __construct(Traversable $iterator) {
+        parent::__construct($iterator);
+    }
+
+    public function current() : file {
+        return parent::current();
+    }
 }

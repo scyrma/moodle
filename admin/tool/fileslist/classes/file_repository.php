@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Files list file API service.
+ * File repository.
  *
  * @package    tool_fileslist
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
@@ -24,29 +24,57 @@
 
 namespace tool_fileslist;
 
+defined('MOODLE_INTERNAL') || die();
+
 use CallbackFilterIterator;
+use Traversable;
 use moodle_database;
 use stdClass;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * File repository.
+ *
+ * This repository operates on a traversable collection of data, and
+ * transforms the data in to a file object via a factory.
+ *
+ * @copyright 2017 Cameron Ball <cameron@cameron1729.xyz>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 final class file_repository {
+    /**
+     * @var Traversable $collection The source collection to query for file data.
+     */
     private $collection;
+
+    /**
+     * @var file_factory $filefactory A file factory.
+     */
     private $filefactory;
 
+    /**
+     * Constructor.
+     *
+     * @param Traversable $collection The source collection to query for file data.
+     * @param file_factory $filefactory A file factory.
+     */
     public function __construct(
-        collection $collection,
+        Traversable $collection,
         file_factory $filefactory
     ) {
-        $this->collection = $collection;
         $this->filefactory = $filefactory;
+        $this->collection = $collection;
     }
 
-    public function get(callable $filter = null) : collection {
-        return new files_collection(
+    /**
+     * Get all the files.
+     *
+     * @param callable $filter An optional filter to filter out irellevant files.
+     * @return file_iterator
+     */
+    public function get(callable $filter = null) : file_iterator {
+        return new file_iterator(
             new mapping_iterator(
-                $filter ? new CallbackFilterIterator($this->collection, $filter)
-                        : $this->collection,
+                $filter ? new CallbackFilterIterator($this->collection, $filter) : $this->collection,
                 function(stdClass $filerecord) : file {
                     return $this->filefactory->create_instance($filerecord);
                 }
@@ -54,7 +82,14 @@ final class file_repository {
         );
     }
 
-    public function get_valid_files() : collection {
+    /**
+     * Get files we consider "valid".
+     *
+     * A valid file has: size, an associated user, and is not a reference file.
+     *
+     * @return file_iterator
+     */
+    public function get_valid_files() : file_iterator {
         return $this->get(function(stdClass $filerecord) : bool {
                 return !!$filerecord->filesize && !!$filerecord->userid && !$filerecord->referencefileid;
             }
