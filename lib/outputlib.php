@@ -60,6 +60,14 @@ function theme_reset_all_caches() {
         $cache->purge();
     }
 
+    // START MOODLECLOUD HACK.
+    $compiledscsscache = cache::make('core', 'compiledscss');
+    $compiledscsscache->purge();
+
+    $postprocessedcsscache = cache::make('core', 'postprocessedcss');
+    $postprocessedcsscache->purge();
+    // END MOODLECLOUD HACK.
+
     if ($PAGE) {
         $PAGE->reload_theme();
     }
@@ -882,6 +890,15 @@ class theme_config {
      */
     public function get_css_content() {
 
+        // START MOODLECLOUD HACK.
+        $cache = cache::make('core', 'postprocessedcss');
+        $key = $this->name . '_' . self::SCSS_KEY . '_' . ($this->rtlmode ? 'rtl' : 'ltr');
+
+        if ($processed = $cache->get($key)) {
+            return $processed;
+        }
+        // END MOODLECLOUD HACK.
+
         $csscontent = '';
         foreach ($this->get_css_files(false) as $type => $value) {
             foreach ($value as $identifier => $val) {
@@ -905,6 +922,9 @@ class theme_config {
         $csscontent = $this->post_process($csscontent);
         $csscontent = core_minify::css($csscontent);
 
+        // START MOODLECLOUD HACK.
+        $cache->set($key, $csscontent);
+        // END MOODLECLOUD HACK.
         return $csscontent;
     }
 
@@ -1207,6 +1227,15 @@ class theme_config {
             throw new coding_exception('The theme did not define a SCSS file, or it is not readable.');
         }
 
+        // START MOODLECLOUD HACK.
+        $cache = cache::make('core', 'compiledscss');
+        $key = $this->name . '_' . self::SCSS_KEY;
+
+        if ($compiled = $cache->get($key)) {
+            return $compiled;
+        }
+        // END MOODLECLOUD HACK.
+
         // We might need more memory/time to do this, so let's play safe.
         raise_memory_limit(MEMORY_EXTRA);
         core_php_time_limit::raise(300);
@@ -1226,6 +1255,9 @@ class theme_config {
             // Compile!
             $compiled = $compiler->to_css();
 
+            // START MOODLECLOUD HACK.
+            $cache->set($key, $compiled);
+            // END MOODLECLOUD HACK.
         } catch (\Leafo\ScssPhp\Exception $e) {
             $compiled = false;
             debugging('Error while compiling SCSS: ' . $e->getMessage(), DEBUG_DEVELOPER);

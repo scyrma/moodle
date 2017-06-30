@@ -38,6 +38,9 @@ $string['cacheadmin'] = 'Cache administration';
 $string['cacheconfig'] = 'Configuration';
 $string['cachedef_calendar_subscriptions'] = 'Calendar subscriptions';
 $string['cachedef_capabilities'] = 'System capabilities list';
+// START MOODLECLOUD HACK.
+$string['cachedef_compiledscss'] = 'Compiled SCSS';
+// END MOODLECLOUD HACK.
 $string['cachedef_config'] = 'Config settings';
 $string['cachedef_coursecat'] = 'Course categories lists for particular user';
 $string['cachedef_coursecatrecords'] = 'Course categories records';
@@ -60,6 +63,7 @@ $string['cachedef_navigation_expandcourse'] = 'Navigation expandable courses';
 $string['cachedef_observers'] = 'Event observers';
 $string['cachedef_plugin_functions'] = 'Plugins available callbacks';
 $string['cachedef_plugin_manager'] = 'Plugin info manager';
+$string['cachedef_postprocessedcss'] = 'Post processed CSS';
 $string['cachedef_tagindexbuilder'] = 'Search results for tagged items';
 $string['cachedef_questiondata'] = 'Question definitions';
 $string['cachedef_repositories'] = 'Repositories instances data';

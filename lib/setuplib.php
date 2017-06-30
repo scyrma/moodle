@@ -232,6 +232,11 @@ class required_capability_exception extends moodle_exception {
         } else {
             $link = $context->get_url();
         }
+        // BEGIN MOODLECLOUD HACK.
+        if (local_moodlecloud\restrictions\capability::capability_is_restricted_by_quota($capability)) {
+            $capabilityname .= ' - Quota limits have been exceeded.';
+        }
+        // END MOODLECLOUD HACK.
         parent::__construct($errormessage, $stringfile, $link, $capabilityname);
     }
 }
@@ -369,6 +374,10 @@ function default_exception_handler($ex) {
         redirect(get_login_url());
     }
 
+    // START MOODLECLOUD HACK.
+    local_logging\logger::log(get_class($ex), array('exception' => $ex), 'exceptions');
+    // END MOODLECLOUD HACK.
+
     $info = get_exception_info($ex);
 
     if (debugging('', DEBUG_MINIMAL)) {
@@ -425,6 +434,26 @@ function default_error_handler($errno, $errstr, $errfile, $errline, $errcontext)
         //fatal catchable error
         throw new coding_exception('PHP catchable fatal error', $errstr);
     }
+
+    // START MOODLECLOUD HACK.
+    if (error_reporting() !== 0 && strpos($errfile, 'local/logging') === false) {
+        $logerror = true;
+        $logerror = $logerror && strpos($errfile, '/typo3/') === false;
+
+        if ($logerror) {
+            // Do not log issues with the logging itself, or if the errors are surpressed.
+            $exception = array('exceptions' => array(
+                'errno' => $errno,
+                'errstr' => $errstr,
+                'errfile' => $errfile,
+                'errline' => $errline,
+                // Note: Do not include the errcontext here - things get circular.
+            ));
+            local_logging\logger::log($errstr, $exception, 'exceptions', \Monolog\Logger::ERROR);
+        }
+    }
+    // END MOODLECLOUD HACK.
+
     return false;
 }
 
