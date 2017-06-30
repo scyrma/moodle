@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Files list controller.
+ * Files list index.
  *
  * @package    tool_fileslist
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
@@ -25,20 +25,15 @@
 namespace tool_fileslist;
 
 use moodle_url;
-use local_cloud\db_row_collection_factory;
 
 require_once('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 admin_externalpage_setup('tool_fileslist/files');
 
-global $OUTPUT;
-global $DB;
-
 $PAGE->set_context(\context_system::instance());
 
 echo $OUTPUT->header();
-
 echo \html_writer::start_tag('div');
 
 // When developing locally, the quota stuff isn't available. So check for it here
@@ -61,7 +56,7 @@ echo get_string('usedquotaconsiderupgrade',
                         PHP_ROUND_HALF_UP
                     ),
                     'total' => $bytestohumanreadable($quota),
-                    'url' => (new \moodle_url('/auth/moodlecloud/portal.php'))->out()
+                    'url' => (new moodle_url('/auth/moodlecloud/portal.php'))->out()
                 ]
 );
 
