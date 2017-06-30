@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'tool_fileslist_get_files_list' => [
+    'tool_fileslist_get_files_by_size' => [
         'classname' => 'tool_fileslist_external',
-        'methodname' => 'get_files_list',
+        'methodname' => 'get_files_by_size',
         'description' => 'Get all uploaded files',
         'type' => 'read',
         'capabilities' => 'tool\fileslist:viewlist',
