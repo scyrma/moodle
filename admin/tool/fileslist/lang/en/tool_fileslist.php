@@ -34,3 +34,4 @@ $string['size'] = 'Size';
 $string['type'] = 'Type';
 $string['usedquotaconsiderupgrade'] = 'You have used {$a->used} ({$a->percentage}%) of your {$a->total} file storage quota. To get more file storage <a href="{$a->url}">upgrade to a larger plan</a>.';
 $string['user'] = 'User';
+$string['listoffiles'] = 'Here is a list of the files, sorted by size (biggest to smallest):';
