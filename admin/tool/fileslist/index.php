@@ -24,6 +24,7 @@
 
 namespace tool_fileslist;
 
+use html_writer;
 use moodle_url;
 
 require_once('../../../config.php');
@@ -60,7 +61,11 @@ echo get_string('usedquotaconsiderupgrade',
                 ]
 );
 
-echo \html_writer::end_tag('div');
+echo html_writer::start_tag('br');
+echo html_writer::end_tag('br');
+
+echo get_string('listoffiles', 'tool_fileslist');
+echo html_writer::end_tag('div');
 
 echo $OUTPUT->render_from_template(
     'tool_fileslist/main',
