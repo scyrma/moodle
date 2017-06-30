@@ -24,15 +24,35 @@
 
 namespace tool_fileslist;
 
-use moodle_database;
-use IteratorIterator;
-use Iterator;
+defined('MOODLE_INTERNAL') || die();
 
-final class db_rows extends IteratorIterator implements collection {
+use Generator;
+use Iterator;
+use IteratorIterator;
+use moodle_database;
+
+/**
+ * Class representing rows of data from the Moodle database.
+ *
+ * @copyright 2017 Cameron Ball <cameron@cameron1729.xyz>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+final class db_rows extends IteratorIterator {
     CONST QUERY_LIMIT = 100;
 
+    /**
+     * @var moodle_database $db Moodle database connection.
+     */
     private $db;
+
+    /**
+     * @var string $table Table which the rows are from.
+     */
     private $table;
+
+    /**
+     * @var string $sortfield Field to sort on.
+     */
     private $sortfield;
 
     public function __construct(moodle_database $db, string $table, string $sortfield = null) {
@@ -55,10 +75,6 @@ final class db_rows extends IteratorIterator implements collection {
         );
     }
 
-    public function get_count() : int {
-        $this->db->count_records($this->table);
-    }
-
     // This method yields 100 records from the database at a time, what this means is
     // that if the result of this function is used in a foreach loop, 100 DB records will
     // be loaded on each iteration of the foreach loop.
@@ -67,7 +83,7 @@ final class db_rows extends IteratorIterator implements collection {
     // each record in turn so that the consumer of this class can iterate over
     // the records individually as if this was a regular flat collection of
     // objects. PHP provides a class for doing exactly this, IteratorIterator.
-    private function load_records(int $start = null) : Iterator {
+    private function load_records(int $start = null) : Generator {
         while ($records = $this->db->get_records(
             $this->table,
             null,
