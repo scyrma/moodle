@@ -1,0 +1,288 @@
+.block_xp .current-level {
+    background: url([[pix:block_xp|10]]) no-repeat;
+    color: #fff;
+    font-size: 4em;
+    height: 100px;
+    line-height: 110px;
+    margin: 10px auto;
+    text-align: center;
+    width: 100px;
+}
+
+.block_xp .level-1 {
+    background-image: url([[pix:block_xp|1]]);
+}
+.block_xp .level-2 {
+    background-image: url([[pix:block_xp|2]]);
+}
+.block_xp .level-3 {
+    background-image: url([[pix:block_xp|3]]);
+}
+.block_xp .level-4 {
+    background-image: url([[pix:block_xp|4]]);
+}
+.block_xp .level-5 {
+    background-image: url([[pix:block_xp|5]]);
+}
+.block_xp .level-6 {
+    background-image: url([[pix:block_xp|6]]);
+}
+.block_xp .level-7 {
+    background-image: url([[pix:block_xp|7]]);
+}
+.block_xp .level-8 {
+    background-image: url([[pix:block_xp|8]]);
+}
+.block_xp .level-9 {
+    background-image: url([[pix:block_xp|9]]);
+}
+
+.block_xp .level-badge {
+    background: none;
+    height: auto;
+    width: auto;
+}
+.block_xp .level-badge img {
+    width: 100px;
+}
+
+.block_xp .description {
+    font-size: 0.9em;
+}
+.block_xp .footer {
+    font-size: 0.9em;
+}
+
+/** Use over defined class name to re-use it through the block pages. */
+.block_xp-level-progress {
+    background-color: #ccc;
+    border-radius: 5px;
+    height: 25px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    max-width: 200px;
+    position: relative;
+}
+.block_xp-level-progress .bar {
+    background-color: green;
+    border-radius: 5px;
+    height: 25px;
+}
+.block_xp-level-progress .txt {
+    color: #fff;
+    font-size: 10px;
+    left: 0;
+    line-height: 25px;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 100%;
+}
+
+/** Using !important because of super-qualified rules to bypass. */
+.path-blocks-xp table .highlight > td{
+    background-color: #D9EDF7 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/**
+ * Like notice.
+ */
+.block-xp-notices .close {
+    display: none;
+}
+.block-xp-notices .dismiss-action {
+    float: right;
+}
+.dir-rtl .block-xp-notices .dismiss-action {
+    float: left;
+}
+
+/**
+ * Notification dialogue.
+ */
+
+.block_xp-notification-hidden {
+    display: none;
+}
+.block_xp-notification .moodle-dialogue-bd,
+.block_xp-notification .moodle-dialogue-ft {
+    text-align: center !important; /* stylelint-disable-line declaration-no-important */
+}
+.block_xp-notification .level-headline {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+.block_xp-notification .moodle-dialogue-ft button {
+    /* Helps centering the button in the dialogue */
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/**
+ * Rule picker dialogue.
+ */
+.block_xp-rulepicker-hidden {
+    display: none;
+}
+.block_xp-rulepicker-content {
+    text-align: center;
+}
+
+/**
+ * Rules pages.
+ *
+ * Note: We find the very first rule using .filter-rules > .rule
+ */
+.block-xp-filters-wrapper ul {
+    list-style: none;
+}
+.block-xp-filters-wrapper p,
+.block-xp-filters-wrapper ul,
+.block-xp-filters-wrapper ul.filters-list,  /** Made more specific for RTL. */
+.block-xp-filters-wrapper input[type],
+.block-xp-filters-wrapper select {
+    margin: 0;
+}
+.block-xp-filters-wrapper .filter-rules {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+.block-xp-filters-wrapper .filter {
+    border: 1px solid #ddd;
+    margin: 10px 0;
+    padding: 8px 4px;
+}
+.block-xp-filters-wrapper .filter-add {
+    margin: 10px 0;
+}
+.block-xp-filters-wrapper .rule-rules {
+    margin-left: 35px;
+}
+.block-xp-filters-wrapper .filter-rules > .rule {
+    border: 0;
+    padding-left: 0;
+}
+.block-xp-filters-wrapper .filter-rules > .rule::before {
+    border: 0;
+}
+.block-xp-filters-wrapper .filter-rules > .rule > .rule-rules {
+    margin-left: 20px;
+}
+.block-xp-filters-wrapper .filter-rules > .rule > .rule-definition {
+    line-height: 40px;
+    padding-left: 5px;
+}
+.block-xp-filters-wrapper .rule-type-ruleset,
+.block-xp-filters-wrapper .rule-type-ruleset .rule-rules > .rule:first-child {
+    padding-top: 5px;
+}
+.block-xp-filters-wrapper .rule-type-ruleset > .rule-definition {
+    background-color: #f1f1f1;
+    padding-bottom: 2px;
+}
+.block-xp-filters-wrapper .rule-rules .rule {
+    border-left: 1px dotted #ccc;
+    line-height: 40px;
+    min-height: 40px;
+    padding-left: 15px;
+    position: relative;
+}
+.block-xp-filters-wrapper .rule-rules .rule::before {
+    border-top: 1px dotted #ccc;
+    content: "";
+    display: block;
+    left: 0;
+    position: absolute;
+    top: 20px;
+    width: 15px;
+}
+.block-xp-filters-wrapper .rule-type-ruleset .rule-rules > .rule:first-child::before,
+.block-xp-filters-wrapper .rule.rule-type-ruleset::before {
+    top: 25px;
+}
+.block-xp-filters-wrapper .rule-add {
+    padding: 10px 17px;
+    position: relative;
+}
+.block-xp-filters-wrapper .rule-add::before,
+.block-xp-filters-wrapper .rule-rules .rule:last-child::before {
+    border-bottom: 1px dotted #ccc;
+    border-left: 1px dotted #ccc;
+    border-top: 0;
+    content: "";
+    display: block;
+    height: 20px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 15px;
+}
+.block-xp-filters-wrapper .rule-rules .rule:last-child {
+    border: 0;
+}
+.block-xp-filters-wrapper .rule-move,
+.block-xp-filters-wrapper .filter-move {
+    cursor: move;
+}
+.block-xp-filters-wrapper .filter-rules > .rule > .rule-definition .rule-delete,
+.block-xp-filters-wrapper .filter-rules > .rule > .rule-definition .rule-move {
+    /** Hide the move/delete button on the top rule. */
+    display: none;
+}
+
+/** Readonly filters. */
+.block-xp-filters-wrapper .filters-readonly .filter {
+    padding: 10px;
+}
+.block-xp-filters-wrapper .filters-readonly .filter-rules > .rule > .rule-definition,
+.block-xp-filters-wrapper .filters-readonly .rule-rules .rule {
+    line-height: 30px;
+    min-height: 30px;
+}
+.block-xp-filters-wrapper .filters-readonly .filter-rules > .rule > .rule-definition {
+    padding: 0 10px;
+}
+.block-xp-filters-wrapper .filters-readonly .rule-type-ruleset .rule-rules > .rule:first-child::before,
+.block-xp-filters-wrapper .filters-readonly .rule.rule-type-ruleset::before {
+    top: 20px;
+}
+.block-xp-filters-wrapper .filters-readonly .rule-rules .rule::before {
+    top: 15px;
+}
+.block-xp-filters-wrapper .filters-readonly .rule-rules .rule:last-child::before {
+    top: 0;
+    height: 15px;
+}
+
+/** RTL styles. */
+.dir-rtl .block-xp-filters-wrapper .filter-rules {
+    margin-left: 0;
+    margin-right: 20px;
+}
+.dir-rtl .block-xp-filters-wrapper .rule-rules {
+    margin-left: 0;
+    margin-right: 40px;
+}
+.dir-rtl .block-xp-filters-wrapper .filter-rules > .rule > .rule-rules {
+    margin-left: 0;
+    margin-right: 20px;
+}
+.dir-rtl .block-xp-filters-wrapper .filter-rules > .rule > .rule-definition {
+    padding-left: 0;
+    padding-right: 5px;
+}
+.dir-rtl .block-xp-filters-wrapper .rule-rules .rule {
+    border-left: 0;
+    border-right: 1px dotted #ccc;
+    padding-left: 0;
+    padding-right: 15px;
+}
+.dir-rtl .block-xp-filters-wrapper .rule-rules .rule::before {
+    right: 0;
+}
+.dir-rtl .block-xp-filters-wrapper .rule-add::before,
+.dir-rtl .block-xp-filters-wrapper .rule-rules .rule:last-child::before {
+    border-left: 0;
+    border-right: 1px dotted #ccc;
+    right: 0;
+}
