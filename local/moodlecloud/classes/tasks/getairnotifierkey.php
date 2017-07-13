@@ -11,7 +11,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class getairnotifierkey extends adhoc_task {
     public function execute() {
-        global $DB;
+        global $DB, $CFG;
 
         $registered = $DB->count_records('registration_hubs', array('huburl' => HUB_MOODLEORGHUBURL, 'confirmed' => 1));
 
