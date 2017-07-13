@@ -5,6 +5,7 @@ use core\task\adhoc_task;
 use core\task\manager;
 use moodle_url;
 use curl;
+use local_logging\logger;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -24,16 +25,40 @@ class register extends adhoc_task {
 
         // Check for valid DNS.
         if ($this->is_dns_valid($huburl)) {
+            logger::log(get_class($this), [
+                'eventname' => 'registration',
+                'component' => 'local_moodlecloud',
+                'other' => 'DNS is valid. Registering.',
+            ], 'registration');
             mtrace("Moodlecloud Registration ({$huburl}): DNS is valid. Registering.");
             $hub = $DB->get_record('registration_hubs', array('huburl' => $huburl));
             if (!$hub) {
+                logger::log(get_class($this), [
+                    'eventname' => 'registration',
+                    'component' => 'local_moodlecloud',
+                    'other' => 'Hub not found. Configuring',
+                ], 'registration');
                 mtrace("Moodlecloud Registration ({$huburl}): Hub not found. Configuring");
                 // We haven't created the hub at all yet.
                 $this->configure($huburl);
             }
 
-            $this->register($huburl);
+            $ret = $this->register($huburl);
+            if (!$ret) {
+                logger::log(get_class($this), [
+                    'eventname' => 'registration',
+                    'component' => 'local_moodlecloud',
+                    'other' => 'Registration failed, queueing self again.',
+                ], 'registration');
+
+                manager::queue_adhoc_task(new register());
+            }
         } else {
+            logger::log(get_class($this), [
+                'eventname' => 'registration',
+                'component' => 'local_moodlecloud',
+                'other' => 'DNS not yet valid. Queueing self again.',
+            ], 'registration');
             mtrace("Moodlecloud Registration ({$huburl}): DNS not yet valid. Queueing self again.");
             manager::queue_adhoc_task(new register());
         }
@@ -106,7 +131,25 @@ class register extends adhoc_task {
                 'CURLOPT_SSL_VERIFYPEER' => 0,
                 'CURLOPT_SSL_VERIFYHOST' => 0,
             ]);
-            $curl->get($url->out(false));
+            $ret = $curl->get($url->out(false));
+
+            if ($errno = $curl->get_errno()) {
+                logger::log(get_class($this), [
+                    'eventname' => 'registration',
+                    'component' => 'local_moodlecloud',
+                    'other' => "Error $errno while registering: ". serialize($ret),
+                ], 'registration');
+
+                return false;
+            } else {
+                logger::log(get_class($this), [
+                    'eventname' => 'registration',
+                    'component' => 'local_moodlecloud',
+                    'other' => 'Registration successful: '. serialize($ret),
+                ], 'registration');
+
+                return true;
+            }
         }
     }
 
