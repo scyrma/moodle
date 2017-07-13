@@ -145,7 +145,8 @@ class register extends adhoc_task {
                 logger::log(get_class($this), [
                     'eventname' => 'registration',
                     'component' => 'local_moodlecloud',
-                    'other' => 'Registration successful: '. serialize($ret),
+                    // limit log to less than 8k, to prevent wrapping text on logentries - keep only meaningful part at the beginning.
+                    'other' => 'Registration successful: '. substr(serialize($ret), 0, 7000),
                 ], 'registration');
 
                 return true;
