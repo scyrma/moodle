@@ -495,7 +495,13 @@ class file_system_s3 extends \file_system {
             // string for the path would be saved as the file content.
             $fh = fopen($sourcefile, 'r');
 
-            self::$client->upload(self::$bucket, $key, $fh);
+            // New server side encryption option
+            $options = ['params' => ['ServerSideEncryption' => 'AES256']];
+
+            // ACL to apply to the object (default: private)
+            $acl = 'private';
+
+            self::$client->upload(self::$bucket, $key, $fh, $acl, $options);
 
             // Note: No need to fclose here. The AWS API does it as part of the upload.
         }
