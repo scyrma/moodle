@@ -77,6 +77,11 @@ final class file_factory {
                 // NB: \stored_file is _Moodle's_ stored file, not our implementation of the file interface.
                 // It is the same instance from the call to get_file_instance above.
                 ->push_from_callable(function(\stored_file $innermoodlestoredfile, array_builder $builder) {
+                    // Backups can have a course context ID or something. Exlcude those.
+                    if ($builder->get(3)  == 'backup') {
+                        return new moodle_url(null);
+                    }
+
                     if ($builder->get(2) instanceof context_module ||
                         $builder->get(2) instanceof context_course
                     ) {
