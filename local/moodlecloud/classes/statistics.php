@@ -132,6 +132,7 @@ FROM (
     FROM {files}
     WHERE referencefileid IS NULL
        AND component <> 'tool_recyclebin'
+       AND (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup')
     {$where}
     GROUP BY filesize, contenthash
 ) AS f;
@@ -159,7 +160,10 @@ FROM (
         filesize,
         regexp_replace(mimetype, '/.+\$', '') AS mimetype
     FROM {files}
-    WHERE filesize > 0
+    WHERE filesize > 0 AND
+       referencefileid IS NULL AND
+       component <> 'tool_recyclebin' AND
+       (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup')
     {$where}
     GROUP BY filesize, regexp_replace(mimetype, '/.+\$', ''), contenthash
 ) iq
