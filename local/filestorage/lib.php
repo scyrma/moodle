@@ -8,6 +8,11 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
         return;
     }
 
+    // Sometimes the new file will be null (example, directory creation).
+    if (!$newfile) {
+        return;
+    }
+
     if ($newfile->component == 'tool_recyclebin') {
         return;
     }
@@ -17,6 +22,11 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
     }
 
     $filesize = $fileinfo['content'] ? strlen($fileinfo['content']) : filesize($fileinfo['pathname']);
+
+    // If somehow we get here and the filesize is still zero just quit. It won't affect the quota.
+    if ($filesize === 0) {
+        return;
+    }
 
     $current = file_system_s3::unique_storage_size_used();
 
