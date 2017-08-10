@@ -44,7 +44,9 @@ define(['jquery', 'core/ajax'], function($, Ajax) {
                     cachedResponse = {
                         files: response.files
                             .filter(function(file) {
-                                return file.filearea != 'draft';
+                                return file.filearea != 'draft' &&
+                                       file.component != 'tool_recyclebin' &&
+                                       (file.component != 'backup' || file.mimetype != 'application/vnd.moodle.backup');
                             })
                     };
                     return cachedResponse;
