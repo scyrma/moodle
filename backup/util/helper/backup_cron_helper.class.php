@@ -83,13 +83,6 @@ abstract class backup_cron_automated_helper {
 
         mtrace("Checking automated backup status",'...');
 
-        // MOODLECLOUD HACK START
-        if (\local_filestorage\file_storage\file_system_s3::unique_storage_size_used() >= FILESTORAGE_QUOTA) {
-            mtrace("This site is over the defined filestorage quota. automated backups disabled.");
-            return backup_cron_automated_helper::STATE_DISABLED;
-        }
-        // MOODLECLOUD HACK END
-
         $state = backup_cron_automated_helper::get_automated_backup_state($rundirective);
         if ($state === backup_cron_automated_helper::STATE_DISABLED) {
             mtrace('INACTIVE');

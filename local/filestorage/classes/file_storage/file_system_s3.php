@@ -410,8 +410,6 @@ class file_system_s3 extends \file_system {
             return [$contenthash, $filesize, true];
         }
 
-        self::check_file_within_quota([$contenthash, $filesize, true]);
-
         return $this->push_to_s3($pathname, $contenthash, $filesize);
     }
 
@@ -434,8 +432,6 @@ class file_system_s3 extends \file_system {
 
         $filepath = $this->get_local_path_from_hash($contenthash, false);
         file_put_contents($filepath, $content);
-
-        self::check_file_within_quota([$contenthash, $filesize, true]);
 
         return $this->push_to_s3($filepath, $contenthash, $filesize);
     }
@@ -520,28 +516,6 @@ class file_system_s3 extends \file_system {
     }
 
     /**
-     * Check whether a file is within the file system quota.
-     *
-     * @param $result
-     * @return void
-     * @throws quota_exception
-     */
-    protected function check_file_within_quota($result) {
-        global $DB;
-        if (defined('FILESTORAGE_QUOTA')) {
-            list($contenthash, $filesize, $newfile) = $result;
-
-            // Cannot rely upon $newfile as the file may not exist on the local file system.
-            if (!$DB->record_exists('files', array('contenthash' => $contenthash))) {
-                $current = self::unique_storage_size_used();
-                if (($current + $filesize) > FILESTORAGE_QUOTA) {
-                    throw new quota_exception($current, $filesize);
-                }
-            }
-        }
-    }
-
-    /**
      * Determine the current unique file storage size.
      *
      * @return int
@@ -560,6 +534,7 @@ class file_system_s3 extends \file_system {
                                FROM {files}
                               WHERE filearea <> 'draft' AND
                                      component <> 'tool_recyclebin' AND
+                                     (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND
                                      referencefileid IS NULL
                            GROUP BY filesize, contenthash
               ) AS f");
