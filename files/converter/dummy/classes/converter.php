@@ -43,8 +43,7 @@ class converter implements converter_interface {
         // set_sourcefile is a hack to make the document converter API think it's reconverting the same
         // file every time. This makes it clean up old records in the files table so the user's quota
         // shouldn't get taken up by a million placeholder PDFs.
-        $conversion->set_sourcefile(get_file_storage()->get_file_by_id(1))
-                   ->store_destfile_from_path($CFG->dirroot . '/files/converter/dummy/placeholder.pdf')
+        $conversion->store_destfile_from_path($CFG->dirroot . '/files/converter/dummy/placeholder.pdf')
                    ->set('status', conversion::STATUS_COMPLETE)
                    ->set('statusmessage', 'Can I hab a ubrgrade pls?')
                    ->update();
