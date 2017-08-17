@@ -143,7 +143,7 @@ class converter implements converter_interface {
         return !empty($CFG->cloudconvertapikey);
     }
 
-    public static function supports(string $from, string $to) : bool {
+    public static function supports($from, $to) : bool {
         return
             // Is the input format accepted?
             in_array(\core_filetypes::get_types()[$from]['type'], self::get_supported_mimetypes()) &&
