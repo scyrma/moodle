@@ -326,6 +326,105 @@ function xmldb_block_xp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2017021401, 'xp');
     }
 
+    if ($oldversion < 2017062900) {
+
+        // Define field defaultfilters to be added to block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('defaultfilters', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1', 'neighbours');
+
+        // Conditionally launch add field defaultfilters.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2017062900, 'xp');
+    }
+
+    if ($oldversion < 2017062901) {
+
+        // Although this should have been done when adding the database field, here
+        // we ensure that existing instances of the block will be set to the 'static'
+        // flag for default filters. This ensures that they are properly marked as
+        // legacy instances, so that we can convert them on the fly later on.
+        define('BLOCK_XP_UPGRADE_DEFAULT_FILTERS_STATIC', 1);
+        $DB->set_field('block_xp_config', 'defaultfilters', BLOCK_XP_UPGRADE_DEFAULT_FILTERS_STATIC);
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2017062901, 'xp');
+    }
+
+    if ($oldversion < 2017070400) {
+
+        // Define field laddercols to be added to block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('laddercols', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, 'xp,progress', 'defaultfilters');
+
+        // Conditionally launch add field laddercols.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2017070400, 'xp');
+    }
+
+    if ($oldversion < 2017071601) {
+
+        // Find what courses were set to, and use that for our admin setting.
+        $keeplogsforever = $DB->record_exists('block_xp_config', ['keeplogs' => 0]);
+        $keeplogsmax = (int) $DB->get_field('block_xp_config', 'MAX(keeplogs)', []);
+        set_config('keeplogs', $keeplogsforever ? 0 : $keeplogsmax, 'block_xp');
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2017071601, 'xp');
+    }
+
+    if ($oldversion < 2017071602) {
+
+        // Define field enablelog to be dropped from block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('enablelog');
+
+        // Conditionally launch drop field enablelog.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2017071602, 'xp');
+    }
+
+    if ($oldversion < 2017071603) {
+
+        // Define field keeplogs to be dropped from block_xp_config.
+        $table = new xmldb_table('block_xp_config');
+        $field = new xmldb_field('keeplogs');
+
+        // Conditionally launch drop field keeplogs.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2017071603, 'xp');
+    }
+
+    if ($oldversion < 2017082000) {
+
+        // Some webservices were broken because we introduced a format of user
+        // preferences which was not supported. Any preference that was introduced
+        // with the former name needs to be removed. See MDL-59876.
+        $like = $DB->sql_like('name', ':name');
+        $sql = "DELETE FROM {user_preferences}
+                      WHERE $like";
+        $params = ['name' => 'block_xp|%'];
+        $DB->execute($sql, $params);
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2017082000, 'xp');
+    }
+
     return true;
 
 }

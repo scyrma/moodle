@@ -27,9 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Block XP manager class.
  *
+ * Empty class kept for compatibility with plugins connecting with it.
+ *
  * @package    block_xp
  * @copyright  2014 Frédéric Massart
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or latern
+ * @deprecated Since 3.0.0
  */
 class block_xp_manager {
 
@@ -95,15 +98,6 @@ class block_xp_manager {
     /** @var context The context related to this manager.*/
     protected $context;
 
-    /** @var block_xp_filter_manager Cache of the manager. */
-    protected $filtermanager;
-
-    /** @var array Cache of levels and their required XP. */
-    protected $levels;
-
-    /** @var bool Whether or not to trigger events, for instance when the user levels up. */
-    protected $triggereevents = true;
-
     /**
      * Constructor.
      *
@@ -111,84 +105,17 @@ class block_xp_manager {
      * @return void
      */
     protected function __construct($courseid) {
-        global $CFG;
-
-        $courseid = intval($courseid);
-        if ($CFG->block_xp_context == CONTEXT_SYSTEM && $courseid != SITEID) {
-            throw new coding_exception('Unexpected course ID.');
-        }
-
-        if ($courseid == SITEID) {
-            $this->context = context_system::instance();
-        } else {
-            $this->context = context_course::instance($courseid);
-        }
-
-        $this->courseid = $courseid;
+        $this->context = context_system::instance();
+        $this->courseid = SITEID;
     }
 
     /**
      * Check wether or not the user can capture this event.
      *
-     * This method is there to prevent a user from refreshing a page
-     * 200x times to get more experience points. For simplicity, and performance
-     * reason, this does not handle multiple sessions at the same time.
-     *
-     * It also prevents a user from opening too many pages at the same time
-     * by limiting the number of events for a given time. This might potentially lead
-     * to ignoring some events in legit situations if the user is quick.
-     *
-     * This method has not been designed to check if the user has capabilities
-     * to capture the event or not, those checks should be done in the observer
-     * for performance reasons.
-     *
      * @return bool True when the event is OK.
      */
     protected function can_capture_event(\core\event\base $event) {
-        global $SESSION;
-
-        $now = time();
-        $maxcount = 64;
-        $maxactions = $this->get_config('maxactionspertime');
-        $maxtime = $this->get_config('timeformaxactions');
-
-        $actiontime = $this->get_config('timebetweensameactions');
-        $actionkey = $event->eventname . ':' . $event->contextid . ':' . $event->objectid . ':' . $event->relateduserid;
-
-        // Init the session variable.
-        if (!isset($SESSION->block_xp_cheatguard)) {
-            $SESSION->block_xp_cheatguard = array();
-        }
-
-        // Actions per time.
-        if (count($SESSION->block_xp_cheatguard) > $maxactions) {
-            $actions = array_reverse($SESSION->block_xp_cheatguard, true);
-            $count = 0;
-            foreach ($actions as $action => $time) {
-                $count++;
-                if ($count > $maxactions && $time > $now - $actiontime) {
-                    // Too many actions within $actiontime.
-                    return false;
-                }
-            }
-        }
-
-        if (isset($SESSION->block_xp_cheatguard[$actionkey])) {
-            if ($SESSION->block_xp_cheatguard[$actionkey] > $now - $actiontime) {
-                // The key was found and the time has not expired, cheater spotted.
-                return false;
-            }
-        }
-
-        // Unset the value to re-add it at the end of the array.
-        unset($SESSION->block_xp_cheatguard[$actionkey]);
-
-        // Log the time at which this event happened.
-        $SESSION->block_xp_cheatguard[$actionkey] = time();
-
-        // Limit the array of events to $maxcount, we do not want to flood the session for no reason.
-        $SESSION->block_xp_cheatguard = array_slice($SESSION->block_xp_cheatguard, -$maxcount, null, true);
-        return true;
+        return false;
     }
 
     /**
@@ -197,7 +124,7 @@ class block_xp_manager {
      * @return bool
      */
     public function can_manage() {
-        return has_capability('block/xp:addinstance', $this->context);
+        return false;
     }
 
     /**
@@ -206,7 +133,7 @@ class block_xp_manager {
      * @return bool
      */
     public function can_view() {
-        return has_capability('block/xp:view', $this->context) || $this->can_manage();
+        return false;
     }
 
     /**
@@ -215,10 +142,7 @@ class block_xp_manager {
      * @return bool
      */
     public function can_view_infos_page() {
-        if (!$this->get_config('enableinfos')) {
-            return $this->can_manage();
-        }
-        return $this->can_view();
+        return false;
     }
 
     /**
@@ -227,10 +151,7 @@ class block_xp_manager {
      * @return bool
      */
     public function can_view_ladder_page() {
-        if (!$this->get_config('enableladder')) {
-            return $this->can_manage();
-        }
-        return $this->can_view();
+        return false;
     }
 
 
@@ -241,44 +162,6 @@ class block_xp_manager {
      * @return void
      */
     public function capture_event(\core\event\base $event) {
-        global $CFG, $DB;
-
-        if ($CFG->block_xp_context != CONTEXT_SYSTEM && $event->courseid != $this->courseid) {
-            throw new coding_exception('Event course ID does not match block course ID');
-        }
-
-        // The capture has not been enabled yet.
-        if (!$this->is_enabled()) {
-            return;
-        }
-
-        if ($this->get_config('enablecheatguard')) {
-            // Check if the user can capture this event, anti cheater method.
-            if (!$this->can_capture_event($event)) {
-                return;
-            }
-        }
-
-        $userid = $event->userid;
-        $points = $this->get_xp_from_event($event);
-
-        // No need to go through the following if the user did not gain XP.
-        if ($points > 0) {
-            if ($DB->count_records('block_xp', array('courseid' => $this->courseid, 'userid' => $userid)) > 0) {
-                $DB->execute('UPDATE {block_xp} SET xp = xp + :xp WHERE courseid = :courseid AND userid = :userid',
-                    array('xp' => $points, 'courseid' => $this->courseid, 'userid' => $userid));
-            } else {
-                $record = new stdClass();
-                $record->courseid = $this->courseid;
-                $record->userid = $userid;
-                $record->xp = $points;
-                $DB->insert_record('block_xp', $record);
-            }
-            $this->update_user_level($userid);
-        }
-
-        // Log the event.
-        $this->log_event($event->eventname, $userid, $points);
     }
 
     /**
@@ -293,18 +176,7 @@ class block_xp_manager {
      * @return block_xp_manager The instance of the manager.
      */
     public static function get($courseid, $forcereload = false) {
-        global $CFG;
-
-        // When the block was set up for the whole site we attach it to the site course.
-        if ($CFG->block_xp_context == CONTEXT_SYSTEM) {
-            $courseid = SITEID;
-        }
-
-        $courseid = intval($courseid);
-        if ($forcereload || !isset(self::$instances[$courseid])) {
-            self::$instances[$courseid] = new block_xp_manager($courseid);
-        }
-        return self::$instances[$courseid];
+        return new block_xp_manager($courseid);
     }
 
     /**
@@ -314,14 +186,10 @@ class block_xp_manager {
      * @return mixed Return either an object, or a value.
      */
     public function get_config($name = null) {
-        global $DB;
         if (empty($this->config)) {
-            $record = $DB->get_record('block_xp_config', array('courseid' => $this->courseid));
-            if (!$record) {
-                $record = (object) self::$configdefaults;
-                $record->id = 0;
-                $record->courseid = $this->courseid;
-            }
+            $record = (object) self::$configdefaults;
+            $record->id = 0;
+            $record->courseid = $this->courseid;
             $this->config = $record;
         }
         if ($name !== null) {
@@ -333,16 +201,6 @@ class block_xp_manager {
     /**
      * Get the context related to the manager.
      *
-     * The context and course IDs here can be a bit confusing. When the plugin is set to act in
-     * courses ($CFG->block_xp_context == CONTEXT_COURSE), then the context of the manager
-     * should be the course context. However, when block_xp_progress is set to CONTEXT_SYSTEM
-     * then we have to rely on the system context, not the context of the site course. The reason
-     * behind this is that we need to get the context parent of where we are going to use the block
-     * and in this case the site/front page context is nto the right one as it's a child of the
-     * system context, and not parent of the courses.
-     *
-     * Also read the nodes of {@link self::get_courseid()}.
-     *
      * @return context
      */
     public function get_context() {
@@ -352,29 +210,14 @@ class block_xp_manager {
     /**
      * Returns the current course object.
      *
-     * The purpose of this is to provide an efficient way to retrieve the current course.
-     *
-     * /!\ The course object MUST NOT be modified!
-     *
      * @return object Course record.
      */
     public function get_course() {
-        global $DB, $PAGE;
-        if (!isset($this->course)) {
-            $this->course = get_course($this->courseid, false);
-        }
-        return $this->course;
+        return get_course($this->courseid, false);
     }
 
     /**
      * Return the current course ID.
-     *
-     * When the block is set to act on the whole site ($CFG->block_xp_context == CONTEXT_SYSTEM),
-     * then we will use the SITEID as course ID. We cannot use 0 because there are some logic here
-     * and there that assumes that the course exists. In any other scenario we use the course ID
-     * of the course the block was added to.
-     *
-     * Also read the nodes of {@link self::get_context()}.
      *
      * @return int The course ID.
      */
@@ -397,10 +240,7 @@ class block_xp_manager {
      * @return block_xp_filter_manager
      */
     public function get_filter_manager() {
-        if (!$this->filtermanager) {
-            $this->filtermanager = new block_xp_filter_manager($this);
-        }
-        return $this->filtermanager;
+        return new block_xp_filter_manager($this);
     }
 
     /**
@@ -409,7 +249,7 @@ class block_xp_manager {
      * @return int Level count.
      */
     public function get_level_count() {
-        return $this->get_config('levels');
+        return 1;
     }
 
     /**
@@ -419,18 +259,7 @@ class block_xp_manager {
      * @return int The level.
      */
     public function get_level_from_xp($xp) {
-        $levels = $this->get_levels();
-
-        $level = 1;
-        for ($i = $level; $i <= count($levels); $i++) {
-            if ($levels[$i] <= $xp) {
-                $level = $i;
-            } else {
-                break;
-            }
-        }
-
-        return $level;
+        return 1;
     }
 
     /**
@@ -439,11 +268,7 @@ class block_xp_manager {
      * @return array level => xp required.
      */
     public function get_levels() {
-        if (empty($this->levels)) {
-            $eventsdata = $this->get_levels_data('levelsdata');
-            $this->levels = $eventsdata['xp'];
-        }
-        return $this->levels;
+        return [1 => 0];
     }
 
     /**
@@ -452,19 +277,11 @@ class block_xp_manager {
      * @return array of levels data.
      */
     public function get_levels_data() {
-        $levelsdata = $this->get_config('levelsdata');
-        if ($levelsdata) {
-            $levelsdata = json_decode($levelsdata, true);
-            if ($levelsdata) {
-                return $levelsdata;
-            }
-        }
-
         return array(
             'usealgo' => 1,
             'base' => self::DEFAULT_BASE,
             'coef' => self::DEFAULT_COEF,
-            'xp' => self::get_levels_with_algo($this->get_level_count()),
+            'xp' => [1 => 0],
             'desc' => array()
         );
     }
@@ -478,17 +295,7 @@ class block_xp_manager {
      * @return array level => xp required.
      */
     public static function get_levels_with_algo($levelcount, $base = self::DEFAULT_BASE, $coef = self::DEFAULT_COEF) {
-        $list = array();
-        for ($i = 1; $i <= $levelcount; $i++) {
-            if ($i == 1) {
-                $list[$i] = 0;
-            } else if ($i == 2) {
-                $list[$i] = $base;
-            } else {
-                $list[$i] = $base + round($list[$i - 1] * $coef);
-            }
-        }
-        return $list;
+        return [1 => 0];
     }
 
     /**
@@ -499,31 +306,16 @@ class block_xp_manager {
      * @return block_xp_progress The progress renderable.
      */
     public function get_progress_for_user($userid, stdClass $record = null) {
-        global $DB;
-
-        if (!$record) {
-            $record = $DB->get_record('block_xp', array('courseid' => $this->courseid, 'userid' => $userid));
-        }
-
-        if (!$record) {
-            $record = new stdClass();
-            $record->xp = 0;
-            $record->lvl = 1;
-            $record->userid = $userid;
-            $record->courseid = $this->courseid;
-        }
-
-        // Manipulation.
+        $record = new stdClass();
+        $record->level = 1;
+        $record->xp = 0;
+        $record->userid = $userid;
+        $record->courseid = $this->courseid;
         $record->contextid = $this->context->id;
-        unset($record->id);
-        $record->level = $record->lvl;
-        unset($record->lvl);
+        $record->levelxp = 0;
+        $record->nextlevelxp = false;
         $params = (array) $record;
-
-        $params['levelxp'] = $this->get_xp_for_level($record->level);
-        $params['nextlevelxp'] = $this->get_xp_for_level($record->level + 1);
         $progress = new block_xp_progress($params);
-
         return $progress;
     }
 
@@ -534,8 +326,7 @@ class block_xp_manager {
      * @return int XP points.
      */
     public function get_xp_from_event(\core\event\base $event) {
-        $fm = $this->get_filter_manager();
-        return $fm->get_points_for_event($event);
+        return 0;
     }
 
     /**
@@ -545,29 +336,17 @@ class block_xp_manager {
      * @return int|false The amount of XP required, or false there is no such level.
      */
     public function get_xp_for_level($level) {
-        $levels = $this->get_levels();
-        if (isset($levels[$level])) {
-            return $levels[$level];
-        }
         return false;
     }
 
     /**
      * Check if the user has levelled up since the last time we reset the status.
      *
-     * See {@link self::update_user_level()} for when the flag is set.
-     *
      * @param int $userid The user that may have levelled up.
      * @param boolean $reset The reset flag, when true the levelled up flag will be reset.
      * @return boolean
      */
     public function has_levelled_up($userid, $reset = true) {
-        $prefkey = self::USERPREF_NOTIFY . $this->courseid;
-        $levelledup = get_user_preferences($prefkey, false, $userid);
-        if ($levelledup && $reset) {
-            unset_user_preference($prefkey);
-        }
-        return $levelledup;
     }
 
     /**
@@ -576,34 +355,7 @@ class block_xp_manager {
      * @return boolean True if enabled.
      */
     public function is_enabled() {
-        return $this->get_config('enabled');
-    }
-
-    /**
-     * Log a captured event.
-     *
-     * @param string $eventname The event name.
-     * @param int $userid The user ID.
-     * @param int $xp The XP earned with that event.
-     * @return void
-     */
-    protected function log_event($eventname, $userid, $xp) {
-        global $DB;
-
-        if ($this->get_config('enablelog')) {
-            $record = new stdClass();
-            $record->courseid = $this->courseid;
-            $record->userid = $userid;
-            $record->eventname = $eventname;
-            $record->xp = $xp;
-            $record->time = time();
-            try {
-                $DB->insert_record('block_xp_log', $record);
-            } catch (dml_exception $e) {
-                // Ignore, but please the linter.
-                $pleaselinter = true;
-            }
-        }
+        return false;
     }
 
     /**
@@ -612,16 +364,6 @@ class block_xp_manager {
      * @return void
      */
     public function purge_log() {
-        global $DB;
-        $keeplogs = $this->get_config('keeplogs');
-        if (!$keeplogs) {
-            return;
-        } else {
-            // The cron is set to run only once a day, so no need to test the last time it was purged here.
-            $DB->delete_records_select('block_xp_log', 'time < :time', array(
-                'time' => time() - ($keeplogs * DAYSECS)
-            ));
-        }
     }
 
     /**
@@ -632,10 +374,6 @@ class block_xp_manager {
      * @return void
      */
     public static function purge_static_caches() {
-        if (!PHPUNIT_TEST) {
-            return;
-        }
-        self::$instances = array();
     }
 
     /**
@@ -645,21 +383,6 @@ class block_xp_manager {
      * @return void
      */
     public function recalculate_levels() {
-        global $DB;
-        $users = $DB->get_recordset('block_xp', array('courseid' => $this->courseid), '', 'userid, lvl, xp');
-
-        // Disable events.
-        $oldtriggerevents = $this->triggereevents;
-        $this->triggereevents = false;
-
-        foreach ($users as $user) {
-            $this->update_user_level($user->userid, $user->xp, $user->lvl);
-        }
-
-        // Restore value.
-        $this->triggereevents = $oldtriggerevents;
-
-        $users->close();
     }
 
     /**
@@ -669,62 +392,16 @@ class block_xp_manager {
      * @return void
      */
     public function reset_data($groupid = 0) {
-        global $DB;
-
-        // Delete XP records.
-        $sql = "DELETE FROM {block_xp} WHERE courseid = :courseid";
-        $params = array('courseid' => $this->courseid);
-        if ($groupid) {
-            $sql .= " AND userid IN
-                  (SELECT gm.userid
-                     FROM {groups_members} gm
-                    WHERE gm.groupid = :groupid)";
-            $params['groupid'] = $groupid;
-        }
-        $DB->execute($sql, $params);
-
-        // Delete logs.
-        $sql = "DELETE FROM {block_xp_log} WHERE courseid = :courseid";
-        $params = array('courseid' => $this->courseid);
-        if ($groupid) {
-            $sql .= " AND userid IN
-                  (SELECT gm.userid
-                     FROM {groups_members} gm
-                    WHERE gm.groupid = :groupid)";
-            $params['groupid'] = $groupid;
-        }
-        $DB->execute($sql, $params);
     }
 
     /**
      * Reset the XP of a user to something.
-     *
-     * This will automatically recalculate the user's level, but will
-     * not trigger an event in case of level up or down.
      *
      * @param int $userid The user ID.
      * @param int $xp The amount of XP.
      * @return void
      */
     public function reset_user_xp($userid, $xp = 0) {
-        global $DB;
-
-        if ($record = $DB->get_record('block_xp', array('courseid' => $this->courseid, 'userid' => $userid))) {
-            $record->xp = $xp;
-            $DB->update_record('block_xp', $record);
-        } else {
-            $record = new stdClass();
-            $record->courseid = $this->courseid;
-            $record->userid = $userid;
-            $record->xp = $xp;
-            $record->lvl = 1;
-            $DB->insert_record('block_xp', $record);
-        }
-
-        $oldtriggerevents = $this->triggereevents;
-        $this->triggereevents = false;
-        $this->update_user_level($userid, $record->xp, $record->lvl);
-        $this->triggereevents = $oldtriggerevents;
     }
 
     /**
@@ -734,25 +411,6 @@ class block_xp_manager {
      * @return void
      */
     public function update_config($data) {
-        global $DB;
-        $config = $this->get_config();
-        foreach ((array) $data as $key => $value) {
-            if (in_array($key, array('id', 'courseid'))) {
-                continue;
-            } else if (property_exists($config, $key)) {
-                if (in_array($key, array('levelsdata'))) {
-                    // Some keys needs to be JSON encoded.
-                    $value = json_encode($value);
-                }
-                $config->{$key} = $value;
-            }
-        }
-        if (empty($config->id)) {
-            $config->id = $DB->insert_record('block_xp_config', $config);
-        } else {
-            $DB->update_record('block_xp_config', $config);
-        }
-        $this->config = $config;
     }
 
     /**
@@ -767,38 +425,6 @@ class block_xp_manager {
      * @return void
      */
     public function update_user_level($userid, $xp = null, $lvl = null) {
-        global $DB;
-
-        if ($xp === null || $lvl === null) {
-            $record = $DB->get_record('block_xp', array('courseid' => $this->courseid, 'userid' => $userid), 'xp,lvl');
-            if (!$record) {
-                return;
-            }
-            $xp = $record->xp;
-            $lvl = $record->lvl;
-        }
-
-        $level = $this->get_level_from_xp($xp);
-        if ($level != $lvl) {
-            // Level up!
-            $DB->set_field('block_xp', 'lvl', $level, array('courseid' => $this->courseid, 'userid' => $userid));
-            if ($this->triggereevents) {
-                $params = array(
-                    'context' => $this->context,
-                    'relateduserid' => $userid,
-                    'other' => array(
-                        'level' => $level
-                    )
-                );
-                $event = \block_xp\event\user_leveledup::create($params);
-                $event->trigger();
-            }
-        }
-
-        if ($level > $lvl && $this->get_config('enablelevelupnotif')) {
-            // Level up, and we want to notify the user.
-            set_user_preference(self::USERPREF_NOTIFY . $this->courseid, 1, $userid);
-        }
     }
 
 }

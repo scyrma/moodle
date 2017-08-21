@@ -24,14 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$observers = array(
-    array(
-        'eventname' => '*',
-        'callback' => 'block_xp_helper::observer',
-        'internal' => false
-    ),
-    array(
-        'eventname' => '\\core\\event\\course_deleted',
-        'callback' => 'block_xp_helper::course_deleted'
-    )
-);
+$rulemaker = \block_xp\di::get('observer_rules_maker');
+$observers = $rulemaker->get_observer_rules();
+unset($rulemaker);
