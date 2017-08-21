@@ -43,6 +43,7 @@ use stored_file;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class converter implements converter_interface {
+
     /**
      * Various CloudConvert formats. Not all of these will be supported (depends on
      * which formats Moodle knows about, see get_supported_extensions).
@@ -176,6 +177,8 @@ class converter implements converter_interface {
      * @param conversion $conversion Document conversion process.
      */
     private static function cloudconvert_api_call(callable $op, conversion $conversion) {
+        global $CFG;
+
         // Nasty hack. Both the S3 SDK and the CloudConvert SDK bundle their own version of guzzle.
         // So if we're running in prod/staging we register our own autoloader to load ONLY the CloudConvert
         // components. The guzzle components will be loaded by some other autoloader registered already.
