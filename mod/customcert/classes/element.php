@@ -129,7 +129,7 @@ abstract class element {
         $element->name = $data->name;
         $element->data = $this->save_unique_data($data);
         $element->font = (isset($data->font)) ? $data->font : null;
-        $element->size = (isset($data->size)) ? $data->size : null;
+        $element->fontsize = (isset($data->fontsize)) ? $data->fontsize : null;
         $element->colour = (isset($data->colour)) ? $data->colour : null;
         if ($this->showposxy) {
             $element->posx = (isset($data->posx)) ? $data->posx : null;
@@ -252,44 +252,5 @@ abstract class element {
         }
 
         return false;
-    }
-
-    /**
-     * Return the list of possible elements to add.
-     *
-     * @return array the list of element types that can be used.
-     */
-    public static function get_available_types() {
-        global $CFG;
-
-        // Array to store the element types.
-        $options = array();
-
-        // Check that the directory exists.
-        $elementdir = "$CFG->dirroot/mod/customcert/element";
-        if (file_exists($elementdir)) {
-            // Get directory contents.
-            $elementfolders = new \DirectoryIterator($elementdir);
-            // Loop through the elements folder.
-            foreach ($elementfolders as $elementfolder) {
-                // If it is not a directory or it is '.' or '..', skip it.
-                if (!$elementfolder->isDir() || $elementfolder->isDot()) {
-                    continue;
-                }
-                // Check that the standard class exists, if not we do
-                // not want to display it as an option as it will not work.
-                $foldername = $elementfolder->getFilename();
-                // Get the class name.
-                $classname = '\\customcertelement_' . $foldername . '\\element';
-                // Ensure the necessary class exists.
-                if (class_exists($classname)) {
-                    $component = "customcertelement_{$foldername}";
-                    $options[$foldername] = get_string('pluginname', $component);
-                }
-            }
-        }
-
-        \core_collator::asort($options);
-        return $options;
     }
 }
