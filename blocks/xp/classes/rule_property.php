@@ -51,6 +51,7 @@ class block_xp_rule_property extends block_xp_rule_base {
      *
      * @param string $compare Constant value.
      * @param mixed $value The value.
+     * @param string $property The property.
      */
     public function __construct($compare = self::EQ, $value = '', $property = '') {
         parent::__construct($compare, $value);
@@ -88,7 +89,8 @@ class block_xp_rule_property extends block_xp_rule_base {
         $o .= '&nbsp;';
         $o .= self::get_compare_select($basename);
         $o .= '&nbsp;';
-        $o .= html_writer::empty_tag('input', array('type' => 'text', 'name' => $basename . '[value]', 'value' => s($this->value)));
+        $o .= html_writer::empty_tag('input', array('type' => 'text', 'name' => $basename . '[value]',
+            'value' => s($this->value), 'class' => 'form-control block_xp-form-control-inline'));
         return $o;
     }
 

@@ -24,6 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use block_xp\local\course_world;
+use block_xp\local\activity\activity;
+use block_xp\local\routing\url_resolver;
+use block_xp\local\xp\level;
+use block_xp\local\xp\level_with_badge;
+use block_xp\local\xp\state;
+use block_xp\output\xp_widget;
+
 /**
  * Block XP renderer class.
  *
@@ -33,82 +41,95 @@ defined('MOODLE_INTERNAL') || die();
  */
 class block_xp_renderer extends plugin_renderer_base {
 
+    /** @var string Notices flag. */
+    protected $noticesflag = 'block_xp_notices';
+
     /**
-     * Administration links.
+     * Print a level's badge.
      *
-     * @param int $courseid The course ID.
-     * @return string HTML produced.
+     * @param level $level The level.
+     * @return string
      */
-    public function admin_links($courseid) {
-        return html_writer::tag('p',
-            html_writer::link(
-                new moodle_url('/blocks/xp/report.php', array('courseid' => $courseid)),
-                get_string('navreport', 'block_xp'))
-            . ' - '
-            . html_writer::link(
-                new moodle_url('/blocks/xp/config.php', array('courseid' => $courseid)),
-                get_string('navsettings', 'block_xp'))
-            , array('class' => 'admin-links')
-        );
+    public function level_badge(level $level) {
+        return $this->level_badge_with_options($level);
     }
 
     /**
-     * Returns the current level rendered.
+     * Small level badge.
      *
-     * @param renderable $progress The renderable object.
-     * @return string HTML produced.
+     * @param level $level The level.
+     * @return string.
      */
-    public function current_level(renderable $progress) {
-        $html = '';
-        $html .= html_writer::tag('div', $progress->level, array('class' => 'current-level level-' . $progress->level));
-        return $html;
+    public function small_level_badge(level $level) {
+        return $this->level_badge_with_options($level, ['small' => true]);
     }
 
     /**
-     * Returns the current level rendered with custom badges.
+     * Print a level's badge.
      *
-     * @param renderable $progress The renderable object.
-     * @return string HTML produced.
+     * @param level $level The level.
+     * @return string
      */
-    public function custom_current_level(renderable $progress) {
-        $html = '';
-        $html .= html_writer::tag('div',
-            html_writer::empty_tag('img', array('src' => $progress->levelimgsrc)),
-            array('class' => 'level-badge current-level level-' . $progress->level)
-        );
-        return $html;
-    }
+    protected function level_badge_with_options(level $level, array $options = []) {
+        $levelnum = $level->get_level();
+        $classes = 'block_xp-level level-' . $levelnum;
+        $label = get_string('levelx', 'block_xp', $levelnum);
 
-    /**
-     * The description to display in the field.
-     *
-     * @param string $string The text to display.
-     * @return string HTML producted.
-     */
-    public function description($string) {
-        if (empty($string)) {
-            return '';
+        if (!empty($options['small'])) {
+            $classes .= ' small';
         }
-        return html_writer::tag('p', $string, array('class' => 'description'));
+
+        $html = '';
+        if ($level instanceof level_with_badge && ($badgeurl = $level->get_badge_url()) !== null) {
+            $html .= html_writer::tag(
+                'div',
+                html_writer::empty_tag('img', ['src' => $badgeurl,
+                    'alt' => $label]),
+                ['class' => $classes . ' level-badge']
+            );
+        } else {
+            $html .= html_writer::tag('div', $levelnum, ['class' => $classes, 'aria-label' => $label]);
+        }
+        return $html;
+    }
+
+    /**
+     * Levels preview.
+     *
+     * @param level[] $levels The levels.
+     * @return string
+     */
+    public function levels_preview(array $levels) {
+        $o = '';
+
+        $o .= html_writer::start_div('block_xp-level-preview');
+        foreach ($levels as $level) {
+            $o .= html_writer::start_div('previewed-level');
+            $o .= html_writer::div('#' . $level->get_level(), 'level-name');
+            $o .= $this->small_level_badge($level);
+            $o .= html_writer::end_div();
+        }
+
+        return $o;
     }
 
     /**
      * Return the notices.
      *
-     * @param block_xp_manager $manager The manager.
+     * @param \block_xp\local\course_world $world The world.
      * @return string The notices.
      */
-    public function notices($manager) {
+    public function notices(\block_xp\local\course_world $world) {
         global $CFG;
         $o = '';
 
-        if (!$manager->can_manage()) {
+        if (!$world->get_access_permissions()->can_manage()) {
             return $o;
         }
 
-        if (!get_user_preferences(block_xp_manager::USERPREF_NOTICES, false)) {
+        if (!get_user_preferences($this->noticesflag, false)) {
             require_once($CFG->libdir . '/ajax/ajaxlib.php');
-            user_preference_allow_ajax_update(block_xp_manager::USERPREF_NOTICES, PARAM_BOOL);
+            user_preference_allow_ajax_update($this->noticesflag, PARAM_BOOL);
 
             $moodleorgurl = new moodle_url('https://moodle.org/plugins/view.php?plugin=block_xp');
             $githuburl = new moodle_url('https://github.com/FMCorz/moodle-block_xp');
@@ -120,14 +141,14 @@ class block_xp_renderer extends plugin_renderer_base {
             $id = html_writer::random_id();
             $this->page->requires->js_init_call("Y.one('.block-xp-rocks').on('click', function(e) {
                 e.preventDefault();
-                M.util.set_user_preference('" . block_xp_manager::USERPREF_NOTICES . "', 1);
+                M.util.set_user_preference('" . $this->noticesflag . "', 1);
                 Y.one('.block-xp-notices').hide();
             });");
 
-            $icon = new pix_icon('t/delete', get_string('dismissnotice', 'block_xp'));
+            $icon = new pix_icon('t/close', get_string('dismissnotice', 'block_xp'), 'block_xp');
             $actionicon = $this->action_icon(new moodle_url($this->page->url), $icon, null, array('class' => 'block-xp-rocks'));
             $text .= html_writer::div($actionicon, 'dismiss-action');
-            $o .= html_writer::div($this->notification($text, 'notifysuccess'), 'block-xp-notices');
+            $o .= html_writer::div($this->notification_without_close($text, 'success'), 'block_xp-dismissable-notice');
         }
 
         return $o;
@@ -136,80 +157,133 @@ class block_xp_renderer extends plugin_renderer_base {
     /**
      * Outputs the navigation.
      *
-     * @param block_xp_manager $manager The manager.
+     * This specifically requires a course_world and not a world.
+     *
+     * @param course_world $world The world.
      * @param string $page The page we are on.
      * @return string The navigation.
      */
-    public function navigation($manager, $page) {
-        $tabs = array();
-        $courseid = $manager->get_courseid();
-
-        if ($manager->can_view_infos_page()) {
-            $tabs[] = new tabobject(
-                'infos',
-                new moodle_url('/blocks/xp/infos.php', array('courseid' => $courseid)),
-                get_string('navinfos', 'block_xp')
-            );
-        }
-        if ($manager->can_view_ladder_page()) {
-            $tabs[] = new tabobject(
-                'ladder',
-                new moodle_url('/blocks/xp/ladder.php', array('courseid' => $courseid)),
-                get_string('navladder', 'block_xp')
-            );
-        }
-
-        if ($manager->can_manage()) {
-            $tabs[] = new tabobject(
-                'report',
-                new moodle_url('/blocks/xp/report.php', array('courseid' => $courseid)),
-                get_string('navreport', 'block_xp')
-            );
-            $tabs[] = new tabobject(
-                'log',
-                new moodle_url('/blocks/xp/log.php', array('courseid' => $courseid)),
-                get_string('navlog', 'block_xp')
-            );
-            $tabs[] = new tabobject(
-                'levels',
-                new moodle_url('/blocks/xp/levels.php', array('courseid' => $courseid)),
-                get_string('navlevels', 'block_xp')
-            );
-            $tabs[] = new tabobject(
-                'rules',
-                new moodle_url('/blocks/xp/rules.php', array('courseid' => $courseid)),
-                get_string('navrules', 'block_xp')
-            );
-            $tabs[] = new tabobject(
-                'visuals',
-                new moodle_url('/blocks/xp/visuals.php', array('courseid' => $courseid)),
-                get_string('navvisuals', 'block_xp')
-            );
-            $tabs[] = new tabobject(
-                'config',
-                new moodle_url('/blocks/xp/config.php', array('courseid' => $courseid)),
-                get_string('navsettings', 'block_xp')
-            );
-        }
+    public function course_world_navigation(course_world $world, $page) {
+        $factory = \block_xp\di::get('course_world_navigation_factory');
+        $links = $factory->get_course_navigation($world);
 
         // If there is only one page, then that is the page we are on.
-        if (count($tabs) == 1) {
+        if (count($links) <= 1) {
             return '';
         }
+
+        $tabs = array_map(function($link) {
+            return new tabobject($link['id'], $link['url'], $link['text'], clean_param($link['text'], PARAM_NOTAGS));
+        }, $links);
 
         return $this->tabtree($tabs, $page);
     }
 
     /**
+     * Print a notification without a close button.
+     *
+     * @param string|lang_string $message The message.
+     * @param string $type The notification type.
+     * @return string
+     */
+    public function notification_without_close($message, $type) {
+        if (class_exists('core\output\notification')) {
+
+            // Of course, it would be too easy if they didn't add and change constants
+            // between two releases... Who reads the upgrade.txt, seriously?
+            if (defined('core\output\notification::NOTIFY_INFO')) {
+                $info = core\output\notification::NOTIFY_INFO;
+            } else {
+                $info = core\output\notification::NOTIFY_MESSAGE;
+            }
+            if (defined('core\output\notification::NOTIFY_SUCCESS')) {
+                $success = core\output\notification::NOTIFY_SUCCESS;
+            } else {
+                $success = core\output\notification::NOTIFY_MESSAGE;
+            }
+            if (defined('core\output\notification::NOTIFY_WARNING')) {
+                $warning = core\output\notification::NOTIFY_WARNING;
+            } else {
+                $warning = core\output\notification::NOTIFY_REDIRECT;
+            }
+            if (defined('core\output\notification::NOTIFY_ERROR')) {
+                $error = core\output\notification::NOTIFY_ERROR;
+            } else {
+                $error = core\output\notification::NOTIFY_PROBLEM;;
+            }
+
+            $typemappings = [
+                'success'           => $success,
+                'info'              => $info,
+                'warning'           => $warning,
+                'error'             => $error,
+                'notifyproblem'     => $error,
+                'notifytiny'        => $error,
+                'notifyerror'       => $error,
+                'notifysuccess'     => $success,
+                'notifymessage'     => $info,
+                'notifyredirect'    => $info,
+                'redirectmessage'   => $info,
+            ];
+        } else {
+            // Old-style notifications.
+            $typemappings = [
+                'success'           => 'notifysuccess',
+                'info'              => 'notifymessage',
+                'warning'           => 'notifyproblem',
+                'error'             => 'notifyproblem',
+                'notifyproblem'     => 'notifyproblem',
+                'notifytiny'        => 'notifyproblem',
+                'notifyerror'       => 'notifyproblem',
+                'notifysuccess'     => 'notifysuccess',
+                'notifymessage'     => 'notifymessage',
+                'notifyredirect'    => 'notifyredirect',
+                'redirectmessage'   => 'redirectmessage',
+            ];
+        }
+
+        $type = $typemappings[$type];
+
+        if (class_exists('core\output\notification')) {
+            $notification = new \core\output\notification($message, $type);
+            if (method_exists($notification, 'set_show_closebutton')) {
+                $notification->set_show_closebutton(false);
+            }
+            return $this->render($notification);
+        }
+
+        return $this->notification($message, $type);
+    }
+
+    /**
+     * Override pix_url to auto-handle deprecation.
+     *
+     * It's just simpler than having to deal with differences between
+     * Moodle < 3.3, and Moodle >= 3.3.
+     *
+     * @param string $image The file.
+     * @param string $component The component.
+     * @return string
+     */
+    public function pix_url($image, $component = 'moodle') {
+        if (method_exists($this, 'image_url')) {
+            return $this->image_url($image, $component);
+        }
+        return parent::pix_url($image, $component);
+    }
+
+    /**
      * Override render method.
      *
+     * @param renderable $renderable The renderable.
+     * @param array $options Options.
      * @return string
      */
     public function render(renderable $renderable, $options = array()) {
-        if ($renderable instanceof block_xp_rule_base) {
-            return $this->render_block_xp_rule($renderable, $options);
-        } else if ($renderable instanceof block_xp_ruleset) {
+        if ($renderable instanceof block_xp_ruleset) {
             return $this->render_block_xp_ruleset($renderable, $options);
+        } else if ($renderable instanceof block_xp_rule) {
+            return $this->render_block_xp_rule($renderable, $options);
         }
         return parent::render($renderable);
     }
@@ -220,6 +294,7 @@ class block_xp_renderer extends plugin_renderer_base {
      * Not very proud of the way I implement this... The HTML is tied to Javascript
      * and to the rule objects themselves. Careful when changing something!
      *
+     * @param block_xp_filter $filter The filter.
      * @return string
      */
     public function render_block_xp_filter($filter) {
@@ -238,7 +313,8 @@ class block_xp_renderer extends plugin_renderer_base {
                     'type' => 'text',
                     'value' => $filter->get_points(),
                     'size' => 3,
-                    'name' => $basename . '[points]'))
+                    'name' => $basename . '[points]',
+                    'class' => 'form-control block_xp-form-control-inline'))
             );
             $content .= $this->action_link('#', '', null, array('class' => 'filter-delete'),
                 new pix_icon('t/delete', get_string('deleterule', 'block_xp'), '', array('class' => 'iconsmall')));
@@ -265,8 +341,9 @@ class block_xp_renderer extends plugin_renderer_base {
     }
 
     /**
-     * Renders a block XP ruleset.
+     * Renders a block XP rule.
      *
+     * @param block_xp_rule_base $rule The rule.
      * @param array $options
      * @return string
      */
@@ -293,7 +370,8 @@ class block_xp_renderer extends plugin_renderer_base {
     /**
      * Renders a block XP ruleset.
      *
-     * @param array $options
+     * @param block_xp_ruleset $ruleset The ruleset.
+     * @param array $options The options
      * @return string
      */
     public function render_block_xp_ruleset($ruleset, $options) {
@@ -331,50 +409,307 @@ class block_xp_renderer extends plugin_renderer_base {
     }
 
     /**
-     * Returns the links for the students.
+     * Render a dismissable notice.
      *
-     * @param int $courseid The course ID.
-     * @param bool $showladder Show the ladder link
-     * @param bool $showinfos Show the infos link
-     * @return string HTML produced.
+     * Yes, we cannot use CSS IDs in there because they are stripped out... turns out they
+     * are considered dangerous. Oh well, we use a class instead. Not pretty, but it works...
+     *
+     * @param renderable $notice The notice.
+     * @return string
      */
-    public function student_links($courseid, $showladder, $showinfos) {
-        $html = '';
-        $links = array();
+    public function render_dismissable_notice(renderable $notice) {
+        $id = html_writer::random_id();
 
-        if ($showinfos) {
-            $links[] = html_writer::link(
-                new moodle_url('/blocks/xp/infos.php', array('courseid' => $courseid)),
-                get_string('infos', 'block_xp')
-            );
-        }
-        if ($showladder) {
-            $links[] = html_writer::link(
-                new moodle_url('/blocks/xp/ladder.php', array('courseid' => $courseid)),
-                get_string('viewtheladder', 'block_xp')
-            );
+        // Tell the indicator that it should be expecing this notice.
+        $indicator = \block_xp\di::get('user_notice_indicator');
+        if ($indicator instanceof \block_xp\local\indicator\user_indicator_with_acceptance) {
+            $indicator->set_acceptable_user_flag($notice->name);
         }
 
-        if (!empty($links)) {
-            $html = html_writer::tag('p', implode(' - ', $links), array('class' => 'student-links'));
+        $url = \block_xp\di::get('ajax_url_resolver')->reverse('notice/dismiss', ['name' => $notice->name]);
+        $this->page->requires->js_init_call(<<<EOT
+            Y.one('.$id .dismiss-action a').on('click', function(e) {
+                e.preventDefault();
+                Y.one('.$id').hide();
+                var url = '$url';
+                var cfg = {
+                    method: 'POST'
+                };
+                Y.io(url, cfg);
+            });
+EOT
+        );
+
+        $icon = new pix_icon('t/close', get_string('dismissnotice', 'block_xp'), 'block_xp');
+        $actionicon = $this->action_icon('#', $icon, null);
+        $text = html_writer::div($actionicon, 'dismiss-action') . $notice->message;
+
+        return html_writer::div($this->notification_without_close($text, $notice->type),
+            'block_xp-dismissable-notice ' . $id);
+    }
+
+    /**
+     * Render the filters widget.
+     *
+     * /!\ We only support one editable widget per page!
+     *
+     * @param renderer_base $widget The widget.
+     * @return string
+     */
+    public function render_filters_widget(renderable $widget) {
+        if ($widget->editable) {
+            $templatefilter = $this->render($widget->filter);
+
+            $templatetypes = [];
+            foreach ($widget->rules as $rule) {
+                $templatetypes[uniqid()] = [
+                    'name' => $rule->name,
+                    'template' => $this->render($rule->rule, ['iseditable' => true, 'basename' => 'XXXXX'])
+                ];
+            }
+
+            // Prepare Javascript.
+            $this->page->requires->yui_module('moodle-block_xp-filters', 'Y.M.block_xp.Filters.init', [[
+                'filter' => $templatefilter,
+                'rules' => $templatetypes
+            ]]);
+            $this->page->requires->strings_for_js(array('pickaconditiontype'), 'block_xp');
         }
 
-        return $html;
+        echo html_writer::start_div('block-xp-filters-wrapper');
+
+        $addlink = '';
+        if ($widget->editable) {
+            echo html_writer::start_tag('form', ['method' => 'POST', 'class' => 'block-xp-filters']);
+            echo html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
+
+            $addlink = html_writer::start_tag('li', ['class' => 'filter-add']);
+            $addlink .= $this->action_link('#', get_string('addarule', 'block_xp'), null, null,
+                new pix_icon('t/add', '', '', ['class' => 'iconsmall']));
+            $addlink .= html_writer::end_tag('li');
+        }
+
+        $class = $widget->editable ? 'filters-editable' : 'filters-readonly';
+        echo html_writer::start_tag('ul', ['class' => 'filters-list ' . $class]);
+        echo $addlink;
+
+        foreach ($widget->filters as $filter) {
+            echo $this->render($filter);
+            echo $addlink;
+        }
+
+        echo html_writer::end_tag('ul');
+
+        if ($widget->editable) {
+            echo html_writer::start_tag('p');
+            echo html_writer::empty_tag('input', ['value' => get_string('savechanges'), 'type' => 'submit', 'name' => 'save',
+                'class' => 'btn btn-primary']);
+            echo ' ';
+            echo html_writer::empty_tag('input', ['value' => get_string('cancel'), 'type' => 'submit', 'name' => 'cancel',
+                'class' => 'btn btn-default']);
+            echo html_writer::end_tag('p');
+            echo html_writer::end_tag('form');
+        }
+
+        echo html_writer::end_div();
+    }
+
+    /**
+     * Render a notice.
+     *
+     * @param renderable $notice The notice.
+     * @return string
+     */
+    public function render_notice(renderable $notice) {
+        return $this->notification_without_close($notice->message, $notice->type);
     }
 
     /**
      * Returns the progress bar rendered.
      *
-     * @param renderable $progress The renderable object.
+     * @param state $state The renderable object.
      * @return string HTML produced.
      */
-    public function progress_bar(renderable $progress) {
+    public function progress_bar(state $state) {
+        $classes = ['block_xp-level-progress'];
+        $pc = $state->get_ratio_in_level() * 100;
+        if ($pc != 0) {
+            $classes[] = 'progress-non-zero';
+        }
+
         $html = '';
-        $html .= html_writer::start_tag('div', array('class' => 'block_xp-level-progress'));
-        $html .= html_writer::tag('div', '', array('style' => 'width: ' . $progress->percentage . '%;', 'class' => 'bar'));
-        $html .= html_writer::tag('div', $progress->xpinlevel . '/' . $progress->xpforlevel, array('class' => 'txt'));
+        $remaining = $state->get_total_xp_in_level() - $state->get_xp_in_level();
+
+        $html .= html_writer::start_tag('div', ['class' => implode(' ', $classes)]);
+
+        $html .= html_writer::start_tag('div', ['class' => 'xp-bar-wrapper', 'role' => 'progressbar',
+            'aria-valuenow' => round($pc, 1), 'aria-valuemin' => 0, 'aria-valuemax' => 100]);
+        $html .= html_writer::tag('div', '', ['style' => "width: {$pc}%;", 'class' => 'xp-bar']);
+        $html .= html_writer::end_tag('div');
+
+        $togo = get_string('xptogo', 'block_xp', $this->xp($remaining));
+        $span = html_writer::start_tag('span', ['class' => 'xp-togo-txt']);
+        if (strpos($togo, '[[') !== false && strpos($togo, ']]')) {
+            $togo = $span . $togo . '</span>';
+            $togo = str_replace('[[', '</span>', $togo);
+            $togo = str_replace(']]', $span, $togo);
+        }
+
+        $html .= html_writer::tag('div', $togo, ['class' => 'xp-togo']);
+
         $html .= html_writer::end_tag('div');
         return $html;
+    }
+
+    /**
+     * Recent activity.
+     *
+     * @param activity[] $activity The activity entries.
+     * @param moodle_url $moreurl The URL to view more.
+     * @return string
+     */
+    public function recent_activity(array $activity, moodle_url $moreurl = null) {
+        $o = '';
+
+        $o .= html_writer::start_tag('div', ['class' => 'block_xp-recent-activity']);
+
+        $title = get_string('recentrewards', 'block_xp');
+        if ($moreurl) {
+            $title .= ' ' . html_writer::link($moreurl, get_string('viewmore'));
+        }
+        $o .= html_writer::tag('h5', $title, ['class' => "clearfix"]);
+
+        $o .= implode('', array_map(function(activity $entry) {
+            $tinyago = $this->tiny_time_ago($entry->get_date());
+            $date = userdate($entry->get_date()->getTimestamp());
+            $xp = $entry instanceof \block_xp\local\activity\activity_with_xp ? $entry->get_xp() : '';
+            $o = '';
+            $o .= html_writer::start_div('activity-entry');
+            $o .= html_writer::div($tinyago, 'date', ['title' => $date]);
+            $o .= html_writer::div($this->xp($xp), 'xp');
+            $o .= html_writer::div(s($entry->get_description()), 'desc');
+            $o .= html_writer::end_div();
+            return $o;
+        }, $activity));
+
+        if (!$activity) {
+            $o .= html_writer::tag('p', '-');
+        }
+
+        $o .= html_writer::end_tag('div');
+
+        return $o;
+    }
+
+    /**
+     * Render XP widget.
+     *
+     * @param renderable $widget The widget.
+     * @return string
+     */
+    public function render_xp_widget(xp_widget $widget) {
+        $o = '';
+
+        foreach ($widget->managernotices as $notice) {
+            $o .= $this->notification_without_close($notice, 'warning');
+        }
+
+        // Badge.
+        $o .= $this->level_badge($widget->state->get_level());
+
+        // Total XP.
+        $xp = $widget->state->get_xp();
+        $o .= html_writer::tag('div', $this->xp($xp), ['class' => 'xp-total']);
+
+        // Progress bar.
+        $o .= $this->progress_bar($widget->state);
+
+        // Intro.
+        if (!empty($widget->intro)) {
+            $o .= html_writer::div($this->render($widget->intro), 'introduction');
+        }
+
+        // Recent rewards.
+        if (!empty($widget->recentactivity) || $widget->forcerecentactivity) {
+            $o .= $this->recent_activity($widget->recentactivity, $widget->recentactivityurl);
+        }
+
+        // Navigation.
+        if (!empty($widget->actions)) {
+            $o .= $this->xp_widget_navigation($widget->actions);
+        }
+
+        return $o;
+    }
+
+    /**
+     * Tiny time ago string.
+     *
+     * @param DateTime $dt The date object.
+     * @return string
+     */
+    public function tiny_time_ago(DateTime $dt) {
+        $now = new \DateTime();
+        $diff = $now->getTimestamp() - $dt->getTimestamp();
+        $ago = '?';
+
+        if ($diff < 15) {
+            $ago = get_string('tinytimenow', 'block_xp');
+        } else if ($diff < 45) {
+            $ago = get_string('tinytimeseconds', 'block_xp', $diff);
+        } else if ($diff < HOURSECS * 0.7) {
+            $ago = get_string('tinytimeminutes', 'block_xp', round($diff / 60));
+        } else if ($diff < DAYSECS * 0.7) {
+            $ago = get_string('tinytimehours', 'block_xp', round($diff / HOURSECS));
+        } else if ($diff < DAYSECS * 7 * 0.7) {
+            $ago = get_string('tinytimedays', 'block_xp', round($diff / DAYSECS));
+        } else if ($diff < DAYSECS * 30 * 0.7) {
+            $ago = get_string('tinytimeweeks', 'block_xp', round($diff / DAYSECS * 7));
+        } else if ($diff < DAYSECS * 365) {
+            $ago = userdate($dt->getTimestamp(), get_string('tinytimewithinayearformat', 'block_xp'));
+        } else {
+            $ago = userdate($dt->getTimestamp(), get_string('tinytimeolderyearformat', 'block_xp'));
+        }
+
+        return $ago;
+    }
+
+    /**
+     * Format an amount of XP.
+     *
+     * @param int $amount The XP.
+     * @return string
+     */
+    public function xp($amount) {
+        $xp = (int) $amount;
+        if ($xp > 999) {
+            $thousandssep = get_string('thousandssep', 'langconfig');
+            $xp = number_format($xp, 0, '.', $thousandssep);
+        }
+        $o = '';
+        $o .= html_writer::start_div('block_xp-xp');
+        $o .= html_writer::div($xp, 'pts');
+        $o .= html_writer::div('xp', 'sign sign-sup');
+        $o .= html_writer::end_div();
+        return $o;
+    }
+
+    /**
+     * Render XP widget navigation.
+     *
+     * @param array $actions The actions.
+     * @return string
+     */
+    public function xp_widget_navigation(array $actions) {
+        $o = '';
+        $o .= html_writer::start_tag('nav');
+        $o .= implode('', array_map(function(action_link $action) {
+            $content = html_writer::div($this->render($action->icon));
+            $content .= html_writer::div($action->text);
+            return html_writer::link($action->url, $content, ['class' => 'nav-button']);
+        }, $actions));
+        $o .= html_writer::end_tag('nav');
+        return $o;
     }
 
 }
