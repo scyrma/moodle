@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Block XP manager.
+ * Block XP helper.
  *
  * @package    block_xp
  * @copyright  2014 Frédéric Massart
@@ -27,9 +27,14 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Block XP helper class.
  *
+ * This class does not do anything any more, but during upgrade Moodle may
+ * try to include the file which leads to very ugly errors if we it does not
+ * exist any more. So we keep the file, but it does not do anything.
+ *
  * @package    block_xp
  * @copyright  2014 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @deprecated Since v3.0.0
  */
 class block_xp_helper {
 
@@ -40,18 +45,6 @@ class block_xp_helper {
      * @return void
      */
     public static function course_deleted(\core\event\course_deleted $event) {
-        global $DB;
-
-        // Clean up the data that could be left behind.
-        $conditions = array('courseid' => $event->objectid);
-        $DB->delete_records('block_xp', $conditions);
-        $DB->delete_records('block_xp_config', $conditions);
-        $DB->delete_records('block_xp_filters', $conditions);
-        $DB->delete_records('block_xp_log', $conditions);
-
-        // Delete the files.
-        $fs = get_file_storage();
-        $fs->delete_area_files($event->contextid, 'block_xp', 'badges');
     }
 
     /**
@@ -61,43 +54,6 @@ class block_xp_helper {
      * @return void
      */
     public static function observer(\core\event\base $event) {
-        global $CFG;
-
-        static $allowedcontexts = null;
-        if ($allowedcontexts === null) {
-            $allowedcontexts = array(CONTEXT_COURSE, CONTEXT_MODULE);
-            if (isset($CFG->block_xp_context) && $CFG->block_xp_context == CONTEXT_SYSTEM) {
-                $allowedcontexts[] = CONTEXT_SYSTEM;
-            }
-        }
-
-        // We can't use empty if statements...
-        $pleaselinter = false;
-
-        if ($event->component === 'block_xp') {
-            // Skip own events.
-            $pleaselinter = true;
-        } else if (!$event->userid || isguestuser($event->userid) || is_siteadmin($event->userid)) {
-            // Skip non-logged in users and guests.
-            $pleaselinter = true;
-        } else if ($event->anonymous) {
-            // Skip all the events marked as anonymous.
-            $pleaselinter = true;
-        } else if (!in_array($event->contextlevel, $allowedcontexts)) {
-            // Ignore events that are not in the right context.
-            $pleaselinter = true;
-        } else if ($event->edulevel !== \core\event\base::LEVEL_PARTICIPATING) {
-            // Ignore events that are not participating.
-            $pleaselinter = true;
-        } else if (!has_capability('block/xp:earnxp', $event->get_context(), $event->userid)) {
-            // Skip the events if the user does not have the capability to earn XP.
-            $pleaselinter = true;
-        } else {
-            // Keep the event, and proceed.
-            $manager = block_xp_manager::get($event->courseid);
-            $manager->capture_event($event);
-        }
-
     }
 
 }
