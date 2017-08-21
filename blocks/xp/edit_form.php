@@ -19,35 +19,28 @@
  *
  * @package    block_xp
  * @copyright  2014 Frédéric Massart
+ * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
+// Moodle expects a certain class to be found here, so we have to workaround it like this.
+$class = \block_xp\di::get('block_edit_form_class');
+if (!class_exists($class) || !is_subclass_of($class, 'block_edit_form')) {
+    throw new coding_exception('Block edit form class does not pass validation, or does not exist.');
+}
+class_alias($class, 'block_xp_block_edit_form_class');
+
 /**
  * Block XP edit form class.
  *
+ * Some code checker maybe expecting to find the class, so here it is...
+ *
  * @package    block_xp
- * @copyright  2014 Frédéric Massart
+ * @copyright  2017 Frédéric Massart
+ * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_xp_edit_form extends block_edit_form {
-
-    /**
-     * Form definition.
-     *
-     * @param moodleform $mform Moodle form.
-     * @return void
-     */
-    protected function specific_definition($mform) {
-        $mform->addElement('header', 'confighdr', get_string('configheader', 'block_xp'));
-        $mform->addElement('text', 'config_title', get_string('configtitle', 'block_xp'));
-        $mform->setDefault('config_title', get_string('levelup', 'block_xp'));
-        $mform->setType('config_title', PARAM_TEXT);
-
-        $mform->addElement('textarea', 'config_description', get_string('configdescription', 'block_xp'));
-        $mform->setDefault('config_description', get_string('participatetolevelup', 'block_xp'));
-        $mform->setType('config_description', PARAM_TEXT);
-    }
-
+class block_xp_edit_form extends block_xp_block_edit_form_class {
 }
