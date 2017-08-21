@@ -24,6 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Block XP progress renderable.
+ *
+ * @package    block_xp
+ * @copyright  2014 Frédéric Massart
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @deprecated Since 3.0.0
+ */
 class block_xp_progress implements renderable {
 
     /** @var int The course ID. */

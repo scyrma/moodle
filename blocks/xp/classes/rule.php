@@ -17,7 +17,7 @@
 /**
  * Rule interface.
  *
- * @package    core
+ * @package    block_xp
  * @copyright  2014 Frédéric Massart - FMCorz.net
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Rule interface.
  *
- * @package    core
+ * @package    block_xp
  * @copyright  2014 Frédéric Massart - FMCorz.net
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -45,10 +45,11 @@ abstract class block_xp_rule implements renderable {
      * @return block_xp_rule|false The rule object.
      */
     public static function create(array $properties) {
-        if (!class_exists($properties['_class'])) {
+        $classname = $properties['_class'];
+        if (!class_exists($classname) || !is_subclass_of($classname, 'block_xp_rule')) {
             return false;
         }
-        $class = new $properties['_class'];
+        $class = new $classname();
         unset($properties['_class']);
         $class->import($properties);
         return $class;
@@ -95,6 +96,7 @@ abstract class block_xp_rule implements renderable {
      *
      * Override this method to handle special keys.
      *
+     * @param array $properties Properties.
      * @return void
      */
     protected function import(array $properties) {
