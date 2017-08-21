@@ -189,7 +189,7 @@ class converter implements converter_interface {
                 function($class) {
                     $classparts = explode("\\", $class, 2);
                     if ($classparts[0] == 'CloudConvert') {
-                        require_once('phar://' . $CFG->dirroot . '/files/convert/cloudconvert/cloudconvert-php.phar/src/' . str_replace("\\", "/", $classparts[1]) . '.php');
+                        require_once('phar://' . $CFG->dirroot . '/files/converter/cloudconvert/cloudconvert-php.phar/src/' . str_replace("\\", "/", $classparts[1]) . '.php');
                     }
                 }
             );
