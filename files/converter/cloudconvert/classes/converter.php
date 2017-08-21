@@ -25,8 +25,6 @@ namespace fileconverter_cloudconvert;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('phar://' . $CFG->dirroot . '/files/converter/cloudconvert/cloudconvert-php.phar/vendor/autoload.php');
-
 use CloudConvert\Api as cloudconvert_api;
 use CloudConvert\Exceptions\ApiTemporaryUnavailableException as cloudconvert_unavailable_exception;
 use CloudConvert\Process as cloudconvert_process;
@@ -117,12 +115,14 @@ class converter implements converter_interface {
     }
 
     public function poll_conversion_status(conversion $conversion) : self {
+        error_log('pollenating');
         self::cloudconvert_api_call(function(conversion $conversion) {
             $process = (new cloudconvert_process(
                 new cloudconvert_api($this->apikey),
                 $conversion->get('data')->url
             ))->refresh();
 
+            error_log('step: ' . $process->step);
             if ($process->step == 'finished') {
                 $tmpfile = make_request_directory() . '/' . uniqid() . '.' . $conversion->get('targetformat');
                 $process->download($tmpfile);
@@ -176,6 +176,24 @@ class converter implements converter_interface {
      * @param conversion $conversion Document conversion process.
      */
     private static function cloudconvert_api_call(callable $op, conversion $conversion) {
+        // Nasty hack. Both the S3 SDK and the CloudConvert SDK bundle their own version of guzzle.
+        // So if we're running in prod/staging we register our own autoloader to load ONLY the CloudConvert
+        // components. The guzzle components will be loaded by some other autoloader registered already.
+        // If running locally, just require the CloudConvert SDK autoloader (which will autoload CloudConvert's
+        // bundled guzzle).
+        if (defined('FILESTORAGE_QUOTA')) {
+            spl_autoload_register(
+                function($class) {
+                    $classparts = explode("\\", $class, 2);
+                    if ($classparts[0] == 'CloudConvert') {
+                        require_once('phar://' . $CFG->dirroot . '/files/convert/cloudconvert/cloudconvert-php.phar/' . str_replace("\\", "/", $classparts[1]) . '.php');
+                    }
+                }
+            );
+        } else {
+            require_once('phar://' . $CFG->dirroot . '/files/converter/cloudconvert/cloudconvert-php.phar/vendor/autoload.php');
+        }
+
         try {
             $op($conversion);
         } catch (cloudconvert_unavailable_exception $e) {
