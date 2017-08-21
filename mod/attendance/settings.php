@@ -74,6 +74,18 @@ if ($ADMIN->fulltree) {
         get_string('defaultview', 'attendance'),
             get_string('defaultview_desc', 'attendance'), ATT_VIEW_WEEKS, $options));
 
+    $settings->add(new admin_setting_configcheckbox('attendance/multisessionexpanded',
+        get_string('multisessionexpanded', 'attendance'),
+        get_string('multisessionexpanded_desc', 'attendance'), 0));
+
+    $settings->add(new admin_setting_configcheckbox('attendance/studentrecordingexpanded',
+        get_string('studentrecordingexpanded', 'attendance'),
+        get_string('studentrecordingexpanded_desc', 'attendance'), 1));
+
+    $settings->add(new admin_setting_configcheckbox('attendance/enablecalendar',
+        get_string('enablecalendar', 'attendance'),
+        get_string('enablecalendar_desc', 'attendance'), 1));
+
     $settings->add(new admin_setting_configcheckbox('attendance/enablewarnings',
         get_string('enablewarnings', 'attendance'),
         get_string('enablewarnings_desc', 'attendance'), 0));
@@ -120,6 +132,9 @@ if ($ADMIN->fulltree) {
     }
     $settings->add(new admin_setting_configselect('attendance/warnafter',
         get_string('warnafter', 'attendance'), get_string('warnafter_help', 'attendance'), 5, $options));
+
+    $settings->add(new admin_setting_configselect('attendance/maxwarn',
+        get_string('maxwarn', 'attendance'), get_string('maxwarn_help', 'attendance'), 1, $options));
 
     $settings->add(new admin_setting_configcheckbox('attendance/emailuser',
         get_string('emailuser', 'attendance'), get_string('emailuser_help', 'attendance'), 1));
