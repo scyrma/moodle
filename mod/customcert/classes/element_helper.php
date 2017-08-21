@@ -61,7 +61,7 @@ class element_helper {
      */
     public static function render_content($pdf, $element, $content) {
         list($font, $attr) = self::get_font($element);
-        $pdf->setFont($font, $attr, $element->size);
+        $pdf->setFont($font, $attr, $element->fontsize);
         $fontcolour = \TCPDF_COLORS::convertHTMLColorToDec($element->colour, $fontcolour);
         $pdf->SetTextColor($fontcolour['R'], $fontcolour['G'], $fontcolour['B']);
 
@@ -120,7 +120,7 @@ class element_helper {
             $fontstyle .= '; font-style: italic';
         }
 
-        $style = $fontstyle . '; color: ' . $element->colour . '; font-size: ' . $element->size . 'pt;';
+        $style = $fontstyle . '; color: ' . $element->colour . '; font-size: ' . $element->fontsize . 'pt;';
         if ($element->width) {
             $style .= ' width: ' . $element->width . 'mm';
         }
@@ -137,10 +137,11 @@ class element_helper {
         $mform->setType('font', PARAM_TEXT);
         $mform->setDefault('font', 'times');
         $mform->addHelpButton('font', 'font', 'customcert');
-        $mform->addElement('select', 'size', get_string('fontsize', 'customcert'), \mod_customcert\certificate::get_font_sizes());
-        $mform->setType('size', PARAM_INT);
-        $mform->setDefault('size', 12);
-        $mform->addHelpButton('size', 'fontsize', 'customcert');
+        $mform->addElement('select', 'fontsize', get_string('fontsize', 'customcert'),
+            \mod_customcert\certificate::get_font_sizes());
+        $mform->setType('fontsize', PARAM_INT);
+        $mform->setDefault('fontsize', 12);
+        $mform->addHelpButton('fontsize', 'fontsize', 'customcert');
     }
 
     /**
@@ -376,5 +377,44 @@ class element_helper {
         } else { // Must be in a site template.
             return $SITE->id;
         }
+    }
+
+    /**
+     * Return the list of possible elements to add.
+     *
+     * @return array the list of element types that can be used.
+     */
+    public static function get_available_element_types() {
+        global $CFG;
+
+        // Array to store the element types.
+        $options = array();
+
+        // Check that the directory exists.
+        $elementdir = "$CFG->dirroot/mod/customcert/element";
+        if (file_exists($elementdir)) {
+            // Get directory contents.
+            $elementfolders = new \DirectoryIterator($elementdir);
+            // Loop through the elements folder.
+            foreach ($elementfolders as $elementfolder) {
+                // If it is not a directory or it is '.' or '..', skip it.
+                if (!$elementfolder->isDir() || $elementfolder->isDot()) {
+                    continue;
+                }
+                // Check that the standard class exists, if not we do
+                // not want to display it as an option as it will not work.
+                $foldername = $elementfolder->getFilename();
+                // Get the class name.
+                $classname = '\\customcertelement_' . $foldername . '\\element';
+                // Ensure the necessary class exists.
+                if (class_exists($classname)) {
+                    $component = "customcertelement_{$foldername}";
+                    $options[$foldername] = get_string('pluginname', $component);
+                }
+            }
+        }
+
+        \core_collator::asort($options);
+        return $options;
     }
 }
