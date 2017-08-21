@@ -186,7 +186,7 @@ class converter implements converter_interface {
         // bundled guzzle).
         if (defined('FILESTORAGE_QUOTA')) {
             spl_autoload_register(
-                function($class) {
+                function($class) use ($CFG) {
                     $classparts = explode("\\", $class, 2);
                     if ($classparts[0] == 'CloudConvert') {
                         require_once('phar://' . $CFG->dirroot . '/files/converter/cloudconvert/cloudconvert-php.phar/src/' . str_replace("\\", "/", $classparts[1]) . '.php');
