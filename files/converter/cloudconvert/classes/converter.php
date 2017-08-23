@@ -135,7 +135,6 @@ class converter implements converter_interface {
         return $this;
     }
 
-
     public static function are_requirements_met() : bool {
         return isset($this->config->cloudconvertapikey);
     }
