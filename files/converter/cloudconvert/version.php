@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Version details.
  *
  * @package   fileconverter_cloudconvert
  * @copyright 2017 Cameron Ball <cameron@cameron1729.xyz>
