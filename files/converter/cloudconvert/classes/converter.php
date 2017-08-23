@@ -84,19 +84,19 @@ class converter implements converter_interface {
     /**
      * @var \stdClass $config Moodle config.
      */
-    private $config;
+    private static $config;
 
     /**
      * Construtor.
      */
     public function __construct() {
         global $CFG;
-        $this->config = $CFG;
+        self::$config = $CFG;
     }
 
     public function start_document_conversion(conversion $conversion) : self {
         self::cloudconvert_api_call(function(conversion $conversion) {
-            $process = (new cloudconvert_api($this->apikey))
+            $process = (new cloudconvert_api(self::$config->cloudconvertapikey))
                      ->convert([
                          'inputformat' => pathinfo($conversion->get_sourcefile()->get_filename(), PATHINFO_EXTENSION),
                          'outputformat' => $conversion->get('targetformat'),
@@ -117,7 +117,7 @@ class converter implements converter_interface {
     public function poll_conversion_status(conversion $conversion) : self {
         self::cloudconvert_api_call(function(conversion $conversion) {
             $process = (new cloudconvert_process(
-                new cloudconvert_api($this->apikey),
+                new cloudconvert_api(self::$config->cloudconvertapikey),
                 $conversion->get('data')->url
             ))->refresh();
 
@@ -136,7 +136,7 @@ class converter implements converter_interface {
     }
 
     public static function are_requirements_met() : bool {
-        return isset($this->config->cloudconvertapikey);
+        return isset(self::$config->cloudconvertapikey);
     }
 
     public static function supports($from, $to) : bool {
@@ -184,7 +184,7 @@ class converter implements converter_interface {
                         require_once(
                             sprintf(
                                 'phar://%s/files/converter/cloudconvert/cloudconvert-php.phar/src/%s.php',
-                                $this->config->dirroot,
+                                self::$config->dirroot,
                                 str_replace("\\", "/", explode("\\", $class, 2)[1])
                             )
                         );
