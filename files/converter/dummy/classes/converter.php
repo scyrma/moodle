@@ -35,7 +35,7 @@ use core_files\converter_interface;
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class converter implements converter_interface {
+final class converter implements converter_interface {
 
     public function start_document_conversion(conversion $conversion) : self {
         global $CFG;
