@@ -84,19 +84,19 @@ class converter implements converter_interface {
     /**
      * @var \stdClass $config Moodle config.
      */
-    private static $config;
+    private $config;
 
     /**
      * Construtor.
      */
     public function __construct() {
         global $CFG;
-        self::$config = $CFG;
+        $this->config = $CFG;
     }
 
     public function start_document_conversion(conversion $conversion) : self {
         self::cloudconvert_api_call(function(conversion $conversion) {
-            $process = (new cloudconvert_api(self::$config->cloudconvertapikey))
+            $process = (new cloudconvert_api($this->config->cloudconvertapikey))
                      ->convert([
                          'inputformat' => pathinfo($conversion->get_sourcefile()->get_filename(), PATHINFO_EXTENSION),
                          'outputformat' => $conversion->get('targetformat'),
@@ -117,7 +117,7 @@ class converter implements converter_interface {
     public function poll_conversion_status(conversion $conversion) : self {
         self::cloudconvert_api_call(function(conversion $conversion) {
             $process = (new cloudconvert_process(
-                new cloudconvert_api(self::$config->cloudconvertapikey),
+                new cloudconvert_api($this->config->cloudconvertapikey),
                 $conversion->get('data')->url
             ))->refresh();
 
@@ -136,7 +136,10 @@ class converter implements converter_interface {
     }
 
     public static function are_requirements_met() : bool {
-        return isset(self::$config->cloudconvertapikey);
+        // Can't avoid using global CFG here since this function is called
+        // statically, before the class is instantiated.
+        global $CFG;
+        return isset($CFG->cloudconvertapikey);
     }
 
     public static function supports($from, $to) : bool {
@@ -171,7 +174,7 @@ class converter implements converter_interface {
      * @param string $apikey CloudConvert API key.
      * @param conversion $conversion Document conversion process.
      */
-    private static function cloudconvert_api_call(callable $op, conversion $conversion) {
+    private function cloudconvert_api_call(callable $op, conversion $conversion) {
         // Nasty hack. Both the S3 SDK and the CloudConvert SDK bundle their own version of guzzle.
         // So if we're running in prod/staging we register our own autoloader to load ONLY the CloudConvert
         // components. The guzzle components will be loaded by some other autoloader registered already.
@@ -179,12 +182,12 @@ class converter implements converter_interface {
         // bundled guzzle).
         if (defined('FILESTORAGE_QUOTA')) {
             spl_autoload_register(
-                function($class) use ($CFG) {
+                function($class) {
                     if (strpos($class, 'CloudConvert') === 0) {
                         require_once(
                             sprintf(
                                 'phar://%s/files/converter/cloudconvert/cloudconvert-php.phar/src/%s.php',
-                                self::$config->dirroot,
+                                $this->config->dirroot,
                                 str_replace("\\", "/", explode("\\", $class, 2)[1])
                             )
                         );
@@ -192,7 +195,7 @@ class converter implements converter_interface {
                 }
             );
         } else {
-            require_once('phar://' . $CFG->dirroot . '/files/converter/cloudconvert/cloudconvert-php.phar/vendor/autoload.php');
+            require_once('phar://' . $this->config->dirroot . '/files/converter/cloudconvert/cloudconvert-php.phar/vendor/autoload.php');
         }
 
         try {
