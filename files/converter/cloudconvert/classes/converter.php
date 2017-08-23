@@ -21,8 +21,8 @@
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace fileconverter_cloudconvert;
 
+namespace fileconverter_cloudconvert;
 defined('MOODLE_INTERNAL') || die();
 
 use CloudConvert\Api as cloudconvert_api;
@@ -36,7 +36,7 @@ use moodle_url;
 use stored_file;
 
 /**
- * Class for converting files between different formats using unoconv.
+ * Class for converting files between different formats using CloudConvert.
  *
  * @package    fileconverter_cloudconvert
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
@@ -71,28 +71,27 @@ class converter implements converter_interface {
     ];
 
     /**
-     * @var $mimetypes Supported mimetypes.
+     * @var array $mimetypes Supported mimetypes.
      */
     private static $mimetypes;
 
 
     /**
-     * @var $extensions Supported extensions.
+     * @var array $extensions Supported extensions.
      */
     private static $extensions;
 
-
     /**
-     * @var $apikey CloudConvert API key.
+     * @var \stdClass $config Moodle config.
      */
-    private $apikey;
+    private $config;
 
     /**
      * Construtor.
      */
     public function __construct() {
         global $CFG;
-        $this->apikey = $CFG->cloudconvertapikey ?? null;
+        $this->config = $CFG;
     }
 
     public function start_document_conversion(conversion $conversion) : self {
@@ -116,14 +115,12 @@ class converter implements converter_interface {
     }
 
     public function poll_conversion_status(conversion $conversion) : self {
-        error_log('pollenating');
         self::cloudconvert_api_call(function(conversion $conversion) {
             $process = (new cloudconvert_process(
                 new cloudconvert_api($this->apikey),
                 $conversion->get('data')->url
             ))->refresh();
 
-            error_log('step: ' . $process->step);
             if ($process->step == 'finished') {
                 $tmpfile = make_request_directory() . '/' . uniqid() . '.' . $conversion->get('targetformat');
                 $process->download($tmpfile);
@@ -140,8 +137,7 @@ class converter implements converter_interface {
 
 
     public static function are_requirements_met() : bool {
-        global $CFG;
-        return !empty($CFG->cloudconvertapikey);
+        return isset($this->config->cloudconvertapikey);
     }
 
     public static function supports($from, $to) : bool {
@@ -177,8 +173,6 @@ class converter implements converter_interface {
      * @param conversion $conversion Document conversion process.
      */
     private static function cloudconvert_api_call(callable $op, conversion $conversion) {
-        global $CFG;
-
         // Nasty hack. Both the S3 SDK and the CloudConvert SDK bundle their own version of guzzle.
         // So if we're running in prod/staging we register our own autoloader to load ONLY the CloudConvert
         // components. The guzzle components will be loaded by some other autoloader registered already.
@@ -187,9 +181,14 @@ class converter implements converter_interface {
         if (defined('FILESTORAGE_QUOTA')) {
             spl_autoload_register(
                 function($class) use ($CFG) {
-                    $classparts = explode("\\", $class, 2);
-                    if ($classparts[0] == 'CloudConvert') {
-                        require_once('phar://' . $CFG->dirroot . '/files/converter/cloudconvert/cloudconvert-php.phar/src/' . str_replace("\\", "/", $classparts[1]) . '.php');
+                    if (strpos($class, 'CloudConvert') === 0) {
+                        require_once(
+                            sprintf(
+                                'phar://%s/files/converter/cloudconvert/cloudconvert-php.phar/src/%s.php',
+                                $this->config->dirroot,
+                                str_replace("\\", "/", explode("\\", $class, 2)[1])
+                            )
+                        );
                     }
                 }
             );
@@ -232,7 +231,7 @@ class converter implements converter_interface {
     private static function get_supported_mimetypes() : array {
         return self::$mimetypes ?? self::$mimetypes = array_unique(
             array_map(
-                function($extension) {
+                function(string $extension) : string {
                     return \core_filetypes::get_types()[$extension]['type'];
                 },
                 self::get_supported_extensions()
@@ -254,11 +253,11 @@ class converter implements converter_interface {
             array_filter(
                 array_reduce(
                     self::FORMATS,
-                    function($c, $v) : array {
+                    function(array $c, array $v) : array {
                         return array_merge($c, $v);
                     }, []
                 ),
-                function($extension) {
+                function(string $extension) : bool {
                     return isset(\core_filetypes::get_types()[$extension]);
                 }
             )
