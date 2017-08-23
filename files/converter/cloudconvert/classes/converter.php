@@ -42,7 +42,7 @@ use stored_file;
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class converter implements converter_interface {
+final class converter implements converter_interface {
 
     /**
      * Various CloudConvert formats. Not all of these will be supported (depends on
