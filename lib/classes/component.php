@@ -665,7 +665,7 @@ $cache = '.var_export($cache, true).';
                     continue;
                 }
                 // START MOODLECLOUD HACK.
-                if (isset($CFG->moodlecloud_blocked_plugins) && isset($CFG->moodlecloud_blocked_plugins[$plugintype."/".$pluginname])) {
+                if (isset($CFG->moodlecloud_blocked_plugins) && isset($CFG->moodlecloud_blocked_plugins[$plugintype."_".$pluginname])) {
                     continue;
                 }
                 // END MOODLECLOUD HACK.
