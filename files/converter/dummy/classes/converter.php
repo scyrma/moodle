@@ -37,6 +37,31 @@ use core_files\converter_interface;
  */
 final class converter implements converter_interface {
 
+    // Coppied from the real CloudConvert plugin.
+    const FORMATS = [
+        'document' => [
+            'abw', 'djvu', 'doc', 'docm', 'docx', 'html', 'lwp', 'md', 'odt', 'pages', 'pages.zip', 'pdf', 'rst', 'rtf', 'sdw',
+            'tex', 'txt', 'wpd', 'wps', 'zabw'
+        ],
+
+        'image' => [
+            '3fr', 'arw', 'bmp', 'cr2', 'crw', 'dcr', 'dng', 'eps', 'erf', 'gif', 'icns', 'ico', 'jpeg', 'jpg', 'mos', 'mrw',
+            'nef', 'odd', 'orf', 'pdf', 'pef', 'png', 'ppm', 'ps',  'psd', 'raf', 'raw', 'svg', 'svgz', 'tif', 'tiff', 'webp',
+            'x3f', 'xcf', 'xps'
+        ],
+
+        'presentation' => [
+            'eps', 'html', 'key', 'key.zip', 'odp', 'pdf', 'pps', 'ppsx', 'ppt', 'pptm', 'pptx', 'ps', 'sda', 'swf'
+        ],
+
+
+        'spreadsheet' => [
+            'csv', 'html', 'numbers', 'numbers.zip', 'ods', 'pdf', 'sdc', 'xls', 'xlsm', 'xlsx'
+        ]
+    ];
+
+    private static $extensions;
+
     public function start_document_conversion(conversion $conversion) : self {
         global $CFG;
 
@@ -61,6 +86,33 @@ final class converter implements converter_interface {
     }
 
     public function get_supported_conversions() : string {
-        return get_string('upgrademessage', 'fileconverter_dummy');
+        return get_string(
+            'upgrademessage',
+            'fileconverter_dummy',
+            join(
+                ', ',
+                (function(array $array) : array {
+                    sort($array);
+                    return $array;
+                })(self::get_supported_extensions())
+            )
+        );
+    }
+
+    // Copied from the real converter plugin.
+    private static function get_supported_extensions() : array {
+        return self::$extensions ?? self::$extensions = array_unique(
+            array_filter(
+                array_reduce(
+                    self::FORMATS,
+                    function(array $c, array $v) : array {
+                        return array_merge($c, $v);
+                    }, []
+                ),
+                function(string $extension) : bool {
+                    return isset(\core_filetypes::get_types()[$extension]);
+                }
+            )
+        );
     }
 }
