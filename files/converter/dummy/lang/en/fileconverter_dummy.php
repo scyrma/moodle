@@ -18,11 +18,11 @@
  * Strings for plugin 'fileconverter_googledrive'
  *
  * @package   fileconverter_googledrive
- * @copyright 2017 Damyon Wiese
+ * @copyright 2017 Cameron Ball
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'MoodleCloud';
-$string['upgrademessage'] = 'Hey bro to get thos massiv conversion gaINs you need to spedn some dollaRs yuo know waht I mean?';
+$string['upgrademessage'] = 'Your free MoodleCloud site does not support file conversion. Upgrade to a Starter or Moodle for School plan to get conversion from these file types - {$a}';
