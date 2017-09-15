@@ -35,6 +35,7 @@ class statistics {
                 'usage'     => array(
                         'including_drafts' => self::get_disk_usage(),
                         'excluding_drafts' => self::get_disk_usage(true),
+                        'backups_only'     => self::get_backups_usage(),
                     ),
                 'types'     => array(
                         'including_drafts' => self::get_file_breakdown(),
@@ -139,6 +140,25 @@ FROM (
 EOF;
 
         return $DB->get_field_sql($sql, $params);
+    }
+
+    public static function get_backups_usage() {
+        global $DB;
+
+        $sql = <<<EOF
+SELECT
+    SUM(f.filesize)
+FROM (
+    SELECT DISTINCT
+        filesize
+    FROM {files}
+    WHERE referencefileid IS NULL
+       AND (component = 'backup' AND mimetype = 'application/vnd.moodle.backup')
+    GROUP BY filesize, contenthash
+) AS f;
+EOF;
+        $backups_usage = $DB->get_field_sql($sql);
+        return !empty($backups_usage) ? $backups_usage : "0";
     }
 
     public static function get_file_breakdown($excludedraft = false) {
