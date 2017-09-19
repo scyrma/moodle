@@ -1227,6 +1227,8 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 
 .moodle-dialogue-base .moodle-dialogue-wrap .moodle-dialogue-hd h1 {
     @extend .modal-title;
+    margin: 0 1em;
+    text-align: center;
 }
 
 .moodle-dialogue-base .moodle-dialogue-wrap .moodle-dialogue-hd .yui3-widget-buttons {
@@ -1608,6 +1610,10 @@ body.jsenabled .formlistingradio {
 
 body.jsenabled .formlisting {
     display: block;
+}
+
+body {
+    -ms-overflow-style: scrollbar;
 }
 
 /* Badges styles */
