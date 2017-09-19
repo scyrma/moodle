@@ -82,6 +82,7 @@ abstract class backup_cron_automated_helper {
         $config = get_config('backup');
 
         mtrace("Checking automated backup status",'...');
+
         $state = backup_cron_automated_helper::get_automated_backup_state($rundirective);
         if ($state === backup_cron_automated_helper::STATE_DISABLED) {
             mtrace('INACTIVE');
