@@ -2906,7 +2906,11 @@ function xmldb_main_upgrade($oldversion) {
             ['hub', '%' . $DB->sql_like_escape('_' . $cleanoldhuburl)]);
         foreach ($entries as $entry) {
             $newname = substr($entry->name, 0, -strlen($cleanoldhuburl)) . $cleannewhuburl;
-            $DB->update_record('config_plugins', ['id' => $entry->id, 'name' => $newname]);
+            // START MOODLECLOUD HACK.
+            try {
+                $DB->update_record('config_plugins', ['id' => $entry->id, 'name' => $newname]);
+            } catch (dml_exception $e) {}
+            // END MOODLECLOUD HACK.
         }
 
         // Update published courses.
