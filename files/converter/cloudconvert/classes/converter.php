@@ -31,6 +31,7 @@ use CloudConvert\Process as cloudconvert_process;
 use Exception;
 use core_files\conversion;
 use core_files\converter_interface;
+use local_logging\logger;
 use moodle_exception;
 use moodle_url;
 use stored_file;
@@ -193,15 +194,26 @@ final class converter implements converter_interface {
         );
 
         try {
+            logger::log(
+                'CloudConvert API call',
+                [
+                    'sourcefileid' => $conversion->get_sourcefile()->get_id(),
+                    'filearea' => $conversion->get_sourcefile()->get_filearea(),
+                    'component' => $conversion->get_sourcefile()->get_component()
+                ],
+                'documentconversion'
+            );
             $op($conversion);
         } catch (cloudconvert_unavailable_exception $e) {
             // Don't change conversion status, or rethrow the exception.
             // This has the effect that we can keep polling the conversion
             // status without the user getting disrupted.
+            logger::log('CloudConvert unavailable', [$e->getMessage()], 'documentconversion');
             $conversion->set('statusmessage', $e->getMessage());
             $conversion->update();
         } catch (Exception $e) {
             // For any other failuers, fail the conversion and rethrow.
+            logger::log('Unrecoverable exception', [$e->getMessage()], 'documentconversion', \Monolog\Logger::ERROR);
             $conversion->set('status', conversion::STATUS_FAILED);
             $conversion->set('statusmessage', $e->getMessage());
             $conversion->update();
