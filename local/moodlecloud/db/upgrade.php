@@ -52,5 +52,25 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017051701, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2017092400) {
+        $table = new xmldb_table('moodlecloud_touchpoints');
+
+        //name, type, precision, unsigned, notnull, sequence, default, previous
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('created', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null);
+        $table->add_field('status', XMLDB_TYPE_CHAR, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'pending', null);
+        $table->add_field('attempts', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0, null);
+        $table->add_field('data', XMLDB_TYPE_TEXT, null, null, null, null, null, null);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        if(!$DB->get_manager()->table_exists($table)) {
+            $DB->get_manager()->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2017092400, 'local', 'moodlecloud');
+    }
+
     return true;
 }
