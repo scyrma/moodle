@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,19 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information.
+ * Computation success.
  *
- * @package   local_moodlecloud
- * @copyright 2015 Andrew Nicols <andrew@nicols.co.uk>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    local_moodlecloud
+ * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_moodlecloud\common;
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017092400;       // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2014110400;       // Requires this Moodle version
-$plugin->component = 'local_moodlecloud';  // Full name of the plugin (used for diagnostics)
-$plugin->dependencies = [
-    'local_logging' => ANY_VERSION,
-    'local_filestorage' => ANY_VERSION
-];
+/**
+ * Class representing a computation success.
+ *
+ * @copyright 2017 Cameron Ball <cameron@cameron1729.xyz>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+final class success extends computation_result {
+
+    public function bimap(callable $f1, callable $f2) : bimappable {
+        return computation_result::success($f2($this->value));
+    }
+
+    public function extract(callable $c1, callable $c2) {
+        return $c2($this->value);
+    }
+}

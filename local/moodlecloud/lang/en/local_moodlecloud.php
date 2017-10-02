@@ -22,6 +22,21 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['emailnotifications'] = 'Email';
+$string['emailnotificationsinfo'] = 'Email notifications are sent to the regisitered MoodleCloud site account owner when site limits are approaching or have been reached.
+Disable the notifications if the account owner no longer wishes to receive these emails.';
+$string['moodlecloudnotifications'] = 'MoodleCloud Notifications';
+$string['onlysiteownercanchangesettings'] = 'Only the site owner can modify these settings.';
 $string['pluginname'] = 'MoodleCloud';
 $string['reporting_task'] = 'MoodleCloud Statistics Reporting';
+$string['touchpoint_task'] = 'MoodleCloud Touchpoints';
 $string['userquotahit'] = 'You have reached your quota for the number of users you may have on your site.  For more information on this limitation, please visit <a href="{$a->helpurl}" target="_blank">{$a->helpurl}</a>.';
+
+$string['send_user_limit_warning'] = 'Send user limit warning';
+$string['send_user_limit_warning_description'] = 'An email will be sent when your site is approaching the user limit. You will be able to continue to add users until you reach your limit.';
+
+$string['send_user_limit_reached'] = 'Send user limit reached';
+$string['send_user_limit_reached_description'] = 'An email will be sent when your site user limit is reached. You will not be able to add any further users until you delete users you no longer need or you increase your limit by upgrading to a larger plan.';
+
+$string['send_file_storage_limit_warning'] = 'Send file storage limit warning';
+$string['send_file_storage_limit_warning_description'] = 'An email will be sent when your site is approaching the file storage limit. You will be able to continue to add files if they are smaller in size than the file storage amount remaining';
