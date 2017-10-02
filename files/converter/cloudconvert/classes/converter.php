@@ -176,27 +176,21 @@ final class converter implements converter_interface {
      */
     private function cloudconvert_api_call(callable $op, conversion $conversion) {
         // Nasty hack. Both the S3 SDK and the CloudConvert SDK bundle their own version of guzzle.
-        // So if we're running in prod/staging we register our own autoloader to load ONLY the CloudConvert
-        // components. The guzzle components will be loaded by some other autoloader registered already.
-        // If running locally, just require the CloudConvert SDK autoloader (which will autoload CloudConvert's
-        // bundled guzzle).
-        if (defined('FILESTORAGE_QUOTA')) {
-            spl_autoload_register(
-                function($class) {
-                    if (strpos($class, 'CloudConvert') === 0) {
-                        require_once(
-                            sprintf(
-                                'phar://%s/files/converter/cloudconvert/cloudconvert-php.phar/src/%s.php',
-                                $this->config->dirroot,
-                                str_replace("\\", "/", explode("\\", $class, 2)[1])
-                            )
-                        );
-                    }
+        // So  we register our own autoloader to load ONLY the CloudConvert components.
+        // The guzzle components will be loaded by some other autoloader registered already.
+        spl_autoload_register(
+            function($class) {
+                if (strpos($class, 'CloudConvert') === 0) {
+                    require_once(
+                        sprintf(
+                            'phar://%s/files/converter/cloudconvert/cloudconvert-php.phar/src/%s.php',
+                            $this->config->dirroot,
+                            str_replace("\\", "/", explode("\\", $class, 2)[1])
+                        )
+                    );
                 }
-            );
-        } else {
-            require_once('phar://' . $this->config->dirroot . '/files/converter/cloudconvert/cloudconvert-php.phar/vendor/autoload.php');
-        }
+            }
+        );
 
         try {
             $op($conversion);
