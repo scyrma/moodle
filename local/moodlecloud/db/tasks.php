@@ -25,8 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
+$tasks = [
+    [
         'classname' => 'local_moodlecloud\task\report_task',
         'blocking' => 0,
         'minute' => '*/10',
@@ -34,5 +34,14 @@ $tasks = array(
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*'
-    )
-);
+    ],
+    [
+        'classname' => 'local_moodlecloud\task\touchpoint_task',
+        'blocking' => 0,
+        'minute' => '*/10',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
+    ]
+];
