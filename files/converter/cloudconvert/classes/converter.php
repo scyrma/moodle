@@ -25,6 +25,8 @@
 namespace fileconverter_cloudconvert;
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/local/logging/vendor/autoload.php');
+
 use CloudConvert\Api as cloudconvert_api;
 use CloudConvert\Exceptions\ApiTemporaryUnavailableException as cloudconvert_unavailable_exception;
 use CloudConvert\Process as cloudconvert_process;
@@ -96,6 +98,7 @@ final class converter implements converter_interface {
     }
 
     public function start_document_conversion(conversion $conversion) : self {
+        self::log('Starting conversion', $conversion);
         self::cloudconvert_api_call(function(conversion $conversion) {
             $process = (new cloudconvert_api($this->config->cloudconvertapikey))
                      ->convert([
@@ -112,10 +115,12 @@ final class converter implements converter_interface {
                        ->update();
         }, $conversion);
 
+        self::log('Conversion sent to CloudConvert', $conversion);
         return $this;
     }
 
     public function poll_conversion_status(conversion $conversion) : self {
+        self::log('Polling conversion status', $conversion);
         self::cloudconvert_api_call(function(conversion $conversion) {
             $process = (new cloudconvert_process(
                 new cloudconvert_api($this->config->cloudconvertapikey),
@@ -123,6 +128,7 @@ final class converter implements converter_interface {
             ))->refresh();
 
             if ($process->step == 'finished') {
+                self::log('Conversion finished', $conversion);
                 $tmpfile = make_request_directory() . '/' . uniqid() . '.' . $conversion->get('targetformat');
                 $process->download($tmpfile);
 
@@ -130,6 +136,8 @@ final class converter implements converter_interface {
                            ->set('status', conversion::STATUS_COMPLETE)
                            ->set('statusmessage', $process->message)
                            ->update();
+            } else {
+                self::log('Conversion still in progress', $conversion, ['conversion process step' => $process->step]);
             }
         }, $conversion);
 
@@ -194,30 +202,20 @@ final class converter implements converter_interface {
         );
 
         try {
-            logger::log(
-                'CloudConvert API call',
-                [
-                    'sourcefileid' => $conversion->get_sourcefile()->get_id(),
-                    'filearea' => $conversion->get_sourcefile()->get_filearea(),
-                    'component' => $conversion->get_sourcefile()->get_component()
-                ],
-                'documentconversion'
-            );
             $op($conversion);
         } catch (cloudconvert_unavailable_exception $e) {
             // Don't change conversion status, or rethrow the exception.
             // This has the effect that we can keep polling the conversion
             // status without the user getting disrupted.
-            logger::log('CloudConvert unavailable', [$e->getMessage()], 'documentconversion');
+            self::log('CloudConvert unavailable', $conversion, ['exception' => $e->getMessage()]);
             $conversion->set('statusmessage', $e->getMessage());
             $conversion->update();
         } catch (Exception $e) {
-            // For any other failuers, fail the conversion and rethrow.
-            logger::log('Unrecoverable exception', [$e->getMessage()], 'documentconversion', \Monolog\Logger::ERROR);
+            // For any other failures, fail the conversion and rethrow.
+            logger::log('Unrecoverable exception', $conversion, ['exception' => $e->getMessage()], \Monolog\Logger::ERROR);
             $conversion->set('status', conversion::STATUS_FAILED);
             $conversion->set('statusmessage', $e->getMessage());
             $conversion->update();
-            throw $e;
         }
     }
 
@@ -269,6 +267,27 @@ final class converter implements converter_interface {
                     return isset(\core_filetypes::get_types()[$extension]);
                 }
             )
+        );
+    }
+
+    private static function log(
+        string $eventname,
+        conversion $conversion,
+        array $data = [],
+        int $level = \Monolog\Logger::INFO
+    ) {
+        logger::log(
+            $eventname,
+            [
+                'conversion' => [
+                    'conversionid' => $conversion->get('id'),
+                    'sourcefileid' => $conversion->get_sourcefile()->get_id(),
+                    'filearea' => $conversion->get_sourcefile()->get_filearea(),
+                    'component' => $conversion->get_sourcefile()->get_component()
+                ]
+            ] + $data,
+            'documentconverter_cloudconvert',
+            $level
         );
     }
 }
