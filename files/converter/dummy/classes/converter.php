@@ -21,12 +21,15 @@
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace fileconverter_dummy;
 
+namespace fileconverter_dummy;
 defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/local/logging/vendor/autoload.php');
 
 use core_files\conversion;
 use core_files\converter_interface;
+use local_logging\logger;
 
 /**
  * Dummy filconverter. Always serves the same PDF regardless of input.
@@ -65,9 +68,24 @@ final class converter implements converter_interface {
     public function start_document_conversion(conversion $conversion) : self {
         global $CFG;
 
+        if (
+            $conversion->get_sourcefile()->get_filearea() !== 'submission_files' ||
+            $conversion->get_sourcefile()->get_component() !== 'assignsubmission_file'
+        ) {
+            logger::log(
+                'Unusual filearea or component detected',
+                [
+                    'filearea' => $conversion->get_sourcefile()->get_filearea(),
+                    'component' => $conversion->get_sourcefile()->get_component()
+                ],
+                'documentconverter_dummy',
+                \Monolog\Logger::WARNING
+            );
+        }
+
         $conversion->store_destfile_from_path($CFG->dirroot . '/files/converter/dummy/placeholder.pdf')
                    ->set('status', conversion::STATUS_COMPLETE)
-                   ->set('statusmessage', 'Can I hab a ubrgrade pls?')
+                   ->set('statusmessage', 'Upgrade please!')
                    ->update();
 
         return $this;
