@@ -24,5 +24,5 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'MoodleCloud';
-$string['upgrademessage'] = 'Your free MoodleCloud site does not support file conversion. Upgrade to a Starter or Moodle for School plan to get conversion from these file types - {$a}';
+$string['pluginname'] = 'Default';
+$string['upgrademessage'] = 'Default document conversion is not available on your Free site. Starter and Moodle for School plans include default document conversion for over 30 file types. To get access to this default document converter, upgrade your plan in the MoodleCloud portal.';
