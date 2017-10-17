@@ -35,7 +35,8 @@ if (right_to_left()) {
 <?php require('header.php'); ?>
 <div id="page" class="container-fluid">
     <?php echo $OUTPUT->full_header(); ?>
-    <div id="page-content" class="row-fluid"><div class="custom-width">
+    <div id="page-content" class="row-fluid">
+        <div class="custom-width">
         <section id="region-main" class="<?php echo $regionmain; ?>">
             <?php
             echo $OUTPUT->course_content_header();
