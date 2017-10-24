@@ -26,7 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 use local_moodlecloud\common\functions;
 
-if ($hassiteconfig) {
+global $DB;
+
+if ($hassiteconfig && $DB->get_manager()->table_exists('moodlecloud_touchpoints')) {
     global $CFG;
     require_once($CFG->dirroot . '/local/moodlecloud/classes/siteowner_configcheckbox.php');
 
