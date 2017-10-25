@@ -65,14 +65,14 @@ final class container {
             new file_factory(
                 get_file_storage(),
                 function(int $uid) : stdClass {
-                    return self::get_userrecords()[$uid];
+                    return self::get_userrecords()[$uid] ?? self::get_null_user();
                 }
             )
         );
     }
 
     /**
-     * Helper function to populare the user cache. We simply get every single
+     * Helper function to populate the user cache. We simply get every single
      * user that is featured in the files table, since at most there will be 500
      * of them.
      *
@@ -82,5 +82,11 @@ final class container {
     private static function get_userrecords() : array {
         global $DB;
         return self::$usercache = self::$usercache ?? ($DB->get_records_sql('SELECT DISTINCT u.* from {user} u INNER JOIN {files} f on u.id = f.userid'));
+    }
+
+    private static function get_null_user() : stdClass {
+        return (object)[
+            'id' => -1
+        ];
     }
 }
