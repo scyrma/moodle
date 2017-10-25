@@ -66,12 +66,26 @@ final class file_repository {
     }
 
     /**
+     * Get files we consider "valid".
+     *
+     * A valid file has: size, a mimetype, and is not a reference file.
+     *
+     * @return file_iterator
+     */
+    public function get_valid_files() : file_iterator {
+        return $this->get(function(stdClass $filerecord) : bool {
+                return !!$filerecord->filesize && !!$filerecord->mimetype && !$filerecord->referencefileid;
+            }
+        );
+    }
+
+    /**
      * Get all the files.
      *
      * @param callable $filter An optional filter to filter out irellevant files.
      * @return file_iterator
      */
-    public function get(callable $filter = null) : file_iterator {
+    private function get(callable $filter = null) : file_iterator {
         return new file_iterator(
             new mapping_iterator(
                 $filter ? new CallbackFilterIterator($this->collection, $filter) : $this->collection,
@@ -82,17 +96,4 @@ final class file_repository {
         );
     }
 
-    /**
-     * Get files we consider "valid".
-     *
-     * A valid file has: size, an associated user, and is not a reference file.
-     *
-     * @return file_iterator
-     */
-    public function get_valid_files() : file_iterator {
-        return $this->get(function(stdClass $filerecord) : bool {
-                return !!$filerecord->filesize && !!$filerecord->userid && !$filerecord->referencefileid;
-            }
-        );
-    }
 }
