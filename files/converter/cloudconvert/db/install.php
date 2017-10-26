@@ -19,22 +19,20 @@ defined('MOODLE_INTERNAL') || die();
 
 function xmldb_fileconverter_cloudconvert_install() {
     global $DB;
+    $existingrecord = $DB->get_record('config', ['name' => 'converter_plugins_sortorder']);
 
-    $sortorder = 'cloudconvert';
-    $existingconverters = $DB->get_record('config', ['name' => 'converter_plugins_sortorder']);
-
-    if($existingconverters) {
-        $sortorder = join(',', (array_merge(explode(',', $existingconverters->value), ['cloudconvert'])));
+    if($existingrecord) {
+        $existingrecord->value = join(',', (array_merge(explode(',', $existingrecord->value), ['cloudconvert'])));
+        $DB->update_record('config', $existingrecord);
+    } else {
+        $DB->insert_record(
+            'config',
+            (object)[
+                'name' => 'converter_plugins_sortorder',
+                'value' => 'cloudconvert'
+            ]
+        );
     }
-
-    $DB->insert_record(
-        'config',
-        (object)
-        [
-            'name' => 'converter_plugins_sortorder',
-            'value' => $sortorder
-        ]
-    );
 
     return true;
 }
