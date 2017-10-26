@@ -19,22 +19,20 @@ defined('MOODLE_INTERNAL') || die();
 
 function xmldb_fileconverter_dummy_install() {
     global $DB;
+    $existingrecord = $DB->get_record('config', ['name' => 'converter_plugins_sortorder']);
 
-    $sortorder = 'dummy';
-    $existingconverters = $DB->get_record('config', ['name' => 'converter_plugins_sortorder']);
-
-    if($existingconverters) {
-        $sortorder = join(',', (array_merge(explode(',', $existingconverters->value), ['dummy'])));
+    if($existingrecord) {
+        $existingrecord->value = join(',', (array_merge(explode(',', $existingrecord->value), ['dummy'])));
+        $DB->update_record('config', $existingrecord);
+    } else {
+        $DB->insert_record(
+            'config',
+            (object)[
+                'name' => 'converter_plugins_sortorder',
+                'value' => 'dummy'
+            ]
+        );
     }
-
-    $DB->insert_record(
-        'config',
-        (object)
-        [
-            'name' => 'converter_plugins_sortorder',
-            'value' => $sortorder
-        ]
-    );
 
     return true;
 }
