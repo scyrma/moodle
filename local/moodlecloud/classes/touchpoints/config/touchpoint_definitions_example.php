@@ -59,7 +59,9 @@ return [
             (object)[
                 "name" => "signup_touchpoint",
                 "arguments" => [
-                    "reached_user_quota"
+                    "reached_user_quota",
+                    [
+                    ]
                 ]
             ]
         ]
