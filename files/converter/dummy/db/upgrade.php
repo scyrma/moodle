@@ -23,13 +23,15 @@ function xmldb_fileconverter_dummy_upgrade($oldversion) {
     // Moodle v3.3.0 release upgrade line.
     // Put any upgrade step following this.
 
-    if ($oldversion < 2017051500) {
+    if ($oldversion <= 2017081501) {
         $existingrecord = $DB->get_record('config', ['name' => 'converter_plugins_sortorder']);
 
         if($existingrecord) {
-            $existingrecord->value = join(',', (array_merge(explode(',', $existingrecord->value), ['dummy'])));
-            $DB->update_record('config', $existingrecord);
-        } else {
+            $existingconverters = explode(',', $existingrecord->value);
+            if(!in_array('dummy', $existingconverters)) {
+                $existingrecord->value = join(',', (array_merge($existingconverters, ['dummy'])));
+                $DB->update_record('config', $existingrecord);
+            }
             $DB->insert_record(
                 'config',
                 (object)[
@@ -39,7 +41,7 @@ function xmldb_fileconverter_dummy_upgrade($oldversion) {
             );
         }
 
-        upgrade_plugin_savepoint(true, 2017051500, 'fileconverter', 'dummy');
+        upgrade_plugin_savepoint(true, 2017081501, 'fileconverter', 'dummy');
     }
 
     return true;
