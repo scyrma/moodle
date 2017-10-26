@@ -22,8 +22,11 @@ function xmldb_fileconverter_cloudconvert_install() {
     $existingrecord = $DB->get_record('config', ['name' => 'converter_plugins_sortorder']);
 
     if($existingrecord) {
-        $existingrecord->value = join(',', (array_merge(explode(',', $existingrecord->value), ['cloudconvert'])));
-        $DB->update_record('config', $existingrecord);
+        $existingconverters = explode(',', $existingrecord->value);
+        if(!in_array('cloudconvert', $existingconverters)) {
+            $existingrecord->value = join(',', (array_merge($existingconverters, ['cloudconvert'])));
+            $DB->update_record('config', $existingrecord);
+        }
     } else {
         $DB->insert_record(
             'config',
