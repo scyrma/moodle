@@ -32,6 +32,7 @@ function xmldb_fileconverter_dummy_upgrade($oldversion) {
                 $existingrecord->value = join(',', (array_merge($existingconverters, ['dummy'])));
                 $DB->update_record('config', $existingrecord);
             }
+        } else {
             $DB->insert_record(
                 'config',
                 (object)[
@@ -40,7 +41,6 @@ function xmldb_fileconverter_dummy_upgrade($oldversion) {
                 ]
             );
         }
-
         upgrade_plugin_savepoint(true, 2017081501, 'fileconverter', 'dummy');
     }
 
