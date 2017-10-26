@@ -30,10 +30,7 @@ function xmldb_fileconverter_cloudconvert_upgrade($oldversion) {
             $existingconverters = explode(',', $existingrecord->value);
 
             // Remove the dummy plugin from the list.
-            $existingconverters = join(
-                ',',
-                array_merge(array_diff($existingconverters, ['dummy']))
-            );
+            $existingconverters = array_merge(array_diff($existingconverters, ['dummy']));
 
             if(!in_array('cloudconvert', $existingconverters)) {
                 $existingrecord->value = join(',', (array_merge($existingconverters, ['cloudconvert'])));
