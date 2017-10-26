@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,12 +15,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Strings for fileconverter_cloudconvert.
- *
- * @package    fileconverter_cloudconvert
- * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'MoodleCloud Converter';
+function xmldb_fileconverter_cloudconvert_install() {
+    global $DB;
+
+    $sortorder = 'cloudconvert';
+    $existingconverters = $DB->get_record('config', ['name' => 'converter_plugins_sortorder']);
+
+    if($existingconverters) {
+        $sortorder = join(',', (array_merge(explode(',', $existingconverters->value), ['cloudconvert'])));
+    }
+
+    $DB->insert_record(
+        'config',
+        (object)
+        [
+            'name' => 'converter_plugins_sortorder',
+            'value' => $sortorder
+        ]
+    );
+
+    return true;
+}
