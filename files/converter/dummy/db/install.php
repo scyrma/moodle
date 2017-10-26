@@ -24,7 +24,7 @@ function xmldb_fileconverter_dummy_install() {
     $existingconverters = $DB->get_record('config', ['name' => 'converter_plugins_sortorder']);
 
     if($existingconverters) {
-        $sortorder = join(',', (array_merge(explode(',', $existingconverters['value']), ['dummy'])));
+        $sortorder = join(',', (array_merge(explode(',', $existingconverters->value), ['dummy'])));
     }
 
     $DB->insert_record(
@@ -32,7 +32,7 @@ function xmldb_fileconverter_dummy_install() {
         (object)
         [
             'name' => 'converter_plugins_sortorder',
-            'value' => 'dummy'
+            'value' => $sortorder
         ]
     );
 
