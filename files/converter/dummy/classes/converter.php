@@ -66,8 +66,6 @@ final class converter implements converter_interface {
     private static $extensions;
 
     public function start_document_conversion(conversion $conversion) : self {
-        global $CFG;
-
         if (
             $conversion->get_sourcefile()->get_filearea() !== 'submission_files' ||
             $conversion->get_sourcefile()->get_component() !== 'assignsubmission_file'
@@ -83,7 +81,7 @@ final class converter implements converter_interface {
             );
         }
 
-        $conversion->store_destfile_from_path($CFG->dirroot . '/files/converter/dummy/placeholder.pdf')
+        $conversion->store_destfile_from_string(self::get_placeholder_pdf())
                    ->set('status', conversion::STATUS_COMPLETE)
                    ->set('statusmessage', 'Upgrade please!')
                    ->update();
@@ -132,5 +130,12 @@ final class converter implements converter_interface {
                 }
             )
         );
+    }
+
+    private static function get_placeholder_pdf() : string {
+        global $CFG;
+
+        return file_get_contents('https://assets.gl.moodlecloud.com/moodle/MoodleCloudConverterMessage.pdf') ?:
+               file_get_contents($CFG->dirroot . '/files/converter/dummy/placeholder.pdf');
     }
 }
