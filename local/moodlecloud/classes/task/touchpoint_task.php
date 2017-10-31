@@ -47,7 +47,7 @@ class touchpoint_task extends \core\task\scheduled_task {
         global $CFG, $DB;
 
         // If the global killswitch is set to false we do nothing.
-        if (isset($CFG->moodlecloud_touchpoints_enabled) && $CFG->moodlecloud_touchpoints_enabled === false) {
+        if (isset($CFG->moodlecloud_touchpoints_enabled) && $CFG->moodlecloud_touchpoints_enabled == false) {
             return;
         }
 
