@@ -55,6 +55,7 @@ class reached_file_quota_percentage implements criterion {
      * @return bool
      */
     public function is_met() : bool {
-        return (file_system_s3::unique_storage_size_used() / FILESTORAGE_QUOTA) >= $this->threshold;;
+        return file_system_s3::unique_storage_size_used() < FILESTORAGE_QUOTA &&
+               file_system_s3::unique_storage_size_used() / FILESTORAGE_QUOTA >= $this->threshold;;
     }
 }
