@@ -33,7 +33,6 @@ use local_moodlecloud\restrictions\userquota;
  */
 class reached_user_quota implements criterion {
 
-
     /**
      * Has the site exhausted its user quota?
      *
