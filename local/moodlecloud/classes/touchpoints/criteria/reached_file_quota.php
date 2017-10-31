@@ -34,7 +34,7 @@ use local_filestorage\file_storage\file_system_s3;
  * @copyright 2017 Cameron Ball <cameron@cameron1729.xyz>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class reached_file_quota_percentage implements criterion {
+class reached_file_quota implements criterion {
 
     /**
      * Has the site exhausted its file quota?
