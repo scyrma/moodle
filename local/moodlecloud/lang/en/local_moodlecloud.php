@@ -40,3 +40,6 @@ $string['send_user_limit_reached_description'] = 'An email will be sent when you
 
 $string['send_file_storage_limit_warning'] = 'Send file storage limit warning';
 $string['send_file_storage_limit_warning_description'] = 'An email will be sent when your site is approaching the file storage limit. You will be able to continue to add files if they are smaller in size than the file storage amount remaining';
+
+$string['send_file_storage_limit_reached'] = 'Send file storage limit reached';
+$string['send_file_storage_limit_reached_description'] = 'An email will be sent when your site file limit is reached. You will not be able to add any further files until you delete files you no longer need or you increase your limit by upgrading to a larger plan.';
