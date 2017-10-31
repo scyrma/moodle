@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 return [
     (object)[
         "name" => "Send user limit warning",
-        "cooldown" => 604800,
+        "cooldown" => 60,
         "criteria" => [
             (object)[
                 "name" => "reached_user_quota_percentage",
@@ -48,7 +48,7 @@ return [
     ],
     (object)[
         "name" => "Send user limit reached",
-        "cooldown" => 604800,
+        "cooldown" => 60,
         "criteria" => [
             (object)[
                 "name" => "reached_user_quota",
@@ -60,14 +60,15 @@ return [
                 "name" => "signup_touchpoint",
                 "arguments" => [
                     "reached_user_quota",
-                    []
+                    [
+                    ]
                 ]
             ]
         ]
     ],
     (object)[
         "name" => "Send file storage limit warning",
-        "cooldown" => 604800,
+        "cooldown" => 60,
         "criteria" => [
             (object)[
                 "name" => "reached_file_quota_percentage",
@@ -82,25 +83,6 @@ return [
                     [
                         "quotaUsed" => \local_filestorage\file_storage\file_system_s3::unique_storage_size_used()
                     ]
-                ]
-            ]
-        ]
-    ],
-    (object)[
-        "name" => "Send file limit reached",
-        "cooldown" => 604800,
-        "criteria" => [
-            (object)[
-                "name" => "reached_file_quota",
-                "arguments" => []
-            ]
-        ],
-        "actions" => [
-            (object)[
-                "signup_touchpoint",
-                "arguments" => [
-                    "reached_file_quota",
-                    []
                 ]
             ]
         ]

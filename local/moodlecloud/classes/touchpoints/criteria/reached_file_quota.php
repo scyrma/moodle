@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * User quota percentage reached criterion.
+ * File quota percentage reached criterion.
  *
  * @package    local_moodlecloud
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
@@ -26,36 +26,22 @@ namespace local_moodlecloud\touchpoints\criteria;
 defined('MOODLE_INTERNAL') || die();
 
 use local_moodlecloud\touchpoints\criterion;
-use local_moodlecloud\restrictions\userquota;
+use local_filestorage\file_storage\file_system_s3;
 
 /**
- * Class representing whether or not a site hasuse more than a given percentage
- * of its available user slots.
+ * Class representing whether or not a site has exhausted its file quota.
  *
  * @copyright 2017 Cameron Ball <cameron@cameron1729.xyz>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class reached_user_quota_percentage implements criterion {
-
-    /** @var float $threshold Threshold to test against. */
-    private $threshold;
+class reached_file_quota_percentage implements criterion {
 
     /**
-     * Constructor.
-     *
-     * @param float $threshold Threshold to test against.
-     */
-    public function __construct(float $threshold) {
-        $this->threshold = $threshold;
-    }
-
-    /**
-     * Is the site over the threshold?
+     * Has the site exhausted its file quota?
      *
      * @return bool
      */
     public function is_met() : bool {
-        return !empty(userquota::number_of_user_slots_remaining()) &&
-               1 - userquota::number_of_user_slots_remaining() / MOODLECLOUD_USER_QUOTA >= $this->threshold;;
+        return file_system_s3::unique_storage_size_used() >= FILESTORAGE_QUOTA;
     }
 }
