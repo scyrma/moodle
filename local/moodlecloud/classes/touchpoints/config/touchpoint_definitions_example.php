@@ -87,7 +87,7 @@ return [
         ]
     ],
     (object)[
-        "name" => "Send file limit reached",
+        "name" => "Send file storage limit reached",
         "cooldown" => 604800,
         "criteria" => [
             (object)[
@@ -97,7 +97,7 @@ return [
         ],
         "actions" => [
             (object)[
-                "signup_touchpoint",
+                "name" => "signup_touchpoint",
                 "arguments" => [
                     "reached_file_quota",
                     []
