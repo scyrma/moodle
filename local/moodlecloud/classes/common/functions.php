@@ -92,13 +92,14 @@ class functions {
     /**
      * Function composition.
      *
-     * @param callable $f1
-     * @param callable $f2
-     * @return callable The composition, $f1 ∘ $g1
+     * @param callable $fs,...
+     * @return callable The composition, $f1 ∘ $f1 ∘ ... ∘ $fn
      */
-    public static function compose(callable $f1, callable $f2) : callable {
-        return function($arg) use ($f1, $f2) {
-            return $f1($f2($arg));
+    public static function compose(callable ...$fs) : callable {
+        return function($arg) use ($fs) {
+            return array_reduce(array_reverse($fs), function($c, $f) {
+                return $f($c);
+            }, $arg);
         };
     }
 
