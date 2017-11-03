@@ -220,4 +220,10 @@ class functions {
     public static function bimap(callable $c1, callable $c2, bimappable $p) : bimappable {
         return $p->bimap($c1, $c2);
     }
+
+    public static function export(string ...$what) {
+        return array_map(function($what) {
+            return self::class . '::' . $what;
+        }, $what);
+    }
 }
