@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,15 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for plugin 'fileconverter_googledrive'
+ * Dummy converter tasks.
  *
- * @package   fileconverter_googledrive
- * @copyright 2017 Cameron Ball
+ * @package   fileconverter_dummy
+ * @copyright 2017 Cameron Ball <cameron@cameron1729.xyz>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'MoodleCloud Converter';
-$string['upgrademessage'] = 'MoodleCloud document conversion is not available on your Free site. Starter and Moodle for School plans include default document conversion for over 30 file types. To get access to this default document converter, upgrade your plan in the MoodleCloud portal.';
-$string['conversioncleanup'] = 'Stale document conversion cleanup.';
+$tasks = [
+    [
+        'classname' => 'fileconverter_dummy\document_conversions_cleanup_task',
+        'blocking' => 0,
+        'minute' => '*/10',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
+    ]
+];
