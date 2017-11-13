@@ -524,7 +524,7 @@ function attendance_exporttocsv($data, $filename) {
 /**
  * Get session data for form.
  * @param stdClass $formdata moodleform - attendance form.
- * $param mod_attendance_structure $att - used to get attendance level subnet.
+ * @param mod_attendance_structure $att - used to get attendance level subnet.
  * @return array.
  */
 function attendance_construct_sessions_data_for_add($formdata, mod_attendance_structure $att) {
@@ -716,6 +716,7 @@ SELECT a.id, a.course as courseid, c.fullname as coursename, atl.studentid AS us
  * Generates a list of users flagged absent.
  *
  * @param array $courseids optional list of courses to return
+ * @param string $orderby how to order results.
  * @param bool $allfornotify get notification list for scheduled task.
  * @return stdClass
  */
@@ -755,7 +756,7 @@ function attendance_get_users_to_notify($courseids = array(), $orderby = '', $al
                    JOIN {attendance_log} atl ON (atl.sessionid = ats.id)
                    JOIN {user} u ON (u.id = atl.studentid)
                    JOIN {attendance_statuses} stg ON (stg.id = atl.statusid AND stg.deleted = 0 AND stg.visible = 1)
-                   JOIN {attendance_warning} n ON n.idnumber = cm.id
+                   JOIN {attendance_warning} n ON n.idnumber = a.id
                    LEFT JOIN {attendance_warning_done} ns ON ns.notifyid = n.id AND ns.userid = atl.studentid
                    JOIN (SELECT attendanceid, setnumber, MAX(grade) AS maxgrade
                            FROM {attendance_statuses}
