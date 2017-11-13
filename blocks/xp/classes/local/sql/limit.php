@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * User indicator interface.
+ * SQL limit.
  *
  * @package    block_xp
  * @copyright  2017 Frédéric Massart
@@ -23,61 +23,46 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_xp\local\indicator;
+namespace block_xp\local\sql;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * User indicator interface.
- *
- * This interface allows to attach a flag value to a user.
+ * SQL limit class.
  *
  * @package    block_xp
  * @copyright  2017 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-interface user_indicator {
+class limit {
 
     /**
-     * Get a user's flag.
+     * Constructor.
      *
-     * @param int $userid The user ID.
-     * @param string $flag The flag name.
-     * @return string|null The flag value.
+     * @param int $count The count.
+     * @param int $offset The offset.
      */
-    public function get_user_flag($userid, $flag);
+    public function __construct($count, $offset = 0) {
+        $this->count = (int) $count;
+        $this->offset = (int) $offset;
+    }
 
     /**
-     * Set a user's flag.
+     * Get number of records we want.
      *
-     * @param int $userid The user ID.
-     * @param string $flag The flag name.
-     * @param string $value The flag value.
+     * @return int
      */
-    public function set_user_flag($userid, $flag, $value);
+    public function get_count() {
+        return $this->count;
+    }
 
     /**
-     * Unset a user's flag.
+     * Get the offset before getting the records.
      *
-     * @param int $userid The user ID.
-     * @param string $flag The flag name.
+     * @return int
      */
-    public function unset_user_flag($userid, $flag);
-
-    /**
-     * Unset all user's flag.
-     *
-     * @param string $flag The flag name.
-     */
-    public function unset_users_flag($flag);
-
-    /**
-     * Whether the user has the flag.
-     *
-     * @param int $userid The user ID.
-     * @param string $key The flag key.
-     * @return bool
-     */
-    public function user_has_flag($userid, $flag);
+    public function get_offset() {
+        return $this->offset;
+    }
 
 }
