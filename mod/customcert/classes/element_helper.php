@@ -26,13 +26,17 @@ namespace mod_customcert;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir . '/grade/constants.php');
+require_once($CFG->dirroot . '/grade/lib.php');
+require_once($CFG->dirroot . '/grade/querylib.php');
+
 /**
  * Class helper.
  *
  * Provides useful functions related to elements.
  *
  * @package    mod_customcert
- * @copyright  2013 Mark Nelson <markn@moodle.com>
+ * @copyright  2016 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element_helper {
@@ -61,14 +65,14 @@ class element_helper {
      */
     public static function render_content($pdf, $element, $content) {
         list($font, $attr) = self::get_font($element);
-        $pdf->setFont($font, $attr, $element->fontsize);
-        $fontcolour = \TCPDF_COLORS::convertHTMLColorToDec($element->colour, $fontcolour);
+        $pdf->setFont($font, $attr, $element->get_fontsize());
+        $fontcolour = \TCPDF_COLORS::convertHTMLColorToDec($element->get_colour(), $fontcolour);
         $pdf->SetTextColor($fontcolour['R'], $fontcolour['G'], $fontcolour['B']);
 
-        $x = $element->posx;
-        $y = $element->posy;
-        $w = $element->width;
-        $refpoint = $element->refpoint;
+        $x = $element->get_posx();
+        $y = $element->get_posy();
+        $w = $element->get_width();
+        $refpoint = $element->get_refpoint();
         $actualwidth = $pdf->GetStringWidth($content);
 
         if ($w and $w < $actualwidth) {
@@ -77,19 +81,19 @@ class element_helper {
 
         switch ($refpoint) {
             case self::CUSTOMCERT_REF_POINT_TOPRIGHT:
-                $x = $element->posx - $actualwidth;
+                $x = $element->get_posx() - $actualwidth;
                 if ($x < 0) {
                     $x = 0;
-                    $w = $element->posx;
+                    $w = $element->get_posx();
                 } else {
                     $w = $actualwidth;
                 }
                 break;
             case self::CUSTOMCERT_REF_POINT_TOPCENTER:
-                $x = $element->posx - $actualwidth / 2;
+                $x = $element->get_posx() - $actualwidth / 2;
                 if ($x < 0) {
                     $x = 0;
-                    $w = $element->posx * 2;
+                    $w = $element->get_posx() * 2;
                 } else {
                     $w = $actualwidth;
                 }
@@ -120,9 +124,9 @@ class element_helper {
             $fontstyle .= '; font-style: italic';
         }
 
-        $style = $fontstyle . '; color: ' . $element->colour . '; font-size: ' . $element->fontsize . 'pt;';
-        if ($element->width) {
-            $style .= ' width: ' . $element->width . 'mm';
+        $style = $fontstyle . '; color: ' . $element->get_colour() . '; font-size: ' . $element->get_fontsize() . 'pt;';
+        if ($element->get_width()) {
+            $style .= ' width: ' . $element->get_width() . 'mm';
         }
         return \html_writer::div($content, '', array('style' => $style));
     }
@@ -253,7 +257,7 @@ class element_helper {
      */
     public static function get_font($element) {
         // Variable for the font.
-        $font = $element->font;
+        $font = $element->get_font();
         // Get the last two characters of the font name.
         $fontlength = strlen($font);
         $lastchar = $font[$fontlength - 1];
@@ -416,5 +420,192 @@ class element_helper {
 
         \core_collator::asort($options);
         return $options;
+    }
+
+    /**
+     * Helper function to return all the grades items for a given course.
+     *
+     * @param \stdClass $course The course we want to return the grade items for
+     * @return array the array of gradeable items in the course
+     */
+    public static function get_grade_items($course) {
+        global $DB;
+
+        // Array to store the grade items.
+        $modules = array();
+
+        // Collect course modules data.
+        $modinfo = get_fast_modinfo($course);
+        $mods = $modinfo->get_cms();
+        $sections = $modinfo->get_section_info_all();
+
+        // Create the section label depending on course format.
+        $sectionlabel = get_string('section');
+        if ($course->format == 'topics') {
+            $sectionlabel = get_string('topic');
+        } else if ($course->format == 'weeks') {
+            $sectionlabel = get_string('week');
+        }
+
+        // Loop through each course section.
+        for ($i = 0; $i <= count($sections) - 1; $i++) {
+            // Confirm the index exists, should always be true.
+            if (isset($sections[$i])) {
+                // Get the individual section.
+                $section = $sections[$i];
+                // Get the mods for this section.
+                $sectionmods = explode(",", $section->sequence);
+                // Loop through the section mods.
+                foreach ($sectionmods as $sectionmod) {
+                    // Should never happen unless DB is borked.
+                    if (empty($mods[$sectionmod])) {
+                        continue;
+                    }
+                    $mod = $mods[$sectionmod];
+                    $instance = $DB->get_record($mod->modname, array('id' => $mod->instance));
+                    // Get the grade items for this activity.
+                    if ($gradeitems = grade_get_grade_items_for_activity($mod)) {
+                        $moditem = grade_get_grades($course->id, 'mod', $mod->modname, $mod->instance);
+                        $gradeitem = reset($moditem->items);
+                        if (isset($gradeitem->grademax)) {
+                            $modules[$mod->id] = $sectionlabel . ' ' . $section->section . ' : ' . $instance->name;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($gradeitems = \grade_item::fetch_all(['courseid' => $course->id])) {
+            $arrgradeitems = [];
+            foreach ($gradeitems as $gi) {
+                // Skip the course and mod items since we already have them.
+                if ($gi->itemtype == 'mod' || $gi->itemtype == 'course') {
+                    continue;
+                }
+                $arrgradeitems['gradeitem:' . $gi->id] = get_string('gradeitem', 'grades') . ' : ' . $gi->get_name(true);
+            }
+
+            // Alphabetise this.
+            asort($arrgradeitems);
+
+            // Merge results.
+            $modules = $modules + $arrgradeitems;
+        }
+
+        return $modules;
+    }
+
+    /**
+     * Helper function to return the grade information for a course for a specified user.
+     *
+     * @param int $courseid
+     * @param int $gradeformat
+     * @param int $userid
+     * @return grade_information|bool the grade information, or false if there is none.
+     */
+    public static function get_course_grade_info($courseid, $gradeformat, $userid) {
+        $courseitem = \grade_item::fetch_course_item($courseid);
+
+        if (!$courseitem) {
+            return false;
+        }
+
+        // Define how many decimals to display.
+        $decimals = 2;
+        if ($gradeformat == GRADE_DISPLAY_TYPE_PERCENTAGE) {
+            $decimals = 0;
+        }
+
+        $grade = new \grade_grade(array('itemid' => $courseitem->id, 'userid' => $userid));
+
+        return new grade_information(
+            $courseitem->get_name(),
+            $grade->finalgrade,
+            grade_format_gradevalue($grade->finalgrade, $courseitem, true, $gradeformat, $decimals),
+            $grade->get_dategraded()
+        );
+    }
+
+    /**
+     * Helper function to return the grade information for a module for a specified user.
+     *
+     * @param int $cmid
+     * @param int $gradeformat
+     * @param int $userid
+     * @return grade_information|bool the grade information, or false if there is none.
+     */
+    public static function get_mod_grade_info($cmid, $gradeformat, $userid) {
+        global $DB;
+
+        if (!$cm = $DB->get_record('course_modules', array('id' => $cmid))) {
+            return false;
+        }
+
+        if (!$module = $DB->get_record('modules', array('id' => $cm->module))) {
+            return false;
+        }
+
+        $gradeitem = grade_get_grades($cm->course, 'mod', $module->name, $cm->instance, $userid);
+
+        if (empty($gradeitem)) {
+            return false;
+        }
+
+        // Define how many decimals to display.
+        $decimals = 2;
+        if ($gradeformat == GRADE_DISPLAY_TYPE_PERCENTAGE) {
+            $decimals = 0;
+        }
+
+        $item = new \grade_item();
+        $item->gradetype = GRADE_TYPE_VALUE;
+        $item->courseid = $cm->course;
+        $itemproperties = reset($gradeitem->items);
+        foreach ($itemproperties as $key => $value) {
+            $item->$key = $value;
+        }
+
+        $objgrade = $item->grades[$userid];
+
+        $dategraded = null;
+        if (!empty($objgrade->dategraded)) {
+            $dategraded = $objgrade->dategraded;
+        }
+
+        return new grade_information(
+            $item->name,
+            $objgrade->grade,
+            grade_format_gradevalue($objgrade->grade, $item, true, $gradeformat, $decimals),
+            $dategraded
+        );
+    }
+
+    /**
+     * Helper function to return the grade information for a grade item for a specified user.
+     *
+     * @param int $gradeitemid
+     * @param int $gradeformat
+     * @param int $userid
+     * @return grade_information|bool the grade information, or false if there is none.
+     */
+    public static function get_grade_item_info($gradeitemid, $gradeformat, $userid) {
+        if (!$gradeitem = \grade_item::fetch(['id' => $gradeitemid])) {
+            return false;
+        }
+
+        // Define how many decimals to display.
+        $decimals = 2;
+        if ($gradeformat == GRADE_DISPLAY_TYPE_PERCENTAGE) {
+            $decimals = 0;
+        }
+
+        $grade = new \grade_grade(array('itemid' => $gradeitem->id, 'userid' => $userid));
+
+        return new grade_information(
+            $gradeitem->get_name(),
+            $grade->finalgrade,
+            grade_format_gradevalue($grade->finalgrade, $gradeitem, true, $gradeformat, $decimals),
+            $grade->get_dategraded()
+        );
     }
 }
