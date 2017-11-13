@@ -26,10 +26,6 @@ namespace customcertelement_grade;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir . '/grade/constants.php');
-require_once($CFG->dirroot . '/grade/lib.php');
-require_once($CFG->dirroot . '/grade/querylib.php');
-
 /**
  * Grade - Course
  */
@@ -50,14 +46,15 @@ class element extends \mod_customcert\element {
      * @param \mod_customcert\edit_element_form $mform the edit_form instance
      */
     public function render_form_elements($mform) {
+        global $COURSE;
+
         // Get the grade items we can display.
         $gradeitems = array();
         $gradeitems[CUSTOMCERT_GRADE_COURSE] = get_string('coursegrade', 'customcertelement_grade');
-        $gradeitems = $gradeitems + self::get_grade_items();
+        $gradeitems = $gradeitems + \mod_customcert\element_helper::get_grade_items($COURSE);
 
         // The grade items.
         $mform->addElement('select', 'gradeitem', get_string('gradeitem', 'customcertelement_grade'), $gradeitems);
-        $mform->setType('gradeitem', PARAM_INT);
         $mform->addHelpButton('gradeitem', 'gradeitem', 'customcertelement_grade');
 
         // The grade format.
@@ -96,22 +93,52 @@ class element extends \mod_customcert\element {
      */
     public function render($pdf, $preview, $user) {
         // If there is no element data, we have nothing to display.
-        if (empty($this->element->data)) {
+        if (empty($this->get_data())) {
             return;
         }
 
         $courseid = \mod_customcert\element_helper::get_courseid($this->id);
 
         // Decode the information stored in the database.
-        $gradeinfo = json_decode($this->element->data);
+        $gradeinfo = json_decode($this->get_data());
+        $gradeitem = $gradeinfo->gradeitem;
+        $gradeformat = $gradeinfo->gradeformat;
 
         // If we are previewing this certificate then just show a demonstration grade.
         if ($preview) {
+            // Define how many decimals to display.
+            $decimals = 2;
+            if ($gradeinfo->gradeformat == GRADE_DISPLAY_TYPE_PERCENTAGE) {
+                $decimals = 0;
+            }
+
             $courseitem = \grade_item::fetch_course_item($courseid);
-            $grade = grade_format_gradevalue('100', $courseitem, true, $gradeinfo->gradeformat, 2);
+            $grade = grade_format_gradevalue('100', $courseitem, true, $gradeinfo->gradeformat, $decimals);
         } else {
-            // Get the grade for the grade item.
-            $grade = self::get_grade($gradeinfo, $user->id, $courseid);
+            if ($gradeitem == CUSTOMCERT_GRADE_COURSE) {
+                $grade = \mod_customcert\element_helper::get_course_grade_info(
+                    $courseid,
+                    $gradeformat,
+                    $user->id
+                );
+            } else if (strpos($gradeitem, 'gradeitem:') === 0) {
+                $gradeitemid = substr($gradeitem, 10);
+                $grade = \mod_customcert\element_helper::get_grade_item_info(
+                    $gradeitemid,
+                    $gradeformat,
+                    $user->id
+                );
+            } else {
+                $grade = \mod_customcert\element_helper::get_mod_grade_info(
+                    $gradeitem,
+                    $gradeformat,
+                    $user->id
+                );
+            }
+
+            if ($grade) {
+                $grade = $grade->get_displaygrade();
+            }
         }
 
         \mod_customcert\element_helper::render_content($pdf, $this, $grade);
@@ -129,19 +156,21 @@ class element extends \mod_customcert\element {
         global $COURSE;
 
         // If there is no element data, we have nothing to display.
-        if (empty($this->element->data)) {
+        if (empty($this->get_data())) {
             return;
         }
 
         // Decode the information stored in the database.
-        $gradeinfo = json_decode($this->element->data);
+        $gradeinfo = json_decode($this->get_data());
 
         $courseitem = \grade_item::fetch_course_item($COURSE->id);
+
         // Define how many decimals to display.
         $decimals = 2;
         if ($gradeinfo->gradeformat == GRADE_DISPLAY_TYPE_PERCENTAGE) {
             $decimals = 0;
         }
+
         $grade = grade_format_gradevalue('100', $courseitem, true, $gradeinfo->gradeformat, $decimals);
 
         return \mod_customcert\element_helper::render_html_content($this, $grade);
@@ -154,10 +183,14 @@ class element extends \mod_customcert\element {
      */
     public function definition_after_data($mform) {
         // Set the item and format for this element.
-        if (!empty($this->element->data)) {
-            $gradeinfo = json_decode($this->element->data);
-            $this->element->gradeitem = $gradeinfo->gradeitem;
-            $this->element->gradeformat = $gradeinfo->gradeformat;
+        if (!empty($this->get_data())) {
+            $gradeinfo = json_decode($this->get_data());
+
+            $element = $mform->getElement('gradeitem');
+            $element->setValue($gradeinfo->gradeitem);
+
+            $element = $mform->getElement('gradeformat');
+            $element->setValue($gradeinfo->gradeformat);
         }
 
         parent::definition_after_data($mform);
@@ -174,71 +207,11 @@ class element extends \mod_customcert\element {
     public function after_restore($restore) {
         global $DB;
 
-        $gradeinfo = json_decode($this->element->data);
+        $gradeinfo = json_decode($this->get_data());
         if ($newitem = \restore_dbops::get_backup_ids_record($restore->get_restoreid(), 'course_module', $gradeinfo->gradeitem)) {
             $gradeinfo->gradeitem = $newitem->newitemid;
-            $DB->set_field('customcert_elements', 'data', self::save_unique_data($gradeinfo), array('id' => $this->element->id));
+            $DB->set_field('customcert_elements', 'data', $this->save_unique_data($gradeinfo), array('id' => $this->get_id()));
         }
-    }
-
-    /**
-     * Helper function to return all the grades items for this course.
-     *
-     * @return array the array of gradeable items in the course
-     */
-    public static function get_grade_items() {
-        global $COURSE, $DB;
-
-        // Array to store the grade items.
-        $modules = array();
-
-        // Collect course modules data.
-        $modinfo = get_fast_modinfo($COURSE);
-        $mods = $modinfo->get_cms();
-        $sections = $modinfo->get_section_info_all();
-
-        // Create the section label depending on course format.
-        switch ($COURSE->format) {
-            case 'topics':
-                $sectionlabel = get_string('topic');
-                break;
-            case 'weeks':
-                $sectionlabel = get_string('week');
-                break;
-            default:
-                $sectionlabel = get_string('section');
-                break;
-        }
-
-        // Loop through each course section.
-        for ($i = 0; $i <= count($sections) - 1; $i++) {
-            // Confirm the index exists, should always be true.
-            if (isset($sections[$i])) {
-                // Get the individual section.
-                $section = $sections[$i];
-                // Get the mods for this section.
-                $sectionmods = explode(",", $section->sequence);
-                // Loop through the section mods.
-                foreach ($sectionmods as $sectionmod) {
-                    // Should never happen unless DB is borked.
-                    if (empty($mods[$sectionmod])) {
-                        continue;
-                    }
-                    $mod = $mods[$sectionmod];
-                    $instance = $DB->get_record($mod->modname, array('id' => $mod->instance));
-                    // Get the grade items for this activity.
-                    if ($gradeitems = grade_get_grade_items_for_activity($mod)) {
-                        $moditem = grade_get_grades($COURSE->id, 'mod', $mod->modname, $mod->instance);
-                        $gradeitem = reset($moditem->items);
-                        if (isset($gradeitem->grademax)) {
-                            $modules[$mod->id] = $sectionlabel . ' ' . $section->section . ' : ' . $instance->name;
-                        }
-                    }
-                }
-            }
-        }
-
-        return $modules;
     }
 
     /**
@@ -253,89 +226,5 @@ class element extends \mod_customcert\element {
         $gradeformat[GRADE_DISPLAY_TYPE_LETTER] = get_string('gradeletter', 'customcertelement_grade');
 
         return $gradeformat;
-    }
-
-    /**
-     * Helper function to return the grade to display.
-     *
-     * @param \stdClass $gradeinfo
-     * @param int $userid
-     * @param int $courseid
-     * @return string the grade result
-     */
-    public static function get_grade($gradeinfo, $userid, $courseid) {
-        // Get the grade information.
-        $gradeitem = $gradeinfo->gradeitem;
-        $gradeformat = $gradeinfo->gradeformat;
-
-        // Check if we are displaying the course grade.
-        if ($gradeitem == CUSTOMCERT_GRADE_COURSE) {
-            if ($courseitem = \grade_item::fetch_course_item($courseid)) {
-                // Set the grade type we want.
-                $courseitem->gradetype = GRADE_TYPE_VALUE;
-                $grade = new \grade_grade(array('itemid' => $courseitem->id, 'userid' => $userid));
-                $coursegrade = grade_format_gradevalue($grade->finalgrade, $courseitem, true, $gradeformat, 2);
-                return $coursegrade;
-            }
-        } else { // Get the module grade.
-            if ($modinfo = self::get_mod_grade($gradeitem, $gradeformat, $userid)) {
-                return $modinfo->gradetodisplay;
-            }
-        }
-
-        // Only gets here if no grade was retrieved from the DB.
-        return '';
-    }
-
-    /**
-     * Helper function to return the grade the user achieved for a specified module.
-     *
-     * @param int $moduleid
-     * @param int $gradeformat
-     * @param int $userid
-     * @return \stdClass|bool the grade information, or false if there is none.
-     */
-    public static function get_mod_grade($moduleid, $gradeformat, $userid) {
-        global $DB;
-
-        if (!$cm = $DB->get_record('course_modules', array('id' => $moduleid))) {
-            return false;
-        }
-
-        if (!$module = $DB->get_record('modules', array('id' => $cm->module))) {
-            return false;
-        }
-
-        $gradeitem = grade_get_grades($cm->course, 'mod', $module->name, $cm->instance, $userid);
-        if (!empty($gradeitem)) {
-            $item = new \grade_item();
-            $item->gradetype = GRADE_TYPE_VALUE;
-            $item->courseid = $cm->course;
-            $itemproperties = reset($gradeitem->items);
-            foreach ($itemproperties as $key => $value) {
-                $item->$key = $value;
-            }
-            // Grade for the user.
-            $grade = $item->grades[$userid]->grade;
-            // Define how many decimals to display.
-            $decimals = 2;
-            if ($gradeformat == GRADE_DISPLAY_TYPE_PERCENTAGE) {
-                $decimals = 0;
-            }
-
-            // Create the object we will be returning.
-            $modinfo = new \stdClass;
-            $modinfo->name = $DB->get_field($module->name, 'name', array('id' => $cm->instance));
-            $modinfo->gradetodisplay = grade_format_gradevalue($grade, $item, true, $gradeformat, $decimals);
-
-            if ($grade) {
-                $modinfo->dategraded = $item->grades[$userid]->dategraded;
-            } else {
-                $modinfo->dategraded = time();
-            }
-            return $modinfo;
-        }
-
-        return false;
     }
 }
