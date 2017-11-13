@@ -79,7 +79,7 @@ if ($data = $mform->get_data()) {
         if (empty($id)) {
             $notify->idnumber = 0;
         } else {
-            $notify->idnumber = $cm->id;
+            $notify->idnumber = $att->id;
         }
 
         $notify->warningpercent = $data->warningpercent;
@@ -105,7 +105,7 @@ if ($data = $mform->get_data()) {
 
     } else {
         $notify = $DB->get_record('attendance_warning', array('id' => $data->notid));
-        if (!empty($id) && $data->idnumber != $id) {
+        if (!empty($id) && $data->idnumber != $att->id) {
             // Someone is trying to update a record for a different attendance.
             print_error('invalidcoursemodule');
         } else {
@@ -144,9 +144,9 @@ if ($action == 'delete' && !empty($notid)) {
     } else {
         require_sesskey();
         $params = array('id' => $notid);
-        if (!empty($id)) {
+        if (!empty($att)) {
             // Add id/level to array.
-            $params['idnumber'] = $cm->id;
+            $params['idnumber'] = $att->id;
         }
         $DB->delete_records('attendance_warning', $params);
         echo $OUTPUT->notification(get_string('warningdeleted', 'mod_attendance'), 'success');
@@ -166,16 +166,17 @@ if ($action == 'update' && !empty($notid)) {
     $mform->display();
 } else {
     if (empty($id)) {
-        echo $OUTPUT->box(get_string('warningdesc', 'mod_attendance'), 'generalbox', 'notice');
-
-        $existingnotifications = $DB->get_records('attendance_warning',
-            array('idnumber' => 0),
-            'warningpercent');
+        $warningdesc = get_string('warningdesc', 'mod_attendance');
+        $idnumber = 0;
     } else {
-        $existingnotifications = $DB->get_records('attendance_warning',
-            array('idnumber' => $cm->id),
-            'warningpercent');
+        $warningdesc = get_string('warningdesc_course', 'mod_attendance');
+        $idnumber = $att->id;
     }
+    echo $OUTPUT->box($warningdesc, 'generalbox attendancedesc', 'notice');
+    $existingnotifications = $DB->get_records('attendance_warning',
+        array('idnumber' => $idnumber),
+        'warningpercent');
+
     if (!empty($existingnotifications)) {
         $table = new html_table();
         $table->head = array(get_string('warningthreshold', 'mod_attendance'),
