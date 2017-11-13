@@ -27,6 +27,11 @@ namespace customcertelement_date;
 defined('MOODLE_INTERNAL') || die();
 
 /**
+ * Date - Course grade date
+ */
+define('CUSTOMCERT_DATE_COURSE_GRADE', '0');
+
+/**
  * Date - Issue
  */
 define('CUSTOMCERT_DATE_ISSUE', '-1');
@@ -63,13 +68,16 @@ class element extends \mod_customcert\element {
      * @param \mod_customcert\edit_element_form $mform the edit_form instance
      */
     public function render_form_elements($mform) {
+        global $COURSE;
+
         // Get the possible date options.
         $dateoptions = array();
         $dateoptions[CUSTOMCERT_DATE_ISSUE] = get_string('issueddate', 'customcertelement_date');
         $dateoptions[CUSTOMCERT_DATE_COMPLETION] = get_string('completiondate', 'customcertelement_date');
         $dateoptions[CUSTOMCERT_DATE_COURSE_START] = get_string('coursestartdate', 'customcertelement_date');
         $dateoptions[CUSTOMCERT_DATE_COURSE_END] = get_string('courseenddate', 'customcertelement_date');
-        $dateoptions = $dateoptions + \customcertelement_grade\element::get_grade_items();
+        $dateoptions[CUSTOMCERT_DATE_COURSE_GRADE] = get_string('coursegradedate', 'customcertelement_date');
+        $dateoptions = $dateoptions + \mod_customcert\element_helper::get_grade_items($COURSE);
 
         $mform->addElement('select', 'dateitem', get_string('dateitem', 'customcertelement_date'), $dateoptions);
         $mform->addHelpButton('dateitem', 'dateitem', 'customcertelement_date');
@@ -109,14 +117,14 @@ class element extends \mod_customcert\element {
         global $DB;
 
         // If there is no element data, we have nothing to display.
-        if (empty($this->element->data)) {
+        if (empty($this->get_data())) {
             return;
         }
 
         $courseid = \mod_customcert\element_helper::get_courseid($this->id);
 
         // Decode the information stored in the database.
-        $dateinfo = json_decode($this->element->data);
+        $dateinfo = json_decode($this->get_data());
         $dateitem = $dateinfo->dateitem;
         $dateformat = $dateinfo->dateformat;
 
@@ -125,7 +133,7 @@ class element extends \mod_customcert\element {
             $date = time();
         } else {
             // Get the page.
-            $page = $DB->get_record('customcert_pages', array('id' => $this->element->pageid), '*', MUST_EXIST);
+            $page = $DB->get_record('customcert_pages', array('id' => $this->get_pageid()), '*', MUST_EXIST);
             // Get the customcert this page belongs to.
             $customcert = $DB->get_record('customcert', array('templateid' => $page->templateid), '*', MUST_EXIST);
             // Now we can get the issue for this user.
@@ -150,11 +158,29 @@ class element extends \mod_customcert\element {
             } else if ($dateitem == CUSTOMCERT_DATE_COURSE_END) {
                 $date = $DB->get_field('course', 'enddate', array('id' => $courseid));
             } else {
-                if ($modinfo = \customcertelement_grade\element::get_mod_grade($dateitem, GRADE_DISPLAY_TYPE_PERCENTAGE,
-                        $issue->userid)) {
-                    if (!empty($modinfo->dategraded)) {
-                        $date = $modinfo->dategraded;
-                    }
+                if ($dateitem == CUSTOMCERT_DATE_COURSE_GRADE) {
+                    $grade = \mod_customcert\element_helper::get_course_grade_info(
+                        $courseid,
+                        GRADE_DISPLAY_TYPE_DEFAULT,
+                        $user->id
+                    );
+                } else if (strpos($dateitem, 'gradeitem:') === 0) {
+                    $gradeitemid = substr($dateitem, 10);
+                    $grade = \mod_customcert\element_helper::get_grade_item_info(
+                        $gradeitemid,
+                        $dateitem,
+                        $user->id
+                    );
+                } else {
+                    $grade = \mod_customcert\element_helper::get_mod_grade_info(
+                        $dateitem,
+                        GRADE_DISPLAY_TYPE_DEFAULT,
+                        $user->id
+                    );
+                }
+
+                if ($grade && !empty($grade->get_dategraded())) {
+                    $date = $grade->get_dategraded();
                 }
             }
         }
@@ -175,12 +201,12 @@ class element extends \mod_customcert\element {
      */
     public function render_html() {
         // If there is no element data, we have nothing to display.
-        if (empty($this->element->data)) {
+        if (empty($this->get_data())) {
             return;
         }
 
         // Decode the information stored in the database.
-        $dateinfo = json_decode($this->element->data);
+        $dateinfo = json_decode($this->get_data());
         $dateformat = $dateinfo->dateformat;
 
         return \mod_customcert\element_helper::render_html_content($this, $this->get_date_format_string(time(), $dateformat));
@@ -193,10 +219,14 @@ class element extends \mod_customcert\element {
      */
     public function definition_after_data($mform) {
         // Set the item and format for this element.
-        if (!empty($this->element->data)) {
-            $dateinfo = json_decode($this->element->data);
-            $this->element->dateitem = $dateinfo->dateitem;
-            $this->element->dateformat = $dateinfo->dateformat;
+        if (!empty($this->get_data())) {
+            $dateinfo = json_decode($this->get_data());
+
+            $element = $mform->getElement('dateitem');
+            $element->setValue($dateinfo->dateitem);
+
+            $element = $mform->getElement('dateformat');
+            $element->setValue($dateinfo->dateformat);
         }
 
         parent::definition_after_data($mform);
@@ -213,10 +243,10 @@ class element extends \mod_customcert\element {
     public function after_restore($restore) {
         global $DB;
 
-        $dateinfo = json_decode($this->element->data);
+        $dateinfo = json_decode($this->get_data());
         if ($newitem = \restore_dbops::get_backup_ids_record($restore->get_restoreid(), 'course_module', $dateinfo->dateitem)) {
             $dateinfo->dateitem = $newitem->newitemid;
-            $DB->set_field('customcert_elements', 'data', self::save_unique_data($dateinfo), array('id' => $this->element->id));
+            $DB->set_field('customcert_elements', 'data', $this->save_unique_data($dateinfo), array('id' => $this->get_id()));
         }
     }
 

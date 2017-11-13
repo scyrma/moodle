@@ -130,7 +130,7 @@ class element extends \mod_customcert\element {
         }
 
         // Handle file uploads.
-        \mod_customcert\certificate::upload_imagefiles($data->customcertimage, $context->id);
+        \mod_customcert\certificate::upload_files($data->customcertimage, $context->id);
 
         return parent::save_form_elements($data);
     }
@@ -143,22 +143,24 @@ class element extends \mod_customcert\element {
      * @return string the json encoded array
      */
     public function save_unique_data($data) {
-        if (empty($data->fileid)) {
-            return;
-        }
-
-        // Array of data we will be storing in the database.
-        $fs = get_file_storage();
-        $file = $fs->get_file_by_id($data->fileid);
-        $arrtostore = array(
-            'contextid' => $file->get_contextid(),
-            'filearea' => $file->get_filearea(),
-            'itemid' => $file->get_itemid(),
-            'filepath' => $file->get_filepath(),
-            'filename' => $file->get_filename(),
+        $arrtostore = [
             'width' => !empty($data->width) ? (int) $data->width : 0,
             'height' => !empty($data->height) ? (int) $data->height : 0
-        );
+        ];
+
+        if (!empty($data->fileid)) {
+            // Array of data we will be storing in the database.
+            $fs = get_file_storage();
+            if ($file = $fs->get_file_by_id($data->fileid)) {
+                $arrtostore += [
+                    'contextid' => $file->get_contextid(),
+                    'filearea' => $file->get_filearea(),
+                    'itemid' => $file->get_itemid(),
+                    'filepath' => $file->get_filepath(),
+                    'filename' => $file->get_filename(),
+                ];
+            }
+        }
 
         return json_encode($arrtostore);
     }
@@ -172,11 +174,16 @@ class element extends \mod_customcert\element {
      */
     public function render($pdf, $preview, $user) {
         // If there is no element data, we have nothing to display.
-        if (empty($this->element->data)) {
+        if (empty($this->get_data())) {
             return;
         }
 
-        $imageinfo = json_decode($this->element->data);
+        $imageinfo = json_decode($this->get_data());
+
+        // If there is no file, we have nothing to display.
+        if (empty($imageinfo->filename)) {
+            return;
+        }
 
         if ($file = $this->get_file()) {
             $location = make_request_directory() . '/target';
@@ -184,9 +191,9 @@ class element extends \mod_customcert\element {
 
             $mimetype = $file->get_mimetype();
             if ($mimetype == 'image/svg+xml') {
-                $pdf->ImageSVG($location, $this->element->posx, $this->element->posy, $imageinfo->width, $imageinfo->height);
+                $pdf->ImageSVG($location, $this->get_posx(), $this->get_posy(), $imageinfo->width, $imageinfo->height);
             } else {
-                $pdf->Image($location, $this->element->posx, $this->element->posy, $imageinfo->width, $imageinfo->height);
+                $pdf->Image($location, $this->get_posx(), $this->get_posy(), $imageinfo->width, $imageinfo->height);
             }
         }
     }
@@ -201,11 +208,16 @@ class element extends \mod_customcert\element {
      */
     public function render_html() {
         // If there is no element data, we have nothing to display.
-        if (empty($this->element->data)) {
+        if (empty($this->get_data())) {
             return '';
         }
 
-        $imageinfo = json_decode($this->element->data);
+        $imageinfo = json_decode($this->get_data());
+
+        // If there is no file, we have nothing to display.
+        if (empty($imageinfo->filename)) {
+            return '';
+        }
 
         // Get the image.
         $fs = get_file_storage();
@@ -246,12 +258,23 @@ class element extends \mod_customcert\element {
         global $COURSE, $SITE;
 
         // Set the image, width and height for this element.
-        if (!empty($this->element->data)) {
-            $imageinfo = json_decode($this->element->data);
-            if ($file = $this->get_file()) {
-                $this->element->fileid = $file->get_id();
-                $this->element->width = $imageinfo->width;
-                $this->element->height = $imageinfo->height;
+        if (!empty($this->get_data())) {
+            $imageinfo = json_decode($this->get_data());
+            if (!empty($imageinfo->filename)) {
+                if ($file = $this->get_file()) {
+                    $element = $mform->getElement('fileid');
+                    $element->setValue($file->get_id());
+                }
+            }
+
+            if (isset($imageinfo->width) && $mform->elementExists('width')) {
+                $element = $mform->getElement('width');
+                $element->setValue($imageinfo->width);
+            }
+
+            if (isset($imageinfo->height) && $mform->elementExists('height')) {
+                $element = $mform->getElement('height');
+                $element->setValue($imageinfo->height);
             }
         }
 
@@ -282,7 +305,7 @@ class element extends \mod_customcert\element {
         global $DB;
 
         // Get the current data we have stored for this element.
-        $elementinfo = json_decode($this->element->data);
+        $elementinfo = json_decode($this->get_data());
 
         // Update the context.
         $elementinfo->contextid = \context_course::instance($restore->get_courseid())->id;
@@ -291,7 +314,7 @@ class element extends \mod_customcert\element {
         $elementinfo = json_encode($elementinfo);
 
         // Perform the update.
-        $DB->set_field('customcert_elements', 'data', $elementinfo, array('id' => $this->element->id));
+        $DB->set_field('customcert_elements', 'data', $elementinfo, array('id' => $this->get_id()));
     }
 
     /**
@@ -300,7 +323,7 @@ class element extends \mod_customcert\element {
      * @return \stored_file|bool stored_file instance if exists, false if not
      */
     public function get_file() {
-        $imageinfo = json_decode($this->element->data);
+        $imageinfo = json_decode($this->get_data());
 
         $fs = get_file_storage();
 
