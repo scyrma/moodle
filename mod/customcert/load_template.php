@@ -42,7 +42,7 @@ if ($cm = $template->get_cm()) {
 $template->require_manage();
 
 // Check that they have confirmed they wish to load the template.
-if ($confirm) {
+if ($confirm && confirm_sesskey()) {
     // First, remove all the existing elements and pages.
     $sql = "SELECT e.*
               FROM {customcert_elements} e
@@ -52,7 +52,7 @@ if ($confirm) {
     if ($elements = $DB->get_records_sql($sql, array('templateid' => $template->get_id()))) {
         foreach ($elements as $element) {
             // Get an instance of the element class.
-            if ($e = \mod_customcert\element::instance($element)) {
+            if ($e = \mod_customcert\element_factory::get_element_instance($element)) {
                 $e->delete();
             }
         }
@@ -61,39 +61,8 @@ if ($confirm) {
     // Delete the pages.
     $DB->delete_records('customcert_pages', array('templateid' => $template->get_id()));
 
-    // Store the current time in a variable.
-    $time = time();
-
-    // Now, get the template data we want to load.
-    if ($templatepages = $DB->get_records('customcert_pages', array('templateid' => $ltid))) {
-        // Loop through the pages.
-        foreach ($templatepages as $templatepage) {
-            $page = clone($templatepage);
-            $page->templateid = $tid;
-            $page->timecreated = $time;
-            $page->timemodified = $time;
-            // Insert into the database.
-            $page->id = $DB->insert_record('customcert_pages', $page);
-            // Now go through the elements we want to load.
-            if ($templateelements = $DB->get_records('customcert_elements', array('pageid' => $templatepage->id))) {
-                foreach ($templateelements as $templateelement) {
-                    $element = clone($templateelement);
-                    $element->pageid = $page->id;
-                    $element->timecreated = $time;
-                    $element->timemodified = $time;
-                    // Ok, now we want to insert this into the database.
-                    $element->id = $DB->insert_record('customcert_elements', $element);
-                    // Load any other information the element may need to for the template.
-                    if ($e = \mod_customcert\element::instance($element)) {
-                        if (!$e->copy_element($templateelement)) {
-                            // Failed to copy - delete the element.
-                            $e->delete();
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // Copy the items across.
+    $loadtemplate->copy_to_template($template->get_id());
 
     // Redirect.
     $url = new moodle_url('/mod/customcert/edit.php', array('tid' => $tid));
@@ -104,7 +73,8 @@ if ($confirm) {
 $nourl = new moodle_url('/mod/customcert/edit.php', array('tid' => $tid));
 $yesurl = new moodle_url('/mod/customcert/load_template.php', array('tid' => $tid,
                                                                     'ltid' => $ltid,
-                                                                    'confirm' => 1));
+                                                                    'confirm' => 1,
+                                                                    'sesskey' => sesskey()));
 
 $pageurl = new moodle_url('/mod/customcert/load_template.php', array('tid' => $tid, 'ltid' => $ltid));
 \mod_customcert\page_helper::page_setup($pageurl, $template->get_context(), get_string('loadtemplate', 'customcert'));
