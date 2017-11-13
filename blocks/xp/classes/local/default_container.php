@@ -52,6 +52,9 @@ class default_container implements container {
         'collection_logger' => true,
         'collection_strategy' => true,
         'config' => true,
+        'course_world_block_any_instance_finder_in_context' => true,
+        'course_world_block_instance_finder' => true,
+        'course_world_block_instances_finder_in_context' => true,
         'course_world_factory' => true,
         'course_world_navigation_factory' => true,
         'db' => true,
@@ -62,6 +65,7 @@ class default_container implements container {
         'settings_maker' => true,
         'tasks_definition_maker' => true,
         'url_resolver' => true,
+        'user_generic_indicator' => true,
         'user_notice_indicator' => true,
     ];
 
@@ -166,8 +170,10 @@ class default_container implements container {
      * Get the block instance finder.
      *
      * @return instance_finder
+     * @deprecated Since 3.1.0, will be removed in 3.3.0
      */
     protected function get_block_instance_finder() {
+        debugging('The generic block_instance_finder getter is deprecated, please do not use any more.', DEBUG_DEVELOPER);
         return new \block_xp\local\block\default_instance_finder($this->get('db'));
     }
 
@@ -201,6 +207,35 @@ class default_container implements container {
         return new \block_xp\local\config\admin_config(
             new \block_xp\local\config\default_admin_config()
         );
+    }
+
+    /**
+     * Get the course world block any instance finder in context.
+     *
+     * @return course_world_instance_finder
+     */
+    protected function get_course_world_block_any_instance_finder_in_context() {
+        // We know the implementation of the following includes what we need.
+        return $this->get('course_world_block_instance_finder');
+    }
+
+    /**
+     * Get the course world block instance finder.
+     *
+     * @return course_world_instance_finder
+     */
+    protected function get_course_world_block_instance_finder() {
+        return new \block_xp\local\block\course_world_instance_finder($this->get('db'));
+    }
+
+    /**
+     * Get the course world block instances finder in context.
+     *
+     * @return course_world_instance_finder
+     */
+    protected function get_course_world_block_instances_finder_in_context() {
+        // We know the implementation of the following includes what we need.
+        return $this->get('course_world_block_instance_finder');
     }
 
     /**
@@ -327,6 +362,17 @@ class default_container implements container {
             $this->get('base_url'),
             $this->get_routes_config()
         );
+    }
+
+    /**
+     * Get the generic indicator.
+     *
+     * Generic indicator to use when no other indicators seem appropriate.
+     *
+     * @return user_indicator
+     */
+    protected function get_user_generic_indicator() {
+        return new \block_xp\local\indicator\prefs_user_indicator($this->get('db'), 'generic');
     }
 
     /**
