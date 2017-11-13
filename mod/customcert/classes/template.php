@@ -18,7 +18,7 @@
  * Class represents a customcert template.
  *
  * @package    mod_customcert
- * @copyright  2015 Mark Nelson <markn@moodle.com>
+ * @copyright  2016 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -159,7 +159,7 @@ class template {
         if ($elements = $DB->get_records_sql($sql, array('templateid' => $this->id))) {
             foreach ($elements as $element) {
                 // Get an instance of the element class.
-                if ($e = \mod_customcert\element::instance($element)) {
+                if ($e = \mod_customcert\element_factory::get_element_instance($element)) {
                     $e->delete();
                 } else {
                     // The plugin files are missing, so just remove the entry from the DB.
@@ -199,7 +199,7 @@ class template {
         if ($elements = $DB->get_records('customcert_elements', array('pageid' => $page->id))) {
             foreach ($elements as $element) {
                 // Get an instance of the element class.
-                if ($e = \mod_customcert\element::instance($element)) {
+                if ($e = \mod_customcert\element_factory::get_element_instance($element)) {
                     $e->delete();
                 } else {
                     // The plugin files are missing, so just remove the entry from the DB.
@@ -229,7 +229,7 @@ class template {
         $element = $DB->get_record('customcert_elements', array('id' => $elementid), '*', MUST_EXIST);
 
         // Get an instance of the element class.
-        if ($e = \mod_customcert\element::instance($element)) {
+        if ($e = \mod_customcert\element_factory::get_element_instance($element)) {
             $e->delete();
         } else {
             // The plugin files are missing, so just remove the entry from the DB.
@@ -299,7 +299,7 @@ class template {
                     // Loop through and display.
                     foreach ($elements as $element) {
                         // Get an instance of the element class.
-                        if ($e = \mod_customcert\element::instance($element)) {
+                        if ($e = \mod_customcert\element_factory::get_element_instance($element)) {
                             $e->render($pdf, $preview, $user);
                         }
                     }
@@ -309,6 +309,46 @@ class template {
                 return $pdf->Output('', 'S');
             }
             $pdf->Output($filename, 'D');
+        }
+    }
+
+    /**
+     * Handles copying this template into another.
+     *
+     * @param int $copytotemplateid The template id to copy to
+     */
+    public function copy_to_template($copytotemplateid) {
+        global $DB;
+
+        // Get the pages for the template, there should always be at least one page for each template.
+        if ($templatepages = $DB->get_records('customcert_pages', array('templateid' => $this->id))) {
+            // Loop through the pages.
+            foreach ($templatepages as $templatepage) {
+                $page = clone($templatepage);
+                $page->templateid = $copytotemplateid;
+                $page->timecreated = time();
+                $page->timemodified = $page->timecreated;
+                // Insert into the database.
+                $page->id = $DB->insert_record('customcert_pages', $page);
+                // Now go through the elements we want to load.
+                if ($templateelements = $DB->get_records('customcert_elements', array('pageid' => $templatepage->id))) {
+                    foreach ($templateelements as $templateelement) {
+                        $element = clone($templateelement);
+                        $element->pageid = $page->id;
+                        $element->timecreated = time();
+                        $element->timemodified = $element->timecreated;
+                        // Ok, now we want to insert this into the database.
+                        $element->id = $DB->insert_record('customcert_elements', $element);
+                        // Load any other information the element may need to for the template.
+                        if ($e = \mod_customcert\element_factory::get_element_instance($element)) {
+                            if (!$e->copy_element($templateelement)) {
+                                // Failed to copy - delete the element.
+                                $e->delete();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

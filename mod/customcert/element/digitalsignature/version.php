@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the version information for the text plugin.
+ * This file contains the version information for the digital signature plugin.
  *
- * @package    customcertelement_text
- * @copyright  2013 Mark Nelson <markn@moodle.com>
+ * @package    customcertelement_digitalsignature
+ * @copyright  2017 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -26,4 +26,4 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 $plugin->version   = 2017111300; // The current module version (Date: YYYYMMDDXX).
 $plugin->requires  = 2017111300; // Requires this Moodle version (3.4).
-$plugin->component = 'customcertelement_text';
+$plugin->component = 'customcertelement_digitalsignature';
