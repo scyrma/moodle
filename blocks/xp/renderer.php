@@ -138,7 +138,6 @@ class block_xp_renderer extends plugin_renderer_base {
                 'github' => $githuburl->out()
             ));
 
-            $id = html_writer::random_id();
             $this->page->requires->js_init_call("Y.one('.block-xp-rocks').on('click', function(e) {
                 e.preventDefault();
                 M.util.set_user_preference('" . $this->noticesflag . "', 1);
@@ -148,7 +147,8 @@ class block_xp_renderer extends plugin_renderer_base {
             $icon = new pix_icon('t/close', get_string('dismissnotice', 'block_xp'), 'block_xp');
             $actionicon = $this->action_icon(new moodle_url($this->page->url), $icon, null, array('class' => 'block-xp-rocks'));
             $text .= html_writer::div($actionicon, 'dismiss-action');
-            $o .= html_writer::div($this->notification_without_close($text, 'success'), 'block_xp-dismissable-notice');
+            $o .= html_writer::div($this->notification_without_close($text, 'success'),
+                'block_xp-dismissable-notice block-xp-notices');
         }
 
         return $o;
@@ -176,7 +176,16 @@ class block_xp_renderer extends plugin_renderer_base {
             return new tabobject($link['id'], $link['url'], $link['text'], clean_param($link['text'], PARAM_NOTAGS));
         }, $links);
 
-        return $this->tabtree($tabs, $page);
+        return html_writer::div($this->tabtree($tabs, $page), 'block_xp-page-nav');
+    }
+
+    /**
+     * New dot.
+     *
+     * @return string
+     */
+    public function new_dot() {
+        return html_writer::div(html_writer::tag('span', get_string('new'), ['class' => 'accesshide']), 'has-new');
     }
 
     /**

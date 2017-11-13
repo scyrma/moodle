@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * User indicator interface.
+ * State rank.
  *
  * @package    block_xp
  * @copyright  2017 Frédéric Massart
@@ -23,61 +23,46 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_xp\local\indicator;
+namespace block_xp\local\xp;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * User indicator interface.
- *
- * This interface allows to attach a flag value to a user.
+ * State rank.
  *
  * @package    block_xp
  * @copyright  2017 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-interface user_indicator {
+class state_rank implements rank {
 
     /**
-     * Get a user's flag.
+     * Constructor.
      *
-     * @param int $userid The user ID.
-     * @param string $flag The flag name.
-     * @return string|null The flag value.
+     * @param int $rank The rank.
+     * @param state $state The state.
      */
-    public function get_user_flag($userid, $flag);
+    public function __construct($rank, state $state) {
+        $this->rank = $rank;
+        $this->state = $state;
+    }
 
     /**
-     * Set a user's flag.
+     * Get the rank of the state.
      *
-     * @param int $userid The user ID.
-     * @param string $flag The flag name.
-     * @param string $value The flag value.
+     * @return int
      */
-    public function set_user_flag($userid, $flag, $value);
+    public function get_rank() {
+        return $this->rank;
+    }
 
     /**
-     * Unset a user's flag.
+     * The state.
      *
-     * @param int $userid The user ID.
-     * @param string $flag The flag name.
+     * @return state
      */
-    public function unset_user_flag($userid, $flag);
-
-    /**
-     * Unset all user's flag.
-     *
-     * @param string $flag The flag name.
-     */
-    public function unset_users_flag($flag);
-
-    /**
-     * Whether the user has the flag.
-     *
-     * @param int $userid The user ID.
-     * @param string $key The flag key.
-     * @return bool
-     */
-    public function user_has_flag($userid, $flag);
+    public function get_state() {
+        return $this->state;
+    }
 
 }
