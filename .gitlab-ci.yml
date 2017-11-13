@@ -6,10 +6,10 @@ before_script:
   - chmod 600 ~/.ssh/id_rsa
   - cp /cache/known_hosts ~/.ssh/known_hosts
   - cp /cache/gitconfig ~/.gitconfig
-  - export SHORT_VERSION=`echo $MOODLE_VERSION |sed -e 's/\.//'`
+  - export SHORT_VERSION=`echo $MOODLE_VERSION |sed -e 's/\.//g'`
 
 variables:
-  MOODLE_VERSION: "3.4"
+  MOODLE_VERSION: "3.4.0"
   PUSH_REPO: "git@git.in.moodle.com:hosting/moodle.git"
 
 stages:
