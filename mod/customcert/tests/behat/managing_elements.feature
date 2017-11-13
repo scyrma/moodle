@@ -119,6 +119,28 @@ Feature: Being able to manage elements in a certificate template
       | Width                    | 20                |
       | Reference point location | Top left          |
     And I press "Save changes"
+    # Digital signature.
+    And I add the element "Digital signature" to page "1" of the "Custom certificate 1" certificate template
+    And I set the following fields to these values:
+      | Signature name         | This is the signature name |
+      | Signature password     | Some awesome password      |
+      | Signature location     | Mordor                     |
+      | Signature reason       | Meh, felt like it.         |
+      | Signature contact info | Sauron                     |
+      | Width                  | 25                         |
+      | Height                 | 15                         |
+    And I press "Save changes"
+    And I should see "Digital signature" in the "elementstable" "table"
+    And I click on ".edit-icon" "css_element" in the "Digital signature" "table_row"
+    And the following fields match these values:
+      | Signature name         | This is the signature name |
+      | Signature password     | Some awesome password      |
+      | Signature location     | Mordor                     |
+      | Signature reason       | Meh, felt like it.         |
+      | Signature contact info | Sauron                     |
+      | Width                  | 25                         |
+      | Height                 | 15                         |
+    And I press "Save changes"
     # Grade.
     And I add the element "Grade" to page "1" of the "Custom certificate 1" certificate template
     And I set the following fields to these values:
@@ -163,8 +185,16 @@ Feature: Being able to manage elements in a certificate template
     And I press "Save changes"
     # Image.
     And I add the element "Image" to page "1" of the "Custom certificate 1" certificate template
+    And I set the following fields to these values:
+      | Width  | 25 |
+      | Height | 15 |
     And I press "Save changes"
     And I should see "Image" in the "elementstable" "table"
+    And I click on ".edit-icon" "css_element" in the "Image" "table_row"
+    And the following fields match these values:
+      | Width  | 25 |
+      | Height | 15 |
+    And I press "Save changes"
     # Student name.
     And I add the element "Student name" to page "1" of the "Custom certificate 1" certificate template
     And I set the following fields to these values:
