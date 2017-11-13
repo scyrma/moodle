@@ -41,8 +41,10 @@ class element extends \mod_customcert\element {
      * @param \mod_customcert\edit_element_form $mform the edit_form instance
      */
     public function render_form_elements($mform) {
+        global $COURSE;
+
         $mform->addElement('select', 'gradeitem', get_string('gradeitem', 'customcertelement_gradeitemname'),
-            \customcertelement_grade\element::get_grade_items());
+            \mod_customcert\element_helper::get_grade_items($COURSE));
         $mform->addHelpButton('gradeitem', 'gradeitem', 'customcertelement_gradeitemname');
 
         parent::render_form_elements($mform);
@@ -74,9 +76,9 @@ class element extends \mod_customcert\element {
         global $DB;
 
         // Check that the grade item is not empty.
-        if (!empty($this->element->data)) {
+        if (!empty($this->get_data())) {
             // Get the course module information.
-            $cm = $DB->get_record('course_modules', array('id' => $this->element->data), '*', MUST_EXIST);
+            $cm = $DB->get_record('course_modules', array('id' => $this->get_data()), '*', MUST_EXIST);
             $module = $DB->get_record('modules', array('id' => $cm->module), '*', MUST_EXIST);
 
             // Get the name of the item.
@@ -98,9 +100,9 @@ class element extends \mod_customcert\element {
         global $DB;
 
         // Check that the grade item is not empty.
-        if (!empty($this->element->data)) {
+        if (!empty($this->get_data())) {
             // Get the course module information.
-            $cm = $DB->get_record('course_modules', array('id' => $this->element->data), '*', MUST_EXIST);
+            $cm = $DB->get_record('course_modules', array('id' => $this->get_data()), '*', MUST_EXIST);
             $module = $DB->get_record('modules', array('id' => $cm->module), '*', MUST_EXIST);
 
             // Get the name of the item.
@@ -118,8 +120,9 @@ class element extends \mod_customcert\element {
      * @param \mod_customcert\edit_element_form $mform the edit_form instance
      */
     public function definition_after_data($mform) {
-        if (!empty($this->element->data)) {
-            $this->element->gradeitem = $this->element->data;
+        if (!empty($this->get_data())) {
+            $element = $mform->getElement('gradeitem');
+            $element->setValue($this->get_data());
         }
         parent::definition_after_data($mform);
     }
