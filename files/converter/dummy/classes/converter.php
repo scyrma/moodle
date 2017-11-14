@@ -63,12 +63,32 @@ final class converter implements converter_interface {
         ]
     ];
 
+    const KNOWN_FILEAREA_COMPONENT_COMBINATIONS = [
+        [
+            'component' => 'assignsubmission_file',
+            'filearea' => 'submission_files'
+        ],
+        [
+            'component' => 'assignfeedback_editpdf',
+            'filearea' => 'submissions_onlinetext'
+        ],
+        [
+            'component' => 'assignfeedback_editpdt',
+            'filearea' => 'importhtml'
+        ]
+    ];
+
     private static $extensions;
 
     public function start_document_conversion(conversion $conversion) : self {
-        if (
-            $conversion->get_sourcefile()->get_filearea() !== 'submission_files' ||
-            $conversion->get_sourcefile()->get_component() !== 'assignsubmission_file'
+
+        if (!array_filter(
+            KNOWN_FILEAREA_COMPONENT_COMBINATIONS,
+            function(array $componentandfilearea) use ($conversion) {
+                return
+                    $conversion->get_sourcefile()->get_component() ==  $componentandfilearea['component'] &&
+                    $conversion->get_sourcefile()->get_filearea() == $componentandfilearea['filearea'];
+            })
         ) {
             logger::log(
                 'Unusual filearea or component detected',
