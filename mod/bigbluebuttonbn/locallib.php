@@ -1016,7 +1016,7 @@ function bigbluebuttonbn_get_recording_data_row($bbbsession, $recording, $tools 
 }
 
 function bigbluebuttonbn_get_recording_data_row_editable($bbbsession) {
-    return ($bbbsession['managerecordings'] && (double)$bbbsession['serverversion'] >= 1.0);
+    return ($bbbsession['managerecordings'] && ((double)$bbbsession['serverversion'] >= 1.0 || bigbluebuttonbn_is_bn_server()));
 }
 
 function bigbluebuttonbn_get_recording_data_row_date($recording) {
@@ -1377,7 +1377,7 @@ function bigbluebuttonbn_is_bn_server() {
 
 function bigbluebuttonbn_import_get_courses_for_select(array $bbbsession) {
     if ($bbbsession['administrator']) {
-        $courses = get_courses('all', 'c.id ASC', 'c.id,c.shortname,c.fullname');
+        $courses = get_courses('all', 'c.fullname ASC', 'c.id,c.shortname,c.fullname');
         // It includes the name of the site as a course (category 0), so remove the first one.
         unset($courses['1']);
     } else {
@@ -1438,6 +1438,9 @@ function bigbluebuttonbn_get_tags($id) {
  * @return string containing the sql used for getting the target bigbluebuttonbn instances
  */
 function bigbluebuttonbn_get_recordings_sql_select($courseid, $bigbluebuttonbnid = null, $subset = true) {
+    if (empty($courseid)) {
+        $courseid = 0;
+    }
     if ($bigbluebuttonbnid === null) {
         return "course = '{$courseid}'";
     }
@@ -1447,17 +1450,18 @@ function bigbluebuttonbn_get_recordings_sql_select($courseid, $bigbluebuttonbnid
     return "id <> '{$bigbluebuttonbnid}' AND course = '{$courseid}'";
 }
 
-function bigbluebuttonbn_get_recordings_sql_selectdeleted($courseid, $bigbluebuttonbnid = null, $subset = true) {
+function bigbluebuttonbn_get_recordings_sql_selectdeleted($courseid = 0, $bigbluebuttonbnid = null, $subset = true) {
+    $sql = "log = '" . BIGBLUEBUTTONBN_LOG_EVENT_DELETE . "' AND meta like '%has_recordings%' AND meta like '%true%'";
+    if (empty($courseid)) {
+        $courseid = 0;
+    }
     if ($bigbluebuttonbnid === null) {
-        return "courseid = '{$courseid}' AND log = '".BIGBLUEBUTTONBN_LOG_EVENT_DELETE.
-            "' AND meta like '%has_recordings%' AND meta like '%true%'";
+        return $sql . " AND courseid = {$courseid}";
     }
     if ($subset) {
-        return "bigbluebuttonbnid = '{$bigbluebuttonbnid}' AND log = '".BIGBLUEBUTTONBN_LOG_EVENT_DELETE.
-            "' AND meta like '%has_recordings%' AND meta like '%true%'";
+        return $sql . " AND bigbluebuttonbnid = '{$bigbluebuttonbnid}'";
     }
-    return "courseid = '{$courseid}' AND bigbluebuttonbnid <> '{$bigbluebuttonbnid}' AND log = '".
-        BIGBLUEBUTTONBN_LOG_EVENT_DELETE."' AND meta like '%has_recordings%' AND meta like '%true%'";
+    return $sql . " AND courseid = {$courseid} AND bigbluebuttonbnid <> '{$bigbluebuttonbnid}'";
 }
 
 function bigbluebuttonbn_get_allrecordings($courseid, $bigbluebuttonbnid = null, $subset = true,
