@@ -15,6 +15,7 @@ if (core\hub\registration::is_registered()) {
         core\hub\registration::unregister(true, true);
     } catch (Exception $e) {
         echo "Unregistration of site failed: " . $e->getMessage() . "\n";
+        exit(1);
     }
 } else {
     echo "Site not registered\n";
