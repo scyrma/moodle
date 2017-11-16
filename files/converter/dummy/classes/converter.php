@@ -83,7 +83,7 @@ final class converter implements converter_interface {
     public function start_document_conversion(conversion $conversion) : self {
 
         if (!array_filter(
-            KNOWN_FILEAREA_COMPONENT_COMBINATIONS,
+            self::KNOWN_FILEAREA_COMPONENT_COMBINATIONS,
             function(array $componentandfilearea) use ($conversion) {
                 return
                     $conversion->get_sourcefile()->get_component() ==  $componentandfilearea['component'] &&
