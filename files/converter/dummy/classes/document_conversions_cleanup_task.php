@@ -107,7 +107,7 @@ class document_conversions_cleanup_task extends scheduled_task {
             })
         )(
             $DB->get_records_sql(
-                'SELECT files.itemid FROM {files} files JOIN {file_conversion} conversions ON files.id = conversions.sourcefileid AND conversions.converter = ? AND conversions.status = 2',
+                'SELECT files.id, files.itemid FROM {files} files JOIN {file_conversion} conversions ON files.id = conversions.sourcefileid AND conversions.converter = ? AND conversions.status = 2',
                 ['\fileconverter_dummy\converter']
             )
         );
