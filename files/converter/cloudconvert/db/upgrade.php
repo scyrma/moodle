@@ -23,7 +23,7 @@ function xmldb_fileconverter_cloudconvert_upgrade($oldversion) {
     // Moodle v3.3.0 release upgrade line.
     // Put any upgrade step following this.
 
-    if ($oldversion <= 2017051501) {
+    if ($oldversion < 2017051501) {
         $existingrecord = $DB->get_record('config', ['name' => 'converter_plugins_sortorder']);
 
         if($existingrecord) {
