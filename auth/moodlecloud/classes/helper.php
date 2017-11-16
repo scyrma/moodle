@@ -68,6 +68,10 @@ class helper {
                     'exceptions'  => false,
                     'verify'      => false,
                     'form_params' => $postData,
+                    'headers' => [
+                        // Magic header so that varnish on signup lets us through.
+                        'X-MC-API' => 'Eivik6Qu',
+                    ],
                 ]
             );
         }
