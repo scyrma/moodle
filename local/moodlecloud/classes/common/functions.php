@@ -26,6 +26,7 @@ namespace local_moodlecloud\common;
 defined('MOODLE_INTERNAL') || die();
 
 use Exception;
+use InvalidArgumentException;
 use Traversable;
 use local_moodlecloud\common\{bimappable, computation_result, success, failure};
 
