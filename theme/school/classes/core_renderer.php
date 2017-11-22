@@ -39,7 +39,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $coursedetailsarray = array();
         foreach ($courses as $course) {
             $url = new \moodle_url('/course/view.php', array('id' => $course->id));
-            $enrolledusersurl = new \moodle_url('/enrol/users.php', array('id' => $course->id));
+            $enrolledusersurl = new \moodle_url('/user/index.php', array('id' => $course->id));
             $summary = format_text($course->summary, $course->summaryformat, array(), $course->id);
             $name = format_string(get_course_display_name_for_list($course), true, array());
             $imageurl = '';
