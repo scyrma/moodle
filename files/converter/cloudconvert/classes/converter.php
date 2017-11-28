@@ -212,7 +212,7 @@ final class converter implements converter_interface {
             $conversion->update();
         } catch (Exception $e) {
             // For any other failures, fail the conversion and rethrow.
-            logger::log('Unrecoverable exception', $conversion, ['exception' => $e->getMessage()], \Monolog\Logger::ERROR);
+            self::log('Unrecoverable exception', $conversion, ['exception' => $e->getMessage()], \Monolog\Logger::ERROR);
             $conversion->set('status', conversion::STATUS_FAILED);
             $conversion->set('statusmessage', $e->getMessage());
             $conversion->update();
