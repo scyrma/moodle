@@ -48,7 +48,8 @@ $templatecontext = [
     'bodyattributes' => $bodyattributes,
     'navdraweropen' => $navdraweropen,
     'regionmainsettingsmenu' => $regionmainsettingsmenu,
-    'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu)
+    'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu),
+	'hidegoogleads' => ($PAGE->pagetype == 'login-forgot_password' ? true : false),
 ];
 
 $templatecontext['flatnavigation'] = $PAGE->flatnav;
