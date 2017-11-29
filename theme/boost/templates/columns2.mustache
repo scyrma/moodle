@@ -99,7 +99,9 @@
             <p class="helplink">{{{ footer_links }}}</p>
         {{/footer_links}}
 
-        {{{ moodlecloud_ad }}}
+        {{^hidegoogleads}}
+            {{{ moodlecloud_ad }}}
+        {{/hidegoogleads}}
 
         {{{ output.login_info }}}
         <div class="tool_usertours-resettourcontainer"></div>
