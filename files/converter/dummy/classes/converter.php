@@ -69,7 +69,7 @@ final class converter implements converter_interface {
             'filearea' => 'submission_files'
         ],
         [
-            'component' => 'assignfeedback_editpdf',
+            'component' => 'assignsubmission_onlinetext',
             'filearea' => 'submissions_onlinetext'
         ],
         [
