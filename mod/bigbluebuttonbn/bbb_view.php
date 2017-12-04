@@ -74,7 +74,7 @@ switch (strtolower($action)) {
         // Moodle event logger: Create an event for meeting left.
         bigbluebuttonbn_event_log(BIGBLUEBUTTON_EVENT_MEETING_LEFT, $bigbluebuttonbn, $cm);
         // Update the cache.
-        $meetinginfo = bigbluebuttonbn_get_meeting_info($bbbsession['meetingid'], BIGBLUEBUTTONBN_FORCED);
+        $meetinginfo = bigbluebuttonbn_get_meeting_info($bbbsession['meetingid'], BIGBLUEBUTTONBN_UPDATE_CACHE);
         // Close the tab or window where BBB was opened.
         bigbluebutton_bbb_view_close_window();
         break;
@@ -151,6 +151,12 @@ switch (strtolower($action)) {
 
 /**
  * Helper for getting the playback url that corresponds to an specific type.
+ *
+ * @param  string   $href
+ * @param  string   $mid
+ * @param  string   $rid
+ * @param  string   $rtype
+ * @return string
  */
 function bigbluebutton_bbb_view_playback_href($href, $mid, $rid, $rtype) {
     if ($href != '' || $mid == '' || $rid == '') {
@@ -165,6 +171,10 @@ function bigbluebutton_bbb_view_playback_href($href, $mid, $rid, $rtype) {
 
 /**
  * Helper for looking up playback url in the recording playback array.
+ *
+ * @param  array    $playbacks
+ * @param  string   $type
+ * @return string
  */
 function bigbluebutton_bbb_view_playback_href_lookup($playbacks, $type) {
     foreach ($playbacks as $playback) {
@@ -177,10 +187,11 @@ function bigbluebutton_bbb_view_playback_href_lookup($playbacks, $type) {
 
 /**
  * Helper for closing the tab or window when the user lefts the meeting.
+ *
+ * @return string
  */
 function bigbluebutton_bbb_view_close_window() {
     global $OUTPUT, $PAGE;
-
     echo $OUTPUT->header();
     $PAGE->requires->yui_module('moodle-mod_bigbluebuttonbn-rooms', 'M.mod_bigbluebuttonbn.rooms.windowClose');
     echo $OUTPUT->footer();
@@ -188,6 +199,8 @@ function bigbluebutton_bbb_view_close_window() {
 
 /**
  * Helper for showing a message when the tab or window can not be closed.
+ *
+ * @return string
  */
 function bigbluebutton_bbb_view_close_window_manually() {
     echo get_string('view_message_tab_close', 'bigbluebuttonbn');
@@ -195,6 +208,9 @@ function bigbluebutton_bbb_view_close_window_manually() {
 
 /**
  * Helper for preparing data used for creating the meeting.
+ *
+ * @param  array    $bbbsession
+ * @return object
  */
 function bigbluebutton_bbb_view_create_meeting_data(&$bbbsession) {
     $data = ['meetingID' => $bbbsession['meetingid'],
@@ -229,6 +245,9 @@ function bigbluebutton_bbb_view_create_meeting_data(&$bbbsession) {
 
 /**
  * Helper for returning the flag to know if the meeting is recorded.
+ *
+ * @param  boolean    $record
+ * @return string
  */
 function bigbluebutton_bbb_view_create_meeting_data_record($record) {
     if ((boolean)\mod_bigbluebuttonbn\locallib\config::recordings_enabled() && $record) {
@@ -239,6 +258,9 @@ function bigbluebutton_bbb_view_create_meeting_data_record($record) {
 
 /**
  * Helper for returning the duration expected for the meeting.
+ *
+ * @param  string    $closingtime
+ * @return integer
  */
 function bigbluebutton_bbb_view_create_meeting_data_duration($closingtime) {
     if ((boolean)\mod_bigbluebuttonbn\locallib\config::get('scheduled_duration_enabled')) {
@@ -249,6 +271,9 @@ function bigbluebutton_bbb_view_create_meeting_data_duration($closingtime) {
 
 /**
  * Helper for preparing metadata used while creating the meeting.
+ *
+ * @param  array    $bbbsession
+ * @return array
  */
 function bigbluebutton_bbb_view_create_meeting_metadata(&$bbbsession) {
     global $USER;
@@ -281,10 +306,14 @@ function bigbluebutton_bbb_view_create_meeting_metadata(&$bbbsession) {
 
 /**
  * Helper for preparing data used while joining the meeting.
+ *
+ * @param  array    $bbbsession
+ * @param  object   $cm
+ * @param object   $bigbluebuttonbn
  */
 function bigbluebutton_bbb_view_join_meeting($bbbsession, $cm, $bigbluebuttonbn) {
     // Update the cache.
-    $meetinginfo = bigbluebuttonbn_get_meeting_info($bbbsession['meetingid'], BIGBLUEBUTTONBN_FORCED);
+    $meetinginfo = bigbluebuttonbn_get_meeting_info($bbbsession['meetingid'], BIGBLUEBUTTONBN_UPDATE_CACHE);
     if ($bbbsession['userlimit'] > 0 && intval($meetinginfo['participantCount']) >= $bbbsession['userlimit']) {
         // No more users allowed to join.
         header('Location: '.$bbbsession['logoutURL']);
@@ -310,6 +339,10 @@ function bigbluebutton_bbb_view_join_meeting($bbbsession, $cm, $bigbluebuttonbn)
 
 /**
  * Helper for showinf error messages if any.
+ *
+ * @param  string   $serrors
+ * @param  string   $id
+ * @return string
  */
 function bigbluebutton_bbb_view_errors($serrors, $id) {
     global $CFG, $OUTPUT;
