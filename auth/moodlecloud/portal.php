@@ -7,6 +7,6 @@ if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
     $url = $auth->get_sso_url();
     redirect($url->out());
 }else {
-    $ssoserver = get_config('auth_moodlecloud', 'ssoserver');
-    redirect($ssoserver.'/en/portal/view/'.$dynamicsite);
+    $signupurl = get_config('auth_moodlecloud', 'signupurl');
+    redirect($signupurl.'/en/portal/view/'.$dynamicsite);
 }
