@@ -2571,6 +2571,10 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
         $setwantsurltome = false;
     }
 
+    // START MOODLECLOUD HACK.
+    \auth_moodlecloud\sso::require_login();
+    // END MOODLECLOUD HACK.
+
     // Redirect to the login page if session has expired, only with dbsessions enabled (MDL-35029) to maintain current behaviour.
     if ((!isloggedin() or isguestuser()) && !empty($SESSION->has_timed_out) && !empty($CFG->dbsessions)) {
         if ($preventredirect) {
@@ -3917,11 +3921,11 @@ function update_user_record_by_id($id) {
                 // Unknown or must not be changed.
                 continue;
             }
-            $confval = $userauth->config->{'field_updatelocal_' . $key};
-            $lockval = $userauth->config->{'field_lock_' . $key};
-            if (empty($confval) || empty($lockval)) {
+            if (empty($userauth->config->{'field_updatelocal_' . $key}) || empty($userauth->config->{'field_lock_' . $key})) {
                 continue;
             }
+            $confval = $userauth->config->{'field_updatelocal_' . $key};
+            $lockval = $userauth->config->{'field_lock_' . $key};
             if ($confval === 'onlogin') {
                 // MDL-4207 Don't overwrite modified user profile values with
                 // empty LDAP values when 'unlocked if empty' is set. The purpose
@@ -5791,8 +5795,10 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
         $noreplyaddress = $noreplyaddressdefault;
     }
 
-    // Make up an email address for handling bounces.
-    if (!empty($CFG->handlebounces)) {
+    if ($CFG->mailsender) {
+        $mail->Sender = $CFG->mailsender;
+    } else if (!empty($CFG->handlebounces)) {
+        // Make up an email address for handling bounces.
         $modargs = 'B'.base64_encode(pack('V', $user->id)).substr(md5($user->email), 0, 16);
         $mail->Sender = generate_email_processing_address(0, $modargs);
     } else {
@@ -9183,6 +9189,13 @@ function get_performance_info() {
         $info['html'] .= '<div class="cachesused">Caches used (hits/misses/sets): 0/0/0</div>';
         $info['txt'] .= 'Caches used (hits/misses/sets): 0/0/0 ';
     }
+
+    // BEGIN MOODLECLOUD HACK.
+    $info['dbread']         = $DB->perf_get_reads();
+    $info['allwrites']      = $DB->perf_get_writes();
+    $info['perfwrites']     = $PERF->logwrites;
+    $info['finalwrites']    = $info['allwrites'] - $info['perfwrites'];
+    // END MOODLECLOUD HACK.
 
     $info['html'] = '<div class="performanceinfo siteinfo container-fluid">'.$info['html'].'</div>';
     return $info;
