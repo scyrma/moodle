@@ -266,7 +266,7 @@ $string['view_recording_format_presentation'] = 'presentation';
 $string['view_recording_format_video'] = 'video';
 $string['view_section_title_presentation'] = 'Presentation file';
 $string['view_section_title_recordings'] = 'Recordings';
-$string['view_message_norecordings'] = 'There are no recording for this meeting.';
+$string['view_message_norecordings'] = 'There are no recording to show.';
 $string['view_message_finished'] = 'This activity is over.';
 $string['view_message_notavailableyet'] = 'This session is not yet available.';
 
@@ -300,6 +300,7 @@ $string['view_message_conference_in_progress'] = 'This conference is in progress
 $string['view_message_conference_has_ended'] = 'This conference has ended.';
 $string['view_message_tab_close'] = 'This tab/window must be closed manually';
 $string['view_message_recordings_disabled'] = 'Recordings were disabled on this server. BigBlueButtonBN instances for recordings only can not be used.';
+$string['view_message_importrecordings_disabled'] = 'Feature for import recording links is disabled on this server.';
 
 $string['view_groups_selection_warning'] = 'There is a conference room for each group. If you have access to more than one be sure to select the correct one.';
 $string['view_groups_nogroups_warning'] = 'The room was configured for using groups but the course does not have goups defined.';
