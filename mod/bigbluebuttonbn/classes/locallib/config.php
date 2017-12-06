@@ -57,7 +57,6 @@ class config {
         return array(
             'server_url' => (string) BIGBLUEBUTTONBN_DEFAULT_SERVER_URL,
             'shared_secret' => (string) BIGBLUEBUTTONBN_DEFAULT_SHARED_SECRET,
-            'importrecordings_enabled' => 'false',
             'voicebridge_editable' => 'false',
             'importrecordings_enabled' => 'false',
             'importrecordings_from_deleted_enabled' => 'false',
@@ -87,6 +86,7 @@ class config {
             'recording_editable' => 'true',
             'recording_icons_enabled' => 'true',
             'general_warning_message' => '',
+            'general_warning_roles' => 'editingteacher,teacher',
             'general_warning_box_type' => 'info',
             'general_warning_button_text' => '',
             'general_warning_button_href' => '',
@@ -117,7 +117,7 @@ class config {
     public static function get($setting) {
         global $CFG;
         if (isset($CFG->bigbluebuttonbn[$setting])) {
-            return (string) $CFG->bigbluebuttonbn[$setting];
+            return (string)$CFG->bigbluebuttonbn[$setting];
         }
         if (isset($CFG->{'bigbluebuttonbn_'.$setting})) {
             return (string)$CFG->{'bigbluebuttonbn_'.$setting};
@@ -131,7 +131,16 @@ class config {
      * @return boolean
      */
     public static function recordings_enabled() {
-        return (self::get('recordings_enabled') === 'true');
+        return (boolean)self::get('recordings_enabled');
+    }
+
+    /**
+     * Validates if imported recording settings are enabled.
+     *
+     * @return boolean
+     */
+    public static function importrecordings_enabled() {
+        return (boolean)self::get('importrecordings_enabled');
     }
 
     /**
