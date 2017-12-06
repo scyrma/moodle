@@ -30,7 +30,7 @@ M.mod_bigbluebuttonbn.rooms = {
      * Initialise the broker code.
      *
      * @method init
-     * @param Object bigbluebuttonbn
+     * @param {object} bigbluebuttonbn
      */
     init: function(bigbluebuttonbn) {
         this.datasource = new Y.DataSource.Get({
@@ -63,14 +63,14 @@ M.mod_bigbluebuttonbn.rooms = {
     },
 
     updateRoom: function(f) {
-        var forced = 'false';
+        var updatecache = 'false';
         if (typeof f !== 'undefined' && f) {
-            forced = 'true';
+            updatecache = 'true';
         }
         var id = this.bigbluebuttonbn.meetingid;
         var bnid = this.bigbluebuttonbn.bigbluebuttonbnid;
         this.datasource.sendRequest({
-            request: 'action=meeting_info&id=' + id + '&bigbluebuttonbn=' + bnid + '&forced=' + forced,
+            request: 'action=meeting_info&id=' + id + '&bigbluebuttonbn=' + bnid + '&updatecache=' + updatecache,
             callback: {
                 success: function(e) {
                     Y.DOM.addHTML(Y.one('#status_bar'),
