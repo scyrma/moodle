@@ -47,7 +47,9 @@ if (!isset($SESSION) || !isset($SESSION->bigbluebuttonbn_bbbsession)) {
 }
 
 if (!(boolean)\mod_bigbluebuttonbn\locallib\config::importrecordings_enabled()) {
-    print_error(get_string('view_message_importrecordings_disabled', 'bigbluebuttonbn'));
+    // BEGIN MOODLECLOUD hack
+    // print_error(get_string('view_message_importrecordings_disabled', 'bigbluebuttonbn'));
+    // END MOODLECLOUD hack
     return;
 }
 
