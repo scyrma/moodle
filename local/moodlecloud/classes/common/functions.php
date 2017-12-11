@@ -222,6 +222,14 @@ class functions {
         return $p->bimap($c1, $c2);
     }
 
+    public static function join_on_comma(array $strings) : string {
+        return join(',', $strings);
+    }
+
+    public static function split_on_comma(string $commadelim) : array {
+        return explode(',', $commadelim);
+    }
+
     public static function export(string ...$what) {
         return array_map(function($what) {
             return self::class . '::' . $what;
