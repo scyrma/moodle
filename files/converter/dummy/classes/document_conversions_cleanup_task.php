@@ -26,7 +26,7 @@ namespace fileconverter_dummy;
 defined('MOODLE_INTERNAL') || die();
 
 use core\task\scheduled_task;
-use local_moodlecloud\common\functions;
+use local_moodlecloud\common\conversion_nuker;
 
 /**
  * Document conversion cleanup task.
@@ -62,74 +62,15 @@ class document_conversions_cleanup_task extends scheduled_task {
         // If we have never persisted the sortorder in our own table, we can't make
         // any assumptions about what has happened, so nuke everything to be safe.
         if (!$lastseensortorder) {
-            $this->nuke_conversions();
+            conversion_nuker::nuke_conversions('dummy');
             return;
         }
 
         // If the dummy plugin has been given lower priority, nuke conversions.
         // Note: Lower priority means higher index in the array.
         if (array_search('dummy', $lastseensortorder) < array_search('dummy', $currentsortorder)) {
-            $this->nuke_conversions();
+            conversion_nuker::nuke_conversions('dummy');
             return;
         }
-    }
-
-    private function nuke_conversions() {
-        global $DB;
-
-        $destfileids = array_map(function($row) {
-            return $row->id;
-        }, $DB->get_records_sql(
-            'SELECT files.id FROM {files} files JOIN {file_conversion} conversions ON files.id = conversions.destfileid AND conversions.converter = ? AND conversions.status = 2',
-            ['\fileconverter_dummy\converter']
-        ));
-
-        if (!$destfileids) {
-            return;
-        }
-
-        list($compose, $partial) = functions::export('compose', 'partial');
-        $gradeids = $compose(
-            $partial('array_map', function($userandassignid) use ($DB) {
-                return $DB->get_record_sql(
-                    'SELECT id from {assign_grades} WHERE userid = ? AND assignment = ?',
-                    [$userandassignid->userid, $userandassignid->assignment]
-                )->id;
-            }),
-            $partial('array_map', function($id) use ($DB) {
-                return $DB->get_record_sql(
-                    'SELECT userid, assignment FROM {assign_submission} WHERE id = ?',
-                    [$id]
-                );
-            }),
-            $partial('array_map', function($row) {
-                return $row->itemid;
-            })
-        )(
-            $DB->get_records_sql(
-                'SELECT files.id, files.itemid FROM {files} files JOIN {file_conversion} conversions ON files.id = conversions.sourcefileid AND conversions.converter = ? AND conversions.status = 2',
-                ['\fileconverter_dummy\converter']
-            )
-        );
-
-        list($gradeidinsql, $gradeidinparams) = $DB->get_in_or_equal($gradeids);
-        list($fileareainsql, $fileareainparams) = $DB->get_in_or_equal(['pages', 'combined']);
-
-        $extrafileidstodelete = array_map(
-            function($row) {
-                return $row->id;
-            },
-            $DB->get_records_sql(
-                "SELECT id FROM {files} WHERE itemid $gradeidinsql AND filearea $fileareainsql AND component = ?",
-                array_merge(
-                    $gradeidinparams,
-                    $fileareainparams,
-                    ['assignfeedback_editpdf']
-                )
-            )
-        );
-
-        $DB->delete_records_list('files', 'id', array_merge($destfileids, $extrafileidstodelete));
-        $DB->delete_records('file_conversion', ['converter' => '\fileconverter_dummy\converter']);
     }
 }
