@@ -15,14 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for fileconverter_cloudconvert.
+ * MoodleCloud converter settings.
  *
  * @package    fileconverter_cloudconvert
  * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'MoodleCloud Converter';
-$string['purge_conversions'] = 'Purge converted files';
-$string['purge_conversions_warning'] = 'This will remove all files converted by the MoodleCloud document converter from your site, then disable the plugin.';
-$string['purge_conversions_complete'] = 'Success.';
+defined('MOODLE_INTERNAL') || die();
+
+if ($hassiteconfig) {
+    global $OUTPUT;
+    $url = new moodle_url('/files/converter/cloudconvert/nuke.php');
+    $link = html_writer::link($url, get_string('purge_conversions', 'fileconverter_cloudconvert'));
+    $settings->add(new admin_setting_heading('nuke_conversions', '', $link));
+}
