@@ -28,6 +28,7 @@ $plugin->version   = 2017051501;         // The current plugin version (Date: YY
 $plugin->requires  = 2017050500;         // Requires this Moodle version
 $plugin->component = 'fileconverter_cloudconvert'; // Full name of the plugin (used for diagnostics).
 $plugin->dependencies = [
+    'local_filestorage' => ANY_VERSION,
     'local_logging' => ANY_VERSION,
-    'local_filestorage' => ANY_VERSION
+    'local_moodlecloud' => 2017121100
 ];
