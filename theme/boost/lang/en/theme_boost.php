@@ -28,7 +28,7 @@ $string['adunblock_message_admin'] = '
     <p>We\'ve detected that your browser is blocking ads on this site.</p>
     <p>MoodleCloud provides a Free plan to users and we depend on advertising to help pay for it.</p>
     <p>The ads are quite unobtrusive. We\'d really appreciate it if you can change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://moodle.com/cloud/faq#adblock" target="_blank">our FAQ</a></p>                
-    <p><b>Also, did you know these ads can be hidden from users on your site by upgrading to our Starter plan? Simply <a href=\'{$a->sso_link}\' target='_blank' class=\'adunblock-upgrade-link\'>login to your portal</a> and click \'Upgrade\' on the Change plan tab.</b></p>        
+    <p><b>Also, did you know these ads can be hidden from users on your site by upgrading to our Starter plan? Simply <a href=\'{$a->sso_link}\' target=\'_blank\' class=\'adunblock-upgrade-link\'>login to your portal</a> and click \'Upgrade\' on the Change plan tab.</b></p>        
     <p>Thanks, MoodleCloud team.</p>';
 $string['adunblock_message_student'] = '
     <p>We\'ve detected that your browser is blocking ads on this site.</p>
