@@ -170,13 +170,17 @@ function theme_boost_get_ad($context) {
     // These strings are used by the JS checker.
     $PAGE->requires->strings_for_js(array(
         'adunblock_title',
-        'adunblock_message',
+        'adunblock_message_admin',
+	    'adunblock_message_student',
     ), 'theme_boost');
+
+	$url = new moodle_url('/auth/moodlecloud/portal.php');
 
     $adconfig = array(
         'id'            => 'moodlecloud_ad',
         'data-notified' => isset($SESSION->theme_boost_adblock_notified),
         'style'         => 'margin-left:auto;margin-right:auto;display:block !important;',
+	    'data-portal-sso' => $url->out()
     );
 
     // do a capability check to see if this is a teacher. The same capability as is used with page_doc_link()
@@ -187,6 +191,7 @@ function theme_boost_get_ad($context) {
             // Teacher ads are disabled.
             return '';
         } else {
+	        $adconfig['data-upsell-context'] = 'admin';
             return html_writer::div(file_get_contents(__DIR__ . '/ads/teacher_body.html'), '', $adconfig);
         }
     } else {
@@ -195,6 +200,7 @@ function theme_boost_get_ad($context) {
             // Student ads are disabled.
             return '';
         } else {
+	        $adconfig['data-upsell-context'] = 'student';
             // Display the student ads.
             return html_writer::div(file_get_contents(__DIR__ . '/ads/general_body.html'), '', $adconfig);
         }
