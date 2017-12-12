@@ -1,7 +1,9 @@
 require(['core/str', 'jquery', 'core/config'], function(str, $, config) {
     var checkFunction = function() {
         var ads = $('#moodlecloud_ad');
-        if (ads.length && ads.height() === 0 && !ads.data('notified')) {
+        var ad_context = ads.attr('data-upsell-context');
+        var sso_link = ads.attr('data-portal-sso');
+        if (ads.length && ads.height() === 0 && !ads.data('notified') && typeof ad_context !== 'undefined') {
             YUI().use('moodle-core-notification-alert', function() {
                 str.get_strings([
                     {
@@ -9,14 +11,16 @@ require(['core/str', 'jquery', 'core/config'], function(str, $, config) {
                         component: 'theme_boost'
                     },
                     {
-                        key: 'adunblock_message',
-                        component: 'theme_boost'
+                        key: 'adunblock_message_' + ad_context,
+                        component: 'theme_boost',
+                        param: {sso_link: sso_link},
                     }
                 ]).done(function(strings) {
                     new M.core.alert({
                         'title': strings[0],
                         message: strings[1],
-                        width: '500px'
+                        width: '500px',
+                        extraClasses: ['moodlecloud-adblocker-modal']
                     });
 
                     var settings = {
@@ -27,6 +31,19 @@ require(['core/str', 'jquery', 'core/config'], function(str, $, config) {
                 });
             });
         }
+
+        $('.adunblock-upgrade-link').click(function(e) {
+            if ("ga" in window) {
+                // we have multiple trackers, one for region and one for global, so we need to iterate over each
+                // tracker and send the event data to each
+                var trackers = ga.getAll();
+                $.each(trackers, function(i, tracker) {
+                    if (tracker) {
+                        tracker.send('event', 'Adunblock Upgrade Link', 'Click', 'label');
+                    }
+                });
+            }
+        });
     };
 
     // Defer the call to the adunblock check by five seconds to account for
