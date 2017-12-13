@@ -39,7 +39,9 @@ require(['core/str', 'jquery', 'core/config'], function(str, $, config) {
                 var trackers = ga.getAll();
                 $.each(trackers, function(i, tracker) {
                     if (tracker) {
-                        tracker.send('event', 'Adunblock Upgrade Link', 'Click', 'label');
+                        tracker.send('event', 'Adunblock Upgrade Link', 'Click', '', {
+                            transport: 'beacon'
+                        });
                     }
                 });
             }
