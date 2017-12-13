@@ -19,6 +19,7 @@ require(['core/str', 'jquery', 'core/config'], function(str, $, config) {
                     new M.core.alert({
                             'title': strings[0],
                             message: strings[1],
+                            width: '500px',
                             extraClasses: ['moodlecloud-adblocker-modal']
                         });
 
