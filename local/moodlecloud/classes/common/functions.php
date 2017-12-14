@@ -222,14 +222,36 @@ class functions {
         return $p->bimap($c1, $c2);
     }
 
-    public static function join_on_comma(array $strings) : string {
-        return join(',', $strings);
+    /**
+     * Create a string from an array using commas to join values.
+     *
+     * @param array $values The array to join.
+     * @return string The joined string.
+     */
+    public static function join_on_comma(array $values) : string {
+        return join(',', $values);
     }
 
+    /**
+     * Split a string in to an array using comma as a delimiter.
+     *
+     * @param string $commadelim The comma delimited string.
+     * @return array
+     */
     public static function split_on_comma(string $commadelim) : array {
         return explode(',', $commadelim);
     }
 
+    /**
+     * Export a set of these functions to use as callables. Example:
+     *
+     * list($compose, $partial) = functions::export('compose', 'partial');
+     *
+     * Which then allows them to be used nicely in callbacks etc.
+     *
+     * @param string $what,... The function names to export.
+     * @return array Array of callables.
+     */
     public static function export(string ...$what) {
         return array_map(function($what) {
             return self::class . '::' . $what;
