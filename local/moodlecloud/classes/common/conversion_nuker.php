@@ -25,13 +25,26 @@
 namespace local_moodlecloud\common;
 defined('MOODLE_INTERNAL') || die();
 
+use stdClass;
+
+/**
+ * Class to nuke all conversions carried out by a particular converter.
+ *
+ * @copyright 2017 Cameron Ball <cameron@cameron1729.xyz>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class conversion_nuker {
 
+    /**
+     * Nuke all conversions for a given plugin.
+     *
+     * @param string $plugin The name of the file converter plugin to nuke conversion for. e.g., "unoconv".
+     */
     public static function nuke_conversions(string $plugin) {
         global $DB;
 
-        $destfileids = array_map(function($row) {
-            return $row->id;
+        $destfileids = array_map(function(stdClass $row) : int {
+                return (int)$row->id;
         }, $DB->get_records_sql(
             'SELECT files.id FROM {files} files JOIN {file_conversion} conversions ON files.id = conversions.destfileid AND conversions.converter = ? AND conversions.status = 2',
             ['\fileconverter_' . $plugin . '\converter']
@@ -43,20 +56,20 @@ class conversion_nuker {
 
         list($compose, $partial) = functions::export('compose', 'partial');
         $gradeids = $compose(
-            $partial('array_map', function($userandassignid) use ($DB) {
-                return $DB->get_record_sql(
+            $partial('array_map', function(stdClass $userandassignid) use ($DB) : int {
+                    return (int)$DB->get_record_sql(
                     'SELECT id from {assign_grades} WHERE userid = ? AND assignment = ?',
                     [$userandassignid->userid, $userandassignid->assignment]
                 )->id;
             }),
-            $partial('array_map', function($id) use ($DB) {
+            $partial('array_map', function(int $id) use ($DB) : stdClass {
                 return $DB->get_record_sql(
                     'SELECT userid, assignment FROM {assign_submission} WHERE id = ?',
                     [$id]
                 );
             }),
-            $partial('array_map', function($row) {
-                return $row->itemid;
+            $partial('array_map', function(stdClass $row) : int {
+                    return (int)$row->itemid;
             })
         )(
             $DB->get_records_sql(
@@ -73,8 +86,8 @@ class conversion_nuker {
         list($fileareainsql, $fileareainparams) = $DB->get_in_or_equal(['pages', 'combined']);
 
         $extrafileidstodelete = array_map(
-            function($row) {
-                return $row->id;
+            function(stdClass $row) : int {
+                return (int)$row->id;
             },
             $DB->get_records_sql(
                 "SELECT id FROM {files} WHERE itemid $gradeidinsql AND filearea $fileareainsql AND component = ?",
