@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017110300;         // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2017121400;         // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2017050500;         // Requires this Moodle version
 $plugin->component = 'fileconverter_dummy'; // Full name of the plugin (used for diagnostics).
 $plugin->dependencies = [
