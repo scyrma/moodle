@@ -26,6 +26,7 @@ namespace local_moodlecloud\task;
 defined('MOODLE_INTERNAL') || die();
 
 use core\task\scheduled_task;
+use core_plugin_manager;
 use local_moodlecloud\common\conversion_nuker;
 
 /**
@@ -51,6 +52,11 @@ class document_conversions_cleanup_task extends scheduled_task {
 
     public function execute() {
         global $CFG;
+
+        // We only need to run this task on free sites (i.e., sites that have the dummy converter installed).
+        if (!(core_plugin_manager::instance())->get_plugin_info('fileconverter_dummy')) {
+            return;
+        }
 
         $currentsortorder = explode(',', $CFG->converter_plugins_sortorder);
         $lastseensortorder = isset(get_config('fileconverter_dummy')->lastseensortorder)
