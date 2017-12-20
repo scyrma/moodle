@@ -53,7 +53,7 @@ final class converter implements converter_interface {
      */
     const FORMATS = [
         'document' => [
-            'abw', 'djvu', 'doc', 'docm', 'docx', 'html', 'lwp', 'md', 'odt', 'pages', 'pages.zip', 'pdf', 'rst', 'rtf', 'sdw',
+            'abw', 'djvu', 'doc', 'docm', 'docx', 'lwp', 'md', 'odt', 'pages', 'pages.zip', 'pdf', 'rst', 'rtf', 'sdw',
             'tex', 'txt', 'wpd', 'wps', 'zabw'
         ],
 
@@ -64,12 +64,12 @@ final class converter implements converter_interface {
         ],
 
         'presentation' => [
-            'eps', 'html', 'key', 'key.zip', 'odp', 'pdf', 'pps', 'ppsx', 'ppt', 'pptm', 'pptx', 'ps', 'sda', 'swf'
+            'eps', 'key', 'key.zip', 'odp', 'pdf', 'pps', 'ppsx', 'ppt', 'pptm', 'pptx', 'ps', 'sda', 'swf'
         ],
 
 
         'spreadsheet' => [
-            'csv', 'html', 'numbers', 'numbers.zip', 'ods', 'pdf', 'sdc', 'xls', 'xlsm', 'xlsx'
+            'csv', 'numbers', 'numbers.zip', 'ods', 'pdf', 'sdc', 'xls', 'xlsm', 'xlsx'
         ]
     ];
 
