@@ -43,6 +43,14 @@ return [
                         "quotaUsed" => MOODLECLOUD_USER_QUOTA - \local_moodlecloud\restrictions\userquota::number_of_user_slots_remaining()
                     ]
                 ]
+            ],
+            (object) [
+                "name" => "admin_notification",
+                "arguments" => [
+                    "Running out of users!",
+                    "You've nearly used all your user quota!",
+                    \local_moodlecloud\notifications\notification::WARNING
+                ]
             ]
         ]
     ],
@@ -61,6 +69,14 @@ return [
                 "arguments" => [
                     "reached_user_quota",
                     []
+                ]
+            ],
+            (object) [
+                "name" => "admin_notification",
+                "arguments" => [
+                    "Out of users!",
+                    "You've used up all your users!",
+                    \local_moodlecloud\notifications\notification::ERROR
                 ]
             ]
         ]
@@ -83,6 +99,14 @@ return [
                         "quotaUsed" => \local_filestorage\file_storage\file_system_s3::unique_storage_size_used()
                     ]
                 ]
+            ],
+            (object) [
+                "name" => "admin_notification",
+                "arguments" => [
+                    "Running out of storage!",
+                    "You've nearly used up all your file storage quota!",
+                    \local_moodlecloud\notifications\notification::WARNING
+                ]
             ]
         ]
     ],
@@ -101,6 +125,14 @@ return [
                 "arguments" => [
                     "reached_file_quota",
                     []
+                ]
+            ],
+            (object) [
+                "name" => "admin_notification",
+                "arguments" => [
+                    "Out of storage!",
+                    "You've used up all your file storage quota!",
+                    \local_moodlecloud\notifications\notification::ERROR
                 ]
             ]
         ]
