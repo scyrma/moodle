@@ -18,13 +18,13 @@
  * Special configcheckbox that can only be saved if you are the site owner.
  *
  * @package    local_moodlecloud
- * @copyright  2017 Cameron Ball <cameron@cameron1729.xyz>
+ * @copyright  2018 Cameron Ball <cameron@cameron1729.xyz>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-final class siteowner_configcheckbox extends admin_setting_configcheckbox {
+final class siteowner_configmulticheckbox extends admin_setting_configmulticheckbox {
     private static $notified;
 
     public function write_setting($data) {

@@ -62,8 +62,6 @@ class touchpoint_task extends \core\task\scheduled_task {
             $container->get('touchpoints.callables.getRepository'),
             // Get all the touchpoints.
             $container->get('touchpoints.callables.getTouchpoints'),
-            // Filter out touchpoints the site owner has disabled.
-            $container->get('touchpoints.callables.filterPermittedTouchpoints'),
             // Filter out touchpoints that cannot be run (either it's too early or the criteria isn't met).
             $container->get('touchpoints.callables.filterRunnableTouchpoints'),
             // Execute the touchpoints.
