@@ -30,7 +30,7 @@ global $DB;
 
 if ($hassiteconfig && $DB->get_manager()->table_exists('moodlecloud_touchpoints')) {
     global $CFG;
-    require_once($CFG->dirroot . '/local/moodlecloud/classes/siteowner_configcheckbox.php');
+    require_once($CFG->dirroot . '/local/moodlecloud/classes/siteowner_configmulticheckbox.php');
 
     $container = new \local_moodlecloud\touchpoints\container((include $CFG->dirroot . '/local/moodlecloud/classes/touchpoints/config/DI.php'));
 
@@ -41,16 +41,18 @@ if ($hassiteconfig && $DB->get_manager()->table_exists('moodlecloud_touchpoints'
 
     $temp = new admin_settingpage('moodlecloudnotifications', new lang_string('moodlecloudnotifications','local_moodlecloud'));
     $temp->add(new admin_setting_heading('emailnotifications', new lang_string('emailnotifications', 'local_moodlecloud'), new lang_string('emailnotificationsinfo', 'local_moodlecloud')));
+
     foreach ($touchpoints as $touchpoint) {
         $nicename = strtolower(str_replace(' ', '_', $touchpoint->get_name()));
-        $temp->add(
-            new siteowner_configcheckbox(
-                'moodlecloudnotifications/touchpoints_' . $nicename,
-                get_string($nicename, 'local_moodlecloud'),
-                get_string($nicename . '_description', 'local_moodlecloud'),
-                1
-            )
-        );
+        $temp->add(new siteowner_configmulticheckbox('moodlecloudnotifications/touchpoints_' . $nicename,
+                                                         get_string($nicename, 'local_moodlecloud'),
+                                                         get_string($nicename . '_description', 'local_moodlecloud'),
+                                                         ['emails' => 1, 'sitenotifications' => 1],
+                                                         [
+                                                             'emails' => get_string('emails', 'local_moodlecloud'),
+                                                             'sitenotifications' => get_string('sitenotifications', 'local_moodlecloud')
+                                                         ]
+        ));
     }
 
     $ADMIN->add('server', $temp);

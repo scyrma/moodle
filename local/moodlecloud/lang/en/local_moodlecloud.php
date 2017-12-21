@@ -25,7 +25,6 @@
 $string['emailnotifications'] = 'Email';
 $string['emailnotificationsinfo'] = 'Email notifications are sent to the regisitered MoodleCloud site account owner when site limits are approaching or have been reached.
 Disable the notifications if the account owner no longer wishes to receive these emails.';
-$string['moodlecloudnotifications'] = 'MoodleCloud Notifications';
 $string['onlysiteownercanchangesettings'] = 'Only the site owner can modify these settings.';
 $string['pluginname'] = 'MoodleCloud';
 $string['reporting_task'] = 'MoodleCloud Statistics Reporting';
@@ -43,3 +42,11 @@ $string['send_file_storage_limit_warning_description'] = 'An email will be sent 
 
 $string['send_file_storage_limit_reached'] = 'Send file storage limit reached';
 $string['send_file_storage_limit_reached_description'] = 'An email will be sent when your site file limit is reached. You will not be able to add any further files until you delete files you no longer need or you increase your limit by upgrading to a larger plan.';
+
+$string['conversioncleanup'] = 'Stale document conversion cleanup.';
+
+$string['emails'] = 'Email';
+$string['moodlecloudnotifications'] = 'MoodleCloud Notifications';
+$string['moodlecloudsitenotifications'] = 'MoodleCloud Site Notifications';
+$string['nonotifications'] = 'No notifications to show';
+$string['sitenotifications'] = 'Site Notifications';

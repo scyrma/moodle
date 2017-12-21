@@ -43,15 +43,20 @@ final class action_resolver implements resolver {
     /** @var callable $signupapicall A function that knows how to call signup. */
     private $signupapicall;
 
+    /** @var callable $notificationcall A function that knows how to make admin notifications. */
+    private $notificationcall;
+
     /**
      * Constructor.
      *
      * @param string $actionnamespace The namespace where actions live.
      * @param callable $signupapicall A function that knows how to call signup.
+     * @param callable $notificationcall A function that knows how to make admin notifications.
      */
-    public function __construct(string $actionnamespace, callable $signupapicall) {
+    public function __construct(string $actionnamespace, callable $signupapicall, callable $notificationcall) {
         $this->actionnamespace = $actionnamespace;
         $this->signupapicall = $signupapicall;
+        $this->notificationcall = $notificationcall;
     }
 
     public function resolve(string $actionname, ...$arguments) : action {
@@ -59,6 +64,13 @@ final class action_resolver implements resolver {
         if ($actionname === 'signup_touchpoint') {
             return functions::instance_from_string(
                 $this->actionnamespace . '\\' . $actionname, $this->signupapicall,
+                ...$arguments
+            );
+        }
+
+        if ($actionname == 'admin_notification') {
+            return functions::instance_from_string(
+                $this->actionnamespace . '\\' . $actionname, $this->notificationcall,
                 ...$arguments
             );
         }

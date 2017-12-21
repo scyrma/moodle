@@ -25,10 +25,13 @@
 namespace local_moodlecloud;
 defined('MOODLE_INTERNAL') || die();
 
+use DateTimeImmutable;
 use Exception;
 use curl;
 use local_moodlecloud\common\computation_result;
 use local_moodlecloud\common\functions;
+use local_moodlecloud\notifications\notification;
+use local_moodlecloud\notifications\notification_repository;
 use local_moodlecloud\touchpoints\resolvers\action_resolver;
 use local_moodlecloud\touchpoints\resolvers\criterion_resolver;
 use local_moodlecloud\touchpoints\touchpoint;
@@ -49,7 +52,8 @@ return [
     action_resolver::class => function($container) : action_resolver {
         return new action_resolver(
             $container->get('touchpoints.actionsNamespace'),
-            $container->get('touchpoints.callables.getSignupCallable')
+            $container->get('touchpoints.callables.getSignupCallable'),
+            $container->get('touchpoints.callables.getNotificationCallable')
         );
     },
 
@@ -64,6 +68,7 @@ return [
         return new touchpoint_repository(
             $container->get(moodle_database::class),
             $container->get(touchpoint_factory::class),
+            $container->get('touchpoints.callables.filterPermittedTouchpointActions'),
             (include $container->get('touchpoints.definitions'))
         );
     },
@@ -73,7 +78,7 @@ return [
     'touchpoints.criteriaNamespace' => '\\local_moodlecloud\\touchpoints\\criteria',
     'touchpoints.actionsNamespace' => '\\local_moodlecloud\\touchpoints\\actions',
 
-    // Below are a bunch of "callables". Touchpoints are  processed by first getting a list
+    // Below are a bunch of "callables". Touchpoints are processed by first getting a list
     // of touchpoint objects and then piping that list through a sequence of steps
     // (e.g., filtering out runnable touchpoints, excluding certain touchpoints based on
     // user preference, persistance, etc). Each of these callables can be considered a
@@ -91,6 +96,22 @@ return [
                 if (!\auth_moodlecloud\helper::call('touchpoint', $parameters)) {
                     throw new Exception('Signup API call failure');
                 }
+
+                return true;
+            };
+        };
+    },
+
+    // A function that knows how to create an admin notification.
+    'touchpoints.callables.getNotificationCallable' => function($container) : callable {
+        return function(string $name, string $body, int $level) use ($container) : callable {
+            return function() use ($name, $body, $level, $container) : bool {
+                (new notification_repository($container->get(moodle_database::class)))->save(
+                    new notification(
+                        null, $name, $body, new DateTimeImmutable, $level, 'touchpounts'
+                    ),
+                    'quotas'
+                );
 
                 return true;
             };
@@ -120,16 +141,39 @@ return [
         };
     },
 
-    // A function that knows how to filter out specific touchpoints  because the site
-    // account owner has specified that they don't want to receive these sort of emails.
-    'touchpoints.callables.filterPermittedTouchpoints' => function($container) : callable {
-        return function(array $touchpoints) : array {
-            return array_filter($touchpoints, function(touchpoint $touchpoint) : bool {
-                return (bool)get_config(
-                    'moodlecloudnotifications',
-                    'touchpoints_' . touchpoint::name_to_identifier($touchpoint->get_name())
-                );
-            });
+    // A function that filters out actions that have been disabled by the site admin.
+    // Originally entire touchpoints were excluded by these settings, but it makes more
+    // sense for the setting to control the actions, since, for example, the admin
+    // may want to stop getting emails but keep getting the little red number, and both
+    // of those things are tied to the same touchpoint.
+    'touchpoints.callables.filterPermittedTouchpointActions' => function($container) : callable {
+        return function(string $touchpointname, array $actions) : array {
+            $enabled = function(string $touchpointname, string $value) : bool {
+                return
+                    !get_config('moodlecloudnotifications', 'touchpoints_' . touchpoint::name_to_identifier($touchpointname)) ||
+                    strpos(
+                        get_config(
+                            'moodlecloudnotifications',
+                            'touchpoints_' . touchpoint::name_to_identifier($touchpointname)
+                        ),
+                        $value
+                    ) !== false;
+            };
+
+            return array_filter(
+                $actions,
+                function(stdClass $action) use ($touchpointname, $enabled) : bool {
+                    if ($action->name == 'signup_touchpoint') {
+                        return $enabled($touchpointname, 'email');
+                    }
+
+                    if ($action->name == 'admin_notification') {
+                        return $enabled($touchpointname, 'sitenotifications');
+                    }
+
+                    return true;
+                }
+            );
         };
     },
 
