@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['adunblock_message_admin'] = '
     <p>We\'ve detected that your browser is blocking ads on this site.</p>
     <p>MoodleCloud provides a Free plan to users and advertising helps pay for it.</p>
-    <p>We\'d really appreciate it if you would change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://moodle.com/cloud/faq#adblock" target="_blank">our FAQs</a></p>    
+    <p>We\'d really appreciate it if you would change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://support.moodlecloud.com" target="_blank">our FAQs</a></p>    
     <p>Alternatively, consider upgrading to a paid plan and support us directly.</p>
     <p>A Starter plan hides the ads from students. Some ads are shown to admin and teacher roles about Moodle services to help you to get more from your MoodleCloud site.</p>
     <p>Any Moodle for School plan hides all ads from all users.</p>
@@ -36,7 +36,7 @@ $string['adunblock_message_admin'] = '
 $string['adunblock_message_student'] = '
     <p>We\'ve detected that your browser is blocking ads on this site.</p>
     <p>MoodleCloud provides a Free plan to users and advertising helps pay for it.</p>
-    <p>We\'d really appreciate it if you can change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://moodle.com/cloud/faq#adblock" target="_blank">our FAQs</a></p>    
+    <p>We\'d really appreciate it if you can change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://support.moodlecloud.com" target="_blank">our FAQs</a></p>    
     <p>Alternatively, talk to your site admin to upgrade your site to a paid plan and support us directly.</p>
     <p>Thanks for supporting MoodleCloud!</p>';
 $string['adunblock_title'] = 'Ad blocker detected :(';
