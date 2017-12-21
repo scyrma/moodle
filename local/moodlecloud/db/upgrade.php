@@ -72,5 +72,25 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017092400, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2018030600) {
+        $table = new xmldb_table('moodlecloud_notifications');
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $table->add_field('created', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null);
+        $table->add_field('body', XMLDB_TYPE_TEXT, null, null, null, null, null, null);
+        $table->add_field('level', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null, null);
+        $table->add_field('source', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null);
+        $table->add_field('category', XMLDB_TYPE_CHAR, '255', null, null, null, null, null);
+
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        if(!$DB->get_manager()->table_exists($table)) {
+            $DB->get_manager()->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2018030600, 'local', 'moodlecloud');
+    }
+
     return true;
 }

@@ -53,6 +53,9 @@ final class touchpoint_repository {
     /** @var array $dbrownamemap A cache of DB rows where the touchpoint name is the key. */
     private $dbrownamemap;
 
+    /** @var callable $actionfilter A function to filter out disabled actions. */
+    private $actionfilter;
+
     /** @var array $pool A cache of touchpoints already retrieved. */
     private $pool;
 
@@ -61,11 +64,13 @@ final class touchpoint_repository {
      *
      * @param moodle_database $db
      * @param touchpoint_factory $factory
+     * @param callable $actionfilter A function to filter out disabled actions.
      * @param array $definitions Touchpoint definitions.
      */
     public function __construct(
         moodle_database $db,
         touchpoint_factory $factory,
+        callable $actionfilter,
         array $definitions
     ) {
         list($statusinsql, $statusinparams) = $db->get_in_or_equal(
@@ -75,6 +80,7 @@ final class touchpoint_repository {
         $this->db = $db;
         $this->factory = $factory;
         $this->definitions = $definitions;
+        $this->actionfilter = $actionfilter;
         $this->dbrownamemap = $this->prepersist_new_definitions(
             array_reduce(
                 $this->db->get_records_sql("SELECT * FROM {moodlecloud_touchpoints} WHERE status $statusinsql", $statusinparams),
@@ -179,6 +185,11 @@ final class touchpoint_repository {
                 if (!empty($this->pool[$datum->name])) {
                     return $this->pool[$datum->name];
                 }
+
+                // TODO: This stuff probably makes more sense living in the factory.
+
+                // Filter out disabled actions.
+                $datum->actions = ($this->actionfilter)($datum->name, $datum->actions);
 
                 // Create a list of actions we need to add to the touchpoint.
                 // We don't simply add them all because in some cases we are retrying a touchpoint,
