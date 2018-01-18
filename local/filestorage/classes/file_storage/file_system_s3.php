@@ -463,6 +463,7 @@ class file_system_s3 extends \file_system {
         try {
             // Fetch the head information.
             // If no file exists at the specified key, then a NoSuchKeyException is thrown.
+            $start = microtime();
             $object = self::$client->headObject(array(
                     'Bucket'        => self::$bucket,
                     'Key'           => $key,
@@ -474,6 +475,12 @@ class file_system_s3 extends \file_system {
             if ($sizematch) {
                 // A copy of this file is already present, and it has a matching file size.
                 // No point in uploading it again so return early.
+                self::log_statistic('precheckmatch', array(
+                        'logmessage'    => 'New file matched existing file in S3',
+                        'contenthash'   => $contenthash,
+                        'filesize'      => $filesize,
+                        'time'          => microtime_diff($start, microtime()),
+                    ));
                 return $result;
             } else {
                 // There's already a key present, but it has a different file size.
@@ -486,6 +493,12 @@ class file_system_s3 extends \file_system {
             }
             // Only catch the NoSuchKeyException exception.
             // There is no key here - upload the file.
+            self::log_statistic('precheckfail', array(
+                    'logmessage'    => 'Existing file not found when checking before upload',
+                    'contenthash'   => $contenthash,
+                    'filesize'      => $filesize,
+                    'time'          => microtime_diff($start, microtime()),
+                ));
 
             // We must use a file handle here. If we were to pass the path to the sourcefile to upload, the literal
             // string for the path would be saved as the file content.
@@ -497,7 +510,17 @@ class file_system_s3 extends \file_system {
             // ACL to apply to the object (default: private)
             $acl = 'private';
 
+            $start = microtime();
+            // Upload the file
             self::$client->upload(self::$bucket, $key, $fh, $acl, $options);
+            // Log about it.
+            self::log_statistic('uploaded', array(
+                    'logmessage'    => 'New file uploaded to S3',
+                    'contenthash'   => $contenthash,
+                    'filesize'      => $filesize,
+                    'time'          => microtime_diff($start, microtime()),
+                ));
+
 
             // Note: No need to fclose here. The AWS API does it as part of the upload.
         }
