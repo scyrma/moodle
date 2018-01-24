@@ -2187,7 +2187,7 @@ class file_storage {
         cron_trace_time_and_memory();
         // START MOODLECLOUD HACK.
         // Hard coded 4 days has been changed to a CFG variable.
-        if (empty($CFG->moodlecloud_draftpurgeage) || !is_int($CFG->moodlecloud_draftpurgeage)) {
+        if (empty($CFG->moodlecloud_draftpurgeage)) {
             $old = time() - 60*60*24*4;
         } else {
             $old = time() - $CFG->moodlecloud_draftpurgeage;
