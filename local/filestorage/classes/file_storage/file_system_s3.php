@@ -180,14 +180,14 @@ class file_system_s3 extends \file_system {
     }
 
     public function is_file_readable_remotely_by_hash($contenthash) {
-
+        global $dynamicsite;
         try {
             // Fetch the head information.
             // If no file exists at the specified key, then a NoSuchKeyException is thrown.
             /** @noinspection PhpUnusedLocalVariableInspection */
             $object = self::$client->headObject(array(
                     'Bucket'        => self::$bucket,
-                    'Key'           => $contenthash,
+                    'Key'           => $contenthash .'_'. $dynamicsite,
                 ));
             // A copy of this file is already present.
             return true;
@@ -239,10 +239,64 @@ class file_system_s3 extends \file_system {
      * @param string $contenthash
      */
     public function remove_file($contenthash) {
-        // This S3 implementation uses a shared bucket.
-        // We do _NOT_ delete file content.
+        if (!self::is_file_removable($contenthash)) {
+            // Don't remove the file - it's still in use.
+            return;
+        }
+
+        global $dynamicsite;
+        $key = $this->get_contentpath_from_hash($contenthash) .'_'. $dynamicsite;
+
+        try {
+            $start = microtime();
+            $result = self::$client->deleteObject(array(
+                    'Bucket'        => self::$bucket,
+                    'Key'           => $key,
+                ));
+            self::log_statistic('deleted', array(
+                    'logmessage'    => 'File deleted from S3',
+                    'contenthash'   => $contenthash,
+                    //'filesize'      => $filesize,
+                    'time'          => microtime_diff($start, microtime()),
+                ));
+            return;
+        } catch (S3Exception $e) {
+            if ($e->getAwsErrorCode() !== 'NotFound') {
+                throw $e;
+            }
+            // Only catch the NoSuchKeyException exception.
+            // There is no key here - upload the file.
+            self::log_statistic('deletefail', array(
+                    'logmessage'    => 'Existing file not found when attempting to delete',
+                    'contenthash'   => $contenthash,
+                    //'filesize'      => $filesize,
+                    'time'          => microtime_diff($start, microtime()),
+                ));
+            return;
+        }
+        // wtf?
         return;
     }
+/*
+    protected static function is_file_removable($contenthash) {
+        global $DB;
+
+        if ($contenthash === file_storage::hash_from_string('')) {
+            // No need to delete files without content.
+            return false;
+        }
+
+        // Note: This section is critical - in theory file could be reused at the same time, if this
+        // happens we can still recover the file from trash.
+        // Technically this is the responsibility of the file_storage API, but as this method is public, we go belt-and-braces.
+        if ($DB->record_exists('files', array('contenthash' => $contenthash))) {
+            // File content is still used.
+            return false;
+        }
+
+        return true;
+    }
+*/
 
     /**
      * Get the content of the specified file.
@@ -279,6 +333,7 @@ class file_system_s3 extends \file_system {
      * @return string The path to the new file
      */
     protected function fetch_local_copy($contenthash, $newtarget = null) {
+        global $dynamicsite;
         $target = $this->get_local_path_from_hash($contenthash, false);
         if ($newtarget === null || $newtarget === $target) {
             if (is_readable($target)) {
@@ -296,7 +351,7 @@ class file_system_s3 extends \file_system {
         $temptarget = $target . '.tmp';
         // The S3 API can only fetch to an existing file.
         touch($temptarget);
-        $key = $this->get_contentpath_from_hash($contenthash);
+        $key = $this->get_contentpath_from_hash($contenthash) .'_'. $dynamicsite;
         try {
             $start = microtime();
             self::$client->getObject(array(
@@ -333,8 +388,9 @@ class file_system_s3 extends \file_system {
      * @return string The pre-signed URL.
      */
     protected function get_presigned_url($contenthash) {
+        global $dynamicsite;
         // Find the path within the filedir to use.
-        $subpath = $this->get_contentpath_from_hash($contenthash);
+        $subpath = $this->get_contentpath_from_hash($contenthash) .'_'. $dynamicsite;
 
         // We generate a pre-signed URL for the file handle to use.
         $command = self::$client->getCommand('GetObject', array(
@@ -364,6 +420,7 @@ class file_system_s3 extends \file_system {
      * @return resource file handle
      */
     public function get_content_file_handle(stored_file $file, $type = stored_file::FILE_HANDLE_FOPEN) {
+        global $dynamicsite;
         switch ($type) {
             case stored_file::FILE_HANDLE_FOPEN:
                 /**
@@ -377,7 +434,7 @@ class file_system_s3 extends \file_system {
                 $context = stream_context_create([
                     's3' => ['seekable' => true]
                 ]);
-                $tmps3filepath = 's3://'. self::$bucket .'/'. $this->get_contentpath_from_hash($file->get_contenthash());
+                $tmps3filepath = 's3://'. self::$bucket .'/'. $this->get_contentpath_from_hash($file->get_contenthash()) .'_'. $dynamicsite;
                 $tmphandle = fopen($tmps3filepath, 'r', false, $context);
                 if ($tmphandle) {
                     // S3 seekable streams allow you to seek only to bytes that were previously read.
@@ -392,7 +449,7 @@ class file_system_s3 extends \file_system {
                 return $tmphandle;
                 break;
             default:
-                return self::get_file_handle_for_path($this->get_presigned_url($file->get_contenthash()), $type);
+                return self::get_file_handle_for_path($this->get_presigned_url($file->get_contenthash() .'_'. $dynamicsite), $type);
         }
     }
 
@@ -446,9 +503,10 @@ class file_system_s3 extends \file_system {
      * @throws file_pool_content_exception
      */
     private function push_to_s3($sourcefile, $contenthash = null, $filesize = null) {
+        global $dynamicsite;
         // Note: We cannot rely on the result of $newfile as this only checks whether a file was present in filedir,
         // which may be empty.
-        $key = $this->get_contentpath_from_hash($contenthash);
+        $key = $this->get_contentpath_from_hash($contenthash) .'_'. $dynamicsite;
 
         $result = [$contenthash, $filesize, true];
 
