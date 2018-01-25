@@ -80,7 +80,7 @@ class file_system_s3 extends \file_system {
     }
 
     protected function connect_metadata() {
-        $sdk = new Aws\Sdk([
+        $sdk = new \Aws\Sdk([
             'endpoint'   => null,
             'region'   => 'us-east-1',
             'version'  => 'latest'
@@ -323,6 +323,12 @@ class file_system_s3 extends \file_system {
         // This S3 implementation uses a shared bucket.
         // We do _NOT_ delete file content.
         // Backend services keep S3 and the metadata service in sync
+
+        // Check to see if this file is still in use elsewhere
+        if (!self::is_file_removable($contenthash)) {
+            return;
+        }
+
         // Update the metadata service to say we no longer use the file.
         if (!$this->remove_metadata($contenthash)) {
             // TODO: come up with solution here, on provisioning or signup-jobs or lambda.
