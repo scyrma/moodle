@@ -36,6 +36,9 @@ use local_filestorage\exception\quota_exception;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 
+use Aws\DynamoDb\Exception\DynamoDbException;
+use Aws\DynamoDb\Marshaler;
+
 use local_logging\logger;
 
 defined('MOODLE_INTERNAL') || die();
@@ -54,6 +57,11 @@ class file_system_s3 extends \file_system {
      */
     protected static $client = null;
 
+    /**
+     * @var DynamoDB $ddbtable The DynamoDB table
+     */
+    protected static $ddbtable = null;
+
     /** @var string $filedir */
     protected static $filedir = null;
 
@@ -68,6 +76,79 @@ class file_system_s3 extends \file_system {
         self::$client = new S3Client($CFG->awsconfig);
         self::$bucket = $CFG->s3bucket;
         self::$filedir = make_request_directory();
+        self::$ddbtable = "s3metadata";
+    }
+
+    protected function connect_metadata() {
+        $sdk = new Aws\Sdk([
+            'endpoint'   => null,
+            'region'   => 'us-east-1',
+            'version'  => 'latest'
+        ]);
+
+        $dynamodb = $sdk->createDynamoDb();
+        $marshaler = new Marshaler();
+
+        return array($dynamodb, $marshaler);
+    }
+
+    protected function update_metadata($contenthash) {
+        global $dynamicsite;
+        list($dynamodb, $marshaler) = $this->connect_metadata();
+
+        $item = $marshaler->marshalJson('
+            {
+                "id": "'.$dynamicsite.':'.$contenthash.'",
+                "contenthash": "'.$contenthash.'"
+            }
+        ');
+
+        $params = [
+            'TableName' => self::$ddbtable,
+            'Item' => $item
+        ];
+
+        try {
+            $result = $dynamodb->putItem($params);
+            error_log("Added item to DynamoDB: ".$contenthash);
+        } catch (DynamoDbException $e) {
+            error_log("Unable to add item to DynamoDB: ".$e->getMessage());
+            self::log_statistic('metadatafail', array(
+                'logmessage'    => 'Could not update metadata service, aborting file upload',
+                'contenthash'   => $contenthash,
+            ));
+            //throw new file_exception('storedfilecannotcreatefile');
+            throw new moodle_exception('Could not update file metadata');
+        }
+    }
+
+    protected function remove_metadata($contenthash) {
+        global $dynamicsite;
+
+        list($dynamodb, $marshaler) = $this->connect_metadata();
+
+        $key = $marshaler->marshalJson('
+            {
+                "id": "'.$dynamicsite.':'.$contenthash.'"
+            }
+        ');
+
+        // Delete the item
+        $params = [
+            'TableName' => self::$ddbtable,
+            'Key' => $key
+        ];
+
+        try {
+            $result = $dynamodb->deleteItem($params);
+            error_log("Deleted item from dynamodb: ".$contenthash);
+        } catch (DynamoDbException $e) {
+            error_log("Unable to delete from dynamodb item: ".$contenthash." : ".$e->getMessage());
+            self::log_statistic('metadatafail', array(
+                'logmessage'    => 'Could not remove contenthash from metadata service.',
+                'contenthash'   => $contenthash,
+            ));
+        }
     }
 
     /**
@@ -241,6 +322,11 @@ class file_system_s3 extends \file_system {
     public function remove_file($contenthash) {
         // This S3 implementation uses a shared bucket.
         // We do _NOT_ delete file content.
+        // Backend services keep S3 and the metadata service in sync
+        // Update the metadata service to say we no longer use the file.
+        if (!$this->remove_metadata($contenthash)) {
+            // TODO: come up with solution here, on provisioning or signup-jobs or lambda.
+        }
         return;
     }
 
@@ -456,6 +542,9 @@ class file_system_s3 extends \file_system {
             // We cannot push empty files or directories.
             return $result;
         }
+
+        // Insert metadata for the new file, abort the whole process if we cannot do this.
+        $this->update_metadata($contenthash);
 
         // Perform the headObject in a try/catch.
         // This saves an API call performing the doesObjectExist, which

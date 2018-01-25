@@ -3,10 +3,9 @@
 use local_filestorage\file_storage\file_system_s3;
 use local_filestorage\exception\quota_exception;
 
-require_once(__DIR__ . '/sdk/aws-autoloader.php');
-//use Aws\DynamoDb\DynamoDbClient;
-use Aws\DynamoDb\Exception\DynamoDbException;
-use Aws\DynamoDb\Marshaler;
+//require_once(__DIR__ . '/sdk/aws-autoloader.php');
+//use Aws\DynamoDb\Exception\DynamoDbException;
+//use Aws\DynamoDb\Marshaler;
 
 function local_filestorage_before_file_created($newfile, $fileinfo) {
     if (!defined('FILESTORAGE_QUOTA')) {
@@ -40,6 +39,7 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
     }
 }
 
+/*
 function local_filestorage_after_file_created($newfile) {
     if ($newfile->filearea == "draft") {
         return;
@@ -120,38 +120,6 @@ function local_filestorage_after_file_deleted($file) {
         }
     ');
 
-    /* 
-    // Update the item.
-    $eav = $marshaler->marshalJson('
-        {
-            ":d": 1,
-            ":ch": "'.$file->contenthash.'",
-            ":s": "'.$dynamicsite.'",
-            ":fn": "'.$file->filename.'",
-            ":fs": "'.$file->filesize.'",
-            ":u": "'. $userid .'",
-            ":fa": "'.$file->filearea.'",
-            ":tc": "'.$file->timecreated.'"
-        }
-    ');
-
-    $params = [
-        'TableName' => $table,
-        'Key' => $key,
-        'UpdateExpression' =>
-            'set deleted = :d, contenthash = :ch, site = :s, filename = :fn, filesize = :fs, userid = :u, filearea = :fa, timecreated = :tc',
-        'ExpressionAttributeValues' => $eav,
-        'ReturnValues' => 'UPDATED_NEW'
-    ];
-    
-    try {
-        $result = $dynamodb->updateItem($params);
-        error_log("Updated (deleted) dynamodb item: ".$file->contenthash);
-    } catch (DynamoDbException $e) {
-        error_log("Unable to (delete) update dynamodb item: ".$file->contenthash." : ".$e->getMessage());
-    }
-    */
-
     // Delete the item
     $params = [
         'TableName' => $table,
@@ -165,3 +133,4 @@ function local_filestorage_after_file_deleted($file) {
         error_log("Unable to delete from dynamodb item: ".$file->contenthash." : ".$e->getMessage());
     }
 }
+*/
