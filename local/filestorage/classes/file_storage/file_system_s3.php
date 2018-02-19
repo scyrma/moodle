@@ -88,14 +88,14 @@ class file_system_s3 extends \file_system {
         ]);
 
         $dynamodb = $sdk->createDynamoDb();
-        $marshaler = new Marshaler();
 
-        return array($dynamodb, $marshaler);
+        return $dynamodb;
     }
 
     protected function update_metadata($contenthash) {
         global $dynamicsite;
-        list($dynamodb, $marshaler) = $this->connect_metadata();
+        $dynamodb = $this->connect_metadata();
+        $marshaler = new Marshaler();
 
         $item = $marshaler->marshalJson('
             {
@@ -129,7 +129,8 @@ class file_system_s3 extends \file_system {
     protected function remove_metadata($contenthash) {
         global $dynamicsite;
 
-        list($dynamodb, $marshaler) = $this->connect_metadata();
+        $dynamodb = $this->connect_metadata();
+        $marshaler = new Marshaler();
 
         $key = $marshaler->marshalJson('
             {
