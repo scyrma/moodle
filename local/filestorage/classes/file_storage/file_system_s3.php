@@ -110,7 +110,10 @@ class file_system_s3 extends \file_system {
 
         try {
             $result = $dynamodb->putItem($params);
-            error_log("Added item to DynamoDB: ".$contenthash);
+            self::log_statistic('metadatasuccess', array(
+                'logmessage'    => 'Contenthash added to metadata.',
+                'contenthash'   => $contenthash,
+            ));
         } catch (DynamoDbException $e) {
             error_log("Unable to add item to DynamoDB: ".$e->getMessage());
             self::log_statistic('metadatafail', array(
@@ -141,13 +144,17 @@ class file_system_s3 extends \file_system {
 
         try {
             $result = $dynamodb->deleteItem($params);
-            error_log("Deleted item from dynamodb: ".$contenthash);
+            self::log_statistic('metadatasuccess', array(
+                'logmessage'    => 'Contenthash removed from metadata.',
+                'contenthash'   => $contenthash,
+            ));
         } catch (DynamoDbException $e) {
             error_log("Unable to delete from dynamodb item: ".$contenthash." : ".$e->getMessage());
             self::log_statistic('metadatafail', array(
                 'logmessage'    => 'Could not remove contenthash from metadata service.',
                 'contenthash'   => $contenthash,
             ));
+            return false;
         }
     }
 
