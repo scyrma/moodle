@@ -80,9 +80,10 @@ class file_system_s3 extends \file_system {
     }
 
     protected function connect_metadata() {
+        global $CFG;
         $sdk = new \Aws\Sdk([
             'endpoint'   => null,
-            'region'   => 'us-east-1',
+            'region'   => $CFG->moodlecloud_metadata_region,
             'version'  => 'latest'
         ]);
 
