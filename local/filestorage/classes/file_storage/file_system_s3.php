@@ -100,7 +100,8 @@ class file_system_s3 extends \file_system {
         $item = $marshaler->marshalJson('
             {
                 "id": "'.$dynamicsite.':'.$contenthash.'",
-                "contenthash": "'.$contenthash.'"
+                "contenthash": "'.$contenthash.'",
+                "site": "'.$dynamicsite.'"
             }
         ');
 
