@@ -122,6 +122,12 @@ final class converter implements converter_interface {
     public function poll_conversion_status(conversion $conversion) : self {
         self::log('Polling conversion status', $conversion);
         self::cloudconvert_api_call(function(conversion $conversion) {
+
+            // If we don't have a URL to poll, try agan to get one.
+            if (!isset($conversion->get('data')->url)) {
+                return self::start_document_conversion($conversion);
+            }
+
             $process = (new cloudconvert_process(
                 new cloudconvert_api($this->config->cloudconvertapikey),
                 $conversion->get('data')->url
@@ -212,7 +218,15 @@ final class converter implements converter_interface {
             $conversion->update();
         } catch (Exception $e) {
             // For any other failures, fail the conversion and rethrow.
-            self::log('Unrecoverable exception', $conversion, ['exception' => $e->getMessage()], \Monolog\Logger::ERROR);
+            self::log(
+                'Unrecoverable exception',
+                $conversion,
+                [
+                    'exception' => get_class($e),
+                    'exceptionMessage' => $e->getMessage()
+                ],
+                \Monolog\Logger::ERROR
+            );
             $conversion->set('status', conversion::STATUS_FAILED);
             $conversion->set('statusmessage', $e->getMessage());
             $conversion->update();
