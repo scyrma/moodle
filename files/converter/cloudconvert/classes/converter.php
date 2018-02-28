@@ -123,7 +123,7 @@ final class converter implements converter_interface {
         self::log('Polling conversion status', $conversion);
         self::cloudconvert_api_call(function(conversion $conversion) {
 
-            // If we don't have a URL to poll, try agan to get one.
+            // If we don't have a URL to poll, try again to get one.
             if (!isset($conversion->get('data')->url)) {
                 return self::start_document_conversion($conversion);
             }
