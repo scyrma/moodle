@@ -74,6 +74,15 @@ final class converter implements converter_interface {
     ];
 
     /**
+     * Because of the way detecting supported formats works (see get_supported_mimetypes) some extensions
+     * slip through when really they are unsupported. For example, Moodle reports that Java has the mimetype
+     * text/plain - which we do support - but CloudConvert will not convert a java file.
+     */
+    const UNSUPPORTED_EXTENSIONS = [
+        'java'
+    ];
+
+    /**
      * @var array $mimetypes Supported mimetypes.
      */
     private static $mimetypes;
@@ -158,7 +167,9 @@ final class converter implements converter_interface {
     }
 
     public static function supports($from, $to) : bool {
+        list($from, $to) = [strtolower($from), strtolower($to)];
         return
+            !in_array($from, self::UNSUPPORTED_EXTENSIONS) &&
             // Is the input format accepted?
             in_array(\core_filetypes::get_types()[$from]['type'], self::get_supported_mimetypes()) &&
             // Is the output format accepted?
