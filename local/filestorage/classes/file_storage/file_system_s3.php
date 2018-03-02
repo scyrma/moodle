@@ -283,6 +283,12 @@ class file_system_s3 extends \file_system {
             // A copy of this file is already present.
             return true;
         } catch (S3Exception $e) {
+            self::log_statistic('s3exception', array(
+                'logmessage'    => 'Could not perform headObject on S3 file',
+                'contenthash'   => $contenthash,
+                'errorcode'     => $e->getAwsErrorCode(),
+                'errormessage'  => $e
+            ));
             if ($e->getAwsErrorCode() !== 'NotFound') {
                 throw $e;
             }
@@ -418,6 +424,12 @@ class file_system_s3 extends \file_system {
             rename($temptarget, $target);
             @unlink($temptarget); // Just in case anything fails in a weird way.
         } catch (S3Exception $e) {
+            self::log_statistic('s3exception', array(
+                'logmessage'    => 'Could not fetch file from S3',
+                'contenthash'   => $contenthash,
+                'errorcode'     => $e->getAwsErrorCode(),
+                'errormessage'  => $e
+            ));
             if ($e->getAwsErrorCode() !== 'NotFound') {
                 throw $e;
             }
