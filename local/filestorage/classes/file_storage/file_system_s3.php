@@ -286,13 +286,13 @@ class file_system_s3 extends \file_system {
             // A copy of this file is already present.
             return true;
         } catch (S3Exception $e) {
-            self::log_statistic('s3exception', array(
-                'logmessage'    => 'Could not perform headObject on S3 file',
-                'contenthash'   => $contenthash,
-                'errorcode'     => $e->getAwsErrorCode(),
-                'errormessage'  => $e
-            ));
             if ($e->getAwsErrorCode() !== 'NotFound') {
+                self::log_statistic('s3exception', array(
+                    'logmessage'    => 'Could not perform headObject on S3 file',
+                    'contenthash'   => $contenthash,
+                    'errorcode'     => $e->getAwsErrorCode(),
+                    'errormessage'  => $e
+                ));
                 throw $e;
             }
             // Only catch the NoSuchKeyException exception.
@@ -452,7 +452,7 @@ class file_system_s3 extends \file_system {
     protected function get_presigned_url($contenthash) {
         if (!$this->is_file_readable_remotely_by_hash($contenthash)) {
             self::log_statistic('generatedurlfail', array(
-                'logmessage'    => 'Could not generate presigned url for file from S3',
+                'logmessage'    => 'Could not generate presigned url for file from S3. file does not exist.',
                 'contenthash'   => $contenthash
             ));
             throw new \file_exception('storedfilecannotread', '', $contenthash);
