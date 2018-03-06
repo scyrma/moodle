@@ -570,6 +570,10 @@ class enrol_imsenterprise_plugin extends enrol_plugin {
                     $DB->set_field('user', 'idnumber', $person->idnumber, array('username' => $person->username));
                 } else {
 
+                    // BEGIN MOODLECLOUD HACK.
+                    local_moodlecloud\restrictions\userquota::site_is_over_user_quota();
+                    // END MOODLECLOUD HACK.
+
                     // If they don't exist and they have a defined username, and $createnewusers == true, we create them.
                     $person->lang = $CFG->lang;
                     // TODO: MDL-15863 this needs more work due to multiauth changes, use first auth for now.
