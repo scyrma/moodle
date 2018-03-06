@@ -53,6 +53,7 @@ echo $OUTPUT->doctype() ?>
     <footer id="page-footer">
         <?php
         echo $OUTPUT->standard_footer_html();
+        echo theme_clean_get_gatc();
         ?>
     </footer>
 
