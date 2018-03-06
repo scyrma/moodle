@@ -273,12 +273,15 @@ class file_system_s3 extends \file_system {
     public function is_file_readable_remotely_by_hash($contenthash) {
 
         try {
+            // Grab the path from the contenthash
+            $key = $this->get_contentpath_from_hash($contenthash);
+
             // Fetch the head information.
             // If no file exists at the specified key, then a NoSuchKeyException is thrown.
             /** @noinspection PhpUnusedLocalVariableInspection */
             $object = self::$client->headObject(array(
                     'Bucket'        => self::$bucket,
-                    'Key'           => $contenthash,
+                    'Key'           => $key,
                 ));
             // A copy of this file is already present.
             return true;
@@ -447,25 +450,54 @@ class file_system_s3 extends \file_system {
      * @return string The pre-signed URL.
      */
     protected function get_presigned_url($contenthash) {
-        // Find the path within the filedir to use.
-        $subpath = $this->get_contentpath_from_hash($contenthash);
+        if (!$this->is_file_readable_remotely_by_hash($contenthash)) {
+            self::log_statistic('generatedurlfail', array(
+                'logmessage'    => 'Could not generate presigned url for file from S3',
+                'contenthash'   => $contenthash
+            ));
+            throw new \file_exception('storedfilecannotread', '', $contenthash);
+        }
 
-        // We generate a pre-signed URL for the file handle to use.
-        $command = self::$client->getCommand('GetObject', array(
-                'Bucket'    => self::$bucket,
-                'Key'       => $subpath,
+        try {
+            // Find the path within the filedir to use.
+            $subpath = $this->get_contentpath_from_hash($contenthash);
+
+            // Fetch the head information.
+            // If no file exists at the specified key, then a NoSuchKeyException is thrown.
+            /** @noinspection PhpUnusedLocalVariableInspection */
+            /*
+            $object = self::$client->headObject(array(
+                    'Bucket'        => self::$bucket,
+                    'Key'           => $contenthash,
+                ));
+            */
+
+            // We generate a pre-signed URL for the file handle to use.
+            $command = self::$client->getCommand('GetObject', array(
+                    'Bucket'    => self::$bucket,
+                    'Key'       => $subpath,
+                ));
+
+            // It doesn't matter how long this presigned URL lasts as it is disposed of almost immediately.
+            // It must be a sufficient period of time to allow slow reads of large files.
+            $url = self::$client->createPresignedRequest($command, '+1 day');
+
+            self::log_statistic('generatedurl', array(
+                'logmessage'    => 'Generated pre-signed URL',
+                'contenthash'   => $contenthash,
             ));
 
-        // It doesn't matter how long this presigned URL lasts as it is disposed of almost immediately.
-        // It must be a sufficient period of time to allow slow reads of large files.
-        $url = self::$client->createPresignedRequest($command, '+1 day');
-
-        self::log_statistic('generatedurl', array(
-            'logmessage'    => 'Generated pre-signed URL',
-            'contenthash'   => $contenthash,
-        ));
-
-        return (string) $url->getUri();
+            return (string) $url->getUri();
+        } catch (S3Exception $e) {
+            self::log_statistic('s3exception', array(
+                'logmessage'    => 'Could not generate presigned url for file from S3',
+                'contenthash'   => $contenthash,
+                'errorcode'     => $e->getAwsErrorCode(),
+                'errormessage'  => $e
+            ));
+            throw $e;
+            debugging('File not found');
+        }
     }
 
     /**
