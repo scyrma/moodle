@@ -1,0 +1,110 @@
+/**
+ * Import all the rules from the parent.
+ */
+@import "../../bootstrapbase/less/moodle.less";
+
+// Set the secondary background.
+@tableBackgroundAccent: darken(@wellBackground, 5%);
+@tableBackgroundHover: darken(@wellBackground, 10%);
+@tableBorder: @wellBorder;
+@navbarBackground: @wellBackground;
+@formActionsBackground: @wellBackground;
+@paginationActiveBackground: @wellBackground;
+@hrBorder: darken(@wellBackground, 5%);
+
+// Remove unwanted text shadow, this can look odd with random colours.
+.breadcrumb li,
+.nav-header {
+    text-shadow: none;
+}
+
+#portal-link-container {
+    position: fixed;
+    top: 45%;
+    right: 0;
+    left: auto;
+    width: 30px;
+    line-height: 30px;
+    background-color: #f98012;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    display: inline-block;
+    overflow: hidden;
+    .box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+    .opacity(80);
+    .border-radius(5px 0 0 5px);
+
+    &:hover {
+        .opacity(100);
+    }
+    #portal-link {
+        color: #fff;
+        font-size: 15px;
+        text-decoration: none;
+        display: inline-block;
+        white-space: nowrap;
+        -webkit-transform: translate(0,100%) rotate(-90deg);
+           -moz-transform: translate(0,100%) rotate(-90deg);
+            -ms-transform: translate(0,100%) rotate(-90deg);
+             -o-transform: translate(0,100%) rotate(-90deg);
+                transform: translate(0,100%) rotate(-90deg);
+        -webkit-transform-origin: 0 0;
+           -moz-transform-origin: 0 0;
+            -ms-transform-origin: 0 0;
+             -o-transform-origin: 0 0;
+                transform-origin: 0 0;
+        img {
+            height: 20px;
+            width: 33px;
+            display: inline-block;
+            vertical-align: sub;
+        }
+        &::after {
+            content: '';
+            float: left;
+            margin-top: 100%;
+        }
+    }
+}
+
+.dir-rtl {
+    #portal-link-container {
+        left: 0;
+        right: auto;
+        .box-shadow(5px 1px 17px -5px rgba(0, 0, 0, 0.5));
+        .border-radius(0 5px 5px 0);
+
+        #portal-link {
+            -webkit-transform: translate(0,100%) rotate(90deg);
+               -moz-transform: translate(0,100%) rotate(90deg);
+                -ms-transform: translate(0,100%) rotate(90deg);
+                 -o-transform: translate(0,100%) rotate(90deg);
+                    transform: translate(0,100%) rotate(90deg);
+            -webkit-transform-origin: 100% 0;
+               -moz-transform-origin: 100% 0;
+                -ms-transform-origin: 100% 0;
+                 -o-transform-origin: 100% 0;
+                    transform-origin: 100% 0;
+        }
+    }
+}
+
+.tip-container {
+    .yellow {
+        -moz-transform: none;
+    }
+}
+
+.popover-region {
+    .fa {
+        color: @textColor;
+    }
+}
+
+.moodlecloud-adblocker-modal {
+    top: auto !important;
+    bottom: 50px !important;
+    p {
+        text-align: left;
+    }
+}
