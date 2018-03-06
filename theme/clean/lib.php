@@ -156,6 +156,22 @@ function theme_clean_get_html_for_settings(renderer_base $output, moodle_page $p
     return $return;
 }
 
+function theme_clean_get_gatc() {
+    global $OUTPUT;
+
+    // we need the global and region property as well as the plan to output
+    if ((defined('MOODLECLOUD_GA_GLOBAL_PROPERTY') && MOODLECLOUD_GA_GLOBAL_PROPERTY) &&
+        (defined('MOODLECLOUD_GA_REGION_PROPERTY') && MOODLECLOUD_GA_REGION_PROPERTY) &&
+        (defined('MOODLECLOUD_PLAN') && MOODLECLOUD_PLAN)
+    ) {
+        return $OUTPUT->render_from_template('theme_moodlecloud/google_analytics', array(
+            'ga_global_property' => MOODLECLOUD_GA_GLOBAL_PROPERTY,
+            'ga_region_property' => MOODLECLOUD_GA_REGION_PROPERTY,
+            'ga_plan' => MOODLECLOUD_PLAN
+        ));
+    }
+}
+
 /**
  * All theme functions should start with theme_clean_
  * @deprecated since 2.5.1
