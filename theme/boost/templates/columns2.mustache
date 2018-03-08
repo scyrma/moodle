@@ -54,9 +54,6 @@
     <title>{{{ output.page_title }}}</title>
     <link rel="shortcut icon" href="{{{ output.favicon }}}" />
     {{{ output.standard_head_html }}}
-    {{^hidegoogleads}}
-        {{{ moodlecloud_ad_header }}}
-    {{/hidegoogleads}}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -106,10 +103,6 @@
         {{# footer_links }}
             <p class="helplink">{{{ footer_links }}}</p>
         {{/footer_links}}
-
-        {{^hidegoogleads}}
-            {{{ moodlecloud_ad }}}
-        {{/hidegoogleads}}
 
         {{{ output.login_info }}}
         <div class="tool_usertours-resettourcontainer"></div>

@@ -42,9 +42,5 @@ if ((defined('MOODLECLOUD_GA_GLOBAL_PROPERTY') && MOODLECLOUD_GA_GLOBAL_PROPERTY
     $templatecontext['ga_plan'] = MOODLECLOUD_PLAN;
 }
 
-// MoodleCloud Google AdSense Banner Ads
-$templatecontext['moodlecloud_ad_header'] = theme_boost_get_ad_header($OUTPUT->page->context);
-$templatecontext['moodlecloud_ad'] = theme_boost_get_ad($OUTPUT->page->context);
-
 echo $OUTPUT->render_from_template('theme_boost/login', $templatecontext);
 
