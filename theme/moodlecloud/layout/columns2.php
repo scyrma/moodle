@@ -39,7 +39,6 @@ echo $OUTPUT->doctype() ?>
     <title><?php echo $OUTPUT->page_title(); ?></title>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
     <?php echo $OUTPUT->standard_head_html() ?>
-    <?php echo theme_moodlecloud_get_ad_header($OUTPUT->page->context); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -97,7 +96,6 @@ echo $OUTPUT->doctype() ?>
     <?php echo theme_moodlecloud_get_footerlinks($OUTPUT->page->context); ?>
     </p>
     <?php
-    echo theme_moodlecloud_get_ad($OUTPUT->page->context);
     echo theme_moodlecloud_get_gatc();
     echo $html->footnote;
     echo $OUTPUT->login_info();

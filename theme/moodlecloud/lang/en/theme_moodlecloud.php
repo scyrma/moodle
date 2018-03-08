@@ -77,22 +77,6 @@ $string['secondarybackground_desc'] = 'The background colour of any secondary co
 $string['supportforums'] = 'Support Forums';
 $string['textcolor'] = 'Text colour';
 $string['textcolor_desc'] = 'The colour of the text.';
-$string['adunblock_title'] = 'Ad blocker detected :(';
-$string['adunblock_message_admin'] = '
-    <p>We\'ve detected that your browser is blocking ads on this site.</p>
-    <p>MoodleCloud provides a Free plan to users and advertising helps pay for it.</p>
-    <p>We\'d really appreciate it if you would change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://support.moodlecloud.com" target="_blank">our FAQs</a></p>    
-    <p>Alternatively, consider upgrading to a paid plan and support us directly.</p>
-    <p>A Starter plan hides the ads from students. Some ads are shown to admin and teacher roles about Moodle services to help you to get more from your MoodleCloud site.</p>
-    <p>Any Moodle for School plan hides all ads from all users.</p>
-    <p>You can upgrade anytime in the <a href=\'{$a->sso_link}?adblocker_modal=1\' target=\'_blank\' class=\'adunblock-upgrade-link\'>MoodleCloud portal</a></p>
-    <p>Thanks for supporting MoodleCloud!</p>';
-$string['adunblock_message_student'] = '
-    <p>We\'ve detected that your browser is blocking ads on this site.</p>
-    <p>MoodleCloud provides a Free plan to users and advertising helps pay for it.</p>
-    <p>We\'d really appreciate it if you can change your Ad blocker settings to add this site to your whitelist. For more information on how to unblock ads visit <a href="https://support.moodlecloud.com" target="_blank">our FAQs</a></p>    
-    <p>Alternatively, talk to your site admin to upgrade your site to a paid plan and support us directly.</p>
-    <p>Thanks for supporting MoodleCloud!</p>';
 $string['cloudlogo'] = 'MoodleCloud logo';
 $string['cloudportallink'] = 'MoodleCloud portal link';
 $string['yourportal'] = 'Portal';
