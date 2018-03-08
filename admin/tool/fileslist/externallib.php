@@ -31,6 +31,10 @@ require_once($CFG->libdir . '/externallib.php');
 
 final class tool_fileslist_external extends external_api {
     public static function get_files_by_size() {
+        if (!is_siteadmin()) {
+            throw new moodle_exception('nopermissions', 'error', '', 'access files list');
+        }
+
         global $PAGE;
 
         self::validate_context(\context_system::instance());
