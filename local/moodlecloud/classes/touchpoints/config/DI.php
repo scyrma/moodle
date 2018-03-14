@@ -164,11 +164,12 @@ return [
                 $actions,
                 function(stdClass $action) use ($touchpointname, $enabled) : bool {
                     if ($action->name == 'signup_touchpoint') {
-                        return $enabled($touchpointname, 'email');
+                        return $enabled($touchpointname, 'emails');
                     }
 
                     if ($action->name == 'admin_notification') {
-                        return $enabled($touchpointname, 'sitenotifications');
+                        // Free sites can't disable the notifications.
+                        return strpos(MOODLECLOUD_PLAN, 'free') !== false || $enabled($touchpointname, 'sitenotifications');
                     }
 
                     return true;

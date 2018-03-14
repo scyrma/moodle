@@ -44,14 +44,13 @@ if ($hassiteconfig && $DB->get_manager()->table_exists('moodlecloud_touchpoints'
 
     foreach ($touchpoints as $touchpoint) {
         $nicename = strtolower(str_replace(' ', '_', $touchpoint->get_name()));
-        $temp->add(new siteowner_configmulticheckbox('moodlecloudnotifications/touchpoints_' . $nicename,
-                                                         get_string($nicename, 'local_moodlecloud'),
-                                                         get_string($nicename . '_description', 'local_moodlecloud'),
-                                                         ['emails' => 1, 'sitenotifications' => 1],
-                                                         [
-                                                             'emails' => get_string('emails', 'local_moodlecloud'),
-                                                             'sitenotifications' => get_string('sitenotifications', 'local_moodlecloud')
-                                                         ]
+        $temp->add(
+            new siteowner_configmulticheckbox(
+                'moodlecloudnotifications/touchpoints_' . $nicename,
+                get_string($nicename, 'local_moodlecloud'),
+                get_string($nicename . '_description', 'local_moodlecloud'),
+                ['emails' => 1] + ((strpos(MOODLECLOUD_PLAN, 'free') === false) ? ['sitenotifications' => 1] : []),
+                ['emails' => get_string('emails', 'local_moodlecloud')] + ((strpos(MOODLECLOUD_PLAN, 'free') === false) ? ['sitenotifications' => get_string('sitenotifications', 'local_moodlecloud')] : [])
         ));
     }
 
