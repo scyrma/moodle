@@ -101,10 +101,12 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
 
             );
         },
-            'touchpoints_send_user_limit_warning',
-            'touchpoints_send_user_limit_reached',
-            'touchpoints_send_file_storage_limit_warning',
-            'touchpoints_send_file_storage_limit_reached'
+            [
+                'touchpoints_send_user_limit_warning',
+                'touchpoints_send_user_limit_reached',
+                'touchpoints_send_file_storage_limit_warning',
+                'touchpoints_send_file_storage_limit_reached'
+            ]
         );
 
         upgrade_plugin_savepoint(true, 2018030601, 'local', 'moodlecloud');
