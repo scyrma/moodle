@@ -150,7 +150,7 @@ return [
         return function(string $touchpointname, array $actions) : array {
             $enabled = function(string $touchpointname, string $value) : bool {
                 return
-                    !get_config('moodlecloudnotifications', 'touchpoints_' . touchpoint::name_to_identifier($touchpointname)) ||
+                    get_config('moodlecloudnotifications', 'touchpoints_' . touchpoint::name_to_identifier($touchpointname)) === false ||
                     strpos(
                         get_config(
                             'moodlecloudnotifications',
