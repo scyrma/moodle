@@ -93,34 +93,21 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018030601) {
-        $userlimitapproaching = get_config('moodlecloudnotifications', 'touchpoints_send_user_limit_warning');
-        $userlimitreached = get_config('moodlecloudnotifications', 'touchpoints_send_user_limit_reached');
-        $filelimitapproaching = get_config('moodlecloudnotifications', 'touchpoints_send_file_storage_limit_warning');
-        $filelimitreached = get_config('moodlecloudnotifications', 'touchpoints_send_file_storage_limit_reached');
+        array_map(function($touchpointname) {
+            set_config(
+                $touchpointname,
+                get_config('moodlecloudnotifications', $touchpointname) == '0' ? 'sitenotifications' : 'emails,sitenotifications',
+                'moodlecloudnotifications'
 
-        set_config(
+            );
+        },
             'touchpoints_send_user_limit_warning',
-            $userlimitapproaching == '0' ? 'sitenotifications' : 'emails,sitenotifications',
-            'moodlecloudnotifications'
-        );
-
-        set_config(
             'touchpoints_send_user_limit_reached',
-            $userlimitreached == '0' ? 'sitenotifications' : 'emails,sitenotifications',
-            'moodlecloudnotifications'
-        );
-
-        set_config(
             'touchpoints_send_file_storage_limit_warning',
-            $filelimitapproaching == '0' ? 'sitenotifications' : 'emails,sitenotifications',
-            'moodlecloudnotifications'
+            'touchpoints_send_file_storage_limit_reached'
         );
 
-        set_config(
-            'touchpoints_send_file_storage_limit_reached',
-            $filelimitreached == '0' ? 'sitenotifications' : 'emails,sitenotifications',
-            'moodlecloudnotifications'
-        );
+        upgrade_plugin_savepoint(true, 2018030601, 'local', 'moodlecloud');
     }
 
     return true;
