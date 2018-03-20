@@ -281,9 +281,9 @@ define(['jquery'], function($) {
             context.textAlign = 'left';
             context.fillText(M.util.get_string('score', 'mod_quizgame',
                                                {
-                                                   "score": Math.round(score), "lives": player.lives
+                                                    "score": Math.round(score), "lives": player.lives
                                                }),
-                                               5, 20);
+                                               5, displayRect.height - 20);
             context.textAlign = 'center';
             context.fillText(question, displayRect.width / 2, 20);
         } else {
@@ -873,7 +873,8 @@ define(['jquery'], function($) {
             showMenu();
         }, 500);
     }
-  return {
-    init: doInitialize,
-  };
+
+    return {
+        init: doInitialize,
+    };
 });

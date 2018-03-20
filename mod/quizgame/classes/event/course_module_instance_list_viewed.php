@@ -15,30 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Functions to be run when installing the module
- *
- * This file replaces the legacy STATEMENTS section in db/install.xml,
- * lib.php/modulename_install() post installation hook and partially defaults.php
+ * The mod_quizgame instance list viewed event.
  *
  * @package    mod_quizgame
- * @copyright  2014 John Okely <john@moodle.com>
+ * @copyright  2018 Stephen Bourget
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_quizgame\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Post installation procedure
+ * The mod_quizgame instance list viewed event class.
  *
- * @see upgrade_plugins_modules()
+ * @package    mod_quizgame
+ * @copyright  2018 Stephen Bourget
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-function xmldb_quizgame_install() {
+class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
+    // No code required here as the parent class handles it all.
 }
 
-/**
- * Post installation recovery procedure
- *
- * @see upgrade_plugins_modules()
- */
-function xmldb_quizgame_install_recovery() {
-}
