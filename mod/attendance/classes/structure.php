@@ -76,6 +76,9 @@ class mod_attendance_structure {
     /** @var boolean flag set when automarking is complete. */
     public $automarkcompleted;
 
+    /** @var int Define if extra user details should be shown in reports */
+    public $showextrauserdetails;
+
     /** @var int Define if session details should be shown in reports */
     public $showsessiondetails;
 
@@ -125,6 +128,9 @@ class mod_attendance_structure {
 
         $this->pageparams = $pageparams;
 
+        if (isset($pageparams->showextrauserdetails) && $pageparams->showextrauserdetails != $this->showextrauserdetails) {
+            $DB->set_field('attendance', 'showextrauserdetails', $pageparams->showextrauserdetails, array('id' => $this->id));
+        }
         if (isset($pageparams->showsessiondetails) && $pageparams->showsessiondetails != $this->showsessiondetails) {
             $DB->set_field('attendance', 'showsessiondetails', $pageparams->showsessiondetails, array('id' => $this->id));
         }
@@ -477,6 +483,9 @@ class mod_attendance_structure {
             if (!isset($sess->studentscanmark)) {
                 $sess->studentscanmark = 0;
             }
+            if (!isset($sess->autoassignstatus)) {
+                $sess->autoassignstatus = 0;
+            }
             if (!isset($sess->studentpassword)) {
                 $sess->studentpassword = '';
             }
@@ -515,15 +524,22 @@ class mod_attendance_structure {
         $sess->descriptionformat = $formdata->sdescription['format'];
 
         $sess->studentscanmark = 0;
+        $sess->autoassignstatus = 0;
         $sess->studentpassword = '';
         $sess->subnet = '';
         $sess->automark = 0;
         $sess->automarkcompleted = 0;
-
+        if (!empty(get_config('attendance', 'enablewarnings'))) {
+            $sess->absenteereport = empty($formdata->absenteereport) ? 0 : 1;
+        }
+        if (!empty($formdata->autoassignstatus)) {
+            $sess->autoassignstatus = $formdata->autoassignstatus;
+        }
         if (!empty(get_config('attendance', 'studentscanmark')) &&
             !empty($formdata->studentscanmark)) {
             $sess->studentscanmark = $formdata->studentscanmark;
             $sess->studentpassword = $formdata->studentpassword;
+            $sess->autoassignstatus = $formdata->autoassignstatus;
             if (!empty($formdata->usedefaultsubnet)) {
                 $sess->subnet = $this->subnet;
             } else {
@@ -537,6 +553,7 @@ class mod_attendance_structure {
 
         $sess->timemodified = time();
         $DB->update_record('attendance_sessions', $sess);
+
         if (empty($sess->caleventid)) {
              // This shouldn't really happen, but just in case to prevent fatal error.
             attendance_create_calendar_event($sess);
@@ -721,7 +738,7 @@ class mod_attendance_structure {
      * @return array
      */
     public function get_users($groupid = 0, $page = 1) {
-        global $DB, $CFG;
+        global $DB;
 
         $fields = array('username' , 'idnumber' , 'institution' , 'department');
         // Get user identity fields if required - doesn't return original $fields array.
@@ -1058,7 +1075,7 @@ class mod_attendance_structure {
         $id = $DB->sql_concat(':value', 'ats.id');
         if ($this->get_group_mode()) {
             $sql = "SELECT $id, ats.id, ats.groupid, ats.sessdate, ats.duration, ats.description,
-                           al.statusid, al.remarks, ats.studentscanmark
+                           al.statusid, al.remarks, ats.studentscanmark, ats.autoassignstatus
                       FROM {attendance_sessions} ats
                 RIGHT JOIN {attendance_log} al
                         ON ats.id = al.sessionid AND al.studentid = :uid
@@ -1067,7 +1084,7 @@ class mod_attendance_structure {
                   ORDER BY ats.sessdate ASC";
         } else {
             $sql = "SELECT $id, ats.id, ats.groupid, ats.sessdate, ats.duration, ats.description, ats.statusset,
-                           al.statusid, al.remarks, ats.studentscanmark
+                           al.statusid, al.remarks, ats.studentscanmark, ats.autoassignstatus
                       FROM {attendance_sessions} ats
                 RIGHT JOIN {attendance_log} al
                         ON ats.id = al.sessionid AND al.studentid = :uid
@@ -1096,9 +1113,8 @@ class mod_attendance_structure {
         } else {
             $where = "ats.attendanceid = :aid AND ats.sessdate >= :csdate AND ats.groupid $gsql";
         }
-
         $sql = "SELECT $id, ats.id, ats.groupid, ats.sessdate, ats.duration, ats.description, ats.statusset,
-                       al.statusid, al.remarks, ats.studentscanmark
+                       al.statusid, al.remarks, ats.studentscanmark, ats.autoassignstatus
                   FROM {attendance_sessions} ats
              LEFT JOIN {attendance_log} al
                     ON ats.id = al.sessionid AND al.studentid = :uid
