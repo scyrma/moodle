@@ -28,6 +28,7 @@ $THEME->name = 'school';
 // in version.php and lang/en/theme_school.php as well.
 //////////////////////////////////
 //
+$THEME->iconsystem = \core\output\icon_system::FONTAWESOME;
 $THEME->doctype = 'html5';
 $THEME->parents = array('bootstrapbase');
 $THEME->lessfile = 'styles';
