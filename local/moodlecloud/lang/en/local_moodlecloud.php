@@ -50,3 +50,4 @@ $string['moodlecloudnotifications'] = 'MoodleCloud Notifications';
 $string['moodlecloudsitenotifications'] = 'MoodleCloud Site Notifications';
 $string['nonotifications'] = 'No notifications to show';
 $string['sitenotifications'] = 'Site Notifications';
+$string['viewnotification'] = 'View notification';
