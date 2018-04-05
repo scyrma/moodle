@@ -180,14 +180,13 @@ class file_system_s3 extends \file_system {
     }
 
     public function is_file_readable_remotely_by_hash($contenthash) {
-        global $dynamicsite;
         try {
             // Fetch the head information.
             // If no file exists at the specified key, then a NoSuchKeyException is thrown.
             /** @noinspection PhpUnusedLocalVariableInspection */
             $object = self::$client->headObject(array(
                     'Bucket'        => self::$bucket,
-                    'Key'           => $contenthash .'_'. $dynamicsite,
+                    'Key'           => $contenthash . self::get_key_suffix_from_contenthash($contenthash)
                 ));
             // A copy of this file is already present.
             return true;
@@ -244,8 +243,7 @@ class file_system_s3 extends \file_system {
             return;
         }
 
-        global $dynamicsite;
-        $key = $this->get_contentpath_from_hash($contenthash) .'_'. $dynamicsite;
+        $key = $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash);
 
         try {
             $start = microtime();
@@ -333,7 +331,6 @@ class file_system_s3 extends \file_system {
      * @return string The path to the new file
      */
     protected function fetch_local_copy($contenthash, $newtarget = null) {
-        global $dynamicsite;
         $target = $this->get_local_path_from_hash($contenthash, false);
         if ($newtarget === null || $newtarget === $target) {
             if (is_readable($target)) {
@@ -351,7 +348,7 @@ class file_system_s3 extends \file_system {
         $temptarget = $target . '.tmp';
         // The S3 API can only fetch to an existing file.
         touch($temptarget);
-        $key = $this->get_contentpath_from_hash($contenthash) .'_'. $dynamicsite;
+        $key = $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash);
         try {
             $start = microtime();
             self::$client->getObject(array(
@@ -388,9 +385,8 @@ class file_system_s3 extends \file_system {
      * @return string The pre-signed URL.
      */
     protected function get_presigned_url($contenthash) {
-        global $dynamicsite;
         // Find the path within the filedir to use.
-        $subpath = $this->get_contentpath_from_hash($contenthash) .'_'. $dynamicsite;
+        $subpath = $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash);
 
         // We generate a pre-signed URL for the file handle to use.
         $command = self::$client->getCommand('GetObject', array(
@@ -420,7 +416,6 @@ class file_system_s3 extends \file_system {
      * @return resource file handle
      */
     public function get_content_file_handle(stored_file $file, $type = stored_file::FILE_HANDLE_FOPEN) {
-        global $dynamicsite;
         switch ($type) {
             case stored_file::FILE_HANDLE_FOPEN:
                 /**
@@ -434,7 +429,7 @@ class file_system_s3 extends \file_system {
                 $context = stream_context_create([
                     's3' => ['seekable' => true]
                 ]);
-                $tmps3filepath = 's3://'. self::$bucket .'/'. $this->get_contentpath_from_hash($file->get_contenthash()) .'_'. $dynamicsite;
+                $tmps3filepath = 's3://'. self::$bucket .'/'. $this->get_contentpath_from_hash($file->get_contenthash()) . self::get_key_suffix_from_contenthash($contenthash);
                 $tmphandle = fopen($tmps3filepath, 'r', false, $context);
                 if ($tmphandle) {
                     // S3 seekable streams allow you to seek only to bytes that were previously read.
@@ -449,7 +444,7 @@ class file_system_s3 extends \file_system {
                 return $tmphandle;
                 break;
             default:
-                return self::get_file_handle_for_path($this->get_presigned_url($file->get_contenthash() .'_'. $dynamicsite), $type);
+                return self::get_file_handle_for_path($this->get_presigned_url($file->get_contenthash() . self::get_key_suffix_from_contenthash($contenthash)), $type);
         }
     }
 
@@ -503,10 +498,9 @@ class file_system_s3 extends \file_system {
      * @throws file_pool_content_exception
      */
     private function push_to_s3($sourcefile, $contenthash = null, $filesize = null) {
-        global $dynamicsite;
         // Note: We cannot rely on the result of $newfile as this only checks whether a file was present in filedir,
         // which may be empty.
-        $key = $this->get_contentpath_from_hash($contenthash) .'_'. $dynamicsite;
+        $key = $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash);
 
         $result = [$contenthash, $filesize, true];
 
@@ -594,6 +588,14 @@ class file_system_s3 extends \file_system {
      */
     protected static function log_statistic($eventname, $data) {
         logger::log($eventname, $data, 'local_filestorage');
+    }
+
+    protected static function get_key_suffix_from_contenthash(string $contenthash) : string {
+        global $CFG, $dynamicsite;
+        require_once($CFG->templatefilespath);
+        global $moodlecloud_template_files;
+
+        return in_array($contenthash, $moodlecloud_template_files) ? '' : '_' . $dynamicsite;
     }
 
     /**
