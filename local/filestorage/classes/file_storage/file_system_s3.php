@@ -234,10 +234,17 @@ class file_system_s3 extends \file_system {
      * @param string $contenthash
      */
     public function remove_file($contenthash) {
-        global $dynamicsite;
+        global $CFG, $dynamicsite;
+        require_once($CFG->moodlecloud_template_files_path);
+        global $moodlecloud_template_files;
 
         if (!self::is_file_removable($contenthash)) {
             // Don't remove the file - it's still in use.
+            return;
+        }
+
+        if (in_array($contenthash, $moodlecloud_template_files)) {
+            // Never remove template files.
             return;
         }
 
