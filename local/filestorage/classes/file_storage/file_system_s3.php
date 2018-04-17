@@ -189,8 +189,8 @@ class file_system_s3 extends \file_system {
 
                 return true;
             },
-            $contenthash . self::get_key_suffix_from_contenthash($contenthash),
-            $contenthash
+            $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash),
+            $this->get_contentpath_from_hash($contenthash)
         );
 
         return false;
@@ -626,7 +626,7 @@ class file_system_s3 extends \file_system {
             }
 
             // Otherwise we can't do anything. Rethrow the exception if it's something other than FileNotFound.
-            if ($e->getAwsErrorCode() !== 'NotFound' || $e->getAwsErrorCode() !== 'NoSuchKey') {
+            if ($e->getAwsErrorCode() !== 'NotFound' && $e->getAwsErrorCode() !== 'NoSuchKey') {
                 throw $e;
             }
 
