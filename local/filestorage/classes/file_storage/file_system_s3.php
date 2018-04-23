@@ -249,30 +249,36 @@ class file_system_s3 extends \file_system {
         }
 
         $start = microtime();
-        self::try_s3_call(
-            function($filekey) use ($contenthash, $start) {
-                $result = self::$client->deleteObject(array(
+        try {
+            self::$client->deleteObject(
+                [
                     'Bucket'        => self::$bucket,
-                    'Key'           => $filekey,
-                ));
-                self::log_statistic('deleted', array(
-                    'logmessage'    => 'File deleted from S3',
-                    'contenthash'   => $contenthash,
-                    'time'          => microtime_diff($start, microtime()),
-                ));
-            },
-            $this->get_contentpath_from_hash($contenthash) . '_' . $dynamicsite,
-            null,
-            [
-                'eventname' => 'deletefail',
-                'data' => [
-                    'logmessage' => 'Existing file not found when attempting to delete',
-                    'contenthash' => $contenthash,
-                    'time' => microtime_diff($start, microtime())
-
+                    'Key'           => $this->get_contentpath_from_hash($contenthash) . '_' . $dynamicsite,
                 ]
-            ]
-        );
+            );
+            self::log_statistic('deleted', [
+                'logmessage'    => 'File deleted from S3',
+                'contenthash'   => $contenthash,
+                'time'          => microtime_diff($start, microtime()),
+            ]);
+        } catch (S3Exception $e) {
+            self::log_statistic(
+                'deletefail',
+                [
+                    'logmessage' => 'Exception thrown while attempting to delete file from S3',
+                    'contenthash' => $contenthash,
+                    'AwsErrorCode' => $e->getAwsErrorCode(),
+                    'errormessage' => $e->getMessage(),
+                    'time' => microtime_diff($start, microtime())
+                ]
+            );
+
+            // Deleting a non-existent file throws an AccessDenied exception. If we get something
+            // other than that, rethrow.
+            if ($e->getAwsErrorCode() !== 'AccessDenied') {
+                throw $e;
+            }
+        }
     }
 
     /**
