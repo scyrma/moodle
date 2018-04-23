@@ -1,0 +1,110 @@
+language: php
+
+sudo: false
+
+addons:
+  firefox: "47.0.1"
+  postgresql: "9.3"
+  apt:
+    packages:
+      - oracle-java8-installer
+      - oracle-java8-set-default
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - $HOME/.npm
+
+php:
+  - 7.0
+  - 7.1
+
+env:
+  global:
+    - COVERAGE=false
+  matrix:
+    - MOODLE_BRANCH=MOODLE_32_STABLE DB=mysqli MOODLE_PLUGIN_CI=2
+    - MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql MOODLE_PLUGIN_CI=2
+    - MOODLE_BRANCH=MOODLE_33_STABLE DB=mysqli MOODLE_PLUGIN_CI=2
+    - MOODLE_BRANCH=MOODLE_33_STABLE DB=pgsql MOODLE_PLUGIN_CI=2
+    - MOODLE_BRANCH=MOODLE_34_STABLE DB=mysqli MOODLE_PLUGIN_CI=2
+    - MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql MOODLE_PLUGIN_CI=2
+    - MOODLE_BRANCH=master DB=mysqli MOODLE_PLUGIN_CI=2
+    - MOODLE_BRANCH=master DB=pgsql MOODLE_PLUGIN_CI=2
+
+matrix:
+  include:
+    - php: 5.4
+      env: MOODLE_BRANCH=MOODLE_30_STABLE DB=mysqli MOODLE_PLUGIN_CI=1
+    - php: 5.4
+      env: MOODLE_BRANCH=MOODLE_30_STABLE DB=pgsql MOODLE_PLUGIN_CI=1
+    - php: 5.5
+      env: MOODLE_BRANCH=MOODLE_30_STABLE DB=mysqli MOODLE_PLUGIN_CI=1
+    - php: 5.5
+      env: MOODLE_BRANCH=MOODLE_30_STABLE DB=pgsql MOODLE_PLUGIN_CI=1
+    - php: 5.6
+      env: MOODLE_BRANCH=MOODLE_30_STABLE DB=mysqli MOODLE_PLUGIN_CI=1
+    - php: 5.6
+      env: MOODLE_BRANCH=MOODLE_30_STABLE DB=pgsql MOODLE_PLUGIN_CI=1
+    - php: 5.4
+      env: MOODLE_BRANCH=MOODLE_31_STABLE DB=mysqli MOODLE_PLUGIN_CI=1
+    - php: 5.4
+      env: MOODLE_BRANCH=MOODLE_31_STABLE DB=pgsql MOODLE_PLUGIN_CI=1
+    - php: 5.5
+      env: MOODLE_BRANCH=MOODLE_31_STABLE DB=mysqli MOODLE_PLUGIN_CI=1
+    - php: 5.5
+      env: MOODLE_BRANCH=MOODLE_31_STABLE DB=pgsql MOODLE_PLUGIN_CI=1
+    - php: 5.6
+      env: MOODLE_BRANCH=MOODLE_31_STABLE DB=mysqli MOODLE_PLUGIN_CI=1
+    - php: 5.6
+      env: MOODLE_BRANCH=MOODLE_31_STABLE DB=pgsql MOODLE_PLUGIN_CI=1
+
+before_install:
+  - phpenv config-rm xdebug.ini
+  #- nvm install node 8.9.0
+  ## Install node manually as is broken since Nov 1, 2017
+  - sudo apt-get install -y build-essential libssl-dev curl
+  - curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh -o install_nvm.sh
+  - bash install_nvm.sh
+  - source ~/.profile
+  - nvm install 8.9.0
+  - nvm alias default 8.9.0
+  - nvm use default
+  - cd ../..
+  ## Standard script
+  - composer selfupdate
+  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^${MOODLE_PLUGIN_CI}
+  - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
+  ### Custom script for bypassing codechecker failing due BIGBLUEBUTTONBN_CFG
+  ##- git clone https://github.com/jfederico/moodle-plugin-ci.git ci
+  ##- cd ci
+  ##- composer config repositories.moodle-plugin-ci '{"type":"vcs", "url":"https://github.com/jfederico/moodle-plugin-ci", "no-api":true}'
+  ##- composer config repositories.moodle-local-codechecker '{"type":"vcs", "url":"https://github.com/jfederico/moodle-local_codechecker", "no-api":true}'
+  ##- composer config repositories.moodle-local_ci '{"type":"vcs", "url":"https://github.com/jfederico/moodle-local_ci", "no-api":true}'
+  ##- composer require --prefer-dist moodlehq/moodle-local_ci:dev-master#279e6b521f16c55b22ffff4ca00726ef291ee3e2
+  ##- composer require --prefer-dist moodlehq/moodle-local_codechecker:dev-master#4f32c02e6d6b19be7431fd33ea175d2f93929387
+  ##- cd ..
+
+install:
+  - moodle-plugin-ci install
+
+script:
+  - moodle-plugin-ci phplint
+  - moodle-plugin-ci phpcpd
+  - moodle-plugin-ci phpmd
+  #- moodle-plugin-ci codechecker ## Failing due BIGBLUEBUTTONBN_CFG
+  - moodle-plugin-ci validate
+  - moodle-plugin-ci phpunit
+  # Specific for version 1
+  - 'if [ ${MOODLE_PLUGIN_CI} = "1" ]; then
+        moodle-plugin-ci csslint;
+        moodle-plugin-ci shifter;
+        moodle-plugin-ci jshint;
+     fi'
+  # Specific for version 2
+  - 'if [ ${MOODLE_PLUGIN_CI} = "2" ]; then
+        moodle-plugin-ci savepoints;
+        moodle-plugin-ci mustache;
+        moodle-plugin-ci grunt;
+        moodle-plugin-ci behat;
+     fi'
