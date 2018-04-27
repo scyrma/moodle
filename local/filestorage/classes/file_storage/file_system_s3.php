@@ -273,9 +273,8 @@ class file_system_s3 extends \file_system {
                 ]
             );
 
-            // Deleting a non-existent file throws an AccessDenied exception. If we get something
-            // other than that, rethrow.
-            if ($e->getAwsErrorCode() !== 'AccessDenied') {
+            // If we get something other than a NotFound exception, rethrow.
+            if ($e->getAwsErrorCode() !== 'NotFound') {
                 throw $e;
             }
         }
