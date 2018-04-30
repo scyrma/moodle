@@ -180,18 +180,28 @@ class file_system_s3 extends \file_system {
     }
 
     public function is_file_readable_remotely_by_hash($contenthash) {
-        return self::try_s3_call(
-            function($filekey) {
-                self::$client->headObject([
-                    'Bucket' => self::$bucket,
-                    'Key' => $filekey
-                ]);
+        try {
+            self::$client->headObject([
+                'Bucket' => self::$bucket,
+                'Key' => $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash),
+            ]);
 
-                return true;
-            },
-            $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash),
-            $this->get_contentpath_from_hash($contenthash)
-        );
+            return true;
+        } catch (S3Exception $e) {
+            if ($e->getAwsErrorCode() !== 'NotFound') {
+                self::log_statistic(
+                    'remotereadbyhashfail',
+                    [
+                        'logmessage' => 'Exception thrown while attempting to read file remotely by hash',
+                        'contenthash' => $contenthash,
+                        'AwsErrorCode' => $e->getAwsErrorCode(),
+                        'errormessage' => $e->getMessage(),
+                    ]
+                );
+
+                throw new moodle_exception('Unable to read file');
+            }
+        }
 
         return false;
     }
@@ -238,6 +248,11 @@ class file_system_s3 extends \file_system {
         require_once($CFG->moodlecloud_template_files_path);
         global $moodlecloud_template_files;
 
+        // Never ever delete template files from a template site.
+        if (isset($CFG->moodlecloud_is_template)) {
+            return;
+        }
+
         if (!self::is_file_removable($contenthash)) {
             // Don't remove the file - it's still in use.
             return;
@@ -262,6 +277,21 @@ class file_system_s3 extends \file_system {
                 'time'          => microtime_diff($start, microtime()),
             ]);
         } catch (S3Exception $e) {
+            if ($e->getAwsErrorCode() !== 'NotFound') {
+                self::log_statistic(
+                    'deletefail',
+                    [
+                        'logmessage' => 'Exception thrown while attempting to delete file from S3',
+                        'contenthash' => $contenthash,
+                        'AwsErrorCode' => $e->getAwsErrorCode(),
+                        'errormessage' => $e->getMessage(),
+                        'time' => microtime_diff($start, microtime())
+                    ]
+                );
+
+                throw new moodle_exception('Unable to remove file');
+            }
+
             self::log_statistic(
                 'deletefail',
                 [
@@ -272,11 +302,6 @@ class file_system_s3 extends \file_system {
                     'time' => microtime_diff($start, microtime())
                 ]
             );
-
-            // If we get something other than a NotFound exception, rethrow.
-            if ($e->getAwsErrorCode() !== 'NotFound') {
-                throw $e;
-            }
         }
     }
 
@@ -333,29 +358,37 @@ class file_system_s3 extends \file_system {
         // The S3 API can only fetch to an existing file.
         touch($temptarget);
 
-        self::try_s3_call(
-            function($filekey) use ($target, $temptarget, $contenthash) {
-                $start = microtime();
-                self::$client->getObject(array(
-                    'Bucket'    => self::$bucket,
-                    'Key'       => $filekey,
-                    'SaveAs'    => $temptarget,
-                ));
+        try {
+            $start = microtime();
+            self::$client->getObject(array(
+                'Bucket'    => self::$bucket,
+                'Key'       => $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash),
+                'SaveAs'    => $temptarget,
+            ));
 
-                self::log_statistic('fetched', array(
-                    'logmessage'    => 'Fetched file from S3',
-                    'contenthash'   => $contenthash,
-                    'filesize'      => filesize($temptarget),
-                    'time'          => microtime_diff($start, microtime()),
-                ));
+            self::log_statistic('fetched', array(
+                'logmessage'    => 'Fetched file from S3',
+                'contenthash'   => $contenthash,
+                'filesize'      => filesize($temptarget),
+                'time'          => microtime_diff($start, microtime()),
+            ));
 
-                // Atomicity is nice.
-                rename($temptarget, $target);
-                @unlink($temptarget); // Just in case anything fails in a weird way.
-            },
-            $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash),
-            $this->get_contentpath_from_hash($contenthash)
-        );
+            // Atomicity is nice.
+            rename($temptarget, $target);
+            @unlink($temptarget); // Just in case anything fails in a weird way.
+        } catch (S3Exception $e) {
+            self::log_statistic(
+                'fetchlocalcopyfail',
+                [
+                    'logmessage' => 'Exception thrown while attempting to fetch local copy',
+                    'contenthash' => $contenthash,
+                    'AwsErrorCode' => $e->getAwsErrorCode(),
+                    'errormessage' => $e->getMessage(),
+                ]
+            );
+
+            throw new moodle_exception('Could not fetch file');
+        }
 
         return $target;
     }
@@ -367,34 +400,43 @@ class file_system_s3 extends \file_system {
      * @return string The pre-signed URL.
      */
     protected function get_presigned_url($contenthash) {
-        return self::try_s3_call(
-            function($filekey) use ($contenthash) {
-                // This is still needed because getCommand doesn't throw an exception if the key doesn't exist.
-                self::$client->headObject(array(
-                    'Bucket'        => self::$bucket,
-                    'Key'           => $filekey,
-                ));
+        try {
+            $key = $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash);
+            // This is still needed because getCommand doesn't throw an exception if the key doesn't exist.
+            self::$client->headObject(array(
+                'Bucket'        => self::$bucket,
+                'Key'           => $key,
+            ));
 
-                // We generate a pre-signed URL for the file handle to use.
-                $command = self::$client->getCommand('GetObject', [
-                    'Bucket'    => self::$bucket,
-                    'Key'       => $filekey
-                ]);
+            // We generate a pre-signed URL for the file handle to use.
+            $command = self::$client->getCommand('GetObject', [
+                'Bucket'    => self::$bucket,
+                'Key'       => $key
+            ]);
 
-                // It doesn't matter how long this presigned URL lasts as it is disposed of almost immediately.
-                // It must be a sufficient period of time to allow slow reads of large files.
-                $url = self::$client->createPresignedRequest($command, '+1 day');
+            // It doesn't matter how long this presigned URL lasts as it is disposed of almost immediately.
+            // It must be a sufficient period of time to allow slow reads of large files.
+            $url = self::$client->createPresignedRequest($command, '+1 day');
 
-                self::log_statistic('generatedurl', array(
-                    'logmessage'    => 'Generated pre-signed URL',
-                    'contenthash'   => $contenthash,
-                ));
+            self::log_statistic('generatedurl', array(
+                'logmessage'    => 'Generated pre-signed URL',
+                'contenthash'   => $contenthash,
+            ));
 
-                return (string) $url->getUri();
-            },
-            $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash),
-            $this->get_contentpath_from_hash($contenthash)
-        );
+            return (string) $url->getUri();
+        } catch (S3Exception $e) {
+            self::log_statistic(
+                'presignfaill',
+                [
+                    'logmessage' => 'Exception thrown while attempting to get presined URL',
+                    'contenthash' => $contenthash,
+                    'AwsErrorCode' => $e->getAwsErrorCode(),
+                    'errormessage' => $e->getMessage()
+                ]
+            );
+
+            throw new moodle_exception('Unable to fetch file');
+        }
     }
 
     /**
@@ -407,59 +449,62 @@ class file_system_s3 extends \file_system {
      * @return resource file handle
      */
     public function get_content_file_handle(stored_file $file, $type = stored_file::FILE_HANDLE_FOPEN) {
-        $basekeys = [
-            stored_file::FILE_HANDLE_FOPEN => $this->get_contentpath_from_hash($file->get_contenthash()) . self::get_key_suffix_from_contenthash($file->get_contenthash()),
-            'default' => $file->get_contenthash() . self::get_key_suffix_from_contenthash($file->get_contenthash())
-        ];
+        try {
+            switch ($type) {
+                case stored_file::FILE_HANDLE_FOPEN:
+                    /**
+                     * Open a seekable S3 stream using the AWS SDK.
+                     * In order to allow previously read data to be recalled, data is buffered in a PHP
+                     * temp stream using a stream decorator. When the amount of cached data exceeds 2MB,
+                     * the data in the temp stream will transfer from memory to disk. Keep this in mind
+                     * when downloading large files from Amazon S3 using the seekable stream context setting.
+                     */
 
-        $fallbackkeys = [
-            stored_file::FILE_HANDLE_FOPEN => $this->get_contentpath_from_hash($file->get_contenthash()),
-            'default' => $file->get_contenthash()
-        ];
+                    $key = $this->get_contentpath_from_hash($file->get_contenthash()) . self::get_key_suffix_from_contenthash($file->get_contenthash());
 
-        return self::try_s3_call(
-            function($filekey) use ($file, $type) {
-                switch ($type) {
-                    case stored_file::FILE_HANDLE_FOPEN:
-                        /**
-                         * Open a seekable S3 stream using the AWS SDK.
-                         * In order to allow previously read data to be recalled, data is buffered in a PHP
-                         * temp stream using a stream decorator. When the amount of cached data exceeds 2MB,
-                         * the data in the temp stream will transfer from memory to disk. Keep this in mind
-                         * when downloading large files from Amazon S3 using the seekable stream context setting.
-                         */
+                    // Check the file exists.
+                    self::$client->headObject(array(
+                        'Bucket'        => self::$bucket,
+                        'Key'           => $key,
+                    ));
 
-                        // Check the file exists. If it doesn't an exception will be thrown.
-                        self::$client->headObject(array(
-                            'Bucket'        => self::$bucket,
-                            'Key'           => $filekey,
-                        ));
-
-                        self::$client->registerStreamWrapper();
-                        $context = stream_context_create([
-                            's3' => ['seekable' => true]
-                        ]);
-                        $tmps3filepath = 's3://'. self::$bucket .'/'. $filekey;
-                        $tmphandle = fopen($tmps3filepath, 'r', false, $context);
-                        if ($tmphandle) {
-                            // S3 seekable streams allow you to seek only to bytes that were previously read.
-                            // Read the entirety of the file before returning the handle to Moodle for seeking.
-                            while (!feof($tmphandle)) {
-                                fread($tmphandle, 8192);
-                            }
-                            fseek($tmphandle, 0);
-                        } else {
-                            error_log('Failed to open the filehandle to S3: '. $tmps3filepath);
+                    self::$client->registerStreamWrapper();
+                    $context = stream_context_create([
+                        's3' => ['seekable' => true]
+                    ]);
+                    $tmps3filepath = 's3://'. self::$bucket .'/'. $key;
+                    $tmphandle = fopen($tmps3filepath, 'r', false, $context);
+                    if ($tmphandle) {
+                        // S3 seekable streams allow you to seek only to bytes that were previously read.
+                        // Read the entirety of the file before returning the handle to Moodle for seeking.
+                        while (!feof($tmphandle)) {
+                            fread($tmphandle, 8192);
                         }
-                        return $tmphandle;
-                        break;
-                    default:
-                        return self::get_file_handle_for_path($this->get_presigned_url($filekey), $type);
-                }
-            },
-            $basekeys[$type == stored_file::FILE_HANDLE_FOPEN ? $type : 'default'],
-            $fallbackkeys[$type == stored_file::FILE_HANDLE_FOPEN ? $type : 'default']
-        );
+                        fseek($tmphandle, 0);
+                    } else {
+                        error_log('Failed to open the filehandle to S3: '. $tmps3filepath);
+                    }
+                    return $tmphandle;
+                    break;
+                default:
+                    return self::get_file_handle_for_path(
+                        $this->get_presigned_url($file->get_contenthash() . self::get_key_suffix_from_contenthash()),
+                        $type
+                    );
+            }
+        } catch (S3Exception $e) {
+            self::log_statistic(
+                'gethandlefail',
+                [
+                    'logmessage' => 'Exception thrown while attempting to get file handle',
+                    'contenthash' => $file->get_contenthash(),
+                    'AwsErrorCode' => $e->getAwsErrorCode(),
+                    'errormessage' => $e->getMessage()
+                ]
+            );
+
+            throw new moodle_exception('Cannot read file');
+        }
     }
 
     /**
@@ -534,7 +579,8 @@ class file_system_s3 extends \file_system {
             $object = self::$client->headObject(array(
                     'Bucket'        => self::$bucket,
                     'Key'           => $key,
-                ));
+                )
+            );
 
             // Compare the local file size against the remote ContentLength.
             $sizematch  = ($object->get('ContentLength') == $filesize);
@@ -556,40 +602,51 @@ class file_system_s3 extends \file_system {
             }
         } catch (S3Exception $e) {
             if ($e->getAwsErrorCode() !== 'NotFound') {
-                throw $e;
-            }
-            // Only catch the NoSuchKeyException exception.
-            // There is no key here - upload the file.
-            self::log_statistic('precheckfail', array(
+                self::log_statistic(
+                    'pushfail',
+                    [
+                        'logmessage' => 'Exception thrown while attempting to push file to S3',
+                        'contenthash' => $contenthash,
+                        'AwsErrorCode' => $e->getAwsErrorCode(),
+                        'errormessage' => $e->getMessage(),
+                        'time' => microtime_diff($start, microtime())
+                    ]
+                );
+
+                throw new moodle_exception('Could not add file');
+            } else {
+                // Only catch the NoSuchKeyException exception.
+                // There is no key here - upload the file.
+                self::log_statistic('precheckfail', array(
                     'logmessage'    => 'Existing file not found when checking before upload',
                     'contenthash'   => $contenthash,
                     'filesize'      => $filesize,
                     'time'          => microtime_diff($start, microtime()),
                 ));
 
-            // We must use a file handle here. If we were to pass the path to the sourcefile to upload, the literal
-            // string for the path would be saved as the file content.
-            $fh = fopen($sourcefile, 'r');
+                // We must use a file handle here. If we were to pass the path to the sourcefile to upload, the literal
+                // string for the path would be saved as the file content.
+                $fh = fopen($sourcefile, 'r');
 
-            // New server side encryption option
-            $options = ['params' => ['ServerSideEncryption' => 'AES256']];
+                // New server side encryption option
+                $options = ['params' => ['ServerSideEncryption' => 'AES256']];
 
-            // ACL to apply to the object (default: private)
-            $acl = 'private';
+                // ACL to apply to the object (default: private)
+                $acl = 'private';
 
-            $start = microtime();
-            // Upload the file
-            self::$client->upload(self::$bucket, $key, $fh, $acl, $options);
-            // Log about it.
-            self::log_statistic('uploaded', array(
+                $start = microtime();
+                // Upload the file
+                self::$client->upload(self::$bucket, $key, $fh, $acl, $options);
+                // Log about it.
+                self::log_statistic('uploaded', array(
                     'logmessage'    => 'New file uploaded to S3',
                     'contenthash'   => $contenthash,
                     'filesize'      => $filesize,
                     'time'          => microtime_diff($start, microtime()),
                 ));
 
-
-            // Note: No need to fclose here. The AWS API does it as part of the upload.
+                // Note: No need to fclose here. The AWS API does it as part of the upload.
+            }
         }
 
         return $result;
@@ -610,35 +667,12 @@ class file_system_s3 extends \file_system {
         require_once($CFG->moodlecloud_template_files_path);
         global $moodlecloud_template_files;
 
-        return in_array($contenthash, $moodlecloud_template_files) ? '' : '_' . $dynamicsite;
-    }
-
-    protected static function try_s3_call(callable $s3call, string $filekey, string $fallbackfilekey = null, array $errorlog = null) {
-        try {
-            return $s3call($filekey);
-        } catch (S3Exception $e) {
-            // We can only try again when the file is not found and we have a fallback key to try.
-            if (($e->getAwsErrorCode() === 'NotFound' || $e->getAwsErrorCode() === 'NoSuchKey') && $fallbackfilekey) {
-                self::log_statistic(
-                    'filefallback',
-                    [
-                        'logmessage'    => 'File not found, falling back',
-                        'filekey' => $filekey,
-                        'fallbackkey' => $fallbackfilekey
-                    ]
-                );
-                return self::try_s3_call($s3call, $fallbackfilekey);
-            }
-
-            // Otherwise we can't do anything. Rethrow the exception if it's something other than FileNotFound.
-            if ($e->getAwsErrorCode() !== 'NotFound' && $e->getAwsErrorCode() !== 'NoSuchKey') {
-                throw $e;
-            }
-
-            if ($errorlog) {
-                self::log_statistic($errorlog['eventname'], $errorlog['data']);
-            }
+        // Never add the suffix on template sites.
+        if (isset($CFG->moodlecloud_is_template)) {
+            return '';
         }
+
+        return in_array($contenthash, $moodlecloud_template_files) ? '' : '_' . $dynamicsite;
     }
 
     /**
