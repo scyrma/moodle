@@ -77,8 +77,7 @@ class user_agreement implements \templatable, \renderable {
         $this->accepted = $accepted;
         $this->canaccept = $canaccept;
         if (count($this->accepted) < count($this->versions) && $canaccept === null) {
-            $this->canaccept = (has_capability('tool/policy:acceptbehalf', \context_system::instance()) ||
-                has_capability('tool/policy:acceptbehalf', \context_user::instance($this->userid)));
+            $this->canaccept = \tool_policy\api::can_accept_policies($this->userid);
         }
     }
 
@@ -102,7 +101,6 @@ class user_agreement implements \templatable, \renderable {
             $linkparams['returnurl'] = $this->pageurl->out_as_local_url(false);
             $link = new \moodle_url('/admin/tool/policy/accept.php', $linkparams);
             $data['acceptlink'] = $link->out(false);
-            $data['acceptmodaldata'] = $link->get_query_string(false); // TODO not needed?
         }
         $data['singleversion'] = count($this->versions) == 1;
         if ($data['singleversion']) {
