@@ -277,21 +277,6 @@ class file_system_s3 extends \file_system {
                 'time'          => microtime_diff($start, microtime()),
             ]);
         } catch (S3Exception $e) {
-            if ($e->getAwsErrorCode() !== 'NotFound') {
-                self::log_statistic(
-                    'deletefail',
-                    [
-                        'logmessage' => 'Exception thrown while attempting to delete file from S3',
-                        'contenthash' => $contenthash,
-                        'AwsErrorCode' => $e->getAwsErrorCode(),
-                        'errormessage' => $e->getMessage(),
-                        'time' => microtime_diff($start, microtime())
-                    ]
-                );
-
-                throw new moodle_exception('Unable to remove file');
-            }
-
             self::log_statistic(
                 'deletefail',
                 [
@@ -302,6 +287,10 @@ class file_system_s3 extends \file_system {
                     'time' => microtime_diff($start, microtime())
                 ]
             );
+
+            if ($e->getAwsErrorCode() !== 'NotFound') {
+                throw new moodle_exception('Unable to remove file');
+            }
         }
     }
 
@@ -557,10 +546,9 @@ class file_system_s3 extends \file_system {
      * @throws file_pool_content_exception
      */
     private function push_to_s3($sourcefile, $contenthash = null, $filesize = null) {
-        global $dynamicsite;
         // Note: We cannot rely on the result of $newfile as this only checks whether a file was present in filedir,
         // which may be empty.
-        $key = $this->get_contentpath_from_hash($contenthash) . '_' . $dynamicsite;
+        $key = $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash);
 
         $result = [$contenthash, $filesize, true];
 
@@ -664,13 +652,14 @@ class file_system_s3 extends \file_system {
 
     protected static function get_key_suffix_from_contenthash(string $contenthash) : string {
         global $CFG, $dynamicsite;
-        require_once($CFG->moodlecloud_template_files_path);
-        global $moodlecloud_template_files;
 
         // Never add the suffix on template sites.
         if (isset($CFG->moodlecloud_is_template)) {
             return '';
         }
+
+        require_once($CFG->moodlecloud_template_files_path);
+        global $moodlecloud_template_files;
 
         return in_array($contenthash, $moodlecloud_template_files) ? '' : '_' . $dynamicsite;
     }
