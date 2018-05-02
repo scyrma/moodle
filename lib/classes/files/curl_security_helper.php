@@ -124,6 +124,8 @@ class curl_security_helper extends curl_security_helper_base {
             return false;
         }
 
+        $host = idn_to_ascii($host);
+
         // Fix for square brackets in the 'host' portion of the URL (only occurs if an IPv6 address is specified).
         $host = str_replace(array('[', ']'), '', $host); // RFC3986, section 3.2.2.
         $blacklistedhosts = $this->get_blacklisted_hosts_by_category();
