@@ -376,7 +376,7 @@ class file_system_s3 extends \file_system {
                 ]
             );
 
-            throw new moodle_exception('Could not fetch file');
+            return false;
         }
 
         return $target;
@@ -424,7 +424,7 @@ class file_system_s3 extends \file_system {
                 ]
             );
 
-            throw new moodle_exception('Unable to fetch file');
+            return false;
         }
     }
 
