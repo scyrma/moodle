@@ -211,8 +211,33 @@ class api {
         }
         foreach ($policies as $policy) {
             if ($policy->currentversionid == $versionid) {
-                return $policy->currentversion;
+                # BEGIN MOODLECLOUD HACK
+                if (self::is_version_locked($versionid)) {
+                    $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/terms.html');
+                    $logout = function() use ($policy) {
+                        require_logout();
+                        $policy->currentversion->content = '<h1>There was a problem fetching the policy. Please try again later.</h1>';
+                        return $policy->currentversion;
+                    };
 
+                    if ($policystr === false || strlen($policystr) < 1000) {
+                        return $logout();
+                    }
+
+                    $doc = new \DOMDocument();
+                    if ($doc->loadHTML($policystr, LIBXML_HTML_NOIMPLIED) !== true) {
+                        return $logout();
+                    }
+
+                    $body = $doc->getElementsByTagName('body');
+                    if ($body->length !== 1) {
+                        return $logout();
+                    }
+
+                    $policy->currentversion->content = '<style type="text/css">@import url("https://assets.gl.moodlecloud.com/legal/moodle.css");</style><div id="moodlecloud_policy">' . $doc->savehtml($body->item(0)) . '</div>';
+                }
+                # END MOODLECLOUD HACK
+                return $policy->currentversion;
             } else {
                 foreach ($policy->draftversions as $draft) {
                     if ($draft->id == $versionid) {
@@ -487,6 +512,11 @@ class api {
 
         // Archive current version of this policy.
         if ($currentversionid = $DB->get_field('tool_policy', 'currentversionid', ['id' => $policyversion->get('policyid')])) {
+            // BEGIN MOODLECLOUD HACK.
+            if (self::is_version_locked($currentversionid)) {
+                return;
+            }
+            //END MOODLECLOUD HACK.
             if ($currentversionid == $versionid) {
                 // Already current, do not change anything.
                 return;
@@ -515,6 +545,11 @@ class api {
         global $DB;
 
         if ($currentversionid = $DB->get_field('tool_policy', 'currentversionid', ['id' => $policyid])) {
+            // BEGIN MOODLECLOUD HACK.
+            if (self::is_version_locked($currentversionid)) {
+                return;
+            }
+            // END MOODLECLOUD HACK.
             // Archive the current version.
             $DB->set_field('tool_policy_versions', 'archived', 1, ['id' => $currentversionid]);
             // Unset current version for the policy.
@@ -546,6 +581,11 @@ class api {
      * @param stdClass $version object describing version, contains fields policyid, id, status, archived, audience, ...
      */
     public static function can_delete_version($version) {
+        // BEGIN MOODLECLOUD HACK.
+        if (self::is_version_locked($version->id)) {
+            return false;
+        }
+        // END MOODLECLOUD HACK.
         // TODO MDL-61900 allow to delete not only draft versions.
         return has_capability('tool/policy:managedocs', context_system::instance()) &&
                 $version->status == policy_version::STATUS_DRAFT;
@@ -1001,4 +1041,10 @@ class api {
             $DB->insert_records('tool_policy_acceptances', $acceptances);
         }
     }
+    // BEGIN MOODLECLOUD HACK.
+    public static function is_version_locked($versionid) {
+        $locked = preg_split('/,/', get_config('tool_policy', 'moodlecloudlockedversions'), -1, PREG_SPLIT_NO_EMPTY);
+        return $locked && in_array($versionid, $locked);
+    }
+    // END MOODLECLOUD HACK.
 }
