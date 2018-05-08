@@ -30,7 +30,7 @@ function xmldb_tool_policy_install() {
 
     $policyid = $DB->insert_record('tool_policy', ['sortorder' => 0]);
     $versionid = $DB->insert_record('tool_policy_versions', [
-        'name' => 'Moodlecloud policy',
+        'name' => 'MoodleCloud policy',
         'type' => 0,
         'audience' => 0, // Change to 1 if this is for signup/logged in users only
         'usermodified' => 2, // admin
