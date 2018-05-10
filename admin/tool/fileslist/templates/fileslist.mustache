@@ -1,0 +1,36 @@
+<div data-region="files-table-container"
+     data-num-items=""
+     data-limit="20"
+     data-start="0"
+>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{{#str}}filename, tool_fileslist{{/str}}</th>
+                <th>{{#str}}size, tool_fileslist{{/str}}</th>
+                <th>{{#str}}type, tool_fileslist{{/str}}</th>
+                <th>{{#str}}user, tool_fileslist{{/str}}</th>
+                <th>{{#str}}component, tool_fileslist{{/str}}</th>
+                <th>{{#str}}filearea, tool_fileslist{{/str}}</th>
+                <th>{{#str}}action, tool_fileslist{{/str}} {{{help.action}}}</th>
+            </tr>
+        </thead>
+        <tbody data-region="files-table-list">
+        </tbody>
+    </table>
+    <div class="text-xs-center text-center">
+        <div class="pagination">
+            <ul class="pagination" data-region="pagination"></ul>
+        </div>
+    </div>
+</div>
+{{#js}}
+require(['jquery', 'tool_fileslist/fileslist', 'tool_fileslist/paging_bar'], function($, FilesList, PagingBar) {
+    FilesList.updateList($('[data-region="files-table-container"]')).then(function() {
+        PagingBar.init(
+            $('[data-region="pagination"]'),
+            $('[data-region="files-table-container"]')
+        );
+    });
+});
+{{/js}}
