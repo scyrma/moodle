@@ -213,7 +213,7 @@ class api {
             if ($policy->currentversionid == $versionid) {
                 # BEGIN MOODLECLOUD HACK
                 if (self::is_version_locked($versionid)) {
-                    $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/terms.html');
+                    $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
                     $logout = function() use ($policy) {
                         require_logout();
                         $policy->currentversion->content = '<h1>There was a problem fetching the policy. Please try again later.</h1>';
@@ -234,7 +234,12 @@ class api {
                         return $logout();
                     }
 
-                    $policy->currentversion->content = '<style type="text/css">@import url("https://assets.gl.moodlecloud.com/legal/moodle.css");</style><div id="moodlecloud_policy">' . $doc->savehtml($body->item(0)) . '</div>';
+                    $mock = new \DOMDocument();
+                    foreach ($body->item(0)->childNodes as $child){
+                        $mock->appendChild($mock->importNode($child, true));
+                    }
+
+                    $policy->currentversion->content = '<style type="text/css">@import url("https://assets.gl.moodlecloud.com/legal/moodle.css");</style><div id="moodlecloud_policy">' . $mock->savehtml() . '</div>';
                 }
                 # END MOODLECLOUD HACK
                 return $policy->currentversion;
