@@ -164,6 +164,37 @@ class api {
         foreach ($policies as $policyid => $policydata) {
             $versionexporters = [];
             foreach ($versions[$policyid] as $versiondata) {
+                # BEGIN MOODLECLOUD HACK
+                if (self::is_version_locked($versiondata->id)) {
+                    $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
+                    $logout = function() use ($versiondata) {
+                        require_logout();
+                        $versiondata->content = '<h1>There was a problem fetching the policy. Please try again later.</h1>';
+                        return $policy->currentversion;
+                    };
+
+                    if ($policystr === false || strlen($policystr) < 1000) {
+                        return $logout();
+                    }
+
+                    $doc = new \DOMDocument();
+                    if ($doc->loadHTML($policystr, LIBXML_HTML_NOIMPLIED) !== true) {
+                        return $logout();
+                    }
+
+                    $body = $doc->getElementsByTagName('body');
+                    if ($body->length !== 1) {
+                        return $logout();
+                    }
+
+                    $mock = new \DOMDocument();
+                    foreach ($body->item(0)->childNodes as $child){
+                        $mock->appendChild($mock->importNode($child, true));
+                    }
+
+                    $versiondata->content = '<style type="text/css">@import url("https://assets.gl.moodlecloud.com/legal/moodle.css");</style><div id="moodlecloud_policy">' . $mock->savehtml() . '</div>';
+                }
+                # END MOODLECLOUD HACK
                 if ($policydata->currentversionid == $versiondata->id) {
                     $versiondata->status = policy_version::STATUS_ACTIVE;
                 } else if ($versiondata->archived) {
@@ -175,6 +206,7 @@ class api {
                     'context' => $context,
                 ]);
             }
+
             $policyexporter = new policy_exporter($policydata, [
                 'versions' => $versionexporters,
             ]);
