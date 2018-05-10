@@ -170,7 +170,7 @@ class api {
                     $logout = function() use ($versiondata) {
                         require_logout();
                         $versiondata->content = '<h1>There was a problem fetching the policy. Please try again later.</h1>';
-                        return $policy->currentversion;
+                        return $versiondata;
                     };
 
                     if ($policystr === false || strlen($policystr) < 1000) {
