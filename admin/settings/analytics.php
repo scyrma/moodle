@@ -24,7 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-if ($hassiteconfig) {
+// START MOODLECLOUD HACK.
+if ($hassiteconfig && false) {
+// END MOODLECLOUD HACK.
     $settings = new admin_settingpage('analyticssettings', new lang_string('analyticssettings', 'analytics'));
     $ADMIN->add('analytics', $settings);
 
