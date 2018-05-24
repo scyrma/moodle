@@ -135,6 +135,10 @@ class register extends adhoc_task {
             $params['token']    = $hub->token;
             $params['url']      = $CFG->wwwroot;
 
+            // MDLSITE-5464 - agree to the hub's privacy policy.
+            $params['policyagreed'] = 1;
+            $params['nowelcomeemail'] = 1;
+
             $url = new moodle_url($huburl . '/local/hub/siteregistration.php', $params);
             $curl = new curl();
             $curl->setopt([
