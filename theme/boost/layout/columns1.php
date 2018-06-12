@@ -32,7 +32,6 @@ $templatecontext = [
     'bodyattributes' => $bodyattributes,
 ];
 
-// MoodleCloud Google AdSense Banner Ads
 $templatecontext['footer_links'] = theme_boost_get_footerlinks($OUTPUT->page->context);
 
 echo $OUTPUT->render_from_template('theme_boost/columns1', $templatecontext);
