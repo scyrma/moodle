@@ -124,6 +124,13 @@ body {
     font-size: .875rem;
     text-transform: uppercase;
     letter-spacing: 1px;
+    &:hover, &:active, &:focus {
+        color: $primary;
+    }
+}
+
+a .icon {
+    color: $body-color;
 }
 
 .navbar-light .navbar-brand {
