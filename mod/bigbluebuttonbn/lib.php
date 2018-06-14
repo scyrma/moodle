@@ -31,6 +31,7 @@ global $CFG;
 require_once($CFG->dirroot.'/calendar/lib.php');
 require_once($CFG->dirroot.'/message/lib.php');
 require_once($CFG->dirroot.'/mod/lti/OAuth.php');
+require_once($CFG->dirroot.'/tag/lib.php');
 require_once($CFG->libdir.'/accesslib.php');
 require_once($CFG->libdir.'/completionlib.php');
 require_once($CFG->libdir.'/datalib.php');
@@ -38,6 +39,7 @@ require_once($CFG->libdir.'/coursecatlib.php');
 require_once($CFG->libdir.'/enrollib.php');
 require_once($CFG->libdir.'/filelib.php');
 require_once($CFG->libdir.'/formslib.php');
+
 
 if (file_exists(dirname(__FILE__).'/vendor/firebase/php-jwt/src/JWT.php')) {
     require_once(dirname(__FILE__).'/vendor/firebase/php-jwt/src/JWT.php');
@@ -51,7 +53,6 @@ if (file_exists(dirname(__FILE__).'/config.php')) {
     require_once(dirname(__FILE__).'/config.php');
     // Old BigBlueButtonBN cfg schema. For backward compatibility.
     global $BIGBLUEBUTTONBN_CFG;
-
     if (isset($BIGBLUEBUTTONBN_CFG)) {
         foreach ((array) $BIGBLUEBUTTONBN_CFG as $key => $value) {
             $cfgkey = str_replace("bigbluebuttonbn_", "", $key);
@@ -389,6 +390,20 @@ function bigbluebuttonbn_get_coursemodule_info($coursemodule) {
  * @return void
  **/
 function bigbluebuttonbn_process_pre_save(&$bigbluebuttonbn) {
+    bigbluebuttonbn_process_pre_save_instance($bigbluebuttonbn);
+    bigbluebuttonbn_process_pre_save_checkboxes($bigbluebuttonbn);
+    bigbluebuttonbn_process_pre_save_common($bigbluebuttonbn);
+    $bigbluebuttonbn->participants = htmlspecialchars_decode($bigbluebuttonbn->participants);
+}
+
+/**
+ * Runs process for defining the instance (insert/update).
+ *
+ * @param object $bigbluebuttonbn BigBlueButtonBN form data
+ *
+ * @return void
+ **/
+function bigbluebuttonbn_process_pre_save_instance(&$bigbluebuttonbn) {
     $bigbluebuttonbn->timemodified = time();
     if ((integer)$bigbluebuttonbn->instance == 0) {
         $bigbluebuttonbn->timecreated = time();
@@ -397,6 +412,16 @@ function bigbluebuttonbn_process_pre_save(&$bigbluebuttonbn) {
         $bigbluebuttonbn->moderatorpass = bigbluebuttonbn_random_password(12);
         $bigbluebuttonbn->viewerpass = bigbluebuttonbn_random_password(12, $bigbluebuttonbn->moderatorpass);
     }
+}
+
+/**
+ * Runs process for assigning default value to checkboxes.
+ *
+ * @param object $bigbluebuttonbn BigBlueButtonBN form data
+ *
+ * @return void
+ **/
+function bigbluebuttonbn_process_pre_save_checkboxes(&$bigbluebuttonbn) {
     if (!isset($bigbluebuttonbn->wait)) {
         $bigbluebuttonbn->wait = 0;
     }
@@ -412,7 +437,24 @@ function bigbluebuttonbn_process_pre_save(&$bigbluebuttonbn) {
     if (!isset($bigbluebuttonbn->recordings_imported)) {
         $bigbluebuttonbn->recordings_imported = 0;
     }
-    $bigbluebuttonbn->participants = htmlspecialchars_decode($bigbluebuttonbn->participants);
+    if (!isset($bigbluebuttonbn->recordings_preview)) {
+        $bigbluebuttonbn->recordings_preview = 0;
+    }
+}
+
+/**
+ * Runs process for wipping common settings when 'recordings only'.
+ *
+ * @param object $bigbluebuttonbn BigBlueButtonBN form data
+ *
+ * @return void
+ **/
+function bigbluebuttonbn_process_pre_save_common(&$bigbluebuttonbn) {
+    // Make sure common settings are removed when 'recordings only'.
+    if ($bigbluebuttonbn->type == BIGBLUEBUTTONBN_TYPE_RECORDING_ONLY) {
+        $bigbluebuttonbn->groupmode = 0;
+        $bigbluebuttonbn->groupingid = 0;
+    }
 }
 
 /**
@@ -491,12 +533,14 @@ function bigbluebuttonbn_process_post_save_event(&$bigbluebuttonbn) {
  * @return string
  */
 function bigbluebuttonbn_get_media_file(&$bigbluebuttonbn) {
-    $draftitemid = isset($bigbluebuttonbn->presentation) ? $bigbluebuttonbn->presentation : null;
+    if (!isset($bigbluebuttonbn->presentation) || $bigbluebuttonbn->presentation == '') {
+        return '';
+    }
     $context = context_module::instance($bigbluebuttonbn->coursemodule);
     // Set the filestorage object.
     $fs = get_file_storage();
     // Save the file if it exists that is currently in the draft area.
-    file_save_draft_area_files($draftitemid, $context->id, 'mod_bigbluebuttonbn', 'presentation', 0);
+    file_save_draft_area_files($bigbluebuttonbn->presentation, $context->id, 'mod_bigbluebuttonbn', 'presentation', 0);
     // Get the file if it exists.
     $files = $fs->get_area_files($context->id, 'mod_bigbluebuttonbn', 'presentation', 0,
         'itemid, filepath, filename', false);
