@@ -78,6 +78,10 @@ if ($ADMIN->fulltree) {
         get_string('multisessionexpanded', 'attendance'),
         get_string('multisessionexpanded_desc', 'attendance'), 0));
 
+    $settings->add(new admin_setting_configcheckbox('attendance/showsessiondescriptiononreport',
+        get_string('showsessiondescriptiononreport', 'attendance'),
+        get_string('showsessiondescriptiononreport_desc', 'attendance'), 0));
+
     $settings->add(new admin_setting_configcheckbox('attendance/studentrecordingexpanded',
         get_string('studentrecordingexpanded', 'attendance'),
         get_string('studentrecordingexpanded_desc', 'attendance'), 1));
@@ -117,6 +121,12 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox('attendance/autoassignstatus',
         get_string('autoassignstatus', 'attendance'), '', 0));
+
+    $settings->add(new admin_setting_configcheckbox('attendance/preventsharedip',
+        get_string('preventsharedip', 'attendance'), '', 0));
+
+    $settings->add(new admin_setting_configtext('attendance/preventsharediptime',
+        get_string('preventsharediptime', 'attendance'), get_string('preventsharediptime_help', 'attendance'), '', PARAM_RAW));
 
     $name = new lang_string('defaultwarningsettings', 'mod_attendance');
     $description = new lang_string('defaultwarningsettings_help', 'mod_attendance');
