@@ -636,6 +636,7 @@ class mod_attendance_renderer extends plugin_renderer_base {
         // Show a 'select all' row of radio buttons.
         $row = new html_table_row();
         $row->cells[] = '';
+        $row->attributes['class'] = 'setallstatusesrow';
         foreach ($extrasearchfields as $field) {
             $row->cells[] = '';
         }
@@ -1505,18 +1506,27 @@ class mod_attendance_renderer extends plugin_renderer_base {
                     'mod/attendance:changeattendances'
                 );
                 if (is_null($sess->lasttaken) and has_any_capability($capabilities, $reportdata->att->context)) {
-                    $sesstext = html_writer::link($reportdata->url_take($sess->id, $sess->groupid), $sesstext);
+                    $sesstext = html_writer::link($reportdata->url_take($sess->id, $sess->groupid), $sesstext,
+                        array('class' => 'attendancereporttakelink'));
                 }
-                $sesstext .= html_writer::empty_tag('br');
+                $sesstext .= html_writer::empty_tag('br', array('class' => 'attendancereportseparator'));
+                if (!empty($sess->description) &&
+                    !empty(get_config('attendance', 'showsessiondescriptiononreport'))) {
+                    $sesstext .= html_writer::tag('small', format_text($sess->description),
+                        array('class' => 'attendancereportcommon'));
+                }
                 if ($sess->groupid) {
                     if (empty($reportdata->groups[$sess->groupid])) {
-                        $sesstext .= html_writer::tag('small', get_string('deletedgroup', 'attendance'));
+                        $sesstext .= html_writer::tag('small', get_string('deletedgroup', 'attendance'),
+                            array('class' => 'attendancereportgroup'));
                     } else {
-                        $sesstext .= html_writer::tag('small', $reportdata->groups[$sess->groupid]->name);
+                        $sesstext .= html_writer::tag('small', $reportdata->groups[$sess->groupid]->name,
+                            array('class' => 'attendancereportgroup'));
                     }
 
                 } else {
-                    $sesstext .= html_writer::tag('small', get_string('commonsession', 'attendance'));
+                    $sesstext .= html_writer::tag('small', get_string('commonsession', 'attendance'),
+                        array('class' => 'attendancereportcommon'));
                 }
 
                 $row->cells[] = $this->build_header_cell($sesstext, false, true, null, null, false);
