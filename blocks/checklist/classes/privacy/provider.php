@@ -15,18 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Instance settings form
+ * GDPR declaration
  *
  * @package   block_checklist
- * @copyright 2010 Davo Smith
+ * @copyright 2018 Davo Smith
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_checklist\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2018040200;
-$plugin->requires = 2017111300; // Moodle 3.4+.
-$plugin->release = '3.4+ (Build: 2018040200)';
-$plugin->component = 'block_checklist';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = ['mod_checklist' => 2010041800]; // Must have checklist activity module installed.
+class provider implements \core_privacy\local\metadata\null_provider {
+    public static function get_reason(): string {
+        return 'privacy:null_reason';
+    }
+}
