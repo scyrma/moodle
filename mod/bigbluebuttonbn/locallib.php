@@ -344,15 +344,7 @@ function bigbluebuttonbn_get_recording_array_value($recording) {
             'url' => trim((string) $format->url), 'length' => (string) $format->length);
         // Add preview per format when existing.
         if ($format->preview) {
-            $imagesarray = array();
-            foreach ($format->preview->images->image as $image) {
-                $imagearray = array('url' => trim((string) $image));
-                foreach ($image->attributes() as $attkey => $attvalue) {
-                    $imagearray[$attkey] = (string) $attvalue;
-                }
-                array_push($imagesarray, $imagearray);
-            }
-            $playbackarray[(string) $format->type]['preview'] = $imagesarray;
+            $playbackarray[(string) $format->type]['preview'] = bigbluebuttonbn_get_recording_preview_images($format->preview);
         }
     }
     // Add the metadata to the recordings array.
@@ -368,9 +360,28 @@ function bigbluebuttonbn_get_recording_array_value($recording) {
 }
 
 /**
+ * Helper function to convert an xml recording preview images to an array in the format used by the plugin.
+ *
+ * @param object $preview
+ *
+ * @return array
+ */
+function bigbluebuttonbn_get_recording_preview_images($preview) {
+    $imagesarray = array();
+    foreach ($preview->images->image as $image) {
+        $imagearray = array('url' => trim((string) $image));
+        foreach ($image->attributes() as $attkey => $attvalue) {
+            $imagearray[$attkey] = (string) $attvalue;
+        }
+        array_push($imagesarray, $imagearray);
+    }
+    return $imagesarray;
+}
+
+/**
  * Helper function to convert an xml recording metadata object to an array in the format used by the plugin.
  *
- * @param object $metadata
+ * @param array $metadata
  *
  * @return array
  */
@@ -597,8 +608,8 @@ function bigbluebuttonbn_end_meeting_if_running($bigbluebuttonbn) {
 /**
  * Returns user roles in a context.
  *
- * @param context $context
- * @param context $userid
+ * @param object $context
+ * @param integer $userid
  *
  * @return array $userroles
  */
@@ -694,7 +705,7 @@ function bigbluebuttonbn_get_roles_select(context $context = null) {
  */
 function bigbluebuttonbn_get_role($id) {
     $roles = (array) role_get_names();
-    if (is_numeric($id)) {
+    if (is_numeric($id) && isset($roles[$id])) {
         return (object)$roles[$id];
     }
     foreach ($roles as $role) {
@@ -828,11 +839,10 @@ function bigbluebuttonbn_get_participant_selection_data() {
  * @param context $context
  * @param string $participants
  * @param integer $userid
- * @param array $userroles
  *
  * @return boolean
  */
-function bigbluebuttonbn_is_moderator($context, $participants, $userid = null, $userroles = null) {
+function bigbluebuttonbn_is_moderator($context, $participants, $userid = null) {
     global $USER;
     if (empty($participants)) {
         // The room that is being used comes from a previous version.
@@ -845,8 +855,9 @@ function bigbluebuttonbn_is_moderator($context, $participants, $userid = null, $
     if (empty($userid)) {
         $userid = $USER->id;
     }
-    if (empty($userroles)) {
-        $userroles = get_user_roles($context, $userid, true);
+    $userroles = bigbluebuttonbn_get_guest_role();
+    if (!isguestuser()) {
+        $userroles = bigbluebuttonbn_get_user_roles($context, $userid);
     }
     return bigbluebuttonbn_is_moderator_validator($participantlist, $userid , $userroles);
 }
@@ -893,7 +904,7 @@ function bigbluebuttonbn_is_moderator_validate_rule($participant, $userid, $user
     }
     // Looks for roles.
     $role = bigbluebuttonbn_get_role($participant->selectionid);
-    if (array_key_exists($role->id, $userroles)) {
+    if ($role != null && array_key_exists($role->id, $userroles)) {
         return true;
     }
     return false;
@@ -920,19 +931,24 @@ function bigbluebuttonbn_get_error_key($messagekey, $defaultkey = null) {
 /**
  * Helper evaluates if a voicebridge number is unique.
  *
+ * @param integer $instance
  * @param integer $voicebridge
  *
  * @return string
  */
-function bigbluebuttonbn_voicebridge_unique($voicebridge) {
+function bigbluebuttonbn_voicebridge_unique($instance, $voicebridge) {
     global $DB;
-    if ($voicebridge != 0) {
-        $select = 'voicebridge = ' . $voicebridge;
-        if ($DB->get_records_select('bigbluebuttonbn', $select)) {
-            return false;
-        }
+    if ($voicebridge == 0) {
+        return true;
     }
-    return true;
+    $select = 'voicebridge = ' . $voicebridge;
+    if ($instance != 0) {
+        $select .= ' AND id <>' . $instance;
+    }
+    if (!$DB->get_records_select('bigbluebuttonbn', $select)) {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -1287,7 +1303,7 @@ function bigbluebuttonbn_get_recording_data_row($bbbsession, $recording, $tools 
     }
     $rowdata = new stdClass();
     // Set recording_types.
-    $rowdata->recording = bigbluebuttonbn_get_recording_data_row_types($recording, $bbbsession['bigbluebuttonbn']->id);
+    $rowdata->recording = bigbluebuttonbn_get_recording_data_row_types($recording, $bbbsession);
     // Set activity name.
     $rowdata->activity = bigbluebuttonbn_get_recording_data_row_meta_activity($recording, $bbbsession);
     // Set activity description.
@@ -1328,7 +1344,7 @@ function bigbluebuttonbn_get_recording_data_row_editable($bbbsession) {
  * @return boolean
  */
 function bigbluebuttonbn_get_recording_data_preview_enabled($bbbsession) {
-    return ((double)$bbbsession['serverversion'] >= 1.0);
+    return ((double)$bbbsession['serverversion'] >= 1.0 && $bbbsession['bigbluebuttonbn']->recordings_preview == '1');
 }
 
 /**
@@ -1467,21 +1483,21 @@ function bigbluebuttonbn_get_recording_data_row_action_publish($published) {
  * @return string
  */
 function bigbluebuttonbn_get_recording_data_row_preview($recording) {
-    $visibility = '';
+    $options = array('id' => 'preview-'.$recording['recordID'], 'class' => 'container');
     if ($recording['published'] === 'false') {
-        $visibility = 'hidden ';
+        $options['hidden'] = 'hidden';
     }
-    $recordingpreview = html_writer::start_tag('div',
-        array('id' => 'preview-'.$recording['recordID'], $visibility => $visibility));
+    $recordingpreview = html_writer::start_tag('div', $options);
     foreach ($recording['playbacks'] as $playback) {
         if (isset($playback['preview'])) {
+            $recordingpreview .= html_writer::start_tag('div', array('class' => 'row'));
             foreach ($playback['preview'] as $image) {
                 $recordingpreview .= html_writer::empty_tag('img',
-                    array('src' => trim($image['url']) . '?' . time(), 'class' => 'thumbnail'));
+                    array('src' => trim($image['url']) . '?' . time(), 'class' => 'recording-thumbnail col-sm'));
             }
-            $recordingpreview .= html_writer::empty_tag('br');
+            $recordingpreview .= html_writer::end_tag('div');
             $recordingpreview .= html_writer::tag('div',
-                get_string('view_recording_preview_help', 'bigbluebuttonbn'), array('class' => 'text-muted small'));
+                get_string('view_recording_preview_help', 'bigbluebuttonbn'), array('class' => 'row text-muted small'));
             break;
         }
     }
@@ -1493,11 +1509,11 @@ function bigbluebuttonbn_get_recording_data_row_preview($recording) {
  * Helper function renders recording types to be used in row for the data used by the recording table.
  *
  * @param array $recording
- * @param integer $bigbluebuttonbnid
+ * @param array $bbbsession
  *
  * @return string
  */
-function bigbluebuttonbn_get_recording_data_row_types($recording, $bigbluebuttonbnid) {
+function bigbluebuttonbn_get_recording_data_row_types($recording, $bbbsession) {
     $dataimported = 'false';
     $title = '';
     if (isset($recording['imported'])) {
@@ -1513,8 +1529,7 @@ function bigbluebuttonbn_get_recording_data_row_types($recording, $bigbluebutton
           'data-meetingid' => $recording['meetingID'], 'data-recordingid' => $recording['recordID'],
           'title' => $title, $visibility => $visibility));
     foreach ($recording['playbacks'] as $playback) {
-        $recordingtypes .= bigbluebuttonbn_get_recording_data_row_type($recording, $bigbluebuttonbnid,
-            $playback).'&#32;';
+        $recordingtypes .= bigbluebuttonbn_get_recording_data_row_type($recording, $bbbsession, $playback);
     }
     $recordingtypes .= html_writer::end_tag('div');
     return $recordingtypes;
@@ -1524,17 +1539,20 @@ function bigbluebuttonbn_get_recording_data_row_types($recording, $bigbluebutton
  * Helper function renders the link used for recording type in row for the data used by the recording table.
  *
  * @param array $recording
- * @param integer $bigbluebuttonbnid
+ * @param array $bbbsession
  * @param array $playback
  *
  * @return string
  */
-function bigbluebuttonbn_get_recording_data_row_type($recording, $bigbluebuttonbnid, $playback) {
+function bigbluebuttonbn_get_recording_data_row_type($recording, $bbbsession, $playback) {
     global $CFG, $OUTPUT;
+    if (!bigbluebuttonbn_include_recording_data_row_type($recording, $bbbsession, $playback)) {
+        return '';
+    }
     $title = get_string('view_recording_format_'.$playback['type'], 'bigbluebuttonbn');
     $onclick = 'M.mod_bigbluebuttonbn.recordings.recordingPlay(this);';
-    $href = $CFG->wwwroot.'/mod/bigbluebuttonbn/bbb_view.php?action=play&bn='.$bigbluebuttonbnid.
-      '&mid='.$recording['meetingID'].'&rid='.$recording['recordID'].'&rtype='.$playback['type'];
+    $href = $CFG->wwwroot . '/mod/bigbluebuttonbn/bbb_view.php?action=play&bn=' . $bbbsession['bigbluebuttonbn']->id .
+      '&mid='.$recording['meetingID'] . '&rid=' . $recording['recordID'] . '&rtype=' . $playback['type'];
     if (!isset($recording['imported']) || !isset($recording['protected']) || $recording['protected'] === 'false') {
         $href .= '&href='.urlencode(trim($playback['url']));
     }
@@ -1547,7 +1565,7 @@ function bigbluebuttonbn_get_recording_data_row_type($recording, $bigbluebuttonb
         'data-href' => $href,
         'class' => 'btn btn-sm btn-default'
       );
-    return $OUTPUT->action_link('#', $title, null, $linkattributes);
+    return $OUTPUT->action_link('#', $title, null, $linkattributes) . '&#32;';
 }
 
 /**
@@ -1822,11 +1840,16 @@ function bigbluebuttonbn_get_recording_table_row($bbbsession, $recording, $rowda
  * @return boolean
  */
 function bigbluebuttonbn_include_recording_table_row($bbbsession, $recording) {
+    // Exclude unpublished recordings, only if user has no rights to manage them.
+    if ($recording['published'] != 'true' && !$bbbsession['managerecordings']) {
+        return false;
+    }
+    // Imported recordings are always shown as long as they are published.
+    if (isset($recording['imported'])) {
+        return true;
+    }
     // When groups are enabled, exclude those to which the user doesn't have access to.
-    // if (!isset($recording['imported']) && isset($bbbsession['group']) && $recording['meetingID'] != $bbbsession['meetingid']) {
-    //    return false;
-    // }
-    if (!$bbbsession['managerecordings'] && $recording['published'] != 'true') {
+    if (isset($bbbsession['group']) && $recording['meetingID'] != $bbbsession['meetingid']) {
         return false;
     }
     return true;
@@ -1905,10 +1928,10 @@ function bigbluebuttonbn_output_recording_table($bbbsession, $recordings, $tools
     if (!isset($table) || !isset($table->data)) {
         // Render a table with "No recordings".
         return html_writer::div(get_string('view_message_norecordings', 'bigbluebuttonbn'), '',
-            array('id' => 'bigbluebuttonbn_html_table'));
+            array('id' => 'bigbluebuttonbn_recordings_table'));
     }
     // Render the table.
-    return html_writer::div(html_writer::table($table), '', array('id' => 'bigbluebuttonbn_html_table'));
+    return html_writer::div(html_writer::table($table), '', array('id' => 'bigbluebuttonbn_recordings_table'));
 }
 
 /**
@@ -1938,8 +1961,10 @@ function bigbluebuttonbn_html2text($html, $len = 0) {
  * @return string containing the tags separated by commas
  */
 function bigbluebuttonbn_get_tags($id) {
-    $tagsarray = core_tag_tag::get_item_tags_array('core', 'course_modules', $id);
-    return implode(',', $tagsarray);
+    if (class_exists('core_tag_tag')) {
+        return implode(',', core_tag_tag::get_item_tags_array('core', 'course_modules', $id));
+    }
+    return implode(',', tag_get_tags('bigbluebuttonbn', $id));
 }
 
 /**
@@ -2132,7 +2157,8 @@ function bigbluebuttonbn_get_instance_type_profiles() {
                 'features' => array('all')),
             array('id' => BIGBLUEBUTTONBN_TYPE_ROOM_ONLY, 'name' => get_string('instance_type_room_only', 'bigbluebuttonbn'),
                 'features' => array('showroom', 'welcomemessage', 'voicebridge', 'waitformoderator', 'userlimit', 'recording',
-                    'sendnotifications', 'preuploadpresentation', 'permissions', 'schedule', 'groups')),
+                    'sendnotifications', 'preuploadpresentation', 'permissions', 'schedule', 'groups',
+                    'modstandardelshdr', 'availabilityconditionsheader', 'tagshdr', 'competenciessection')),
             array('id' => BIGBLUEBUTTONBN_TYPE_RECORDING_ONLY, 'name' => get_string('instance_type_recording_only',
                 'bigbluebuttonbn'), 'features' => array('showrecordings', 'importrecordings')),
     );
@@ -2283,13 +2309,28 @@ function bigbluebuttonbn_views_instance_bigbluebuttonbn($bigbluebuttonbnid) {
 }
 
 /**
+ * Helper function renders general warning message for settings (if any).
+ *
+ * @param object $renderer
+ *
+ * @return void
+ */
+function bigbluebuttonbn_settings_general_warning(&$renderer) {
+    global $BIGBLUEBUTTONBN_CFG;
+    if (isset($BIGBLUEBUTTONBN_CFG)) {
+        $renderer->render_warning_message('general_warning',
+             get_string('config_warning_bigbluebuttonbn_cfg_deprecated', 'bigbluebuttonbn'));
+    }
+}
+
+/**
  * Helper function renders general settings if the feature is enabled.
  *
  * @param object $renderer
  *
  * @return void
  */
-function bigbluebutonbn_settings_general(&$renderer) {
+function bigbluebuttonbn_settings_general(&$renderer) {
     // Configuration for BigBlueButton.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_general_shown()) {
         $renderer->render_group_header('general');
@@ -2307,7 +2348,7 @@ function bigbluebutonbn_settings_general(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_record(&$renderer) {
+function bigbluebuttonbn_settings_record(&$renderer) {
     // Configuration for 'recording' feature.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_record_meeting_shown()) {
         $renderer->render_group_header('recording');
@@ -2327,7 +2368,7 @@ function bigbluebutonbn_settings_record(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_importrecordings(&$renderer) {
+function bigbluebuttonbn_settings_importrecordings(&$renderer) {
     // Configuration for 'import recordings' feature.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_import_recordings_shown()) {
         $renderer->render_group_header('importrecordings');
@@ -2345,7 +2386,7 @@ function bigbluebutonbn_settings_importrecordings(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_showrecordings(&$renderer) {
+function bigbluebuttonbn_settings_showrecordings(&$renderer) {
     // Configuration for 'show recordings' feature.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_show_recordings_shown()) {
         $renderer->render_group_header('recordings');
@@ -2361,6 +2402,10 @@ function bigbluebutonbn_settings_showrecordings(&$renderer) {
             $renderer->render_group_element_checkbox('recordings_imported_default', 0));
         $renderer->render_group_element('recordings_imported_editable',
             $renderer->render_group_element_checkbox('recordings_imported_editable', 1));
+        $renderer->render_group_element('recordings_preview_default',
+            $renderer->render_group_element_checkbox('recordings_preview_default', 1));
+        $renderer->render_group_element('recordings_preview_editable',
+            $renderer->render_group_element_checkbox('recordings_preview_editable', 0));
     }
 }
 
@@ -2371,7 +2416,7 @@ function bigbluebutonbn_settings_showrecordings(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_waitmoderator(&$renderer) {
+function bigbluebuttonbn_settings_waitmoderator(&$renderer) {
     // Configuration for wait for moderator feature.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_wait_moderator_shown()) {
         $renderer->render_group_header('waitformoderator');
@@ -2393,7 +2438,7 @@ function bigbluebutonbn_settings_waitmoderator(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_voicebridge(&$renderer) {
+function bigbluebuttonbn_settings_voicebridge(&$renderer) {
     // Configuration for "static voice bridge" feature.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_static_voice_bridge_shown()) {
         $renderer->render_group_header('voicebridge');
@@ -2409,7 +2454,7 @@ function bigbluebutonbn_settings_voicebridge(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_preupload(&$renderer) {
+function bigbluebuttonbn_settings_preupload(&$renderer) {
     // Configuration for "preupload presentation" feature.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_preupload_presentation_shown()) {
         // This feature only works if curl is installed.
@@ -2434,7 +2479,7 @@ function bigbluebutonbn_settings_preupload(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_userlimit(&$renderer) {
+function bigbluebuttonbn_settings_userlimit(&$renderer) {
     // Configuration for "user limit" feature.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_user_limit_shown()) {
         $renderer->render_group_header('userlimit');
@@ -2452,7 +2497,7 @@ function bigbluebutonbn_settings_userlimit(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_duration(&$renderer) {
+function bigbluebuttonbn_settings_duration(&$renderer) {
     // Configuration for "scheduled duration" feature.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_scheduled_duration_shown()) {
         $renderer->render_group_header('scheduled');
@@ -2472,7 +2517,7 @@ function bigbluebutonbn_settings_duration(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_participants(&$renderer) {
+function bigbluebuttonbn_settings_participants(&$renderer) {
     // Configuration for defining the default role/user that will be moderator on new activities.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_moderator_default_shown()) {
         $renderer->render_group_header('participant');
@@ -2493,7 +2538,7 @@ function bigbluebutonbn_settings_participants(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_notifications(&$renderer) {
+function bigbluebuttonbn_settings_notifications(&$renderer) {
     // Configuration for "send notifications" feature.
     if ((boolean)\mod_bigbluebuttonbn\settings\renderer::section_send_notifications_shown()) {
         $renderer->render_group_header('sendnotifications');
@@ -2509,7 +2554,7 @@ function bigbluebutonbn_settings_notifications(&$renderer) {
  *
  * @return void
  */
-function bigbluebutonbn_settings_extended(&$renderer) {
+function bigbluebuttonbn_settings_extended(&$renderer) {
     // Configuration for extended BN capabilities.
     if (!bigbluebuttonbn_is_bn_server()) {
         return;
@@ -2536,4 +2581,87 @@ function bigbluebutonbn_settings_extended(&$renderer) {
 function bigbluebuttonbn_encode_meetingid($seed) {
     global $CFG;
     return sha1($CFG->wwwroot . $seed . \mod_bigbluebuttonbn\locallib\config::get('shared_secret'));
+}
+
+/**
+ * Helper function renders the link used for recording type in row for the data used by the recording table.
+ *
+ * @param array $recording
+ * @param array $bbbsession
+ * @param array $playback
+ *
+ * @return boolean
+ */
+function bigbluebuttonbn_include_recording_data_row_type($recording, $bbbsession, $playback) {
+    // All types that are not statistics are included.
+    if ($playback['type'] != 'statistics') {
+        return true;
+    }
+    // Exclude imported recordings.
+    if (isset($recording['imported'])) {
+        return false;
+    }
+    // Exclude non moderators.
+    if (!$bbbsession['administrator'] && !$bbbsession['moderator']) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Renders the general warning message.
+ *
+ * @param string $message
+ * @param string $type
+ * @param string $href
+ * @param string $text
+ * @param string $class
+ *
+ * @return string
+ */
+function bigbluebuttonbn_render_warning($message, $type='info', $href='', $text='', $class='') {
+    global $OUTPUT;
+    $output = "\n";
+    // Evaluates if config_warning is enabled.
+    if (empty($message)) {
+        return $output;
+    }
+    $output .= $OUTPUT->box_start('box boxalignleft adminerror alert alert-' . $type . ' alert-block fade in',
+      'bigbluebuttonbn_view_general_warning') . "\n";
+    $output .= '    ' . $message . "\n";
+    $output .= '  <div class="singlebutton pull-right">' . "\n";
+    if (!empty($href)) {
+        $output .= bigbluebuttonbn_render_warning_button($href, $text, $class);
+    }
+    $output .= '  </div>' . "\n";
+    $output .= $OUTPUT->box_end() . "\n";
+    return $output;
+}
+
+/**
+ * Renders the general warning button.
+ *
+ * @param string $href
+ * @param string $text
+ * @param string $class
+ * @param string $title
+ *
+ * @return string
+ */
+function bigbluebuttonbn_render_warning_button($href, $text = '', $class = '', $title = '') {
+    if ($text == '') {
+        $text = get_string('ok', 'moodle');
+    }
+    if ($title == '') {
+        $title = $text;
+    }
+    if ($class == '') {
+        $class = 'btn btn-secondary';
+    }
+    $output  = '  <form method="post" action="' . $href . '" class="form-inline">'."\n";
+    $output .= '      <button type="submit" class="' . $class . '"'."\n";
+    $output .= '          title="' . $title . '"'."\n";
+    $output .= '          >' . $text . '</button>'."\n";
+    $output .= '  </form>'."\n";
+    return $output;
 }
