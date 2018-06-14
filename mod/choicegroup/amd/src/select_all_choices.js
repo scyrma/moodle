@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,22 +14,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Ticks or unticks all checkboxes when clicking the Select all or Deselect all elements when viewing the response overview.
  *
- * @package    mod
- * @subpackage choicegroup
- * @copyright  2013-2015 Université de Lausanne
- * @author     Nicolas Dunand <Nicolas.Dunand@unil.ch>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @module      mod_choicegroup/select_all_choices
+ * @copyright   2017 Marcus Fabriczy <marcus.fabriczy@blackboard.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version  = 2018061301;
-$plugin->requires  = 2014050800; // Moodle 2.7
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release = '1.13 for Moodle 2.7-3.5 (Build: 2018061301)';
-
-$plugin->component = 'mod_choicegroup';
-$plugin->cron = 0;
-
+define(['jquery'], function($) {
+    return {
+        init: function () {
+            $('.selectallnone a').on('click', function(e) {
+                e.preventDefault();
+                $('#attemptsform').find('input:checkbox').prop('checked', $(this).data('selectInfo'));
+            });
+        }
+    };
+});
