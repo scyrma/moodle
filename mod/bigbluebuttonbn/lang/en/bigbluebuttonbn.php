@@ -18,7 +18,7 @@
  * Language File.
  *
  * @package   mod_bigbluebuttonbn
- * @copyright 2010-2017 Blindside Networks Inc
+ * @copyright 2010-2018 Blindside Networks Inc
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v2 or later
  * @author    Jesus Federico  (jesus [at] blindsidenetworks [dt] com)
  * @author    Fred Dixon  (ffdixon [at] blindsidenetworks [dt] com)
@@ -29,10 +29,22 @@ $string['activityoverview'] = 'You have upcoming bigbluebuttonbn sessions';
 $string['bbbduetimeoverstartingtime'] = 'The due time for this activity must be greater than the starting time';
 $string['bbbdurationwarning'] = 'The maximum duration for this session is %duration% minutes.';
 $string['bbbrecordwarning'] = 'This session may be recorded.';
-$string['bigbluebuttonbn:join'] = 'Join a meeting';
-$string['bigbluebuttonbn:managerecordings'] = 'Manage recordings';
-$string['bigbluebuttonbn:addinstance'] = 'Add a new meeting';
+$string['bigbluebuttonbn:addinstance'] = 'Add a new bigbluebuttonbn room/activity';
+$string['bigbluebuttonbn:join'] = 'Join a bigbluebuttonbn meeting';
+$string['bigbluebuttonbn:managerecordings'] = 'Manage bigbluebuttonbn recordings';
 $string['bigbluebuttonbn'] = 'BigBlueButton';
+
+$string['privacy:metadata:bigbluebuttonbn'] = 'Stores the configuration for the room or activity that defines the features and general behaviour of the BigBlueButton session.';
+$string['privacy:metadata:bigbluebuttonbn:participants'] = 'A list of rules that define the role users will in the live meeting. A user ID may be stored as permissions can be granted per role or user.';
+$string['privacy:metadata:bigbluebuttonbn_logs'] = 'Stores events triggered when using the plugin.';
+$string['privacy:metadata:bigbluebuttonbn_logs:userid'] = 'The user ID of the user who triggered the event.';
+$string['privacy:metadata:bigbluebuttonbn_logs:timecreated'] = 'The time at which the log was created.';
+$string['privacy:metadata:bigbluebuttonbn_logs:meetingid'] = 'The meeting ID the user had access to.';
+$string['privacy:metadata:bigbluebuttonbn_logs:log'] = 'The type of event triggered by the user.';
+$string['privacy:metadata:bigbluebuttonbn_logs:meta'] = 'May include extra information related to the meeting or the recording afected by the event.';
+$string['privacy:metadata:bigbluebutton'] = 'In order to create and join BigBlueButton sessions, user data needs to be exchanged with the server.';
+$string['privacy:metadata:bigbluebutton:userid'] = 'The userid of the user accessing the BigBlueButton server.';
+$string['privacy:metadata:bigbluebutton:fullname'] = 'The fullname of the user accessing the BigBlueButton server.';
 
 $string['config_general'] = 'General configuration';
 $string['config_general_description'] = 'These settings are <b>always</b> used';
@@ -57,15 +69,20 @@ $string['config_recordings_general_description'] = 'These settings are used only
 $string['config_recordings_html_default'] = 'UI as html is enabled by default';
 $string['config_recordings_html_default_description'] = 'If enabled the recording table is shown in plain HTML by default.';
 $string['config_recordings_html_editable'] = 'UI as html feature can be edited';
-$string['config_recordings_html_editable_description'] = 'UI as html value by default can be edited when the recordingbn is added or updated.';
+$string['config_recordings_html_editable_description'] = 'UI as html value by default can be edited when the instance is added or updated.';
 $string['config_recordings_deleted_default'] = 'Include recordings from deleted activities enabled by default';
 $string['config_recordings_deleted_default_description'] = 'If enabled the recording table will include the recordings belonging to deleted activities if there is any.';
 $string['config_recordings_deleted_editable'] = 'Include recordings from deleted activities feature can be edited';
-$string['config_recordings_deleted_editable_description'] = 'Include recordings from deleted activities by default can be edited when the recordingbn is added or updated.';
+$string['config_recordings_deleted_editable_description'] = 'Include recordings from deleted activities by default can be edited when the instance is added or updated.';
 $string['config_recordings_imported_default'] = 'Show only imported links enabled by default';
 $string['config_recordings_imported_default_description'] = 'If enabled the recording table will include only the imported links to recordings.';
 $string['config_recordings_imported_editable'] = 'Show only imported links feature can be edited';
-$string['config_recordings_imported_editable_description'] = 'Show only imported links by default can be edited when the recordingbn is added or updated.';
+$string['config_recordings_imported_editable_description'] = 'Show only imported links by default can be edited when the instance is added or updated.';
+$string['config_recordings_preview_default'] = 'Preview is enabled by default';
+$string['config_recordings_preview_default_description'] = 'If enabled the table includes a preview of the presentation.';
+$string['config_recordings_preview_editable'] = 'Preview feature can be edited';
+$string['config_recordings_preview_editable_description'] = 'Preview feature can be edited when the instance is added or updated.';
+
 
 $string['config_importrecordings'] = 'Configuration for "Import recordings" feature';
 $string['config_importrecordings_description'] = 'These settings are feature specific';
@@ -131,6 +148,7 @@ $string['config_meetingevents_enabled'] = 'Register meeting events';
 $string['config_meetingevents_enabled_description'] = 'Register meeting events feature is enabled.';
 
 $string['config_warning_curl_not_installed'] = 'This feature requires the CURL extension for php installed and enabled. The settings will be accessible only if this condition is fulfilled.';
+$string['config_warning_bigbluebuttonbn_cfg_deprecated'] = 'BigBlueButtonBN is making use of config.php with a global variable that has been deprecated. Please convert the file as it will not be supported in future versions';
 
 $string['general_error_unable_connect'] = 'Unable to connect. Please check the url of the BigBlueButton server AND check to see if the BigBlueButton server is running.';
 
@@ -176,7 +194,7 @@ $string['mod_form_field_wait'] = 'Wait for moderator';
 $string['mod_form_field_wait_help'] = 'Viewers must wait until a moderator enters the session before they can do so';
 $string['mod_form_field_welcome'] = 'Welcome message';
 $string['mod_form_field_welcome_help'] = 'Replaces the default message setted up for the BigBlueButton server. The message can includes keywords  (%%CONFNAME%%, %%DIALNUM%%, %%CONFNUM%%) which will be substituted automatically, and also html tags like <b>...</b> or <i></i> ';
-$string['mod_form_field_welcome_default'] = '<br>Welcome to <b>%%CONFNAME%%</b>!<br><br>To understand how BigBlueButton works see our <a href="event:http://www.bigbluebutton.org/content/videos"><u>tutorial videos</u></a>.<br><br>To join the audio bridge click the headset icon (upper-left hand corner). <b>Please use a headset to avoid causing noise for others.</b>';
+$string['mod_form_field_welcome_default'] = '<br>Welcome to <b>%%CONFNAME%%</b>!<br><br>For help on using BigBlueButton see these (short)  <a href="event:http://www.bigbluebutton.org/content/videos"><u>tutorial videos</u></a>.<br><br>To join the audio bridge click the phone icon (top center). <b>Please use a headset to avoid causing background noise for others.</b>';
 $string['mod_form_field_participant_add'] = 'Add participant';
 $string['mod_form_field_participant_list'] = 'Participant list';
 $string['mod_form_field_participant_list_type_all'] = 'All users enrolled';
@@ -200,6 +218,7 @@ $string['mod_form_field_notification_msg_at'] = 'at';
 $string['mod_form_field_recordings_html'] = 'Show the table in plain html';
 $string['mod_form_field_recordings_deleted'] = 'Include recordings from deleted activities';
 $string['mod_form_field_recordings_imported'] = 'Show only imported links';
+$string['mod_form_field_recordings_preview'] = 'Show recording preview';
 
 $string['modulename'] = 'BigBlueButtonBN';
 $string['modulenameplural'] = 'BigBlueButtonBN';
@@ -264,6 +283,7 @@ $string['view_recording_button_import'] = 'Import recording links';
 $string['view_recording_button_return'] = 'Go back';
 $string['view_recording_format_presentation'] = 'presentation';
 $string['view_recording_format_video'] = 'video';
+$string['view_recording_format_statistics'] = 'statistics';
 $string['view_section_title_presentation'] = 'Presentation file';
 $string['view_section_title_recordings'] = 'Recordings';
 $string['view_message_norecordings'] = 'There are no recording to show.';
@@ -300,8 +320,9 @@ $string['view_message_conference_in_progress'] = 'This conference is in progress
 $string['view_message_conference_has_ended'] = 'This conference has ended.';
 $string['view_message_tab_close'] = 'This tab/window must be closed manually';
 $string['view_message_recordings_disabled'] = 'Recordings were disabled on this server. BigBlueButtonBN instances for recordings only can not be used.';
+$string['view_message_importrecordings_disabled'] = 'Feature for import recording links is disabled on this server.';
 
-$string['view_groups_selection_warning'] = 'There is a conference room for each group. If you have access to more than one be sure to select the correct one.';
+$string['view_groups_selection_warning'] = 'There is a conference room for each group and you have access to more than one. Be sure to select the correct one.';
 $string['view_groups_nogroups_warning'] = 'The room was configured for using groups but the course does not have goups defined.';
 $string['view_groups_notenrolled_warning'] = 'The room was configured for using groups but you are not enrolled in any of them.';
 $string['view_conference_action_join'] = 'Join session';
@@ -356,7 +377,6 @@ $string['instance_type_default'] = 'Room/Activity with recordings';
 $string['instance_type_room_only'] = 'Room/Activity only';
 $string['instance_type_recording_only'] = 'Recordings only';
 
-$string['email_title_notification_has_been'] = 'has been';
 $string['email_body_notification_meeting_has_been'] = 'has been';
 $string['email_body_notification_meeting_details'] = 'Details';
 $string['email_body_notification_meeting_title'] = 'Title';
@@ -372,3 +392,4 @@ $string['email_footer_sent_from'] = 'from the course';
 $string['view_error_meeting_not_running'] = 'Something went wrong, the meeting is not running.';
 $string['view_error_current_state_not_found'] = 'Current state was not found. The recording may have been deleted or the BigBlueButton server is not compatible with the action performed.';
 $string['view_error_action_not_completed'] = 'Action could not be completed';
+$string['view_warning_default_server'] = 'This Moodle server is making use of the BigBlueButton testing server that comes pre-configured by default. It should be replaced for production.';
