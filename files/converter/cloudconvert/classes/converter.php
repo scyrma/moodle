@@ -26,6 +26,7 @@ namespace fileconverter_cloudconvert;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/local/logging/vendor/autoload.php');
+require_once($CFG->libdir.'/pdflib.php');
 
 use CloudConvert\Api as cloudconvert_api;
 use CloudConvert\Exceptions\ApiTemporaryUnavailableException as cloudconvert_unavailable_exception;
@@ -36,6 +37,7 @@ use core_files\converter_interface;
 use local_logging\logger;
 use moodle_exception;
 use moodle_url;
+use pdf;
 use stored_file;
 
 /**
@@ -53,7 +55,7 @@ final class converter implements converter_interface {
      */
     const FORMATS = [
         'document' => [
-            'abw', 'djvu', 'doc', 'docm', 'docx', 'lwp', 'md', 'odt', 'pages', 'pages.zip', 'pdf', 'rst', 'rtf', 'sdw',
+            'abw', 'djvu', 'doc', 'docm', 'docx', 'html', 'lwp', 'md', 'odt', 'pages', 'pages.zip', 'pdf', 'rst', 'rtf', 'sdw',
             'tex', 'txt', 'wpd', 'wps', 'zabw'
         ],
 
@@ -64,12 +66,12 @@ final class converter implements converter_interface {
         ],
 
         'presentation' => [
-            'eps', 'key', 'key.zip', 'odp', 'pdf', 'pps', 'ppsx', 'ppt', 'pptm', 'pptx', 'ps', 'sda', 'swf'
+            'eps', 'html', 'key', 'key.zip', 'odp', 'pdf', 'pps', 'ppsx', 'ppt', 'pptm', 'pptx', 'ps', 'sda', 'swf'
         ],
 
 
         'spreadsheet' => [
-            'csv', 'numbers', 'numbers.zip', 'ods', 'pdf', 'sdc', 'xls', 'xlsm', 'xlsx'
+            'csv', 'html', 'numbers', 'numbers.zip', 'ods', 'pdf', 'sdc', 'xls', 'xlsm', 'xlsx'
         ]
     ];
 
@@ -108,6 +110,20 @@ final class converter implements converter_interface {
 
     public function start_document_conversion(conversion $conversion) : self {
         self::log('Starting conversion', $conversion);
+
+        if($conversion->get_sourcefile()->get_mimetype() === 'text/html') {
+            self::log('Using TCPDF to convert text/html', $conversion);
+            $pdf = new pdf();
+            $pdf->AddPage();
+
+            $pdf->writeHTML($conversion->get_sourcefile()->get_content(), true, 0, true, 0);
+            $conversion->store_destfile_from_string($pdf->Output('', 'S'))
+                       ->set('status', conversion::STATUS_COMPLETE)
+                       ->set('statusmessage', 'Converted by TCPDF')
+                       ->update();
+            return $this;
+        }
+
         self::cloudconvert_api_call(function(conversion $conversion) {
             $process = (new cloudconvert_api($this->config->cloudconvertapikey))
                      ->convert([
