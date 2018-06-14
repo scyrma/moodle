@@ -15,22 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Privacy Subsystem implementation for mod_choicegroup.
  *
- * @package    mod
- * @subpackage choicegroup
- * @copyright  2013-2015 Université de Lausanne
- * @author     Nicolas Dunand <Nicolas.Dunand@unil.ch>
+ * @package    mod_choicegroup
+ * @copyright  2018 Nicolas Dunand
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_choicegroup\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2018061301;
-$plugin->requires  = 2014050800; // Moodle 2.7
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release = '1.13 for Moodle 2.7-3.5 (Build: 2018061301)';
+class provider implements \core_privacy\local\metadata\null_provider {
 
-$plugin->component = 'mod_choicegroup';
-$plugin->cron = 0;
-
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
+}
