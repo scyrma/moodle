@@ -15,17 +15,35 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file.
+ * Shortcodes definition maker interface.
  *
  * @package    block_xp
- * @copyright  2014 Frédéric Massart
+ * @copyright  2018 Frédéric Massart
+ * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_xp\local\shortcode;
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version    = 2018050900;
-$plugin->requires   = 2014041500;
-$plugin->component  = 'block_xp';
-$plugin->maturity   = MATURITY_STABLE;
-$plugin->release    = '3.2.1';
+/**
+ * Shortcodes definition maker interface.
+ *
+ * @package    block_xp
+ * @copyright  2018 Frédéric Massart
+ * @author     Frédéric Massart <fred@branchup.tech>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+interface shortcodes_definition_maker {
+
+    /**
+     * Get the shortcodes definition.
+     *
+     * This must conform to what is expected to be found in db/shortcodes.php,
+     * in the variable $shortcodes, defined by the plugin filter_shortcodes.
+     *
+     * @return array
+     */
+    public function get_shortcodes_definition();
+
+}
