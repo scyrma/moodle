@@ -15,17 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file.
+ * Shortcodes definitions.
  *
- * @package    block_xp
- * @copyright  2014 Frédéric Massart
+ * @package    filter_shortcodes
+ * @copyright  2018 Frédéric Massart
+ * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version    = 2018050900;
-$plugin->requires   = 2014041500;
-$plugin->component  = 'block_xp';
-$plugin->maturity   = MATURITY_STABLE;
-$plugin->release    = '3.2.1';
+$defsmaker = \block_xp\di::get('shortcodes_definition_maker');
+$shortcodes = $defsmaker->get_shortcodes_definition();
+unset($defsmaker);
