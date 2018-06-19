@@ -161,8 +161,7 @@ final class converter implements converter_interface {
             if ($process->step == 'finished') {
                 self::log('Conversion finished', $conversion);
                 $tmpfile = make_request_directory() . '/' . uniqid() . '.' . $conversion->get('targetformat');
-                $process->download($tmpfile);
-
+                $process->download($tmpfile)->delete();
                 $conversion->store_destfile_from_path($tmpfile)
                            ->set('status', conversion::STATUS_COMPLETE)
                            ->set('statusmessage', $process->message)
@@ -254,6 +253,12 @@ final class converter implements converter_interface {
                 ],
                 \Monolog\Logger::ERROR
             );
+
+            $process = (new cloudconvert_process(
+                new cloudconvert_api($this->config->cloudconvertapikey),
+                $conversion->get('data')->url
+            ))->delete();
+
             $conversion->set('status', conversion::STATUS_FAILED);
             $conversion->set('statusmessage', $e->getMessage());
             $conversion->update();
