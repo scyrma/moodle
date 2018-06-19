@@ -22,9 +22,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 define('BLOCKS_COURSE_OVERVIEW_SHOWCATEGORIES_NONE', '0');
 define('BLOCKS_COURSE_OVERVIEW_SHOWCATEGORIES_ONLY_PARENT_NAME', '1');
 define('BLOCKS_COURSE_OVERVIEW_SHOWCATEGORIES_FULL_PATH', '2');
+
+define('BLOCKS_COURSE_OVERVIEW_REORDER_NONE', '0');
+define('BLOCKS_COURSE_OVERVIEW_REORDER_FULLNAME', '1');
+define('BLOCKS_COURSE_OVERVIEW_REORDER_SHORTNAME', '2');
+define('BLOCKS_COURSE_OVERVIEW_REORDER_ID', '3');
 
 /**
  * Display overview for courses
@@ -35,11 +42,17 @@ define('BLOCKS_COURSE_OVERVIEW_SHOWCATEGORIES_FULL_PATH', '2');
 function block_course_overview_get_overviews($courses) {
     global $CFG;
 
+    // Tab may not have any courses.
+    if (!$courses) {
+        return array();
+    }
+
     // Disable debugging mode because all course modules show debugging message in their print_overview.
     $debugmode = $CFG->debug;
     $CFG->debug ^= E_DEPRECATED;
 
     $htmlarray = array();
+
     if ($modules = get_plugin_list_with_function('mod', 'print_overview')) {
         // Split courses list into batches with no more than MAX_MODINFO_CACHE_SIZE courses in one batch.
         // Otherwise we exceed the cache limit in get_fast_modinfo() and rebuild it too often.
@@ -75,7 +88,8 @@ function block_course_overview_update_mynumber($number) {
 function block_course_overview_update_myorder($sortorder) {
     $value = implode(',', $sortorder);
     if (core_text::strlen($value) > 1333) {
-        // The value won't fit into the user preference. Remove courses in the end of the list (mostly likely user won't even notice).
+        // The value won't fit into the user preference.
+        // Remove courses in the end of the list (mostly likely user won't even notice).
         $value = preg_replace('/,[\d]*$/', '', core_text::substr($value, 0, 1334));
     }
     set_user_preference('course_overview_course_sortorder', $value);
@@ -101,84 +115,79 @@ function block_course_overview_get_myorder() {
 }
 
 /**
- * Returns shortname of activities in course
+ * Get the list of course favourites
  *
- * @param int $courseid id of course for which activity shortname is needed
- * @return string|bool list of child shortname
+ * @return array list of course ids
  */
-function block_course_overview_get_child_shortnames($courseid) {
-    global $DB;
-    $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
-    $sql = "SELECT c.id, c.shortname, $ctxselect
-            FROM {enrol} e
-            JOIN {course} c ON (c.id = e.customint1)
-            JOIN {context} ctx ON (ctx.instanceid = e.customint1)
-            WHERE e.courseid = :courseid AND e.enrol = :method AND ctx.contextlevel = :contextlevel ORDER BY e.sortorder";
-    $params = array('method' => 'meta', 'courseid' => $courseid, 'contextlevel' => CONTEXT_COURSE);
-
-    if ($results = $DB->get_records_sql($sql, $params)) {
-        $shortnames = array();
-        // Preload the context we will need it to format the category name shortly.
-        foreach ($results as $res) {
-            context_helper::preload_from_record($res);
-            $context = context_course::instance($res->id);
-            $shortnames[] = format_string($res->shortname, true, $context);
-        }
-        $total = count($shortnames);
-        $suffix = '';
-        if ($total > 10) {
-            $shortnames = array_slice($shortnames, 0, 10);
-            $diff = $total - count($shortnames);
-            if ($diff > 1) {
-                $suffix = get_string('shortnamesufixprural', 'block_course_overview', $diff);
-            } else {
-                $suffix = get_string('shortnamesufixsingular', 'block_course_overview', $diff);
-            }
-        }
-        $shortnames = get_string('shortnameprefix', 'block_course_overview', implode('; ', $shortnames));
-        $shortnames .= $suffix;
+function block_course_overview_get_favourites() {
+    if ($value = get_user_preferences('course_overview_favourites')) {
+        return explode(',', $value);
+    } else {
+        return array();
     }
-
-    return isset($shortnames) ? $shortnames : false;
 }
 
 /**
- * Returns maximum number of courses which will be displayed in course_overview block
+ * Sets favourites
  *
- * @param bool $showallcourses if set true all courses will be visible.
- * @return int maximum number of courses
+ * @param array $favourites list of course ids
  */
-function block_course_overview_get_max_user_courses($showallcourses = false) {
-    // Get block configuration
-    $config = get_config('block_course_overview');
-    $limit = $config->defaultmaxcourses;
-
-    // If max course is not set then try get user preference
-    if (empty($config->forcedefaultmaxcourses)) {
-        if ($showallcourses) {
-            $limit = 0;
-        } else {
-            $limit = get_user_preferences('course_overview_number_of_courses', $limit);
-        }
+function block_course_overview_update_favourites($favourites) {
+    $value = implode(',', $favourites);
+    if (core_text::strlen($value) > 1333) {
+        // The value won't fit into the user preference.
+        // Remove courses in the end of the list (mostly likely user won't even notice).
+        $value = preg_replace('/,[\d]*$/', '', core_text::substr($value, 0, 1334));
     }
-    return $limit;
+    set_user_preference('course_overview_favourites', $value);
+}
+
+/**
+ * Get sort order preference
+ * @return int
+ */
+function block_course_overview_get_sortorder() {
+    if ($value = get_user_preferences('course_overview_sortorder')) {
+        return $value;
+    } else {
+        return BLOCKS_COURSE_OVERVIEW_REORDER_NONE;
+    }
+}
+
+/**
+ * Set sort order preference
+ * @param int $sortorder
+ */
+function block_course_overview_update_sortorder($sortorder) {
+    set_user_preference('course_overview_sortorder', $sortorder);
 }
 
 /**
  * Return sorted list of user courses
  *
- * @param bool $showallcourses if set true all courses will be visible.
+ * @param bool $favourites tab selected
+ * @param bool $keepfavourites setting, show favs in course tab
+ * @param array $exlude list of courses not to include (i.e. favs in courses list)A
  * @return array list of sorted courses and count of courses.
  */
-function block_course_overview_get_sorted_courses($showallcourses = false) {
+function block_course_overview_get_sorted_courses($favourites, $keepfavourites = false, $exclude = []) {
     global $USER;
 
-    $limit = block_course_overview_get_max_user_courses($showallcourses);
-
-    $courses = enrol_get_my_courses();
+    // Get courses in order.
+    $sortorder = block_course_overview_get_sortorder();
+    if ($sortorder == BLOCKS_COURSE_OVERVIEW_REORDER_FULLNAME) {
+        $sort = 'fullname ASC';
+    } else if ($sortorder == BLOCKS_COURSE_OVERVIEW_REORDER_SHORTNAME) {
+        $sort = 'shortname ASC';
+    } else if ($sortorder == BLOCKS_COURSE_OVERVIEW_REORDER_ID) {
+        $sort = 'id ASC';
+    } else {
+        $sort = 'visible DESC,sortorder ASC';
+    }
+    $courses = enrol_get_my_courses(null, $sort);
     $site = get_site();
 
-    if (array_key_exists($site->id,$courses)) {
+    if (array_key_exists($site->id, $courses)) {
         unset($courses[$site->id]);
     }
 
@@ -195,46 +204,107 @@ function block_course_overview_get_sorted_courses($showallcourses = false) {
     if (is_enabled_auth('mnet')) {
         $remotecourses = get_my_remotecourses();
     }
-    // Remote courses will have -ve remoteid as key, so it can be differentiated from normal courses
+    // Remote courses will have -ve remoteid as key, so it can be differentiated from normal courses.
     foreach ($remotecourses as $id => $val) {
         $remoteid = $val->remoteid * -1;
         $val->id = $remoteid;
         $courses[$remoteid] = $val;
     }
 
-    $order = block_course_overview_get_myorder();
+    if ($favourites) {
+        $order = block_course_overview_get_favourites();
+    } else {
+        $order = block_course_overview_get_myorder();
+    }
 
     $sortedcourses = array();
-    $counter = 0;
-    // Get courses in sort order into list.
-    foreach ($order as $key => $cid) {
-        if (($counter >= $limit) && ($limit != 0)) {
-            break;
+
+    // Accept list as-is or order by preference list.
+    if (!$favourites && ($sortorder != BLOCKS_COURSE_OVERVIEW_REORDER_NONE)) {
+        $sortedcourses = $courses;
+    } else {
+        $counter = 0;
+
+        // Get courses in sort order into list.
+        foreach ($order as $key => $cid) {
+
+            // Make sure user is still enroled.
+            if (isset($courses[$cid])) {
+                $sortedcourses[$cid] = $courses[$cid];
+                $counter++;
+            }
         }
 
-        // Make sure user is still enroled.
-        if (isset($courses[$cid])) {
-            $sortedcourses[$cid] = $courses[$cid];
-            $counter++;
-        }
-    }
-    // Append unsorted courses if limit allows
-    foreach ($courses as $c) {
-        if (($limit != 0) && ($counter >= $limit)) {
-            break;
-        }
-        if (!in_array($c->id, $order)) {
-            $sortedcourses[$c->id] = $c;
-            $counter++;
+        // Append unsorted courses if limit allows & not favourites.
+        if (!$favourites) {
+            foreach ($courses as $c) {
+                if (!in_array($c->id, $order)) {
+                    $sortedcourses[$c->id] = $c;
+                    $counter++;
+                }
+            }
         }
     }
 
-    // From list extract site courses for overview
+    // If this is the courses tab and we are excluding favourites.
+    if (!$favourites && !$keepfavourites) {
+        foreach ($sortedcourses as $c) {
+            if (in_array($c->id, $exclude)) {
+                unset($sortedcourses[$c->id]);
+            }
+        }
+    }
+
+    // From list extract site courses for overview.
     $sitecourses = array();
     foreach ($sortedcourses as $key => $course) {
         if ($course->id > 0) {
             $sitecourses[$key] = $course;
         }
     }
-    return array($sortedcourses, $sitecourses, count($courses));
+    return array($sortedcourses, $sitecourses, count($sortedcourses));
+}
+
+/**
+ * Add a course to favourites
+ * @param int $favourite id of course
+ */
+function block_course_overview_add_favourite($favourite) {
+
+    // Add to fabourites list.
+    $favourites = block_course_overview_get_favourites();
+    if (!in_array($favourite, $favourites)) {
+        array_unshift($favourites, $favourite);
+    }
+    block_course_overview_update_favourites($favourites);
+
+    // Remove from courses list.
+    $order = block_course_overview_get_myorder();
+    $key = array_search($favourite, $order);
+    if ($key !== false) {
+        unset($order[$key]);
+    }
+    block_course_overview_update_myorder($order);
+}
+
+/**
+ * Remove course from favourites
+ * @param int $favourite id of course
+ */
+function block_course_overview_remove_favourite($favourite) {
+
+    // Remove from favourites list.
+    $order = block_course_overview_get_favourites();
+    $key = array_search($favourite, $order);
+    if ($key !== false) {
+        unset($order[$key]);
+    }
+    block_course_overview_update_favourites($order);
+
+    // Add to courses list.
+    $order = block_course_overview_get_myorder();
+    if (!in_array($favourite, $order)) {
+        $order[] = $favourite;
+    }
+    block_course_overview_update_myorder($order);
 }
