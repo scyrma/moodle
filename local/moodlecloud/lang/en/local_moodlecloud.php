@@ -51,3 +51,5 @@ $string['moodlecloudsitenotifications'] = 'MoodleCloud Site Notifications';
 $string['nonotifications'] = 'No notifications to show';
 $string['sitenotifications'] = 'Site Notifications';
 $string['viewnotification'] = 'View notification';
+
+$string['privacy:metadata'] = 'The MoodleCloud plugin stores events and triggers for the site administrator but does not store any user IDs or otherwise personally identifiable information.';
