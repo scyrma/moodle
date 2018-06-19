@@ -1,87 +1,70 @@
-.block_course_overview .coursechildren {
-    font-weight: normal;
-    font-style: italic;
+.block-course-overview .courseovbox {
+    border-bottom: 1px solid #d3d8dc;
+    padding-top: 12px;
+    padding-bottom: 4px;
 }
 
-.block_course_overview .categorypath {
-    text-align: right;
+.block-course-overview .course-list {
+    padding-top: 4px;
 }
 
-.block_course_overview .content {
-    margin: 0 20px;
+.overview-icon .icon {
+    height: 25px;
+    width: 25px;
 }
 
-.block_course_overview .content .notice {
-    margin: 5px 0;
+
+.course-overview-dialog {
+    display: none;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #d3d8dc;
+    z-index: 9999 !important;
+    box-shadow: 10px 10px 5px rgba(128, 128, 128, 0.5);
 }
 
-.block_course_overview .coursebox {
-    padding: 15px;
-    width: auto;
+.course-overview-dialog .ui-dialog-titlebar-close {
+    border: 0;
 }
 
-.block_course_overview .profilepicture {
-    float: left;
+.course-overview-dialog .ui-dialog-titlebar-close:after {
+    position: absolute;
+    font-family: FontAwesome;
+    font-size: 2.0em;
+    top:8px;
+    right:8px;
+    content: "\f00d ";
 }
 
-.block_course_overview .welcome_area {
-    width: 100%;
-    padding-bottom: 5px;
+.dialogue h3 {
+    font-size: 1.5rem;
 }
 
-.block_course_overview .welcome_message {
-    float: left;
-    padding: 10px;
-    border-collapse: separate;
-    clear: none;
+a.favourite_icon:hover {
+    text-decoration: none;
 }
 
-.block_course_overview .content h2.title {
-    float: left;
-    margin: 0 0 .5em 0;
-    position: relative;
+.block-course-overview .overview-help {
+    margin-top: 10px;
 }
 
-.block_course_overview .course_title {
-    position: relative;
+.block-course-overview .overview-help i {
+    font-size: 1.5em;
 }
 
-.editing .block_course_overview .coursebox .cursor {
-    cursor: move;
-    margin-bottom: 2px;
+div.courseovbox {
+    margin-left: -15px !important;
 }
 
-.editing .block_course_overview .move {
-    float: left;
-    padding: 2px 10px 0 0;
+.course-overview-dialog .ui-dialog-titlebar button{
+    background-color: #fff;
+    background-image:none;
+    height: 25px;
+    position: absolute;
+    top: 8px;
+    right: 13px;
 }
-
-.block_course_overview .course_list {
-    width: 100%;
-}
-
-.block_course_overview div.flush {
-    clear: both;
-}
-
-.block_course_overview .activity_info {
-    clear: both;
-}
-
-.block_course_overview .activity_overview {
-    padding: 2px;
-}
-
-.block_course_overview .activity_overview img.iconlarge {
-    vertical-align: text-bottom;
-    margin-right: 6px;
-}
-
-.block_course_overview .singleselect {
-    text-align: left;
-    margin: 0;
-}
-
-.block_course_overview .content .course_list .movehere {
-    margin-bottom: 15px;
+.course-overview-dialog .ui-dialog-titlebar-close::after{
+    top: 1px;
+    left: 1px;
 }
