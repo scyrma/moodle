@@ -15,16 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for plugin 'fileconverter_googledrive'
+ * Data provider.
  *
- * @package   fileconverter_googledrive
- * @copyright 2017 Cameron Ball
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    local_moodlecloud
+ * @copyright  2018 Cameron Ball <cameron@cameron1729.xyz>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace fileconverter_dummy\privacy;
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'MoodleCloud Converter';
-$string['upgrademessage'] = 'MoodleCloud document conversion is not available on your Free site. Starter and Moodle for School plans include default document conversion for over 30 file types. To get access to this default document converter, upgrade your plan in the MoodleCloud portal.';
-$string['conversioncleanup'] = 'Stale document conversion cleanup.';
-$string['privacy:metadata'] = 'This plugin simply serves a static PDF';
+use core_privacy\local\metadata\null_provider;
+
+/**
+ * Data provider class.
+ *
+ * @copyright  2018 Cameron Ball <cameron@cameron1729.xyz>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements null_provider {
+
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
+}
