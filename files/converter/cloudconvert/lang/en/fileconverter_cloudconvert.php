@@ -27,7 +27,7 @@ $string['purge_conversions'] = 'Purge converted files';
 $string['purge_conversions_warning'] = 'This will remove all files converted by the MoodleCloud document converter from your site, then disable the plugin.';
 $string['purge_conversions_complete'] = 'Success.';
 
-$string['privacy:metadata:fileconverter_cloudconvert:externalpurpose'] = 'This information is sent to the CloudConvet API in order for the file to be converted to another format. The file is temporarily kept on CloudConvert\'s servers and is deleted after the conversion is complete.';
+$string['privacy:metadata:fileconverter_cloudconvert:externalpurpose'] = 'This information is sent to an external document conversion service in order to be converted to another format. The file is temporarily kept on the provider\'s servers and is deleted after the conversion is complete. Currently CloudConvert is used to provide this service.';
 $string['privacy:metadata:fileconverter_cloudconvert:filecontent'] = 'The content of the file.';
 $string['privacy:metadata:fileconverter_cloudconvert:filemimetype'] = 'The MIME type of the file.';
-$string['privacy:metadata:fileconverter_cloudconvert:params'] = 'The query parameters passed to the CloudConvert API.';
+$string['privacy:metadata:fileconverter_cloudconvert:params'] = 'The query parameters passed to the external service.';
