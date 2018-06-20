@@ -251,3 +251,4 @@ $string['filtersubcategories'] = 'Filter down to subcategories';
 $string['numberofsubcategories'] = 'Number of subcategories';
 $string['coursecatname'] = 'Course category {$a}';
 $string['togglecoursedetails'] = 'Toggle course {$a} details';
+$string['privacy:metadata'] = 'The school theme plugin does not store any personal data.';
