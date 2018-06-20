@@ -47,7 +47,7 @@ class provider implements
      * @return collection A listing of user data stored through this system.
      */
     public static function get_metadata(collection $collection) : collection {
-        $collection->add_external_location_link('cloudconvert', [
+        $collection->add_external_location_link('moodlecloudconverter', [
             'params' => 'privacy:metadata:fileconverter_cloudconvert:params',
             'filecontent' => 'privacy:metadata:fileconverter_cloudconvert:filecontent',
             'filemimetype' => 'privacy:metadata:fileconverter_cloudconvert:filemimetype',
