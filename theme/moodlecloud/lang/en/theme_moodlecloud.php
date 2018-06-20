@@ -80,3 +80,4 @@ $string['textcolor_desc'] = 'The colour of the text.';
 $string['cloudlogo'] = 'MoodleCloud logo';
 $string['cloudportallink'] = 'MoodleCloud portal link';
 $string['yourportal'] = 'Portal';
+$string['privacy:metadata'] = 'The MoodleCloud theme does not store any personal data.';
