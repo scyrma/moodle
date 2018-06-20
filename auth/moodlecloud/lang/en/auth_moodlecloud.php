@@ -25,3 +25,9 @@
 $string['pluginname'] = 'MoodleCloud';
 $string['servermaintenance'] = 'The MoodleCloud service is currently undergoing scheduled maintenance. Please try again later';
 $string['auth_moodleclouddescription'] = '';
+
+$string['privacy:metadata:auth_moodlecloud:externalpurpose'] = 'This information is sent to the the MoodleCloud signup portal in order to synchronise the site owner\'s personal details.';
+$string['privacy:metadata:auth_moodlecloud:firstname'] = 'The site owner\'s first name.';
+$string['privacy:metadata:auth_moodlecloud:lastname'] = 'The site owner\'s last name.';
+$string['privacy:metadata:auth_moodlecloud:email'] = 'The site owner\'s email.';
+$string['privacy:metadata:auth_moodlecloud:params'] = 'The query parameters passed to the signup portal.';
