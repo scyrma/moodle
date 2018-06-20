@@ -55,3 +55,4 @@ $string['quizgame:view'] = 'View Quizventure';
 $string['score'] = 'Score: {$a->score} Lives: {$a->lives}';
 $string['spacetostart'] = 'Press space or click to start';
 $string['sound'] = 'Sound';
+$string['privacy:metadata'] = 'Although the quiz game displays scores, it does not save them, or any other data.';
