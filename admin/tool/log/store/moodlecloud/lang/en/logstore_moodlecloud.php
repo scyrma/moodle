@@ -24,3 +24,7 @@
 
 $string['pluginname'] = 'MoodleCloud log';
 $string['pluginname_desc'] = 'A log store which stores MoodleCloud logs';
+$string['privacy:metadata:logstore_moodlecloud:context'] = 'Additional context to accompany the event.';
+$string['privacy:metadata:logstore_moodlecloud:event'] = 'The event to log.';
+$string['privacy:metadata:logstore_moodlecloud:params'] = 'The query parameters passed to the external logging service.';
+$string['privacy:metadata:logstore_moodlecloud:externalpurpose'] = 'This information is sent to an external log aggregation service. The logs are temporarily kept on the service provider\'s servers and periodically purged. Currently logentries is used to provide this service.';
