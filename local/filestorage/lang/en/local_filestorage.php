@@ -24,3 +24,6 @@
 
 $string['pluginname'] = 'Local Storage';
 $string['quotahit'] = 'This site has reached its file quota. To get more more space, upgrade your plan at moodlecloud.com';
+$string['privacy:metadata:local_filestorage:externalpurpose'] = 'This information is sent to Amazon S3. When your site is delete all data associated with your site stored on S3 is purged.';
+$string['privacy:metadata:local_filestorage:filecontent'] = 'The content of the file.';
+$string['privacy:metadata:local_filestorage:filemimetype'] = 'The MIME type of the file.';
