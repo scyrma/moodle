@@ -8548,9 +8548,6 @@ a.dimmed_text:visited,
   background-position: center right calc(2.15625rem + 2px)/4;
   background-size: calc(2.15625rem + 2px)/2 calc(2.15625rem + 2px)/2; }
 
-.form-check-input {
-  position: static; }
-
 .tag-default {
   background-color: #868e96; }
   .tag-default[href]:hover, .tag-default[href]:focus {
@@ -9857,7 +9854,7 @@ body#page-lib-editor-tinymce-plugins-moodlemedia-preview {
 
 /* Fixed for safari browser on iPhone4S with ios7@mixin */
 @media (max-height: 639px) {
-  .ios .choosercontainer #chooseform .submitbuttons {
+  .ios.safari .choosercontainer #chooseform .submitbuttons {
     padding: 45px 0; } }
 
 .choosercontainer #chooseform .submitbuttons input {
@@ -10420,6 +10417,12 @@ ul {
 
 .open.atto_menu > .dropdown-menu {
   display: block; }
+
+div.editor_atto_toolbar button .icon {
+  color: #495057; }
+
+.w-auto {
+  width: auto; }
 
 .icon {
   font-size: 16px;
@@ -16362,9 +16365,6 @@ body:not(.jsenabled) .langmenu:hover > .dropdown-menu,
   max-height: 150px;
   overflow-y: auto; }
 
-ol {
-  margin: 0 0 0.75 2.5em; }
-
 .navbar.fixed-top .dropdown .dropdown-menu {
   max-height: calc(100vh - 50px);
   overflow-y: auto; }
@@ -16961,6 +16961,54 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
     /*rtl:ignore*/
     left: 50%;
     transform: translate(-50%, -50%); }
+
+#portal-link-container {
+  position: fixed;
+  top: 45%;
+  right: 0; }
+  #portal-link-container #portal-link {
+    color: #fff;
+    font-size: 15px;
+    text-decoration: none;
+    display: inline-block;
+    white-space: nowrap;
+    line-height: 30px;
+    background-color: #f98012;
+    padding: 0 5px;
+    box-shadow: -5px -1px 17px -5px rgba(0, 0, 0, 0.5);
+    opacity: 0.8;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    -webkit-transform-origin: 100% 100%;
+    -moz-transform-origin: 100% 100%;
+    -ms-transform-origin: 100% 100%;
+    -o-transform-origin: 100% 100%;
+    transform-origin: 100% 100%; }
+    #portal-link-container #portal-link img {
+      height: 20px;
+      width: 33px;
+      display: inline-block;
+      vertical-align: sub; }
+    #portal-link-container #portal-link:hover {
+      opacity: 1; }
+
+.dir-rtl #portal-link-container {
+  left: 0;
+  right: auto; }
+  .dir-rtl #portal-link-container #portal-link {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+    -webkit-transform-origin: 0 100%;
+    -moz-transform-origin: 0 100%;
+    -ms-transform-origin: 0 100%;
+    -o-transform-origin: 0 100%;
+    transform-origin: 0 100%; }
 
 body {
   -webkit-font-smoothing: antialiased; }
