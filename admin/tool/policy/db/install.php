@@ -28,22 +28,44 @@ function xmldb_tool_policy_install() {
     // BEGIN MOODLECLOUD HACK.
     global $CFG, $OUTPUT, $DB;
 
-    $policyid = $DB->insert_record('tool_policy', ['sortorder' => 0]);
-    $versionid = $DB->insert_record('tool_policy_versions', [
-        'name' => 'MoodleCloud policy',
-        'type' => 0,
-        'audience' => 0, // Change to 1 if this is for signup/logged in users only
-        'usermodified' => 2, // admin
-        'timecreated' => time(),
-        'timemodified' => time(),
-        'policyid' => $policyid,
-        'revision' => '',
-        'summary' => '',
-        'summaryformat' => 1, // FORMAT_HTML
-        'content' => '',
-        'contentformat' => 1, // FORMAT_HTML
-    ]);
-    $DB->update_record('tool_policy', ['id' => $policyid, 'currentversionid' => $versionid]);
-    set_config('moodlecloudlockedversions', $versionid, 'tool_policy');
+    $policyids = [
+        'privacy' => $DB->insert_record('tool_policy', ['sortorder' => 0]),
+        'cookie' => $DB->insert_record('tool_policy', ['sortorder' => 1])
+    ];
+    $versionids = [
+        'privacy' => $DB->insert_record('tool_policy_versions', [
+            'name' => 'MoodleCloud policy',
+            'type' => 0,
+            'audience' => 0, // Change to 1 if this is for signup/logged in users only
+            'usermodified' => 2, // admin
+            'timecreated' => time(),
+            'timemodified' => time(),
+            'policyid' => $policyids['privacy'],
+            'revision' => '',
+            'summary' => '',
+            'summaryformat' => 1, // FORMAT_HTML
+            'content' => '',
+            'contentformat' => 1 // FORMAT_HTML
+        ]),
+        'cookie' => $DB->insert_record('tool_policy_versions', [
+            'name' => 'MoodleCloud cookie policy',
+            'type' => 0,
+            'audience' => 0,
+            'usermodified' => 2,
+            'timecreated' => time(),
+            'timemodified' => time(),
+            'policyid' => $policyids['cookie'],
+            'revision' => '',
+            'summary' => '',
+            'summaryformat' => 1,
+            'content' => '',
+            'contentformat' => 1
+        ]),
+    ];
+
+    $DB->update_record('tool_policy', ['id' => $policyids['privacy'], 'currentversionid' => $versionids['privacy']]);
+    $DB->update_record('tool_policy', ['id' => $policyids['cookie'], 'currentversionid' => $versionids['cookie']]);
+
+    set_config('moodlecloudlockedversions', implode(',', $versionids), 'tool_policy');
     // END MOODLECLOUD HACK.
 }
