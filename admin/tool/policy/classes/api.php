@@ -170,15 +170,10 @@ class api {
             foreach ($versions[$policyid] as $versiondata) {
                 # BEGIN MOODLECLOUD HACK
                 if (self::is_version_locked($versiondata->id)) {
-                    $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
-                    $logout = function() use ($versiondata) {
-                        require_logout();
-                        $versiondata->content = '<h1>There was a problem fetching the policy. Please try again later.</h1>';
-                        return $versiondata;
-                    };
-
-                    if ($policystr === false || strlen($policystr) < 1000) {
-                        return $logout();
+                    if ($versiondata->name === 'MoodleCloud policy') {
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
+                    } else if ($versiondata->name === 'MoodleCloud cookie policy') {
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
                     }
 
                     $doc = new \DOMDocument();
@@ -245,11 +240,21 @@ class api {
         if ($policies === null) {
             $policies = self::list_policies();
         }
+
         foreach ($policies as $policy) {
             if ($policy->currentversionid == $versionid) {
                 # BEGIN MOODLECLOUD HACK
                 if (self::is_version_locked($versionid)) {
-                    $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
+                    $policystr = false;
+
+                    if ($policy->currentversion->name === 'MoodleCloud policy') {
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
+                    } else if ($policy->currentversion->name === 'MoodleCloud cookie policy') {
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
+                    } else {
+                        //what the fuck?? Error handling?
+                    }
+
                     $logout = function() use ($policy) {
                         require_logout();
                         $policy->currentversion->content = '<h1>There was a problem fetching the policy. Please try again later.</h1>';
