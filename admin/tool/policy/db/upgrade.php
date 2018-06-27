@@ -36,6 +36,52 @@ function xmldb_tool_policy_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
+    if ($oldversion < 2018051400) {
+        $policyid = $DB->insert_record('tool_policy', ['sortorder' => 1]);
+
+        $versionid = $DB->insert_record('tool_policy_versions', [
+            'name' => 'MoodleCloud cookies policy',
+            'type' => 0,
+            'audience' => 0,
+            'usermodified' => 2,
+            'timecreated' => time(),
+            'timemodified' => time(),
+            'policyid' => $policyid,
+            'revision' => '',
+            'summary' => '',
+            'summaryformat' => 1,
+            'content' => '',
+            'contentformat' => 1
+        ]);
+
+        $DB->update_record('tool_policy', ['id' => $policyid, 'currentversionid' => $versionid]);
+
+        set_config('moodlecloudlockedversions',
+                   get_config('tool_policy', 'moodlecloudlockedversions') . ',' . $versionid, 'tool_policy'
+        );
+
+        [$privacyid, $cookieid] = preg_split('/,/', get_config('tool_policy', 'moodlecloudlockedversions'), -1, PREG_SPLIT_NO_EMPTY);
+
+        // Fix sortorders so ours come first and second.
+        $sortorder = 2;
+        foreach ($DB->get_records('tool_policy') as $record) {
+            if ($record-> id == $privacyid) {
+                $DB->set_field('tool_policy', 'sortorder', 0, ['id' => $record->id]);
+                continue;
+            }
+
+            if ($record-> id == $cookieid) {
+                $DB->set_field('tool_policy', 'sortorder', 1, ['id' => $record->id]);
+                continue;
+            }
+
+            $DB->set_field('tool_policy', 'sortorder', $sortorder, ['id' => $record->id]);
+            $sortorder++;
+        }
+
+        upgrade_plugin_savepoint(true, 2018051400, 'tool', 'policy');
+    }
+
     if ($oldversion < 2018082900) {
         // Add field agreementstyle to the table tool_policy_versions.
         $table = new xmldb_table('tool_policy_versions');
