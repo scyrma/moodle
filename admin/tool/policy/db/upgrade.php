@@ -60,7 +60,7 @@ function xmldb_tool_policy_upgrade($oldversion) {
                    get_config('tool_policy', 'moodlecloudlockedversions') . ',' . $versionid, 'tool_policy'
         );
 
-        [$privacyid, $cookieid] = preg_split('/,/', get_config('tool_policy', 'moodlecloudlockedversions'), -1, PREG_SPLIT_NO_EMPTY);
+        list($privacyid, $cookieid) = preg_split('/,/', get_config('tool_policy', 'moodlecloudlockedversions'), -1, PREG_SPLIT_NO_EMPTY);
 
         // Fix sortorders so ours come first and second.
         $sortorder = 2;
