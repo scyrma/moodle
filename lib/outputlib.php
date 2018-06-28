@@ -257,6 +257,12 @@ function theme_reset_all_caches() {
     // Purge compiled post processed css.
     cache::make('core', 'postprocessedcss')->purge();
 
+    // Delete all old theme localcaches.
+    $themecachedirs = glob("{$CFG->localcachedir}/theme/*", GLOB_ONLYDIR);
+    foreach ($themecachedirs as $localcachedir) {
+        fulldelete($localcachedir);
+    }
+
     if ($PAGE) {
         $PAGE->reload_theme();
     }
