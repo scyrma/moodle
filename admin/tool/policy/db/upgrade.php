@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_tool_policy_upgrade($oldversion) {
     global $CFG, $DB;
 
-    if ($oldversion < 2018051400) {
+    if ($oldversion < 2018051401) {
         $policyid = $DB->insert_record('tool_policy', ['sortorder' => 1]);
 
         $versionid = $DB->insert_record('tool_policy_versions', [
@@ -70,7 +70,7 @@ function xmldb_tool_policy_upgrade($oldversion) {
             $sortorder++;
         }
 
-        upgrade_plugin_savepoint(true, 2018051400, 'tool', 'policy');
+        upgrade_plugin_savepoint(true, 2018051401, 'tool', 'policy');
     }
 
     return true;
