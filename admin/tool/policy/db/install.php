@@ -48,7 +48,7 @@ function xmldb_tool_policy_install() {
             'contentformat' => 1 // FORMAT_HTML
         ]),
         'cookie' => $DB->insert_record('tool_policy_versions', [
-            'name' => 'MoodleCloud cookie policy',
+            'name' => 'MoodleCloud cookies policy',
             'type' => 0,
             'audience' => 0,
             'usermodified' => 2,
