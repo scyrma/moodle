@@ -173,7 +173,7 @@ class api {
                     if ($versiondata->name === 'MoodleCloud policy') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
                     } else if ($versiondata->name === 'MoodleCloud cookies policy') {
-                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/cookies.html');
                     }
 
                     $doc = new \DOMDocument();
@@ -250,9 +250,7 @@ class api {
                     if ($policy->currentversion->name === 'MoodleCloud policy') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
                     } else if ($policy->currentversion->name === 'MoodleCloud cookies policy') {
-                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
-                    } else {
-                        //what the fuck?? Error handling?
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/cookies.html');
                     }
 
                     $logout = function() use ($policy) {
