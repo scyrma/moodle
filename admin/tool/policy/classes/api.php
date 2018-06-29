@@ -172,7 +172,7 @@ class api {
                 if (self::is_version_locked($versiondata->id)) {
                     if ($versiondata->name === 'MoodleCloud policy') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
-                    } else if ($versiondata->name === 'MoodleCloud cookie policy') {
+                    } else if ($versiondata->name === 'MoodleCloud cookies policy') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
                     }
 
@@ -249,7 +249,7 @@ class api {
 
                     if ($policy->currentversion->name === 'MoodleCloud policy') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
-                    } else if ($policy->currentversion->name === 'MoodleCloud cookie policy') {
+                    } else if ($policy->currentversion->name === 'MoodleCloud cookies policy') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
                     } else {
                         //what the fuck?? Error handling?
