@@ -47,7 +47,7 @@ use local_moodlecloud\common\conversion_nuker;
 class document_conversions_cleanup_task extends scheduled_task {
 
     public function get_name() : string {
-        return get_string('conversioncleanup', 'fileconverter_dummy');
+        return get_string('conversioncleanup', 'local_moodlecloud');
     }
 
     public function execute() {
