@@ -342,6 +342,9 @@ class cachestore_file extends cache_store implements cache_is_key_aware, cache_i
             $maxtime = cache::now() - $ttl;
         }
         $readfile = false;
+        // START MOODLECLOUD HACK.
+        clearstatcache(true, $file);
+        // END MOODLECLOUD HACK.
         if ($this->prescan && array_key_exists($filename, $this->keys)) {
             if ((!$ttl || $this->keys[$filename] >= $maxtime) && file_exists($file)) {
                 $readfile = true;
@@ -354,6 +357,8 @@ class cachestore_file extends cache_store implements cache_is_key_aware, cache_i
         if (!$readfile) {
             return false;
         }
+        // START MOODLECLOUD HACK.
+        /*
         // Open ensuring the file for reading in binary format.
         if (!$handle = fopen($file, 'rb')) {
             return false;
@@ -369,6 +374,12 @@ class cachestore_file extends cache_store implements cache_is_key_aware, cache_i
         } while (!feof($handle));
         // Unlock it.
         flock($handle, LOCK_UN);
+        */
+        $data = @file_get_contents($file);
+        if (empty($data)) {
+            return false;
+        }
+        // END MOODLECLOUD HACK.
         // Return it unserialised.
         return $this->prep_data_after_read($data);
     }
@@ -700,6 +711,11 @@ class cachestore_file extends cache_store implements cache_is_key_aware, cache_i
      * @return bool
      */
     protected function write_file($file, $content) {
+        // START MOODLECLOUD HACK.
+        if (file_exists($file) && md5_file($file) === md5($content)) {
+            return true;
+        }
+        // END MOODLECLOUD HACK.
         // Generate a temp file that is going to be unique. We'll rename it at the end to the desired file name.
         // in this way we avoid partial writes.
         $path = dirname($file);
@@ -728,14 +744,17 @@ class cachestore_file extends cache_store implements cache_is_key_aware, cache_i
             @unlink($tempfile);
             return false;
         }
-
+        // START MOODLECLOUD HACK.
+        @unlink($file);
         // Finally rename the temp file to the desired file, returning the true|false result.
         $result = rename($tempfile, $file);
-        @chmod($file, $this->cfg->filepermissions);
         if (!$result) {
             // Failed to rename, don't leave files lying around.
             @unlink($tempfile);
+        }else {
+            @chmod($file, $this->cfg->filepermissions);
         }
+        // END MOODLECLOUD HACK.
         return $result;
     }
 
