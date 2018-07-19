@@ -477,7 +477,7 @@ class file_system_s3 extends \file_system {
                     break;
                 default:
                     return self::get_file_handle_for_path(
-                        $this->get_presigned_url($file->get_contenthash() . self::get_key_suffix_from_contenthash($file->get_contenthash())),
+                        $this->get_presigned_url($file->get_contenthash()),
                         $type
                     );
             }
