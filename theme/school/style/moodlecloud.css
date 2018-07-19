@@ -1,0 +1,21 @@
+a:hover .i-hov,
+.header:hover .i-hov,
+.active .i-hov {
+	display: none;
+}
+
+a:hover .i-def, .header:hover .i-def, .active .i-def {
+	display: inline-block;
+}
+
+.usermenu .menu li:first-child,
+.usermenu .menu li:last-child
+{
+    border: none;
+    padding: 0;
+}
+
+.usermenu .menu li.predivide {
+	border-top: 1px solid #e3e3ec;
+	padding: 3px 0;
+}
