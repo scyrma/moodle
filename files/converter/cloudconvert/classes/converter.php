@@ -254,13 +254,21 @@ final class converter implements converter_interface {
                 \Monolog\Logger::ERROR
             );
 
-            $process = (new cloudconvert_process(
-                new cloudconvert_api($this->config->cloudconvertapikey),
-                $conversion->get('data')->url
-            ))->delete();
+            // For whatever reason, more then 24 hours have passed since we started the process. And CloudConvert has deleted it.
+            if ($e->getMessage() == 'Process not found') {
+                self::log('Process gone from CloudConvert. Restarting...', $conversion);
 
+                // Restart the conversion.
+                // Clearing data has the effect of completely restarting the conversion on next poll.
+                $conversion->set('data', null);
+                $conversion->update();
+
+                return;
+            }
+
+            // Otherwise we don't know wtf. End it all.
             $conversion->set('status', conversion::STATUS_FAILED);
-            $conversion->set('statusmessage', $e->getMessage());
+            $conversion->set('statusmessage', "Sorry, there was a problem converting your file. We are looking in to it.");
             $conversion->update();
         }
     }
@@ -326,6 +334,7 @@ final class converter implements converter_interface {
             $eventname,
             [
                 'conversion' => [
+                    'processUrl' => $conversion->get('data')->url ?? null,
                     'conversionid' => $conversion->get('id'),
                     'sourcefileid' => $conversion->get_sourcefile()->get_id(),
                     'filearea' => $conversion->get_sourcefile()->get_filearea(),
