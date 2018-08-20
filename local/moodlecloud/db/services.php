@@ -47,5 +47,13 @@ $functions = [
         'description' => 'Delete all notifications',
         'type' => 'write',
         'ajax' => true,
+    ],
+
+    'local_moodlecloud_get_top_ten_file_types_by_size' => [
+        'classname' => 'local_moodlecloud_external',
+        'methodname' => 'get_top_ten_file_types_by_size',
+        'description' => 'Get the top 10 file types by size',
+        'type' => 'read',
+        'ajax' => true
     ]
 ];

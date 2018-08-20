@@ -24,9 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use local_moodlecloud\notifications\external\notifications_exporter;
-use local_moodlecloud\notifications\notification;
-use local_moodlecloud\notifications\notification_repository;
+use local_moodlecloud\external\file_types_exporter;
 
 require_once($CFG->libdir . '/externallib.php');
 
@@ -80,6 +78,31 @@ final class local_moodlecloud_external extends external_api {
         $repo->delete_all();
     }
 
+    public static function get_top_ten_file_types_by_size() {
+        if (!is_siteadmin()) {
+            throw new moodle_exception('nopermissions', 'error', '', 'access MoodleCloud site notifications');
+        }
+
+        global $PAGE, $DB;
+        self::validate_context(context_system::instance());
+
+        return (new file_types_exporter(
+                $DB->get_records_sql(
+                    "SELECT sum(filesize) AS size, mimetype
+                         FROM {files}
+                         WHERE mimetype IS NOT NULL AND
+                               filearea <> 'draft' AND
+                               component <> 'tool_recyclebin' AND
+                               (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND
+                               filesize > 0 AND
+                               referencefileid IS NULL
+                         GROUP BY mimetype
+                         ORDER BY size desc
+                         LIMIT 10"
+                )
+        ))->export($PAGE->get_renderer('core'));
+    }
+
     protected static function get_popup_notifications_returns() {
         return notifications_exporter::get_read_structure();
     }
@@ -94,6 +117,14 @@ final class local_moodlecloud_external extends external_api {
                 'id' => new external_value(PARAM_INT, 'Notification ID', VALUE_REQUIRED, '', NULL_NOT_ALLOWED)
             ]
         );
+    }
+
+    protected static function get_top_ten_file_types_by_size_parameters() {
+        return new external_function_parameters([]);
+    }
+
+    protected static function get_top_ten_file_types_by_size_returns() {
+        return file_types_exporter::get_read_structure();
     }
 
     protected static function delete_notification_returns() {
