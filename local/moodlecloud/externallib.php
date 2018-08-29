@@ -25,6 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 use local_moodlecloud\external\file_types_exporter;
+use local_moodlecloud\notifications\external\notifications_exporter;
+use local_moodlecloud\notifications\notification_repository;
 
 require_once($CFG->libdir . '/externallib.php');
 

@@ -34,17 +34,33 @@ function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
         return '';
     }
 
-    $userpercentage = 1 - userquota::number_of_user_slots_remaining() / MOODLECLOUD_USER_QUOTA;
-    $storagepercentage = file_system_s3::unique_storage_size_used() / FILESTORAGE_QUOTA;
+    $userpercentage = min(1, 1 - userquota::number_of_user_slots_remaining() / MOODLECLOUD_USER_QUOTA);
+    $storagepercentage = min(1, file_system_s3::unique_storage_size_used() / FILESTORAGE_QUOTA);
 
     return
+        (($DB->count_records('moodlecloud_notifications') === 0)
+            ? ""
+            : $renderer->render_from_template(
+                  'local_moodlecloud/notification_popover',
+                  [
+                      'urls' =>
+                      [
+                          'preferences' => (new moodle_url(
+                              '/admin/settings.php',
+                              ['section' => 'moodlecloudnotifications'])
+                          )->out(true)
+                      ]
+                  ]
+            )
+        )
+        .
         $renderer->render_from_template(
             'local_moodlecloud/quota_popover',
             [
                 'userpercentage' => $userpercentage,
-                'userpercentagestatus' => ['ok', 'warn', 'danger'][floor($userpercentage * 3)],
+                'userpercentagestatus' => ['ok', 'warn', 'danger'][min(2, floor($userpercentage * 3))],
                 'storagepercentage' => $storagepercentage,
-                'storagepercentagestatus' => ['ok', 'warn', 'danger'][floor($storagepercentage * 3)],
+                'storagepercentagestatus' => ['ok', 'warn', 'danger'][min(2, floor($storagepercentage * 3))],
                 'users' => MOODLECLOUD_USER_QUOTA - userquota::number_of_user_slots_remaining(),
                 'totalusers' => MOODLECLOUD_USER_QUOTA,
                 'mb' => round(file_system_s3::unique_storage_size_used()/(1024**2)),
@@ -53,18 +69,6 @@ function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
                     'seeall' => (new moodle_url('/admin/tool/fileslist'))->out()
                 ]
             ]
-        )
-        .
-        (($DB->count_records('moodlecloud_notifications') === 0)
-            ? ""
-            : $renderer->render_from_template(
-                  'local_moodlecloud/notification_popover',
-                  [
-                      'urls' => [
-                          'preferences' => (new moodle_url('/admin/settings.php', ['section' => 'moodlecloudnotifications']))->out(true)
-                      ]
-                  ]
-            )
         );
 }
 
