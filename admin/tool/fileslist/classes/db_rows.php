@@ -38,7 +38,7 @@ use moodle_database;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class db_rows extends IteratorIterator {
-    CONST QUERY_LIMIT = 100;
+    CONST QUERY_LIMIT = 50000;
 
     /**
      * @var moodle_database $db Moodle database connection.
