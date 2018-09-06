@@ -29,10 +29,12 @@ if ($hassiteconfig) {
 
     if ($ADMIN->fulltree) {
         // Contact data protection officer. Disabled by default.
+        // BEGIN MOODLECLOUD HACK.
         $privacysettings->add(new admin_setting_configcheckbox('tool_dataprivacy/contactdataprotectionofficer',
                 new lang_string('contactdataprotectionofficer', 'tool_dataprivacy'),
-                new lang_string('contactdataprotectionofficer_desc', 'tool_dataprivacy'), 0)
+                new lang_string('contactdataprotectionofficer_desc', 'tool_dataprivacy'), 1)
         );
+        // END MOODLECLOUD HACK.
 
         // Fetch roles that are assignable.
         $assignableroles = get_assignable_roles(context_system::instance());
