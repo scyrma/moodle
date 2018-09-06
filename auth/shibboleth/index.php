@@ -51,7 +51,7 @@
     /// Check if the user has actually submitted login data to us
 
         if ($shibbolethauth->user_login($frm->username, $frm->password)
-                && $user = authenticate_user_login($frm->username, $frm->password)) {
+                && $user = authenticate_user_login($frm->username, $frm->password, false, null, false)) {
             complete_user_login($user);
 
             if (user_not_fully_set_up($USER, true)) {
