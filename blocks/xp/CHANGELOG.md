@@ -1,6 +1,22 @@
 Changelog
 =========
 
+v3.4.0
+------
+
+- Support GIFs and SVGs for level badges
+- Maintenance for Level up! Plus group leaderboards
+
+v3.3.1
+------
+
+- Maintenance for Level up! Plus
+
+v3.3.0
+------
+
+- New shortcode `xpladder` for displaying the ladder
+
 v3.2.1
 ------
 
