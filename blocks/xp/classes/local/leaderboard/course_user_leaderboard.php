@@ -15,50 +15,56 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * State store leaderboard.
+ * Course user state leaderboard.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2018 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_xp\local\xp;
+namespace block_xp\local\leaderboard;
 defined('MOODLE_INTERNAL') || die();
 
+use coding_exception;
+use context_helper;
+use course_modinfo;
 use moodle_database;
+use stdClass;
+use user_picture;
+use block_xp\local\iterator\map_recordset;
 use block_xp\local\sql\limit;
+use block_xp\local\xp\course_user_state_store;
+use block_xp\local\xp\levels_info;
+use block_xp\local\xp\state_rank;
+use block_xp\local\xp\user_state;
 
 /**
- * State store leaderboard.
+ * Course user state leaderboard.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2018 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_user_state_store_leaderboard {
+class course_user_leaderboard implements leaderboard {
 
+    /** @var string[] The columns. */
+    protected $columns;
     /** @var moodle_database The database. */
     protected $db;
+    /** @var course_modinfo The course. */
+    protected $course;
     /** @var int The course ID. */
     protected $courseid;
     /** @var int The group ID. */
     protected $groupid;
     /** @var levels_info The levels info. */
     protected $levelsinfo;
+    /** @var ranker The ranker. */
+    protected $ranker;
     /** @var string The DB table. */
     protected $table = 'block_xp';
-    /** @var string SQL fields. */
-    protected $fields;
-    /** @var string SQL from. */
-    protected $from;
-    /** @var string SQL where. */
-    protected $where;
-    /** @var string SQL order. */
-    protected $order;
-    /** @var array SQL params. */
-    protected $params;
 
     /**
      * Constructor.
@@ -66,17 +72,24 @@ class course_user_state_store_leaderboard {
      * @param moodle_database $db The DB.
      * @param levels_info $levelsinfo The levels info.
      * @param int $courseid The course ID.
-     * @param int $groupid The group ID, or zero.
+     * @param string[] $columns The name of the columns.
+     * @param ranker $ranker An alternative ranker.
+     * @param int $groupid The group ID.
      */
-    public function __construct(moodle_database $db, levels_info $levelsinfo, $courseid, $groupid = 0) {
-
-        debugging('The class block_xp\\local\\xp\\course_user_state_store_leaderboard is deprecated, please use ' .
-            'block_xp\\local\\leaderboard\\course_user_leaderboard instead.', DEBUG_DEVELOPER);
+    public function __construct(
+            moodle_database $db,
+            levels_info $levelsinfo,
+            $courseid,
+            array $columns,
+            ranker $ranker = null,
+            $groupid = 0) {
 
         $this->db = $db;
         $this->levelsinfo = $levelsinfo;
         $this->courseid = $courseid;
+        $this->ranker = $ranker;
         $this->groupid = $groupid;
+        $this->columns = $columns;
 
         $params = [];
         $groupsql = '';
@@ -88,8 +101,8 @@ class course_user_state_store_leaderboard {
         }
 
         $this->fields = 'x.*, ' .
-            \user_picture::fields('u', null, 'userid') . ', ' .
-            \context_helper::get_preload_record_columns_sql('ctx');
+            user_picture::fields('u', null, 'userid') . ', ' .
+            context_helper::get_preload_record_columns_sql('ctx');
         $this->from = "{{$this->table}} x
                        $groupsql
                   JOIN {user} u
@@ -106,6 +119,15 @@ class course_user_state_store_leaderboard {
     }
 
     /**
+     * Get the leaderboard columns.
+     *
+     * @return array Where keys are column identifiers and values are lang_string objects.
+     */
+    public function get_columns() {
+        return $this->columns;
+    }
+
+    /**
      * Get the number of rows in the leaderboard.
      *
      * @return int
@@ -118,37 +140,83 @@ class course_user_state_store_leaderboard {
     }
 
     /**
-     * Get position.
+     * Get the points of an object.
      *
-     * @param state $state The state.
+     * @param int $id The object ID.
+     * @return int|false False when not ranked.
+     */
+    protected function get_points($id) {
+        $sql = "SELECT x.xp
+                  FROM {$this->from}
+                 WHERE {$this->where}
+                   AND (x.userid = :userid)";
+        $params = $this->params + ['userid' => $id];
+        return $this->db->get_field_sql($sql, $params);
+    }
+
+    /**
+     * Return the position of the object.
+     *
+     * The position is used to determine how to paginate the leaderboard.
+     *
+     * @param int $id The object ID.
+     * @return int Indexed from 0, null when not ranked.
+     */
+    public function get_position($id) {
+        $xp = $this->get_points($id);
+        return $xp === false ? null : $this->get_position_with_xp($id, $xp);
+    }
+
+    /**
+     * Get position based on ID and XP.
+     *
+     * @param int $id The object ID..
+     * @param int $xp The amount of XP.
      * @return int Indexed from 0.
      */
-    public function get_position(state $state) {
+    protected function get_position_with_xp($id, $xp) {
         $sql = "SELECT COUNT('x')
                   FROM {$this->from}
                  WHERE {$this->where}
                    AND (x.xp > :posxp
                     OR (x.xp = :posxpeq AND x.userid < :posid))";
         $params = $this->params + [
-            'posxp' => $state->get_xp(),
-            'posxpeq' => $state->get_xp(),
-            'posid' => $state->get_id()
+            'posxp' => $xp,
+            'posxpeq' => $xp,
+            'posid' => $id
         ];
         return $this->db->count_records_sql($sql, $params);
     }
 
     /**
-     * Get rank.
+     * Get the rank of an object.
      *
      * @param int $id The object ID.
+     * @return rank|null
+     */
+    public function get_rank($id) {
+        $state = $this->get_state($id);
+        if (!$state) {
+            return null;
+        } else if ($this->ranker) {
+            return $this->ranker->rank_state($state);
+        }
+        $rank = $this->get_rank_from_xp($state->get_xp());
+        return new state_rank($rank, $state);
+    }
+
+    /**
+     * Get the rank of an amount of XP.
+     *
+     * @param int $xp The xp.
      * @return int Indexed from 1.
      */
-    public function get_rank(state $state) {
+    protected function get_rank_from_xp($xp) {
         $sql = "SELECT COUNT('x')
                   FROM {$this->from}
                  WHERE {$this->where}
                    AND (x.xp > :posxp)";
-        return $this->db->count_records_sql($sql, $this->params + ['posxp' => $state->get_xp()]) + 1;
+        return $this->db->count_records_sql($sql, $this->params + ['posxp' => $xp]) + 1;
     }
 
     /**
@@ -157,8 +225,16 @@ class course_user_state_store_leaderboard {
      * @param limit $limit The limit.
      * @return Traversable
      */
-    public function get_ranking(limit $limit = null) {
+    public function get_ranking(limit $limit) {
         $recordset = $this->get_ranking_recordset($limit);
+
+        if ($this->ranker) {
+            return $this->ranker->rank_states(
+                new map_recordset($recordset, function($record) {
+                    return $this->make_state_from_record($record);
+                })
+            );
+        }
 
         $rank = null;
         $offset = null;
@@ -170,8 +246,8 @@ class course_user_state_store_leaderboard {
 
             if ($rank === null || $lastxp !== $state->get_xp()) {
                 if ($rank === null) {
-                    $pos = $this->get_position($state);
-                    $rank = $this->get_rank($state);
+                    $pos = $this->get_position_with_xp($state->get_id(), $state->get_xp());
+                    $rank = $this->get_rank_from_xp($state->get_xp());
                     $offset = 1 + ($pos + 1 - $rank);
                 } else {
                     $rank += $offset;
@@ -182,9 +258,7 @@ class course_user_state_store_leaderboard {
                 $offset++;
             }
 
-            $rankobj = new \stdClass($rank, $state);
             $ranking[] = new state_rank($rank, $state);
-
         }
 
         $recordset->close();
@@ -194,10 +268,10 @@ class course_user_state_store_leaderboard {
     /**
      * Get ranking recordset.
      *
-     * @param limit|null $limit The limit.
+     * @param limit $limit The limit.
      * @return moodle_recordset
      */
-    protected function get_ranking_recordset(limit $limit = null) {
+    protected function get_ranking_recordset(limit $limit) {
         $sql = "SELECT {$this->fields}
                   FROM {$this->from}
                  WHERE {$this->where}
@@ -211,29 +285,19 @@ class course_user_state_store_leaderboard {
     }
 
     /**
-     * Get the relative ranking.
+     * Get the state.
      *
-     * Automatically appends the state we are relative to if not seen.
-     *
-     * @param state $relativeto The state to compare with.
-     * @param limit $limit The limit.
-     * @return Traversable
+     * @param int $id The object ID.
+     * @return state|null
      */
-    public function get_relative_ranking(state $relativeto, limit $limit = null) {
-        $recordset = $this->get_ranking_recordset($limit);
-
-        $offset = $relativeto->get_xp();
-        $ranking = [];
-
-        foreach ($recordset as $record) {
-            $state = $this->make_state_from_record($record);
-            $rank = $state->get_xp() - $offset;
-            $rankobj = new \stdClass($rank, $state);
-            $ranking[] = new state_rank($rank, $state);
-        }
-
-        $recordset->close();
-        return $ranking;
+    protected function get_state($id) {
+        $sql = "SELECT {$this->fields}
+                  FROM {$this->from}
+                 WHERE {$this->where}
+                   AND (x.userid = :userid)";
+        $params = $this->params + ['userid' => $id];
+        $record = $this->db->get_record_sql($sql, $params);
+        return !$record ? null : $this->make_state_from_record($record);
     }
 
     /**
@@ -243,11 +307,10 @@ class course_user_state_store_leaderboard {
      * @param string $useridfield The user ID field.
      * @return user_state
      */
-    protected function make_state_from_record(\stdClass $record, $useridfield = 'userid') {
-        $user = \user_picture::unalias($record, null, $useridfield);
-        \context_helper::preload_from_record($record);
+    protected function make_state_from_record(stdClass $record, $useridfield = 'userid') {
+        $user = user_picture::unalias($record, null, $useridfield);
+        context_helper::preload_from_record($record);
         $xp = !empty($record->xp) ? $record->xp : 0;
         return new user_state($user, $xp, $this->levelsinfo);
     }
-
 }
