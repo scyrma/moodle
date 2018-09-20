@@ -106,6 +106,7 @@ $string['for3days'] = 'For 3 days';
 $string['forever'] = 'Forever';
 $string['forthewholesite'] = 'For the whole site';
 $string['give'] = 'give';
+$string['gotofullladder'] = 'Go to full ladder';
 $string['hideparticipantsidentity'] = 'Hide participants identity';
 $string['hiderank'] = 'Hide rank';
 $string['incourses'] = 'In courses';
@@ -115,6 +116,7 @@ $string['keeplogs'] = 'Keep logs';
 $string['ladder'] = 'Ladder';
 $string['ladderadditionalcols'] = 'Additional columns';
 $string['ladderadditionalcols_help'] = 'This setting determines which additional columns are displayed on the ladder. Press the CTRL or CMD key while clicking to select more than one column, or to unselect a selected column.';
+$string['ladderempty'] = 'The ladder is currently empty, make sure to come back later!';
 $string['level'] = 'Level';
 $string['levelbadges'] = 'Level badges';
 $string['levelbadgesformhelp'] = 'Name the files [level].[file extension], for instance: 1.png, 2.jpg, etc... The recommended image size is 100x100.';
@@ -215,9 +217,29 @@ $string['rulesformhelp'] = '<p>This plugin is making use of the events to attrib
 </p>';
 $string['send'] = 'Send';
 $string['shortcode:xpbadge'] = 'The badge matching the current user\'s level.';
+$string['shortcode:xpladder'] = 'Display a portion of the ladder around the current user\'s rank.';
+$string['shortcode:xpladder_help'] = '
+```
+[xpladder]
+```
+
+A link to the full ladder will automatically be displayed below the table, if you do not want to display such link, add the argument `hidelink`.
+
+```
+[xpladder hidelink]
+```
+
+By default, the table does not include the progress column which displays the progress bar. If such column has been selected in the additional colums in the ladder\'s settings, you can use the argument `withprogress` to display it.
+
+```
+[xpladder withprogress]
+```
+
+Note that when a course is using groups, the ladder will best guess which group to display the ladder of.
+';
 $string['shortcode:xpiflevel'] = 'Display the content when the current user\'s level matches.';
 $string['shortcode:xpiflevel_help'] = '
-Refer to the examples below to format this shortcode. When a level is stricly specified, the content will be displayed regardless of the other rules.
+Refer to the examples below to format this shortcode. When a level is strictly specified, the content will be displayed regardless of the other rules.
 The _greater_ and _less than_ rules must all match for the content to be displayed. Watch out as that may sometimes result in the content to never be displayed!
 Note that teachers, or otherwise users with editing capabilities, will always see everything.
 

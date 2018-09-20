@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Default shortcodes definition maker.
+ * Course world leaderboard factory interface.
  *
  * @package    block_xp
  * @copyright  2018 Frédéric Massart
@@ -23,44 +23,28 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_xp\local\shortcode;
+namespace block_xp\local\factory;
 defined('MOODLE_INTERNAL') || die();
 
+use \block_xp\local\course_world;
+
 /**
- * Default shortcodes definition maker.
+ * Course world leaderboard factory interface.
  *
  * @package    block_xp
  * @copyright  2018 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class default_shortcodes_definition_maker implements shortcodes_definition_maker {
+interface course_world_leaderboard_factory {
 
     /**
-     * Get the shortcodes definition.
+     * Get the leaderboard.
      *
-     * @return array
+     * @param course_world $world The world.
+     * @param course_world $groupid The group ID, or 0 for none or all participants.
+     * @return block_xp\local\leaderboard\leaderboard
      */
-    public function get_shortcodes_definition() {
-        return [
-            'xpbadge' => [
-                'callback' => 'block_xp\local\shortcode\handler::xpbadge',
-                'description' => 'shortcode:xpbadge'
-            ],
-            'xpiflevel' => [
-                'callback' => 'block_xp\local\shortcode\handler::xpiflevel',
-                'description' => 'shortcode:xpiflevel',
-                'wraps' => true
-            ],
-            'xpladder' => [
-                'callback' => 'block_xp\local\shortcode\handler::xpladder',
-                'description' => 'shortcode:xpladder'
-            ],
-            'xpprogressbar' => [
-                'callback' => 'block_xp\local\shortcode\handler::xpprogressbar',
-                'description' => 'shortcode:xpprogressbar'
-            ],
-        ];
-    }
+    public function get_course_leaderboard(course_world $world, $groupid = 0);
 
 }
