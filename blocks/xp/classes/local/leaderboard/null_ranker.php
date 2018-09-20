@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Default shortcodes definition maker.
+ * Ranker.
  *
  * @package    block_xp
  * @copyright  2018 Frédéric Massart
@@ -23,44 +23,43 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_xp\local\shortcode;
+namespace block_xp\local\leaderboard;
 defined('MOODLE_INTERNAL') || die();
 
+use block_xp\local\iterator\map_iterator;
+use block_xp\local\xp\state;
+use block_xp\local\xp\state_rank;
+
 /**
- * Default shortcodes definition maker.
+ * Ranker.
+ *
+ * Ranks are always set to 0.
  *
  * @package    block_xp
  * @copyright  2018 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class default_shortcodes_definition_maker implements shortcodes_definition_maker {
+class null_ranker implements ranker {
 
     /**
-     * Get the shortcodes definition.
+     * Rank a state.
      *
-     * @return array
+     * @param state $state The state.
+     * @return rank
      */
-    public function get_shortcodes_definition() {
-        return [
-            'xpbadge' => [
-                'callback' => 'block_xp\local\shortcode\handler::xpbadge',
-                'description' => 'shortcode:xpbadge'
-            ],
-            'xpiflevel' => [
-                'callback' => 'block_xp\local\shortcode\handler::xpiflevel',
-                'description' => 'shortcode:xpiflevel',
-                'wraps' => true
-            ],
-            'xpladder' => [
-                'callback' => 'block_xp\local\shortcode\handler::xpladder',
-                'description' => 'shortcode:xpladder'
-            ],
-            'xpprogressbar' => [
-                'callback' => 'block_xp\local\shortcode\handler::xpprogressbar',
-                'description' => 'shortcode:xpprogressbar'
-            ],
-        ];
+    public function rank_state(state $state) {
+        return new state_rank(0, $state);
+    }
+
+    /**
+     * Rank an ordered list of states.
+     *
+     * @param Traversable $states The states.
+     * @return Traversable
+     */
+    public function rank_states($states) {
+        return new map_iterator($states, [$this, 'rank_state']);
     }
 
 }
