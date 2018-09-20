@@ -142,8 +142,7 @@ function bigbluebuttonbn_view_bbbsession_set($context, &$bbbsession) {
     // User roles.
     $bbbsession['administrator'] = is_siteadmin($bbbsession['userID']);
     $participantlist = bigbluebuttonbn_get_participant_list($bbbsession['bigbluebuttonbn'], $context);
-    $bbbsession['moderator'] = bigbluebuttonbn_is_moderator(
-        $context, json_encode($participantlist), $bbbsession['userID']);
+    $bbbsession['moderator'] = bigbluebuttonbn_is_moderator($context, $participantlist);
     $bbbsession['managerecordings'] = ($bbbsession['administrator']
         || has_capability('mod/bigbluebuttonbn:managerecordings', $context));
     $bbbsession['importrecordings'] = ($bbbsession['managerecordings']);
@@ -442,7 +441,11 @@ function bigbluebuttonbn_view_render_recordings(&$bbbsession, $enabledfeatures, 
           );
         /* Perform aritmetic addition instead of merge so the imported recordings corresponding to existent
          * recordings are not included. */
-        $recordings += $recordingsimported;
+        if ($bbbsession['bigbluebuttonbn']->recordings_imported) {
+            $recordings = $recordingsimported;
+        } else {
+            $recordings += $recordingsimported;
+        }
     }
     if (empty($recordings) || array_key_exists('messageKey', $recordings)) {
         // There are no recordings to be shown.
