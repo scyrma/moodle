@@ -181,7 +181,7 @@ function bigbluebuttonbn_broker_meeting_info($bbbsession, $params, $updatecache)
  * @param boolean $running
  * @param boolean $participantcount
  *
- * @return boolean
+ * @return array
  */
 function bigbluebuttonbn_broker_meeting_info_can_join($bbbsession, $running, $participantcount) {
     $status = array("can_join" => false);
@@ -326,8 +326,9 @@ function bigbluebuttonbn_broker_recording_info_current($recording, $params) {
     }
     $meta = json_decode($params['meta'], true);
     foreach (array_keys($meta) as $key) {
+        $callbackresponse[$key] = '';
         if (isset($recording[$key])) {
-            $callbackresponse[$key] = $recording[$key];
+            $callbackresponse[$key] = trim($recording[$key]);
         }
     }
     return $callbackresponse;
@@ -694,7 +695,7 @@ function bigbluebuttonbn_broker_recording_import($bbbsession, $params) {
     $importrecordings[$params['id']]['imported'] = true;
     $overrides = array('meetingid' => $importrecordings[$params['id']]['meetingID']);
     $meta = '{"recording":'.json_encode($importrecordings[$params['id']]).'}';
-    bigbluebuttonbn_logs($bbbsession, BIGBLUEBUTTONBN_LOG_EVENT_IMPORT, $overrides, $meta);
+    bigbluebuttonbn_log($bbbsession['bigbluebuttonbn'], BIGBLUEBUTTONBN_LOG_EVENT_IMPORT, $overrides, $meta);
     // Moodle event logger: Create an event for recording imported.
     if (isset($bbbsession['bigbluebutton']) && isset($bbbsession['cm'])) {
         bigbluebuttonbn_event_log(BIGBLUEBUTTON_EVENT_RECORDING_IMPORTED, $bbbsession['bigbluebuttonbn'],
