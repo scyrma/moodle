@@ -26,6 +26,4 @@ $string['pluginname'] = 'MoodleCloud Logging';
 $string['privacy:metadata:local_logging:context'] = 'Additional context to accompany the event.';
 $string['privacy:metadata:local_logging:event'] = 'The event to log.';
 $string['privacy:metadata:local_logging:params'] = 'The query parameters passed to the external logging service.';
-$string['privacy:metadata:local_logging:externalpurpose'] = 'This information is sent to an external log aggregation service. The logs are temporarily kept on the service provider\'s servers and periodically purged. Currently logentries is used to provide this service.';
-
-
+$string['privacy:metadata:local_logging:externalpurpose'] = 'This information is sent to an external log aggregation service. The logs are temporarily kept on the service provider\'s servers and periodically purged.';
