@@ -19,3 +19,19 @@ a:hover .i-def, .header:hover .i-def, .active .i-def {
 	border-top: 1px solid #e3e3ec;
 	padding: 3px 0;
 }
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle div {
+    line-height: 20px !important;
+}
+
+#nav-moodlecloud-quota-popover-container {
+    transform: translateY(50%) !important;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-container {
+    margin-top: 0px !important;
+}
+
+.popover-region {
+    transform: translateY(0%);
+}
