@@ -33,7 +33,7 @@ a:hover .i-def, .header:hover .i-def, .active .i-def {
 }
 
 .popover-region {
-    z-index: 999;
+    z-index: 9999;
     transform: translateY(0%) !important;
 }
 
