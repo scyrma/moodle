@@ -73,15 +73,11 @@ progress.danger::-webkit-progress-value {
 
 
 #nav-moodlecloud-quota-popover-container {
-    transform: translateY(-3%);
+    transform: translateY(-3%) !important;
 }
 
 .popover-region.popover-region-quotas.collapsed .items {
     display: none;
-}
-
-.popover-region {
-    transform: translateY(30%);
 }
 
 .items {
