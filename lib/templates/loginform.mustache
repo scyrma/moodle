@@ -35,14 +35,15 @@
         "rememberusername": true,
         "signupurl": "http://localhost/stable_master/login/signup.php",
         "cookieshelpiconformatted": "",
-        "username": ""
+        "username": "",
+        "logintoken": "randomstring"
     }
 }}
 {{#hasinstructions}}
-<div class="loginbox clearfix twocolumns">
+    <div class="loginbox clearfix twocolumns">
 {{/hasinstructions}}
 {{^hasinstructions}}
-<div class="loginbox clearfix onecolumn">
+    <div class="loginbox clearfix onecolumn">
 {{/hasinstructions}}
 
     <div class="loginpanel">
@@ -95,6 +96,7 @@
                 <div class="clearer"><!-- --></div>
                 <input id="anchor" type="hidden" name="anchor" value="" />
                 <script>document.getElementById('anchor').value = location.hash;</script>
+                <input type="hidden" name="logintoken" value="{{logintoken}}">
                 <input type="submit" id="loginbtn" value={{#quote}}{{#str}} login {{/str}}{{/quote}} />
                 <div class="forgetpass">
                     <a href="{{forgotpasswordurl}}">{{#str}} forgotten {{/str}}</a>
@@ -113,6 +115,7 @@
                 <div class="desc">{{#str}} someallowguest {{/str}}</div>
                 <form action="{{loginurl}}" method="post" id="guestlogin">
                     <div class="guestform">
+                        <input type="hidden" name="logintoken" value="{{logintoken}}">
                         <input type="hidden" name="username" value="guest" />
                         <input type="hidden" name="password" value="guest" />
                         <input type="submit" value={{#quote}}{{#str}} loginguest {{/str}}{{/quote}} />
@@ -137,11 +140,12 @@
                     </form>
                 </div>
             {{/cansignup}}
-        </div>
-    {{/hasinstructions}}
+       </div>
+{{/hasinstructions}}
 
-    {{#hasidentityproviders}}
-        <div class="subcontent potentialidps">
+</div>
+{{#hasidentityproviders}}
+        <div class="subcontent potentialidps no-courses">
             <h6>{{#str}} potentialidps, auth {{/str}}</h6>
             <div class="potentialidplist">
                 {{#identityproviders}}
@@ -162,19 +166,19 @@
 
 {{#js}}
     {{#error}}
-        require(['jquery'], function($) {
+            require(['jquery'], function($) {
             $('#loginerrormessage').focus();
-        });
+            });
     {{/error}}
     {{^error}}
         {{#autofocusform}}
-            require(['jquery'], function($) {
+                require(['jquery'], function($) {
                 if ($('#username').val()) {
-                    $('#password').focus();
+                $('#password').focus();
                 } else {
-                    $('#username').focus();
+                $('#username').focus();
                 }
-            });
+                });
         {{/autofocusform}}
     {{/error}}
 {{/js}}
