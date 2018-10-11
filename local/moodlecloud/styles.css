@@ -11,7 +11,7 @@
     z-index: 1;
 }
 
-progress {
+#nav-moodlecloud-quota-popover-container progress {
 	  display:inline-block;
     vertical-align: middle !important;
 	  width:100px;
@@ -27,47 +27,47 @@ progress {
 
 
 /* IE10 */
-progress.ok {
+#nav-moodlecloud-quota-popover-container progress.ok {
     color: red;
 }
 
 /* Firefox */
-progress.ok::-moz-progress-bar {
+#nav-moodlecloud-quota-popover-container progress.ok::-moz-progress-bar {
     background: green;
 }
 
 /* Chrome */
-progress.ok::-webkit-progress-value {
+#nav-moodlecloud-quota-popover-container progress.ok::-webkit-progress-value {
     background: green;
 }
 
 /* IE10 */
-progress.warn {
+#nav-moodlecloud-quota-popover-container progress.warn {
     color: orange;
 }
 
 /* Firefox */
-progress.warn::-moz-progress-bar {
+#nav-moodlecloud-quota-popover-container progress.warn::-moz-progress-bar {
     background: orange;
 }
 
 /* Chrome */
-progress.warn::-webkit-progress-value {
+#nav-moodlecloud-quota-popover-container progress.warn::-webkit-progress-value {
     background: orange;
 }
 
 /* IE10 */
-progress.danger {
+#nav-moodlecloud-quota-popover-container progress.danger {
     color: red;
 }
 
 /* Firefox */
-progress.danger::-moz-progress-bar {
+#nav-moodlecloud-quota-popover-container progress.danger::-moz-progress-bar {
     background: red;
 }
 
 /* Chrome */
-progress.danger::-webkit-progress-value {
+#nav-moodlecloud-quota-popover-container progress.danger::-webkit-progress-value {
     background: red;
 }
 
@@ -80,17 +80,17 @@ progress.danger::-webkit-progress-value {
     display: none;
 }
 
-.items {
+#nav-moodlecloud-quota-popover-container .items {
     text-align: center;
     margin-top: 10px;
 }
 
-.item {
+#nav-moodlecloud-quota-popover-container .item {
     position: relative;
     display: inline-block;
 }
 
-.item h2 {
+#nav-moodlecloud-quota-popover-container .item h2 {
     font-size:19px;
     text-align:center;
     position: absolute;
@@ -98,7 +98,7 @@ progress.danger::-webkit-progress-value {
     width: 100%;
 }
 
-.item h3 {
+#nav-moodlecloud-quota-popover-container .item h3 {
     font-size: 15px;
     font-weight: bold;
     color: #bcbcbc;
@@ -108,29 +108,29 @@ progress.danger::-webkit-progress-value {
     width: 100%;
 }
 
-svg {
+#nav-moodlecloud-quota-popover-container svg {
     transform: rotate(-90deg);
 }
 
-.circle_animation {
+#nav-moodlecloud-quota-popover-container .circle_animation {
     stroke-dasharray: 440;
     stroke-dashoffset: 440;
 }
 
-@keyframes users {
+@keyframes moodlecloud_quota_popover_users {
     0% {stroke-dashoffset: 440;}
 }
 
-.users .circle_animation {
+#nav-moodlecloud-quota-popover-container .users .circle_animation {
     -webkit-animation: users 1s ease-out forwards;
-    animation: users 1s ease-out forwards;
+    animation: moodlecloud_quota_popover_users 1s ease-out forwards;
 }
 
-@keyframes storage {
+@keyframes moodlecloud_quota_popover_storage {
     0% {stroke-dashoffset: 440;}
 }
 
-.storage .circle_animation {
+#nav-moodlecloud-quota-popover-container .storage .circle_animation {
     -webkit-animation: storage 1s ease-out forwards;
-    animation: storage 1s ease-out forwards;
+    animation: moodlecloud_quota_popover_storage 1s ease-out forwards;
 }
