@@ -129,7 +129,7 @@ SELECT
     SUM(f.filesize)
 FROM (
     SELECT DISTINCT
-        filesize
+        filesize, contenthash
     FROM {files}
     WHERE referencefileid IS NULL
        AND component <> 'tool_recyclebin'
@@ -150,7 +150,7 @@ SELECT
     SUM(f.filesize)
 FROM (
     SELECT DISTINCT
-        filesize
+        filesize, contenthash
     FROM {files}
     WHERE referencefileid IS NULL
        AND (component = 'backup' AND mimetype = 'application/vnd.moodle.backup')
