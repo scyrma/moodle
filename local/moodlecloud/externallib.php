@@ -90,17 +90,25 @@ final class local_moodlecloud_external extends external_api {
 
         return (new file_types_exporter(
                 $DB->get_records_sql(
-                    "SELECT sum(filesize) AS size, mimetype
+                    "SELECT
+                         df.mimetype as mimetype,
+                         SUM(df.filesize) AS size
+                     FROM (
+                         SELECT
+                             filesize,
+                             mimetype
                          FROM {files}
-                         WHERE mimetype IS NOT NULL AND
-                               filearea <> 'draft' AND
-                               component <> 'tool_recyclebin' AND
-                               (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND
-                               filesize > 0 AND
-                               referencefileid IS NULL
-                         GROUP BY mimetype
-                         ORDER BY size desc
-                         LIMIT 10"
+                         WHERE
+                             filesize > 0 AND
+                             referencefileid IS NULL AND
+                             component <> 'tool_recyclebin' AND
+                             (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND
+                             filearea <> 'draft'
+                        GROUP BY filesize, mimetype, contenthash
+                    ) df
+                    GROUP BY df.mimetype
+                    ORDER BY size DESC
+                    LIMIT 10"
                 )
         ))->export($PAGE->get_renderer('core'));
     }
