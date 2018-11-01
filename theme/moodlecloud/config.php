@@ -25,6 +25,7 @@
 $THEME->name = 'moodlecloud';
 $THEME->parents = array('clean', 'bootstrapbase');
 
+$THEME->iconsystem = \core\output\icon_system::FONTAWESOME;
 $THEME->doctype = 'html5';
 $THEME->sheets = array('custom');
 $THEME->lessfile = 'moodle';
