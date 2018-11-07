@@ -29,10 +29,12 @@ if ($hassiteconfig) {
 
     if ($ADMIN->fulltree) {
         // Contact data protection officer. Disabled by default.
+        // BEGIN MOODLECLOUD HACK.
         $privacysettings->add(new admin_setting_configcheckbox('tool_dataprivacy/contactdataprotectionofficer',
                 new lang_string('contactdataprotectionofficer', 'tool_dataprivacy'),
-                new lang_string('contactdataprotectionofficer_desc', 'tool_dataprivacy'), 0)
+                new lang_string('contactdataprotectionofficer_desc', 'tool_dataprivacy'), 1)
         );
+        // END MOODLECLOUD HACK.
 
         // Set days approved data requests will be accessible. 1 week default.
         $privacysettings->add(new admin_setting_configduration('tool_dataprivacy/privacyrequestexpiry',
