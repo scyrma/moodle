@@ -684,6 +684,7 @@ class file_system_s3 extends \file_system {
                               WHERE filearea <> 'draft' AND
                                      component <> 'tool_recyclebin' AND
                                      (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND
+                                     component <> 'assignfeedback_editpdf' AND
                                      referencefileid IS NULL
                            GROUP BY filesize, contenthash
               ) AS f");
