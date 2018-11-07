@@ -21,6 +21,10 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
         return;
     }
 
+    if ($newfile->component == 'assignfeedback_editpdf') {
+        return;
+    }
+
     $filesize = $fileinfo['content'] ? strlen($fileinfo['content']) : filesize($fileinfo['pathname']);
 
     // If somehow we get here and the filesize is still zero just quit. It won't affect the quota.
