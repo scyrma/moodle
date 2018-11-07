@@ -134,6 +134,7 @@ FROM (
     WHERE referencefileid IS NULL
        AND component <> 'tool_recyclebin'
        AND (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup')
+       AND component <> 'assignfeedback_editpdf'
     {$where}
     GROUP BY filesize, contenthash
 ) AS f;
@@ -183,7 +184,8 @@ FROM (
     WHERE filesize > 0 AND
        referencefileid IS NULL AND
        component <> 'tool_recyclebin' AND
-       (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup')
+       (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND
+       component <> 'assignfeedback_editpdf'
     {$where}
     GROUP BY filesize, regexp_replace(mimetype, '/.+\$', ''), contenthash
 ) iq
