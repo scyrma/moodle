@@ -46,7 +46,8 @@ define(['jquery', 'core/ajax'], function($, Ajax) {
                             .filter(function(file) {
                                 return file.filearea != 'draft' &&
                                        file.component != 'tool_recyclebin' &&
-                                       (file.component != 'backup' || file.mimetype != 'application/vnd.moodle.backup');
+                                       (file.component != 'backup' || file.mimetype != 'application/vnd.moodle.backup') &&
+                                       file.component != 'assignfeedback_editpdf';
                             })
                     };
                     return cachedResponse;
