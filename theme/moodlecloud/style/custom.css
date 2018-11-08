@@ -1,0 +1,73 @@
+/* Custom CSS
+-------------------------*/
+div.logo {
+    background: url([[setting:logo]]) no-repeat 0 0;
+    display: block;
+    float: left;
+    height: 75px;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.dir-rtl div.logo {
+    background: url([[setting:logo]]) no-repeat 100% 0;
+    display: block;
+    float: right;
+}
+
+/* Custom CSS Settings
+-------------------------*/
+[[setting:customcss]]
+
+body,
+html {
+    height: 100%;
+    padding-top: 0;
+}
+.wrapper {
+    min-height: 100%;
+    margin-bottom: -180px;
+}
+.wrapper::after {
+    content: "";
+    display: block;
+    min-height: 180px;
+}
+#page-footer {
+    box-sizing: border-box;
+    margin: 0;
+    min-height: 180px;
+    background-color: #fff;
+    width: 100%;
+}
+#page {
+    padding-top: 60px; /* Bootstrap Navbar height */
+}
+
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle div {
+    line-height: 20px !important;
+}
+
+#nav-moodlecloud-quota-popover-container {
+    transform: translateY(50%) !important;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-container {
+    margin-top: 0px !important;
+}
+
+#nav-moodlecloud-quota-popover-container.popover-region, .popover-region {
+    z-index: 999;
+    transform: translateY(0%) !important;
+}
+
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle::before {
+    bottom: 0px;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle::after {
+    bottom: 0px;
+}
