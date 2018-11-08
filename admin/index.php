@@ -65,6 +65,10 @@ if (isset($_POST['upgradekey'])) {
     die();
 }
 
+// START MOODLECLOUD HACK.
+$_GET['cache'] = 1;
+// END MOODLECLOUD HACK.
+
 if ((isset($_GET['cache']) and $_GET['cache'] === '0')
         or (isset($_POST['cache']) and $_POST['cache'] === '0')
         or (!isset($_POST['cache']) and !isset($_GET['cache']) and empty($_GET['sesskey']) and empty($_POST['sesskey']))) {
