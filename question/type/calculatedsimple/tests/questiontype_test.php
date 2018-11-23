@@ -95,7 +95,7 @@ class qtype_calculatedsimple_test extends advanced_testcase {
         }
 
         foreach ($questiondata->options as $optionname => $value) {
-            if ($optionname != 'answers') {
+            if (!in_array($optionname, array('question', 'answers'))) {
                 $this->assertAttributeEquals($value, $optionname, $actualquestiondata->options);
             }
         }

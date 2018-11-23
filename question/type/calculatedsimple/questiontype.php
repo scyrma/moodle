@@ -298,4 +298,13 @@ class qtype_calculatedsimple extends qtype_calculated {
         }
         return array($options, $selected);
     }
+
+    protected function set_default_combined_feedback($options) {
+        $options->correctfeedback = '';
+        $options->correctfeedbackformat = FORMAT_MOODLE;
+        $options->partiallycorrectfeedback = '';
+        $options->partiallycorrectfeedbackformat = FORMAT_MOODLE;
+        $options->incorrectfeedback = '';
+        $options->incorrectfeedbackformat = FORMAT_MOODLE;
+    }
 }
