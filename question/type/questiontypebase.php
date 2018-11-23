@@ -1432,6 +1432,20 @@ class question_type {
                 return base64_decode($file->content);
         }
     }
+
+    /**
+     * Adds combined feedback properties to the provided object.
+     *
+     * @param stdClass $options The object that we want the combined feedback properties to be added to.
+     */
+    protected function set_default_combined_feedback($options) {
+        $options->correctfeedback = get_string('correctfeedbackdefault', 'question');
+        $options->correctfeedbackformat = FORMAT_HTML;
+        $options->partiallycorrectfeedback = get_string('partiallycorrectfeedbackdefault', 'question');
+        $options->partiallycorrectfeedbackformat = FORMAT_HTML;
+        $options->incorrectfeedback = get_string('incorrectfeedbackdefault', 'question');
+        $options->incorrectfeedbackformat = FORMAT_HTML;
+    }
 }
 
 
