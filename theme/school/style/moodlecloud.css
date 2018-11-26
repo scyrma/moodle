@@ -1,0 +1,46 @@
+a:hover .i-hov,
+.header:hover .i-hov,
+.active .i-hov {
+	display: none;
+}
+
+a:hover .i-def, .header:hover .i-def, .active .i-def {
+	display: inline-block;
+}
+
+.usermenu .menu li:first-child,
+.usermenu .menu li:last-child
+{
+    border: none;
+    padding: 0;
+}
+
+.usermenu .menu li.predivide {
+	border-top: 1px solid #e3e3ec;
+	padding: 3px 0;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle div {
+    line-height: 20px !important;
+}
+
+#nav-moodlecloud-quota-popover-container {
+    transform: translateY(50%) !important;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-container {
+    margin-top: 0px !important;
+}
+
+.popover-region {
+    z-index: 9999;
+    transform: translateY(0%) !important;
+}
+
+.landing-page #nav-moodlecloud-quota-popover-container .popover-region-toggle::before {
+    bottom: -23px;
+}
+
+.landing-page #nav-moodlecloud-quota-popover-container .popover-region-toggle::after {
+    bottom: -24px;
+}
