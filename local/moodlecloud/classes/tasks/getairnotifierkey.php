@@ -48,17 +48,8 @@ class getairnotifierkey extends adhoc_task {
     }
 
     private function requeue_adhoc_task() {
-        global $DB;
-
-        if ($DB->count_records('task_adhoc', ['classname' => '\\' . self::class]) == 1) {
-            logger::log(get_class($this), [
-                'eventname' => 'airnotifier',
-                'component' => 'local_moodlecloud',
-                'other' => 'Task already queued. Aborting.',
-            ], 'registration');
-
-            return;
-        }
-        manager::queue_adhoc_task(new getairnotifierkey());
+        $task = new getairnotifierkey();
+        $task->set_next_run_time(time() + 300);
+        manager::queue_adhoc_task($task);
     }
 }
