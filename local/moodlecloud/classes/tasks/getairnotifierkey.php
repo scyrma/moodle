@@ -6,6 +6,7 @@ use core\task\manager;
 use moodle_url;
 use curl;
 use stdClass;
+use local_logging\logger;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,7 +35,7 @@ class getairnotifierkey extends adhoc_task {
                 } else {
                     set_config('airnotifieraccesskey', 'd4985ad12ce3099b040a4773724cc6b3');
                     $msg = get_string('errorretrievingkey', 'message_airnotifier');
-                    manager::queue_adhoc_task(new getairnotifierkey());
+                    $this->requeue_adhoc_task();
                 }
                 mtrace("Moodlecloud Airnotifier: $msg");
             }else {
@@ -42,8 +43,22 @@ class getairnotifierkey extends adhoc_task {
             }
         } else {
             mtrace("Moodlecloud Airnotifier: site is not registered on hub yet. Queueing self again.");
-            manager::queue_adhoc_task(new getairnotifierkey());
+            $this->requeue_adhoc_task();
         }
     }
 
+    private function requeue_adhoc_task() {
+        global $DB;
+
+        if ($DB->get_record('task_adhoc', ['classname' => '\\' . self::class])) {
+            logger::log(get_class($this), [
+                'eventname' => 'airnotifier',
+                'component' => 'local_moodlecloud',
+                'other' => 'Task already queued. Aborting.',
+            ], 'registration');
+
+            return;
+        }
+        manager::queue_adhoc_task(new getairnotifierkey());
+    }
 }

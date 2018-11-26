@@ -14,9 +14,19 @@ class register extends adhoc_task {
     public function execute($wait_for_dns = true) {
         global $DB;
 
+        if ($DB->get_record('registration_hubs', ['huburl' => HUB_MOODLEORGHUBURL])) {
+            logger::log(get_class($this), [
+                'eventname' => 'registration',
+                'component' => 'local_moodlecloud',
+                'other' => 'Site already registered. Aborting.',
+            ], 'registration');
+
+            return;
+        }
+
         if ($wait_for_dns) {
             // Delay execution of the task a little longer to give DNS more of a fighting chance.
-            sleep(30);
+            sleep(15);
         }
 
         $huburl = HUB_MOODLEORGHUBURL;
@@ -49,7 +59,7 @@ class register extends adhoc_task {
                     'other' => 'Registration failed, queueing self again.',
                 ], 'registration');
 
-                manager::queue_adhoc_task(new register());
+                $this->requeue_adhoc_task();
             }
         } else {
             logger::log(get_class($this), [
@@ -58,7 +68,8 @@ class register extends adhoc_task {
                 'other' => 'DNS not yet valid. Queueing self again.',
             ], 'registration');
             mtrace("Moodlecloud Registration ({$huburl}): DNS not yet valid. Queueing self again.");
-            manager::queue_adhoc_task(new register());
+
+            $this->requeue_adhoc_task();
         }
     }
 
@@ -124,6 +135,21 @@ class register extends adhoc_task {
             null,
             \core\hub\registration::class
         )();
+    }
+
+    private function requeue_adhoc_task() {
+        global $DB;
+
+        if ($DB->get_record('task_adhoc', ['classname' => '\\' . self::class])) {
+            logger::log(get_class($this), [
+                'eventname' => 'registration',
+                'component' => 'local_moodlecloud',
+                'other' => 'Task already queued. Aborting.',
+            ], 'registration');
+
+            return;
+        }
+        manager::queue_adhoc_task(new register());
     }
 
     private function register($huburl) {
