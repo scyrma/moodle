@@ -140,7 +140,7 @@ class register extends adhoc_task {
     private function requeue_adhoc_task() {
         global $DB;
 
-        if ($DB->get_record('task_adhoc', ['classname' => '\\' . self::class])) {
+        if ($DB->count_records('task_adhoc', ['classname' => '\\' . self::class]) == 1) {
             logger::log(get_class($this), [
                 'eventname' => 'registration',
                 'component' => 'local_moodlecloud',
