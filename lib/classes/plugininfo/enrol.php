@@ -98,6 +98,14 @@ class enrol extends base {
         $plugininfo = $this; // Also can be used inside settings.php.
         $enrol = $this;      // Also can be used inside settings.php.
 
+// START MOODLECLOUD HACK.
+if (isset($CFG->moodlecloud_blocked_enrol)) {
+    if (isset($CFG->moodlecloud_blocked_enrol[$enrol->name]) && $CFG->moodlecloud_blocked_enrol[$enrol->name]) {
+        return;
+    }
+}
+// END MOODLECLOUD HACK.
+
         if (!$this->is_installed_and_upgraded()) {
             return;
         }
