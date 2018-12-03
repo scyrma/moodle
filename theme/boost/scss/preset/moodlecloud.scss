@@ -134,6 +134,13 @@ a .icon {
     color: $body-color;
 }
 
+a.nav-link .icon {
+    color: $navbar-light-color;
+    &:hover, &:active, &:focus {
+        color: $primary;
+    }
+}
+
 .navbar-light .navbar-brand {
     padding-left: 1rem;
     padding-right: 1rem;
