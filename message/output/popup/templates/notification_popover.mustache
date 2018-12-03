@@ -39,12 +39,14 @@
 
 }}
 {{< core/popover_region }}
+<div class="messaging-container">
     {{$classes}}popover-region-notifications{{/classes}}
     {{$attributes}}id="nav-notification-popover-container" data-userid="{{userid}}"{{/attributes}}
 
     {{$togglelabel}}{{#str}} shownotificationwindownonew, message {{/str}}{{/togglelabel}}
     {{$togglecontent}}
-        {{#pix}} i/notifications, core, {{#str}} togglenotificationmenu, message {{/str}} {{/pix}}
+        <i class="icon fa fa-bell"></i>
+
         <div class="count-container {{^unreadcount}}hidden{{/unreadcount}}" data-region="count-container">{{unreadcount}}</div>
     {{/togglecontent}}
 
@@ -75,6 +77,7 @@
             aria-relevant="additions"></div>
         <div class="empty-message" tabindex="0" data-region="empty-message">{{#str}} nonotifications, message {{/str}}</div>
     {{/content}}
+</div>
 {{/ core/popover_region }}
 {{#js}}
 require(['jquery', 'message_popup/notification_popover_controller'], function($, controller) {
