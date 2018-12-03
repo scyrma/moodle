@@ -21,7 +21,6 @@
  */
 
 require_once($CFG->dirroot . '/theme/bootstrapbase/renderers.php');
-require_once($CFG->dirroot . '/lib/coursecatlib.php');
 require_once($CFG->dirroot . '/mod/forum/lib.php');
 
 class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
@@ -445,7 +444,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     }
 
     public function frontpage_courses() {
-        $coursecategory = coursecat::get(0);
+        $coursecategory = core_course_category::get(0);
         $courses = $coursecategory->get_courses(array('summary' => 1, 'coursecontacts' => 1, 'recursive' => 1));
 
         if (empty($courses)) {
@@ -455,7 +454,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         $coursedetails = $this->serialise_courses($courses);
 
         $categoriesurl = new \moodle_url('/course/index.php');
-        $category = coursecat::get(0);
+        $category = core_course_category::get(0);
         $categories = array_values($category->get_children());
         $filter = function($category) {
             return $category->visible && $category->coursecount;
@@ -672,7 +671,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     public function coursecategory_categories() {
         global $CFG;
 
-        $category = coursecat::get(0);
+        $category = core_course_category::get(0);
         $childcategories = array_values($category->get_children());
         $moodlecontext = get_category_or_system_context($category->id);
         $coursesearchurl = new \moodle_url('/course/search.php');
@@ -697,7 +696,7 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
         if ($coursecategory->id) {
             $html = html_writer::start_tag('div', array('class' => 'categorypicker'));
             $select = new single_select(new \moodle_url('/course/index.php'), 'categoryid',
-                    coursecat::make_categories_list(), $coursecategory->id, null, 'all-category-picker');
+                    core_course_category::make_categories_list(), $coursecategory->id, null, 'all-category-picker');
             $select->set_label(get_string('allcategories').':');
             $html .= $this->render($select);
             $html .= html_writer::end_tag('div');
@@ -754,15 +753,15 @@ class theme_school_core_renderer extends theme_bootstrapbase_core_renderer {
     public function coursecategory_index($categoryid) {
         if (!$categoryid) {
             // If no id is given and we've only got one category just show those courses.
-            if (coursecat::count_all() == 1) {
-                return $this->coursecategory_courses(coursecat::get_default());
+            if (core_course_category::count_all() == 1) {
+                return $this->coursecategory_courses(core_course_category::get_default());
             } else {
             // Otherwise show a list of the categories.
                 return $this->coursecategory_categories();
             }
         } else {
         // If we were given a category id then show that one specifically.
-            $coursecategory = coursecat::get($categoryid);
+            $coursecategory = core_course_category::get($categoryid);
             return $this->coursecategory_courses($coursecategory);
         }
     }
