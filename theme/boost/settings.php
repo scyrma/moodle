@@ -51,6 +51,7 @@ if ($ADMIN->fulltree) {
     // These are the built in presets.
     $choices['default.scss'] = 'default.scss';
     $choices['plain.scss'] = 'plain.scss';
+    $choices['moodlecloud.scss'] = 'moodlecloud.scss';
 
     $setting = new admin_setting_configthemepreset($name, $title, $description, $default, $choices, 'boost');
     $setting->set_updatedcallback('theme_reset_all_caches');

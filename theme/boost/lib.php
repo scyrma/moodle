@@ -111,6 +111,8 @@ function theme_boost_get_main_scss_content($theme) {
         $scss .= file_get_contents($CFG->dirroot . '/theme/boost/scss/preset/default.scss');
     } else if ($filename == 'plain.scss') {
         $scss .= file_get_contents($CFG->dirroot . '/theme/boost/scss/preset/plain.scss');
+    } else if ($filename == 'moodlecloud.scss') {
+        $scss .= file_get_contents($CFG->dirroot . '/theme/boost/scss/preset/moodlecloud.scss');
     } else if ($filename && ($presetfile = $fs->get_file($context->id, 'theme_boost', 'preset', 0, '/', $filename))) {
         $scss .= $presetfile->get_content();
     } else {
@@ -163,4 +165,31 @@ function theme_boost_get_pre_scss($theme) {
     }
 
     return $scss;
+}
+
+function theme_boost_get_footerlinks($context) {
+    global $OUTPUT;
+
+    $links = array();
+
+    if ($doclink = $OUTPUT->page_doc_link()) {
+        $links[] = $doclink;
+    }
+
+    if (theme_boost_is_teacher($context)) {
+        $title = get_string('supportforums', 'theme_boost');
+        $link = new moodle_url('https://moodle.org/community');
+        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
+    }
+    if (is_siteadmin()) {
+        $title = get_string('faq', 'theme_boost');
+        $link = new moodle_url('https://moodle.com/cloud/faq');
+        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
+    }
+    return implode(' | ', $links);
+}
+
+function theme_boost_is_teacher($context) {
+    // The same capability as is used with page_doc_link().
+    return has_capability('moodle/site:doclinks', $context);
 }
