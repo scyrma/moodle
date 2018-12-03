@@ -515,6 +515,12 @@ function has_capability($capability, context $context, $user = null, $doanything
         }
     }
 
+    // BEGIN MOODLECLOUD HACK.
+    if (local_moodlecloud\restrictions\capability::capability_is_restricted_by_quota($capability)) {
+        return false;
+    }
+    // END MOODLECLOUD HACK.
+
     // context path/depth must be valid
     if (empty($context->path) or $context->depth == 0) {
         // this should not happen often, each upgrade tries to rebuild the context paths
