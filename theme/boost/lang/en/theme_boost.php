@@ -24,6 +24,15 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/* MoodleCloud hack */
+$string['cloudportallink'] = 'MoodleCloud portal link';
+$string['fontsize'] = 'Theme base fontsize';
+$string['fontsize_desc'] = 'Enter a fontsize in %';
+$string['faq'] = 'MoodleCloud FAQ';
+$string['supportforums'] = 'Support Forums';
+$string['yourportal'] = 'Portal';
+/* End */
+
 $string['advancedsettings'] = 'Advanced settings';
 $string['backgroundimage'] = 'Background image';
 $string['backgroundimage_desc'] = 'The image to display as a background of the site. The background image you upload here will override the background image in your theme preset files.';
@@ -66,3 +75,4 @@ $string['totop'] = 'Go to top';
 $string['currentinparentheses'] = '(current)';
 $string['privacy:drawernavclosed'] = 'The current preference for the navigation drawer is closed.';
 $string['privacy:drawernavopen'] = 'The current preference for the navigation drawer is open.';
+
