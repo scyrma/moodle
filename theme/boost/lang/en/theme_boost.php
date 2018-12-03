@@ -32,8 +32,12 @@ $string['brandcolor_desc'] = 'The accent colour.';
 $string['bootswatch'] = 'Bootswatch';
 $string['bootswatch_desc'] = 'A bootswatch is a set of Bootstrap variables and css to style Bootstrap';
 $string['choosereadme'] = 'Boost is a modern highly-customisable theme. This theme is intended to be used directly, or as a parent theme when creating new themes utilising Bootstrap 4.';
+$string['cloudportallink'] = 'MoodleCloud portal link';
 $string['currentinparentheses'] = '(current)';
 $string['configtitle'] = 'Boost';
+$string['fontsize'] = 'Theme base fontsize';
+$string['fontsize_desc'] = 'Enter a fontsize in %';
+$string['faq'] = 'MoodleCloud FAQ';
 $string['generalsettings'] = 'General settings';
 $string['loginbackgroundimage'] = 'Login page background image';
 $string['loginbackgroundimage_desc'] = 'The image to display as a background for the login page.';
@@ -64,3 +68,6 @@ $string['privacy:drawernavopen'] = 'The current preference for the navigation dr
 
 // Deprecated since Moodle 4.0.
 $string['totop'] = 'Go to top';
+$string['cloudportallink'] = 'MoodleCloud portal link';
+$string['supportforums'] = 'Support Forums';
+$string['yourportal'] = 'Portal';
