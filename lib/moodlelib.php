@@ -2729,6 +2729,10 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
         $setwantsurltome = false;
     }
 
+    // START MOODLECLOUD HACK.
+    \auth_moodlecloud\sso::require_login();
+    // END MOODLECLOUD HACK.
+
     // Redirect to the login page if session has expired, only with dbsessions enabled (MDL-35029) to maintain current behaviour.
     if ((!isloggedin() or isguestuser()) && !empty($SESSION->has_timed_out) && !empty($CFG->dbsessions)) {
         if ($preventredirect) {
@@ -9890,6 +9894,14 @@ function get_performance_info() {
     }
 
     $info['html'] = '<div class="performanceinfo siteinfo container-fluid px-md-0 overflow-auto pt-3">'.$info['html'].'</div>';
+    // BEGIN MOODLECLOUD HACK.
+    $info['dbread']         = $DB->perf_get_reads();
+    $info['allwrites']      = $DB->perf_get_writes();
+    $info['perfwrites']     = $PERF->logwrites;
+    $info['finalwrites']    = $info['allwrites'] - $info['perfwrites'];
+    // END MOODLECLOUD HACK.
+
+    $info['html'] = '<div class="performanceinfo siteinfo container-fluid">'.$info['html'].'</div>';
     return $info;
 }
 
