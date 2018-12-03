@@ -89,6 +89,7 @@ echo $OUTPUT->doctype() ?>
 </div>
 
 <?php echo theme_moodlecloud_portal_link() ?>
+<?php echo $OUTPUT->standard_after_main_region_html(); ?>
 
 <footer id="page-footer">
     <div id="course-footer"><?php echo $OUTPUT->course_footer(); ?></div>
