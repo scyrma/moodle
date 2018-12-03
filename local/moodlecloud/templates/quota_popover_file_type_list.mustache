@@ -1,0 +1,16 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>{{#str}} filetype, local_moodlecloud {{/str}}</th>
+            <th>{{#str}} spaceused, local_moodlecloud {{/str}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#filetypes}}
+            <tr>
+                <td>{{mimetype}}</td>
+                <td>{{sizeHumanReadable}}</td>
+            </tr>
+        {{/filetypes}}
+    </tbody>
+</table>
