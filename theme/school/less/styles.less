@@ -7347,9 +7347,15 @@ footer {
 
 header.navbar,
 .navbar-fixed-top .navbar-inner,
-.navbar-static-top .navbar-inner {
+.navbar-static-top .navbar-inner,
+.popover-region-toggle {
   background: @primaryColour;
   color: @primaryFontColour;
+}
+
+.popover-region-toggle:hover, .popover-region-toggle:active, .popover-region-toggle:focus {
+    color: @primaryFontColour;
+    opacity: 1;
 }
 
 .landing-page .logo-img {
