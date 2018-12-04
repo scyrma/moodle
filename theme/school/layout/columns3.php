@@ -56,6 +56,7 @@ echo $OUTPUT->doctype() ?>
     </div>
 
     <?php
+        echo $OUTPUT->standard_after_main_region_html();
         echo $OUTPUT->theme_footer();
         echo $OUTPUT->standard_end_of_body_html();
     ?>
