@@ -38,7 +38,7 @@ if (!isloggedin() && $isregistration->value == 'email') { ?>
             ?>
         </section>
     </div>
-
+    <?php echo $OUTPUT->standard_after_main_region_html(); ?>
     <?php
         echo $OUTPUT->theme_footer();
         echo $OUTPUT->standard_end_of_body_html();
