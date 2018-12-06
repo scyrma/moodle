@@ -673,6 +673,7 @@ $string['questionname'] = 'Question name';
 $string['questionnonav'] = '<span class="accesshide">Question </span>{$a->number}<span class="accesshide"> {$a->attributes}</span>';
 $string['questionnonavinfo'] = '<span class="accesshide">Information </span>{$a->number}<span class="accesshide"> {$a->attributes}</span>';
 $string['questionnotloaded'] = 'Question {$a} has not been loaded from the database';
+$string['questionoptionsnotloaded'] = 'Additional settings for question {$a} could not be loaded from the database';
 $string['questionorder'] = 'Question order';
 $string['questionposition'] = 'New position in order for question {$a}';
 $string['questions'] = 'Questions';
