@@ -926,7 +926,16 @@ function _tidy_question($question, $category, array $tagobjects = null, array $f
         $question->questiontext = html_writer::tag('p', get_string('warningmissingtype',
                 'qtype_missingtype')) . $question->questiontext;
     }
-    question_bank::get_qtype($question->qtype)->get_question_options($question);
+
+    try {
+        $optionsloaded = question_bank::get_qtype($question->qtype)->get_question_options($question);
+    } catch (Exception $e) {
+        $optionsloaded = false;
+    }
+
+    if ($optionsloaded === false) {
+        $question->questiontext = html_writer::tag('p', get_string('optionsfailed', 'core_question')) . $question->questiontext;
+    }
 
     // Convert numeric fields to float. (Prevents these being displayed as 1.0000000.)
     $question->defaultmark += 0;
