@@ -622,8 +622,10 @@ class mod_attendance_structure {
         $record->takenby = $USER->id;
         $record->ipaddress = getremoteaddr(null);
 
-        $dbsesslog = $this->get_session_log($mformdata->sessid);
-        if (array_key_exists($record->studentid, $dbsesslog)) {
+        $existingattendance = $DB->record_exists('attendance_log',
+            array('sessionid' => $mformdata->sessid, 'studentid' => $USER->id));
+
+        if ($existingattendance) {
             // Already recorded do not save.
             return false;
         }
@@ -735,28 +737,6 @@ class mod_attendance_structure {
         $event->add_record_snapshot('course_modules', $this->cm);
         $event->add_record_snapshot('attendance_sessions', $session);
         $event->trigger();
-
-        $group = 0;
-        if ($this->pageparams->grouptype != self::SESSION_COMMON) {
-            $group = $this->pageparams->grouptype;
-        } else {
-            if ($this->pageparams->group) {
-                $group = $this->pageparams->group;
-            }
-        }
-
-        $totalusers = count_enrolled_users(context_module::instance($this->cm->id), 'mod/attendance:canbelisted', $group);
-        $usersperpage = $this->pageparams->perpage;
-
-        if (!empty($this->pageparams->page) && $this->pageparams->page && $totalusers && $usersperpage) {
-            $numberofpages = ceil($totalusers / $usersperpage);
-            if ($this->pageparams->page < $numberofpages) {
-                $params['page'] = $this->pageparams->page + 1;
-                redirect($this->url_take($params), get_string('moreattendance', 'attendance'));
-            }
-        }
-
-        redirect($this->url_manage(), get_string('attendancesuccess', 'attendance'));
     }
 
     /**
@@ -843,6 +823,7 @@ class mod_attendance_structure {
             $enrolments = $DB->get_records_sql($sql, $params);
 
             foreach ($users as $user) {
+                $users[$user->id]->fullname = fullname($user);
                 $users[$user->id]->enrolmentstatus = $enrolments[$user->id]->status;
                 $users[$user->id]->enrolmentstart = $enrolments[$user->id]->mintime;
                 $users[$user->id]->enrolmentend = $enrolments[$user->id]->maxtime;
