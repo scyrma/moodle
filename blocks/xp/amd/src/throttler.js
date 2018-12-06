@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,17 +14,39 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Visuals.
+ * Throttler.
  *
  * @package    block_xp
- * @copyright  2014 Frédéric Massart - FMCorz.net
+ * @copyright  2018 Frédéric Massart
+ * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @deprecated Since 3.0.0, will be removed in 3.2.0
  */
 
-require(__DIR__ . '/../../config.php');
+define([], function() {
+    /**
+     * Throttler.
+     *
+     * @param {Number} delay The delay.
+     */
+    function Throttler(delay) {
+        this.delay = delay || 300;
+        this.timeout = null;
+        this.time = new Date();
+    }
 
-$courseid = required_param('courseid', PARAM_INT);
-$PAGE->set_url('/blocks/xp/visuals.php', ['courseid' => $courseid]);
-debugging(get_string('urlaccessdeprecated', 'block_xp'), DEBUG_DEVELOPER);
-redirect(\block_xp\di::get('url_resolver')->reverse('visuals', ['courseid' => $courseid]));
+    Throttler.prototype.cancel = function() {
+        clearTimeout(this.timeout);
+    };
+
+    Throttler.prototype.schedule = function(callback) {
+        var now = new Date();
+        if (this.time.getTime() + this.delay > now) {
+            clearTimeout(this.timeout);
+        }
+
+        this.time = now;
+        this.timeout = setTimeout(callback, this.delay);
+    };
+
+    return Throttler;
+});
