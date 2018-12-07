@@ -266,6 +266,7 @@ class quiz {
             }
             $questions[$id] = $this->questions[$id];
             $this->ensure_question_loaded($id);
+            $this->ensure_question_options_loaded($id);
         }
         return $questions;
     }
@@ -429,11 +430,26 @@ class quiz {
     // Private methods =========================================================
     /**
      * Check that the definition of a particular question is loaded, and if not throw an exception.
-     * @param $id a questionid.
+     *
+     * @param int $id a questionid.
+     * @throws moodle_quiz_exception
      */
     protected function ensure_question_loaded($id) {
         if (isset($this->questions[$id]->_partiallyloaded)) {
             throw new moodle_quiz_exception($this, 'questionnotloaded', $id);
+        }
+    }
+
+    /**
+     * Check that there was no error at loading question options.
+     *
+     * @param int $id a questionid.
+     * @throws moodle_quiz_exception
+     */
+    protected function ensure_question_options_loaded($id) {
+        if (isset($this->questions[$id]->_loading_options_failed)) {
+            throw new moodle_quiz_exception($this, 'questionoptionsnotloaded', $id, '',
+                    $this->questions[$id]->_loading_options_failed);
         }
     }
 
