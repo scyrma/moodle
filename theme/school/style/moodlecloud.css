@@ -48,4 +48,5 @@ a:hover .i-def, .header:hover .i-def, .active .i-def {
 .message-drawer {
     z-index: 1002;
     top: 81px;
+    height: calc(100% - 82px);
 }
