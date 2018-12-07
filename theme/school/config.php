@@ -69,4 +69,3 @@ $THEME->layouts = array(
         'regions' => array('side-pre', 'side-post'),
     ),
 );
-
