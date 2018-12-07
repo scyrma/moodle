@@ -50,3 +50,7 @@ a:hover .i-def, .header:hover .i-def, .active .i-def {
     top: 81px;
     height: calc(100% - 82px);
 }
+
+.message-drawer .rounded-circle {
+    max-width: none !important;
+}
