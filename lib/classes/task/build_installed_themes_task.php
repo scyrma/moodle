@@ -42,6 +42,9 @@ class build_installed_themes_task extends adhoc_task {
         global $CFG;
         require_once("{$CFG->libdir}/outputlib.php");
 
+        // BEGIN MOODLECLOUD HACK.
+
+        /* Dont build for of all themes.
         $themenames = array_keys(\core_component::get_plugin_list('theme'));
         // Load the theme configs.
         $themeconfigs = array_map(function($themename) {
@@ -50,5 +53,14 @@ class build_installed_themes_task extends adhoc_task {
 
         // Build the list of themes and cache them in local cache.
         theme_build_css_for_themes($themeconfigs);
+        */
+
+        // Build the current theme so that the user can immediately
+        // browse the site without having to wait for the theme to build.
+        $themeconfig = \theme_config::load($CFG->theme);
+        $direction = right_to_left() ? 'rtl' : 'ltr';
+        theme_build_css_for_themes([$themeconfig], [$direction]);
+
+        // END MOODLECLOUD HACK.
     }
 }
