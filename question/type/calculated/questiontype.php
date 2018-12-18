@@ -60,30 +60,24 @@ class qtype_calculated extends question_type {
     public function get_question_options($question) {
         // First get the datasets and default options.
         // The code is used for calculated, calculatedsimple and calculatedmulti qtypes.
-        global $CFG, $DB, $OUTPUT;
-        if (!$question->options = $DB->get_record('question_calculated_options',
-                array('question' => $question->id))) {
-            $question->options = new stdClass();
-            $question->options->synchronize = 0;
-            $question->options->single = 0;
-            $question->options->answernumbering = 'abc';
-            $question->options->shuffleanswers = 0;
-            $question->options->correctfeedback = '';
-            $question->options->partiallycorrectfeedback = '';
-            $question->options->incorrectfeedback = '';
-            $question->options->correctfeedbackformat = 0;
-            $question->options->partiallycorrectfeedbackformat = 0;
-            $question->options->incorrectfeedbackformat = 0;
+        global $DB;
+        if (!$question->options = $DB->get_record('question_calculated_options', ['question' => $question->id])) {
+            // Because of the current (bad) design architecture of qtype_calculated and qtype_calculatedsimple,
+            // we cannot show a debugging notice here. It is expected for qtype_calculatedsimple questions to
+            // not have any options.
+
+            $question->options = $this->create_default_options($question);
         }
 
         if (!$question->options->answers = $DB->get_records_sql("
-            SELECT a.*, c.tolerance, c.tolerancetype, c.correctanswerlength, c.correctanswerformat
-            FROM {question_answers} a,
-                 {question_calculated} c
-            WHERE a.question = ?
-            AND   a.id = c.answer
-            ORDER BY a.id ASC", array($question->id))) {
-                return false;
+                SELECT a.*, c.tolerance, c.tolerancetype, c.correctanswerlength, c.correctanswerformat
+                FROM {question_answers} a,
+                     {question_calculated} c
+                WHERE a.question = ?
+                AND   a.id = c.answer
+                ORDER BY a.id ASC", array($question->id))) {
+            debugging("Missing question answers for question ID {$question->id}!");
+            return false;
         }
 
         if ($this->get_virtual_qtype()->name() == 'numerical') {
@@ -1841,6 +1835,29 @@ class qtype_calculated extends question_type {
         parent::delete_files($questionid, $contextid);
         $this->delete_files_in_answers($questionid, $contextid);
         $this->delete_files_in_hints($questionid, $contextid);
+    }
+
+    /**
+     * Create a default options object for the provided question.
+     *
+     *
+     * @param stdClass $question The question to get the options of
+     * @return object The options object.
+     */
+    protected function create_default_options($question) {
+        // Create a default question options record.
+        $options = new stdClass();
+        $options->question = $question->id;
+
+        $this->set_default_combined_feedback($options);
+
+        $options->synchronize = 0;
+        $options->single = 0;
+        $options->shuffleanswers = 0;
+        $options->answernumbering = 'abc';
+        $options->shownumcorrect = 0;
+
+        return $options;
     }
 }
 
