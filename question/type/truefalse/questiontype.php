@@ -112,19 +112,18 @@ class qtype_truefalse extends question_type {
      * Loads the question type specific options for the question.
      */
     public function get_question_options($question) {
-        global $DB, $OUTPUT;
+        global $DB;
         // Get additional information from database
         // and attach it to the question object.
         if (!$question->options = $DB->get_record('question_truefalse',
                 array('question' => $question->id))) {
-            echo $OUTPUT->notification('Error: Missing question options!');
+            debugging("Question ID {$question->id} was missing question options!");
             return false;
         }
         // Load the answers.
         if (!$question->options->answers = $DB->get_records('question_answers',
-                array('question' =>  $question->id), 'id ASC')) {
-            echo $OUTPUT->notification('Error: Missing question answers for truefalse question ' .
-                    $question->id . '!');
+                array('question' => $question->id), 'id ASC')) {
+            debugging("Missing question answers for truefalse question ID {$question->id}!");
             return false;
         }
 

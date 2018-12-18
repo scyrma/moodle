@@ -921,14 +921,26 @@ function question_load_questions($questionids, $extrafields = '', $join = '') {
  * @param stdClass[]|null $filtercourses The courses to filter the course tags by.
  */
 function _tidy_question($question, $category, array $tagobjects = null, array $filtercourses = null) {
-    global $CFG;
-
     // Load question-type specific fields.
     if (!question_bank::is_qtype_installed($question->qtype)) {
         $question->questiontext = html_writer::tag('p', get_string('warningmissingtype',
                 'qtype_missingtype')) . $question->questiontext;
     }
-    question_bank::get_qtype($question->qtype)->get_question_options($question);
+
+    try {
+        $optionsloaded = question_bank::get_qtype($question->qtype)->get_question_options($question);
+    } catch (Exception $e) {
+        $optionsloaded = false;
+        $question->_loading_options_failed = $e->getMessage();
+    }
+
+    if ($optionsloaded === false) {
+        $question->questiontext = html_writer::tag('p', get_string('optionsfailed', 'core_question')) . $question->questiontext;
+        if (!isset($question->_loading_options_failed)) {
+            $question->_loading_options_failed = '';    // Although we don't have any useful information to add,
+                                                        // we want this to be set to indicate the failure.
+        }
+    }
 
     // Convert numeric fields to float. (Prevents these being displayed as 1.0000000.)
     $question->defaultmark += 0;

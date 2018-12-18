@@ -64,13 +64,7 @@ class qtype_multichoice extends question_type {
         $options = new stdClass();
         $options->questionid = $question->id;
 
-        // Get the default strings and just set the format.
-        $options->correctfeedback = get_string('correctfeedbackdefault', 'question');
-        $options->correctfeedbackformat = FORMAT_HTML;
-        $options->partiallycorrectfeedback = get_string('partiallycorrectfeedbackdefault', 'question');;
-        $options->partiallycorrectfeedbackformat = FORMAT_HTML;
-        $options->incorrectfeedback = get_string('incorrectfeedbackdefault', 'question');
-        $options->incorrectfeedbackformat = FORMAT_HTML;
+        $this->set_default_combined_feedback($options);
 
         $config = get_config('qtype_multichoice');
         $options->single = $config->answerhowmany;
