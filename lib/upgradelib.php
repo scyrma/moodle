@@ -1753,6 +1753,9 @@ function upgrade_themes() {
     $direction = right_to_left() ? 'rtl' : 'ltr';
     theme_build_css_for_themes([$themeconfig], [$direction]);
 
+    // BEGIN MOODLECLOUD HACK.
+    // TROLOLOL
+    /*
     // Only queue the task if there isn't already one queued.
     if (empty(\core\task\manager::get_adhoc_tasks('\\core\\task\\build_installed_themes_task'))) {
         // Queue a task to build all of the site themes at some point
@@ -1761,6 +1764,8 @@ function upgrade_themes() {
         $adhoctask = new \core\task\build_installed_themes_task();
         \core\task\manager::queue_adhoc_task($adhoctask);
     }
+    */
+    // END MOODLECLOUD HACK.
 }
 
 /**
