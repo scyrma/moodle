@@ -243,6 +243,7 @@ $string['novirtualquestiontype'] = 'No virtual question type for question type {
 $string['numqas'] = 'No. question attempts';
 $string['numquestions'] = 'No. questions';
 $string['numquestionsandhidden'] = '{$a->numquestions} (+{$a->numhidden} hidden)';
+$string['optionsfailed'] = 'It is not possible to load this question\'s additional options. Please do not use this question. Please edit, review the question\'s setting s and save the question again.';
 $string['page-question-x'] = 'Any question page';
 $string['page-question-edit'] = 'Question editing page';
 $string['page-question-category'] = 'Question category page';
