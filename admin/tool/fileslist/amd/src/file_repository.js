@@ -22,37 +22,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define(['jquery', 'core/ajax'], function($, Ajax) {
-    var cachedResponse;
-
     /**
      * Retrieve a list of files ordered by filesize.
      *
      * @method getFilesBySize
      * @return {promise} Resolved with an array of file objects.
      */
-    var getFilesBySize = function() {
-        return $.when(
-            // If we already have the response cached, we can resolve with
-            // that immediately, otherwise query the server.
-            cachedResponse ||
-                Ajax.call([
-                    {
-                        methodname: 'tool_fileslist_get_files_by_size',
-                        args: []
-                    }
-                ])[0].then(function(response) {
-                    cachedResponse = {
-                        files: response.files
-                            .filter(function(file) {
-                                return file.filearea != 'draft' &&
-                                       file.component != 'tool_recyclebin' &&
-                                       (file.component != 'backup' || file.mimetype != 'application/vnd.moodle.backup') &&
-                                       file.component != 'assignfeedback_editpdf';
-                            })
-                    };
-                    return cachedResponse;
-                })
-        );
+    var getFilesBySize = function(offset, limit) {
+        return Ajax.call([
+            {
+                methodname: 'tool_fileslist_get_files_by_size',
+                args: [offset, limit]
+            }
+        ])[0];
     };
 
     return {
