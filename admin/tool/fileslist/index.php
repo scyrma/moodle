@@ -70,6 +70,9 @@ echo html_writer::end_tag('div');
 echo $OUTPUT->render_from_template(
     'tool_fileslist/main',
     [
+        'numitems' => $DB->count_records_sql(
+            "SELECT COUNT(*) FROM {files} WHERE filesize > 0 AND mimetype IS NOT NULL AND referencefileid IS NULL"
+        ),
         'help' => [
             'action' => $OUTPUT->help_icon('action', 'tool_fileslist')
         ]
@@ -77,4 +80,3 @@ echo $OUTPUT->render_from_template(
 );
 
 echo $OUTPUT->footer();
-
