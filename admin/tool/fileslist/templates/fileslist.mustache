@@ -1,8 +1,4 @@
-<div data-region="files-table-container"
-     data-num-items=""
-     data-limit="20"
-     data-start="0"
->
+<div data-region="files-table-container">
     <table class="table table-striped">
         <thead>
             <tr>
@@ -16,21 +12,19 @@
             </tr>
         </thead>
         <tbody data-region="files-table-list">
+            {{#files}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{sizeHumanReadable}}</td>
+                    <td>{{mimetype}}</td>
+                    <td><a href="{{user.profile}}">{{user.fullname}}<a/></td>
+                        <td>{{component}}</td>
+                        <td>{{filearea}}</td>
+                        <td>
+                            {{#location}}<a href="{{location}}" class="btn btn-secondary">View in context</a>{{/location}}
+                        </td>
+                </tr>
+            {{/files}}
         </tbody>
     </table>
-    <div class="text-xs-center text-center">
-        <div class="pagination">
-            <ul class="pagination" data-region="pagination"></ul>
-        </div>
-    </div>
 </div>
-{{#js}}
-require(['jquery', 'tool_fileslist/fileslist', 'tool_fileslist/paging_bar'], function($, FilesList, PagingBar) {
-    FilesList.updateList($('[data-region="files-table-container"]')).then(function() {
-        PagingBar.init(
-            $('[data-region="pagination"]'),
-            $('[data-region="files-table-container"]')
-        );
-    });
-});
-{{/js}}

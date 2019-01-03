@@ -31,6 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use core_user;
 use stdClass;
+use Generator;
 
 /**
  * Container.
@@ -58,10 +59,19 @@ final class container {
      *
      * @return file_repository
      */
-    public static function get_files_by_size_repository() : file_repository {
+    public static function get_files_by_size_repository(int $offset, int $limit) : file_repository {
         global $DB;
         return new file_repository(
-            new db_rows($DB, 'files', 'filesize DESC'),
+            // Quick and dirty way to make an Iterator.
+            (function() use ($DB, $offset, $limit) : Generator {
+                yield from $DB->get_records_sql(
+                    "SELECT * FROM {files} WHERE filesize > 0 AND mimetype IS NOT NULL AND referencefileid IS NULL ORDER BY filesize DESC LIMIT :limit OFFSET :offset",
+                    [
+                        'limit' => $limit,
+                        'offset' => $offset,
+                    ]
+                );
+            })(),
             new file_factory(
                 get_file_storage(),
                 function(int $uid) : stdClass {
