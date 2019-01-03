@@ -30,7 +30,7 @@ use tool_fileslist\container;
 require_once($CFG->libdir . '/externallib.php');
 
 final class tool_fileslist_external extends external_api {
-    public static function get_files_by_size() {
+    public static function get_files_by_size(int $offset, int $limit) {
         if (!is_siteadmin()) {
             throw new moodle_exception('nopermissions', 'error', '', 'access files list');
         }
@@ -40,7 +40,7 @@ final class tool_fileslist_external extends external_api {
         self::validate_context(\context_system::instance());
 
         return (
-            new files_exporter(container::get_files_by_size_repository()->get_valid_files())
+            new files_exporter(container::get_files_by_size_repository($offset, $limit)->get_valid_files())
         )->export($PAGE->get_renderer('core'));
     }
 
@@ -49,6 +49,9 @@ final class tool_fileslist_external extends external_api {
     }
 
     protected static function get_files_by_size_parameters() {
-        return new external_function_parameters([]);
+        return new external_function_parameters([
+            new external_value(PARAM_INT),
+            new external_value(PARAM_INT)
+        ]);
     }
 }
