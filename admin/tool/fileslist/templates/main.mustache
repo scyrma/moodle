@@ -8,7 +8,7 @@
                 10,
                 function(pagesData) {
                     return pagesData.map(function(pageData) {
-                        return FileRepository.getFilesBySize((pageData.pageNumber-1)*10,10).then(function(data) {
+                        return FileRepository.getFilesBySize((pageData.pageNumber-1)*100,100).then(function(data) {
                             return Templates.render(
                                 'tool_fileslist/fileslist',
                                 {
