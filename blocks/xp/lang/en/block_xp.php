@@ -31,6 +31,7 @@ $string['addarule'] = 'Add a rule';
 $string['admindefaultrulesintro'] = 'The following rules will be used as default for courses in which the block is added.';
 $string['admindefaultsettingsintro'] = 'The settings below will be used as defaults when the block is newly added to a course.';
 $string['admindefaultvisualsintro'] = 'The following will be used as defaults when the block is newly added to a course.';
+$string['addinstructions'] = 'Add more information';
 $string['anonymity'] = 'Anonymity';
 $string['anonymity_help'] = 'This setting controls whether participants can see each other\'s name and avatar.';
 $string['awardaxpwhen'] = '<strong>{$a}</strong> points are earned when:';
@@ -79,6 +80,7 @@ $string['displayoneneigbour'] = 'Display one neighbour';
 $string['displayparticipantsidentity'] = 'Display participants identity';
 $string['displayrank'] = 'Display rank';
 $string['displayrelativerank'] = 'Display a relative rank';
+$string['editinstructions'] = 'Edit information';
 $string['enablecheatguard'] = 'Enable cheat guard';
 $string['enablecheatguard_help'] = 'The cheat guard offers a simple inexpensive mechanism for preventing students to abuse the system using obvious techniques, such as refreshing the same page endlessly, or repeating the same action over and over again.';
 $string['enableinfos'] = 'Enable info page';
@@ -117,6 +119,7 @@ $string['hiderank'] = 'Hide rank';
 $string['incourses'] = 'In courses';
 $string['ineffective'] = 'Ineffective';
 $string['infos'] = 'Information';
+$string['instructions'] = 'More information';
 $string['invalidxp'] = 'Invalid points value';
 $string['keeplogs'] = 'Keep logs';
 $string['ladder'] = 'Ladder';
@@ -150,6 +153,7 @@ $string['navrules'] = 'Rules';
 $string['navsettings'] = 'Settings';
 $string['navvisuals'] = 'Visuals';
 $string['participant'] = 'Participant';
+$string['perpagecolon'] = 'Per page:';
 $string['pickaconditiontype'] = 'Pick a condition type';
 $string['pluginname'] = 'Level up!';
 $string['pointsintimelinker'] = 'per';
@@ -166,11 +170,13 @@ $string['privacy:metadata:prefintro'] = 'Records whether the user dismissed the 
 $string['privacy:metadata:preflevelup'] = 'Records whether the user should see the level up notification';
 $string['privacy:metadata:prefnotices'] = 'Records whether the user closed the support notice';
 $string['privacy:metadata:prefseenpromo'] = 'Records when the user viewed the promo page';
+$string['privacy:metadata:prefladderpagesize'] = 'The user\'s preferred page size when viewing the ladder';
 $string['privacy:metadata:xp'] = 'Stores the points and level of users';
 $string['privacy:metadata:xp:xp'] = 'The user\'s points';
 $string['privacy:metadata:xp:lvl'] = 'The user\'s level';
 $string['privacy:metadata:xp:userid'] = 'The user';
 $string['progress'] = 'Progress';
+$string['progressbar'] = 'Progress bar';
 $string['property:action'] = 'Event action';
 $string['property:component'] = 'Event component';
 $string['property:crud'] = 'Event CRUD';
@@ -232,10 +238,19 @@ $string['searchandselectcourse'] = 'Search and select a course';
 $string['searchandselectmodule'] = 'Search and select an activity or resource';
 $string['send'] = 'Send';
 $string['shortcode:xpbadge'] = 'The badge matching the current user\'s level.';
-$string['shortcode:xpladder'] = 'Display a portion of the ladder around the current user\'s rank.';
+$string['shortcode:xpladder'] = 'Display a portion of the ladder.';
 $string['shortcode:xpladder_help'] = '
+By default, a portion of the ladder surrounding the current user will be displayed.
+
 ```
 [xpladder]
+```
+
+To display the top 10 students instead of the neighbours of the current user, set the parameter `top`. You can optionally set the number of users to display like so `top=20`.
+
+```
+[xpladder top]
+[xpladder top=15]
 ```
 
 A link to the full ladder will automatically be displayed below the table, if you do not want to display such link, add the argument `hidelink`.
