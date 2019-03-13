@@ -38,6 +38,8 @@ use moodle_exception;
  */
 class ladder_controller extends page_controller {
 
+    const PAGE_SIZE_FLAG = 'ladder-pagesize';
+
     protected $requiremanage = false;
     protected $supportsgroups = true;
     protected $routename = 'ladder';
@@ -53,6 +55,17 @@ class ladder_controller extends page_controller {
         global $PAGE;
         parent::page_setup();
         $PAGE->add_body_class('block_xp-ladder');
+    }
+
+    /**
+     * The optional params expected.
+     *
+     * @return array
+     */
+    protected function define_optional_params() {
+        return [
+            ['pagesize', 0, PARAM_INT, false]
+        ];
     }
 
     /**
@@ -81,6 +94,7 @@ class ladder_controller extends page_controller {
             ],
             $USER->id
         );
+        $table->show_pagesize_selector(true);
         $table->define_baseurl($this->pageurl);
         return $table;
     }
@@ -93,9 +107,48 @@ class ladder_controller extends page_controller {
         return get_string('ladder', 'block_xp');
     }
 
+    /**
+     * Get the page size.
+     *
+     * @return int
+     */
+    protected function get_page_size() {
+        global $USER;
+
+        $indicator = \block_xp\di::get('user_generic_indicator');
+        $pagesizepref = $indicator->get_user_flag($USER->id, self::PAGE_SIZE_FLAG);
+        $defaultpagesize = 20;
+
+        // Get page size from URL argument.
+        $pagesize = $this->get_param('pagesize');
+
+        // Fallback on preference.
+        if (empty($pagesize)) {
+            $pagesize = $pagesizepref;
+        }
+
+        // Check that it is the right value.
+        if (!in_array($pagesize, [20, 50, 100])) {
+            $pagesize = $defaultpagesize;
+        }
+
+        if ($pagesize == $defaultpagesize) {
+            // When the default, and we've got a saved flag, unset it.
+            if (!empty($pagesizepref)) {
+                $indicator->unset_user_flag($USER->id, self::PAGE_SIZE_FLAG);
+            }
+
+        } else if ($pagesize != $pagesizepref) {
+            // It's not the default, and it's not our flag, save the flag.
+            $indicator->set_user_flag($USER->id, self::PAGE_SIZE_FLAG, $pagesize);
+        }
+
+        return (int) $pagesize;
+    }
+
     protected function page_content() {
         $this->print_group_menu();
-        echo $this->get_table()->out(20, false);
+        echo $this->get_table()->out($this->get_page_size(), false);
     }
 
 }
