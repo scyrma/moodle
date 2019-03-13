@@ -386,7 +386,7 @@ function xmldb_attendance_upgrade($oldversion=0) {
 
             // Adding keys to table attendance_warning.
             $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            $table->add_key('level_id', XMLDB_KEY_UNIQUE, array('idnumber, warningpercent, warnafter'));
+            $table->add_key('level_id', XMLDB_KEY_UNIQUE, array('idnumber', 'warningpercent', 'warnafter'));
 
             // Conditionally launch create table for attendance_warning.
             $dbman->create_table($table);
@@ -401,7 +401,7 @@ function xmldb_attendance_upgrade($oldversion=0) {
                     $DB->execute("DROP INDEX ". $name);
                 }
             }
-            $index = new xmldb_key('level_id', XMLDB_KEY_UNIQUE, array('idnumber, warningpercent', 'warnafter'));
+            $index = new xmldb_key('level_id', XMLDB_KEY_UNIQUE, array('idnumber', 'warningpercent', 'warnafter'));
             $dbman->add_key($table, $index);
         }
         // Attendance savepoint reached.
@@ -535,6 +535,19 @@ function xmldb_attendance_upgrade($oldversion=0) {
             $dbman->add_field($table, $field);
         }
         upgrade_mod_savepoint(true, 2018051404, 'attendance');
+    }
+
+    if ($oldversion < 2018051408) {
+
+        // Changing precision of field statusset on table attendance_log to (1333).
+        $table = new xmldb_table('attendance_log');
+        $field = new xmldb_field('statusset', XMLDB_TYPE_CHAR, '1333', null, null, null, null, 'statusid');
+
+        // Launch change of precision for field statusset.
+        $dbman->change_field_precision($table, $field);
+
+        // Attendance savepoint reached.
+        upgrade_mod_savepoint(true, 2018051408, 'attendance');
     }
 
     return $result;
