@@ -1,0 +1,32 @@
+<div id="tool-fileslist-container"></div>
+{{#js}}
+    require(
+        ['jquery', 'core/templates', 'core/paged_content_factory', 'tool_fileslist/file_repository'],
+        function($, Templates, PagedContentFactory, FileRepository) {
+            PagedContentFactory.createWithTotalAndLimit(
+                {{numitems}},
+                100,
+                function(pagesData) {
+                    return pagesData.map(function(pageData) {
+                        return FileRepository.getFilesBySize((pageData.pageNumber-1)*100,100).then(function(data) {
+                            return Templates.render(
+                                'tool_fileslist/fileslist',
+                                {
+                                    files: data.files.map(function(file) {
+                                        var index = Math.floor(Math.log(file.size) / Math.log(1024));
+                                        file.sizeHumanReadable = Math.round((file.size/Math.pow(1024, index))*100)/100
+                                            + ' ' + ['B', 'KB', 'MB', 'GB'][index];
+                                        return file;
+                                    })
+                                }
+                            );
+                        });
+                    });
+                },
+                {controlPlacementBottom: true}
+            ).then(function(html, js) {
+                Templates.replaceNodeContents($('#tool-fileslist-container'), html, js);
+            });
+        }
+    );
+{{/js}}
