@@ -7,6 +7,7 @@ use moodle_url;
 use curl;
 use local_logging\logger;
 use stdClass;
+use DOMDocument;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -58,6 +59,7 @@ class register extends adhoc_task {
                     'component' => 'local_moodlecloud',
                     'other' => 'Registration failed, queueing self again.',
                 ], 'registration');
+                mtrace("Moodlecloud Registration ({$huburl}): Registration failed, queueing self again.");
 
                 $this->requeue_adhoc_task();
             }
@@ -170,16 +172,36 @@ class register extends adhoc_task {
                     'component' => 'local_moodlecloud',
                     'other' => "Error $errno while registering: ". serialize($ret),
                 ], 'registration');
-
+                mtrace("Moodlecloud Registration ({$huburl}): Error $errno while registering: " . serialize($ret));
                 return false;
             } else {
+                $doc = new DomDocument;
+
+                if (@$doc->loadHTML($ret)) {
+                    $main = $doc->getElementById("region-main") ? $doc->getElementById("region-main")->getElementsByTagName('div') : false;
+                    $main = isset($main[0]) ? $main[0] : false;
+                }
+
+                if (isset($main) && $main != false) {
+                    $message = join(
+                        " ",
+                        array_filter(
+                            explode("\n", $main->textContent),
+                            function($v) {
+                                return trim($v) !== "×" && !empty($v) && trim($v) !== "Continue";
+                            }
+                        )
+                    );
+                } else {
+                    $message = "Unknown response after registering with hub";
+                }
+
                 logger::log(get_class($this), [
                     'eventname' => 'registration',
                     'component' => 'local_moodlecloud',
-                    // limit log to less than 8k, to prevent wrapping text on logentries - keep only meaningful part at the beginning.
-                    'other' => 'Registration successful: '. substr(serialize($ret), 0, 7000),
+                    'other' => "Registration successful: $message",
                 ], 'registration');
-
+                mtrace("Moodlecloud Registration ({$huburl}): Registration successful: $message");
                 return true;
             }
         }
