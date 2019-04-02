@@ -3289,6 +3289,9 @@ function set_debugging($level, $debugdisplay = null) {
     }
 }
 
+// BEGIN MOODLECLOUD HACK.
+class newrelic_moodle_debugging extends Exception {}
+// END MOODLECLOUD HACK.
 /**
  * Standard Debugging Function
  *
@@ -3316,6 +3319,14 @@ function set_debugging($level, $debugdisplay = null) {
  */
 function debugging($message = '', $level = DEBUG_NORMAL, $backtrace = null) {
     global $CFG, $USER;
+    // BEGIN MOODLECLOUD HACK.
+    if (function_exists('newrelic_notice_error') && $message) {
+        newrelic_notice_error(
+            null,
+            new newrelic_moodle_debugging($message)
+        );
+    }
+    // END MOODLECLOUD HACK.
 
     $forcedebug = false;
     if (!empty($CFG->debugusers) && $USER) {
