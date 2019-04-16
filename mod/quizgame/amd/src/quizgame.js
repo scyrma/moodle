@@ -301,21 +301,29 @@ define(['jquery','core/yui', 'core/notification', 'core/ajax'], function($, Y, n
         lastShot = 0;
         currentPointsLeft = 0;
 
-        if (questions[level].type == 'multichoice') {
+        if (questions[level].type == 'truefalse') {
+            questions[level].answers.forEach(function(answer) {
+                var enemy = new TFEnemy(Math.random() * bounds.width, -Math.random() * bounds.height / 2,
+                                           answer.text, answer.fraction);
+                currentTeam.push(enemy);
+                gameObjects.push(enemy);
+            });
+            currentPointsLeft = 0; // This is unused by TrueFalse questions.
+        } else if (questions[level].type == 'multichoice') {
             questions[level].answers.forEach(function(answer) {
                 var enemy = new MultiEnemy(Math.random() * bounds.width, -Math.random() * bounds.height / 2,
-                                           answer.text, answer.fraction);
+                                           answer.text, answer.fraction, questions[level].single);
                 if (answer.fraction < 1) {
                     currentTeam.push(enemy);
                     if (answer.fraction > 0) {
-                        currentPointsLeft += answer.fraction;
+                        currentPointsLeft += parseFloat(answer.fraction);
                     }
                 }
                 gameObjects.push(enemy);
             });
         } else if (questions[level].type == 'match') {
             var i = 0;
-            var fraction = 1 / questions[level].stems.length;
+            var fraction = 1 / (questions[level].stems.length * 2);
             currentPointsLeft += 1;
             questions[level].stems.forEach(function(stem) {
                 i++;
@@ -581,9 +589,8 @@ define(['jquery','core/yui', 'core/notification', 'core/ajax'], function($, Y, n
                 currentPointsLeft -= this.fraction;
                 score -= 1000 * this.fraction;
             }
-            if (currentPointsLeft <= 0 && this.level == level && player.alive) {
-                nextLevel();
-            }
+
+            shipReachedEnd.call(this);
         }
     };
     Enemy.prototype.draw = function (context) {
@@ -598,7 +605,11 @@ define(['jquery','core/yui', 'core/notification', 'core/ajax'], function($, Y, n
     Enemy.prototype.die = function() {
         GameObject.prototype.die.call(this);
         spray(this.x + this.image.width, this.y + this.image.height, 50 + (this.fraction * 150), "#FF0000");
+
+        // Adjust Score.
         score += this.fraction * 1000;
+
+        // Kill off the ship.
         playSound("explosion");
     };
     Enemy.prototype.gotShot = function(shot) {
@@ -607,8 +618,45 @@ define(['jquery','core/yui', 'core/notification', 'core/ajax'], function($, Y, n
         this.die();
     };
 
-    function MultiEnemy(x, y, text, fraction) {
+    function killAllAlive() {
+        currentTeam.forEach(function (enemy) {
+            if (enemy.alive) {
+                // Make the fraction 0 so it won't count as anything and make a new level.
+                enemy.fraction = 0;
+                enemy.die();
+            }
+        });
+        currentTeam = [];
+    }
+
+    function TFEnemy(x, y, text, fraction) {
         Enemy.call(this, "pix/enemy.png", x, y, text, fraction);
+    }
+    TFEnemy.prototype = Object.create(Enemy.prototype);
+    TFEnemy.prototype.die = function() {
+        // TrueFalse questions are very simple, if either of the ships die, Enemy.prototype.die will handle
+        // the score adding of 1000 or 0, and then this will kill the other remaining ship.
+        Enemy.prototype.die.call(this);
+        killAllAlive();
+        // Only goes to the next level if the result is "true", as no matter what enemy dies first, the opposite will
+        // die immediately after.
+        if (this.fraction > 0) {
+            nextLevel();
+        }
+    };
+    TFEnemy.prototype.gotShot = function(shot) {
+        if (this.fraction > 0) {
+            shot.die();
+            this.die();
+        } else {
+            score += (this.fraction - 0.5) * 600;
+            shot.deflect();
+        }
+    };
+
+    function MultiEnemy(x, y, text, fraction, single) {
+        Enemy.call(this, "pix/enemy.png", x, y, text, fraction);
+        this.single = single;
     }
     MultiEnemy.prototype = Object.create(Enemy.prototype);
     MultiEnemy.prototype.die = function() {
@@ -616,18 +664,13 @@ define(['jquery','core/yui', 'core/notification', 'core/ajax'], function($, Y, n
         if (this.fraction > 0) {
             currentPointsLeft -= this.fraction;
         }
-        if (this.fraction >= 1 || (this.fraction > 0 && currentPointsLeft <= 0)) {
-            currentTeam.forEach(function (enemy) {
-                if (enemy.alive) {
-                    enemy.die();
-                }
-            });
-            currentTeam = [];
+        if ((this.single && this.fraction === 1) && this.fraction >= 1 || (this.fraction > 0 && currentPointsLeft <= 0)) {
+            killAllAlive();
             nextLevel();
         }
     };
     MultiEnemy.prototype.gotShot = function(shot) {
-        if (this.fraction > 0) {
+        if (this.fraction >= 1 || (this.fraction > 0 && !this.single)) {
             shot.die();
             this.die();
         } else {
@@ -649,11 +692,19 @@ define(['jquery','core/yui', 'core/notification', 'core/ajax'], function($, Y, n
     }
     MatchEnemy.prototype = Object.create(Enemy.prototype);
     MatchEnemy.prototype.die = function() {
+        currentPointsLeft -= this.fraction;
+        // Sets the fraction as 0 to stop it adding to the score in #die()
+        this.fraction = 0;
         Enemy.prototype.die.call(this);
     };
     MatchEnemy.prototype.gotShot = function(shot) {
         if (shot.alive && this.alive) {
             if (lastShot == -this.pairid) {
+
+                // Increasing the score here instead of in #die(), due to rounding issues being a few numbers off.
+                // This must be done before because when #die is invoked, as it sets the fraction as 0.
+                score += this.fraction * 1000 * 2;
+
                 shot.die();
                 this.die();
                 var alives = 0;
@@ -665,6 +716,7 @@ define(['jquery','core/yui', 'core/notification', 'core/ajax'], function($, Y, n
                         alives++;
                     }
                 });
+
                 if (alives <= 0) {
                     nextLevel();
                 }
@@ -859,6 +911,15 @@ define(['jquery','core/yui', 'core/notification', 'core/ajax'], function($, Y, n
 
             context.fillText(drawLine.text, x, drawLine.y + modifier);
         });
+    }
+
+    function shipReachedEnd() {
+        var amountLeft = currentTeam.filter(function (enemy) { return enemy.alive; }).length;
+
+        if (amountLeft === 0 && (currentPointsLeft < this.fraction || currentPointsLeft <= 0)
+            && this.level === level && player.alive) {
+            nextLevel();
+        }
     }
 
     // Input.
