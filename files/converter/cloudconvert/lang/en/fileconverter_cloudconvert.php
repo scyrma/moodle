@@ -30,3 +30,4 @@ $string['privacy:metadata:fileconverter_cloudconvert:params'] = 'The query param
 $string['purge_conversions'] = 'Purge converted files';
 $string['purge_conversions_complete'] = 'Success.';
 $string['purge_conversions_warning'] = 'This will remove all files converted by the MoodleCloud document converter from your site, then disable the plugin.';
+$string['problemconvertingfile'] = 'Sorry, there was a problem converting your file. We are looking in to it.';
