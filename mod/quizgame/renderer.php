@@ -40,14 +40,21 @@ class mod_quizgame_renderer extends plugin_renderer_base {
 
         $qjson = [];
         foreach ($questions as $question) {
-            if ($question->qtype == "multichoice") {
+            if ($question->qtype == "multichoice" || $question->qtype == "truefalse") {
                 $questiontext = quizgame_cleanup($question->questiontext);
                 $answers = [];
                 foreach ($question->options->answers as $answer) {
                     $answertext = quizgame_cleanup($answer->answer);
                     $answers[] = ["text" => $answertext, "fraction" => $answer->fraction];
                 }
-                $qjson[] = ["question" => $questiontext, "answers" => $answers, "type" => $question->qtype];
+
+                // The "single" entry is used by multichoice to determine single or multi answer.
+                if ($question->qtype == "truefalse") {
+                    $qjson[] = ["question" => $questiontext, "answers" => $answers, "type" => $question->qtype];
+                } else {
+                    $qjson[] = ["question" => $questiontext, "answers" => $answers, "type" => $question->qtype,
+                        "single" => $question->qtype == "multichoice" && $question->options->single == 1];
+                }
             }
             if ($question->qtype == "match") {
                 $subquestions = [];
