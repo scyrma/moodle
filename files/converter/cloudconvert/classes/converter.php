@@ -268,8 +268,7 @@ final class converter implements converter_interface {
 
             // Otherwise we don't know wtf. End it all.
             $conversion->set('status', conversion::STATUS_FAILED);
-            // TODO: This should be a lang string but we need to deploy it without an upgrade so... YOLO.
-            $conversion->set('statusmessage', "Sorry, there was a problem converting your file. We are looking in to it.");
+            $conversion->set('statusmessage', get_string('problemconvertingfile', 'fileconverter_cloudconvert'));
             $conversion->update();
         }
     }
