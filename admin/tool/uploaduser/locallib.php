@@ -62,7 +62,7 @@ class uu_progress_tracker {
      * @var array
      */
     public $columns = array('status', 'line', 'id', 'username', 'firstname', 'lastname', 'email',
-                            'password', 'auth', 'enrolments', 'suspended', 'theme', 'deleted');
+                            'password', 'auth', 'enrolments', 'suspended', 'theme', 'deleted', 'tool_wp');
 
     /**
      * Print table header.
@@ -207,7 +207,9 @@ function uu_validate_user_upload_columns(csv_import_reader $cir, $stdfields, $pr
         } else if (preg_match('/^(sysrole|cohort|course|group|type|role|enrolperiod|enrolstatus|enroltimestart)\d+$/', $lcfield)) {
             // special fields for enrolments
             $newfield = $lcfield;
-
+        } else if (component_class_callback('tool_wp\tool_uploaduser', 'validate_column', [$lcfield])) {
+            /** @uses \tool_wp\tool_uploaduser::validate_column() */
+            $newfield = $lcfield;
         } else {
             $cir->close();
             $cir->cleanup();
