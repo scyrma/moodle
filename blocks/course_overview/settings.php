@@ -44,4 +44,29 @@ if ($ADMIN->fulltree) {
         new lang_string('keepfavouritesdesc', 'block_course_overview'),
         0
     ));
+    $defaulttabs = [
+        BLOCKS_COURSE_OVERVIEW_DEFAULT_FAVOURITES => new lang_string('favourites', 'block_course_overview'),
+        BLOCKS_COURSE_OVERVIEW_DEFAULT_COURSES => new lang_string('courses', 'block_course_overview'),
+    ];
+    $settings->add(new admin_setting_configselect(
+        'block_course_overview/defaulttab',
+        new lang_string('defaulttab', 'block_course_overview'),
+        new lang_string('defaulttabdesc', 'block_course_overview'),
+        BLOCKS_COURSE_OVERVIEW_DEFAULT_FAVOURITES,
+        $defaulttabs
+    ));
+    $settings->add(new admin_setting_configtext(
+        'block_course_overview/setmaxcourses',
+        new lang_string('setmaxcourses', 'block_course_overview'),
+        new lang_string('setmaxcoursesdesc', 'block_course_overview'),
+        10,
+        PARAM_INT,
+        5));
+    $settings->add(new admin_setting_configtext(
+        'block_course_overview/setmaxcoursesmax',
+        new lang_string('setmaxcoursesmax', 'block_course_overview'),
+        new lang_string('setmaxcoursesmaxdesc', 'block_course_overview'),
+        50,
+        PARAM_INT,
+        5));
 }

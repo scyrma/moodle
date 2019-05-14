@@ -94,6 +94,14 @@ class block_course_overview extends block_base {
             block_course_overview_update_sortorder($sortorder);
         }
 
+        // Check if number of courses to display was updated.
+        $usersetmaxcourses = optional_param('usersetmaxcourses', null, PARAM_INT);
+        if ( $usersetmaxcourses === null ) {
+            $usersetmaxcourses = block_course_overview_get_usersetmaxcourses();
+        } else {
+            block_course_overview_update_usersetmaxcourses($usersetmaxcourses);
+        }
+
         // Get data for favourites and course tab.
         $tabs = array();
         $ftab = new stdClass;
@@ -113,8 +121,8 @@ class block_course_overview extends block_base {
         // Get list of favourites.
         $favourites = array_keys($ftab->sortedcourses);
 
-        // Default tab. One with something in it or favourites.
-        if ($ftab->totalcourses) {
+        // Default tab. One with something in it or selected default.
+        if (($config->defaulttab == BLOCKS_COURSE_OVERVIEW_DEFAULT_FAVOURITES) && $ftab->totalcourses) {
             $tab = 'favourites';
         } else {
             $tab = 'courses';
@@ -123,7 +131,8 @@ class block_course_overview extends block_base {
         $renderer = $this->page->get_renderer('block_course_overview');
 
         // Render block.
-        $main = new block_course_overview\output\main($config, $tabs, $isediting, $tab, $sortorder, $favourites);
+        $main = new block_course_overview\output\main(
+            $config, $tabs, $isediting, $tab, $sortorder, $favourites, $usersetmaxcourses);
         $this->content->text .= $renderer->render($main);
         return $this->content;
     }
@@ -153,5 +162,21 @@ class block_course_overview extends block_base {
      */
     public function hide_header() {
         return false;
+    }
+
+    /**
+     * Do any additional initialization you may need at the time a new block instance is created
+     * @return boolean
+     */
+    public function instance_create() {
+        global $DB;
+
+        // Bodge? Modify our own instance to make the default region the
+        // content area, not the side bar.
+        $instance = $this->instance;
+        $instance->defaultregion = 'content';
+        $DB->update_record('block_instances', $instance);
+
+        return true;
     }
 }
