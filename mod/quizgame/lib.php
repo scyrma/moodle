@@ -194,7 +194,6 @@ function quizgame_user_complete($course, $user, $mod, $quizgame) {
  * Obtains the automatic completion state for this quizgame based on any conditions
  * in quizgame settings.
  *
- * @global object $DB
  * @param object $course Course
  * @param object $cm Course-module
  * @param int $userid User ID
@@ -483,6 +482,7 @@ function quizgame_reset_course_form_definition(&$mform) {
 
 /**
  * Course reset form defaults.
+ * @param stdClass $course
  * @return array
  */
 function quizgame_reset_course_form_defaults($course) {
@@ -494,8 +494,7 @@ function quizgame_reset_course_form_defaults($course) {
  * Actual implementation of the rest coures functionality, delete all the
  * quizgame responses for course $data->courseid.
  *
- * @global stdClass
- * @param $data the data submitted from the reset course.
+ * @param stdClass $data the data submitted from the reset course.
  * @return array status array
  */
 function quizgame_reset_userdata($data) {
@@ -518,12 +517,11 @@ function quizgame_reset_userdata($data) {
 /**
  * Removes all grades from gradebook
  *
- * @global stdClass
  * @param int $courseid
- * @param string optional type
+ * @param string $type (Optional)
  */
-// TODO: LOOK AT AFTER GRADES ARE IMPLEMENTED!
 function quizgame_reset_gradebook($courseid, $type='') {
+    // TODO: LOOK AT AFTER GRADES ARE IMPLEMENTED!
     global $DB;
 
     $sql = "SELECT g.*, cm.idnumber as cmidnumber, g.course as courseid
@@ -535,4 +533,40 @@ function quizgame_reset_gradebook($courseid, $type='') {
             quizgame_grade_item_update($quizgame, 'reset');
         }
     }
+}
+
+/**
+ * This function receives a calendar event and returns the action associated with it, or null if there is none.
+ *
+ * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
+ * is not displayed on the block.
+ *
+ * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory
+ * @param int $userid User id to use for all capability checks, etc. Set to 0 for current user (default).
+ * @return \core_calendar\local\event\entities\action_interface|null
+ */
+function mod_quizgame_core_calendar_provide_event_action(calendar_event $event,
+                                                    \core_calendar\action_factory $factory,
+                                                    int $userid = 0) {
+    global $USER;
+    if (!$userid) {
+        $userid = $USER->id;
+    }
+    $cm = get_fast_modinfo($event->courseid, $userid)->instances['quizgame'][$event->instance];
+    if (!$cm->uservisible) {
+        // The module is not visible to the user for any reason.
+        return null;
+    }
+    $completion = new \completion_info($cm->get_course());
+    $completiondata = $completion->get_data($cm, false, $userid);
+    if ($completiondata->completionstate != COMPLETION_INCOMPLETE) {
+        return null;
+    }
+    return $factory->create_instance(
+        get_string('view'),
+        new \moodle_url('/mod/quizgame/view.php', ['id' => $cm->id]),
+        1,
+        true
+    );
 }
