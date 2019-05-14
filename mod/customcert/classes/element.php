@@ -230,7 +230,7 @@ abstract class element {
      * This function renders the form elements when adding a customcert element.
      * Can be overridden if more functionality is needed.
      *
-     * @param edit_element_form $mform the edit_form instance.
+     * @param \MoodleQuickForm $mform the edit_form instance.
      */
     public function render_form_elements($mform) {
         // Render the common elements.
@@ -240,6 +240,7 @@ abstract class element {
             element_helper::render_form_element_position($mform);
         }
         element_helper::render_form_element_width($mform);
+        element_helper::render_form_element_refpoint($mform);
     }
 
     /**
