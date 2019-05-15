@@ -426,6 +426,10 @@ class course_enrolment_manager {
         }
         $wherecondition = implode(' AND ', $tests);
 
+        /** @uses \tool_tenant\tenancy::get_users_subquery */
+        $wherecondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery',
+                [], '') . $wherecondition;
+
         $selects = $fieldselects . ', u.username, u.lastaccess, u.maildisplay';
         return [$selects, $fieldjoins, $params, $wherecondition];
     }
