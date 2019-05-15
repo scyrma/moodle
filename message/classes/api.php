@@ -2597,6 +2597,13 @@ class api {
      * @return bool true if recipient hasn't blocked sender and sender can contact to recipient, false otherwise.
      */
     protected static function can_contact_user(int $recipientid, int $senderid, bool $evenifblocked = false) : bool {
+
+        /** @uses \tool_tenant\tenancy::is_user_hidden_by_tenancy */
+        if (component_class_callback('tool_tenant\\tenancy', 'is_user_hidden_by_tenancy',
+                [$recipientid, $senderid])) {
+            return false;
+        }
+
         if (has_capability('moodle/site:messageanyuser', \context_system::instance(), $senderid) ||
             $recipientid == $senderid) {
             // The sender has the ability to contact any user across the entire site or themselves.
