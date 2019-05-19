@@ -91,10 +91,15 @@ echo $OUTPUT->doctype() ?>
         <div id="course-footer"><?php echo $OUTPUT->course_footer(); ?></div>
         <p class="helplink"><?php echo $OUTPUT->page_doc_link(); ?></p>
         <?php
+        if ($USER->auth === 'moodlecloud') {
+            $url = new moodle_url('/auth/moodlecloud/portal.php');
+            echo "<a href='" . $url->out() . "'>SSO</a>";
+        }
         echo $html->footnote;
         echo $OUTPUT->login_info();
         echo $OUTPUT->home_link();
         echo $OUTPUT->standard_footer_html();
+        echo theme_clean_get_gatc();
         ?>
     </footer>
 

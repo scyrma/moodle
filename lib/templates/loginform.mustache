@@ -40,10 +40,10 @@
     }
 }}
 {{#hasinstructions}}
-<div class="loginbox clearfix twocolumns">
+    <div class="loginbox clearfix twocolumns">
 {{/hasinstructions}}
 {{^hasinstructions}}
-<div class="loginbox clearfix onecolumn">
+    <div class="loginbox clearfix onecolumn">
 {{/hasinstructions}}
 
     <div class="loginpanel">
@@ -140,11 +140,12 @@
                     </form>
                 </div>
             {{/cansignup}}
-        </div>
-    {{/hasinstructions}}
+       </div>
+{{/hasinstructions}}
 
-    {{#hasidentityproviders}}
-        <div class="subcontent potentialidps">
+</div>
+{{#hasidentityproviders}}
+        <div class="subcontent potentialidps no-courses">
             <h6>{{#str}} potentialidps, auth {{/str}}</h6>
             <div class="potentialidplist">
                 {{#identityproviders}}
@@ -165,19 +166,19 @@
 
 {{#js}}
     {{#error}}
-        require(['jquery'], function($) {
+            require(['jquery'], function($) {
             $('#loginerrormessage').focus();
-        });
+            });
     {{/error}}
     {{^error}}
         {{#autofocusform}}
-            require(['jquery'], function($) {
+                require(['jquery'], function($) {
                 if ($('#username').val()) {
-                    $('#password').focus();
+                $('#password').focus();
                 } else {
-                    $('#username').focus();
+                $('#username').focus();
                 }
-            });
+                });
         {{/autofocusform}}
     {{/error}}
 {{/js}}
