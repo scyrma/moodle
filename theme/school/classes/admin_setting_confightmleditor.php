@@ -55,14 +55,10 @@ class theme_school_admin_setting_confightmleditor extends admin_setting_configte
 
         $editor = editors_get_preferred_editor(FORMAT_HTML);
         $editor->set_text($data);
-        $editor->use_editor($this->get_id(), array('noclean'=>true,
-            // MOODLECLOUD SPECIFIC CHANGE
-            'autosave'=>false,
-            // END MOODLECLOUD
-        ));
+        $editor->use_editor($this->get_id(), array('noclean'=>true));
 
         return format_admin_setting($this, $this->visiblename,
-            '<div class="form-textarea"><textarea rows="'. $this->rows .'" cols="'. $this->cols .'" id="'. $this->get_id() .'" name="'. $this->get_full_name() .'" spellcheck="true">'. s($data) .'</textarea></div>',
-            $this->description, true, '', $defaultinfo, $query);
+                '<div class="form-textarea"><textarea rows="'. $this->rows .'" cols="'. $this->cols .'" id="'. $this->get_id() .'" name="'. $this->get_full_name() .'" spellcheck="true">'. s($data) .'</textarea></div>',
+                $this->description, true, '', $defaultinfo, $query);
     }
 }

@@ -6,27 +6,6 @@ define([
         'theme_school/custom_menu'
     ], function($, bxslider, cslider, modernizer, customMenu) {
 
-    var toggleUserMenu = function(e) {
-
-        // don't open the user menu if the user has selected the messaging notifications
-        if ($(e.target).attr('class') == 'smallicon') {
-            return;
-        }
-
-        $('.menu').toggleClass('usermenu-show');
-        $('.nav-collapse').toggleClass('in').removeAttr('style');
-        $('.btn-navbar').toggleClass('collapsed');
-        var userMenu = $('.usermenu');
-
-        if (userMenu.attr('aria-expanded') == "false") {
-            userMenu.attr('aria-expanded', "true");
-        } else {
-            userMenu.attr('aria-expanded', "false");
-        }
-
-        userMenu.toggleClass('active-drop-user-menu');
-    };
-
     var initCourseSlider = function() {
         var minSlides,
             width = $(window).width();
@@ -40,6 +19,8 @@ define([
             speed: 1500,
             nextSelector: '#slider-next',
             prevSelector: '#slider-prev',
+            nextText: '<button class="btn-link border-0"><i class="fa fa-2x fa-chevron-circle-right"></i></button>',
+            prevText: '<button class="btn-link border-0"><i class="fa fa-2x fa-chevron-circle-left"></i></button>',
             pager: false,
             minSlides: minSlides,
             maxSlides: minSlides,
@@ -49,33 +30,6 @@ define([
             pause: 7000,
             onSliderLoad: function() {
                 $('.popular-courses-slider').css('visibility', 'visible');
-            }
-        });
-
-        $(".bx-prev, .bx-next").html("");
-    };
-
-    var initNavBar = function() {
-        $('html').click(function(e) {
-            var userMenu = $(e.target).closest('.usermenu');
-
-            // If we didn't click in the user menu then close it.
-            if (!userMenu.length) {
-                $('.menu').removeClass('usermenu-show');
-                $('.usermenu').removeClass('active-drop-user-menu');
-            }
-        });
-
-        $('.menu').css('display', 'none');
-        $('.usermenu').on("click", function(e) {
-            toggleUserMenu(e);
-        });
-
-        $('.usermenu').on("keypress", function(e) {
-            if (!e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
-                if (e.keyCode == 13 || e.keyCode == 32) {
-                    toggleUserMenu(e);
-                }
             }
         });
     };
@@ -93,7 +47,6 @@ define([
     return {
         init: function() {
             initCourseSlider();
-            initNavBar();
             initPage();
             customMenu.init();
         }
