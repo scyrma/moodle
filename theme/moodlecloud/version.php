@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Theme moodlecloud version file.
+ *  MoodleCloud theme.
  *
  * @package    theme_moodlecloud
- * @copyright  2014 Frédéric Massart
+ * @copyright  2019 Michael Hawkins
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+// This line protects the file from being accessed by a URL directly.
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015121400;
-$plugin->requires  = 2014110400;
+$plugin->version = 2019032100;
+$plugin->requires = 2019030100;
 $plugin->component = 'theme_moodlecloud';
-$plugin->dependencies = array(
-    'theme_bootstrapbase'  => 2014110400,
-    'theme_clean'  => 2014110400,
-);
+$plugin->dependencies = [
+    'theme_classic' => 2019030100
+];
