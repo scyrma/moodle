@@ -1,0 +1,61 @@
+// General variables for all presets.
+$theme-orange: #f15a23 !default;
+$theme-black: #3a3a3a !default;
+$theme-secondary: #a3a3a3 !default;
+$theme-gray: #efefef !default;
+$white: #fff !default;
+
+$theme-colors: () !default;
+$theme-colors: map-merge((
+  "theme-orange": $theme-orange,
+  "theme-black":  $theme-black,
+  "theme-gray":    $theme-gray,
+  "theme-secondary": $theme-secondary
+), $theme-colors);
+
+
+$body-color: #555 !default;
+
+$font-size-sm: 0.75rem; // 12px
+$font-size-base: 0.875rem; // 14px
+$font-size-lg: 1rem; // 16px
+
+$body-bg: $white;
+
+$font-family-sans-serif:      Raleway, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+$headings-font-family:		  OpenSans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+$font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$font-family-base:            $font-family-sans-serif !default;
+$card-group-margin: .25rem;
+// stylelint-enable value-keyword-case
+
+$headings-font-weight: 700;
+
+$font-size-base:              1rem !default; // Assumes the browser default, typically `16px`
+$font-size-lg:                ($font-size-base * 1.25) !default;
+$font-size-sm:                ($font-size-base * .875) !default;
+
+$btn-font-size:               0.75rem !default;
+$btn-font-size-sm:            0.625rem !default;
+$btn-font-weight:             bold !default;
+
+$breadcrumb-bg: $theme-gray !default;
+$breadcrumb-margin-bottom: 0;
+$breadcrumb-divider-color: #ccc;
+
+$primary : $theme-orange !default;
+$dropdown-link-hover-color: $primary !default;
+
+$font: $white !default;
+$linkstandard: $white !default;
+$secondary: $theme-black !default;
+$secondaryfont: $white !default;
+$secondarylink: $white !default;
+$footerbackground: $theme-black !default;
+$footerfont: #aaa !default;
+$footerlinkstandard: $theme-orange !default;
+$blockbackground: $theme-gray !default;
+$blockfont: $theme-orange !default;
+$backgroundcolor: $white !default;
+$primaryfont: #555 !default;
+$linkhighlight: $theme-orange !default;

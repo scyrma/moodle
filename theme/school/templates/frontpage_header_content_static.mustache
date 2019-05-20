@@ -26,14 +26,14 @@
         <div class="container">
             <div class="row">
                 {{^mediaalignleft}}
-                    <div class="{{#hasmedia}}span6{{/hasmedia}}
-                                {{^hasmedia}}span12{{/hasmedia}}
+                    <div class="{{#hasmedia}}col-md-6{{/hasmedia}}
+                                {{^hasmedia}}col-md-12{{/hasmedia}}
                                 static-content-align">{{{text}}}</div>
                 {{/mediaalignleft}}
                 {{#hasmedia}}
                     {{#mediaimage}}
                             {{#imageurl}}
-                                <div class="span6 static-content-align">
+                                <div class="col-md-6 static-content-align">
                                     <img src="{{{.}}}" alt="{{#str}} staticimagealt, theme_school {{/str}}" />
                                 </div>
                             {{/imageurl}}
@@ -41,12 +41,12 @@
                     {{^mediaimage}}
                         {{#iframevideo}}
                             {{#iframehtml}}
-                                <div class="span6 static-content-align">{{{.}}}</div>
+                                <div class="col-md-6 static-content-align">{{{.}}}</div>
                             {{/iframehtml}}
                         {{/iframevideo}}
                         {{^iframevideo}}
                             {{#videosrc}}
-                                <div class="span6 static-content-align">
+                                <div class="col-md-6 static-content-align">
                                     <video width="560" height="315" controls>
                                         <source src="{{{.}}}" type="video/mp4">
                                     </video>
@@ -56,8 +56,8 @@
                     {{/mediaimage}}
                 {{/hasmedia}}
                 {{#mediaalignleft}}
-                    <div class="{{#hasmedia}}span6{{/hasmedia}}
-                                {{^hasmedia}}span12{{/hasmedia}}
+                    <div class="{{#hasmedia}}col-md-6{{/hasmedia}}
+                                {{^hasmedia}}col-md-12{{/hasmedia}}
                                 static-content-align">{{{text}}}</div>
                 {{/mediaalignleft}}
             </div>
