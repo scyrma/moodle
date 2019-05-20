@@ -15,21 +15,25 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 <div class="text-center">
-    <div class="btn-show-more-wr">
-        {{#urls.addcourse}}
-            <a class="btn-show-more" href="{{{.}}}">
-                <span>{{#str}} addnewcourse {{/str}}</span>
-            </a>
-        {{/urls.addcourse}}
-        {{#urls.requestcourseurl}}
-            <a class="btn-show-more" href="{{{.}}}">
-                <span>{{#str}} requestcourse {{/str}}</span>
-            </a>
-        {{/urls.requestcourseurl}}
-        {{#urls.pendingcoursesurl}}
-            <a class="btn-show-more" href="{{{.}}}">
-                <span>{{#str}} coursespending {{/str}}</span>
-            </a>
-        {{/urls.pendingcoursesurl}}
+    <div class="btn-show-more-wr d-flex align-items-center mt-2">
+        <div class="border-top flex-fill"></div>
+        <div class="d-inline-flex p-2 border rounded bg-white">
+            {{#urls.addcourse}}
+                <a class="btn btn-theme-secondary text-uppercase btn-show-more" href="{{{.}}}">
+                    <span>{{#str}} addnewcourse {{/str}}</span>
+                </a>
+            {{/urls.addcourse}}
+            {{#urls.requestcourseurl}}
+                <a class="btn btn-theme-secondary text-uppercase btn-show-more" href="{{{.}}}">
+                    <span>{{#str}} requestcourse {{/str}}</span>
+                </a>
+            {{/urls.requestcourseurl}}
+            {{#urls.pendingcoursesurl}}
+                <a class="btn btn-theme-secondary text-uppercase btn-show-more" href="{{{.}}}">
+                    <span>{{#str}} coursespending {{/str}}</span>
+                </a>
+            {{/urls.pendingcoursesurl}}
+        </div>
+        <div class="border-top flex-fill"></div>
     </div>
 </div>
