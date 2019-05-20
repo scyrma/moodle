@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 <div class="news-updates">
-    <div class="container">
+    <div class="d-flex inner ml-auto mr-auto">
         <div class="news-icon">
             <div class="news-icon-container">
                 <div class="left"></div>
@@ -25,8 +25,8 @@
                 <div class="right"></div>
             </div>
         </div>
-        <div class="row">
-            <div class="span{{columnspan}}">
+        <div class="row content flex-fill">
+            <div class="col-md-{{columnspan}}">
                 <h3>{{heading}}</h3>
                 <p>
                     <a href="{{{linkurl}}}" title="{{linktext}}">
@@ -36,13 +36,13 @@
                 </p>
             </div>
             {{#newsitems}}
-                <div class="span{{columnspan}}">
+                <div class="col-md-{{columnspan}}">
                     <p><a href="{{{linkurl}}}">{{title}}</a></p>
                     <h5>{{modified}}</h5>
                 </div>
             {{/newsitems}}
             {{^newsitems}}
-                <div class="span5">
+                <div class="col-md-5">
                     <a href="{{{linkurl}}}">{{#str}} nonewsitems, theme_school {{/str}}</a>
                 </div>
             {{/newsitems}}

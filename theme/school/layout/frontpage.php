@@ -15,60 +15,81 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   theme_school
- * @copyright 2016 Moodle, moodle.org
+ * The columns layout for the classic theme.
+ *
+ * @package   theme_classic
+ * @copyright 2018 Bas Brands
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Get the HTML for the settings bits.
-$html = theme_school_get_html_for_settings($OUTPUT, $PAGE);
-GLOBAL $DB, $CFG, $OUTPUT, $USER;
+defined('MOODLE_INTERNAL') || die();
 
-$isregistration = $DB->get_record('config', array('name'=>'registerauth'));
+$bodyattributes = $OUTPUT->body_attributes();
 
-echo $OUTPUT->doctype();?>
-<html <?php echo $OUTPUT->htmlattributes(); ?>>
-<head>
-    <?php
-        echo $OUTPUT->standard_head_html();
-        echo $OUTPUT->frontpage_theme_head_html();
-    ?>
-</head>
-	<body class="landing-page">
-        <?php echo $OUTPUT->standard_top_of_body_html() ?>
+$renderer = $PAGE->get_renderer('theme_school');
 
-        <header>
-            <div class="mobile-top-head">
-            <?php
-                echo $OUTPUT->logo();
-                echo $OUTPUT->user_menu();
-                echo $OUTPUT->navbar_plugin_output();
-                echo $OUTPUT->custom_menu();
-            ?>
-			</div>
+$widgettorender = get_config('theme_school', 'frontpageimagecontent');
 
-            <?php echo $OUTPUT->frontpage_header_content(); ?>
-		</header><!-- END of header -->
+if ($widgettorender == true) {
+    $heroslider = new \theme_school\output\heroslider();
+    $widgets = (object) [
+            'object' => $renderer->render($heroslider)];
+} else {
+    $herostatic = new \theme_school\output\herostatic();
+    $widgets = (object) [
+            'object' => $renderer->render($herostatic)];
+}
 
-		<div class="content">
-            <?php echo $OUTPUT->skip_link_target('maincontent'); ?>
-            <?php echo $OUTPUT->frontpage_news_and_updates(); ?>
-            <?php echo $OUTPUT->frontpage_courses(); ?>
-            <?php echo $OUTPUT->frontpage_feedback(); ?>
-		</div><!-- END of .content -->
-		<?php
-			echo $OUTPUT->main_content();
-            echo $OUTPUT->standard_after_main_region_html();
-            echo $OUTPUT->theme_footer();
-            echo $OUTPUT->standard_end_of_body_html();
+$frontpagesettingsurl = new \moodle_url('/admin/settings.php', array('section' => 'themesettingschool', 'activetab' => 'theme_school_frontpage'));
+$frontpagesiteadminurl = new \moodle_url('/admin/');
 
-			if (isloggedin() && $isregistration->value != 'email') { ?>
-                <input type="hidden" name="custommenu" value="yeslogin" id="custommenu">
-            <?php } else if (!isloggedin() && $isregistration->value == 'email') { ?>
-                <input type="hidden" name="custommenu" value="nologinselfreg" id="custommenu">
-            <?php } else if (!isloggedin()) { ?>
-                <input type="hidden" name="custommenu" value="nologin" id="custommenu">
-            <?php }
-		?>
-</body>
-</html>
+$context = array(
+        'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
+        'output' => $OUTPUT,
+        'bodyattributes' => $bodyattributes,
+        'widgets' => $widgets,
+        'coursefooter' => $this->course_footer(),
+        'doclinks' => $this->page_doc_link(),
+        'logininfo' => $this->login_info(),
+        'standardfooterhtml' => $this->standard_footer_html(),
+        'isadmin' => is_siteadmin(),
+        'frontpagesettingsurl' => $frontpagesettingsurl->out(),
+        'frontpagesiteadminurl' => $frontpagesiteadminurl->out(),
+);
+
+$leftfootnote = get_config('theme_school', 'leftfootnote');
+if (!empty($leftfootnote)) {
+    $context['leftfootnote'] = $leftfootnote;
+}
+
+$footnote = get_config('theme_school', 'footnote');
+if (!empty($footnote)) {
+    $context['footnote'] = format_text($footnote);
+}
+
+$footnotelinks = array();
+for ($i = 1; $i <= 6; $i++) {
+    $text = get_config('theme_school', sprintf('leftfootnotesection%d', $i));
+    $url = get_config('theme_school', sprintf('leftfootnotesectionlink%d', $i));
+
+    if (!empty($text) && !empty($url)) {
+        $footnotelinks[] = array('text' => $text, 'url' => $url);
+    }
+}
+
+$context['footnotelinks'] = $footnotelinks;
+
+// Determine whether the 2nd column has content or not.
+$context['hasleftfootnotes'] = !empty($footnotelinks) || !empty(strip_tags($leftfootnote));
+
+$context['facebookurl'] = get_config('theme_school', 'facebook');
+$context['twitterurl'] = get_config('theme_school', 'twitter');
+$context['googleplusurl'] = get_config('theme_school', 'googleplus');
+$context['youtubeurl'] = get_config('theme_school', 'youtube');
+$context['address'] = get_config('theme_school', 'contactaddress');
+$context['phone'] = get_config('theme_school', 'contactphone');
+$context['email'] = get_config('theme_school', 'contactemail');
+$context['hascontacts'] = !empty($context['facebookurl']) || !empty($context['twitterurl']) || !empty($context['googleplusurl'])
+        || !empty($context['youtubeurl']) || !empty($context['address']) || !empty($context['phone']) || !empty($context['email']);
+
+echo $OUTPUT->render_from_template('theme_school/frontpage', $context);

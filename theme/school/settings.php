@@ -15,15 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   theme_school
- * @copyright 2016 Moodle, moodle.org
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Theme school settings.
+ *
+ * Each setting that is defined in the parent theme Clean should be
+ * defined here too, and use the exact same config name. The reason
+ * is that theme_school does not define any layout files to re-use the
+ * ones from theme_clean. But as those layout files use the function
+ * {@link theme_clean_get_html_for_settings} that belong to Clean,
+ * we have to make sure it works as expected by having the same settings
+ * in our theme.
+ *
+ * @see        theme_clean_get_html_for_settings
+ * @package    theme_school
+ * @copyright  2014 Frédéric Massart
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-if (is_siteadmin()) {
-    $settings = new theme_school_admin_settingpage_tabs('theme_school', get_string('configtitle', 'theme_school'));
+if ($ADMIN->fulltree) {
+
+
+    $settings = new theme_boost_admin_settingspage_tabs('themesettingschool', get_string('configtitle', 'theme_school'));
     $temp = new admin_settingpage('theme_school_general',  get_string('generalsettings', 'theme_school'));
 
     $name = 'theme_school/logoorsitename';
@@ -31,9 +44,9 @@ if (is_siteadmin()) {
     $description = get_string('logoorsitenamedesc', 'theme_school');
     $default = 'sitename';
     $setting = new admin_setting_configselect($name, $title, $description, $default, array(
-        'sitename' => get_string('onlysitename', 'theme_school'),
-        'logo' => get_string('onlylogo', 'theme_school'),
-        'iconsitename' => get_string('iconsitename', 'theme_school')
+            'sitename' => get_string('onlysitename', 'theme_school'),
+            'logo' => get_string('onlylogo', 'theme_school'),
+            'iconsitename' => get_string('iconsitename', 'theme_school')
     ));
     $temp->add($setting);
 
@@ -176,7 +189,7 @@ if (is_siteadmin()) {
 
     // Contact information.
     $temp->add(new admin_setting_heading('theme_school_nextsection', get_string('contactinformation', 'theme_school'),
-        format_text(get_string('contactinformationdesc', 'theme_school'), FORMAT_MARKDOWN)));
+            format_text(get_string('contactinformationdesc', 'theme_school'), FORMAT_MARKDOWN)));
 
     $name = 'theme_school/facebook';
     $title = get_string('facebook', 'theme_school');
@@ -188,13 +201,6 @@ if (is_siteadmin()) {
     $name = 'theme_school/twitter';
     $title = get_string('twitter', 'theme_school');
     $description = get_string('twitterdesc', 'theme_school');
-    $default = '';
-    $setting = new admin_setting_configtext($name, $title, $description, $default);
-    $temp->add($setting);
-
-    $name = 'theme_school/googleplus';
-    $title = get_string('googleplus', 'theme_school');
-    $description = get_string('googleplusdesc', 'theme_school');
     $default = '';
     $setting = new admin_setting_configtext($name, $title, $description, $default);
     $temp->add($setting);
@@ -233,15 +239,15 @@ if (is_siteadmin()) {
     //frontpage temp
     $temp = new admin_settingpage('theme_school_frontpage',  get_string('frontpagesettings', 'theme_school'));
     $temp->add(new admin_setting_heading('theme_school_upsection', get_string('frontpageimagecontent', 'theme_school'),
-        format_text(get_string('frontpageimagecontentdesc', 'theme_school'), FORMAT_MARKDOWN)));
+            format_text(get_string('frontpageimagecontentdesc', 'theme_school'), FORMAT_MARKDOWN)));
     $name = 'theme_school/frontpageimagecontent';
     $title = get_string('frontpageimagecontentstyle', 'theme_school');
     $description = '';
     $setting = new admin_setting_configselect($name, $title, $description, 0,
-    array(
-            0 => get_string('staticcontent', 'theme_school'),
-            1 => get_string('slidercontent', 'theme_school'),
-        ));
+            array(
+                    0 => get_string('staticcontent', 'theme_school'),
+                    1 => get_string('slidercontent', 'theme_school'),
+            ));
     $temp->add($setting);
 
     $name = 'theme_school/addtext';
@@ -255,8 +261,8 @@ if (is_siteadmin()) {
     $title = get_string('frontpagestaticcontentselect', 'theme_school');
     $description = '';
     $setting = new admin_setting_configselect($name, $title, $description, 0, array(
-        0 => get_string('mediaimage', 'theme_school'),
-        1 => get_string('mediavideo', 'theme_school'),
+            0 => get_string('mediaimage', 'theme_school'),
+            1 => get_string('mediavideo', 'theme_school'),
     ));
     $temp->add($setting);
 
@@ -264,10 +270,10 @@ if (is_siteadmin()) {
     $title = get_string('frontpagemediaalignment', 'theme_school');
     $description = get_string('frontpagemediaalignmentdesc', 'theme_school');
     $setting = new admin_setting_configselect($name, $title, $description, 1,
-    array(
-        0 => get_string('medialeft', 'theme_school'),
-        1 => get_string('mediaright', 'theme_school'),
-    ));
+            array(
+                    0 => get_string('medialeft', 'theme_school'),
+                    1 => get_string('mediaright', 'theme_school'),
+            ));
     $temp->add($setting);
 
     // image.
@@ -283,10 +289,10 @@ if (is_siteadmin()) {
     $title = get_string('videotype', 'theme_school');
     $description = '';
     $setting = new admin_setting_configselect($name, $title, $description, 0,
-    array(
-        0 => get_string('iframe', 'theme_school'),
-        1 => get_string('upload', 'theme_school'),
-    ));
+            array(
+                    0 => get_string('iframe', 'theme_school'),
+                    1 => get_string('upload', 'theme_school'),
+            ));
     $temp->add($setting);
 
     $name = 'theme_school/video';
@@ -300,7 +306,7 @@ if (is_siteadmin()) {
     $title = get_string('uploadvideo','theme_school');
     $description = get_string('uploadvideodesc', 'theme_school');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'uploadvideo', $itemid = 0, array(
-    'accepted_types' => '.mp4'
+            'accepted_types' => '.mp4'
     ));
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
@@ -316,23 +322,23 @@ if (is_siteadmin()) {
     $title = get_string('sliderautoplay', 'theme_school');
     $description = get_string('sliderautoplaydesc', 'theme_school');
     $setting = new admin_setting_configselect($name, $title, $description, 1,
-    array(
-            1 => get_string('true', 'theme_school'),
-            2 => get_string('false', 'theme_school'),
-        ));
+            array(
+                    1 => get_string('true', 'theme_school'),
+                    2 => get_string('false', 'theme_school'),
+            ));
     $temp->add($setting);
 
     $name = 'theme_school/slidercount';
     $title = get_string('slidercount', 'theme_school');
     $description = get_string('slidercountdesc', 'theme_school');
     $setting = new admin_setting_configselect($name, $title, $description, 1,
-    array(
-            1 => get_string('one', 'theme_school'),
-            2 => get_string('two', 'theme_school'),
-            3 => get_string('three', 'theme_school'),
-            4 => get_string('four', 'theme_school'),
-            5 => get_string('five', 'theme_school'),
-        ));
+            array(
+                    1 => get_string('one', 'theme_school'),
+                    2 => get_string('two', 'theme_school'),
+                    3 => get_string('three', 'theme_school'),
+                    4 => get_string('four', 'theme_school'),
+                    5 => get_string('five', 'theme_school'),
+            ));
     $temp->add($setting);
 
     for($slidecounts = 1; $slidecounts <= get_config('theme_school', 'slidercount'); $slidecounts = $slidecounts + 1) {
@@ -373,7 +379,7 @@ if (is_siteadmin()) {
     }
 
     $temp->add(new admin_setting_heading('theme_school_coursequicklinks', get_string('coursequicklinks', 'theme_school'),
-        format_text(get_string('coursequicklinksdesc', 'theme_school'), FORMAT_MARKDOWN)));
+            format_text(get_string('coursequicklinksdesc', 'theme_school'), FORMAT_MARKDOWN)));
 
     $name = 'theme_school/coursesectionheading';
     $title = get_string('coursesectionheading', 'theme_school');
@@ -397,7 +403,7 @@ if (is_siteadmin()) {
     $temp->add($setting);
 
     $temp->add(new admin_setting_heading('theme_school_feedbacksection', get_string('feedback', 'theme_school'),
-    format_text('', FORMAT_MARKDOWN)));
+            format_text('', FORMAT_MARKDOWN)));
 
     $name = 'theme_school/feedbackheading';
     $title = get_string('feedbackheading', 'theme_school');
@@ -624,8 +630,8 @@ if (is_siteadmin()) {
     $description = get_string('fontselectdesc', 'theme_school');
     $default = 1;
     $choices = array(
-        1 => get_string('fonttypestandard', 'theme_school'),
-        2 => get_string('fonttypecustom', 'theme_school'),
+            1 => get_string('fonttypestandard', 'theme_school'),
+            2 => get_string('fonttypecustom', 'theme_school'),
     );
     $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
     $setting->set_updatedcallback('theme_reset_all_caches');
