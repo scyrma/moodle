@@ -26,7 +26,7 @@ class theme_school_admin_settingpage_tabs extends admin_settingpage {
 
     public function add_tab(\admin_settingpage $tab) {
         foreach ($tab->settings as $setting) {
-                $this->settings->{$setting->name} = $setting;
+            $this->settings->{$setting->name} = $setting;
         }
         $this->tabs[] = $tab;
         return true;
@@ -59,10 +59,10 @@ class theme_school_admin_settingpage_tabs extends admin_settingpage {
             }
 
             $context['tabs'][] = array(
-                'name' => $tab->name,
-                'displayname' => $tab->visiblename,
-                'html' => $tab->output_html(),
-                'active' => $active,
+                    'name' => $tab->name,
+                    'displayname' => $tab->visiblename,
+                    'html' => $tab->output_html(),
+                    'active' => $active,
             );
         }
 

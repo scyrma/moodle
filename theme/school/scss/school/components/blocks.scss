@@ -1,0 +1,125 @@
+/* Block stuff */
+#block-region-side-pre,
+#block-region-side-post {
+    .block {
+        padding: 0 !important; // stylelint-disable-line declaration-no-important
+        background: none;
+        border: 0;
+        border-radius: 0;
+        margin: 0;
+        clear: both;
+        .content {
+            padding: 18px 12px;
+        }
+    }
+    .card-title {
+        background: $primary;
+        color: $linkstandard;
+        margin: 0;
+        padding: 15px;
+
+        h5 {
+            font-weight: 700;
+            line-height: 20px;
+            text-transform: uppercase;
+            font-size: 1.1em;
+            word-wrap: break-word;
+        }
+
+        .dropdown > a {
+            color: $linkstandard;
+        }
+    }
+
+    .block-controls.float-right.header {
+        top: -35px;
+        right: 10px;
+        position: relative;
+        color: $white;
+    }
+    .block-controls .dropdown-toggle {
+        color: $white;
+    }
+
+    .block .minicalendar {
+        max-width: none;
+        background-color: rgba(0, 0, 0, .6);
+        .calendar-controls {
+            background-color: rgba(0, 0, 0, .8);
+            a.arrow_link {
+                width: 17%;
+                display: inline-block;
+                padding: 15px 0;
+                box-sizing: border-box;
+                text-align: center;
+            }
+            .current {
+                padding: 15px 0;
+                box-sizing: border-box;
+                width: 65%;
+            }
+        }
+        th {
+            background-color: #3a3a3a;
+            color: $white;
+            padding: 6px;
+            text-transform: uppercase;
+        }
+        td {
+            font-size: 1em;
+            padding: 6px;
+            color: $white;
+            border-right: 1px solid rgba(0, 0, 0, .2);
+            border-bottom: 1px solid rgba(0, 0, 0, .2);
+        }
+    }
+    .block.block_calendar_month .content {
+        padding: 0;
+    }
+}
+
+#block-region-content {
+    .block {
+        margin: 1rem;
+    }
+}
+
+/* Calender block */
+
+.block_settings,
+.block_navigation {
+    .block_tree {
+        [aria-expanded="false"] {
+            &:before{
+                content: $fa-var-chevron-circle-right;
+            }
+        }
+        [aria-expanded="true"] {
+            &:before{
+                content: $fa-var-chevron-circle-down;
+            }
+        }
+        .tree_item.branch {
+            margin-left: 0;
+        }
+    }
+}
+
+.block_settings .adminsearchform .input-group-append {
+    margin-bottom: 2px;
+}
+.forumsearch .input-group-append {
+    margin-bottom: 2px;
+    margin-left: -3px;
+}
+
+.dir-rtl .block_settings,
+.dir-rtl .block_navigation {
+    .block_tree {
+        [aria-expanded="false"] {
+            &:before{
+                content: $fa-var-chevron-circle-left;
+            }
+        }
+    }
+}

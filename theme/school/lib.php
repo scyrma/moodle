@@ -15,10 +15,45 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   theme_school
- * @copyright 2016 Moodle, moodle.org
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Theme school lib.
+ *
+ * @package    theme_school
+ * @copyright  2019 Mathew May
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+// This line protects the file from being accessed by a URL directly.
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Returns the main SCSS content.
+ *
+ * @param theme_config $theme The theme config object.
+ * @return string All fixed Sass for this theme.
+ */
+function theme_school_get_main_scss_content($theme) {
+    global $CFG;
+
+    $scss = '';
+    $scss .= theme_school_get_pre_scss($theme);
+    $scss .= file_get_contents($CFG->dirroot . '/theme/school/scss/pre.scss');
+    $scss .= file_get_contents($CFG->dirroot . '/theme/classic/scss/fontawesome.scss');
+    $scss .= file_get_contents($CFG->dirroot . '/theme/classic/scss/bootstrap.scss');
+    $scss .= file_get_contents($CFG->dirroot . '/theme/classic/scss/moodle.scss');
+    $scss .= file_get_contents($CFG->dirroot . '/theme/school/scss/post.scss');
+
+    return $scss;
+}
+
+/**
+ * Get compiled CSS.
+ *
+ * @return string compiled CSS
+ */
+function theme_school_get_precompiled_css() {
+    global $CFG;
+    return file_get_contents($CFG->dirroot . '/theme/school/style/school.css');
+}
 
 function theme_school_get_setting($setting, $format = false) {
     global $CFG;
@@ -39,75 +74,62 @@ function theme_school_get_setting($setting, $format = false) {
         return format_string($theme->settings->$setting);
     }
 }
+
 /**
- * Parses CSS before it is cached.
+ * Get SCSS to prepend (eg SCSS variables to set/override on parent theme).
  *
- * This function can make alterations and replace patterns within the CSS.
- *
- * @param string $css The CSS
  * @param theme_config $theme The theme config object.
- * @return string The parsed CSS The parsed CSS.
+ * @return array
  */
-function theme_school_process_css($css, $theme) {
+function theme_school_get_pre_scss($theme) {
+    global $CFG;
+    $scss = '';
+    $configurable = [
+        // Config key           => [variableName, ...].
+        'primarycolour'         => ['primary'],
+        'primaryfontcolour'     => ['font'],
+        'primarylinkcolour'     => ['linkstandard'],
+        'secondarycolour'       => ['secondary'],
+        'secondaryfontcolour'   => ['secondaryfont'],
+        'secondarylinkcolour'   => ['secondarylink'],
+        'footercolour'          => ['footerbackground'],
+        'footerfontcolour'      => ['footerfont'],
+        'footerlinkcolour'      => ['footerlinkstandard'],
+        'blocklinkcolour'       => ['blockfont'],
+        'mainlinkcolour'        => ['link-color'],
+    ];
 
-    // Set the background image for the logo.
-    $logo = $theme->setting_file_url('logo', 'logo');
-    $css = theme_school_set_logo($css, $logo);
-
-    if (!empty($theme->settings->fontnamebody)) {
-        $font = $theme->settings->fontnamebody;
-    } else {
-        $font = 'Raleway';
+    // Prepend variables first.
+    foreach ($configurable as $configkey => $targets) {
+        $value = isset($theme->settings->{$configkey}) ? $theme->settings->{$configkey} : null;
+        if (empty($value)) {
+            continue;
+        }
+        array_map(function($target) use (&$scss, $value) {
+            $scss .= '$' . $target . ': ' . $value . ";\n";
+        }, (array) $targets);
     }
 
-    $headingfont = theme_school_get_setting('fontnameheading');
-    $bodyfont = theme_school_get_setting('fontnamebody');
-    $css = theme_school_set_headingfont($css, $headingfont);
-    $css = theme_school_set_bodyfont($css, $bodyfont);
-    $css = theme_school_set_fontfiles($css, 'heading', $headingfont);
-    $css = theme_school_set_fontfiles($css, 'body', $bodyfont);
-
-    // Set custom CSS.
-    if (!empty($theme->settings->customcss)) {
-        $customcss = $theme->settings->customcss;
-    } else {
-        $customcss = null;
-    }
-    $css = theme_school_set_customcss($css, $customcss);
-    return $css;
-}
-
-function theme_school_set_headingfont($css, $headingfont) {
-    $tag = '[[setting:headingfont]]';
-    $replacement = $headingfont;
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-
-function theme_school_set_bodyfont($css, $bodyfont) {
-    $tag = '[[setting:bodyfont]]';
-    $replacement = $bodyfont;
-    $css = str_replace($tag, $replacement, $css);
-    return $css;
-}
-/**
- * Adds the logo to CSS.
- *
- * @param string $css The CSS.
- * @param string $logo The URL of the logo.
- * @return string The parsed CSS
- */
-function theme_school_set_logo($css, $logo) {
-    GLOBAL $CFG;
-    $tag = '[[setting:logo]]';
-    $replacement = $logo;
-    if (is_null($replacement)) {
-        return $css;
+    // Prepend pre-scss.
+    if (!empty($theme->settings->scsspre)) {
+        $scss .= $theme->settings->scsspre;
     }
 
-    $css = str_replace($tag, $replacement, $css);
+    if (theme_school_get_setting('fontselect') === '2') {
+        $headingfont = theme_school_get_setting('fontnameheading');
+        if ($headingfont) {
+            $scss .= theme_school_set_fontfiles('heading', $headingfont);
+            $scss .= '$headings-font-family: ' . $headingfont . ";\n";
+        }
 
-    return $css;
+        $bodyfont = theme_school_get_setting('fontnamebody');
+        if ($bodyfont) {
+            $scss .= theme_school_set_fontfiles('body', $bodyfont);
+            $scss .= '$font-family-sans-serif: ' . $bodyfont . ";\n";
+        }
+    }
+
+    return $scss;
 }
 
 /**
@@ -117,57 +139,52 @@ function theme_school_set_logo($css, $logo) {
  * @param string $font The font name.
  * @return string The parsed CSS
  */
+function theme_school_set_fontfiles($type, $fontname) {
 
-function theme_school_set_fontfiles($css, $type, $fontname) {
-    $tag = '[[setting:fontfiles' . $type . ']]';
-    $replacement = '';
-    if (theme_school_get_setting('fontselect') === '2') {
-        static $theme;
-        if (empty($theme)) {
-            $theme = theme_config::load('school');  // $theme needs to be us for child themes.
-        }
-
-        $fontfiles = array();
-        $fontfileeot = $theme->setting_file_url('fontfileeot' . $type, 'fontfileeot' . $type);
-        if (!empty($fontfileeot)) {
-            $fontfiles[] = "url('" . $fontfileeot . "?#iefix') format('embedded-opentype')";
-        }
-        $fontfilewoff = $theme->setting_file_url('fontfilewoff' . $type, 'fontfilewoff' . $type);
-        if (!empty($fontfilewoff)) {
-            $fontfiles[] = "url('" . $fontfilewoff . "') format('woff')";
-        }
-        $fontfilewofftwo = $theme->setting_file_url('fontfilewofftwo' . $type, 'fontfilewofftwo' . $type);
-        if (!empty($fontfilewofftwo)) {
-            $fontfiles[] = "url('" . $fontfilewofftwo . "') format('woff2')";
-        }
-        $fontfileotf = $theme->setting_file_url('fontfileotf' . $type, 'fontfileotf' . $type);
-        if (!empty($fontfileotf)) {
-            $fontfiles[] = "url('" . $fontfileotf . "') format('opentype')";
-        }
-        $fontfilettf = $theme->setting_file_url('fontfilettf' . $type, 'fontfilettf' . $type);
-        if (!empty($fontfilettf)) {
-            $fontfiles[] = "url('" . $fontfilettf . "') format('truetype')";
-        }
-        $fontfilesvg = $theme->setting_file_url('fontfilesvg' . $type, 'fontfilesvg' . $type);
-        if (!empty($fontfilesvg)) {
-            $fontfiles[] = "url('" . $fontfilesvg . "') format('svg')";
-        }
-
-        $replacement = '@font-face {' . PHP_EOL . 'font-family: "' . $fontname . '";' . PHP_EOL;
-        $replacement .=!empty($fontfileeot) ? "src: url('" . $fontfileeot . "');" . PHP_EOL : '';
-        if (!empty($fontfiles)) {
-            $replacement .= "src: ";
-            $replacement .= implode("," . PHP_EOL . " ", $fontfiles);
-            $replacement .= ";";
-        }
-        $replacement .= '' . PHP_EOL . "}";
+    static $theme;
+    if (empty($theme)) {
+        $theme = theme_config::load('school');  // $theme needs to be us for child themes.
     }
 
-    $css = str_replace($tag, $replacement, $css);
+    $fontfiles = array();
+    $fontfileeot = $theme->setting_file_url('fontfileeot' . $type, 'fontfileeot' . $type);
+    if (!empty($fontfileeot)) {
+        $fontfiles[] = "url('" . $fontfileeot . "?#iefix') format('embedded-opentype')";
+    }
+    $fontfilewoff = $theme->setting_file_url('fontfilewoff' . $type, 'fontfilewoff' . $type);
+    if (!empty($fontfilewoff)) {
+        $fontfiles[] = "url('" . $fontfilewoff . "') format('woff')";
+    }
+    $fontfilewofftwo = $theme->setting_file_url('fontfilewofftwo' . $type, 'fontfilewofftwo' . $type);
+    if (!empty($fontfilewofftwo)) {
+        $fontfiles[] = "url('" . $fontfilewofftwo . "') format('woff2')";
+    }
+    $fontfileotf = $theme->setting_file_url('fontfileotf' . $type, 'fontfileotf' . $type);
+    if (!empty($fontfileotf)) {
+        $fontfiles[] = "url('" . $fontfileotf . "') format('opentype')";
+    }
+    $fontfilettf = $theme->setting_file_url('fontfilettf' . $type, 'fontfilettf' . $type);
+    if (!empty($fontfilettf)) {
+        $fontfiles[] = "url('" . $fontfilettf . "') format('truetype')";
+    }
+    $fontfilesvg = $theme->setting_file_url('fontfilesvg' . $type, 'fontfilesvg' . $type);
+    if (!empty($fontfilesvg)) {
+        $fontfiles[] = "url('" . $fontfilesvg . "') format('svg')";
+    }
+
+    $css = '@font-face {' . PHP_EOL . 'font-family: "' . $fontname . '";' . PHP_EOL;
+    $css .= !empty($fontfileeot) ? "src: url('" . $fontfileeot . "');" . PHP_EOL : '';
+    if (!empty($fontfiles)) {
+        $css .= "src: ";
+        $css .= implode("," . PHP_EOL . " ", $fontfiles);
+        $css .= ";";
+    }
+    $css .= '' . PHP_EOL . "}";
     return $css;
 }
+
 /**
- * Serves any files associated with the theme settings.
+ * Serve any files associated with the theme settings.
  *
  * @param stdClass $course
  * @param stdClass $cm
@@ -228,102 +245,4 @@ function theme_school_pluginfile($course, $cm, $context, $filearea, $args, $forc
     } else {
         send_file_not_found();
     }
-
-}
-
-/**
- * Adds any custom CSS to the CSS before it is cached.
- *
- * @param string $css The original CSS.
- * @param string $customcss The custom CSS to add.
- * @return string The CSS which now contains our custom CSS.
- */
-function theme_school_set_customcss($css, $customcss) {
-    $tag = '[[setting:customcss]]';
-    $replacement = $customcss;
-    if (is_null($replacement)) {
-        $replacement = '';
-    }
-
-    $css = str_replace($tag, $replacement, $css);
-
-    return $css;
-}
-
-/**
- * Returns an object containing HTML for the areas affected by settings.
- *
- * Do not add school specific logic in here, child themes should be able to
- * rely on that function just by declaring settings with similar names.
- *
- * @param renderer_base $output Pass in $OUTPUT.
- * @param moodle_page $page Pass in $PAGE.
- * @return stdClass An object with the following properties:
- *      - navbarclass A CSS class to use on the navbar. By default ''.
- *      - heading HTML to use for the heading. A logo if one is selected or the default heading.
- *      - footnote HTML to use as a footnote. By default ''.
- */
-function theme_school_get_html_for_settings(renderer_base $output, moodle_page $page) {
-    global $CFG;
-    $return = new stdClass;
-
-    $return->navbarclass = '';
-    if (!empty($page->theme->settings->invert)) {
-        $return->navbarclass .= ' navbar-inverse';
-    }
-
-    if (!empty($page->theme->settings->logo)) {
-        $return->heading = html_writer::tag('div', '', array('class' => 'logo'));
-    } else {
-        $return->heading = $output->page_heading();
-    }
-
-    return $return;
-}
-
-/**
- * Returns variables for LESS.
- *
- * We will inject some LESS variables from the settings that the user has defined
- * for the theme. No need to write some custom LESS for this.
- *
- * @param theme_config $theme The theme config object.
- * @return array of LESS variables without the @.
- */
-function theme_school_less_variables($theme) {
-    $variables = array();
-    if (!empty($theme->settings->primarycolour)) {
-        $variables['primaryColour'] = $theme->settings->primarycolour;
-    }
-    if (!empty($theme->settings->primaryfontcolour)) {
-        $variables['primaryFontColour'] = $theme->settings->primaryfontcolour;
-    }
-    if (!empty($theme->settings->primarylinkcolour)) {
-        $variables['primaryLinkColour'] = $theme->settings->primarylinkcolour;
-    }
-    if (!empty($theme->settings->secondarycolour)) {
-        $variables['secondaryColour'] = $theme->settings->secondarycolour;
-    }
-    if (!empty($theme->settings->secondaryfontcolour)) {
-        $variables['secondaryFontColour'] = $theme->settings->secondaryfontcolour;
-    }
-    if (!empty($theme->settings->secondarylinkcolour)) {
-        $variables['secondaryLinkColour'] = $theme->settings->secondarylinkcolour;
-    }
-    if (!empty($theme->settings->footercolour)) {
-        $variables['footerColour'] = $theme->settings->footercolour;
-    }
-    if (!empty($theme->settings->footerfontcolour)) {
-        $variables['footerFontColour'] = $theme->settings->footerfontcolour;
-    }
-    if (!empty($theme->settings->footerlinkcolour)) {
-        $variables['footerLinkColour'] = $theme->settings->footerlinkcolour;
-    }
-    if (!empty($theme->settings->mainlinkcolour)) {
-        $variables['mainLinkColour'] = $theme->settings->mainlinkcolour;
-    }
-    if (!empty($theme->settings->blocklinkcolour)) {
-        $variables['blockLinkColour'] = $theme->settings->blocklinkcolour;
-    }
-    return $variables;
 }

@@ -17,29 +17,31 @@
 <div class="row-fluid">
     <div class="students-area">
         <div class="container">
-            {{#hastext}}
-                <div class="students-area-feedback
-                    {{#hasslides}}span5{{/hasslides}}
-                    {{^hasslides}}no-slides{{/hasslides}}">
-                        {{#heading}}<h2>{{.}}</h2>{{/heading}}
-                        {{#subheading}}<h3>{{.}}</h3>{{/subheading}}
-                        {{#iframe}}{{{.}}}{{/iframe}}
-                        {{#brieftext}}{{{.}}}{{/brieftext}}
-                </div>
-            {{/hastext}}
-            {{#hasslides}}
-            <div {{#hastext}}class="testimonials-container span7 masonry-2-col"{{/hastext}}>
-                {{#slides}}
-                    <div class="grid-testimo {{#imageurl}}with-image{{/imageurl}}">
-                        <div class="blog_box">
-                            {{#imageurl}}<div class="blog_box_bloger"><img src="{{{.}}}" alt="{{#str}} userimage, theme_school {{/str}}"></div>{{/imageurl}}
-                            <div class="testimonial-name">{{{name}}}</div>
-                            <p class="testimonial-text"><i class="fa fa-quote-left"></i>{{text}}<i class="fa fa-quote-right"></i></p>
-                        </div>
+            <div class="row">
+                {{#hastext}}
+                    <div class="students-area-feedback
+                        {{#hasslides}}col-md-5{{/hasslides}}
+                        {{^hasslides}}no-slides{{/hasslides}}">
+                            {{#heading}}<h2>{{.}}</h2>{{/heading}}
+                            {{#subheading}}<h3>{{.}}</h3>{{/subheading}}
+                            {{#iframe}}{{{.}}}{{/iframe}}
+                            {{#brieftext}}{{{.}}}{{/brieftext}}
                     </div>
-                {{/slides}}
+                {{/hastext}}
+                {{#hasslides}}
+                <div {{#hastext}}class="testimonials-container col-md-7"{{/hastext}}>
+                    {{#slides}}
+                        <div class="grid-testimo {{#imageurl}}with-image{{/imageurl}}">
+                            <div class="blog_box">
+                                {{#imageurl}}<div class="blog_box_bloger"><img src="{{{.}}}" alt="{{#str}} userimage, theme_school {{/str}}"></div>{{/imageurl}}
+                                <div class="testimonial-name">{{{name}}}</div>
+                                <p class="testimonial-text"><i class="fa fa-quote-left mx-1"></i>{{text}}<i class="fa fa-quote-right mx-1"></i></p>
+                            </div>
+                        </div>
+                    {{/slides}}
+                </div>
+                {{/hasslides}}
             </div>
-            {{/hasslides}}
         </div>
     </div>
 </div>

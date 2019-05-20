@@ -15,9 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   theme_school
- * @copyright 2016 Moodle, moodle.org
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Theme school lang file.
+ *
+ * @package    theme_school
+ * @copyright  2019 Mathew May
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['choosereadme'] = '
@@ -42,8 +44,6 @@ $string['slidernext'] = 'Next slide';
 $string['sliderprev'] = 'Previous slide';
 $string['courseslidernext'] = 'Next slide of courses';
 $string['coursesliderprev'] = 'Previous slide of courses';
-$string['cloudportallink'] = 'MoodleCloud portal link';
-$string['yourportal'] = 'Portal';
 
 /*logo*/
 $string['logo'] = 'Logo';
@@ -252,3 +252,8 @@ $string['numberofsubcategories'] = 'Number of subcategories';
 $string['coursecatname'] = 'Course category {$a}';
 $string['togglecoursedetails'] = 'Toggle course {$a} details';
 $string['privacy:metadata'] = 'The school theme plugin does not store any personal data.';
+
+/* Portal button */
+$string['cloudportallink'] = 'MoodleCloud portal link';
+$string['cloudlogo'] = 'MoodleCloud logo';
+$string['yourportal'] = 'Portal';

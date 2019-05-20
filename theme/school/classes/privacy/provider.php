@@ -17,7 +17,7 @@
 /**
  * Privacy Subsystem implementation for theme_school.
  *
- * @package    theme_school
+ * @package    tool_phpunit
  * @copyright  2018 Mathieu Petit-Clair <mathieu@petitclair.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,7 +27,7 @@ namespace theme_school\privacy;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The more theme does not store any data.
+ * Privacy Subsystem for theme_school implementing null_provider.
  *
  * @copyright  2018 Mathieu Petit-Clair <mathieu@petitclair.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

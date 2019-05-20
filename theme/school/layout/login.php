@@ -14,36 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
- * @package   theme_school
- * @copyright 2016 Moodle, moodle.org
+ * A login page layout for the boost theme.
+ *
+ * @package   theme_boost
+ * @copyright 2016 Damyon Wiese
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Get the HTML for the settings bits.
-$html = theme_school_get_html_for_settings($OUTPUT, $PAGE);
-require('header.php');
-if (!isloggedin() && $isregistration->value == 'email') { ?>
-    <input type="hidden" name="custommenu" value="nologinselfreg" id="custommenu">
-<?php } ?>
-<div id="page" class="container-fluid">
+$bodyattributes = $OUTPUT->body_attributes();
 
-    <div id="page-content" class="row-fluid">
-        <section id="region-main" class="span12">
-            <?php
-            echo $OUTPUT->login_page_header();
-            echo $OUTPUT->main_content();
-            echo $OUTPUT->lang_menu();
-            ?>
-        </section>
-    </div>
+$templatecontext = [
+    'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
+    'output' => $OUTPUT,
+    'bodyattributes' => $bodyattributes,
+];
 
-    <?php
-        echo $OUTPUT->theme_footer();
-        echo $OUTPUT->standard_end_of_body_html();
-        $PAGE->requires->js_call_amd('theme_school/login', 'init');
-    ?>
+echo $OUTPUT->render_from_template('theme_school/login', $templatecontext);
 
-</div>
-</body>
-</html>

@@ -18,31 +18,35 @@
     <div class="region-main-header clearfix">
         <div class="search-wr">
             <form class="coursesearchform" method="get" action="{{{urls.coursesearch}}}">
-                <div>
-                    <label for="coursesearchquery" class="accesshide">{{#str}} coursesearch, theme_school {{/str}}</label>
-                    <div class="input-append">
-                        <input id="coursesearchquery" type="text" name="search" value="" placeholder="{{#str}} coursesearch, theme_school {{/str}}"></input>
-                        <button type="submit" value="Go"><i class="fa fa-search"></i></button>
+                <div class="input-group mb-3">
+                    <label for="coursesearchquery" class="sr-only">{{#str}} coursesearch, theme_school {{/str}}</label>
+                    <input id="coursesearchquery" type="text" name="search" class="form-control" placeholder="{{#str}} coursesearch, theme_school {{/str}}" aria-label="{{#str}} coursesearch, theme_school {{/str}}" aria-describedby="button-search">
+                    <div class="input-group-append">
+                        <button class="btn btn-theme-secondary icon-nomargin" type="button" value="Go" id="button-search">
+                            {{#pix}}a/search, core{{/pix}}
+                        </button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
     <div class="clearfix"></div>
-    <div id="category-list-container" class="container-fluid">
-        <div class="row-fluid">
+    <div id="category-list-container">
+        <div class="card-deck">
             {{#categories}}
-                <a href="{{{url}}}" class="grid-item category" aria-label="{{#str}} coursecatname, theme_school, {{name}} {{/str}}">
-                    <h3 class="name">{{name}}</h3>
-                    <ul>
-                        <li title="{{#str}} numberofcourses {{/str}}">
-                            <i class="fa fa-graduation-cap"></i> {{#str}} courses {{/str}}: {{coursecount}}
-                        </li>
-                        <li title="{{#str}} numberofsubcategories, theme_school {{/str}}">
-                            <i class="fa fa-sitemap"></i> {{#str}} subcategories {{/str}}: {{subcategorycount}}
-                        </li>
-                    </ul>
-                    <div class="description">{{{description}}}</div>
+                <a href="{{{url}}}" class="card box-shadow-light rounded bg-theme-gray category" aria-label="{{#str}} coursecatname, theme_school, {{name}} {{/str}}">
+                    <div class="card-body">
+                        <h3 class="name">{{name}}</h3>
+                        <ul>
+                            <li title="{{#str}} numberofcourses {{/str}}">
+                                <i class="fa fa-graduation-cap"></i> {{#str}} courses {{/str}}: {{coursecount}}
+                            </li>
+                            <li title="{{#str}} numberofsubcategories, theme_school {{/str}}">
+                                <i class="fa fa-sitemap"></i> {{#str}} subcategories {{/str}}: {{subcategorycount}}
+                            </li>
+                        </ul>
+                        <div class="description">{{{description}}}</div>
+                    </div>
                 </a>
             {{/categories}}
         </div>

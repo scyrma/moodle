@@ -15,11 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 <li {{# predivide }}class="predivide"{{/ predivide }} >
-<a href="{{{ link }}}" title="{{title}}" aria-label="{{title}}">
-        <span class="i-wr">
-            <i class="i-def">{{{ pix }}}</i>
-        </span>
-        <span>
+    <a href="{{{ link }}}"  class="dropdown-item menu-action" role="menuitem" data-title="profile,moodle" aria-labelledby="actionmenuaction-2" title="{{title}}" aria-label="{{title}}">
+        {{{ pix }}}
+        <span class="menu-action-text" id="actionmenuaction-2">
             {{ title }}
         </span>
     </a>
