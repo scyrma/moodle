@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Theme Moodlefree install.
+ * Theme Moodlecloud install.
  *
  * @package    theme_moodlecloud
  * @copyright  2014 Frédéric Massart
