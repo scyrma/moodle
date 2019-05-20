@@ -16,24 +16,26 @@
 }}
 <div class="popular-courses">
     <div class="container-fluid">
-        <div class="container nheading">
-            {{#hastext}}
-                <div class="span5 popular-course-nheading">
-                  {{#heading}}<h2>{{.}}</h2>{{/heading}}
-                  {{#subheading}}<h4>{{.}}</h4>{{/subheading}}
-                  {{#overview}}<p>{{{.}}}</p>{{/overview}}
-                </div>
-            {{/hastext}}
-            {{#hascategories}}
-                <div class="{{#hastext}}span7{{/hastext}} popular-course-links">
-                    <ul>
-                        {{#categories}}
-                            <li><a href="{{{url}}}" title="{{name}}">{{name}}</a></li>
-                        {{/categories}}
-                        <li><a class="viewmore" href="{{{categoriesurl}}}">{{#str}}viewallcategories, theme_school{{/str}}</a></li>
-                    </ul>
-                </div>
-            {{/hascategories}}
+        <div class="container">
+            <div class="row mb-5">
+                {{#hastext}}
+                    <div class="col-md-5 popular-course-nheading">
+                      {{#heading}}<h2 class="my-2">{{.}}</h2>{{/heading}}
+                      {{#subheading}}<h4>{{.}}</h4>{{/subheading}}
+                      {{#overview}}<p>{{{.}}}</p>{{/overview}}
+                    </div>
+                {{/hastext}}
+                {{#hascategories}}
+                    <div class="{{#hastext}}col-md-7{{/hastext}} popular-course-links">
+                        <ul>
+                            {{#categories}}
+                                <li><a href="{{{url}}}" title="{{name}}">{{name}}</a></li>
+                            {{/categories}}
+                            <li><a class="viewmore" href="{{{categoriesurl}}}">{{#str}}viewallcategories, theme_school{{/str}}</a></li>
+                        </ul>
+                    </div>
+                {{/hascategories}}
+            </div>
         </div>
 
         <div class="course-items" style="visibility: hidden;">
@@ -41,7 +43,7 @@
                 {{#courses}}
                     <li>
                         <div class="course-item">
-                            <a href="{{{url}}}" title="{{#str}} courseimage, theme_school, {{name}} {{/str}}">
+                            <a href="{{{url}}}" title="{{#str}} courseimage, theme_school, {{name}} {{/str}}" class="d-block">
                                 <div class="img-wr" style="background-image: url('{{{imageurl}}}');"></div>
                             </a>
                             <div class="course-item-cont">
@@ -61,9 +63,9 @@
                 {{/courses}}
             </ul>
         </div>
-        <div class="popular-courses-nav">
-            <div><span id="slider-prev" role="button" aria-label="{{#str}} coursesliderprev, theme_school {{/str}}"><i class="fa fa-chevron-circle-left"></i></span></div>
-            <div><span id="slider-next" role="button" aria-label="{{#str}} courseslidernext, theme_school {{/str}}"><i class="fa fa-chevron-circle-right"></i></span></div>
+        <div class="popular-courses-nav d-flex">
+                <span id="slider-prev" class="ml-auto" role="button" aria-label="{{#str}} coursesliderprev, theme_school {{/str}}"></span>
+                <span id="slider-next" role="button" aria-label="{{#str}} courseslidernext, theme_school {{/str}}"></span>
         </div>
     </div>
 </div>
