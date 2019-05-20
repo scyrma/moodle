@@ -1,0 +1,67 @@
+/**
+ * Custom MoodleCloud CSS.
+ *
+ */
+
+body,
+html {
+    height: 100%;
+    padding-top: 0;
+}
+.wrapper {
+    min-height: 100%;
+    margin-bottom: -180px;
+}
+.wrapper::after {
+    content: "";
+    display: block;
+    min-height: 180px;
+}
+#page-footer {
+    box-sizing: border-box;
+    margin: 0;
+    min-height: 180px;
+    background-color: #fff;
+    width: 100%;
+    text-align: center;
+}
+
+/*#page {
+    padding-top: 60px;  Bootstrap Navbar height // TODO - remove? DOESN'T SEEM TO BE NEEDED
+}*/
+
+// Prevent negative-margin from adding horizontal scrollbar to section.
+.row {
+    max-width: 100%; //!important; // stylelint-disable-line declaration-no-important
+}
+
+.page-context-header .page-header-headings {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle div {
+    line-height: 20px !important; // stylelint-disable-line declaration-no-important
+}
+
+#nav-moodlecloud-quota-popover-container {
+    transform: translateY(50%) !important; // stylelint-disable-line declaration-no-important
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-container {
+    margin-top: 0 !important; // stylelint-disable-line declaration-no-important
+}
+
+#nav-moodlecloud-quota-popover-container.popover-region,
+.popover-region {
+    z-index: 999;
+    transform: translateY(0%) !important; // stylelint-disable-line declaration-no-important
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle::before {
+    bottom: 0;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle::after {
+    bottom: 0;
+}
