@@ -59,6 +59,9 @@ $undeletableroles = array();
 $undeletableroles[$CFG->notloggedinroleid] = 1;
 $undeletableroles[$CFG->guestroleid] = 1;
 $undeletableroles[$CFG->defaultuserroleid] = 1;
+$undeletableroles[(int)get_config('', 'tool_tenant_adminrole')] = 1;
+$undeletableroles[(int)get_config('', 'tool_tenant_userrole')] = 1;
+$undeletableroles[(int)get_config('', 'tool_tenant_managerrole')] = 1;
 
 $PAGE->set_primary_active_tab('siteadminnode');
 $PAGE->navbar->add(get_string('defineroles', 'role'), $PAGE->url);
