@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Theme Moodlecloud lang file.
+ * Theme moodlecloud lang file.
  *
  * @package    theme_moodlecloud
  * @copyright  2014 Frédéric Massart
