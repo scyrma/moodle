@@ -14,28 +14,40 @@
     You should have received a copy of the GNU General Public License
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
-<div class="usermenu" tabindex="0" role="menu" aria-label="{{#str}} usermenu {{/str}}" aria-expanded="false" aria-controls="user-menu-items">
-    <ul class="menubar menubars">
-        <li>
-            <div class="clickable">
-                <span class="userbutton">
-                    <div class="name">
-                        {{ firstname }}</br>
-                        {{ lastname }}
+<li class="nav-item d-flex align-items-center">
+    <div class="usermenu">
+        <div class="action-menu moodle-actionmenu nowrap-items d-inline" id="action-menu-0" data-enhance="moodle-core-actionmenu"  aria-label="{{#str}} usermenu {{/str}}" aria-expanded="false" aria-controls="user-menu-items">
+            <div class="menubar d-flex " id="action-menu-0-menubar" role="menubar">
+                <div class="action-menu-trigger">
+                    <div class="dropdown">
+                        <a href="#" tabindex="0" class=" dropdown-toggle icon-no-margin" id="dropdown-0" aria-label="User menu" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" aria-controls="action-menu-0-menu">
+
+                            <span class="userbutton">
+                                <span class="usertext mr-1 col-md-7">
+                                    <div class="name">
+                                        {{ firstname }}
+                                        </br>
+                                        {{ lastname }}
+                                    </div>
+                                </span>
+                                <b class="caret col-md-1"></b>
+                                <span class="avatars col-md-4">
+                                    <span class="avatar current">
+                                        {{{ user_profile_picture }}}
+                                    </span>
+                                </span>
+                            </span>
+
+
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right menu  align-tr-br" id="action-menu-0-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-0" role="menu" data-align="tr-br">
+                            {{# menuitems }}
+                                {{> theme_school/usermenu_item_link }}
+                            {{/ menuitems }}
+                        </div>
                     </div>
-                    <div class="avatar current">
-                        {{{ user_profile_picture }}}
-                    </div>
-                    <div class="dropdown-icon-container">
-                        <i class="fa fa-chevron-circle-down"></i>
-                    </div>
-                </span>
+                </div>
             </div>
-        </li>
-    </ul>
-    <ul id="user-menu-items" class="menu menulist">
-        {{# menuitems }}
-            {{> theme_school/usermenu_item_link }}
-        {{/ menuitems }}
-    </ul>
-</div>
+    </div>
+    </div>
+</li>
