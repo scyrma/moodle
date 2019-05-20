@@ -15,17 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   theme_school
- * @copyright 2016 Moodle, moodle.org
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *  school theme.
+ *
+ * @package    theme_school
+ * @copyright  2019 Mathew May
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+// This line protects the file from being accessed by a URL directly.
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016030200;
-$plugin->release   = '1.0.0';
-$plugin->requires  = 2014051200;
+$plugin->version = 2019041100;
+$plugin->requires = 2019030100;
 $plugin->component = 'theme_school';
-$plugin->dependencies = array(
-    'theme_bootstrapbase'  => 2014051200,
-);
+$plugin->dependencies = [
+    'theme_classic' => 2019030100
+];
