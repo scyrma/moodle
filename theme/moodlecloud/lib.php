@@ -18,124 +18,171 @@
  * Theme moodlecloud lib.
  *
  * @package    theme_moodlecloud
- * @copyright  2014 Frédéric Massart
+ * @copyright  2019 Michael Hawkins
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// This line protects the file from being accessed by a URL directly.
+defined('MOODLE_INTERNAL') || die();
+
 /**
- * Extra LESS code to inject.
- *
- * This will generate some LESS code from the settings used by the user. We cannot use
- * the {@link theme_moodlecloud_less_variables()} here because we need to create selectors or
- * alter existing ones.
+ * Returns the main SCSS content.
  *
  * @param theme_config $theme The theme config object.
- * @return string Raw LESS code.
+ * @return string All fixed Sass for this theme.
  */
-function theme_moodlecloud_extra_less($theme) {
+function theme_moodlecloud_get_main_scss_content($theme) {
+    global $CFG;
+
+    $scss = '';
+
+    $filename = !empty($theme->settings->preset) ? $theme->settings->preset : null;
+    $fs = get_file_storage();
+
+    $context = context_system::instance();
+    $scss .= file_get_contents($CFG->dirroot . '/theme/moodlecloud/scss/moodlecloud/pre.scss');
+    if ($filename && ($presetfile = $fs->get_file($context->id, 'theme_classic', 'preset', 0, '/', $filename))) {
+        $scss .= $presetfile->get_content();
+    } else {
+        // Safety fallback - maybe new installs etc.
+        $scss .= file_get_contents($CFG->dirroot . '/theme/moodlecloud/scss/preset/default.scss');
+    }
+
+    //$scss .= file_get_contents($CFG->dirroot . '/theme/classic/scss/classic/post.scss');
+    $scss .= file_get_contents($CFG->dirroot . '/theme/moodlecloud/scss/moodlecloud/post.scss');
+
+    return $scss;
+
+  /*  $fs = get_file_storage();
+
+    // Main CSS - Get the CSS from theme Classic.
+    $scss .= file_get_contents($CFG->dirroot . '/theme/classic/scss/classic/pre.scss');
+    $scss .= file_get_contents($CFG->dirroot . '/theme/classic/scss/preset/default.scss');
+    $scss .= file_get_contents($CFG->dirroot . '/theme/classic/scss/classic/post.scss');
+
+    // Pre CSS - this is loaded AFTER any prescss from the setting but before the main scss.
+    $pre = file_get_contents($CFG->dirroot . '/theme/moodlecloud/scss/pre.scss');
+
+    // Post CSS - this is loaded AFTER the main scss but before the extra scss from the setting.
+    $post = file_get_contents($CFG->dirroot . '/theme/moodlecloud/scss/post.scss');
+
+    // Combine them together.
+    return $pre . "\n" . $scss . "\n" . $post;*/
+}
+
+/**
+ * Get compiled CSS.
+ *
+ * @return string compiled CSS
+ */
+function theme_moodlecloud_get_precompiled_css() {
+    global $CFG;
+    return file_get_contents($CFG->dirroot . '/theme/moodlecloud/style/moodle.css');
+}
+
+/**
+ * Inject additional SCSS.
+ *
+ * @param theme_config $theme The theme config object.
+ * @return string
+ */
+function theme_moodlecloud_get_extra_scss($theme) {
+    global $CFG;
     $content = '';
+
+    // Set the page background image.
     $imageurl = $theme->setting_file_url('backgroundimage', 'backgroundimage');
-    // Sets the background image, and its settings.
+
     if (!empty($imageurl)) {
         $content .= 'body { ';
-        $content .= "background-image: url('$imageurl');";
+        $content .= "background-image: url('{$imageurl}');";
+        $content .= "background-size: auto;";
+
         if (!empty($theme->settings->backgroundfixed)) {
             $content .= 'background-attachment: fixed;';
         }
+
         if (!empty($theme->settings->backgroundposition)) {
             $content .= 'background-position: ' . str_replace('_', ' ', $theme->settings->backgroundposition) . ';';
         }
+
         if (!empty($theme->settings->backgroundrepeat)) {
             $content .= 'background-repeat: ' . $theme->settings->backgroundrepeat . ';';
         }
+
         $content .= ' }';
     }
+
     // If there the user wants a background for the content, we need to make it look consistent,
     // therefore we need to round its borders, and adapt the border colour.
-    if (!empty($theme->settings->contentbackground)) {
-        $content .= '
-            #region-main {
-                .well;
-                background-color: ' . $theme->settings->contentbackground . ';
-                border-color: darken(' . $theme->settings->contentbackground . ', 7%);
-            }';
+    if (!empty($theme->settings->invert)) {
+        $content .= file_get_contents($CFG->dirroot .
+            '/theme/moodlecloud/scss/moodlecloud/navbar-dark.scss');
+    } else {
+        $content .= file_get_contents($CFG->dirroot .
+            '/theme/moodlecloud/scss/moodlecloud/navbar-light.scss');
     }
+
+    // Apply the the logo image if one is set.
+    $logoURL = $theme->setting_file_url('logo', 'logo');
+    if (!empty($logoURL)) {
+        $content .= "\$logoURL: '{$logoURL}';";
+        $content .= file_get_contents($CFG->dirroot .
+            '/theme/moodlecloud/scss/moodlecloud/logo.scss');
+    }
+
+    // Apply Cloud custom CSS.
+    $content .= file_get_contents($CFG->dirroot .
+        '/theme/moodlecloud/scss/moodlecloud/cloud-specific.scss');
+
+   // Apply admin editable custom CSS.
+    if (!empty($theme->settings->customcss)) {
+        $content .= $theme->settings->customcss;
+    }
+
     return $content;
 }
 
 /**
- * Returns variables for LESS.
- *
- * We will inject some LESS variables from the settings that the user has defined
- * for the theme. No need to write some custom LESS for this.
+ * Get SCSS to prepend (eg SCSS variables to set/override on parent theme).
  *
  * @param theme_config $theme The theme config object.
- * @return array of LESS variables without the @.
+ * @return array
  */
-function theme_moodlecloud_less_variables($theme) {
-    $variables = array();
-    if (!empty($theme->settings->bodybackground)) {
-        $variables['bodyBackground'] = $theme->settings->bodybackground;
+function theme_moodlecloud_get_pre_scss($theme) {
+    global $CFG;
+
+    $scss = '';
+    $configurable = [
+        // Config key           => [variableName, ...].
+        'bodybackground'        => ['body-bg'],
+        'textcolor'             => ['textColor'],
+        'linkcolor'             => ['linkColor'],
+        'secondarybackground'   => ['cardBackground'],
+        'contentbackground'     => ['contentBackground']
+    ];
+
+    // Prepend variables first.
+    foreach ($configurable as $configkey => $targets) {
+        $value = isset($theme->settings->{$configkey}) ? $theme->settings->{$configkey} : null;
+        if (empty($value)) {
+            continue;
+        }
+        array_map(function($target) use (&$scss, $value) {
+            $scss .= '$' . $target . ': ' . $value . ";\n";
+        }, (array) $targets);
     }
-    if (!empty($theme->settings->textcolor)) {
-        $variables['textColor'] = $theme->settings->textcolor;
+
+    // Prepend pre-scss.
+    if (!empty($theme->settings->scsspre)) {
+        $scss .= $theme->settings->scsspre;
     }
-    if (!empty($theme->settings->linkcolor)) {
-        $variables['linkColor'] = $theme->settings->linkcolor;
-    }
-    if (!empty($theme->settings->secondarybackground)) {
-        $variables['wellBackground'] = $theme->settings->secondarybackground;
-    }
-    return $variables;
+
+    return $scss;
 }
 
 /**
- * Parses CSS before it is cached.
- *
- * This function can make alterations and replace patterns within the CSS.
- *
- * @param string $css The CSS
- * @param theme_config $theme The theme config object.
- * @return string The parsed CSS The parsed CSS.
- */
-function theme_moodlecloud_process_css($css, $theme) {
-
-    // Set the background image for the logo.
-    $logo = $theme->setting_file_url('logo', 'logo');
-    $css = theme_moodlecloud_set_logo($css, $logo);
-
-    // Set custom CSS.
-    if (!empty($theme->settings->customcss)) {
-        $customcss = $theme->settings->customcss;
-    } else {
-        $customcss = null;
-    }
-    $css = theme_moodlecloud_set_customcss($css, $customcss);
-
-    return $css;
-}
-
-/**
- * Adds the logo to CSS.
- *
- * @param string $css The CSS.
- * @param string $logo The URL of the logo.
- * @return string The parsed CSS
- */
-function theme_moodlecloud_set_logo($css, $logo) {
-    $tag = '[[setting:logo]]';
-    $replacement = $logo;
-    if (is_null($replacement)) {
-        $replacement = '';
-    }
-
-    $css = str_replace($tag, $replacement, $css);
-
-    return $css;
-}
-
-/**
- * Serves any files associated with the theme settings.
+ * Serve any files associated with the theme settings.
  *
  * @param stdClass $course
  * @param stdClass $cm
@@ -156,87 +203,5 @@ function theme_moodlecloud_pluginfile($course, $cm, $context, $filearea, $args, 
         return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
     } else {
         send_file_not_found();
-    }
-}
-
-/**
- * Adds any custom CSS to the CSS before it is cached.
- *
- * @param string $css The original CSS.
- * @param string $customcss The custom CSS to add.
- * @return string The CSS which now contains our custom CSS.
- */
-function theme_moodlecloud_set_customcss($css, $customcss) {
-    $tag = '[[setting:customcss]]';
-    $replacement = $customcss;
-    if (is_null($replacement)) {
-        $replacement = '';
-    }
-
-    $css = str_replace($tag, $replacement, $css);
-
-    return $css;
-}
-
-function theme_moodlecloud_is_teacher($context) {
-    // The same capability as is used with page_doc_link().
-    return has_capability('moodle/site:doclinks', $context);
-}
-
-function theme_moodlecloud_get_footerlinks($context) {
-    global $OUTPUT;
-
-    $links = array();
-
-    if ($doclink = $OUTPUT->page_doc_link()) {
-        $links[] = $doclink;
-    }
-
-    if (theme_moodlecloud_is_teacher($context)) {
-        $title = get_string('supportforums', 'theme_moodlecloud');
-        $link = new moodle_urL('https://moodle.org/community');
-        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
-    }
-    if (is_siteadmin()) {
-        $title = get_string('faq', 'theme_moodlecloud');
-        $link = new moodle_urL('https://moodle.com/cloud/faq');
-        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
-    }
-    return implode(' | ', $links);;
-}
-
-function theme_moodlecloud_get_gatc() {
-    global $OUTPUT;
-
-    // we need the global and region property as well as the plan to output
-    if ((defined('MOODLECLOUD_GA_GLOBAL_PROPERTY') && MOODLECLOUD_GA_GLOBAL_PROPERTY) &&
-        (defined('MOODLECLOUD_GA_REGION_PROPERTY') && MOODLECLOUD_GA_REGION_PROPERTY) &&
-        (defined('MOODLECLOUD_PLAN') && MOODLECLOUD_PLAN)
-    ) {
-        return $OUTPUT->render_from_template('theme_moodlecloud/google_analytics', array(
-            'ga_global_property' => MOODLECLOUD_GA_GLOBAL_PROPERTY,
-            'ga_region_property' => MOODLECLOUD_GA_REGION_PROPERTY,
-            'ga_plan' => MOODLECLOUD_PLAN
-        ));
-    }
-}
-
-function theme_moodlecloud_portal_link() {
-    global $USER, $CFG;
-
-    if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
-        $url = new moodle_url('/auth/moodlecloud/portal.php');
-        $title = get_string('cloudportallink', 'theme_moodlecloud');
-        $alt = get_string('cloudlogo', 'theme_moodlecloud');
-        $text = get_string('yourportal', 'theme_moodlecloud');
-        $theme = theme_config::load('moodlecloud');
-        $imageurl = $theme->image_url('moodlecloud-logo-inverted', 'theme');
-        $imghtml = html_writer::img($imageurl, $alt);
-        $linkhtml = html_writer::link($url->out(), sprintf("%s %s", $imghtml, $text),
-            array('id' => 'portal-link', 'title' => $title, 'target' => '_blank'));
-
-        return html_writer::div($linkhtml, '', array('id' => 'portal-link-container'));
-    } else {
-        return '';
     }
 }
