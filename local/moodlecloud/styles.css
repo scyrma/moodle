@@ -80,6 +80,10 @@
     display: none;
 }
 
+.popover-region {
+    transform: translateY(30%);
+}
+
 #nav-moodlecloud-quota-popover-container .items {
     text-align: center;
     margin-top: 10px;
