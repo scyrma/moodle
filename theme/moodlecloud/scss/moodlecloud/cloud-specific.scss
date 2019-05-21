@@ -26,10 +26,6 @@ html {
     text-align: center;
 }
 
-/*#page {
-    padding-top: 60px;  Bootstrap Navbar height // TODO - remove? DOESN'T SEEM TO BE NEEDED
-}*/
-
 // Prevent negative-margin from adding horizontal scrollbar to section.
 .row {
     max-width: 100%; //!important; // stylelint-disable-line declaration-no-important
@@ -38,30 +34,4 @@ html {
 .page-context-header .page-header-headings {
     margin-top: 30px;
     margin-bottom: 10px;
-}
-
-#nav-moodlecloud-quota-popover-container .popover-region-toggle div {
-    line-height: 20px !important; // stylelint-disable-line declaration-no-important
-}
-
-#nav-moodlecloud-quota-popover-container {
-    transform: translateY(50%) !important; // stylelint-disable-line declaration-no-important
-}
-
-#nav-moodlecloud-quota-popover-container .popover-region-container {
-    margin-top: 0 !important; // stylelint-disable-line declaration-no-important
-}
-
-#nav-moodlecloud-quota-popover-container.popover-region,
-.popover-region {
-    z-index: 999;
-    transform: translateY(0%) !important; // stylelint-disable-line declaration-no-important
-}
-
-#nav-moodlecloud-quota-popover-container .popover-region-toggle::before {
-    bottom: 0;
-}
-
-#nav-moodlecloud-quota-popover-container .popover-region-toggle::after {
-    bottom: 0;
 }
