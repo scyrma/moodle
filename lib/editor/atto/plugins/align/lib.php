@@ -24,7 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-<<<<<<< HEAD:lib/editor/atto/plugins/align/lib.php
 /**
  * Initialise the strings required for JS.
  *
