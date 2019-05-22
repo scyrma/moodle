@@ -156,9 +156,9 @@ body:not(#page-site-index) .usermenu {
     top: 80px;
 }
 .navbar .popover-region-toggle {
-    line-height: 64px;
     height: 64px;
     width: 30px;
+    z-index: 1;
 
     &:before,
     &:after {
@@ -221,4 +221,8 @@ span.userbutton {
             }
         }
     }
+}
+
+#nav-moodlecloud-quota-popover-container {
+    transform: translateY(15%) !important;
 }
