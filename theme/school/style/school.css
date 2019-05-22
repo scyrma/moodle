@@ -20043,19 +20043,19 @@ body .btn-see-all {
 .navbar-bootswatch.navbar {
   background: #007bff;
   color: #fff;
-  height: 80px;
-  max-height: 80px; }
+  height: 50px;
+  max-height: 50px; }
   .navbar-bootswatch.navbar .popover-region-container {
     color: #212529; }
 
 .navbar-bootswatch .navbar-brand {
   color: #fff;
   background: #6c757d;
-  height: 80px;
+  height: 50px;
   min-width: 270px;
   margin: 0 !important;
   text-align: center;
-  line-height: 80px;
+  line-height: 50px;
   float: left;
   padding: 0 20px;
   max-width: 500px; }
@@ -20072,7 +20072,7 @@ body .btn-see-all {
   margin-top: 0; }
 
 .fixed-navbar #page {
-  margin-top: 80px; }
+  margin-top: 50px; }
 
 .navbar-nav a.dropdown-toggle {
   color: white; }
@@ -20087,7 +20087,7 @@ span.site-name {
 .usermenu {
   margin: 0 0 0 10px;
   min-width: 235px;
-  height: 80px;
+  height: 50px;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   position: relative;
@@ -20100,11 +20100,11 @@ span.site-name {
       -ms-flex-direction: column;
           flex-direction: column; }
   .usermenu .login {
-    line-height: 80px;
+    line-height: 50px;
     margin-left: 15px; }
   .usermenu .dropdown-toggle {
     display: block;
-    padding: 10px 10px 10px 20px; }
+    padding-top: 10px; }
     .usermenu .dropdown-toggle .caret {
       display: none; }
   .usermenu .usertext {
@@ -20126,8 +20126,8 @@ span.site-name {
   .usermenu .userbutton .avatar img {
     border-radius: 50%;
     border: solid 3px rgba(0, 0, 0, 0.25);
-    height: 55px;
-    width: 55px;
+    height: 35px;
+    width: 35px;
     vertical-align: middle;
     margin: 0;
     max-width: none;
@@ -20187,10 +20187,9 @@ body:not(#page-site-index) .usermenu {
   display: none; }
 
 .navbar .popover-region-container {
-  top: 80px; }
+  top: 50px; }
 
 .navbar .popover-region-toggle {
-  height: 64px;
   width: 30px;
   z-index: 1; }
   .navbar .popover-region-toggle:before, .navbar .popover-region-toggle:after {
@@ -21980,7 +21979,7 @@ h6 {
     line-height: 20px !important; } }
 
 .message-app.drawer {
-  height: calc(100% - 80px);
-  top: 80px; }
+  height: calc(100% - 50px);
+  top: 50px; }
 
 /*# sourceMappingURL=school.css.map */
