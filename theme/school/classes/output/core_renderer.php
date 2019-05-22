@@ -374,7 +374,7 @@ class core_renderer extends \core_renderer {
 
         $avatarclasses = "avatars col-md-6";
         $avatarcontents = html_writer::span($opts->metadata['useravatar'], 'avatar current ml-2');
-        $usertextcontents = $user->firstname . '<br/>' . $user->lastname;
+        $usertextcontents = $user->firstname . ' ' . $user->lastname;
 
         // Other user.
         if (!empty($opts->metadata['asotheruser'])) {
