@@ -154,7 +154,7 @@ class course_renderer extends \core_course_renderer {
         if (!$categoryid) {
             // If no id is given and we've only got one category just show those courses.
             if (\core_course_category::is_simple_site()) {
-                return $this->coursecategory_courses(core_course_category::get_default());
+                return $this->coursecategory_courses(\core_course_category::get_default());
             } else {
             // Otherwise show a list of the categories.
                 return $this->coursecategory_categories();
