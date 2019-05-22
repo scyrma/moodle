@@ -20260,12 +20260,6 @@ span.userbutton {
     float: left;
     margin-right: 10px; }
 
-#nav-moodlecloud-quota-popover-container {
-  -webkit-transform: translateY(15%) !important;
-      -ms-transform: translateY(15%) !important;
-       -o-transform: translateY(15%) !important;
-          transform: translateY(15%) !important; }
-
 /* Block stuff */
 #block-region-side-pre .block,
 #block-region-side-post .block {
