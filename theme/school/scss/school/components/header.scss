@@ -152,12 +152,18 @@ body:not(#page-site-index) .usermenu {
 .dropdown-toggle::after {
     display: none;
 }
+
+.navbar .popover-region {
+    z-index: 3;
+}
+
 .navbar .popover-region-container {
     top: 50px;
+    z-index: 3;
 }
+
 .navbar .popover-region-toggle {
     width: 30px;
-    z-index: 1;
 
     &:before,
     &:after {
