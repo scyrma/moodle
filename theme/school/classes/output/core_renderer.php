@@ -507,6 +507,31 @@ class core_renderer extends \core_renderer {
     }
 
     /**
+     * Prepare the MoodleCloud portal link button for site owners.
+     *
+     * @return string HTML for the portal link button, or empty string.
+     */
+    public function portal_link() {
+        global $USER, $CFG;
+
+        if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
+            $url = new moodle_url('/auth/moodlecloud/portal.php');
+            $title = get_string('cloudportallink', 'theme_school');
+            $alt = get_string('cloudlogo', 'theme_school');
+            $text = get_string('yourportal', 'theme_school');
+            $theme = \theme_config::load('school');
+            $imageurl = $theme->image_url('school-logo-inverted', 'theme');
+            $imghtml = html_writer::img($imageurl, $alt);
+            $linkhtml = html_writer::link($url->out(), sprintf("%s %s", $imghtml, $text),
+                array('id' => 'portal-link', 'title' => $title, 'target' => '_blank'));
+
+            return html_writer::div($linkhtml, '', array('id' => 'portal-link-container'));
+        } else {
+            return '';
+        }
+    }
+
+    /**
      * Prepare Google Analytics template for page.
      *
      * @return string
