@@ -20186,12 +20186,15 @@ body:not(#page-site-index) .usermenu {
 .dropdown-toggle::after {
   display: none; }
 
+.navbar .popover-region {
+  z-index: 3; }
+
 .navbar .popover-region-container {
-  top: 50px; }
+  top: 50px;
+  z-index: 3; }
 
 .navbar .popover-region-toggle {
-  width: 30px;
-  z-index: 1; }
+  width: 30px; }
   .navbar .popover-region-toggle:before, .navbar .popover-region-toggle:after {
     display: none;
     content: '';
@@ -20427,6 +20430,60 @@ footer {
         color: #f15a23; }
         .contact-info #social-list li a:hover {
           color: #d4420d; }
+
+#portal-link-container {
+  position: fixed;
+  top: 45%;
+  right: 0;
+  left: auto;
+  width: 30px;
+  line-height: 30px;
+  background-color: #f15a23;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  display: inline-block;
+  overflow: hidden;
+  opacity: .8;
+  border-radius: 5px 0 0 5px; }
+  #portal-link-container:hover {
+    opacity: 1; }
+  #portal-link-container #portal-link {
+    color: #fff;
+    font-size: 15px;
+    text-decoration: none;
+    display: inline-block;
+    white-space: nowrap;
+    -webkit-transform: translate(0, 100%) rotate(-90deg);
+    -ms-transform: translate(0, 100%) rotate(-90deg);
+    -o-transform: translate(0, 100%) rotate(-90deg);
+    transform: translate(0, 100%) rotate(-90deg);
+    -webkit-transform-origin: 0 0;
+    -ms-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    transform-origin: 0 0; }
+    #portal-link-container #portal-link img {
+      height: 20px;
+      width: 33px;
+      display: inline-block;
+      vertical-align: sub; }
+    #portal-link-container #portal-link::after {
+      content: '';
+      float: left;
+      margin-top: 100%; }
+
+.dir-rtl #portal-link-container {
+  left: 0;
+  right: auto;
+  border-radius: 0 5px 5px 0; }
+  .dir-rtl #portal-link-container #portal-link {
+    -webkit-transform: translate(0, 100%) rotate(90deg);
+    -ms-transform: translate(0, 100%) rotate(90deg);
+    -o-transform: translate(0, 100%) rotate(90deg);
+    transform: translate(0, 100%) rotate(90deg);
+    -webkit-transform-origin: 100% 0;
+    -ms-transform-origin: 100% 0;
+    -o-transform-origin: 100% 0;
+    transform-origin: 100% 0; }
 
 .icon-nomargin .icon {
   margin: 0; }
