@@ -46,5 +46,23 @@ $templatecontext = [
     'headercontent' => $headercontent,
 ];
 
-echo $OUTPUT->render_from_template('theme_classic/columns', $templatecontext);
+// add the Google Analytics Tracking Code to the footer (if we have the settings)
+if ((defined('MOODLECLOUD_GA_GLOBAL_PROPERTY') && MOODLECLOUD_GA_GLOBAL_PROPERTY) &&
+    (defined('MOODLECLOUD_GA_REGION_PROPERTY') && MOODLECLOUD_GA_REGION_PROPERTY) &&
+    (defined('MOODLECLOUD_PLAN') && MOODLECLOUD_PLAN)
+) {
+    $templatecontext['ga_global_property'] = MOODLECLOUD_GA_GLOBAL_PROPERTY;
+    $templatecontext['ga_region_property'] = MOODLECLOUD_GA_REGION_PROPERTY;
+    $templatecontext['ga_plan'] = MOODLECLOUD_PLAN;
+}
 
+// MoodleCloud Portal SSO Tab
+if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
+    $url = new moodle_url('/auth/moodlecloud/portal.php');
+    $templatecontext['showportallink'] = true;
+    $templatecontext['cloudportalurl'] = $url->out();
+    $theme = theme_config::load('boost');
+    $templatecontext['cloudinvertedimgurl'] = $theme->image_url('cloud-logo-inverted', 'theme');
+}
+
+echo $OUTPUT->render_from_template('theme_classic/columns', $templatecontext);
