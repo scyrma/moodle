@@ -201,7 +201,6 @@
 </div>
 </div>
 
-<<<<<<< HEAD
 
 {{#hasinstructions}}
 <div class="row justify-content-center mt-3">
@@ -218,41 +217,6 @@
                 <button type="submit" class="btn btn-secondary">{{#str}}startsignup{{/str}}</button>
             </form>
         {{/cansignup}}
-=======
-    <div class="signuppanel">
-    {{#hasinstructions}}
-        <h2>{{#str}} firsttime {{/str}}</h2>
-        <div class="subcontent">
-            {{{instructions}}}
-            {{#cansignup}}
-                <div class="signupform">
-                    <form action="{{signupurl}}" method="get" id="signup">
-                        <div>
-                            <input type="submit" value={{#quote}}{{#str}} startsignup {{/str}}{{/quote}} />
-                        </div>
-                    </form>
-                </div>
-            {{/cansignup}}
-       </div>
-{{/hasinstructions}}
-
-</div>
-{{#hasidentityproviders}}
-        <div class="subcontent potentialidps no-courses">
-            <h6>{{#str}} potentialidps, auth {{/str}}</h6>
-            <div class="potentialidplist">
-                {{#identityproviders}}
-                    <div class="potentialidp">
-                        <a href="{{url}}" title={{#quote}}{{name}}{{/quote}} class="btn">
-                        {{#iconurl}}
-                            <img src="{{iconurl}}" alt="" width="24" height="24"/>
-                        {{/iconurl}}
-                        {{name}}
-                        </a>
-                    </div>
-                {{/identityproviders}}
-            </div>
->>>>>>> MC-662: OAuth login layout issues on School theme
         </div>
     </div>
 </div>
