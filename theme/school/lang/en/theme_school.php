@@ -27,8 +27,9 @@ $string['choosereadme'] = '
     <div class="well">
         <h2>School</h2>
         <h3>Theme Credits</h3>
-        <p>Author: Ryan Wyllie<br>
-        Based on Tikli from DualCube, by permission from the author.
+        <p>Author: Mathew May<br>
+        <p>Author: Bas Brands<br>
+        Based on Classic.
         </p>
     </div>
 </div>';
