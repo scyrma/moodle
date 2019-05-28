@@ -20438,13 +20438,11 @@ footer {
   left: auto;
   width: 30px;
   line-height: 30px;
-  background-color: #f15a23;
-  padding-top: 5px;
+  padding-top: 10px;
   padding-bottom: 5px;
   display: inline-block;
   overflow: hidden;
   opacity: .8;
-  border-radius: 5px 0 0 5px; }
   #portal-link-container:hover {
     opacity: 1; }
   #portal-link-container #portal-link {
