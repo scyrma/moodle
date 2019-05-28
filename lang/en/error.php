@@ -199,9 +199,9 @@ $string['csvinvalidcols'] = '<b>Invalid CSV file:</b> First line must include "H
 $string['csvinvalidcolsnum'] = 'Invalid CSV file - each line must include 49 or 70 fields';
 $string['csvloaderror'] = 'An error occurred while loading the CSV file: {$a}';
 $string['csvweirdcolumns'] = 'Invalid CSV file format - number of columns is not constant!';
-$string['dbconnectionfailed'] = '<p>Error: Database connection failed</p>
-<p>It is possible that the database is overloaded or otherwise not running properly.</p>
-<p>The site administrator should also check that the database details have been correctly specified in config.php</p>';
+// START MOODLECLOUD HACK
+$string['dbconnectionfailed'] = '<p>We\'re terribly sorry, your MoodleCloud site is down for some important maintenance work. We are working hard to have it back up in the Cloud as soon as possible.</p>';
+// END MOODLECLOUD HACK
 $string['dbdriverproblem'] = '<p>Error: database driver problem detected</p>
 <p>The site administrator should verify server configuration</p><p>{$a}</p>';
 $string['dbsessionbroken'] = 'Serious database session problem detected.<br /><br />Please notify server administrator.';
