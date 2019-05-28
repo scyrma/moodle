@@ -196,14 +196,12 @@ $hrBorder: darken($cardBackground, 5%);
     left: auto;
     width: 30px;
     line-height: 30px;
-    background-color: $moodle-orange;
-    padding-top: 5px;
+    padding-top: 10px;
     padding-bottom: 5px;
     display: inline-block;
     overflow: hidden;
     @include box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
     @include opacity(80);
-    @include border-radius(5px 0 0 5px);
 
     &:hover {
         @include opacity(100);
