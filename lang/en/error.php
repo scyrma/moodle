@@ -205,7 +205,7 @@ $string['csvloaderror'] = 'An error occurred while loading the CSV file: {$a}';
 $string['csvnodata'] = 'Invalid CSV file - The CSV file has headers but does not contain any data.';
 $string['csvweirdcolumns'] = 'Invalid CSV file format - number of columns is not constant!';
 // START MOODLECLOUD HACK
-$string['dbconnectionfailed'] = '<p>We\'re terribly sorry, your MoodleCloud site is down for some important maintenance work. We are working hard to have it back up in the Cloud as soon as possible.</p>';
+$string['dbconnectionfailed'] = '<p>Site is undergoing maintenance, please try again shortly.</p>';
 // END MOODLECLOUD HACK
 $string['dbdriverproblem'] = '<p>Error: database driver problem detected</p>
 <p>The site administrator should verify server configuration</p><p>{$a}</p>';
