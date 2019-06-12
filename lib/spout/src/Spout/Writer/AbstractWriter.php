@@ -142,19 +142,21 @@ abstract class AbstractWriter implements WriterInterface
         // @see https://github.com/box/spout/issues/241
         $this->globalFunctionsHelper->ob_end_clean();
 
-        // Set headers
-        $this->globalFunctionsHelper->header('Content-Type: ' . static::$headerContentType);
-        $this->globalFunctionsHelper->header('Content-Disposition: attachment; filename="' . $this->outputFilePath . '"');
+        if (!PHPUNIT_TEST) {
+            // Set headers
+            $this->globalFunctionsHelper->header('Content-Type: ' . static::$headerContentType);
+            $this->globalFunctionsHelper->header('Content-Disposition: attachment; filename="' . $this->outputFilePath . '"');
 
-        /*
-         * When forcing the download of a file over SSL,IE8 and lower browsers fail
-         * if the Cache-Control and Pragma headers are not set.
-         *
-         * @see http://support.microsoft.com/KB/323308
-         * @see https://github.com/liuggio/ExcelBundle/issues/45
-         */
-        $this->globalFunctionsHelper->header('Cache-Control: max-age=0');
-        $this->globalFunctionsHelper->header('Pragma: public');
+            /*
+             * When forcing the download of a file over SSL,IE8 and lower browsers fail
+             * if the Cache-Control and Pragma headers are not set.
+             *
+             * @see http://support.microsoft.com/KB/323308
+             * @see https://github.com/liuggio/ExcelBundle/issues/45
+             */
+            $this->globalFunctionsHelper->header('Cache-Control: max-age=0');
+            $this->globalFunctionsHelper->header('Pragma: public');
+        }
 
         $this->openWriter();
         $this->isWriterOpened = true;
