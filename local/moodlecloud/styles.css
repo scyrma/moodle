@@ -12,19 +12,18 @@
 }
 
 #nav-moodlecloud-quota-popover-container progress {
-	  display:inline-block;
+    display:inline-block;
     vertical-align: middle !important;
-	  width:100px;
-	  height:10px;
-	  background:grey;
-	  border: 0;
+    width:100px;
+    height:10px;
+    background:grey;
+    border: 0;
     float: right;
     margin-top: 6px;
     margin-left: 5px;
-	  position:relative;
+    position:relative;
     -webkit-appearance: progress-bar;
 }
-
 
 /* IE10 */
 #nav-moodlecloud-quota-popover-container progress.ok {
@@ -71,17 +70,8 @@
     background: red;
 }
 
-
-#nav-moodlecloud-quota-popover-container {
-    transform: translateY(-3%) !important;
-}
-
 .popover-region.popover-region-quotas.collapsed .items {
     display: none;
-}
-
-.popover-region {
-    transform: translateY(30%);
 }
 
 #nav-moodlecloud-quota-popover-container .items {
@@ -137,4 +127,9 @@
 #nav-moodlecloud-quota-popover-container .storage .circle_animation {
     -webkit-animation: storage 1s ease-out forwards;
     animation: moodlecloud_quota_popover_storage 1s ease-out forwards;
+}
+
+.fixed-top .popover-region .icon {
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
