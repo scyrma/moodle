@@ -3233,15 +3233,21 @@ EOD;
             }
         }
 
+        // START MOODLECLOUD HACK
         if ($pluginsfunction = get_plugins_with_function('render_navbar_output')) {
             foreach ($pluginsfunction as $plugintype => $plugins) {
-                foreach ($plugins as $pluginfunction) {
-                    $output .= $pluginfunction($this);
+                foreach ($plugins as $pluginname => $pluginfunction) {
+                    if ($pluginname == 'moodlecloud') {
+                        $mcoutput = $pluginfunction($this);
+                    } else {
+                        $output .= $pluginfunction($this);
+                    }
                 }
             }
         }
 
-        return $output;
+        return $mcoutput . $output;
+        // END MOODLECLOUD HACK
     }
 
     /**
