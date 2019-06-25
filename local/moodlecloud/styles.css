@@ -20,6 +20,10 @@
     z-index: 1;
 }
 
+#nav-moodlecloud-quota-popover-container .popover-region-toggle::after {
+    display: none !important;
+}
+
 #nav-moodlecloud-quota-popover-container progress {
     display:inline-block;
     vertical-align: middle !important;
