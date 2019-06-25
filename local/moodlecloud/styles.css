@@ -1,4 +1,13 @@
+#nav-moodlecloud-quota-popover-container {
+    height: 1px;
+}
+
+#nav-moodlecloud-quota-popover-container > div > div {
+    line-height: 1.3;
+}
+
 #nav-moodlecloud-quota-popover-container .popover-region-toggle {
+    padding: 0px;
     width: auto;
 }
 
@@ -127,9 +136,4 @@
 #nav-moodlecloud-quota-popover-container .storage .circle_animation {
     -webkit-animation: storage 1s ease-out forwards;
     animation: moodlecloud_quota_popover_storage 1s ease-out forwards;
-}
-
-.fixed-top .popover-region .icon {
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
