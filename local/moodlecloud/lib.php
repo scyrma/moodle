@@ -28,7 +28,7 @@ use local_moodlecloud\restrictions\userquota;
 use local_filestorage\file_storage\file_system_s3;
 
 function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
-    global $USER, $CFG, $DB;
+    global $USER, $CFG, $DB, $PAGE;
 
     if (!is_siteadmin()) {
         return '';
@@ -67,7 +67,8 @@ function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
                 'totalmb' => FILESTORAGE_QUOTA/(1024**2),
                 'urls' => [
                     'seeall' => (new moodle_url('/admin/tool/fileslist'))->out()
-                ]
+                ],
+                'theme' => $PAGE->theme->name
             ]
         );
 }
