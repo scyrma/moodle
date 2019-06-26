@@ -24,6 +24,10 @@
     display: none !important;
 }
 
+#nav-moodlecloud-quota-popover-container.workplace {
+    padding-top: 6px !important;
+}
+
 #nav-moodlecloud-quota-popover-container progress {
     display:inline-block;
     vertical-align: middle !important;
