@@ -72,6 +72,7 @@ class course_enrol extends \tool_dynamicrule\outcome_base {
      * @param \MoodleQuickForm $mform The form to add elements to
      */
     public function get_config_form(\MoodleQuickForm $mform) {
+
         $mform->addElement('course', 'coursetoenrol', get_string('course'));
         $mform->addRule('coursetoenrol', null, 'required', null, 'client');
         $mform->setType('coursetoenrol', PARAM_INT);
@@ -120,7 +121,8 @@ class course_enrol extends \tool_dynamicrule\outcome_base {
      * @return array
      */
     private function get_roles(): array {
-        return get_default_enrol_roles(\context_system::instance());
+        return role_fix_names(get_archetype_roles('student'), null, ROLENAME_ALIAS, true ) +
+            get_default_enrol_roles(\context_system::instance());
     }
 
     /**
