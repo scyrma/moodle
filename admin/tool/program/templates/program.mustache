@@ -27,8 +27,9 @@
 </div>
 {{#js}}
     M.util.js_pending('tool_program_edit');
-    require(['tool_program/edit_details'], function(EditDetails) {
+    require(['tool_program/edit_details', 'tool_dynamicrule/rules_list'], function(EditDetails, rulesList) {
         new EditDetails();
+        rulesList.init();
         M.util.js_complete('tool_program_edit');
     });
 {{/js}}

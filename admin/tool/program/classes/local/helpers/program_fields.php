@@ -208,15 +208,17 @@ class program_fields extends entity_base {
 
         $fields = $this->get_program_fields();
         foreach ($fields as $field => $name) {
-            $filter    = new report_filter(
-                $this->get_filter_class_name($field, false),
-                $field,
-                $name,
-                'tool_program',
-                $this->programtablealias . '.' . $field
-            );
-            $filter->add_join($this->programjoin);
-            $filters[] = $filter;
+            if ($field !== 'description') {
+                $filter    = new report_filter(
+                    $this->get_filter_class_name($field, false),
+                    $field,
+                    $name,
+                    'tool_program',
+                    $this->programtablealias . '.' . $field
+                );
+                $filter->add_join($this->programjoin);
+                $filters[] = $filter;
+            }
         }
 
         // Add program custom fields filters.
@@ -273,15 +275,17 @@ class program_fields extends entity_base {
 
         $fields = $this->get_program_fields();
         foreach ($fields as $field => $name) {
-            $filter    = new report_filter(
-                $this->get_filter_class_name($field, false),
-                $field,
-                $name,
-                'tool_program',
-                $this->programtablealias . '.' . $field
-            );
-            $filter->add_join($this->programjoin);
-            $filters[] = $filter;
+            if ($field !== 'description') {
+                $filter = new report_filter(
+                    $this->get_filter_class_name($field, true),
+                    $field,
+                    $name,
+                    'tool_program',
+                    $this->programtablealias . '.' . $field
+                );
+                $filter->add_join($this->programjoin);
+                $filters[] = $filter;
+            }
         }
 
         // Add program custom fields conditions.
