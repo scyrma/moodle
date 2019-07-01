@@ -27,7 +27,7 @@
 if (isset($_REQUEST['lang'])) {
     $lang = preg_replace('/[^A-Za-z0-9_-]/i', '', $_REQUEST['lang']);
 } else {
-    $lang = 'en';
+    $lang = 'en_wp';
 }
 
 if (isset($_REQUEST['admin'])) {
