@@ -237,7 +237,6 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                 // Removing new unsaved from instance.
                 editRule.removeCardNode(cardNode);
             }
-            editRule.updateEnableButton();
         },
 
         /**
@@ -273,7 +272,6 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                 }).fail(Notification.exception);
             } else {
                 // Removing new unsaved from instance.
-                editRule.updateEnableButton();
                 editRule.removeCardNode(cardNode);
             }
         },
@@ -357,8 +355,10 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
 
         /**
          * Rule enable action.
+         *
+         * @param {Modal} modal The outcomes modal instance to be "closed" on rule enabling.
          */
-        initEnableButton: function() {
+        initEnableButton: function(modal) {
             $(SELECTORS.ENABLE_BUTTON).on('click', function(e) {
                 e.preventDefault();
                 Ajax.call([
@@ -377,7 +377,12 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                             {methodname: 'tool_dynamicrule_enable_rule', args: {id: editRule.ruleId}}
                         ])[0]
                         .then(function() {
-                            window.location.href = $(e.currentTarget).data('destination');
+                            if (typeof modal !== 'undefined') {
+                                modal.hide();
+                                Tabs.loadTab();
+                            } else {
+                                window.location.href = $(e.currentTarget).data('destination');
+                            }
                             return null;
                         }).fail(Notification.exception);
                     });
@@ -460,12 +465,14 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
          * Initialise outcomes configuration for modal use.
          *
          * @param {Number} ruleId
+         * @param {Modal} modal, the modal to be destroyed
          */
-        initRuleOutcomesModal: function(ruleId) {
+        initRuleOutcomesModal: function(ruleId, modal) {
             editRule.ruleId = ruleId;
             M.util.js_pending('tool_dynamicrule_edit_rule_init');
+            editRule.initEnableButton(modal);
             editRule.initRuleOutcomes();
             M.util.js_complete('tool_dynamicrule_edit_rule_init');
-        }
+        },
     };
 });

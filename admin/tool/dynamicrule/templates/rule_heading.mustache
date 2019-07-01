@@ -18,15 +18,16 @@
 
     Example context (json):
     {
-        "tabheading": "Details"
+        "tabheading": "Details",
+        "enablehelp": {}
     }
 }}
 {{#tabheading}}
     <h2>
       {{{tabheading}}}
       <span class="float-right">
-        {{#enablehelp}}{{>tool_dynamicrule/help_icon}}{{/enablehelp}}
-        {{>tool_dynamicrule/enable_button}}
+        {{#enablehelp}}{{> core/help_icon}}{{/enablehelp}}
+        {{> tool_dynamicrule/enable_button}}
       </span>
     </h2>
 {{/tabheading}}

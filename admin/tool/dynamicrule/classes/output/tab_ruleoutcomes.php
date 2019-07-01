@@ -48,7 +48,8 @@ class tab_ruleoutcomes extends tab {
     }
 
     /**
-     * Get rule id from the data
+     * Get rule id from the data.
+     *
      * @return int
      */
     protected function get_rule_id(): int {
@@ -57,7 +58,18 @@ class tab_ruleoutcomes extends tab {
     }
 
     /**
-     * return true if rule can be enabled
+     * Return true if tab content is rendered for modal.
+     *
+     * @return bool
+     */
+    public function is_for_modal(): bool {
+        return !empty($this->data['formodal']) ?
+            clean_param($this->data['formodal'], PARAM_BOOL) : false;
+    }
+
+    /**
+     * Return true if rule can be enabled.
+     *
      * @return bool
      */
     protected function can_enable_rule(): bool {
@@ -100,7 +112,11 @@ class tab_ruleoutcomes extends tab {
             $outcomeinstances[] = (new outcome_instance($ruleoutcome))->export_for_template($output);
         }
 
-        $enablehelp = new \help_icon('enablehelp', 'tool_dynamicrule');
+        if ($this->is_for_modal()) {
+            $enablehelp = new \help_icon('enablehelpmodal', 'tool_dynamicrule');
+        } else {
+            $enablehelp = new \help_icon('enablehelp', 'tool_dynamicrule');
+        }
 
         $params = [
             'tabheading' => get_string('outcomes', 'tool_dynamicrule'),

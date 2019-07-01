@@ -212,7 +212,7 @@ function($, Ajax, Notification, Str, Config, Tabs, ModalForm, ModalFactory, Moda
             methodname: 'tool_wp_get_tab_content',
             args: {
                 tab: '\\tool_dynamicrule\\output\\tab_ruleoutcomes',
-                jsondata: JSON.stringify({ruleid: ruleId}),
+                jsondata: JSON.stringify({ruleid: ruleId, formodal: true}),
             }
         }])[0]
         .then(function(data) {
@@ -236,7 +236,7 @@ function($, Ajax, Notification, Str, Config, Tabs, ModalForm, ModalFactory, Moda
 
             // Initialise outcomes editing when content is ready.
             modal.getRoot().on(ModalEvents.bodyRendered, function() {
-                EditRule.initRuleOutcomesModal(ruleId);
+                EditRule.initRuleOutcomesModal(ruleId, modal);
             });
 
             // Using setLarge does not make it large enough, so using class here.
