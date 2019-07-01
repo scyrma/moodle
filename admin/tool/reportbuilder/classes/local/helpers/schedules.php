@@ -147,8 +147,8 @@ class schedules {
             constants::RECURRENCENOTREPEAT => get_string('recurrencedonorepeat', 'tool_reportbuilder'),
             constants::RECURRENCEDAILY => get_string('recurrencedaily', 'tool_reportbuilder'),
             constants::RECURRENCEWEEKLY => get_string('recurrenceweekly', 'tool_reportbuilder'),
-            constants::RECURRENCEMONTHLY => get_string('recurrencemoontly', 'tool_reportbuilder'),
-            constants::RECURRENCEANNUALLY => get_string('recurrenceannnualy', 'tool_reportbuilder')
+            constants::RECURRENCEMONTHLY => get_string('recurrencemonthly', 'tool_reportbuilder'),
+            constants::RECURRENCEANNUALLY => get_string('recurrenceannualy', 'tool_reportbuilder')
         ];
     }
 

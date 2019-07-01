@@ -573,11 +573,18 @@ class user extends entity_base {
                 continue;
             }
             if (preg_match('/^<<(\d+)>>$/', $part, $matches)) {
+                // This is a user name field.
                 $elements[] = $prefix . $usernames[$matches[1]];
             } else if (!$ascsv) {
-                $paramname = db::generate_param_name();
-                $params[$paramname] = $part;
-                $elements[] = ':' . $paramname;
+                if (preg_match('/^[ \,\.\-\(\)]*$/', $part)) {
+                    // The separator is a simple string containing spaces, commas, braces, we don't need parameter.
+                    $elements[] = "'" . $part . "'";
+                } else {
+                    // Use parameter for any complex separator.
+                    $paramname = db::generate_param_name();
+                    $params[$paramname] = $part;
+                    $elements[] = ':' . $paramname;
+                }
             }
         }
         if ($ascsv) {
