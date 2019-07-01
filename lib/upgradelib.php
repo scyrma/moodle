@@ -1761,6 +1761,10 @@ function install_core($version, $verbose) {
         // Write default settings unconditionally
         admin_apply_default_settings(NULL, true);
 
+        // Call Workplace hook to change settings after install.
+        /** @uses \tool_wp\install_hook::execute() */
+        component_class_callback('tool_wp\install_hook', 'execute', []);
+
         print_upgrade_part_end(null, true, $verbose);
 
         // Purge all caches. They're disabled but this ensures that we don't have any persistent data just in case something

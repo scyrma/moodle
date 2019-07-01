@@ -520,6 +520,10 @@ function install_cli_database(array $options, $interactive) {
         $DB->set_field('course', 'summary', $options['summary'], array('format' => 'site'));
     }
 
+    // Call Workplace hook to change settings after install.
+    /** @uses \tool_wp\install_hook::execute() */
+    component_class_callback('tool_wp\install_hook', 'execute', []);
+
     // Redirect to site registration on first login.
     set_config('registrationpending', 1);
 }
