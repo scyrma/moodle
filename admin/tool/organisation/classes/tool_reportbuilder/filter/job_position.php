@@ -97,20 +97,21 @@ class job_position extends select {
             return ['', []];
         }
 
+        $field = $this->reportfilter->get_field_sql();
         $tenantparam = db::generate_param_name();
-        $where = "p.tenantid = :{$tenantparam}";
+        $where = "{$field}.tenantid = :{$tenantparam}";
         $params = [$tenantparam => tenancy::get_tenant_id()];
 
         if ($operator) {
             $pathparam = db::generate_param_name();
-            $likepath = $DB->sql_like("p.path", ':' . $pathparam);
+            $likepath = $DB->sql_like("{$field}.path", ':' . $pathparam);
             $where .= " AND {$likepath}";
 
             $pospath = $DB->get_field('tool_organisation_position', 'path', ['id' => $value]);
             $params[$pathparam] = $pospath . '%';
         } else {
             $pos = db::generate_param_name();
-            $where .= " AND j.positionid = :{$pos}";
+            $where .= " AND {$field}.id = :{$pos}";
             $params[$pos] = $value;
         }
         return [$where, $params];

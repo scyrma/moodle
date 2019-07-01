@@ -92,7 +92,7 @@ class jobs_list extends system_report {
             'position',
             new \lang_string('position', 'tool_organisation'),
             'tool_organisation_jobs',
-            'j.id'
+            'p'
         );
         $f->set_is_default(true);
         $f->set_options(organisation::get_all_positions_menu( ['' => get_string('anyposition', 'tool_organisation')]));
@@ -104,7 +104,7 @@ class jobs_list extends system_report {
             'department',
             new \lang_string('department', 'tool_organisation'),
             'tool_organisation_jobs',
-            'j.id'
+            'd'
         );
         $f->set_is_default(true);
         $f->set_options(organisation::get_all_departments_menu(['' => get_string('anydepartment', 'tool_organisation')]));

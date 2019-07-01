@@ -96,20 +96,21 @@ class job_department extends select {
             return ['', []];
         }
 
+        $field = $this->reportfilter->get_field_sql();
         $tenantparam = db::generate_param_name();
-        $where = "d.tenantid = :{$tenantparam}";
+        $where = "{$field}.tenantid = :{$tenantparam}";
         $params = [$tenantparam => tenancy::get_tenant_id()];
 
         if ($operator) {
             $pdeppath = db::generate_param_name();
-            $likepath = $DB->sql_like("d.path", ':' . $pdeppath);
+            $likepath = $DB->sql_like("{$field}.path", ':' . $pdeppath);
             $where .= " AND {$likepath}";
 
             $deppath = $DB->get_field('tool_organisation_department', 'path', ['id' => $value]);
             $params[$pdeppath] = $deppath . '%';
         } else {
             $dep = db::generate_param_name();
-            $where .= " AND j.departmentid = :{$dep}";
+            $where .= " AND {$field}.id = :{$dep}";
             $params[$dep] = $value;
         }
         return [$where, $params];
