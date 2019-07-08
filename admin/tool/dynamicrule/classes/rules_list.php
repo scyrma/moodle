@@ -73,7 +73,7 @@ class rules_list extends system_report {
         }
 
         // Add columns.
-        $this->annotate_entity('rule', new \lang_string('rule', 'tool_dynamicrule'));
+        $this->annotate_entity('rule', new \lang_string('pluginname', 'tool_dynamicrule'));
 
         $this->add_column((new report_column(
             'enabled',
