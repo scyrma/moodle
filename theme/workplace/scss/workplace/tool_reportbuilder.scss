@@ -1,0 +1,181 @@
+
+.tool_reportbuilder_report {
+    .large-multiple-select {
+        width: 100%;
+    }
+    table.flexible {
+        .emptyrow {
+            display: block;
+            visibility: hidden;
+        }
+    }
+
+    .ui-droppable-active {
+        border: 2px dotted black;
+        tr {
+            background-color: $brand030;
+            opacity: 0.4;
+        }
+        td {
+            background-color: $brand030;
+            opacity: 0.4;
+        }
+    }
+    .filters-icon {
+        .btn {
+            position: relative;
+        }
+        .filters-count {
+            position: absolute;
+            background-color: $danger;
+            left: -5px;
+            bottom: 0;
+            top: 15px;
+            width: 20px;
+            height: 20px;
+            border-radius: 20px;
+            font-size: 11px;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            line-height: 20px;
+            z-index: 10;
+        }
+    }
+    .tool_reportbuilder_loading {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .tool_reportbuilder_report_sidebar_filters {
+        max-width: 350px;
+    }
+}
+.tool_reportbuilder_report.system-report {
+    th.header {
+        border-top: none;
+    }
+    .filters-icon {
+        padding: 10px;
+    }
+    // TODO: Use specific classes instead of attributes as spec on WP-687.
+    [data-source="actions"] {
+        text-align: right;
+    }
+}
+ul.reportbuilder-sortable-list.sortable-list-target {
+    li {
+        &:not(.sortable-list-current-position) {
+            opacity: 0.4;
+        }
+    }
+}
+ul.reportbuilder-sortable-list {
+    li.reportbuilder-sortable-list__item {
+        background-color: $white;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: none;
+    }
+    li.reportbuilder-sortable-list__item.sortable-list-current-position {
+        background-color: $brand030;
+    }
+    li.reportbuilder-sortable-list__item.sortable-list-is-dragged {
+        opacity: 0.9;
+        min-width: 200px;
+        .icon {
+            display: none;
+        }
+        input {
+            display: none;
+        }
+    }
+}
+
+.tool_reportbuilder_report_filters {
+    .js-filters-list {
+        .list-group-item {
+            background-color: $white;
+            -webkit-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: none;
+        }
+    }
+    .filters-list {
+        .form-group {
+            select {
+                max-width: 250px;
+            }
+        }
+    }
+}
+#region-main {
+    form.sortable-list-target {
+        .card {
+            &:not(.sortable-list-current-position) {
+                opacity: 0.4;
+            }
+        }
+        .card.sortable-list-is-dragged {
+            opacity: 0.9;
+            .icon {
+                display: none;
+            }
+            .card-body {
+                display: none;
+            }
+        }
+    }
+    .sortable-list-current-position {
+        background-color: $brand030;
+        .card-body {
+            display: none;
+        }
+        .icon {
+            &:not(:first-child) {
+                display: none;
+            }
+        }
+    }
+}
+.js-draggable-column {
+    &:hover {
+        cursor: move;
+        z-index: 1;
+    }
+}
+
+.form-vertical .mform.full-width-labels {
+    .fitem.row {
+        > .col-md-3 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        > .col-md-9 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+}
+
+
+// Un-dim actions icons in dimmed rows
+.system-report {
+    .dimmed_text a,
+    .dimmed_text a:link {
+        &.action-icon {
+            color: $primary !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+
+.autocomplete input {
+    @extend .form-control;
+}
+#downloadtype_download {
+    @extend .custom-select;
+}

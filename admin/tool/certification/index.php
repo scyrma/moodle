@@ -1,0 +1,48 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Manager view.
+ *
+ * @package   tool_certification
+ * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+use tool_certification\permission;
+
+require_once(__DIR__ . '/../../../config.php');
+
+// Check permissions.
+$context = context_system::instance();
+require_login();
+permission::require_can_view_list($context);
+
+$PAGE->set_pagelayout('admin');
+$certificationsmanagerurl = new moodle_url('/admin/tool/certification/index.php');
+$PAGE->set_url($certificationsmanagerurl);
+$PAGE->set_context($context);
+
+// Navigation note: Shows the certification list.
+$certificatonsstr = get_string('certifications', 'tool_certification');
+$PAGE->set_title($certificatonsstr);
+$PAGE->set_heading($certificatonsstr);
+
+/** @var \tool_certification\output\renderer $output */
+$output = $PAGE->get_renderer('tool_certification');
+echo $output->header();
+echo $output->render_certification_manager();
+echo $output->footer();

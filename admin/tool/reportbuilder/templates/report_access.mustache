@@ -1,0 +1,63 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+     Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_reportbuilder/report_access
+
+    Template for displaying the report builder access page
+
+    Example context (json):
+    {
+        "supportsorg": 1,
+        "managers": [],
+        "users": []
+    }
+}}
+
+<div class="tool_reportbuilder_report_access report" data-reportid="{{id}}">
+    <h2>{{#str}} accesstab, tool_reportbuilder {{/str}}</h2>
+    {{#supportsorg}}
+        <div class="card p-4 mb-4">
+            <h5 class="mb-4">{{#str}} accesspeoplecapabilities, tool_reportbuilder {{/str}}</h5>
+            {{#userswithcapabilities}}
+                <div class="d-block m-2">{{{profileimage}}}{{fullname}}</div>
+            {{/userswithcapabilities}}
+            {{^userswithcapabilities}}
+                <div class="d-block m-2">{{#str}} nousersfound {{/str}}</div>
+            {{/userswithcapabilities}}
+        </div>
+        <div class="card p-4 mb-4">
+            <h5 class="mb-4">{{#str}} accesspeopleorgmanagers, tool_reportbuilder {{/str}}</h5>
+            {{#managers}}
+                <div class="border-bottom my-3 py-2">{{position}}</div>
+                {{#data}}
+                    <div class="d-block m-2">{{{profileimage}}}{{fullname}}</div>
+                {{/data}}
+            {{/managers}}
+            {{^managers}}
+                <div class="d-block m-2">{{#str}} nousersfound {{/str}}</div>
+            {{/managers}}
+        </div>
+    {{/supportsorg}}
+    {{^supportsorg}}
+        <div class="card p-4 mb-4">
+            <h5 class="mb-4">{{#str}} accesspeopleonlycapabilities, tool_reportbuilder {{/str}}</h5>
+            {{#userswithcapabilities}}
+                <div class="d-block m-2">{{{profileimage}}}{{fullname}}</div>
+            {{/userswithcapabilities}}
+            {{^userswithcapabilities}}
+                <div class="d-block m-2">{{#str}} nousersfound {{/str}}</div>
+            {{/userswithcapabilities}}
+        </div>
+    {{/supportsorg}}
+</div>

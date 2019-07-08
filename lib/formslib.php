@@ -1448,6 +1448,16 @@ abstract class moodleform {
         $oldclass = $this->_form->getAttribute('class');
         $this->_form->updateAttributes(array('class' => $oldclass . ' full-width-labels'));
     }
+
+    /**
+     * Set the initial 'dirty' state of the form.
+     *
+     * @param bool $state
+     * @since Moodle 3.7.1
+     */
+    public function set_initial_dirty_state($state = false) {
+        $this->_form->set_initial_dirty_state($state);
+    }
 }
 
 /**
@@ -1502,6 +1512,13 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
 
     /** @var bool whether to automatically initialise M.formchangechecker for this form. */
     protected $_use_form_change_checker = true;
+
+    /**
+     * The initial state of the dirty state.
+     *
+     * @var bool
+     */
+    protected $_initial_form_dirty_state = false;
 
     /**
      * The form name is derived from the class name of the wrapper minus the trailing form
@@ -1722,6 +1739,26 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
     }
 
     /**
+     * Set the initial 'dirty' state of the form.
+     *
+     * @param bool $state
+     * @since Moodle 3.7.1
+     */
+    public function set_initial_dirty_state($state = false) {
+        $this->_initial_form_dirty_state = $state;
+    }
+
+    /**
+     * Is the form currently set to dirty?
+     *
+     * @return boolean Initial dirty state.
+     * @since Moodle 3.7.1
+     */
+    public function is_dirty() {
+        return $this->_initial_form_dirty_state;
+    }
+
+    /**
      * Call this method if you don't want the formchangechecker JavaScript to be
      * automatically initialised for this form.
      */
@@ -1747,11 +1784,52 @@ class MoodleQuickForm extends HTML_QuickForm_DHTMLRulesTableless {
     }
 
     /**
+     * Wether the current form contains at least one element of type date selector or date time selector
+     *
+     * @return bool
+     */
+    private function form_contains_date_element() {
+        foreach (array_keys($this->_elements) as $elementIndex) {
+            if ($this->is_date_element_or_contains_date_element($this->_elements[$elementIndex])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Wether the given element is a date selector or date time selector or contains at least one element of these types.
+     *
+     * @param HTML_QuickForm_element|MoodleQuickForm_group $element
+     * @return bool
+     */
+    private function is_date_element_or_contains_date_element($element) {
+        if ($element->_type === 'date_selector' || $element->_type === 'date_time_selector') {
+            return true;
+        }
+        if ($element->_type === 'group') {
+            $elements = $element->getElements();
+            foreach (array_keys($elements) as $elementIndex) {
+                $childElement = $elements[$elementIndex];
+                if ($this->is_date_element_or_contains_date_element($childElement)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
     * Accepts a renderer
     *
     * @param HTML_QuickForm_Renderer $renderer An HTML_QuickForm_Renderer object
     */
     function accept(&$renderer) {
+        if (method_exists($renderer, 'setHasDateElement')) {
+            if ($this->form_contains_date_element()) {
+                $renderer->setHasDateElement();
+            }
+        }
         if (method_exists($renderer, 'setAdvancedElements')){
             //Check for visible fieldsets where all elements are advanced
             //and mark these headers as advanced as well.
@@ -2394,6 +2472,9 @@ require(["core/event", "jquery"], function(Event, $) {
                     return sprintf("_%2x", ord($matches[0]));
                 },
                 $elementName);
+            if (is_object($element) && ($element instanceof HTML_QuickForm_element) && $element->getAttribute('id')) {
+                $escapedElementName = preg_replace('/^id_/', '', $element->getAttribute('id'));
+            }
             $valFunc = 'validate_' . $this->_formName . '_' . $escapedElementName . '(ev.target, \''.$escapedElementName.'\')';
 
             if (!is_array($element)) {
@@ -2886,6 +2967,13 @@ class MoodleQuickForm_Renderer extends HTML_QuickForm_Renderer_Tableless{
     var $_collapsibleElements = array();
 
     /**
+     * Wether the form has date elements.
+     *
+     * @var bool
+     */
+    var $_hasDateElement = false;
+
+    /**
      * @var string Contains the collapsible buttons to add to the form.
      */
     var $_collapseButtons = '';
@@ -2920,6 +3008,13 @@ class MoodleQuickForm_Renderer extends HTML_QuickForm_Renderer_Tableless{
     public function MoodleQuickForm_Renderer() {
         debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
         self::__construct();
+    }
+
+    /**
+     * Sets flag has date elements to true
+     */
+    function setHasDateElement() {
+        $this->_hasDateElement = true;
     }
 
     /**
@@ -2964,7 +3059,8 @@ class MoodleQuickForm_Renderer extends HTML_QuickForm_Renderer_Tableless{
             $PAGE->requires->yui_module('moodle-core-formchangechecker',
                     'M.core_formchangechecker.init',
                     array(array(
-                        'formid' => $formid
+                        'formid' => $formid,
+                        'initialdirtystate' => $form->is_dirty(),
                     ))
             );
             $PAGE->requires->string_for_js('changesmadereallygoaway', 'moodle');
@@ -2979,6 +3075,13 @@ class MoodleQuickForm_Renderer extends HTML_QuickForm_Renderer_Tableless{
         }
         if (!empty($this->_advancedElements)){
             $PAGE->requires->js_call_amd('core_form/showadvanced', 'init', [$formid]);
+        }
+        if ($this->_hasDateElement && !$form->isFrozen()) {
+            $calendartype = \core_calendar\type_factory::get_calendar_instance();
+            // The YUI2 calendar only supports the gregorian calendar type.
+            if ($calendartype->get_name() === 'gregorian') {
+                form_init_date_js();
+            }
         }
     }
 

@@ -1,0 +1,44 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+     Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_tenant/appearance
+
+    Template for editing tenant theme settings
+
+    Example context (json):
+    {
+        "tabheading": "Appearance",
+        "formclass": "some\\class",
+        "form": "Form contents"
+    }
+}}
+
+{{> tool_wp/tab_heading }}
+{{> tool_wp/tab_form }}
+{{#js}}
+    require(['tool_wp/tabs', 'tool_wp/notification', 'core/str'], function(Tabs, WpNotification, Str) {
+        Tabs.initForm(function() {
+            window.scrollTo(0, 0);
+            Str.get_string('themesettingssaved', 'tool_tenant')
+                .then(function(string) {
+                    WpNotification.addNotification({
+                        message: string,
+                        type: 'success'
+                    });
+                    return null;
+                })
+                .fail(WpNotification.exception);
+        });
+    });
+{{/js}}

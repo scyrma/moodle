@@ -1,0 +1,348 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Class rules_list
+ *
+ * @package     tool_dynamicrule
+ * @copyright   2019 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace tool_dynamicrule;
+
+use tool_reportbuilder\report_action;
+use tool_reportbuilder\report_column;
+use tool_reportbuilder\system_report;
+use tool_wp\db;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Class rules_list
+ *
+ * @package     tool_dynamicrule
+ * @copyright   2019 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class rules_list extends system_report {
+
+    /**
+     * Initialise report.
+     */
+    public function initialise() {
+        $this->set_main_table(rule::TABLE, 'r');
+        $showarchived = $this->get_parameter('archived', false, PARAM_BOOL);
+        // When parameter 'readonly' is true report shows only enabled rules without the edit and the enable/disable buttons.
+        // If this parameter is not sent will be false by default.
+        $readonly = $this->get_parameter('readonly', false, PARAM_BOOL);
+        $this->add_base_condition_simple('r.archived', $showarchived ? 1 : 0);
+        if ($readonly) {
+            $this->add_base_condition_simple('r.enabled', 1);
+        }
+        $this->set_downloadable(false);
+        $this->set_attributes(['class' => 'dynamicrules-list']);
+        $this->add_base_fields('r.id, r.name, \'\' AS title, r.enabled, r.archived, r.component'); // Needed for actions.
+        $this->set_show_actions_header(false);
+
+        // Add subqueries for rules inside the component or rules without component respectively.
+        $component = $this->get_parameter('component', null, PARAM_COMPONENT);
+        $componentarea = $this->get_parameter('componentarea', null, PARAM_ALPHANUMEXT);
+        $itemid = $this->get_parameter('itemid', 0, PARAM_INT);
+        if ($component) {
+            $p1 = db::generate_param_name();
+            $p2 = db::generate_param_name();
+            $p3 = db::generate_param_name();
+            $this->add_base_condition_sql("r.component = :{$p1} AND r.componentarea = :{$p2} AND r.itemid = :{$p3}",
+                [$p1 => $component, $p2 => $componentarea, $p3 => $itemid]);
+        } else {
+            $this->add_base_condition_sql("r.component IS NULL");
+        }
+
+        // Add columns.
+        $this->annotate_entity('rule', new \lang_string('pluginname', 'tool_dynamicrule'));
+
+        $this->add_column((new report_column(
+            'enabled',
+            null,
+            'rule'
+        ))
+            ->add_fields('r.enabled, r.id, r.name')
+            ->set_is_default(true)
+            ->set_is_available(!($showarchived || $readonly))
+            ->add_attributes(['class' => 'wp-toggle'])
+            ->add_callback([self::class, 'get_enabled']));
+
+        $this->add_column((new report_column(
+            'name',
+            new \lang_string('name'),
+            'rule'
+        ))
+            ->add_fields('r.name, r.id')
+            ->set_is_default(true)
+            ->set_is_available(empty($component))
+            ->set_is_sortable(true, true)
+            ->add_callback([self::class, 'get_display_name']));
+
+        $this->add_column((new report_column(
+            'conditions',
+            new \lang_string('conditions', 'tool_dynamicrule'),
+            'rule'
+        ))
+            ->add_fields('r.id')
+            ->set_is_default(true)
+            ->add_callback([self::class, 'get_display_conditions']));
+
+        $this->add_column((new report_column(
+            'actions',
+            new \lang_string('outcomes', 'tool_dynamicrule'),
+            'rule'
+        ))
+            ->add_fields('r.id')
+            ->set_is_default(true)
+            ->add_callback([self::class, 'get_display_actions']));
+
+        if (!$readonly) {
+            $this->add_actions();
+        }
+    }
+
+    /**
+     * Validates access to view this report with the given parameters
+     *
+     * This is necessary to implement here and not on the page that embeds the system report
+     * because second and consequtive pages of the report are rendered via web services.
+     *
+     * To retrieve parameters values call $this->get_parameter()
+     */
+    public function can_view(): bool {
+        $component = $this->get_parameter('component', null, PARAM_COMPONENT);
+        if ($component) {
+            $componentarea = $this->get_parameter('componentarea', null, PARAM_ALPHANUMEXT);
+            $itemid = $this->get_parameter('itemid', 0, PARAM_INT);
+            return component_callback($component, 'can_view_dynamic_rules', [$componentarea, $itemid]);
+        }
+        return has_capability('tool/dynamicrule:manage', \context_system::instance());
+    }
+
+    /**
+     * Get enabled switch
+     * @param mixed $value
+     * @param \stdClass $row
+     * @param mixed $additionalarguments
+     * @return mixed
+     */
+    public static function get_enabled($value, \stdClass $row, $additionalarguments) {
+        global $OUTPUT;
+
+        $formattedname = format_string($row->name, true, ['escape' => false]);
+        $rule = new rule(0, $row);
+
+        if ($rule->can_enable()) {
+            // Rule is enabled icon.
+            $title = get_string('disablerule', 'tool_dynamicrule', $formattedname);
+            $disablelink = new \action_link(
+                new \moodle_url('#'), '', null,
+                ['title' => $title, 'data-action' => 'disable', 'data-id' => $row->id, 'data-wp-toggle' => 'on'],
+                new \pix_icon('toggle-on', '', 'tool_wp')
+            );
+
+            // Rule is disabled icon.
+            $title = get_string('enablerule', 'tool_dynamicrule', $formattedname);
+            $enablelink = new \action_link(
+                new \moodle_url('#'), '', null,
+                ['title' => $title, 'data-action' => 'enable', 'data-id' => $row->id, 'data-wp-toggle' => 'off'],
+                new \pix_icon('toggle-off', '', 'tool_wp')
+            );
+
+            // Hide one that is not relevant to current state.
+            if ($row->enabled) {
+                $enablelink->add_class('hidden');
+            } else {
+                $disablelink->add_class('hidden');
+            }
+
+            return $OUTPUT->render_from_template('core/action_menu_link', $disablelink->export_for_template($OUTPUT)) .
+                $OUTPUT->render_from_template('core/action_menu_link', $enablelink->export_for_template($OUTPUT));
+        } else {
+            $title = get_string('cannotenablerule', 'tool_dynamicrule', $formattedname);
+            $enablelink = new \action_link(
+                new \moodle_url('#'), '', null,
+                ['title' => $title, 'data-id' => $row->id, 'data-wp-toggle' => 'off'],
+                new \pix_icon('toggle-off', '', 'tool_wp')
+            );
+            return $OUTPUT->render_from_template('core/action_menu_link', $enablelink->export_for_template($OUTPUT));
+        }
+    }
+
+    /**
+     * Report name
+     * @return string
+     */
+    public static function get_name() {
+        return get_string('reportruleslist', 'tool_dynamicrule');
+    }
+
+    /**
+     * Callback for the name display
+     *
+     * @param string $value
+     * @param \stdClass $row
+     * @param mixed $additionalarguments
+     * @return string
+     */
+    public static function get_display_name($value, \stdClass $row, $additionalarguments) {
+        global $OUTPUT;
+        $rule = new rule(0, $row);
+        $editable = \tool_dynamicrule\api::get_name_inplace_editable($rule);
+        return $editable->render($OUTPUT);
+    }
+
+    /**
+     * Callback for the conditions display
+     *
+     * @param string $value
+     * @param \stdClass $row
+     * @param mixed $additionalarguments
+     * @return string
+     */
+    public static function get_display_conditions($value, \stdClass $row, $additionalarguments) {
+        $conditions = array_map(function(condition_base $c) {
+            return \html_writer::tag('li', $c->get_description());
+        }, api::get_rule_conditions($row->id));
+        if (empty($conditions)) {
+            $conditions[] = \html_writer::tag('li', get_string('noruleconditions', 'tool_dynamicrule'));
+        }
+        return \html_writer::tag('ul', join('', $conditions));
+    }
+
+    /**
+     * Callback for the actions display
+     *
+     * @param string $value
+     * @param \stdClass $row
+     * @param mixed $additionalarguments
+     * @return string
+     */
+    public static function get_display_actions($value, \stdClass $row, $additionalarguments) {
+        $actions = array_map(function(outcome_base $a) {
+            return \html_writer::tag('li', $a->get_description());
+        }, api::get_rule_outcomes($row->id));
+        if (empty($actions)) {
+            $actions[] = \html_writer::tag('li', get_string('noruleoutcomes', 'tool_dynamicrule'));
+        }
+        return \html_writer::tag('ul', join('', $actions));
+    }
+
+    /**
+     * Add actions
+     */
+    protected function add_actions() {
+
+        // Add edit action icon (used in plugins).
+        $this->add_action((new report_action(new \moodle_url('#'),
+            new \pix_icon('i/settings', '', 'core'),
+            ['title' => ':title', 'data-action' => 'editactions', 'data-id' => ':id']))
+            ->add_callback(function(\stdClass $row) {
+                return rules_list::action_callback($row, 'editactions', false);
+            }));
+
+        // Proceed to contents.
+        $editurl = new \moodle_url('/admin/tool/dynamicrule/rule.php', ['id' => ':id']);
+        $this->add_action((new report_action($editurl,
+            new \pix_icon('t/right', '', 'core'),
+            ['title' => ':title', 'data-action' => 'editcontent', 'data-id' => ':id']))
+        ->add_callback(function(\stdClass $row) {
+            return rules_list::action_callback($row, 'editrule', false);
+        }));
+
+        // Add edit details icon.
+        $this->add_action((new report_action(new \moodle_url('#'),
+            new \pix_icon('i/settings', '', 'core'),
+            ['title' => ':title', 'data-action' => 'editdetails', 'data-id' => ':id']))
+            ->add_callback(function(\stdClass $row) {
+                return rules_list::action_callback($row, 'editdetails', false);
+            }));
+
+        // Add duplicate icon.
+        $this->add_action((new report_action(new \moodle_url('#'),
+            new \pix_icon('e/manage_files', '', 'core'),
+            ['title' => ':title', 'data-rulename' => ':name', 'data-action' => 'duplicate', 'data-id' => ':id']))
+            ->add_callback(function(\stdClass $row) {
+                return rules_list::action_callback($row, 'duplicate', false);
+            }));
+
+        // Add report icon.
+        $editurl = new \moodle_url('/admin/tool/dynamicrule/report.php', ['id' => ':id']);
+        $this->add_action((new report_action($editurl,
+            new \pix_icon('bar-chart', '', 'tool_wp'),
+            ['title' => ':title', 'data-action' => 'report', 'data-id' => ':id']))
+            ->add_callback(function(\stdClass $row) {
+                return rules_list::action_callback($row, 'viewreport');
+            }));
+
+        // Add archive icon.
+        $this->add_action((new report_action(new \moodle_url('#'),
+            new \pix_icon('archive', '', 'tool_wp'),
+            ['title' => ':title', 'data-rulename' => ':name', 'data-action' => 'archive', 'data-id' => ':id']))
+            ->add_callback(function(\stdClass $row) {
+                return rules_list::action_callback($row, 'archiverule', false);
+            }));
+
+        // Add unarchive icon.
+        $this->add_action((new report_action(new \moodle_url('#'),
+            new \pix_icon('restorearchived', '', 'tool_wp'),
+            ['title' => ':title', 'data-rulename' => ':name', 'data-action' => 'unarchive', 'data-id' => ':id']))
+            ->add_callback(function(\stdClass $row) {
+                return rules_list::action_callback($row, 'unarchiverule', true);
+            }));
+
+        // Add delete icon.
+        $this->add_action((new report_action(new \moodle_url('#'),
+            new \pix_icon('i/trash', '', 'core'),
+            ['title' => ':title', 'data-rulename' => ':name', 'data-action' => 'delete', 'data-id' => ':id']))
+            ->add_callback(function(\stdClass $row) {
+                return rules_list::action_callback($row, 'deleterule', true);
+            }));
+    }
+
+    /**
+     * Callback for actions
+     *
+     * @param \stdClass $row
+     * @param string $stringkey
+     * @param bool|null $archived
+     * @return bool
+     */
+    public static function action_callback(\stdClass $row, string $stringkey, ?bool $archived = null) {
+        $row->name = format_string($row->name, true, ['escape' => false]);
+        $row->title = get_string($stringkey, 'tool_dynamicrule', $row->name);
+        return (($row->component === null && $stringkey !== 'editactions') ||
+            ($row->component !== null && $stringkey === 'editactions')) &&
+            ($archived === null || (bool)$row->archived == $archived) &&
+            has_capability('tool/dynamicrule:manage', \context_system::instance());
+    }
+
+    /**
+     * Row class
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function get_row_class(\stdClass $row): string {
+        return $row->enabled ? '' : 'dimmed_text';
+    }
+}

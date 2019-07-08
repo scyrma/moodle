@@ -1,0 +1,85 @@
+[data-region="edit-program-calendar"] .calendar-fix-selector-width select {
+    min-width: 221px;
+}
+
+[data-region="edit-content"] .dropdown-toggle::after {
+    display: none;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+}
+
+[data-region="edit-content"] .program-item.sortable-list-current-position .card-body {
+    background-color: #d7f0ee;
+}
+
+[data-region="edit-content"] .program-item.sortable-list-is-dragged {
+    opacity: 0.65;
+}
+
+[data-region="edit-content"] [data-groupname="completioncriteriagroup"] {
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+[data-region="edit-content"] [data-groupname="completioncriteriagroup"].femptylabel {
+    margin-left: 0;
+}
+
+[data-region="edit-content"] [data-groupname="completioncriteriagroup"].femptylabel .col-md-3 {
+    display: none;
+    visibility: hidden;
+}
+
+[data-region="edit-content"] [data-groupname="completioncriteriagroup"].femptylabel .col-md-9 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.program_tag,
+.program_archived,
+.program_user_status_overdue,
+.program_user_status_expired,
+.program_user_status_suspended,
+.program_program_deleted,
+.program_user_status_open,
+.program_user_status_futureallocation,
+.program_user_status_active,
+.program_user_status_certified,
+.program_user_status_completed {
+    height: 100%;
+    width: 100%;
+    padding: 5px 5px;
+    text-align: center;
+    color: white;
+    border-radius: 5px;
+}
+
+.program_archived,
+.program_user_status_overdue {
+    background-color: #f5a622;
+}
+
+.program_user_status_expired,
+.program_user_status_suspended,
+.program_program_deleted {
+    background-color: #db4d5f;
+}
+
+.program_user_status_open,
+.program_user_status_futureallocation,
+.program_user_status_active {
+    background-color: #4a90e2;
+}
+
+.program_user_status_certified,
+.program_user_status_completed {
+    background-color: #7ed321;
+}
+
+[data-region="programs-overview-recursive-view"] .text-warning > .wp-hourglass {
+    color: #ffd166;
+}

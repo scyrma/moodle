@@ -1,0 +1,59 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_dynamicrule/outcome_notification_placeholders
+
+    Template for showing notification placeholders help.
+
+    Example context (json):
+    {
+        "elementid": "randomstring",
+        "userplaceholders": [],
+        "conditionsplaceholders": []
+    }
+}}
+
+<div>
+    <div class="mb-0 d-flex" id="outcome-placeholders-{{elementid}}-heading">
+        <a class="btn btn-link p-0 text-left ws-toggle nomargin collapsed" href="#" data-toggle="collapse" data-target="#outcome-placeholders-{{elementid}}" aria-expanded="false" aria-controls="outcome-placeholders-{{elementid}}">
+            <span class="togglesectionicon collapsed-icon-container">
+                {{#pix}} t/collapsedcaret, core, {{#str}} expand, moodle {{/str}}{{/pix}}
+            </span>
+            <span class="togglesectionicon expanded-icon-container">
+                {{#pix}} t/expanded, core, {{#str}} collapse, moodle {{/str}}{{/pix}}
+            </span>
+            {{#str}} availableplaceholders, tool_dynamicrule {{/str}}
+        </a>
+    </div>
+    <div id="outcome-placeholders-{{elementid}}" class="collapse p-3" aria-labelledby="outcome-placeholders-{{elementid}}-heading">
+            {{#str}} userplaceholders, tool_dynamicrule {{/str}}
+            <ul>
+                {{#userplaceholders}}
+                <li><code>&#123;&#123;{{placeholderkey}}&#125;&#125;</code> - {{placeholderdescription}}</li>
+                {{/userplaceholders}}
+            </ul>
+            {{#conditionsplaceholders}}
+                {{conditiontitle}}
+                <ul>
+                    {{#conditionplaceholders}}
+                    <li><code>&#123;&#123;{{placeholderkey}}&#125;&#125;</code> - {{placeholderdescription}}</li>
+                    {{/conditionplaceholders}}
+                </ul>
+            {{/conditionsplaceholders}}
+    </div>
+</div>
+<hr>

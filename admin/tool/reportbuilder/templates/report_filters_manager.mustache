@@ -1,0 +1,60 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+     Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_reportbuilder/report_filters_manager
+
+    Template for the list of filters in the report builder editor
+
+    Classes required for JS:
+    -
+    Data attributes required for JS:
+    -
+    Context variables required for this template:
+    -
+
+    Example context (json):
+    {
+        "hasfiltersselected": true,
+        "filtersinuse": [
+            {"sortorder": 1,
+            "key": "key",
+            "id": 1,
+            "formattedheading": "Filter name",
+            "customheader": "Filter header"}
+        ],
+        "nofiltersurl": "http://moodlehq.local/theme/image.php/workplace/tool_reportbuilder/1540388927/no-filters"
+    }
+}}
+{{#hasfiltersselected}}
+    <ul class="list-group js-filters-list reportbuilder-sortable-list mt-2">
+        {{#filtersinuse}}
+            <li class="list-group-item list-group-item-action d-flex align-items-start mb-2 text-dark reportbuilder-sortable-list__item" data-order="{{sortorder}}" data-key="{{key}}" data-id="{{id}}">
+                <span
+                        tabindex="0"
+                        role="button"
+                        aria-haspopup="true"
+                        data-drag-type="move"
+                        title="{{#str}}movefilter, tool_reportbuilder, {{formattedheading}}{{/str}}">
+                    {{#pix}} i/dragdrop, core {{/pix}}</span>
+                {{{customheader}}}
+                <span class="ml-auto">
+                    <a class="js-delete-filter" href="#" data-filterid="{{id}}" title="{{#str}}deletefilter, tool_reportbuilder{{/str}}">{{# pix }} i/trash, core {{/ pix }}</a>
+                </span>
+            </li>
+        {{/filtersinuse}}
+    </ul>
+{{/hasfiltersselected}}
+{{^hasfiltersselected}}
+    {{> tool_reportbuilder/no-filters}}
+{{/hasfiltersselected}}

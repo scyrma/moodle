@@ -5762,7 +5762,7 @@ function get_mailer($action='get') {
         } else {
             // Use SMTP directly.
             $mailer->isSMTP();
-            if (!empty($CFG->debugsmtp)) {
+            if (!empty($CFG->debugsmtp) && (!empty($CFG->debugdeveloper))) {
                 $mailer->SMTPDebug = 3;
             }
             // Specify main and backup servers.
@@ -8610,7 +8610,7 @@ function format_float($float, $decimalpoints=1, $localized=true, $stripzeros=fal
     $result = number_format($float, $decimalpoints, $separator, '');
     if ($stripzeros) {
         // Remove zeros and final dot if not needed.
-        $result = preg_replace('~(' . preg_quote($separator) . ')?0+$~', '', $result);
+        $result = preg_replace('~(' . preg_quote($separator, '~') . ')?0+$~', '', $result);
     }
     return $result;
 }

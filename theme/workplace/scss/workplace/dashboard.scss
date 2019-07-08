@@ -1,0 +1,10 @@
+.wp-dashboard-tabs {
+    background-color: $white;
+    .nav-link {
+        padding: 1.5rem 2rem;
+        color: $body-color;
+        &.active {
+            border-bottom: 2px solid $accent;
+        }
+    }
+}
