@@ -28,11 +28,17 @@ use lang_string;
 use tool_organisation\organisation;
 use tool_organisation\tool_reportbuilder\filter\job_department;
 use tool_organisation\tool_reportbuilder\filter\job_position;
+use tool_organisation\tool_reportbuilder\filter\job_time;
+use tool_organisation\tool_reportbuilder\filter\position_permissions;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\entity_base;
+use tool_reportbuilder\local\filter\checkbox;
+use tool_reportbuilder\local\filter\date_condition;
+use tool_reportbuilder\local\filter\date_filter;
 use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\report_filter;
+use tool_reportbuilder\db;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -62,7 +68,7 @@ class jobs extends entity_base {
     public function __construct(string $join = '', string $tablealias = 'toj', array $excludecolumns = []) {
         $this->tablealias = $tablealias;
         $this->join = $join . $this->get_jobs_join();
-        $this->excludecolumns = array_combine($excludecolumns, $excludecolumns);
+        $this->excludecolumns = $excludecolumns;
     }
 
     /**
@@ -71,7 +77,7 @@ class jobs extends entity_base {
      * @return string
      */
     protected function get_jobs_join(): string {
-        return "LEFT JOIN {tool_organisation_position} topos ON {$this->tablealias}.positionid = topos.id " .
+        return " LEFT JOIN {tool_organisation_position} topos ON {$this->tablealias}.positionid = topos.id " .
             "LEFT JOIN {tool_organisation_department} tod ON {$this->tablealias}.departmentid = tod.id ";
     }
 
@@ -99,26 +105,148 @@ class jobs extends entity_base {
     public function get_columns(): array {
         $columns = [];
 
-        foreach ($this->get_included_columns() as $columnid => $columnoptions) {
-            $newcolumn = new report_column($columnid, $columnoptions['label'], $this->get_entity_name());
-            $newcolumn->add_join($this->join);
+        // Column position.
+        $newcolumn = (new report_column(
+            'position',
+            new lang_string('position', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->set_is_sortable(true)
+            ->add_field('topos.name')
+            ->add_callback([format::class, 'format_string']);
+        $columns[] = $newcolumn;
 
-            foreach ($columnoptions['fields'] as $otherfield => $otherfieldalias) {
-                $newcolumn->add_field($otherfield, $otherfieldalias);
-            }
+        // Column department.
+        $newcolumn = (new report_column(
+            'department',
+            new lang_string('department', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->set_is_sortable(true)
+            ->add_field('tod.name')
+            ->add_callback([format::class, 'format_string']);
+        $columns[] = $newcolumn;
 
-            if (method_exists($columnoptions['callback']['class'], $columnoptions['callback']['method'])) {
-                $newcolumn->add_callback([$columnoptions['callback']['class'], $columnoptions['callback']['method']]);
-            }
+        // Column position department.
+        [$sqlposdept, $paramsposdept] = db::sql_get_string('positionanddepartmentdisplay', 'tool_organisation',
+            ['position' => 'topos.name', 'department' => 'tod.name']);
+        $sqlposdeptgrp = db::sql_get_string('positionanddepartmentdisplay', 'tool_organisation',
+            ['position' => 'topos.name', 'department' => 'tod.name'], true);
 
-            if (isset($columnoptions['type'])) {
-                $newcolumn->set_type($columnoptions['type']);
-            }
+        $newcolumn = (new report_column(
+            'positiondepartment',
+            new lang_string('jobpositiondepartment', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->set_is_sortable(true)
+            ->add_field($sqlposdept, 'positiondepartment', $paramsposdept)
+            ->add_callback([format::class, 'format_string'])
+            ->set_groupby_sql($sqlposdeptgrp);
 
-            $columns[] = $newcolumn;
-        }
+        $columns[] = $newcolumn;
 
-        return $columns;
+        // Column startdate.
+        $newcolumn = (new report_column(
+            'startdate',
+            new lang_string('startdate', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TIMESTAMP)
+            ->set_is_sortable(true)
+            ->add_field("$this->tablealias.startdate")
+            ->add_callback([format::class, 'userdate']);
+        // Aggregation.
+        $newcolumn->add_aggregation_callback('max', [format::class, 'userdate'])
+            ->add_aggregation_callback('min', [format::class, 'userdate']);
+        $columns[] = $newcolumn;
+
+        // Column enddate.
+        $newcolumn = (new report_column(
+            'enddate',
+            new lang_string('enddate', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TIMESTAMP)
+            ->set_is_sortable(true)
+            ->add_field("$this->tablealias.enddate")
+            ->add_callback([format::class, 'userdate']);
+        // Aggregation.
+        $newcolumn->add_aggregation_callback('max', [format::class, 'userdate'])
+            ->add_aggregation_callback('min', [format::class, 'userdate']);
+        $columns[] = $newcolumn;
+
+        // Column globalmanagementicons.
+        $newcolumn = (new report_column(
+            'globalmanagementicons',
+            new lang_string('globalmanagementicons', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_field('CASE WHEN topos.globalmanager = 1 THEN topos.globalpermissions ELSE NULL END', 'globalpermissions')
+            ->add_callback([\tool_organisation\local\helpers\format::class, 'managementicons'], 'globalpermissions')
+            ->add_aggregation_callback('groupconcat',
+                [\tool_organisation\local\helpers\format::class, 'managementicons_group'], 'globalpermissions')
+            ->add_aggregation_callback('groupconcatdistinct',
+                [\tool_organisation\local\helpers\format::class, 'managementicons_group'], 'globalpermissions');
+        $columns[] = $newcolumn;
+
+        // Column departmentmanagementicons.
+        $newcolumn = (new report_column(
+            'departmentmanagementicons',
+            new lang_string('departmentmanagementicons', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_field('CASE WHEN topos.departmentmanager = 1 THEN topos.departmentpermissions ELSE NULL END',
+                'departmentpermissions')
+            ->add_callback([\tool_organisation\local\helpers\format::class, 'managementicons'], 'departmentpermissions')
+            ->add_aggregation_callback('groupconcat',
+                [\tool_organisation\local\helpers\format::class, 'managementicons_group'], 'departmentpermissions')
+            ->add_aggregation_callback('groupconcatdistinct',
+                [\tool_organisation\local\helpers\format::class, 'managementicons_group'], 'departmentpermissions');
+        $columns[] = $newcolumn;
+
+        // Column positionframework.
+        $sql = self::generate_framework_query('topos');
+        $newcolumn = (new report_column(
+            'positionframework',
+            new lang_string('positionframework', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->add_join(' LEFT JOIN {tool_organisation_position} topfram ON topfram.id = ' . $sql . ' ')
+            ->add_field('topfram.name')
+            ->add_callback([format::class, 'format_string'])
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->set_is_sortable(true);
+        $columns[] = $newcolumn;
+
+        // Column departmentframework.
+        $sql = self::generate_framework_query('tod');
+        $newcolumn = (new report_column(
+            'departmentframework',
+            new lang_string('departmentframework', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->add_join(' LEFT JOIN {tool_organisation_department} todfram ON todfram.id = ' . $sql . ' ')
+            ->add_field('todfram.name')
+            ->add_callback([format::class, 'format_string'])
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->set_is_sortable(true);
+        $columns[] = $newcolumn;
+
+        return array_diff_key($columns, $this->excludecolumns);
     }
 
     /**
@@ -172,73 +300,117 @@ class jobs extends entity_base {
             ->set_options(organisation::get_all_departments_menu(
                 ['' => get_string('anydepartment', 'tool_organisation')]));
 
+        // Start date filter.
+        $filters[] = (new report_filter(
+            $iscondition ? date_condition::class : date_filter::class,
+            'startdate',
+            new lang_string('startdate', 'tool_organisation'),
+            'tool_organisation_jobs'
+        ))
+            ->add_join($this->join)
+            ->set_field_sql('toj.startdate');
+
+        // End date filter.
+        $filters[] = (new report_filter(
+            $iscondition ? date_condition::class : date_filter::class,
+            'enddate',
+            new lang_string('enddate', 'tool_organisation'),
+            'tool_organisation_jobs'
+        ))
+            ->add_join($this->join)
+            ->set_field_sql('toj.enddate');
+
+        // Is manager filter.
+        $filters[] = (new report_filter(
+            checkbox::class,
+            'manager',
+            new lang_string('manager', 'role'),
+            'tool_organisation_jobs'
+        ))
+            ->add_join($this->join)
+            ->set_field_sql('(CASE WHEN (topos.globalmanager = 1 OR topos.departmentmanager = 1) THEN 1 ELSE 0 END)');
+
+        // Is global manager filter.
+        $filters[] = (new report_filter(
+            checkbox::class,
+            'globalmanager',
+            new lang_string('globalmanager', 'tool_organisation'),
+            'tool_organisation_jobs'
+        ))
+            ->add_join($this->join)
+            ->set_field_sql('topos.globalmanager');
+
+        // Is department manager filter.
+        $filters[] = (new report_filter(
+            checkbox::class,
+            'departmentmanager',
+            new lang_string('departmentmanager', 'tool_organisation'),
+            'tool_organisation_jobs'
+        ))
+            ->add_join($this->join)
+            ->set_field_sql('topos.departmentmanager');
+
+        // Can view reports filter.
+        $filters[] = (new report_filter(
+            position_permissions::class,
+            'canviewreports',
+            new lang_string('conditioncanviewreports', 'tool_organisation'),
+            'tool_organisation_jobs'
+        ))
+            ->add_join($this->join)
+            ->set_field_sql('topos');
+
+        // Can receive notifications filter.
+        $filters[] = (new report_filter(
+            position_permissions::class,
+            'canreceivenotifications',
+            new lang_string('conditioncanreceivenotifications', 'tool_organisation'),
+            'tool_organisation_jobs'
+        ))
+            ->add_join($this->join)
+            ->set_field_sql('topos');
+
+        // Can allocate to programs filter.
+        $filters[] = (new report_filter(
+            position_permissions::class,
+            'canallocateprograms',
+            new lang_string('conditioncanallocateprograms', 'tool_organisation'),
+            'tool_organisation_jobs'
+        ))
+            ->add_join($this->join)
+            ->set_field_sql('topos');
+
+        // Show jobs filter.
+        $filters[] = (new report_filter(
+            job_time::class,
+            'showjobs',
+            new lang_string('showjobs', 'tool_organisation'),
+            'tool_organisation_jobs'
+        ))
+            ->add_join($this->join)
+            ->set_field_sql('toj');
+
         return $filters;
     }
 
     /**
-     * Jobs entity columns.
+     * Generates query to get the position/department framework id from the path.
      *
-     * @return array
+     * Performs a substring from the PATH field. The start position on the substring is 2 to remove the first /
+     * To calculate the end position it calculates the length of the substring starting on position 2 to the position of
+     * The second / removing 3 characters from the beginning to avoid the incompatibility problems of using substract.
+     * Eg. If path is /11/23/26 returns id 11.
+     *
+     * @param string $tablealias
+     * @return string
+     * @throws \coding_exception
      */
-    protected function get_included_columns(): array {
+    private static function generate_framework_query(string $tablealias): string {
         global $DB;
-        $columns = [
-            'position' => [
-                'type' => constants::DB_TYPE_TEXT,
-                'label' => new lang_string('position', 'tool_organisation'),
-                'fields' => [
-                    'topos.name' => ''
-                ],
-                'callback' => [
-                    'class' => format::class,
-                    'method' => 'format_string',
-                ]
-            ],
-            'department' => [
-                'type' => constants::DB_TYPE_TEXT,
-                'label' => new lang_string('department', 'tool_organisation'),
-                'fields' => [
-                    'tod.name' => ''
-                ],
-                'callback' => [
-                    'class' => format::class,
-                    'method' => 'format_string',
-                ]
-            ],
-            'positiondepartment' => [
-                'type' => constants::DB_TYPE_TEXT,
-                'label' => new lang_string('jobpositiondepartment', 'tool_organisation'),
-                'fields' => [
-                    $DB->sql_concat('topos.name', "' '", 'tod.name') => 'positiondepartment'
-                ],
-                'callback' => [
-                    'class' => format::class,
-                    'method' => 'format_string',
-                ]
-            ],
-            'startdate' => [
-                'type' => constants::DB_TYPE_TIMESTAMP,
-                'label' => new lang_string('startdate', 'tool_organisation'),
-                'fields' => [
-                    "$this->tablealias.startdate" => ''
-                ],
-                'callback' => [
-                    'class' => format::class,
-                    'method' => 'userdate',
-                ]
-            ],
-            'enddate' => [
-                'type' => constants::DB_TYPE_TIMESTAMP,
-                'label' => new lang_string('enddate', 'tool_organisation'),
-                'fields' => [
-                    "$this->tablealias.enddate" => ''
-                ],
-                'callback' => [
-                    'class' => format::class,
-                    'method' => 'userdate',
-                ]
-            ]
-        ];
-        return array_diff_key($columns, $this->excludecolumns);
+
+        $endposition = $DB->sql_position("'/'", $DB->sql_substr("$tablealias.path", 3));
+        $topid = $DB->sql_substr("$tablealias.path", 2, $endposition);
+        $cast = $DB->sql_cast_char2int($topid);
+        return "CASE WHEN $tablealias.id IS NULL THEN NULL ELSE $cast END";
     }
 }

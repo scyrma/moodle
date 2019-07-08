@@ -530,4 +530,21 @@ class helper {
                                 WHERE {$j}.userid = {$usertablealias}.id)";
         return [$where, []];
     }
+
+    /**
+     * Return a SQL subselect to be used by report builder "has current jobs" column and filter.
+     *
+     * @param string $usertablealias
+     * @return string
+     */
+    public static function get_has_current_jobs_sql(string $usertablealias = 'u') {
+        $j = db::generate_alias();
+        $now = strtotime('today');
+        return "CASE WHEN EXISTS (SELECT 1
+                   FROM {tool_organisation_job} {$j}
+                  WHERE {$j}.userid = {$usertablealias}.id
+                    AND {$j}.startdate <= {$now}
+                    AND ({$j}.enddate = 0 OR {$j}.enddate >= {$now}))
+                THEN 1 ELSE 0 END";
+    }
 }
