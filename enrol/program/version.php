@@ -24,8 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'enrol_program';
-$plugin->release = '3.7';
-$plugin->version = 2019062500;
-$plugin->requires = 2019052000.04;
-$plugin->maturity = MATURITY_STABLE;
+// This plugin is part of Moodle Workplace product.
+$plugin->component    = 'enrol_program';
+$plugin->release      = '3.7.1';
+$plugin->version      = 2019070700;
+$plugin->requires     = 2019052001;
+$plugin->maturity     = MATURITY_STABLE;
