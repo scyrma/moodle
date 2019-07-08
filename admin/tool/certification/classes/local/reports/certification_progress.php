@@ -201,7 +201,7 @@ class certification_progress extends system_report {
         ))
             ->add_fields('tcu.userid, tcu.certificationid, tc.program as programid')
             ->set_is_default(true, 10)
-            ->add_callback([\tool_program\local\helpers\format::class, 'programprogress']);
+            ->add_callback([\tool_program\local\helpers\programuser_format::class, 'programprogress']);
         $this->add_column($newcolumn);
 
         // Column "completion date".

@@ -168,60 +168,6 @@ class edit_certification_details_form extends modal_form {
         $mform->hideIf('expirydaterelative', 'expirydatetype', 'in', $params);
         $mform->disabledIf('expirydaterelative', 'expirydatetype', 'noteq', constants::DATE_ABSOLUTE);
 
-        // Re-certification section.
-        $mform->addElement('header', 'recertificationhdr', get_string('recertification', 'tool_certification'));
-        $mform->setExpanded('recertificationhdr', true);
-
-        // Require recertification.
-        $requirerecertstr = get_string('requirerecertification', 'tool_certification');
-        $mform->addElement('selectyesno', 'requirerecertification', $requirerecertstr, null);
-        $mform->addHelpButton('requirerecertification', 'requirerecertification', 'tool_certification');
-        $mform->disabledIf('requirerecertification', 'id', 'noteq', 'sp2018');
-
-        // Select a different program.
-        $selectdiffprogstr = get_string('selectadifferentprogram', 'tool_certification');
-        $mform->addElement('selectyesno', 'selectadifferentprogram', $selectdiffprogstr, null);
-        $mform->addHelpButton('selectadifferentprogram', 'selectadifferentprogram', 'tool_certification');
-        $mform->disabledIf('selectadifferentprogram', 'id', 'noteq', 'sp2018');
-
-        // Re-certification program.
-        $recertprogstr = get_string('recertificationprogram', 'tool_certification');
-        $noselectionstr = get_string('noselection', 'tool_certification');
-        $mform->addElement('static', 'recertificationprogram', $recertprogstr, $noselectionstr);
-        $mform->addHelpButton('recertificationprogram', 'recertificationprogram', 'tool_certification');
-        $mform->disabledIf('recertificationprogram', 'id', 'noteq', 'sp2018');
-
-        // Start date.
-        $mform->addElement('periodduration', 'recertstartdaterelative', $startdatestr, null);
-        $mform->addHelpButton('recertstartdaterelative', 'recertstartdaterelative', 'tool_certification');
-        $mform->disabledIf('recertstartdaterelative', 'id', 'noteq', 'sp2018');
-
-        // Due date.
-        $prevcertexpdatestr = get_string('previouscertexpirydate', 'tool_certification');
-        $mform->addElement('static', 'previouscertexpirydate', $duedatestr, $prevcertexpdatestr, null, null);
-        $mform->addHelpButton('previouscertexpirydate', 'recertduedaterelative', 'tool_certification');
-
-        // Grace period.
-        $recertgraceperiodstr = get_string('recertgraceperiod', 'tool_certification');
-        $mform->addElement('periodduration', 'recertgraceperiod', $recertgraceperiodstr, null);
-        $mform->addHelpButton('recertgraceperiod', 'recertgraceperiod', 'tool_certification');
-        $mform->disabledIf('recertgraceperiod', 'id', 'noteq', 'sp2018');
-
-        // Expiry date.
-        $recertneverstr = get_string('never', 'tool_certification');
-        $recertafterprevcompl = get_string('afterpreviouscertcompletion', 'tool_certification');
-        $recertafterprevexp = get_string('afterpreviouscertexpdate', 'tool_certification');
-        $recertafterlatest = get_string('afterlatest', 'tool_certification');
-        $choices = [
-            constants::RECERT_EXPIRY_DATE_NEVER_DATE => $recertneverstr,
-            constants::RECERT_EXPIRY_DATE_AFTR_PREV_COMPL => $recertafterprevcompl,
-            constants::RECERT_EXPIRY_DATE_AFTR_PREV_EXP => $recertafterprevexp,
-            constants::RECERT_EXPIRY_DATE_AFTR_LATEST => $recertafterlatest,
-        ];
-        $mform->addElement('select', 'recertexpirydate', $expirydatestr, $choices);
-        $mform->addHelpButton('recertexpirydate', 'recertexpirydate', 'tool_certification');
-        $mform->disabledIf('recertexpirydate', 'id', 'noteq', 'sp2018');
-
         $this->add_action_buttons(false);
     }
 
