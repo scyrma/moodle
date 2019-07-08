@@ -26,7 +26,7 @@ namespace tool_program\local\reports;
 defined('MOODLE_INTERNAL') || die();
 
 use lang_string;
-use tool_program\local\helpers\format;
+use tool_program\local\helpers\programitem_format;
 use tool_program\permission;
 use tool_program\persistent\program;
 use tool_program\persistent\program_course;
@@ -150,7 +150,7 @@ class program_progress_report extends system_report {
         ))
             ->add_field("$pri.isset")
             ->set_is_default(true, 1)
-            ->add_callback([format::class, 'programitemtype']);
+            ->add_callback([programitem_format::class, 'type']);
         $this->add_column($newcolumn);
 
         // Column program item name.
@@ -163,7 +163,7 @@ class program_progress_report extends system_report {
             ->add_field("$pri.name")
             ->add_field("$pri.isset")
             ->set_is_default(true, 2)
-            ->add_callback([format::class, 'programitemname']);
+            ->add_callback([programitem_format::class, 'name']);
         $this->add_column($newcolumn);
 
         // Column completion criteria.
@@ -176,7 +176,7 @@ class program_progress_report extends system_report {
             ->add_field("$pri.completionatleast")
             ->add_field("$pri.isset")
             ->set_is_default(true, 3)
-            ->add_callback([format::class, 'programitemcompletioncriteria']);
+            ->add_callback([programitem_format::class, 'completioncriteria']);
         $this->add_column($newcolumn);
 
         // Column parent name.
@@ -189,7 +189,7 @@ class program_progress_report extends system_report {
             ->add_field("$u.id", 'userid')
             ->add_field("$p.id", 'programid')
             ->set_is_default(true, 4)
-            ->add_callback([format::class, 'programitemparentname']);
+            ->add_callback([programitem_format::class, 'parentname']);
         $this->add_column($newcolumn);
 
         // Column progress percentage.
@@ -204,7 +204,7 @@ class program_progress_report extends system_report {
             ->add_field("$u.id", 'userid')
             ->add_field("$p.id", 'programid')
             ->set_is_default(true, 5)
-            ->add_callback([format::class, 'programitemprogress']);
+            ->add_callback([programitem_format::class, 'progress']);
         $this->add_column($newcolumn);
 
         // TODO column completion status.

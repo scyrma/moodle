@@ -29,6 +29,8 @@ use lang_string;
 use tool_certification\certification_user;
 use tool_program\api;
 use tool_program\local\helpers\format;
+use tool_program\local\helpers\programcompletion_format;
+use tool_program\local\helpers\programuser_format;
 use tool_program\permission;
 use tool_program\persistent\program;
 use tool_program\persistent\program_set_completion;
@@ -125,7 +127,7 @@ class programs_progress_report extends system_report {
             ->add_field("{$p}.id", 'programid')
             ->set_is_default(true, 1)
             ->set_is_sortable(true, true)
-            ->add_callback([format::class, 'userprogramname'], ['userid' => $this->userid]);
+            ->add_callback([programuser_format::class, 'userprogramname'], ['userid' => $this->userid]);
         $this->add_column($newcolumn);
 
         // Column "certificationid" (associated certification, if any).
@@ -136,7 +138,7 @@ class programs_progress_report extends system_report {
         ))
             ->add_field("{$pu}.certificationid")
             ->set_is_default(true, 2)
-            ->add_callback([format::class, 'certificationname']);
+            ->add_callback([programuser_format::class, 'certificationname']);
         $this->add_column($newcolumn);
 
         // Column "certified expirydate".
@@ -152,7 +154,7 @@ class programs_progress_report extends system_report {
             ->add_fields("$cu.expirydate, $cu.expirydatelocked, $cu.userid, $cu.certificationid")
             ->add_join($certificationuserjoin)
             ->set_is_default(true, 3);
-        $newcolumn->add_callback([format::class, 'userexpirydate']);
+        $newcolumn->add_callback([programuser_format::class, 'userexpirydate']);
         $this->add_column($newcolumn);
 
         // Column "duedate" (program or certification due date).
@@ -164,7 +166,7 @@ class programs_progress_report extends system_report {
             ->add_field("{$pu}.duedate")
             ->add_field("{$pu}.duedatelocked")
             ->set_is_default(true, 4)
-            ->add_callback([format::class, 'duedate']);
+            ->add_callback([programuser_format::class, 'duedate']);
         $this->add_column($newcolumn);
 
         // Column "status" (program or certification status).
@@ -174,10 +176,10 @@ class programs_progress_report extends system_report {
             'tool_program_users'
         ))
             ->add_field("{$pu}.userid")
-            ->add_field("{$pu}.certificationid", 'certid')
+            ->add_field("{$pu}.certificationid")
             ->add_field("{$pu}.programid")
             ->set_is_default(true, 5)
-            ->add_callback([format::class, 'userstatus']);
+            ->add_callback([programuser_format::class, 'programstatus']);
         $this->add_column($newcolumn);
 
         $newcolumn = (new report_column(
@@ -187,7 +189,7 @@ class programs_progress_report extends system_report {
         ))
             ->add_fields("$pu.id, $pu.userid, $pu.certificationid, $pu.programid")
             ->set_is_default(true, 6)
-            ->add_callback([format::class, 'progressoverviewlink']);
+            ->add_callback([programuser_format::class, 'progressoverviewlink']);
         $this->add_column($newcolumn);
 
         // Column "completion date".
@@ -198,7 +200,7 @@ class programs_progress_report extends system_report {
         ))
             ->add_fields("$psc.completeddate")
             ->set_is_default(true, 7)
-            ->add_callback([format::class, 'completiondate']);
+            ->add_callback([programcompletion_format::class, 'completeddate']);
         $this->add_column($newcolumn);
     }
 

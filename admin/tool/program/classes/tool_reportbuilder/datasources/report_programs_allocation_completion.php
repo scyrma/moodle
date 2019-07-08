@@ -26,12 +26,14 @@ namespace tool_program\tool_reportbuilder\datasources;
 
 use lang_string;
 use moodle_exception;
-use tool_program\local\helpers\program_fields;
+use tool_program\api;
+use tool_program\local\helpers\program_entity;
+use tool_program\local\helpers\programcompletion_entity;
+use tool_program\local\helpers\programcompletion_format;
+use tool_program\local\helpers\programuser_entity;
 use tool_reportbuilder\datasource;
-use tool_reportbuilder\local\filter\date_condition;
-use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\local\entities\user as user_entity;
-use tool_reportbuilder\report_filter;
+use \tool_organisation\local\entities\jobs as jobs_entity;
 use tool_reportbuilder\report_column;
 use tool_tenant\tenancy;
 
@@ -57,6 +59,10 @@ class report_programs_allocation_completion extends datasource {
         $this->set_main_table('tool_program_users', 'tpu');
         $this->add_base_join('INNER JOIN {user} u ON tpu.userid = u.id');
         $this->add_base_join('INNER JOIN {tool_program} tp ON tpu.programid = tp.id');
+        $this->add_base_join('INNER JOIN {tool_program_sets} tps ON tps.programid = tpu.programid AND tps.parent = 0');
+        $this->add_base_join('LEFT JOIN {tool_program_set_completion} tpsc ON tpsc.setid = tps.id AND tpsc.userid = tpu.userid');
+        $this->add_base_join('LEFT JOIN {tool_organisation_job} toj ON u.id = toj.userid');
+
         $this->add_base_condition_simple('tp.tenantid', tenancy::get_tenant_id());
 
         $this->add_organisation_condition('u');
@@ -67,13 +73,64 @@ class report_programs_allocation_completion extends datasource {
         $this->set_conditions();
         $this->set_filters();
 
-        $this->get_column('user:fullname')
-            ->set_is_default(true)
-            ->set_is_sortable(true, true, 1);
+        // Add default columns.
+        if ($column = $this->get_column('tool_program:programnamewithimage')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true, 1, SORT_ASC);
+        }
 
-        $this->get_column('tool_program:fullname')
-            ->set_is_default(true)
-            ->set_is_sortable(true, true, 1);
+        if ($column = $this->get_column('user:fullname')) {
+            $column->set_is_default(true, 2);
+            $column->set_is_sortable(true, true, 2);
+        }
+
+        if ($column = $this->get_column('tool_program_users:timecreated')) {
+            $column->set_is_default(true, 3);
+            $column->set_is_sortable(true, true, 3);
+        }
+
+        if ($column = $this->get_column('tool_program_users:duedate')) {
+            $column->set_is_default(true, 4);
+            $column->set_is_sortable(true, true, 4);
+        }
+
+        if ($column = $this->get_column('tool_program_users:enddate')) {
+            $column->set_is_default(true, 5);
+            $column->set_is_sortable(true, true, 5);
+        }
+
+        if ($column = $this->get_column('tool_program_set_completion:completed')) {
+            $column->set_is_default(true, 6);
+            $column->set_is_sortable(true, true, 6);
+        }
+
+        if ($column = $this->get_column('tool_program_set_completion:completeddate')) {
+            $column->set_is_default(true, 7);
+            $column->set_is_sortable(true, true, 7);
+        }
+
+        if ($column = $this->get_column('tool_program:programnamewithimage')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true, 1, SORT_ASC);
+        }
+
+        if ($column = $this->get_column('user:username')) {
+            $column->set_is_default(true, 2);
+            $column->set_is_sortable(true, true, 2, SORT_ASC);
+        }
+
+        // Add default conditions.
+        $conditions = $this->get_conditions();
+        $conditions['tool_program:archived']->set_is_default(true, ['archived_op' => 2, 'archived' => 0]);
+        $conditions['tool_program:visible']->set_is_default(true, ['visible_op' => 1, 'visible' => 1]);
+
+        // Add default filters.
+        $filters = $this->get_filters();
+        $filters['tool_program:programselector']->set_is_default(true, [1]);
+        $filters['tool_program_users:timecreated']->set_is_default(true);
+        $filters['tool_program_set_completion:completeddate']->set_is_default(true);
+        $filters['tool_organisation_jobs:position']->set_is_default(true);
+        $filters['tool_organisation_jobs:department']->set_is_default(true);
     }
 
     /**
@@ -86,112 +143,37 @@ class report_programs_allocation_completion extends datasource {
     }
 
     /**
-     * Gets an instance of program_fields_helper that is used to add typical program columns, filters and conditions
-     *
-     * @return program_fields
-     */
-    protected function get_program_fields_helper(): program_fields {
-        return new program_fields(
-                '',
-                'tp',
-                [
-                    'startdatetype',
-                    'startdateabsolute',
-                    'startdaterelative',
-                    'duedatetype',
-                    'duedateabsolute',
-                    'duedaterelative',
-                    'enddatetype',
-                    'enddateabsolute',
-                    'enddaterelative',
-                    'allocationstartdatetype',
-                    'allocationstartdateabsolute',
-                    'allocationenddatetype',
-                    'allocationenddateabsolute',
-                    'allocationenddaterelative',
-                    'timearchived',
-                    'allowdirectallocation',
-                ]
-            );
-    }
-
-    /**
-     * SQL call helper for columns that have sets joins
-     *
-     * @return string
-     */
-    private function get_program_sets_joins_helper(): string {
-        return 'INNER JOIN {tool_program_sets} tps
-                ON tps.programid = tpu.programid AND tps.parent = 0
-                LEFT JOIN {tool_program_set_completion} tpsc
-                ON tpsc.setid = tps.id  AND tpsc.userid = tpu.userid';
-    }
-
-    /**
      * Set the columns available for the report and the definition of each.
-     *
      */
     protected function set_columns(): void {
-        $this->add_entity($this->get_program_fields_helper());
-        $this->annotate_entity('tool_program_users', new lang_string('entityprogramusers', 'tool_program'));
-        $this->annotate_entity('tool_program_set_completion', new lang_string('entityprogramcompletion', 'tool_program'));
-        $this->annotate_entity('tool_organisation_department', new lang_string('entitydepartment', 'tool_organisation'));
-        $this->annotate_entity('tool_organisation_position', new lang_string('entityposition', 'tool_organisation'));
-        $this->annotate_entity('tool_organisation_jobs', new lang_string('entityjob', 'tool_organisation'));
+        $this->add_entity(new program_entity('', 'tp'));
+        $this->add_entity(new programuser_entity('', 'tpu'));
+        $this->add_entity(new programcompletion_entity('', 'tpsc'));
+        $this->add_entity(new user_entity('', 'u'));
+        if (class_exists(jobs_entity::class)) {
+            $this->add_entity(new jobs_entity('', 'toj'));
+        }
 
-        $newcolumn = (new report_column(
-            'programcompletion',
-            new lang_string('programcompletion', 'tool_program'),
+        // Mixed entities columns.
+        $column = (new report_column(
+            'daystakingprogram',
+            new lang_string('daystakingprogram', 'tool_program'),
             'tool_program_set_completion'
         ))
-            ->add_join($this->get_program_sets_joins_helper())
-            ->add_field('tpsc.completeddate');
-        $newcolumn->add_callback([format::class, 'userdate']);
-        $this->add_column($newcolumn);
+            ->add_field('tpu.startdate')
+            ->add_field('tpsc.completeddate')
+            ->add_callback([programcompletion_format::class, 'daystakingprogram']);
+        $this->add_column($column);
 
-        $newcolumn = (new report_column(
-            'programstartdate',
-            new lang_string('startdate', 'tool_program'),
-            'tool_program_users'
+        $column = (new report_column(
+            'dayssinceallocation',
+            new lang_string('dayssinceallocation', 'tool_program'),
+            'tool_program_set_completion'
         ))
-            ->add_join($this->get_program_sets_joins_helper())
-            ->add_field('tpu.startdate');
-        $newcolumn->add_callback([format::class, 'userdate']);
-        $this->add_column($newcolumn);
-
-        $newcolumn = (new report_column(
-            'programduedate',
-            new lang_string('duedate', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_join($this->get_program_sets_joins_helper())
-            ->add_field('tpu.duedate');
-        $newcolumn->add_callback([format::class, 'userdate']);
-        $this->add_column($newcolumn);
-
-        $newcolumn = (new report_column(
-            'programenddate',
-            new lang_string('enddate', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_join($this->get_program_sets_joins_helper())
-            ->add_field('tpu.enddate');
-        $newcolumn->add_callback([format::class, 'userdate']);
-        $this->add_column($newcolumn);
-
-        // User status.
-        $newcolumn = (new report_column(
-            'userstatus',
-            new lang_string('status', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_field('tpu.programid')
-            ->add_field('tpu.certificationid', 'certid')
-            ->add_field('tpu.userid');
-        $newcolumn->add_callback([\tool_program\local\helpers\format::class, 'userstatus']);
-        $this->add_column($newcolumn);
-
-        $this->add_entity(new user_entity('', 'u', ['idnumber']));
+            ->add_field('tpu.timecreated')
+            ->add_field('tpsc.completeddate')
+            ->add_callback([programcompletion_format::class, 'dayssinceallocation']);
+        $this->add_column($column);
     }
 
     /**
@@ -217,61 +199,6 @@ class report_programs_allocation_completion extends datasource {
         if (!in_array($method, ['add_filter', 'add_condition'])) {
             throw new moodle_exception('errorhelperactionnotallowed', 'tool_program');
         }
-
-        $this->$method(
-            (new report_filter(
-                date_condition::class,
-                'timecreated',
-                new lang_string('userallocation', 'tool_program'),
-                'tool_program_users',
-                'tpu.timecreated'
-            ))
-                ->add_join($this->get_program_sets_joins_helper())
-        );
-
-        $this->$method(
-            (new report_filter(
-                date_condition::class,
-                'completeddate',
-                new lang_string('programcompletion', 'tool_program'),
-                'tool_program_set_completion',
-                'tpsc.completeddate'
-            ))
-                ->add_join($this->get_program_sets_joins_helper())
-        );
-
-        $this->$method(
-            (new report_filter(
-                date_condition::class,
-                'startdate',
-                new lang_string('programstartdate', 'tool_program'),
-                'tool_program_users',
-                'tpu.startdate'
-            ))
-                ->add_join($this->get_program_sets_joins_helper())
-        );
-
-        $this->$method(
-            (new report_filter(
-                date_condition::class,
-                'duedate',
-                new lang_string('programduedate', 'tool_program'),
-                'tool_program_users',
-                'tpu.duedate'
-            ))
-                ->add_join($this->get_program_sets_joins_helper())
-        );
-
-        $this->$method(
-            (new report_filter(
-                date_condition::class,
-                'enddate',
-                new lang_string('programenddate', 'tool_program'),
-                'tool_program_users',
-                'tpu.enddate'
-            ))
-                ->add_join($this->get_program_sets_joins_helper())
-        );
     }
 
     /**

@@ -49,7 +49,11 @@ $PAGE->navbar->add(get_string('administrationsite'), new moodle_url("/$CFG->admi
 $coursesadminurl = new moodle_url("/$CFG->admin/category.php", ['category' => 'courses']);
 $PAGE->navbar->add(get_string('coursesadmintab', 'tool_wp'), $coursesadminurl);
 $PAGE->navbar->add(get_string('programs', 'tool_program'), new moodle_url("/$CFG->admin/tool/program/index.php"));
-$PAGE->navbar->add($fullname, new moodle_url("/$CFG->admin/tool/program/edit.php", ['id' => $programid]));
+if ($program->is_archived()) {
+    $PAGE->navbar->add($fullname);
+} else {
+    $PAGE->navbar->add($fullname, new moodle_url("/$CFG->admin/tool/program/edit.php", ['id' => $programid]));
+}
 $PAGE->navbar->add($programprogressstr);
 $PAGE->set_title($programprogressstr);
 $PAGE->set_heading($fullname);

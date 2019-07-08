@@ -36,7 +36,6 @@ use enrol_program_plugin;
 use moodle_exception;
 use stdClass;
 use tool_certification\certification;
-use tool_certification\certification_completion;
 use tool_certification\certification_user;
 use tool_program\event\program_course_created;
 use tool_program\event\program_course_deleted;
@@ -442,7 +441,16 @@ class api {
      * @return bool
      */
     public static function delete_program_course(program_course $programcourse): bool {
-        $course = $programcourse->get_course();
+        global $DB;
+
+        // Course might have been deleted.
+        if ($DB->record_exists('course', ['id' => $programcourse->get('courseid')])) {
+            $course = $programcourse->get_course();
+        } else {
+            $course = new stdClass();
+            $course->id = $programcourse->get('courseid');
+        }
+
         $program = $programcourse->get_program();
         $programid = $program->get('id');
 
@@ -1041,9 +1049,6 @@ class api {
      *
      * @param int $programid Origin program id
      * @param int $newprogramid Destination program id
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws coding_exception
      */
     public static function duplicate_program_dynamicrules(int $programid, int $newprogramid): void {
         global $DB;
@@ -2530,5 +2535,33 @@ class api {
      */
     private static function calculate_user_program_progress(program $program, int $userid): program_tree_progress {
         return new program_tree_progress($program, $userid);
+    }
+
+    /**
+     * Removes a deleted course from all programs. A course can be several times inside one program.
+     * Used in the course_deleted observer.
+     *
+     * @param int $courseid
+     * @throws \dml_exception
+     */
+    public static function remove_deleted_course_from_programs(int $courseid): void {
+        global $DB;
+
+        $sql = 'SELECT pco.*
+                           FROM {' . program_course::TABLE . '} pco
+                     INNER JOIN {' . program_set::TABLE . '} ps
+                     ON ps.id = pco.setid
+                     INNER JOIN {' . program::TABLE . '} p
+                             ON p.id = ps.programid
+                          WHERE pco.courseid = ?';
+
+        $courselist = $DB->get_records_sql($sql, [$courseid]);
+
+        if (!empty($courselist)) {
+            foreach ($courselist as $item) {
+                $programcourse = new program_course(0, $item);
+                self::delete_program_course($programcourse);
+            }
+        }
     }
 }

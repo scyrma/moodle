@@ -24,12 +24,12 @@
 
 namespace tool_program\tool_reportbuilder\datasources;
 
-use lang_string;
 use moodle_exception;
-use tool_program\local\helpers\format;
-use tool_program\local\helpers\program_fields;
+use tool_certification\local\helpers\certification_fields;
+use tool_program\local\helpers\program_entity;
 use tool_reportbuilder\datasource;
-use tool_reportbuilder\report_column;
+use tool_reportbuilder\local\entities\course;
+use tool_reportbuilder\local\entities\user;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -51,16 +51,28 @@ class report_programs extends datasource {
      */
     protected function initialise(): void {
         $this->set_main_table('tool_program', 'tp');
-        $this->add_base_join('left join {context} ctx on ctx.instanceid = tp.id and ctx.contextlevel = 10');
+        $this->add_base_join('LEFT JOIN {context} ctx ON ctx.instanceid = tp.id AND ctx.contextlevel = 10');
+        $this->add_base_join('LEFT JOIN {tool_program_sets} tps ON tps.programid = tp.id');
+        $this->add_base_join('LEFT JOIN {tool_program_courses} tpc ON tpc.setid = tps.id');
+        $this->add_base_join('LEFT JOIN {tool_program_users} tpu ON tpu.programid = tp.id');
+        $this->add_base_join('LEFT JOIN {user} u ON u.id = tpu.userid');
+        $this->add_base_join('LEFT JOIN {tool_program_set_completion} tpsc ON tpsc.setid = tps.id AND tpsc.userid = tpu.userid');
+        $this->add_base_join('LEFT JOIN {course} c ON c.id = tpc.courseid');
+        $this->add_base_join('LEFT JOIN {tool_certification} tc ON tc.program = tp.id');
 
         $this->set_downloadable(false);
         $this->set_columns();
         $this->set_conditions();
         $this->set_filters();
 
-        $this->get_column('tool_program:fullname')
-            ->set_is_default(true)
-            ->set_is_sortable(true, true, 1);
+        if ($column = $this->get_column('tool_program:fullname')) {
+            $column->set_is_default(true);
+            $column->set_is_sortable(true, true, 1);
+        }
+
+        $conditions = $this->get_conditions();
+        $conditions['tool_program:archived']->set_is_default(true, ['archived_op' => 2, 'archived' => 0]);
+        $conditions['tool_program:visible']->set_is_default(true, ['visible_op' => 1, 'visible' => 1]);
     }
 
     /**
@@ -73,72 +85,14 @@ class report_programs extends datasource {
     }
 
     /**
-     * Gets an instance of program_fields_helper that is used to add typical program columns, filters and conditions
-     *
-     * @return program_fields
-     */
-    protected function get_program_fields_helper(): program_fields {
-        return new program_fields(
-            '',
-            'tp',
-            [
-                'allocationstartdatetype',
-                'allocationenddatetype',
-            ]
-        );
-    }
-
-    /**
      * Set the columns available for the report and the definition of each.
      *
      */
     protected function set_columns(): void {
-        $this->add_entity($this->get_program_fields_helper());
-
-        // Program start date.
-        $newcolumn = (new report_column(
-            'startdate',
-            new lang_string('startdate', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_field('tp.startdatetype')
-            ->add_field('tp.startdateabsolute')
-            ->add_field('tp.startdaterelative');
-        $newcolumn->add_callback([format::class, 'programstartdate']);
-        $this->add_column($newcolumn);
-
-        // Program due date.
-        $newcolumn = (new report_column(
-            'duedate',
-            new lang_string('duedate', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_field('tp.startdatetype')
-            ->add_field('tp.startdateabsolute')
-            ->add_field('tp.duedatetype')
-            ->add_field('tp.duedateabsolute')
-            ->add_field('tp.duedaterelative')
-            ->add_field('tp.enddatetype')
-            ->add_field('tp.enddateabsolute');
-        $newcolumn->add_callback([format::class, 'programduedate']);
-        $this->add_column($newcolumn);
-
-        // Program expiry date.
-        $newcolumn = (new report_column(
-            'enddate',
-            new lang_string('enddate', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_field('tp.enddatetype')
-            ->add_field('tp.enddateabsolute')
-            ->add_field('tp.enddaterelative')
-            ->add_field('tp.startdatetype')
-            ->add_field('tp.startdateabsolute')
-            ->add_field('tp.duedatetype')
-            ->add_field('tp.duedateabsolute')
-            ->add_field('tp.duedaterelative');
-        $newcolumn->add_callback([format::class, 'programenddate']);
-        $this->add_column($newcolumn);
+        $this->add_entity(new program_entity('', 'tp'));
+        $this->add_entity(new user('', 'u'));
+        $this->add_entity(new course('', 'c'));
+        // TODO add certification entity.
     }
 
     /**

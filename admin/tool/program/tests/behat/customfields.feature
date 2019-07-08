@@ -86,7 +86,7 @@ Feature: Create custom fields on programs
     And I press "Save" in the modal form dialogue
     Then I should see "Report customfields"
     And I should see "ID number" in the "#entity_tool_program" "css_element"
-    And I should see "Full name" in the "#entity_tool_program" "css_element"
+    And I should see "Program name" in the "#entity_tool_program" "css_element"
     And I should see "Description" in the "#entity_tool_program" "css_element"
     And I should see "Visible" in the "#entity_tool_program" "css_element"
     And I should see "Allocation start date" in the "#entity_tool_program" "css_element"

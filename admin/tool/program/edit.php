@@ -42,6 +42,9 @@ $PAGE->set_url($editprogramurl);
 $PAGE->set_context($context);
 
 $program = new program($programid);
+if ($program->is_archived()) {
+    throw new moodle_exception('errorprogramisarchived', 'tool_program');
+}
 $baseset = $program->get_base_set();
 $basesetid = $baseset->get('id');
 $fullname = format_string($program->get('fullname'));

@@ -28,8 +28,9 @@ defined('MOODLE_INTERNAL') || die();
 use lang_string;
 use moodle_url;
 use pix_icon;
-use tool_program\local\helpers\format;
+use tool_program\local\helpers\program_format;
 use tool_program\permission;
+use tool_reportbuilder\local\helpers\format as reportbuilder_format;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
@@ -94,7 +95,7 @@ class archived_programs_report extends system_report {
             ->add_field('tp.fullname')
             ->set_is_default(true, 1)
             ->set_is_sortable(true, true);
-        $newcolumn->add_callback([\tool_reportbuilder\local\helpers\format::class, 'format_string']);
+        $newcolumn->add_callback([reportbuilder_format::class, 'format_string']);
         $this->add_column($newcolumn);
 
         // Column "timearchived".
@@ -106,7 +107,7 @@ class archived_programs_report extends system_report {
             ->add_field('tp.timearchived')
             ->set_is_default(true, 2)
             ->set_is_sortable(true);
-        $newcolumn->add_callback([format::class, 'archived_on']);
+        $newcolumn->add_callback([program_format::class, 'timearchived']);
         $this->add_column($newcolumn);
     }
 

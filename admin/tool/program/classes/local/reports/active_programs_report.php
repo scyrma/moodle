@@ -29,7 +29,7 @@ use lang_string;
 use moodle_url;
 use pix_icon;
 use stdClass;
-use tool_program\local\helpers\format;
+use tool_program\local\helpers\program_format;
 use tool_program\permission;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
@@ -84,7 +84,7 @@ class active_programs_report extends system_report {
     protected function set_columns(): void {
         $this->annotate_entity('tool_program', new lang_string('entityprogram', 'tool_program'));
 
-        // Column "name".
+        // Column "Editable program name".
         $newcolumn = (new report_column(
             'fullname',
             new lang_string('name', 'tool_program'),
@@ -92,30 +92,30 @@ class active_programs_report extends system_report {
         ))
             ->add_fields('tp.fullname,tp.id')
             ->set_is_default(true, 1)
-            ->set_is_sortable(true, true);
-        $newcolumn->add_callback([format::class, 'inplace_editable']);
+            ->set_is_sortable(true, true)
+            ->add_callback([program_format::class, 'fullnameeditable']);
         $this->add_column($newcolumn);
 
-        // Column "tags".
+        // Column "Tags".
         $newcolumn = (new report_column(
             'tags',
             new lang_string('tags', 'tool_program'),
             'tool_program'
         ))
             ->add_field('tp.id')
-            ->set_is_default(true, 2);
-        $newcolumn->add_callback([format::class, 'tags']);
+            ->set_is_default(true, 2)
+            ->add_callback([program_format::class, 'tags']);
         $this->add_column($newcolumn);
 
-        // Column "Associated certifications".
+        // Column "Related certifications".
         $newcolumn = (new report_column(
             'certification',
             new lang_string('associatedcertifications', 'tool_program'),
             'tool_program'
         ))
             ->add_field('tp.id')
-            ->set_is_default(true, 3);
-        $newcolumn->add_callback([format::class, 'certification']);
+            ->set_is_default(true, 3)
+            ->add_callback([program_format::class, 'relatedcertifications']);
         $this->add_column($newcolumn);
     }
 

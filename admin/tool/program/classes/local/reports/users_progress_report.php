@@ -30,6 +30,8 @@ use moodle_url;
 use pix_icon;
 use tool_organisation\organisation;
 use tool_program\local\helpers\format;
+use tool_program\local\helpers\programcompletion_format;
+use tool_program\local\helpers\programuser_format;
 use tool_program\permission;
 use tool_program\persistent\program;
 use tool_program\persistent\program_set;
@@ -127,7 +129,7 @@ class users_progress_report extends system_report {
         ))
             ->add_fields("$pu.id as programuserid," . implode(',', $this->get_user_columns($u)))
             ->set_is_default(true, 1);
-        $newcolumn->add_callback([format::class, 'userinfo']);
+        $newcolumn->add_callback([programuser_format::class, 'userinfo']);
         $this->add_column($newcolumn);
 
         // Column "startdate".
@@ -138,7 +140,7 @@ class users_progress_report extends system_report {
         ))
             ->add_fields('startdate, startdatelocked')
             ->set_is_default(true, 2)
-            ->add_callback([format::class, 'startdate']);
+            ->add_callback([programuser_format::class, 'startdate']);
         $this->add_column($newcolumn);
 
         // Column "duedate".
@@ -149,7 +151,7 @@ class users_progress_report extends system_report {
         ))
             ->add_fields('duedate, duedatelocked')
             ->set_is_default(true, 3)
-            ->add_callback([format::class, 'duedate']);
+            ->add_callback([programuser_format::class, 'duedate']);
         $this->add_column($newcolumn);
 
         // Column "enddate".
@@ -160,7 +162,7 @@ class users_progress_report extends system_report {
         ))
             ->add_fields('enddate, enddatelocked')
             ->set_is_default(true, 4)
-            ->add_callback([format::class, 'enddate']);
+            ->add_callback([programuser_format::class, 'enddate']);
         $this->add_column($newcolumn);
 
         // Column "allocationdate".
@@ -171,7 +173,7 @@ class users_progress_report extends system_report {
         ))
             ->add_field("$pu.timecreated")
             ->set_is_default(true, 5)
-            ->add_callback([format::class, 'allocation_date']);
+            ->add_callback([programuser_format::class, 'timecreated']);
         $this->add_column($newcolumn);
 
         // Column "allocationtype".
@@ -182,7 +184,7 @@ class users_progress_report extends system_report {
         ))
             ->add_field("$pu.allocationtype")
             ->set_is_default(true, 6)
-            ->add_callback([format::class, 'allocation_source']);
+            ->add_callback([programuser_format::class, 'allocationtype']);
         $this->add_column($newcolumn);
 
         // Column "certification".
@@ -193,7 +195,7 @@ class users_progress_report extends system_report {
         ))
             ->add_field("$pu.certificationid", 'certificationuser')
             ->set_is_default(true, 7)
-            ->add_callback([format::class, 'certificationuser']);
+            ->add_callback([programuser_format::class, 'certificationuser']);
         $this->add_column($newcolumn);
 
         // Column "certification status".
@@ -204,7 +206,7 @@ class users_progress_report extends system_report {
         ))
             ->add_fields("$pu.userid, $pu.certificationid")
             ->set_is_default(true, 8)
-            ->add_callback([format::class, 'certificationstatus']);
+            ->add_callback([programuser_format::class, 'certificationstatus']);
         $this->add_column($newcolumn);
 
         // Column "program status".
@@ -215,7 +217,7 @@ class users_progress_report extends system_report {
         ))
             ->add_fields("$pu.userid, $pu.certificationid, $pu.programid")
             ->set_is_default(true, 9)
-            ->add_callback([format::class, 'programstatus']);
+            ->add_callback([programuser_format::class, 'programstatus']);
         $this->add_column($newcolumn);
 
         // Column "program progress".
@@ -226,7 +228,7 @@ class users_progress_report extends system_report {
         ))
             ->add_fields("$pu.userid, $pu.certificationid, $pu.programid")
             ->set_is_default(true, 10)
-            ->add_callback([format::class, 'programprogress']);
+            ->add_callback([programuser_format::class, 'programprogress']);
         $this->add_column($newcolumn);
 
         // Column "completion date".
@@ -238,7 +240,7 @@ class users_progress_report extends system_report {
             ->add_join("LEFT JOIN {" . program_set_completion::TABLE . "} $psc ON $psc.setid = $ps.id AND $psc.userid = $pu.userid")
             ->add_fields("$psc.completeddate")
             ->set_is_default(true, 11)
-            ->add_callback([format::class, 'completiondate']);
+            ->add_callback([programcompletion_format::class, 'completeddate']);
         $this->add_column($newcolumn);
     }
 

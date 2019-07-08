@@ -23,6 +23,7 @@
  */
 
 use core\event\course_completed;
+use core\event\course_deleted;
 use tool_program\event\program_completed;
 use tool_program\event\user_allocation_created;
 use tool_program\event\user_allocation_deleted;
@@ -45,5 +46,9 @@ $observers = [
     [
         'eventname' => user_allocation_deleted::class,
         'callback' => 'tool_program_observer::user_allocation_deleted'
+    ],
+    [
+        'eventname' => course_deleted::class,
+        'callback' => 'tool_program_observer::course_deleted'
     ],
 ];

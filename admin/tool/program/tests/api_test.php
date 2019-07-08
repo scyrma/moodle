@@ -468,6 +468,49 @@ class tool_program_api_testcase extends advanced_testcase {
         $enrolparams = ['courseid' => $courseid, 'enrol' => 'program', 'customint1' => $programid];
         $enrolinstance = $DB->get_record('enrol', $enrolparams, '*', MUST_EXIST);
         $this->assertEquals(ENROL_INSTANCE_DISABLED, $enrolinstance->status);
+
+        // Create a new program with 2 courses inside, delete one course and then delete program.
+        $program = $this->generator->generate_program_with_base_set();
+        $programid = $program->get('id');
+        $baseset = $program->get_base_set();
+        $basesetid = $baseset->get('id');
+        $course1 = self::getDataGenerator()->create_course();
+        $course2 = self::getDataGenerator()->create_course();
+        $courseid1 = $course1->id;
+        $courseid2 = $course2->id;
+        $programcourse1 = $this->generator->add_course_to_set($courseid1, $basesetid);
+        $programcourse2 = $this->generator->add_course_to_set($courseid2, $basesetid);
+        $programcourseid1 = $programcourse1->get('id');
+        $programcourseid2 = $programcourse2->get('id');
+        $this->generator->enable_program_enrol_instance($programcourse1);
+        $this->generator->enable_program_enrol_instance($programcourse2);
+        $user = self::getDataGenerator()->create_and_enrol($course1);
+        $userid = $user->id;
+        $programuser = $this->generator->allocate_user_to_program($programid, $userid);
+        $programuserid = $programuser->get('id');
+        self::getDataGenerator()->enrol_user($userid, $courseid, 'student', 'program');
+
+        // Delete one course.
+        delete_course($courseid1, false);
+        // We mark the program as archived now.
+        $program->set('archived', 1);
+        $program->update();
+
+        // We try to delete program.
+        api::delete_program($program);
+
+        // We check program is deleted.
+        $this->assertFalse($DB->record_exists('tool_program', ['id' => $programid]));
+
+        // We check base set is deleted.
+        $this->assertFalse($DB->record_exists('tool_program_sets', ['id' => $basesetid]));
+
+        // We check if program courses have been deleted.
+        $this->assertFalse($DB->record_exists('tool_program_courses', ['id' => $programcourseid1]));
+        $this->assertFalse($DB->record_exists('tool_program_courses', ['id' => $programcourseid2]));
+
+        // We check if program user has been deleted.
+        $this->assertFalse($DB->record_exists('tool_program_users', ['id' => $programuserid]));
     }
 
     /**
@@ -924,6 +967,24 @@ class tool_program_api_testcase extends advanced_testcase {
         ]);
         $this->assertNotFalse($enrolinstance2);
         $this->assertSame((string) ENROL_INSTANCE_ENABLED, $enrolinstance2->status);
+
+        // Create a program with 2 courses. Delete one course and then delete de programcourse instances.
+        $program = $this->generator->generate_program_with_base_set();
+        $basesetid = $program->get_base_set()->get('id');
+        $course1 = self::getDataGenerator()->create_course();
+        $course2 = self::getDataGenerator()->create_course();
+        $programcourse1 = $this->generator->add_course_to_set($course1->id, $basesetid);
+        $programcourse2 = $this->generator->add_course_to_set($course2->id, $basesetid);
+        $this->generator->enable_program_enrol_instance($programcourse1);
+        $this->generator->enable_program_enrol_instance($programcourse2);
+
+        delete_course($course1->id, false);
+
+        api::delete_program_course($programcourse2);
+
+        // Check course does not exist anymore.
+        $this->assertFalse($DB->record_exists('tool_program_courses', ['id' => $programcourse1->get('id')]));
+        $this->assertFalse($DB->record_exists('tool_program_courses', ['id' => $programcourse2->get('id')]));
     }
 
     /**
@@ -3722,5 +3783,42 @@ class tool_program_api_testcase extends advanced_testcase {
         $this->assertNotEmpty($outcome);
         $this->assertEquals($outcomeclass, $outcome->classname);
         $this->assertEquals($configdata, json_decode($outcome->configdata, true));
+    }
+
+    public function test_remove_deleted_course_from_programs(): void {
+        global $DB;
+        self::setAdminUser();
+
+        $course1 = self::getDataGenerator()->create_course();
+        $courseid1 = $course1->id;
+        $course2 = self::getDataGenerator()->create_course();
+        $courseid2 = $course2->id;
+
+        $program1 = $this->generator->generate_program_with_base_set();
+        $baseset1 = $program1->get_base_set();
+        $programcourse1 = $this->generator->add_course_to_set($courseid1, $baseset1->get('id'));
+        $programcourseid1 = $programcourse1->get('id');
+        $this->generator->enable_program_enrol_instance($programcourse1);
+        $programcourse3 = $this->generator->add_course_to_set($courseid2, $baseset1->get('id'));
+        $programcourseid3 = $programcourse3->get('id');
+        $this->generator->enable_program_enrol_instance($programcourse3);
+
+        $program2 = $this->generator->generate_program_with_base_set();
+        $baseset2 = $program2->get_base_set();
+        $programcourse2 = $this->generator->add_course_to_set($courseid1, $baseset2->get('id'));
+        $programcourseid2 = $programcourse1->get('id');
+        $this->generator->enable_program_enrol_instance($programcourse2);
+
+        // We check if program course instance exists.
+        $this->assertTrue($DB->record_exists('tool_program_courses', ['id' => $programcourseid1]));
+        $this->assertTrue($DB->record_exists('tool_program_courses', ['id' => $programcourseid2]));
+        $this->assertTrue($DB->record_exists('tool_program_courses', ['id' => $programcourseid3]));
+
+        delete_course($courseid1, false);
+
+        // We check if program course instance exists.
+        $this->assertFalse($DB->record_exists('tool_program_courses', ['id' => $programcourseid1]));
+        $this->assertFalse($DB->record_exists('tool_program_courses', ['id' => $programcourseid2]));
+        $this->assertTrue($DB->record_exists('tool_program_courses', ['id' => $programcourseid3]));
     }
 }

@@ -73,4 +73,13 @@ class tool_program_observer {
     public static function user_allocation_deleted(user_allocation_deleted $event): void {
         api::send_program_user_deallocated_notification($event->relateduserid, $event->other['programid']);
     }
+
+    /**
+     * Course deleted observer
+     *
+     * @param \core\event\course_deleted $event
+     */
+    public static function course_deleted(\core\event\course_deleted $event): void {
+        api::remove_deleted_course_from_programs($event->courseid);
+    }
 }

@@ -29,8 +29,10 @@ use stdClass;
 use tool_organisation\organisation;
 use tool_program\constants;
 use tool_program\local\helpers\format;
+use tool_program\local\helpers\programuser_format;
 use tool_program\permission;
 use tool_reportbuilder\local\entities\user as user_entity;
+use tool_reportbuilder\local\helpers\format as reportbuilder_format;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
@@ -59,10 +61,10 @@ class allocations_report extends system_report {
         $this->add_base_join('INNER JOIN {tool_program} tp ON tp.id = tpu.programid');
         $this->add_base_condition_simple('tpu.programid', $programid);
         $this->add_base_condition_simple('tp.tenantid', tenancy::get_tenant_id());
-        $this->add_base_fields('tpu.id, tpu.certificationid, tpu.programid, tpu.userid, ' .
-            'tpu.status, tpu.enddate'); // Fields necessary for actions and row class.
+        // Fields necessary for actions and row class.
+        $this->add_base_fields('tpu.id, tpu.certificationid, tpu.programid, tpu.userid, tpu.status, tpu.enddate');
 
-        if (!permission::has_allocateuser_capability(\context_system::instance())) {
+        if (!permission::has_allocateuser_capability(context_system::instance())) {
             // Managers with no system capability are only allowed to see the users they manage.
             if ($manager = organisation::get_user_with_jobs()) {
                 [$where, $params] = $manager->get_managed_users_select('u', organisation::PERM_ALLOCATE_PROGRAMS);
@@ -113,7 +115,7 @@ class allocations_report extends system_report {
             ->add_fields('tpu.userid, ' . user_entity::get_all_user_name_fields(true, 'u'))
             ->set_is_default(true, 1)
             ->set_is_sortable(true, true, 0)
-            ->add_callback([\tool_reportbuilder\local\helpers\format::class, 'fullname']);
+            ->add_callback([reportbuilder_format::class, 'fullname']);
         $this->add_column($newcolumn);
 
         // Column "duedate".
@@ -124,7 +126,7 @@ class allocations_report extends system_report {
         ))
             ->add_fields('duedate, duedatelocked')
             ->set_is_default(true, 2)
-            ->add_callback([format::class, 'duedate']);
+            ->add_callback([programuser_format::class, 'duedate']);
         $this->add_column($newcolumn);
 
         // Column "allocationtype".
@@ -136,7 +138,7 @@ class allocations_report extends system_report {
             ->add_field('tpu.allocationtype')
             ->set_is_default(true, 3)
             ->set_is_sortable(true, true, 1, SORT_DESC)
-            ->add_callback([format::class, 'allocation_source']);
+            ->add_callback([programuser_format::class, 'allocationtype']);
         $this->add_column($newcolumn);
 
         // Column "certification".
@@ -147,7 +149,7 @@ class allocations_report extends system_report {
         ))
             ->add_field('tpu.certificationid', 'certificationuser')
             ->set_is_default(true, 4)
-            ->add_callback([format::class, 'certificationuser']);
+            ->add_callback([programuser_format::class, 'certificationuser']);
         $this->add_column($newcolumn);
 
         // Column "certification status".
@@ -158,7 +160,7 @@ class allocations_report extends system_report {
         ))
             ->add_fields('tpu.userid, tpu.certificationid')
             ->set_is_default(true, 5)
-            ->add_callback([format::class, 'certificationstatus']);
+            ->add_callback([programuser_format::class, 'certificationstatus']);
         $this->add_column($newcolumn);
 
         // Column "program status".
@@ -169,7 +171,7 @@ class allocations_report extends system_report {
         ))
             ->add_fields('tpu.userid, tpu.certificationid, tpu.programid')
             ->set_is_default(true, 6)
-            ->add_callback([format::class, 'programstatus']);
+            ->add_callback([programuser_format::class, 'programstatus']);
         $this->add_column($newcolumn);
     }
 
