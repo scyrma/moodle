@@ -26,6 +26,7 @@
         "courseactivityclipboard": "course activity clipboard html",
         "courseid": 3,
         "editing": true,
+        "contextid": 2,
         "sections": [
             {
                 "sectionnumber": 1,
@@ -197,6 +198,6 @@ function(
     Main
 ) {
     var root = $('#format-wplist-{{uniqid}}');
-    Main.init(root);
+    Main.init(root, {{contextid}});
 });
 {{/js}}

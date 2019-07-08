@@ -204,15 +204,18 @@ class format_wplist_renderer extends format_section_renderer_base {
 
         $template->accordion = $options['accordioneffect'];
 
+        $context = context_course::instance($course->id);
+
         $opensections = [];
-        $preferences = get_user_preferences('format_wplist_opensections');
-        if (is_array(json_decode($preferences, true))) {
+        $preferences = get_user_preferences('format_wplist_opensections_' . $context->id);
+        if ($preferences) {
             $opensections = json_decode($preferences, true);
         } else {
-            set_user_preference('format_wplist_opensections', '[]');
+            set_user_preference('format_wplist_opensections_' . $context->id, '[]');
         }
 
-        $context = context_course::instance($course->id);
+        $template->contextid = $context->id;
+
         $completioninfo = new completion_info($course);
 
         $template->completioninfo = $completioninfo->display_help_icon();

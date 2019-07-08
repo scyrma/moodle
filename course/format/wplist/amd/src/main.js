@@ -168,8 +168,9 @@ function(
      * Listen to, and handle events for the workplace list format.
      *
      * @param {Object} root The course format root container element.
+     * @param {Number} contextid Course context ID.
      */
-    var registerEventListeners = function(root) {
+    var registerEventListeners = function(root, contextid) {
         CustomEvents.define(root, [
             CustomEvents.events.activate
         ]);
@@ -205,13 +206,13 @@ function(
         $(SELECTORS.EXPAND_SECTIONS_CONTENT).on('hidden.bs.collapse', function() {
             var sectionid = $(this).attr('data-sectionid');
             var isaccordion = $(this).attr('data-isaccordion');
-            storeSectionPreference(sectionid, isaccordion, false);
+            storeSectionPreference(sectionid, isaccordion, false, contextid);
         });
 
         $(SELECTORS.EXPAND_SECTIONS_CONTENT).on('shown.bs.collapse', function() {
             var sectionid = $(this).attr('data-sectionid');
             var isaccordion = $(this).attr('data-isaccordion');
-            storeSectionPreference(sectionid, isaccordion, true);
+            storeSectionPreference(sectionid, isaccordion, true, contextid);
         });
 
         // Listen for changes on completion.
@@ -369,13 +370,14 @@ function(
      * @param {Number} sectionid Section ID.
      * @param {Boolean} isaccordion
      * @param {Boolean} opened = true or closed = false.
+     * @param {Number} contextid Course context ID.
      */
-    var storeSectionPreference = function(sectionid, isaccordion, opened) {
+    var storeSectionPreference = function(sectionid, isaccordion, opened, contextid) {
 
         var requestget = {
             methodname: 'core_user_get_user_preferences',
             args: {
-                name: 'format_wplist_opensections'
+                name: 'format_wplist_opensections_' + contextid
             }
         };
 
@@ -408,7 +410,7 @@ function(
                     methodname: 'core_user_update_user_preferences',
                     args: {
                         preferences: [{
-                            type: 'format_wplist_opensections',
+                            type: 'format_wplist_opensections_' + contextid,
                             value: JSON.stringify(sections)
                         }]
                     }
@@ -422,10 +424,11 @@ function(
      * Initialise all of the modules for the workplace list course format.
      *
      * @param {object} root The root element for the workplace list course format.
+     * @param {Number} contextid Course context ID.
      */
-    var init = function(root) {
+    var init = function(root, contextid) {
         root = $(root);
-        registerEventListeners(root);
+        registerEventListeners(root, contextid);
     };
 
     return {

@@ -378,10 +378,11 @@ class format_wplist extends format_base {
  * @return mixed Array representing current options along with defaults
  */
 function format_wplist_user_preferences() {
-    $preferences['format_wplist_opensections'] = array(
+    $preferences['/^format_wplist_opensections_(\d)+$/'] = array(
+        'isregex' => true,
         'type' => PARAM_RAW,
         'null' => NULL_NOT_ALLOWED,
-        'default' => ''
+        'default' => '[]'
     );
     return $preferences;
 }
