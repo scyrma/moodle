@@ -134,7 +134,7 @@ if (preg_match('/all-(\d+)-?(rtl)?$/', $type, $matches)) {
     // Set the tenant id in the $theme->settings object this is used in the theme lib file
     // to serve the correct variables for this tenant.
     $theme->settings->tenantid = $tenantid;
-    if ($matches[2]) {
+    if (!empty($matches[2])) {
         $theme->set_rtl_mode(true);
     }
 }
