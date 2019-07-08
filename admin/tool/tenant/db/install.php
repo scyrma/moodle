@@ -28,16 +28,29 @@ defined('MOODLE_INTERNAL') || die();
  * Custom code to be run on installing the plugin.
  */
 function xmldb_tool_tenant_install() {
-
-    if (during_initial_install() && !defined('BEHAT_SITE_RUNNING') && !(defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
-        // When Moodle Workplace is installed remove capability to view list of courses from regular users.
-        // Do not do it in the behat/unittests because it will break all core tests.
-        \tool_tenant\manager::change_core_roles();
-    }
+    global $DB;
 
     // Create tenant-related roles.
     update_capabilities('tool_tenant'); // TODO MDL-65668 remove.
     \tool_tenant\manager::create_tenant_roles();
+
+    if (during_initial_install() &&
+            !defined('BEHAT_SITE_RUNNING') && !(defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
+        // When Moodle Workplace is installed remove capability to view list of courses from regular users.
+        // Do not do it in the behat/unittests because it will break all core tests.
+        $userroleid = $DB->get_field('role', 'id', ['shortname' => 'user']);
+        $guestroleid = $DB->get_field('role', 'id', ['shortname' => 'guest']);
+        unassign_capability('moodle/category:viewcourselist', $userroleid);
+        unassign_capability('moodle/category:viewcourselist', $guestroleid);
+
+        \tool_tenant\manager::change_core_roles();
+
+        // Rename default category and associate it to default tenant.
+        $category = \core_course_category::get_default();
+        $category->update(['name' => get_string('defaultname', 'tool_tenant')]);
+        $manager = new \tool_tenant\manager();
+        $manager->update_tenant(\tool_tenant\tenancy::get_tenant_id(), (object)['categoryid' => $category->id]);
+    }
 
     return true;
 }
