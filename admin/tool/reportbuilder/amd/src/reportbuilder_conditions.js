@@ -26,6 +26,7 @@ define(
         'jquery',
         'core/ajax',
         'core/templates',
+        'core/notification',
         'tool_wp/notification',
         'core/custom_interaction_events',
         'core/sortable_list',
@@ -41,6 +42,7 @@ define(
         Ajax,
         Templates,
         Notification,
+        WpNotification,
         CustomEvents,
         SortableList,
         ModalFactory,
@@ -98,7 +100,9 @@ define(
                 this._addCondition.bind(this));
             this.onDelegateEvent(CustomEvents.events.activate, SELECTORS.RESETALL, this.resetAll.bind(this));
             this.onDelegateEvent(CustomEvents.events.activate, SELECTORS.RESETFILTER, this.resetFilter.bind(this));
-            this.removeConditionHandler();
+            this.reportBuilder.onDelegateEvent('click',
+                SELECTORS.CONDITIONSSREGION + ' ' + SELECTORS.ACTIVECONDITIONS + ' ' + ACTIONS.DELETE,
+                this.removeConditionHandler.bind(this));
             this.formHandler();
         };
 
@@ -133,45 +137,45 @@ define(
          *
          * @param {event} e The jquery event
          * @param {object} data Additional event data
-         * @return {Promise}
          */
         Conditions.prototype.resetAll = function(e, data) {
             data.originalEvent.preventDefault();
-            return ModalFactory.create({
-                title: Str.get_string('resetalltitle', 'tool_reportbuilder'),
-                body: Str.get_string('confirmresetallconditions', 'tool_reportbuilder'),
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(Str.get_string('resetall', 'tool_reportbuilder'));
-                modal.show();
-                modal.getRoot().on(ModalEvents.save, function() {
-                    var formWrapper = this.reportBuilder.find(SELECTORS.ACTIVECONDITIONS);
-                    return Templates.render(TEMPLATES.LOADING, {visible: true}, '').then(function(html, js) {
-                        Templates.appendNodeContents(formWrapper,
-                            html, js);
-                        M.util.js_pending('tool_reportbuilder_reset_all'); // Tell Behat to wait.
-                        var promises = Ajax.call([
-                            {
-                                methodname: SERVICES.RESETALLCONDITIONS,
-                                args: {
-                                    reportid: this.reportBuilder.getReportId(),
-                                }
+            var doReset = function() {
+                var formWrapper = this.reportBuilder.find(SELECTORS.ACTIVECONDITIONS);
+                return Templates.render(TEMPLATES.LOADING, {visible: true}, '').then(function(html, js) {
+                    Templates.appendNodeContents(formWrapper,
+                        html, js);
+                    M.util.js_pending('tool_reportbuilder_reset_all'); // Tell Behat to wait.
+                    var promises = Ajax.call([
+                        {
+                            methodname: SERVICES.RESETALLCONDITIONS,
+                            args: {
+                                reportid: this.reportBuilder.getReportId(),
                             }
-                        ]);
-                        return promises[0];
-                    }.bind(this)).then(function(data) {
-                        this.reportBuilder.trigger(Events.RELOADTABLE);
-                        this._reloadSelectedConditions(data);
-                        M.util.js_complete('tool_reportbuilder_reset_all'); // Tell Behat to wait.
-                    }.bind(this)).fail(Notification.exception);
-                }.bind(this));
+                        }
+                    ]);
+                    return promises[0];
+                }.bind(this)).then(function(data) {
+                    this.reportBuilder.trigger(Events.RELOADTABLE);
+                    this._reloadSelectedConditions(data);
+                    M.util.js_complete('tool_reportbuilder_reset_all'); // Tell Behat to wait.
+                }.bind(this)).fail(Notification.exception);
+            }.bind(this);
 
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-
-                return modal;
-            }.bind(this));
+            Str.get_strings([
+                {key: 'confirm', component: 'tool_reportbuilder'},
+                {key: 'confirmresetallconditions', component: 'tool_reportbuilder'},
+                {key: 'resetall', component: 'tool_reportbuilder'},
+                {key: 'cancel', component: 'moodle'}
+            ]).done(function(strings) {
+                Notification.confirm(
+                    strings[0], // Confirm.
+                    strings[1], // Confirmation text.
+                    strings[2], // Save button.
+                    strings[3], // Cancel.
+                    doReset
+                );
+            }).fail(Notification.exception);
         };
 
         /**
@@ -179,123 +183,99 @@ define(
          *
          * @param {event} e The jquery event
          * @param {object} data Additional event data
-         * @return {Promise}
          */
         Conditions.prototype.resetFilter = function(e, data) {
             data.originalEvent.preventDefault();
             var element = $(e.currentTarget);
             var id = element.data('id');
             var field = element.data('field');
-            return ModalFactory.create({
-                title: Str.get_string('resetcondition', 'tool_reportbuilder'),
-                body: Str.get_string('confirmresetconditions', 'tool_reportbuilder', field),
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(Str.get_string('resetcondition', 'tool_reportbuilder'));
-                modal.show();
-                modal.getRoot().on(ModalEvents.save, function() {
-                    var formWrapper = this.reportBuilder.find(SELECTORS.ACTIVECONDITIONS);
-                    return Templates.render(TEMPLATES.LOADING, {visible: true}, '').then(function(html, js) {
-                        Templates.appendNodeContents(formWrapper,
-                            html, js);
-                        M.util.js_pending('tool_reportbuilder_reset'); // Tell Behat to wait.
-                        var promises = Ajax.call([
-                            {
-                                methodname: SERVICES.RESETCONDITION,
-                                args: {
-                                    reportid: this.reportBuilder.getReportId(),
-                                    conditionid: id,
-                                }
+            var doReset = function() {
+                var formWrapper = this.reportBuilder.find(SELECTORS.ACTIVECONDITIONS);
+                return Templates.render(TEMPLATES.LOADING, {visible: true}, '').then(function(html, js) {
+                    Templates.appendNodeContents(formWrapper,
+                        html, js);
+                    M.util.js_pending('tool_reportbuilder_reset'); // Tell Behat to wait.
+                    var promises = Ajax.call([
+                        {
+                            methodname: SERVICES.RESETCONDITION,
+                            args: {
+                                reportid: this.reportBuilder.getReportId(),
+                                conditionid: id,
                             }
-                        ]);
-                        return promises[0];
-                    }.bind(this)).then(function(data) {
-                        this.reportBuilder.trigger(Events.RELOADTABLE);
-                        this._reloadSelectedConditions(data);
-                        M.util.js_complete('tool_reportbuilder_reset'); // Tell Behat to wait.
-                    }.bind(this)).fail(Notification.exception);
-                }.bind(this));
+                        }
+                    ]);
+                    return promises[0];
+                }.bind(this)).then(function(data) {
+                    this.reportBuilder.trigger(Events.RELOADTABLE);
+                    this._reloadSelectedConditions(data);
+                    M.util.js_complete('tool_reportbuilder_reset'); // Tell Behat to wait.
+                }.bind(this)).fail(Notification.exception);
+            }.bind(this);
 
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-
-                return modal;
-            }.bind(this));
+            Str.get_strings([
+                {key: 'confirm', component: 'tool_reportbuilder'},
+                {key: 'confirmresetconditions', component: 'tool_reportbuilder', param: field},
+                {key: 'resetcondition', component: 'tool_reportbuilder'},
+                {key: 'cancel', component: 'moodle'}
+            ]).done(function(strings) {
+                Notification.confirm(
+                    strings[0], // Confirm.
+                    strings[1], // Confirmation text.
+                    strings[2], // Save button.
+                    strings[3], // Cancel.
+                    doReset
+                );
+            }).fail(Notification.exception);
         };
 
         /**
-         * Register event listeners.
+         * Event listener for deleting condition
+         *
+         * @param {Event} e
          */
-        Conditions.prototype.removeConditionHandler = function() {
-            var selector = SELECTORS.CONDITIONSSREGION + ' ' + SELECTORS.ACTIVECONDITIONS + ' ' + ACTIONS.DELETE;
+        Conditions.prototype.removeConditionHandler = function(e) {
+            e.preventDefault();
+            var element = $(e.currentTarget);
+            var id = element.data('id');
+            var conditionname = element.data('name');
+            var doDelete = function() {
+                var request = {
+                    methodname: SERVICES.DELETECONDITION,
+                    args: {conditionid: id}
+                };
 
-            this.reportBuilder.onDelegateEvent('click', selector, function(e) {
-                e.preventDefault();
-                var element = $(e.currentTarget);
-                var id = element.data('id');
-                var conditionname = element.data('name');
-                var stringkeys = [
-                {
-                    key: 'confirm',
-                },
-                {
-                    key: 'confirmdeletecondition',
-                    component: 'tool_reportbuilder',
-                    param: conditionname
-                },
-                {
-                    key: 'removeconditionsuccess',
-                    component: 'tool_reportbuilder',
-                    param: conditionname
-                },
-                {
-                    key: 'delete'
-                }
-                ];
+                M.util.js_pending('tool_reportbuilder_delete_condition'); // Tell Behat to wait.
+                Ajax.call([request])[0].done(function(data) {
+                    if (data) {
+                        Str.get_string('removeconditionsuccess', 'tool_reportbuilder', conditionname).then(function(message) {
+                            this.reportBuilder.trigger(Events.RELOADTABLE);
+                            this._reloadSelectedConditions(data);
+                            this._reloadAvailableConditions(data);
+                            WpNotification.addNotification({
+                                message: message,
+                                type: 'success'
+                            });
+                            M.util.js_complete('tool_reportbuilder_delete_condition');
+                        }.bind(this)).fail(Notification.exception);
+                    }
+                    return null;
+                }.bind(this)).fail(Notification.exception);
+            }.bind(this);
 
-                Str.get_strings(stringkeys).then(function(langStrings) {
-                    var title = langStrings[0];
-                    var confirmMessage = langStrings[1];
-                    var buttonText = langStrings[3];
-                    return ModalFactory.create({
-                        title: title,
-                        body: confirmMessage,
-                        type: ModalFactory.types.SAVE_CANCEL
-                    }).then(function(modal) {
-                        modal.setSaveButtonText(buttonText);
-                        // Handle save event.
-                        modal.getRoot().on(ModalEvents.save, function() {
-                            var request = {
-                                methodname: SERVICES.DELETECONDITION,
-                                args: {conditionid: id}
-                            };
-
-                            M.util.js_pending('tool_reportbuilder_delete_condition'); // Tell Behat to wait.
-                            Ajax.call([request])[0].done(function(data) {
-                                if (data) {
-                                    this.reportBuilder.trigger(Events.RELOADTABLE);
-                                    this._reloadSelectedConditions(data);
-                                    this._reloadAvailableConditions(data);
-                                    Notification.addNotification({
-                                        message: langStrings[2],
-                                        type: 'success'
-                                    });
-                                    M.util.js_complete('tool_reportbuilder_delete_condition');
-                                }
-                            }.bind(this)).fail(Notification.exception);
-                        }.bind(this));
-
-                        modal.getRoot().on(ModalEvents.hidden, function() {
-                            modal.destroy();
-                        });
-
-                        return modal;
-                    }.bind(this));
-                }.bind(this)).done(function(modal) {
-                    modal.show();
-                }).fail(Notification.exception);
-            }.bind(this));
+            Str.get_strings([
+                {key: 'confirm', component: 'tool_reportbuilder'},
+                {key: 'confirmdeletecondition', component: 'tool_reportbuilder', param: conditionname},
+                {key: 'delete', component: 'moodle'},
+                {key: 'cancel', component: 'moodle'}
+            ]).done(function(strings) {
+                Notification.confirm(
+                    strings[0], // Confirm.
+                    strings[1], // Confirmation text.
+                    strings[2], // Save button.
+                    strings[3], // Cancel.
+                    doDelete
+                );
+            }).fail(Notification.exception);
         };
 
         /**

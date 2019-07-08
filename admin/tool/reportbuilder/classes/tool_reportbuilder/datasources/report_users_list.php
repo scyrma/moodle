@@ -60,6 +60,24 @@ class report_users_list extends \tool_reportbuilder\datasource {
         $this->get_column('user:fullname')
             ->set_is_default(true)
             ->set_is_sortable(true, true, 1);
+
+        $this->get_column('user:email')
+            ->set_is_default(true)
+            ->set_is_sortable(true, true, 2);
+
+        $this->get_column('user:country')
+            ->set_is_default(true)
+            ->set_is_sortable(true, true, 3);
+
+        $this->get_column('user:city')
+            ->set_is_default(true)
+            ->set_is_sortable(true, true, 4);
+
+        $this->get_conditions()['user:suspended']
+            ->set_is_default(true, ['suspended_op' => 2]);
+
+        $this->get_filters()['user:hascurrentjobs']
+            ->set_is_default(true);
     }
 
     /**

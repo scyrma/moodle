@@ -74,6 +74,8 @@ class report_column {
     protected $issortable = false;
     /** @var array $attributes */
     protected $attributes = [];
+    /** @var array $disabledaggregations */
+    protected $disabledaggregations = [];
     /**
      * String indicating the data type of this column when retrieved from the database.
      * Valid options are the same as allowed DB fields types and null.
@@ -162,6 +164,7 @@ class report_column {
      * Set join.
      *
      * @param string $join
+     * @return report_column
      */
     public function add_join(string $join) : report_column {
         $this->joins[] = strtolower(trim($join));
@@ -173,6 +176,7 @@ class report_column {
      *
      * @deprecated use add_join
      * @param string $join
+     * @return report_column
      */
     public function set_join(?string $join) : report_column {
         if ($join) {
@@ -295,7 +299,7 @@ class report_column {
      */
     public function add_field(string $sql, ?string $alias = null, array $params = []) : report_column {
         $sql = trim($sql);
-        if (preg_match('/ \w+$/', $sql)) {
+        if (preg_match('/ \w+$/', $sql) && !$alias) {
             // SQL ends with a space and a word - this looks like an alias was passed as part of the field.
             throw new \coding_exception('Column alias must be passed as a separate argument: '. $sql);
         }
@@ -321,6 +325,7 @@ class report_column {
      * Chainable
      *
      * @param string $sql
+     * @return report_column
      */
     public function add_fields(string $sql) : report_column {
         $chunks = preg_split('/\s*,\s*/', trim($sql));
@@ -363,13 +368,16 @@ class report_column {
      *
      * Chainable
      *
-     * @param string $aggregation Aggregation name
+     * @param string $aggregation Aggregation type
      * @param callable $callable function that takes arguments ($value, \stdClass $row, $additionalarguments)
      * @param mixed $additionalarguments will be passed as a third parameter to the callback
      * @return report_column
      */
     public function add_aggregation_callback(string $aggregation, callable $callable, $additionalarguments = null) : report_column {
-        // TODO: check if is a valid aggregation.
+        if (!aggregation::is_valid($aggregation)) {
+            throw new \coding_exception("Invalid aggregation '$aggregation'.");
+        }
+
         $this->callbacksaggre[$aggregation][] = [$callable, $additionalarguments];
         return $this;
     }
@@ -428,11 +436,11 @@ class report_column {
     /**
      * Is it possible to sort by this column
      *
-     * @param string $aggre Aggregation name
+     * @param string $aggre Aggregation type
      * @return bool
      */
-    public function get_is_sortable($aggre = '') {
-        if ($aggre && in_array($aggre, aggregation::not_allow_sort())) {
+    public function get_is_sortable($aggre = '') : bool {
+        if ($aggre && !aggregation::is_sortable($aggre)) {
             return false;
         }
         return $this->issortable;
@@ -518,7 +526,7 @@ class report_column {
     /**
      * Get is column is available to the current user or not
      *
-     * @return mixed
+     * @return bool
      */
     public function get_is_available() : bool {
         return $this->available;
@@ -542,6 +550,7 @@ class report_column {
      * Set the type of the column. Needed for the aggregation functions.
      *
      * @param null|string $dbtype
+     * @return report_column
      * @throws \coding_exception
      */
     public function set_type(?string $dbtype) : report_column {
@@ -563,7 +572,7 @@ class report_column {
     /**
      * Get the type of column.
      *
-     * @return string
+     * @return null|string
      */
     public function get_type() : ?string {
         return $this->type;
@@ -597,16 +606,19 @@ class report_column {
      *
      * Chainable
      *
-     * @param string $aggre
+     * @param string $aggregation Aggregation type
      * @param string $sql SQL query, this may be a simple "tablealias.fieldname" or a complex sub-query that returns only one field
      * @return report_column
      * @throws \coding_exception
      */
-    public function add_aggregation_fields(string $aggre, string $sql) : report_column {
-        // TODO: validate the aggregation passed as argument is valid
+    public function add_aggregation_fields(string $aggregation, string $sql) : report_column {
+        if (!aggregation::is_valid($aggregation)) {
+            throw new \coding_exception("Invalid aggregation '$aggregation'.");
+        }
+
         // TODO: check if a column has multiple values and create an aggregation for this.
         $sql = trim($sql);
-        $this->fieldsaggre[$aggre] = $sql;
+        $this->fieldsaggre[$aggregation] = $sql;
 
         return $this;
     }
@@ -629,9 +641,11 @@ class report_column {
 
     /**
      * Add column attributes (data-, class, etc.) that will be included in HTML when column is displayed
+     *
      * @param array $attributes
+     * @return report_column
      */
-    public function add_attributes(array $attributes) {
+    public function add_attributes(array $attributes) : report_column {
         $this->attributes = $attributes + $this->attributes;
         return $this;
     }
@@ -651,5 +665,34 @@ class report_column {
         if ($this->params && empty($this->groupbysql)) {
             throw new \coding_exception('Column ' . $this->get_unique_identifier() . ' must define groupby sql');
         }
+    }
+
+    /**
+     * Disable aggregation type for this column.
+     *
+     * Normally allowed aggregation types are determined by the column data type (see
+     * is_compatible method in aggregation_base). This method allows to disable any
+     * of allowed aggregation types for this column.
+     *
+     * @param string $aggregation Aggregation type to disable.
+     * @return report_column
+     */
+    public function disable_aggregation(string $aggregation) : report_column {
+        if (!aggregation::is_valid($aggregation)) {
+            throw new \coding_exception("Invalid aggregation '$aggregation'.");
+        }
+        if (!in_array($aggregation, $this->disabledaggregations)) {
+            $this->disabledaggregations[] = $aggregation;
+        }
+        return $this;
+    }
+
+    /**
+     * Return aggregation types disabled for this column.
+     *
+     * @return array
+     */
+    public function get_disabled_aggregations() {
+        return $this->disabledaggregations;
     }
 }

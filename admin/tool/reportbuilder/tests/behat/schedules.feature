@@ -34,26 +34,26 @@ Feature: Manage report builder schedules
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I follow "Schedules"
     And I follow "New schedule"
-    And I press "Save changes" in the modal form dialogue
+    And I press "Save" in the modal form dialogue
     And I should see "You must supply a value here" in the "//*[@data-region='modal']//*[contains(@class, 'fitem') and contains(.,'Schedule name')]" "xpath_element"
     And I set the following visible fields to these values:
       | Schedule name | New schedule |
       | Recurrence | 1 |
       | Subject | New schedule |
     And I set the field "Message" to "Example"
-    And I press "Save changes" in the modal form dialogue
+    And I press "Save" in the modal form dialogue
     And I should see "You must supply a value here" in the "//*[@data-region='modal']//*[contains(@class, 'fitem') and contains(.,'Report')]" "xpath_element"
     And I set the visible field "Report" to "Example report"
-    And I press "Save changes" in the modal form dialogue
+    And I press "Save" in the modal form dialogue
     And I should see "You must select a format" in the "Format" "form_row"
     And I set the following visible fields to these values:
-      | Format | CSV |
+      | Format | csv |
       | scheduled[day] | 1 |
       | scheduled[month] | January |
       | scheduled[year] | 2030 |
       | scheduled[hour] | 01 |
       | scheduled[minute] | 00 |
-    And I press "Save changes" in the modal form dialogue
+    And I press "Save" in the modal form dialogue
     And I should see "Schedule name" in the "table.report-table thead" "css_element"
     And I should see "Report name" in the "table.report-table thead" "css_element"
     And I should see "Scheduled" in the "table.report-table thead" "css_element"
@@ -68,7 +68,7 @@ Feature: Manage report builder schedules
     And "New schedule" "text" should exist in the "Example report" "table_row"
     And "Example report" "text" should exist in the "New schedule" "table_row"
     And "1/01/30, 01:00" "text" should exist in the "New schedule" "table_row"
-    And "CSV" "text" should exist in the "New schedule" "table_row"
+    And "Comma separated values (.csv)" "text" should exist in the "New schedule" "table_row"
     And I log out
 
   @javascript
@@ -85,7 +85,7 @@ Feature: Manage report builder schedules
     And I click on "Edit schedule" "link" in the "Example schedule 1" "table_row"
     And I set the following visible fields to these values:
       | name | Name updated |
-    And I press "Save changes" in the modal form dialogue
+    And I press "Save" in the modal form dialogue
     And "Name updated" "text" should exist in the "Report1" "table_row"
     And I log out
 

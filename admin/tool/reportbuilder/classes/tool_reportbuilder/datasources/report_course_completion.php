@@ -85,6 +85,8 @@ class report_course_completion extends \tool_reportbuilder\datasource {
      * @throws \moodle_exception
      */
     protected function set_columns() {
+        global $DB;
+        $ismssql = $DB->get_dbfamily() === 'mssql';
         $this->annotate_entity('tool_datastore_action', new \lang_string('entitydatastoreaction', 'tool_reportbuilder'));
         $this->annotate_entity('tool_datastore__course', new \lang_string('entitydatastorecourse', 'tool_reportbuilder'));
         $this->annotate_entity('tool_datastore__user', new \lang_string('entitydatastoreuser', 'tool_reportbuilder'));
@@ -122,6 +124,14 @@ class report_course_completion extends \tool_reportbuilder\datasource {
             ->set_groupby_sql('dsa.id, dsa.originalcourseid')
             ->set_type(constants::DB_TYPE_LONGTEXT)
             ->add_callback([format::class, 'format_string']);
+        if ($ismssql) {
+            // MsSQL can not aggregate the columns with subquery.
+            $newcolumn
+                ->disable_aggregation('count')
+                ->disable_aggregation('countdistinct')
+                ->disable_aggregation('groupconcat')
+                ->disable_aggregation('groupconcatdistinct');
+        }
         $this->add_column($newcolumn);
 
         $p1 = db::generate_param_name();
@@ -147,6 +157,14 @@ class report_course_completion extends \tool_reportbuilder\datasource {
             ->set_type(constants::DB_TYPE_LONGTEXT)
             ->set_groupby_sql('dsa.id, dsa.relateduserid');
         $this->add_column($newcolumn);
+        if ($ismssql) {
+            // MsSQL can not aggregate the columns with subquery.
+            $newcolumn
+                ->disable_aggregation('count')
+                ->disable_aggregation('countdistinct')
+                ->disable_aggregation('groupconcat')
+                ->disable_aggregation('groupconcatdistinct');
+        }
 
         $p1 = db::generate_param_name();
         $p2 = db::generate_param_name();
@@ -171,6 +189,14 @@ class report_course_completion extends \tool_reportbuilder\datasource {
             ->set_type(constants::DB_TYPE_LONGTEXT)
             ->set_groupby_sql('dsa.id, dsa.relateduserid');
         $this->add_column($newcolumn);
+        if ($ismssql) {
+            // MsSQL can not aggregate the columns with subquery.
+            $newcolumn
+                ->disable_aggregation('count')
+                ->disable_aggregation('countdistinct')
+                ->disable_aggregation('groupconcat')
+                ->disable_aggregation('groupconcatdistinct');
+        }
 
         // Course completion columns.
         $newcolumn = (new report_column(

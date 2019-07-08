@@ -130,7 +130,7 @@ function tool_reportbuilder_inplace_editable($itemtype, $itemid, $newvalue) {
         $column = \tool_reportbuilder\local\helpers\aggregation::set_aggregation($itemid, $newvalue);
         $formatedheader = \tool_reportbuilder\local\helpers\columns::get_formatted_header($column, $newvalue);
         return \tool_reportbuilder\local\helpers\aggregation::get_aggregation_inplace_editable($newvalue, $itemid,
-            $formatedheader, $column->get_type());
+            $formatedheader, $column->get_type(), $column->get_disabled_aggregations());
     }
 
     return false;

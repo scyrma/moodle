@@ -121,19 +121,20 @@ class schedules {
     /**
      * Get the formats to send a report.
      *
+     * @param bool $onlyenabled
      * @return array
      * @throws \coding_exception
      */
-    public static function get_formats() : array {
-        // TODO retrieve enabled plugin types for dataformat.
-        return [
-            constants::FORMAT_CSV => get_string('formatcsv', 'tool_reportbuilder'),
-            constants::FORMAT_JSON => get_string('formatjson', 'tool_reportbuilder'),
-            constants::FORMAT_HTML => get_string('formathtml', 'tool_reportbuilder'),
-            constants::FORMAT_EXCEL => get_string('formatexcel', 'tool_reportbuilder'),
-            constants::FORMAT_PDF => get_string('formatpdf', 'tool_reportbuilder'),
-            constants::FORMAT_ODS => get_string('formatods', 'tool_reportbuilder'),
-        ];
+    public static function get_formats($onlyenabled = true) : array {
+        $formats = \core_plugin_manager::instance()->get_plugins_of_type('dataformat');
+        $options = array();
+        foreach ($formats as $format) {
+            if ($format->is_enabled() || !$onlyenabled) {
+                $options[$format->name] = get_string('dataformat', $format->component);
+            }
+        }
+
+        return $options;
     }
 
     /**
@@ -164,15 +165,15 @@ class schedules {
     /**
      * Get the visible name of the given format.
      *
-     * @param int $value
+     * @param string $value
      * @param array $row
      *
      * @return string
      * @throws \coding_exception
      */
-    public static function get_format(int $value, $row = []) : string {
-        $format = self::get_formats();
-        return $format[$value];
+    public static function get_format(string $value, $row = []) : string {
+        $formats = self::get_formats(false);
+        return $formats[$value];
     }
 
     /**

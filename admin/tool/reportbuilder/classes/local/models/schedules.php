@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 use core\persistent;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\reportbuilder;
+use \tool_reportbuilder\local\helpers\schedules as scheduleshelper;
 
 /**
  * Class for the schedules persistent
@@ -68,16 +69,7 @@ class schedules extends persistent {
                 }
             ),
             'format' => array(
-                'type' => PARAM_INT,
-                'default' => constants::FORMAT_EXCEL,
-                'choices' => array(
-                    constants::FORMAT_EXCEL,
-                    constants::FORMAT_CSV,
-                    constants::FORMAT_PDF,
-                    constants::FORMAT_JSON,
-                    constants::FORMAT_HTML,
-                    constants::FORMAT_ODS
-                )
+                'type' => PARAM_TEXT,
             ),
             'subject' => array(
                 'type' => PARAM_TEXT

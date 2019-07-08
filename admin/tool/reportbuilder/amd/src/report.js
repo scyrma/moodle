@@ -44,14 +44,9 @@ define(['jquery', 'core/str', 'tool_wp/modal_form', 'core/config'],
                 args: {id: id},
                 modalConfig: {title: title},
                 contextId: Config.contextid,
-                triggerElement: triggerElement
+                triggerElement: triggerElement,
+                saveButtonText: Str.get_string('save')
             });
-            // Override onInit() function to change the text for the save button.
-            var oldInit = modal.onInit;
-            modal.onInit = function() {
-                this.modal.setSaveButtonText(Str.get_string('save'));
-                oldInit.bind(this)();
-            };
             return modal;
         };
 

@@ -78,7 +78,7 @@ Feature: Check tenant visibility
     And I should see "Newreport"
     And I should not see "Report1"
     And I click on "Delete report" "link" in the "Report2" "table_row"
-    And I press "Delete" in the modal form dialogue
+    And I click on "Delete" "button" in the "Confirm" "dialogue"
     And I should see "Newreport"
     And I should not see "Report2"
     And I should see "Report3"

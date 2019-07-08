@@ -82,4 +82,13 @@ class min extends aggregation_base {
     public static function get_shortname(): string {
         return 'min';
     }
+
+    /**
+     * If this aggregation supports sorting.
+     *
+     * @return bool
+     */
+    public static function is_sortable() : bool {
+        return false;
+    }
 }

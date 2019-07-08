@@ -87,7 +87,7 @@ class send extends \tool_reportbuilder\output\report_exporter {
      * @throws \coding_exception
      */
     private function init(\tool_reportbuilder\local\models\schedules $schedule) {
-        $this->format = $this->get_format($schedule->get('format'));
+        $this->format = $schedule->get('format');
         $this->subject = $schedule->get('subject');
         $this->message = $schedule->get('message');
         $this->name = $schedule->get('name');
@@ -144,24 +144,6 @@ class send extends \tool_reportbuilder\output\report_exporter {
         $content = ob_get_contents();
         ob_end_clean();
         return $content;
-    }
-
-    /**
-     * Get format
-     *
-     * @param int $formatid Format id
-     * @return mixed
-     */
-    private function get_format($formatid) {
-        $formats = [
-            constants::FORMAT_CSV => 'csv',
-            constants::FORMAT_EXCEL => 'excel',
-            constants::FORMAT_JSON => 'json',
-            constants::FORMAT_HTML => 'html',
-            constants::FORMAT_PDF => 'pdf',
-            constants::FORMAT_ODS => 'ods',
-        ];
-        return $formats[$formatid];
     }
 
     /**

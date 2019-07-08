@@ -42,27 +42,50 @@ class aggregation {
     /**
      * Inplace editable for columns aggregation
      *
-     * @param null|string $currentvalue Display value
+     * @param null|string $currentvalue Current aggregation type
      * @param int $id ID of the column
      * @param string $formatedheader Visible heading
-     * @param int $columntype Type of the column
+     * @param null|int $columntype Type of the column
+     * @param array $disabledaggregations List of disabled aggregation types for this column
      * @return inplace_editable
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function get_aggregation_inplace_editable(?string $currentvalue, int $id, string $formatedheader,
-                                                            ?int $columntype) : inplace_editable {
+    public static function get_aggregation_inplace_editable(?string $currentvalue,
+            int $id, string $formatedheader, ?int $columntype, array $disabledaggregations) : inplace_editable {
+
         $inplace = new inplace_editable('tool_reportbuilder', 'aggregation', $id,
             has_capability('tool/reportbuilder:edit', \context_system::instance()),
             null, $currentvalue, get_string('selectaggregation', 'tool_reportbuilder', $formatedheader),
             get_string('newaggregationfor', 'tool_reportbuilder', $formatedheader));
 
-        $aggregations = self::get_allowed_aggregations($columntype);
+        $aggregations = self::get_allowed_aggregations($columntype, $disabledaggregations);
         $inplace->set_type_select($aggregations);
 
         return $inplace;
     }
 
+    /**
+     * Helper function to check if aggregation is valid.
+     *
+     * @param string $aggregation Aggregation type
+     * @return bool
+     */
+    public static function is_valid(string $aggregation) {
+        $classaggre = "\\tool_reportbuilder\\local\aggregate\\$aggregation";
+        return (class_exists($classaggre) && is_subclass_of($classaggre, aggregation_base::class));
+    }
+
+    /**
+     * Helper function to check if aggregation supports sorting.
+     *
+     * @param string $aggregation Aggregation type
+     * @return bool
+     */
+    public static function is_sortable(string $aggregation) {
+        $classaggre = "\\tool_reportbuilder\\local\aggregate\\$aggregation";
+        return $classaggre::is_sortable();
+    }
 
     /**
      * Set the selected aggregation for a column.
@@ -74,6 +97,10 @@ class aggregation {
      * @throws \moodle_exception
      */
     public static function set_aggregation(int $columnid, string $aggregation) : report_column {
+        if ($aggregation && !self::is_valid($aggregation)) {
+            throw new \coding_exception("Invalid aggregation '$aggregation'.");
+        }
+
         $columnpersistent = new \tool_reportbuilder\reportbuilder_column($columnid, null);
         $report = \tool_reportbuilder\manager::get_report($columnpersistent->get('reportid'));
         \tool_reportbuilder\permission::require_can_edit($report->get_id());
@@ -87,25 +114,25 @@ class aggregation {
     /**
      * Get the aggregations
      *
-     * @param int $dbtype
+     * @param null|int $dbtype Type of the column
+     * @param array $disabledaggregations List of disabled aggregation types for this column
      * @return array
      * @throws \coding_exception
      */
-    private static function get_allowed_aggregations(?int $dbtype) : array {
+    private static function get_allowed_aggregations(?int $dbtype, array $disabledaggregations) : array {
         $allowedaggregations = [
             '' => get_string('noaggregation', 'tool_reportbuilder'),
         ];
 
-        $aggregates = \core_component::get_component_classes_in_namespace(
+        $aggregations = \core_component::get_component_classes_in_namespace(
             'tool_reportbuilder',
             'local\\aggregate'
         );
 
-        $founded = array_keys($aggregates);
-        foreach ($founded as $aggregate) {
+        foreach (array_keys($aggregations) as $aggregation) {
             /** @var aggregation_base $classaggre */
-            $classaggre = "\\" . $aggregate;
-            if ($classaggre::is_compatible($dbtype)) {
+            $classaggre = "\\" . $aggregation;
+            if ($classaggre::is_compatible($dbtype) && !in_array($classaggre::get_shortname(), $disabledaggregations)) {
                 $allowedaggregations[$classaggre::get_shortname()] = $classaggre::get_displayname();
             }
         }
@@ -114,34 +141,26 @@ class aggregation {
     }
 
     /**
-     * Get the SQL statement for the given aggregate function
+     * Get the SQL statement for the given aggregation
      *
-     * @param null|string $aggrefunction
+     * @param null|string $aggregation Aggregation type
      * @param string $field
      * @param int|null $dbtype
      * @return string
      * @throws \coding_exception
      */
-    public static function get_sql(?string $aggrefunction, string $field, int $dbtype = null) : string {
-        if (!$aggrefunction) {
+    public static function get_sql(?string $aggregation, string $field, int $dbtype = null) : string {
+        if (!$aggregation) {
             return $field;
         }
-        $classaggre = "\\tool_reportbuilder\\local\aggregate\\$aggrefunction";
-        if (class_exists($classaggre) && is_subclass_of($classaggre, aggregation_base::class)) {
-            /** @var aggregation_base $aggregation */
-            $aggregation = new $classaggre($field);
-            return $aggregation->get_field($field, $dbtype);
-        } else {
-            throw new \coding_exception('Aggregation function not supported');
-        }
-    }
 
-    /**
-     * This aggregate functions does not allow sort at same time
-     * @return array
-     */
-    public static function not_allow_sort() : array {
-        // TODO: constansts.
-        return ['count', 'avg', 'sum', 'min', 'countdistinct'];
+        if (self::is_valid($aggregation)) {
+            $classaggre = "\\tool_reportbuilder\\local\aggregate\\$aggregation";
+            /** @var aggregation_base $aggregationinstance */
+            $aggregationinstance = new $classaggre($field);
+            return $aggregationinstance->get_field($field, $dbtype);
+        } else {
+            throw new \coding_exception("Invalid aggregation '$aggregation'.");
+        }
     }
 }

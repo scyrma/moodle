@@ -38,18 +38,6 @@ class constants {
     const TYPE_DATASOURCE = 0;
     /** @var int  */
     const TYPE_SYSTEM = 1;
-    /** @var int */
-    const FORMAT_EXCEL = 1;
-    /** @var int */
-    const FORMAT_CSV = 2;
-    /** @var int */
-    const FORMAT_PDF = 3;
-    /** @var int */
-    const FORMAT_JSON = 4;
-    /** @var int */
-    const FORMAT_HTML = 5;
-    /** @var int */
-    const FORMAT_ODS = 6;
 
     /** Integer, float, decimal, number ... */
     const DB_TYPE_NUMBER = 1;

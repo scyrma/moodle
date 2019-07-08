@@ -41,7 +41,7 @@ Feature: Manage conditions in report builder
     And I should see "Are you sure you want to delete condition 'Test&\"3'?" in the "Confirm" "dialogue"
     And I should not see "Prueba"
     And I click on "Delete" "button" in the "Confirm" "dialogue"
-    And I should see "The condition 'Test&\"3' has been removed."
+    And I should see "The condition 'Test&\"3' has been deleted."
     And I should not see "Prueba"
     And I log out
 

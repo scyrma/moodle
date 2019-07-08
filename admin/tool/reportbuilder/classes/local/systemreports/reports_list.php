@@ -183,18 +183,21 @@ class reports_list extends system_report {
             $this->add_action($action);
 
             // Duplicate action.
-            $icon = new \pix_icon('e/manage_files', get_string('duplicatereport', 'tool_reportbuilder'), 'core');
-            $action = new report_action(new \moodle_url('/admin/tool/reportbuilder/duplicate.php', ['id' => ':id']), $icon,
-                array(
-                    'data-action' => 'duplicate',
-                    'data-id' => ':id'
-                )
-            );
-            $this->add_action($action);
+            if (false) {
+                // TODO WP-259 not implemented.
+                $icon = new \pix_icon('e/manage_files', get_string('duplicatereport', 'tool_reportbuilder'), 'core');
+                $action = new report_action(new \moodle_url('#'), $icon,
+                    array(
+                        'data-action' => 'duplicate',
+                        'data-id' => ':id'
+                    )
+                );
+                $this->add_action($action);
+            }
 
             // Delete icon.
             $icon = new \pix_icon('i/trash', get_string('deletereport', 'tool_reportbuilder'), 'core');
-            $action = (new report_action(new \moodle_url('/admin/tool/reportbuilder/delete.php', ['id' => ':id']), $icon,
+            $action = (new report_action(new \moodle_url('#'), $icon,
                 array(
                     'data-action' => 'delete',
                     'data-reportname' => ':name',

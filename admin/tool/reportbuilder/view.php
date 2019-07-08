@@ -28,8 +28,7 @@ use \tool_reportbuilder\event\report_viewed;
 require_once(__DIR__ . '/../../../config.php');
 
 require_login();
-
-global $USER, $PAGE;
+$PAGE->set_context(context_system::instance());
 
 $reportid = required_param('id', PARAM_INT);
 $download = optional_param('download', 0, PARAM_ALPHA);

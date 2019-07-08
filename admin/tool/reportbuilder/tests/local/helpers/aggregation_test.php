@@ -109,7 +109,9 @@ class tool_reportbuilder_aggregation_testcase extends advanced_testcase {
         if ($aggfunction === 'groupconcat' || $aggfunction === 'groupconcatdistinct') {
             // Ignore the order of values.
             $expectedresultar = preg_split('/,/', $expectedresult);
-            $resar = preg_split('/,/', $res);
+            $resar = preg_split('/' .
+                preg_quote(\tool_reportbuilder\aggregation_base::get_list_separator(), '/') .
+                '/', $res);
             if ($dbfamily === 'mysql' && preg_match('/decfield/', $fieldname)) {
                 // Mysql adds 0s in the end of floats when converted to string.
                 array_walk($expectedresultar, function(&$v) {
@@ -152,7 +154,7 @@ class tool_reportbuilder_aggregation_testcase extends advanced_testcase {
 
         $actual = [];
         foreach ($alltypes as $dbtype) {
-            $result = $rcm->invokeArgs($manager, [$dbtype]);
+            $result = $rcm->invokeArgs($manager, [$dbtype, []]);
             if (array_key_exists($aggfunction, $result)) {
                 $actual[] = $dbtype;
             }
@@ -176,7 +178,7 @@ class tool_reportbuilder_aggregation_testcase extends advanced_testcase {
                      \tool_reportbuilder\constants::DB_TYPE_TEXT,
                      \tool_reportbuilder\constants::DB_TYPE_LONGTEXT
                  ] as $dbtype) {
-            $result = $rcm->invokeArgs($manager, [$dbtype]);
+            $result = $rcm->invokeArgs($manager, [$dbtype, []]);
             $this->assertEquals($result, [
                 '' => get_string('noaggregation', 'tool_reportbuilder'),
                 'count' => get_string('aggregation_count', 'tool_reportbuilder'),
@@ -187,10 +189,25 @@ class tool_reportbuilder_aggregation_testcase extends advanced_testcase {
             ]);
         }
 
+        // Same text DB types with disabled aggregation types.
+        foreach ([
+                     null,
+                     \tool_reportbuilder\constants::DB_TYPE_TEXT,
+                     \tool_reportbuilder\constants::DB_TYPE_LONGTEXT
+                 ] as $dbtype) {
+            $result = $rcm->invokeArgs($manager, [$dbtype, ['count', 'countdistinct']]);
+            $this->assertEquals($result, [
+                '' => get_string('noaggregation', 'tool_reportbuilder'),
+                'groupconcat' => get_string('aggregation_groupconcat', 'tool_reportbuilder'),
+                'groupconcatdistinct' => get_string('aggregation_groupconcatdistinct', 'tool_reportbuilder'),
+                'unique' => get_string('aggregation_unique', 'tool_reportbuilder')
+            ]);
+        }
+
         foreach ([
                      \tool_reportbuilder\constants::DB_TYPE_NUMBER
                  ] as $dbtype) {
-            $result = $rcm->invokeArgs($manager, [$dbtype]);
+            $result = $rcm->invokeArgs($manager, [$dbtype, []]);
             $this->assertEquals($result, [
                 '' => get_string('noaggregation', 'tool_reportbuilder'),
                 'count' => get_string('aggregation_count', 'tool_reportbuilder'),
@@ -208,7 +225,7 @@ class tool_reportbuilder_aggregation_testcase extends advanced_testcase {
         foreach ([
                      \tool_reportbuilder\constants::DB_TYPE_BOOLEAN
                  ] as $dbtype) {
-            $result = $rcm->invokeArgs($manager, [$dbtype]);
+            $result = $rcm->invokeArgs($manager, [$dbtype, []]);
             $this->assertEquals($result, [
                 '' => get_string('noaggregation', 'tool_reportbuilder'),
                 'count' => get_string('aggregation_count', 'tool_reportbuilder'),
@@ -226,7 +243,7 @@ class tool_reportbuilder_aggregation_testcase extends advanced_testcase {
                      \tool_reportbuilder\constants::DB_TYPE_DATETIME,
                      \tool_reportbuilder\constants::DB_TYPE_TIMESTAMP
                  ] as $dbtype) {
-            $result = $rcm->invokeArgs($manager, [$dbtype]);
+            $result = $rcm->invokeArgs($manager, [$dbtype, []]);
             $this->assertEquals($result, [
                 '' => get_string('noaggregation', 'tool_reportbuilder'),
                 'count' => get_string('aggregation_count', 'tool_reportbuilder'),

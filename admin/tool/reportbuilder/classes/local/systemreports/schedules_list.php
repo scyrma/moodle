@@ -183,36 +183,28 @@ class schedules_list extends system_report {
         if (has_capability('tool/reportbuilder:edit', $context)) {
 
             // Edit icon.
-            $editurl = new \moodle_url('/admin/tool/reportbuilder/schedule.php', ['id' => ':id']);
             $icon = new \pix_icon('i/settings', get_string('editschedule', 'tool_reportbuilder'), 'core');
-            $action = new report_action($editurl, $icon, array('data-action' => 'edit', 'data-id' => ':id'));
-            $this->add_action($action);
-
-            // Disable icon.
-            $editurl = new \moodle_url('/admin/tool/reportbuilder/status.php', ['id' => ':id']);
-            $icon = new \pix_icon('i/hide', get_string('togglestatus', 'tool_reportbuilder'), 'core');
-            $action = new report_action($editurl, $icon, array('data-action' => 'togglestatus', 'data-id' => ':id'));
+            $action = new report_action(new \moodle_url('#'), $icon, array('data-action' => 'edit', 'data-id' => ':id'));
             $this->add_action($action);
 
             // Duplicate icon.
             if (false) {
-                // TODO not implemented yet.
-                $editurl = new \moodle_url('/admin/tool/reportbuilder/duplicate.php', ['id' => ':id']);
+                // TODO WP-902 not implemented yet.
                 $icon = new \pix_icon('e/manage_files', get_string('duplicate', 'tool_reportbuilder'), 'core');
-                $action = new report_action($editurl, $icon, array('data-action' => 'duplicate', 'data-id' => ':id'));
+                $action = new report_action(new \moodle_url('#'), $icon, array('data-action' => 'duplicate', 'data-id' => ':id'));
                 $this->add_action($action);
             }
 
             // Send now icon.
-            $editurl = new \moodle_url('/admin/tool/reportbuilder/send.php', ['id' => ':id']);
             $icon = new \pix_icon('paper-plane-o', get_string('send', 'tool_reportbuilder'), 'tool_wp');
-            $action = new report_action($editurl, $icon, array('data-action' => 'send', 'data-id' => ':id'));
+            $action = new report_action(new \moodle_url('#'), $icon,
+                array('data-action' => 'send', 'data-id' => ':id', 'data-schedulename' => ':name')
+            );
             $this->add_action($action);
 
             // Delete icon.
             $icon = new \pix_icon('i/trash', get_string('deleteschedule', 'tool_reportbuilder'), 'core');
-            $action = new report_action(new \moodle_url('/admin/tool/reportbuilder/schedule.php',
-                    ['action' => 'delete', 'id' => ':id']),
+            $action = new report_action(new \moodle_url('#'),
                 $icon,
                 array(
                     'data-action' => 'delete',

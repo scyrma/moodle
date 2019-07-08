@@ -228,10 +228,10 @@ class report_exporter extends \core\external\persistent_exporter {
      * @throws \dml_exception
      */
     protected function prepare_report(\renderer_base $output) {
-        $extrajoins = [];
         /** @var report_base $source */
         $source = $this->related['source'];
         $editon = $this->related['editon'];
+        $extrajoins = $source->get_joins();
 
         $extrasql = $sql = $source->get_main_filter_field();
         $extraparams = $source->get_main_filter_value();
@@ -252,8 +252,6 @@ class report_exporter extends \core\external\persistent_exporter {
         list($extrasql, $extraparams, $extrajoins) = $this->conditions->get_sql_filter($extrasql, $extraparams, $extrajoins);
 
         list($this->columnsdata, $this->columnssorting) = columns_helper::export($source, $output);
-
-        $extrajoins += $source->get_joins();
 
         $this->table = $this->prepare_table($this->columnsdata, $extrajoins, $extrasql, $extraparams);
     }
@@ -445,7 +443,8 @@ class report_exporter extends \core\external\persistent_exporter {
                         $columndata->aggregate,
                         $columndata->id,
                         $columndata->formattedheading,
-                        $column->get_type()
+                        $column->get_type(),
+                        $column->get_disabled_aggregations()
                     );
                 }
                 foreach ($column->get_joins() as $columnjoin) {

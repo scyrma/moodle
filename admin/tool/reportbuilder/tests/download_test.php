@@ -71,7 +71,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
         $exporter = new testable_report_exporter($reportid, false);
         $content = $exporter->download('csv', true);
         $actual = array_filter(explode("\n", $content));
-        $expected = ['"Full name"', '"User Lastname 1"'];
+        $expected = ['"Full name","Email address",City/town,Country', '"User Lastname 1",username1@example.com,,'];
         $this->assertEquals($expected, preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $actual));
 
         // Test with users from other tenant.
@@ -82,7 +82,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
         $exporter = new testable_report_exporter($reportid);
         $content = $exporter->download('csv', true);
         $actual = array_filter(explode("\n", $content));
-        $expected = ['"Full name"', '"User Lastname 1"'];
+        $expected = ['"Full name","Email address",City/town,Country', '"User Lastname 1",username1@example.com,,'];
         $this->assertEquals($expected, preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $actual));
 
         // Test export with a filter.
@@ -102,7 +102,10 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
         $exporter = new testable_report_exporter($reportid, false);
         $content = $exporter->download('csv', true);
         $actual = array_filter(explode("\n", $content));
-        $expected = ['"Full name"', '"User Lastname 2"', '"User Lastname 3"', '"User Lastname 4"'];
+        $expected = ['"Full name","Email address",City/town,Country',
+            '"User Lastname 2",username3@example.com,,France',
+            '"User Lastname 3",username4@example.com,,France',
+            '"User Lastname 4",username5@example.com,,France'];
         $this->assertEquals($expected, preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $actual));
 
         // Test export with a condition.
@@ -113,7 +116,6 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
         $exporter = new testable_report_exporter($reportid, false);
         $content = $exporter->download('csv', true);
         $actual = array_filter(explode("\n", $content));
-        $expected = ['"Full name"', '"User Lastname 2"', '"User Lastname 3"', '"User Lastname 4"'];
         $this->assertEquals($expected, preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $actual));
     }
 
@@ -232,7 +234,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
 
         $exporter = new testable_report_exporter($reportid, false);
         $content = $exporter->download('json');
-        $this->assertEquals("[[\"User Lastname 1\"]]", $content);
+        $this->assertEquals('[["User Lastname 1","username1@example.com","",""]]', $content);
 
         // Test with users from other tenant.
         $user2 = $this->getDataGenerator()->create_user(['firstname' => 'User', 'lastname' => 'Lastname 2']);
@@ -241,7 +243,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
 
         $exporter = new testable_report_exporter($reportid);
         $content = $exporter->download('json');
-        $this->assertEquals("[[\"User Lastname 1\"]]", $content);
+        $this->assertEquals('[["User Lastname 1","username1@example.com","",""]]', $content);
 
         // Test export with a filter.
         for ($i = 2; $i < 5; $i++) {
@@ -259,7 +261,10 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
 
         $exporter = new testable_report_exporter($reportid, false);
         $content = $exporter->download('json');
-        $this->assertEquals("[[\"User Lastname 2\"],[\"User Lastname 3\"],[\"User Lastname 4\"]]", $content);
+        $expected = '[["User Lastname 2","username3@example.com","","France"],' .
+            '["User Lastname 3","username4@example.com","","France"],' .
+            '["User Lastname 4","username5@example.com","","France"]]';
+        $this->assertEquals($expected, $content);
 
         // Test export with a condition.
         $this->get_reportbuilder_generator()->add_condition($reportid, 'user:country');
@@ -268,7 +273,10 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
 
         $exporter = new testable_report_exporter($reportid, false);
         $content = $exporter->download('json');
-        $this->assertEquals("[[\"User Lastname 2\"],[\"User Lastname 3\"],[\"User Lastname 4\"]]", $content);
+        $expected = '[["User Lastname 2","username3@example.com","","France"],' .
+            '["User Lastname 3","username4@example.com","","France"],' .
+            '["User Lastname 4","username5@example.com","","France"]]';
+        $this->assertEquals($expected, $content);
     }
 
     /**
@@ -300,7 +308,10 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
 
         $exporter = new testable_report_exporter($reportid, false);
         $content = $exporter->download('html', true);
-        $expectedrows = ['Full name', 'User Lastname 1'];
+        $expectedrows = [
+            ['Full name', 'Email address', 'City/town', 'Country'],
+            ['User Lastname 1', 'username1@example.com', '', '']
+        ];
         $this->assertEquals($this->get_html_table($expectedrows), $content);
 
         // Test with users from other tenant.
@@ -310,7 +321,10 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
 
         $exporter = new testable_report_exporter($reportid);
         $content = $exporter->download('html', true);
-        $expectedrows = ['Full name', 'User Lastname 1'];
+        $expectedrows = [
+            ['Full name', 'Email address', 'City/town', 'Country'],
+            ['User Lastname 1', 'username1@example.com', '', '']
+        ];
         $this->assertEquals($this->get_html_table($expectedrows), $content);
 
         // Test export with a filter.
@@ -329,7 +343,10 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
 
         $exporter = new testable_report_exporter($reportid, false);
         $content = $exporter->download('html', true);
-        $expectedrows = ['Full name', 'User Lastname 2', 'User Lastname 3', 'User Lastname 4'];
+        $expectedrows = [['Full name', 'Email address', 'City/town', 'Country'],
+            ['User Lastname 2', 'username3@example.com', '', 'France'],
+            ['User Lastname 3', 'username4@example.com', '', 'France'],
+            ['User Lastname 4', 'username5@example.com', '', 'France']];
         $this->assertEquals($this->get_html_table($expectedrows), $content);
 
         // Test export with a condition.
@@ -339,7 +356,6 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
 
         $exporter = new testable_report_exporter($reportid, false);
         $content = $exporter->download('html', true);
-        $expectedrows = ['Full name', 'User Lastname 2', 'User Lastname 3', 'User Lastname 4'];
         $this->assertEquals($this->get_html_table($expectedrows), $content);
     }
 
@@ -542,8 +558,15 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
      */
     private function get_html_table(array $expectedrows): string {
         $body = '';
-        foreach ($expectedrows as $expectedrow) {
-            $body .= '<tr><td>' . $expectedrow . '</td></tr>';
+        foreach ($expectedrows as $expectedcolumns) {
+            $body .= '<tr>';
+            if (!is_array($expectedcolumns)) {
+                $expectedcolumns = [$expectedcolumns];
+            }
+            foreach ($expectedcolumns as $column) {
+                $body .= '<td>' . $column. '</td>';
+            }
+            $body .= '</tr>';
         }
         return '<!DOCTYPE html><html><head><meta charset="UTF-8" /><title>test</title><style>
 html, body {

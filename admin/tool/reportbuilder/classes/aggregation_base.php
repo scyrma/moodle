@@ -34,6 +34,27 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class aggregation_base {
+
+    /**
+     * Separator for group concatenation
+     *
+     * @return string
+     */
+    public static function get_list_separator() : string {
+        return get_string('listsep', 'langconfig') . ' ';
+    }
+
+    /**
+     * If this aggregation supports sorting.
+     *
+     * Override if needed.
+     *
+     * @return bool
+     */
+    public static function is_sortable() : bool {
+        return true;
+    }
+
     /**
      * Return a display name of the transformation option.
      *

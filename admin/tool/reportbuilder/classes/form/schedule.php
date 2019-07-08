@@ -75,12 +75,12 @@ class schedule extends modal_form {
         }
 
         $formats = schedules::get_formats();
-        $formats[0] = get_string('choose', 'tool_reportbuilder');
-        ksort($formats);
+        $formats = [0 => get_string('choose', 'tool_reportbuilder')] + $formats;
         $mform->addElement('select', 'format', get_string('format', 'tool_reportbuilder'), $formats);
         $mform->addRule('format', get_string('error:mustselectformat', 'tool_reportbuilder'), 'regex', '/[^0]+/', 'client');
-        $mform->setType('format', PARAM_INT);
+        $mform->setType('format', PARAM_TEXT);
         $mform->addRule('format', null, 'required', null, 'client');
+        $mform->setDefault('format', "0");
 
         $mform->addElement('date_time_selector', 'scheduled', get_string('datetostart', 'tool_reportbuilder'),
             array('optional' => false));
@@ -91,8 +91,7 @@ class schedule extends modal_form {
         $recurrences[0] = get_string('choose', 'tool_reportbuilder');
         ksort($recurrences);
         $mform->addElement('select', 'recurrence', get_string('recurrence', 'tool_reportbuilder'), $recurrences);
-        $mform->addRule('recurrence', get_string('error:mustselectrecurrence', 'tool_reportbuilder'),
-            'regex', '/[^0]+/', 'client');
+        $mform->addRule('recurrence', null, 'required', null, 'client');
         $mform->setType('recurrence', PARAM_INT);
 
         $mform->addElement('header', 'general', get_string('audience', 'tool_reportbuilder'));

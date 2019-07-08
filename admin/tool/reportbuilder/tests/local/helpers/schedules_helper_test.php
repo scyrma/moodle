@@ -56,7 +56,7 @@ class tool_reportbuilder_schedules_helper_testcase extends advanced_testcase {
         $data->name = 'Example schedule';
         $data->lastsenton = 0;
         $data->scheduled = time();
-        $data->format = \tool_reportbuilder\constants::FORMAT_EXCEL;
+        $data->format = 'excel';
         $data->subject = 'Subject';
         $data->message = 'Message';
         $data->usercreated = 0;
@@ -138,14 +138,7 @@ class tool_reportbuilder_schedules_helper_testcase extends advanced_testcase {
     public function test_get_formats() {
         $this->resetAfterTest();
         $formats = \tool_reportbuilder\local\helpers\schedules::get_formats();
-        $this->assertEquals([
-            \tool_reportbuilder\constants::FORMAT_CSV => get_string('formatcsv', 'tool_reportbuilder'),
-            \tool_reportbuilder\constants::FORMAT_EXCEL => get_string('formatexcel', 'tool_reportbuilder'),
-            \tool_reportbuilder\constants::FORMAT_PDF => get_string('formatpdf', 'tool_reportbuilder'),
-            \tool_reportbuilder\constants::FORMAT_JSON => get_string('formatjson', 'tool_reportbuilder'),
-            \tool_reportbuilder\constants::FORMAT_HTML => get_string('formathtml', 'tool_reportbuilder'),
-            \tool_reportbuilder\constants::FORMAT_ODS => get_string('formatods', 'tool_reportbuilder')
-        ], $formats);
+        $this->assertNotEmpty($formats);
     }
 
     /**
@@ -157,22 +150,40 @@ class tool_reportbuilder_schedules_helper_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Format excel.
-        $format = \tool_reportbuilder\local\helpers\schedules::get_format(1);
+        $format = \tool_reportbuilder\local\helpers\schedules::get_format('excel');
         $this->assertEquals(
-            get_string('formatexcel', 'tool_reportbuilder')
+            'Microsoft Excel (.xlsx)'
         , $format);
 
         // Format pdf.
-        $format = \tool_reportbuilder\local\helpers\schedules::get_format(2);
+        $format = \tool_reportbuilder\local\helpers\schedules::get_format('csv');
         $this->assertEquals(
-            get_string('formatcsv', 'tool_reportbuilder')
+            'Comma separated values (.csv)'
         , $format);
 
         // Format CSV.
-        $format = \tool_reportbuilder\local\helpers\schedules::get_format(3);
+        $format = \tool_reportbuilder\local\helpers\schedules::get_format('pdf');
         $this->assertEquals(
-            get_string('formatpdf', 'tool_reportbuilder')
+            'Portable Document Format (.pdf)'
         , $format);
+
+        // Format JSON.
+        $format = \tool_reportbuilder\local\helpers\schedules::get_format('json');
+        $this->assertEquals(
+            'Javascript Object Notation (.json)'
+            , $format);
+
+        // Format HTML.
+        $format = \tool_reportbuilder\local\helpers\schedules::get_format('html');
+        $this->assertEquals(
+            'HTML table'
+            , $format);
+
+        // Format ODS.
+        $format = \tool_reportbuilder\local\helpers\schedules::get_format('ods');
+        $this->assertEquals(
+            'OpenDocument (.ods)'
+            , $format);
     }
 
     /**

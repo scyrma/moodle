@@ -26,6 +26,7 @@ namespace tool_reportbuilder\local\aggregate;
 
 use tool_reportbuilder\aggregation_base;
 use tool_reportbuilder\constants;
+use tool_reportbuilder\db;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -46,24 +47,8 @@ class groupconcatdistinct extends aggregation_base {
      * @throws \coding_exception
      */
     public static function get_field(string $field, ?int $dbtype = null) : string {
-        // TODO: add order by and order direction.
-        global $DB;
-        $dbfamily = $DB->get_dbfamily();
-        $separator = get_string('listsep', 'langconfig');
-        switch ($dbfamily) {
-            case 'mssql':
-                return " STRING_AGG($field, '{$separator}') ";
-                break;
-            case 'postgres':
-                return " STRING_AGG(CAST($field AS VARCHAR), '{$separator}')";
-                break;
-            case 'mysql':
-                return "GROUP_CONCAT(DISTINCT $field SEPARATOR '$separator')";
-                break;
-            case 'oracle':
-                return "LISTAGG($field, '{$separator}') WITHIN GROUP (ORDER BY 1)";
-                break;
-        }
+        $separator = self::get_list_separator();
+        return db::sql_group_concat_distinct($field, $separator);
     }
 
     /**

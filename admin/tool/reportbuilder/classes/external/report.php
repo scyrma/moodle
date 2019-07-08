@@ -77,6 +77,7 @@ class report extends \external_api {
         $output = $PAGE->get_renderer('tool_reportbuilder');
         $context = $report->export_for_template($output);
         $context->ispreview = $editon ? false : true;
+        $context->tabheading = get_string('tabletab', 'tool_reportbuilder');
 
         if (!$editon) {
             // Trigger report viewed event on preview mode.

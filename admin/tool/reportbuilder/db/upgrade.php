@@ -110,6 +110,28 @@ function xmldb_tool_reportbuilder_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019062311, 'tool', 'reportbuilder');
     }
 
+    if ($oldversion < 2019062501) {
+        // Update formats in the database from int code to plugin name.
+        $formats = [
+            1 => 'excel',
+            2 => 'csv',
+            3 => 'pdf',
+            4 => 'json',
+            5 => 'html',
+            6 => 'ods'
+        ];
+        foreach ($formats as $oldformat => $newformat) {
+            $DB->execute('UPDATE {tool_reportbuilder_scheduled} SET format = ? WHERE format = ?',
+                [$newformat, $oldformat]);
+        }
+        list($sql, $params) = $DB->get_in_or_equal($formats, SQL_PARAMS_NAMED, 'param', false);
+        $DB->execute('UPDATE {tool_reportbuilder_scheduled} SET format = :excel WHERE format ' . $sql,
+            ['excel' => 'excel'] + $params);
+
+        // Reportbuilder savepoint reached.
+        upgrade_plugin_savepoint(true, 2019062501, 'tool', 'reportbuilder');
+    }
+
     return true;
 }
 

@@ -33,7 +33,8 @@ define([
         'tool_wp/tabs',
         'tool_reportbuilder/reportbuilder_helper',
         'tool_wp/modal_form',
-        'core/config'
+        'core/config',
+        'tool_wp/notification',
     ],
     function($,
               CustomEvents,
@@ -46,7 +47,8 @@ define([
               Tabs,
               Helper,
               ModalForm,
-              Config) {
+              Config,
+              WpNotification) {
 
         /** @type {Object} The list of selectors for the reports area. */
         var
@@ -108,14 +110,9 @@ define([
                 args: {id: id},
                 modalConfig: {title: title},
                 contextId: Config.contextid,
-                triggerElement: triggerElement
+                triggerElement: triggerElement,
+                saveButtonText: Str.get_string('save')
             });
-            // Override onInit() function to change the text for the save button.
-            var oldInit = modal.onInit;
-            modal.onInit = function() {
-                this.modal.setSaveButtonText(Str.get_string('save'));
-                oldInit.bind(this)();
-            };
             return modal;
         };
 
@@ -158,6 +155,7 @@ define([
          * @private
          */
         ReportsManager.prototype._duplicateReportHandler = function(e, data) {
+            // TODO WP-259 not implemented.
             data.originalEvent.preventDefault();
             data.originalEvent.stopPropagation();
         };
@@ -175,62 +173,43 @@ define([
             var element = $(e.currentTarget);
             var id = element.data('id');
             var reportname = element.data('reportname');
+            var doDelete = function() {
+                var request = {
+                    methodname: SERVICES.DELETEREPORT,
+                    args: {
+                        reportid: id
+                    }
+                };
 
-            var stringkeys = [
-            {
-                key: 'confirm',
-                component: 'tool_reportbuilder'
-            },
-            {
-                key: 'deletereportmsg',
-                component: 'tool_reportbuilder',
-                param: reportname
-            },
-            {
-                key: 'removereportsuccess',
-                component: 'tool_reportbuilder'
-            },
-            {
-                key: 'delete'
-            }
-            ];
-
-            Str.get_strings(stringkeys).then(function(langStrings) {
-                var title = langStrings[0];
-                var confirmMessage = langStrings[1];
-                var buttonText = langStrings[3];
-                return ModalFactory.create({
-                    title: title,
-                    body: confirmMessage,
-                    type: ModalFactory.types.SAVE_CANCEL
-                }).then(function(modal) {
-                    modal.setSaveButtonText(buttonText);
-                    // Handle save event.
-                    modal.getRoot().on(ModalEvents.save, function() {
-                        var request = {
-                            methodname: SERVICES.DELETEREPORT,
-                            args: {
-                                reportid: id
-                            }
-                        };
-
-                        Ajax.call([request])[0].done(function(data) {
-                            if (data) {
-                                Tabs.loadTab(null, null);
-                            }
+                Ajax.call([request])[0].done(function(data) {
+                    if (data) {
+                        Str.get_string('deletereportsuccess', 'tool_reportbuilder').then(function(message) {
+                            WpNotification.addNotification({
+                                message: message,
+                                type: 'success'
+                            });
+                            Tabs.loadTab(null, null);
+                            return null;
                         }).fail(Notification.exception);
-                    });
+                    }
+                    return null;
+                }).fail(Notification.exception);
+            };
 
-                    modal.getRoot().on(ModalEvents.hidden, function() {
-                        modal.destroy();
-                    });
-
-                    return modal;
-                });
-            }).done(function(modal) {
-                modal.show();
+            Str.get_strings([
+                {key: 'confirm', component: 'tool_reportbuilder'},
+                {key: 'deletereportmsg', component: 'tool_reportbuilder', param: reportname},
+                {key: 'delete', component: 'moodle'},
+                {key: 'cancel', component: 'moodle'}
+            ]).done(function(strings) {
+                Notification.confirm(
+                    strings[0], // Confirm.
+                    strings[1], // Confirmation text.
+                    strings[2], // Save button.
+                    strings[3], // Cancel.
+                    doDelete
+                );
             }).fail(Notification.exception);
-
         };
 
         return ReportsManager;

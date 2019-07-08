@@ -27,6 +27,7 @@ namespace tool_reportbuilder\local\entities;
 use tool_organisation\organisation;
 use tool_organisation\tool_reportbuilder\filter\department_select;
 use tool_organisation\tool_reportbuilder\filter\position_select;
+use tool_reportbuilder\aggregation_base;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\entity_base;
 use tool_reportbuilder\local\filter\checkbox;
@@ -122,6 +123,7 @@ class user extends entity_base {
             'phone1' => new lang_string('phone'),
             'address' => new lang_string('address'),
             'lastaccess' => new lang_string('lastaccess'),
+            'suspended' => new lang_string('usersuspended', 'tool_reportbuilder'),
             'confirmed' => new lang_string('userconfirmed', 'tool_reportbuilder'),
             'username' => new lang_string('username'),
         );
@@ -148,7 +150,7 @@ class user extends entity_base {
 
         // Column "fullname".
         $viewfullnames = has_capability('moodle/site:viewfullnames', \context_system::instance());
-        list($sql, $params) = self::sql_fullname($this->usertablealias, $viewfullnames);
+        list($sql, $params) = \tool_reportbuilder\db::sql_fullname($this->usertablealias, $viewfullnames);
         $columns[] = (new report_column(
             'fullname',
             new \lang_string('fullname'),
@@ -157,8 +159,51 @@ class user extends entity_base {
             ->add_field($sql, 'fullname', $params)
             ->set_is_sortable(true)
             ->add_aggregation_fields('count', $this->usertablealias . '.id')
-            ->set_groupby_sql(self::sql_fullname($this->usertablealias, $viewfullnames, true));
+            ->set_groupby_sql(\tool_reportbuilder\db::sql_fullname($this->usertablealias, $viewfullnames, true));
 
+        // Columns picture, fullname with picture, fullname with picture and link, fullname with link.
+        $fullnamefields = [
+            'picture' => new \lang_string('userpicture', 'tool_reportbuilder'),
+            'fullnamewithlink' => new \lang_string('fullnamewithlink', 'tool_reportbuilder'),
+            'fullnamewithpicture' => new \lang_string('fullnamewithpicture', 'tool_reportbuilder'),
+            'fullnamewithpicturelink' => new \lang_string('fullnamewithpicturelink', 'tool_reportbuilder'),
+        ];
+        foreach ($fullnamefields as $fieldname => $fielddisplayname) {
+            $haspicture = preg_match('/picture/', $fieldname);
+            $hasfullname = preg_match('/fullname/', $fieldname);
+            $groupby = "{$this->usertablealias}.id".
+                ($haspicture ? ",{$this->usertablealias}.picture,{$this->usertablealias}.email" : "") .
+                ($hasfullname ? "," . \tool_reportbuilder\db::sql_fullname($this->usertablealias, $viewfullnames, true) : "");
+            $str = '<span>' . ($hasfullname ? '{{name}}' : '') .
+                '</span data-user="{{id}},' . ($haspicture ? '{{picture}},{{email}}' : ',') . '">';
+            $sqlname = '';
+            $paramsname = [];
+            if ($hasfullname) {
+                list($sqlname, $paramsname) = \tool_reportbuilder\db::sql_fullname($this->usertablealias);
+                $sqlname = \tool_reportbuilder\db::remove_oracle_hack($sqlname);
+            }
+            list($sql, $params) = \tool_reportbuilder\db::sql_string_with_placeholders($str,
+                ['{{id}}' => $this->usertablealias . '.id',
+                    '{{picture}}' => $this->usertablealias . '.picture',
+                    '{{email}}' => $this->usertablealias . '.email',
+                    '{{name}}' => $sqlname]);
+            $params += $paramsname;
+
+            $columns[] = (new report_column(
+                $fieldname,
+                $fielddisplayname,
+                $this->get_entity_name()
+            ))
+                ->add_field($sql, $fieldname, $params)
+                ->set_is_sortable($fieldname !== 'picture')
+                ->add_aggregation_fields('count', $this->usertablealias . '.id')
+                ->add_callback([$this, 'fullname_replace_all'], $fieldname)
+                ->add_aggregation_callback('groupconcat', [$this, 'fullname_replace_all'], $fieldname)
+                ->add_aggregation_callback('groupconcatdistinct', [$this, 'fullname_replace_all'], $fieldname)
+                ->set_groupby_sql($groupby);
+        }
+
+        // Add all other user fields.
         $userfields = $this->get_user_fields();
 
         foreach ($userfields as $userkey => $userfield) {
@@ -182,6 +227,48 @@ class user extends entity_base {
     }
 
     /**
+     * Formats a fullname or a list of comma-separated names to add pictures and/or links
+     *
+     * @param string $value
+     * @param \stdClass $row
+     * @param string $type one of: fullnamewithpicture, fullnamewithpicturelink, fullnamewithlink, picture
+     * @return null|string|string[]
+     */
+    public static function fullname_replace_all($value, $row, $type) {
+        return preg_replace_callback('#<span>([^<]*?)</span data-user="(\d*),(\d*),([^"]*?)">#',
+            function($matches) use ($type) {
+                return self::fullname_replace_one($type, $matches[1], $matches[2], $matches[3], $matches[4]);
+            }, $value);
+    }
+
+    /**
+     * Formats a fullname to add an picture and/or a link
+     *
+     * @param string $type one of: fullnamewithpicture, fullnamewithpicturelink, fullnamewithlink, picture
+     * @param string $name
+     * @param int $id
+     * @param int $picture
+     * @param string $email
+     * @return string
+     */
+    protected static function fullname_replace_one($type, $name, $id, $picture, $email) {
+        global $OUTPUT;
+        if ($type === 'fullnamewithpicture' || $type === 'fullnamewithpicturelink' || $type === 'picture') {
+            $user = (object)array_fill_keys(self::get_all_user_name_fields(), '');
+            $user->id = (int)$id;
+            $user->picture = (int)$picture;
+            $user->email = $email;
+            $user->imagealt = '';
+            $name = $OUTPUT->user_picture($user, ['link' => false, 'alttext' => false]) . $name;
+        }
+        if ($type === 'fullnamewithpicturelink' || $type === 'fullnamewithlink') {
+            $url = new \moodle_url('/user/profile.php', ['id' => $id]);
+            return \html_writer::link($url, $name);
+        }
+        return $name;
+    }
+
+    /**
      * Get the type of the column.
      *
      * @param string $userkey
@@ -190,6 +277,8 @@ class user extends entity_base {
     protected function get_type(string $userkey) {
         switch ($userkey) {
             case 'confirmed':
+            case 'suspended':
+            case 'hascurrentjobs':
                 return constants::DB_TYPE_BOOLEAN;
                 break;
             case 'lastaccess':
@@ -412,6 +501,29 @@ class user extends entity_base {
             $conditions[] = $filter;
         }
 
+        // Add fullname condition and filter. Filter is default, condition is not.
+        $viewfullnames = has_capability('moodle/site:viewfullnames', \context_system::instance());
+        list($fieldsql, $params) = \tool_reportbuilder\db::sql_fullname($this->usertablealias, $viewfullnames);
+        $fullnamefilter = (new report_filter(
+            text::class,
+            'fullname',
+            new lang_string('fullname'),
+            $this->get_entity_name(),
+            $fieldsql
+        ))
+            ->add_join($this->userjoin);
+        $conditions[] = $fullnamefilter;
+
+        // Add has current jobs condition and filter.
+        $currentjobsfilter = (new report_filter(
+            checkbox::class,
+            'hascurrentjobs',
+            new lang_string('hascurrentjobs', 'tool_reportbuilder'),
+            $this->get_entity_name(),
+            \tool_organisation\helper::get_has_current_jobs_sql()
+        ));
+        $conditions[] = $currentjobsfilter;
+
         // Add user profile fields filters.
         $customfilters = $this->get_user_custom_filters($iscondition);
 
@@ -511,6 +623,8 @@ class user extends entity_base {
             return format::country($value, $row);
         } else if ($fieldname === 'confirmed') {
             return format::checkbox_as_text($value);
+        } else if ($fieldname === 'suspended') {
+            return format::checkbox_as_text($value);
         } else {
             return $value;
         }
@@ -525,7 +639,7 @@ class user extends entity_base {
      * @return string
      * @throws \coding_exception
      */
-    public function format_aggregation(string $value, \stdClass $row, string $fieldname) {
+    public function format_aggregation(?string $value, \stdClass $row, string $fieldname) {
         try {
             $type = \core_user::get_property_type($fieldname);
         } catch (\Exception $e) {
@@ -534,13 +648,13 @@ class user extends entity_base {
 
         if ($fieldname === 'country') {
             $namedcountries = [];
-            $separator = get_string('listsep', 'langconfig');
+            $separator = aggregation_base::get_list_separator();
             $countries = explode ($separator, $value);
             foreach ($countries as $country) {
                 $value = clean_param($country, $type);
                 $namedcountries[] = format::country($value, $row);
             }
-            return implode(', ', array_filter($namedcountries));
+            return implode($separator, array_filter($namedcountries));
         }
 
         $value = clean_param($value, $type);
@@ -557,40 +671,6 @@ class user extends entity_base {
      * @return array|string
      */
     public static function sql_fullname($usertablealias = 'u', bool $override = false, bool $ascsv = false) {
-        global $DB;
-        $user = (object)[];
-        $usernames = array_keys(self::get_all_user_name_fields());
-        foreach ($usernames as $idx => $field) {
-            $user->$field = '|||<<' . $idx . '>>|||';
-        }
-        $name = fullname($user, $override);
-        $parts = preg_split('/\|\|\|/', $name);
-        $params = [];
-        $elements = [];
-        $prefix = strlen($usertablealias) ? $usertablealias . '.' : '';
-        foreach ($parts as $part) {
-            if (!strlen($part)) {
-                continue;
-            }
-            if (preg_match('/^<<(\d+)>>$/', $part, $matches)) {
-                // This is a user name field.
-                $elements[] = $prefix . $usernames[$matches[1]];
-            } else if (!$ascsv) {
-                if (preg_match('/^[ \,\.\-\(\)]*$/', $part)) {
-                    // The separator is a simple string containing spaces, commas, braces, we don't need parameter.
-                    $elements[] = "'" . $part . "'";
-                } else {
-                    // Use parameter for any complex separator.
-                    $paramname = db::generate_param_name();
-                    $params[$paramname] = $part;
-                    $elements[] = ':' . $paramname;
-                }
-            }
-        }
-        if ($ascsv) {
-            return join(', ', $elements);
-        }
-        $sql = call_user_func_array([$DB, 'sql_concat'], $elements);
-        return [$sql, $params];
+        return \tool_reportbuilder\db::sql_fullname($usertablealias, $override, $ascsv);
     }
 }

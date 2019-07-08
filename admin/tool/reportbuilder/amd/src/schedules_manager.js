@@ -29,6 +29,7 @@ define([
         'core/ajax',
         'core/modal_factory',
         'core/modal_events',
+        'core/notification',
         'tool_wp/notification',
         'tool_wp/tabs',
         'tool_reportbuilder/reportbuilder_helper',
@@ -43,6 +44,7 @@ define([
               ModalFactory,
               ModalEvents,
               Notification,
+              WpNotification,
               Tabs,
               Helper,
               ModalForm,
@@ -61,7 +63,7 @@ define([
         },
         SERVICES = {
             DELETESCHEDULE: 'tool_reportbuilder_delete_schedule',
-            SENDCHEDULE: 'tool_reportbuilder_send_schedule'
+            SENDSCHEDULE: 'tool_reportbuilder_send_schedule'
         };
 
         /**
@@ -98,10 +100,6 @@ define([
                 this._showModal.bind(this)
             );
 
-            Helper.onDelegateEvent(this.node, CustomEvents.events.activate, SELECTORS.TOGGLESTATUS,
-                this._toggleStatus.bind(this)
-            );
-
             Helper.onDelegateEvent(this.node, CustomEvents.events.activate, SELECTORS.DUPLICATE,
                 this._duplicateSchedule.bind(this)
             );
@@ -134,21 +132,12 @@ define([
                     }
                 },
                 contextId: Config.contextid,
-                triggerElement: currentTarget
+                triggerElement: currentTarget,
+                saveButtonText: Str.get_string('save')
             });
             modal.onSubmitSuccess = function() {
                 Tabs.loadTab(null, {});
             };
-        };
-
-        /**
-         * Toggle status
-         * @param {Event} e
-         * @param {Event} data
-         * @private
-         */
-        SchedulesManager.prototype._toggleStatus = function(e, data) {
-            data.originalEvent.preventDefault();
         };
 
         /**
@@ -158,6 +147,7 @@ define([
          * @private
          */
         SchedulesManager.prototype._duplicateSchedule = function(e, data) {
+            // TODO WP-902 not implemented.
             data.originalEvent.preventDefault();
         };
 
@@ -171,21 +161,39 @@ define([
             data.originalEvent.preventDefault();
             var element = $(e.currentTarget);
             var id = element.data('id');
-            var request = {
-                methodname: SERVICES.SENDCHEDULE,
-                args: {
-                    scheduleid: id
-                }
+            var schedulename = element.data('schedulename');
+            var doSend = function() {
+                var request = {
+                    methodname: SERVICES.SENDSCHEDULE,
+                    args: {
+                        scheduleid: id
+                    }
+                };
+
+                Ajax.call([request])[0].then(function() {
+                    return Str.get_string('scheduleaddedastask', 'tool_reportbuilder');
+                }).then(function(message) {
+                    WpNotification.addNotification({
+                        message: message,
+                        type: 'success'
+                    });
+                    return null;
+                }).fail(Notification.exception);
             };
 
-            Ajax.call([request])[0].then(function() {
-                return Str.get_string('scheduleaddedastask', 'tool_reportbuilder');
-            }).then(function(message) {
-                Notification.addNotification({
-                    message: message,
-                    type: 'success'
-                });
-                return null;
+            Str.get_strings([
+                {key: 'confirm', component: 'tool_reportbuilder'},
+                {key: 'confirmsendschedule', component: 'tool_reportbuilder', param: schedulename},
+                {key: 'send', component: 'tool_reportbuilder'},
+                {key: 'cancel', component: 'moodle'}
+            ]).done(function(strings) {
+                Notification.confirm(
+                    strings[0], // Confirm.
+                    strings[1], // Confirmation text.
+                    strings[2], // Save button.
+                    strings[3], // Cancel.
+                    doSend
+                );
             }).fail(Notification.exception);
         };
 
@@ -200,64 +208,42 @@ define([
             var element = $(e.currentTarget);
             var id = element.data('id');
             var schedulename = element.data('schedulename');
+            var doDelete = function() {
+                var request = {
+                    methodname: SERVICES.DELETESCHEDULE,
+                    args: {
+                        scheduleid: id
+                    }
+                };
 
-            var stringkeys = [
-            {
-                key: 'confirm',
-                component: 'tool_reportbuilder'
-            },
-            {
-                key: 'confirmdeleteschedule',
-                component: 'tool_reportbuilder',
-                param: schedulename
-            },
-            {
-                key: 'removechedulesuccess',
-                component: 'tool_reportbuilder'
-            },
-            {
-                key: 'delete'
-            }
-            ];
-
-            Str.get_strings(stringkeys).then(function(langStrings) {
-                var title = langStrings[0];
-                var confirmMessage = langStrings[1];
-                var buttonText = langStrings[3];
-                return ModalFactory.create({
-                    title: title,
-                    body: confirmMessage,
-                    type: ModalFactory.types.SAVE_CANCEL
-                }).then(function(modal) {
-                    modal.setSaveButtonText(buttonText);
-                    // Handle save event.
-                    modal.getRoot().on(ModalEvents.save, function() {
-                        var request = {
-                            methodname: SERVICES.DELETESCHEDULE,
-                            args: {
-                                scheduleid: id
-                            }
-                        };
-
-                        Ajax.call([request])[0].done(function(data) {
-                            if (data) {
-                                Notification.addNotification({
-                                    message: langStrings[2],
-                                    type: 'success'
-                                });
-                                Tabs.loadTab(null, null);
-                            }
+                Ajax.call([request])[0].done(function(data) {
+                    if (data) {
+                        Str.get_string('removechedulesuccess', 'tool_reportbuilder').then(function(message) {
+                            WpNotification.addNotification({
+                                message: message,
+                                type: 'success'
+                            });
+                            Tabs.loadTab(null, null);
+                            return null;
                         }).fail(Notification.exception);
-                    });
+                    }
+                    return null;
+                }).fail(Notification.exception);
+            };
 
-                    modal.getRoot().on(ModalEvents.hidden, function() {
-                        modal.destroy();
-                    });
-
-                    return modal;
-                });
-            }).done(function(modal) {
-                modal.show();
+            Str.get_strings([
+                {key: 'confirm', component: 'tool_reportbuilder'},
+                {key: 'confirmdeleteschedule', component: 'tool_reportbuilder', param: schedulename},
+                {key: 'delete', component: 'moodle'},
+                {key: 'cancel', component: 'moodle'}
+            ]).done(function(strings) {
+                Notification.confirm(
+                    strings[0], // Confirm.
+                    strings[1], // Confirmation text.
+                    strings[2], // Save button.
+                    strings[3], // Cancel.
+                    doDelete
+                );
             }).fail(Notification.exception);
         };
 

@@ -180,6 +180,9 @@ class tool_reportbuilder_generator extends component_generator_base {
         if (!array_key_exists('name', $record)) {
             $record['name'] = 'New schedule ' . (++$this->schedulecount);
         }
+        if (!array_key_exists('format', $record)) {
+            $record['format'] = 'excel';
+        }
         if (!array_key_exists('subject', $record)) {
             $record['subject'] = 'Subject';
         }
@@ -292,7 +295,7 @@ class tool_reportbuilder_generator extends component_generator_base {
         $rcm = $rc->getMethod('get_allowed_aggregations');
         $rcm->setAccessible(true);
 
-        return array_diff(array_keys($rcm->invokeArgs($manager, [$dbtype])), $exclude);
+        return array_keys($rcm->invokeArgs($manager, [$dbtype, $exclude]));
     }
 
     /**
@@ -433,7 +436,8 @@ class tool_reportbuilder_generator extends component_generator_base {
             $key = $activecolumn->get_unique_identifier();
             $column = $columns[$key];
             $columnid = $activecolumn->get('id');
-            foreach ($this->get_allowed_aggregation_types($column->get_type(), ['unique', 'max', 'sum']) as $aggre) {
+            $exclude = array_merge($column->get_disabled_aggregations(), ['unique', 'max', 'sum']);
+            foreach ($this->get_allowed_aggregation_types($column->get_type(), $exclude) as $aggre) {
                 // Aggregating column $key with $aggre .
                 \tool_reportbuilder\local\helpers\aggregation::set_aggregation($columnid, $aggre);
                 try {

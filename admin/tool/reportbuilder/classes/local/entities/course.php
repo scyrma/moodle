@@ -342,7 +342,7 @@ class course extends entity_base {
      * @return string
      * @throws \coding_exception
      */
-    public function format_aggregation(string $value, \stdClass $row, string $fieldname) {
+    public function format_aggregation(?string $value, \stdClass $row, string $fieldname) {
         // TODO make sure that summary does not support 'groupconcat' aggregation.
 
         if (($options = $this->get_options_for($fieldname)) !== null) {
