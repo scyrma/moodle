@@ -69,10 +69,10 @@ class userquota {
         if (empty(self::number_of_user_slots_remaining())) {
             // This site has now hit its user quota.
             if ($exception) {
+                global $dynamicsite;
                 $a = new \stdClass;
                 $a->quota = MOODLECLOUD_USER_QUOTA;
-                $a->helpurl = 'https://moodle.com/cloud/faq/#userquota';
-                throw new \moodle_exception('userquotahit', 'local_moodlecloud', '', $a);
+                throw new \moodle_exception('userquotahit', 'local_moodlecloud', 'https://moodlecloud.com/app/en/portal/view/' . $dynamicsite  .'/plan', $a);
             } else {
                 return true;
             }
