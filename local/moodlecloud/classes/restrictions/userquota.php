@@ -72,7 +72,8 @@ class userquota {
                 global $dynamicsite;
                 $a = new \stdClass;
                 $a->quota = MOODLECLOUD_USER_QUOTA;
-                throw new \moodle_exception('userquotahit', 'local_moodlecloud', 'https://moodlecloud.com/app/en/portal/view/' . $dynamicsite  .'/plan', $a);
+                $a->sitename = $dynamicsite;
+                throw new \moodle_exception('userquotahit', 'local_moodlecloud', '', $a);
             } else {
                 return true;
             }
