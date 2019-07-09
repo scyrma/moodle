@@ -80,5 +80,7 @@ $templatecontext['email'] = get_config('theme_school', 'contactemail');
 $templatecontext['hascontacts'] = !empty($templatecontext['facebookurl']) || !empty($templatecontext['twitterurl']) || !empty($templatecontext['googleplusurl'])
         || !empty($templatecontext['youtubeurl']) || !empty($templatecontext['address']) || !empty($templatecontext['phone']) || !empty($templatecontext['email']);
 
+$templatecontext['footer_links'] = theme_boost_get_footerlinks($OUTPUT->page->context);
+
 echo $OUTPUT->render_from_template('theme_school/columns', $templatecontext);
 
