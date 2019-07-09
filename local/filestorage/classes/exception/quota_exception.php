@@ -15,10 +15,10 @@ class quota_exception extends \moodle_exception {
      * @param string $filesize
      */
     function __construct($current, $filesize) {
+        global $dynamicsite;
         $a = new \stdClass();
         $a->current = $current;
         $a->filesize = $filesize;
-        $a->helpurl = 'https://moodle.com/cloud/faq/#filequota';
-        parent::__construct('quotahit', 'local_filestorage', '', $a);
+        parent::__construct('quotahit', 'local_filestorage', 'https://moodlecloud.com/app/en/portal/view/' . $dynamicsite  . '/plan', $a);
     }
 }
