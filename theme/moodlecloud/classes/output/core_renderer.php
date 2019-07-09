@@ -114,7 +114,7 @@ class core_renderer extends \core_renderer {
 
         if (is_siteadmin()) {
             $title = get_string('faq', 'theme_moodlecloud');
-            $link = new moodle_url('https://moodle.com/cloud/faq');
+            $link = new moodle_url('https://support.moodlecloud.com');
             $links[] = html_writer::link($link, $title, array('target' => '_blank'));
         }
 
