@@ -65,4 +65,6 @@ if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
     $templatecontext['cloudinvertedimgurl'] = $theme->image_url('cloud-logo-inverted', 'theme');
 }
 
+$templatecontext['footer_links'] = theme_boost_get_footerlinks($OUTPUT->page->context);
+
 echo $OUTPUT->render_from_template('theme_classic/columns', $templatecontext);
