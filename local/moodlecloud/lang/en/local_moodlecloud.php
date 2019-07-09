@@ -29,7 +29,7 @@ $string['onlysiteownercanchangesettings'] = 'Only the site owner can modify thes
 $string['pluginname'] = 'MoodleCloud';
 $string['reporting_task'] = 'MoodleCloud Statistics Reporting';
 $string['touchpoint_task'] = 'MoodleCloud Touchpoints';
-$string['userquotahit'] = 'You have reached your quota for the number of users you may have on your site. To get more users, upgrade your plan using the link below.';
+$string['userquotahit'] = 'You have reached your quota for the number of users you may have on your site. To get more users, upgrade your plan using the following link https://moodlecloud.com/app/en/portal/view/{$a->sitename}/plan';
 
 $string['send_user_limit_warning'] = 'Send user limit warning';
 $string['send_user_limit_warning_description'] = 'An email will be sent when your site is approaching the user limit. You will be able to continue to add users until you reach your limit.';
