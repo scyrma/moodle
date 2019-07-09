@@ -23,7 +23,7 @@
  */
 
 $string['pluginname'] = 'Local Storage';
-$string['quotahit'] = 'This site has reached its file quota. To get more more space, upgrade your plan using the link below.';
+$string['quotahit'] = 'This site has reached its file quota. To get more more space, upgrade your plan using the following link https://moodlecloud.com/app/en/portal/view/{$a->sitename}/plan';
 $string['privacy:metadata:local_filestorage:externalpurpose'] = 'This information is sent to our cloud object store. When your site is deleted all data associated with your site is purged from this store.';
 $string['privacy:metadata:local_filestorage:filecontent'] = 'The content of the file.';
 $string['privacy:metadata:local_filestorage:filemimetype'] = 'The MIME type of the file.';
