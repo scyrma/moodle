@@ -48,16 +48,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_format {
-    /**
-     * Returns formatted id
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function id(string $value, stdClass $row): string {
-        return format::integer($row->id);
-    }
 
     /**
      * Displays column tags.
@@ -77,17 +67,6 @@ class program_format {
             }
         }
         return $listoftags;
-    }
-
-    /**
-     * Returns formatted tenant id
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function tenantid(string $value, stdClass $row): string {
-        return format::integer($row->tenantid);
     }
 
     /**
@@ -179,7 +158,7 @@ class program_format {
      * @param stdClass $row
      * @return string
      */
-    public static function description(string $value, stdClass $row): string {
+    public static function description(?string $value, stdClass $row): string {
         $contextid = context_system::instance()->id;
         $description = file_rewrite_pluginfile_urls($row->description, 'pluginfile.php', $contextid,
             'tool_program', 'program_description', $row->id);

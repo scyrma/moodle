@@ -25,7 +25,7 @@
 namespace tool_program\tool_reportbuilder\datasources;
 
 use moodle_exception;
-use tool_certification\local\helpers\certification_fields;
+use tool_certification\local\helpers\certification_entity;
 use tool_program\local\helpers\program_entity;
 use tool_reportbuilder\datasource;
 use tool_reportbuilder\local\entities\course;

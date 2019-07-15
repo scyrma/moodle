@@ -55,7 +55,7 @@ class edit_program_add_courses_form extends \tool_wp\modal_form {
             'multiple' => true,
             'exclude' => $set->get_courses_ids(),
         ];
-        $mform->addElement('course', 'courseslist', get_string('selectcourses', 'tool_program'), $options);
+        $mform->addElement('course', 'courseslist', get_string('addcourseslist', 'tool_program'), $options);
         $mform->addRule('courseslist', null, 'required');
         $mform->addHelpButton('courseslist', 'addcourseslist', 'tool_program');
         $mform->addRule('courseslist', get_string('missingcourse', 'tool_program'), 'required', null, 'client');

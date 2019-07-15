@@ -57,7 +57,7 @@ class edit_program_users_form_modal extends \tool_wp\modal_form {
             'data-area' => 'allocate',
             'data-itemid' => $programid ?: 0
         ];
-        $mform->addElement('autocomplete', 'userlist', get_string('selectusers', 'enrol_manual'), [], $options);
+        $mform->addElement('autocomplete', 'userlist', get_string('userlist', 'tool_program'), [], $options);
         $mform->addRule('userlist', get_string('nousersselected', 'tool_program'), 'required', null, 'client');
         $mform->addHelpButton('userlist', 'userlist', 'tool_program');
 

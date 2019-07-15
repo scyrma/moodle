@@ -47,16 +47,6 @@ class format {
     }
 
     /**
-     * Formats an integer
-     *
-     * @param int $rawinteger
-     * @return string
-     */
-    public static function integer(int $rawinteger): string {
-        return (string) $rawinteger;
-    }
-
-    /**
      * Formats a boolean
      *
      * @param bool $rawboolean

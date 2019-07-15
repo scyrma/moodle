@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 use stdClass;
 use tool_organisation\organisation;
 use tool_program\constants;
-use tool_program\local\helpers\format;
 use tool_program\local\helpers\programuser_format;
 use tool_program\permission;
 use tool_reportbuilder\local\entities\user as user_entity;
@@ -56,13 +55,22 @@ class allocations_report extends system_report {
      */
     protected function initialise(): void {
         $programid = $this->get_parameter('id', 0, PARAM_INT);
+        $tenantid = tenancy::get_tenant_id();
+
         $this->set_columns();
         $this->set_main_table('tool_program_users', 'tpu');
         $this->add_base_join('INNER JOIN {tool_program} tp ON tp.id = tpu.programid');
+        $this->add_base_join('INNER JOIN {user} u ON u.id = tpu.userid');
         $this->add_base_condition_simple('tpu.programid', $programid);
-        $this->add_base_condition_simple('tp.tenantid', tenancy::get_tenant_id());
+        $this->add_base_condition_simple('tp.tenantid', $tenantid);
+        $this->add_base_condition_simple('u.deleted', 0);
         // Fields necessary for actions and row class.
         $this->add_base_fields('tpu.id, tpu.certificationid, tpu.programid, tpu.userid, tpu.status, tpu.enddate');
+
+        // Check tenant id on users in case they have been moved to another tenant.
+        [$join, $where, $params] = tenancy::get_users_sql('u', $tenantid);
+        $this->add_base_join($join);
+        $this->add_base_condition_sql($where, $params);
 
         if (!permission::has_allocateuser_capability(context_system::instance())) {
             // Managers with no system capability are only allowed to see the users they manage.

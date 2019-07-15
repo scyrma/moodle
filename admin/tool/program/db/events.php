@@ -27,6 +27,7 @@ use core\event\course_deleted;
 use tool_program\event\program_completed;
 use tool_program\event\user_allocation_created;
 use tool_program\event\user_allocation_deleted;
+use core\event\user_deleted;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -50,5 +51,9 @@ $observers = [
     [
         'eventname' => course_deleted::class,
         'callback' => 'tool_program_observer::course_deleted'
+    ],
+    [
+        'eventname' => user_deleted::class,
+        'callback' => 'tool_program_observer::user_deleted'
     ],
 ];

@@ -25,11 +25,13 @@
 namespace tool_program\local\helpers;
 
 use lang_string;
+use tool_program\api;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\entity_base;
 use tool_reportbuilder\local\filter\checkbox;
 use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
+use tool_reportbuilder\local\filter\select;
 use tool_reportbuilder\report_filter;
 use tool_reportbuilder\report_column;
 
@@ -49,6 +51,8 @@ class programcompletion_entity extends entity_base {
     protected $tablealias = 'tpsc';
     /** @var array */
     protected $excludecolumns = [];
+    /** @var string Alias for tool_program_users table */
+    protected $tablealiastpu = 'tpu';
 
     /**
      * program_fields constructor.
@@ -56,11 +60,14 @@ class programcompletion_entity extends entity_base {
      * @param string $join
      * @param string $tablealias
      * @param array $excludecolumns
+     * @param string $tablealiastpu
      */
-    public function __construct(string $join = '', string $tablealias = 'tpsc', array $excludecolumns = []) {
+    public function __construct(string $join = '', string $tablealias = 'tpsc',
+                                array $excludecolumns = [], string $tablealiastpu = 'tpu') {
         $this->join = $join;
         $this->tablealias = $tablealias;
         $this->excludecolumns = array_combine($excludecolumns, $excludecolumns);
+        $this->tablealiastpu = $tablealiastpu;
     }
 
     /**
@@ -197,6 +204,7 @@ class programcompletion_entity extends entity_base {
             ->add_join($this->join)
             ->set_field_sql("$this->tablealias.timecreated");
 
+        // Filter Completed.
         $filters[] = (new report_filter(
             checkbox::class,
             'completed',
@@ -205,6 +213,16 @@ class programcompletion_entity extends entity_base {
         ))
             ->add_join($this->join)
             ->set_field_sql("(CASE WHEN ({$this->tablealias}.completeddate > 0) THEN 1 ELSE 0 END)");
+
+        // Filter program status.
+        $filters[] = (new report_filter(
+            select::class,
+            'programstatus',
+            new lang_string('programstatus', 'tool_program'),
+            $this->get_entity_name(),
+            api::get_status_sql_cases(0, $this->tablealiastpu, $this->tablealias)
+        ))
+            ->set_options(api::get_program_statuses_fieldset());
 
         return $filters;
     }

@@ -2564,4 +2564,19 @@ class api {
             }
         }
     }
+
+    /**
+     * Removes a deleted user from all programs.
+     * Used in the user_deleted observer.
+     *
+     * @param int $userid
+     */
+    public static function remove_deleted_user_from_programs(int $userid): void {
+        $programs = self::get_programs_by_userid($userid);
+        if (!empty($programs)) {
+            foreach ($programs as $program) {
+                self::deallocate_user($program->get('id'), $userid);
+            }
+        }
+    }
 }

@@ -29,6 +29,8 @@ use tool_program\api;
 use tool_program\event\program_completed;
 use tool_program\event\user_allocation_created;
 use tool_program\event\user_allocation_deleted;
+use core\event\course_deleted;
+use core\event\user_deleted;
 
 /**
  * Class tool_program_observer
@@ -77,9 +79,18 @@ class tool_program_observer {
     /**
      * Course deleted observer
      *
-     * @param \core\event\course_deleted $event
+     * @param course_deleted $event
      */
-    public static function course_deleted(\core\event\course_deleted $event): void {
+    public static function course_deleted(course_deleted $event): void {
         api::remove_deleted_course_from_programs($event->courseid);
+    }
+
+    /**
+     * User deleted observer
+     *
+     * @param user_deleted $event
+     */
+    public static function user_deleted(user_deleted $event): void {
+        api::remove_deleted_user_from_programs($event->objectid);
     }
 }

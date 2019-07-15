@@ -31,20 +31,14 @@ define([
     'core/str',
     'tool_wp/tabs',
     'tool_wp/modal_form',
-    'core/config',
-    'core/modal_factory',
-    'core/modal_events'
 ], function($,
             ajax,
             templates,
             fragment,
-            notification,
+            Notification,
             Str,
             Tabs,
-            ModalForm,
-            Config,
-            ModalFactory,
-            ModalEvents) {
+            ModalForm) {
 
     /** @type {Object} The list of selectors for the certification area. */
     var SELECTORS = {
@@ -100,59 +94,24 @@ define([
 
         var element = $(e.currentTarget);
         var programid = element.data('programid');
-        var programname = element.closest('tr')
+        var name = element.closest('tr')
             .find('.inplaceeditable[data-itemtype=programname]').text();
-        var stringkeys = [{
-            key: 'confirm',
-            component: 'tool_program'
-        },
-        {
-            key: 'archivedconfirmation',
-            component: 'tool_program',
-            param: programname
-        },
-        {
-            key: 'archive',
-            component: 'tool_program'
-        },
-        {
-            key: 'no'
-        }];
-
-        Str.get_strings(stringkeys).then(function(langStrings) {
-            var title = langStrings[0];
-            var confirmMessage = langStrings[1];
-            var buttonText = langStrings[2];
-            return ModalFactory.create({
-                title: title,
-                body: confirmMessage,
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(buttonText);
-                // Handle save event.
-                modal.getRoot().on(ModalEvents.save, function() {
-                    var request = {
-                        methodname: SERVICES.ARCHIVEPROGRAM,
-                        args: {
-                            programid: programid
-                        }
-                    };
-
-                    ajax.call([request])[0].done(function(data) {
-                        if (data) {
-                            Tabs.loadTab(null, null);
-                        }
-                    }).fail(Notification.exception);
-                });
-
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-
-                return modal;
+        Str.get_strings([
+            {key: 'confirm'},
+            {key: 'archivedconfirmation', component: 'tool_program', param: name},
+            {key: 'archive', component: 'tool_program'},
+            {key: 'cancel'}
+        ]).done(function(s) {
+            Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                var promises = ajax.call([
+                    {methodname: SERVICES.ARCHIVEPROGRAM, args: {programid: programid}}
+                ]);
+                promises[0].done(function(data) {
+                    if (data) {
+                        Tabs.loadTab(null, null);
+                    }
+                }).fail(Notification.exception);
             });
-        }).done(function(modal) {
-            modal.show();
         }).fail(Notification.exception);
     };
 
@@ -219,57 +178,23 @@ define([
 
         var element = $(e.currentTarget);
         var programid = element.data('programid');
-        var certname = element.closest('tr').find('.c0').text();
-        var stringkeys = [{
-            key: 'confirm',
-            component: 'tool_program'
-        },
-        {
-            key: 'confirmdeleteprogram',
-            component: 'tool_program',
-            param: certname
-        },
-        {
-            key: 'delete'
-        },
-        {
-            key: 'no'
-        }];
-
-        Str.get_strings(stringkeys).then(function(langStrings) {
-            var title = langStrings[0];
-            var confirmMessage = langStrings[1];
-            var buttonText = langStrings[2];
-            return ModalFactory.create({
-                title: title,
-                body: confirmMessage,
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(buttonText);
-                // Handle save event.
-                modal.getRoot().on(ModalEvents.save, function() {
-                    var request = {
-                        methodname: SERVICES.DELETEPROGRAM,
-                        args: {
-                            programid: programid
-                        }
-                    };
-
-                    ajax.call([request])[0].done(function(data) {
-                        if (data) {
-                            Tabs.loadTab(null, null);
-                        }
-                    }).fail(Notification.exception);
-                });
-
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-
-                return modal;
+        var name = element.closest('tr').find('.c0').text();
+        Str.get_strings([
+            {key: 'confirm'},
+            {key: 'confirmdeleteprogram', component: 'tool_program', param: name},
+            {key: 'delete'},
+            {key: 'cancel'}
+        ]).done(function(s) {
+            Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                var promises = ajax.call([
+                    {methodname: SERVICES.DELETEPROGRAM, args: {programid: programid}}
+                ]);
+                promises[0].done(function(data) {
+                    if (data) {
+                        Tabs.loadTab(null, null);
+                    }
+                }).fail(Notification.exception);
             });
-        }).done(function(modal) {
-            modal.show();
         }).fail(Notification.exception);
     };
 
@@ -284,58 +209,24 @@ define([
 
         var element = $(e.currentTarget);
         var programid = element.data('programid');
-        var programname = element.closest('tr')
+        var name = element.closest('tr')
             .find('.inplaceeditable[data-itemtype=programname]').text();
-        var stringkeys = [{
-            key: 'confirm',
-            component: 'tool_program'
-        },
-        {
-            key: 'confirmduplicate',
-            component: 'tool_program',
-            param: programname
-        },
-        {
-            key: 'ok'
-        },
-        {
-            key: 'cancel'
-        }];
-
-        Str.get_strings(stringkeys).then(function(langStrings) {
-            var title = langStrings[0];
-            var confirmMessage = langStrings[1];
-            var buttonText = langStrings[2];
-            return ModalFactory.create({
-                title: title,
-                body: confirmMessage,
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(buttonText);
-                // Handle save event.
-                modal.getRoot().on(ModalEvents.save, function() {
-                    var request = {
-                        methodname: SERVICES.DUPLICATEPROGRAM,
-                        args: {
-                            programid: programid
-                        }
-                    };
-
-                    ajax.call([request])[0].done(function(data) {
-                        if (data) {
-                            Tabs.loadTab(null, null);
-                        }
-                    }).fail(Notification.exception);
-                });
-
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-
-                return modal;
+        Str.get_strings([
+            {key: 'confirm'},
+            {key: 'confirmduplicate', component: 'tool_program', param: name},
+            {key: 'ok'},
+            {key: 'cancel'}
+        ]).done(function(s) {
+            Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                var promises = ajax.call([
+                    {methodname: SERVICES.DUPLICATEPROGRAM, args: {programid: programid}}
+                ]);
+                promises[0].done(function(data) {
+                    if (data) {
+                        Tabs.loadTab(null, null);
+                    }
+                }).fail(Notification.exception);
             });
-        }).done(function(modal) {
-            modal.show();
         }).fail(Notification.exception);
     };
 

@@ -33,7 +33,7 @@ Feature: Add courses to programs
     Then I press "Add a set or a course"
     Then I click on "Course" "link" in the ".dropdown-menu.show" "css_element"
     Then I should see "Add courses"
-    And I should see "Select courses"
+    Then I should see "Select courses"
     Then I open the autocomplete suggestions list in the dialog
     And I should see "Course11" in the ".modal-dialog .form-autocomplete-suggestions" "css_element"
     And I should see "Course12" in the ".modal-dialog .form-autocomplete-suggestions" "css_element"

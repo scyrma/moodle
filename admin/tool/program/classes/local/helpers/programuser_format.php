@@ -47,49 +47,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class programuser_format {
-    /**
-     * Formats id
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function id(string $value, stdClass $row): string {
-        return format::integer($row->id);
-    }
-
-    /**
-     * Formats programid
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function programid(string $value, stdClass $row): string {
-        return format::integer($row->programid);
-    }
-
-    /**
-     * Formats userid
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function userid(string $value, stdClass $row): string {
-        return format::integer($row->userid);
-    }
-
-    /**
-     * Formats certificationid
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function certificationid(string $value, stdClass $row): string {
-        return format::integer($row->certificationid);
-    }
 
     /**
      * Displays column duedate.

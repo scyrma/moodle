@@ -76,7 +76,7 @@ class edit_program_users_edit_form_modal extends modal_form {
         $mform->setType('id', PARAM_INT);
 
         $mform->addElement('hidden', 'programuserid', $programuserid);
-        $mform->setType('userid', PARAM_INT);
+        $mform->setType('programuserid', PARAM_INT);
 
         $choices = [
             constants::STATUS_OVERRIDE_DEFAULT => $defaultstr,

@@ -46,7 +46,7 @@ class allocation extends outcome_base {
      */
     public function get_config_form(MoodleQuickForm $mform): void {
         // Program select (autocomplete) field.
-        $selectprogramstr = get_string('selectprogram', 'tool_program');
+        $selectprogramstr = get_string('selectprogramoutcome', 'tool_program');
         $missingprogramstr = get_string('missingprogram', 'tool_program');
         $options = [
             'ajax' => 'tool_certification/form_potential_program_selector',

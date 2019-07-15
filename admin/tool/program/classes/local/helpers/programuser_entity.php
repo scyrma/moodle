@@ -30,7 +30,8 @@ use tool_reportbuilder\entity_base;
 use tool_reportbuilder\local\filter\checkbox;
 use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
-use tool_reportbuilder\local\filter\text;
+use tool_reportbuilder\local\filter\select;
+use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_filter;
 use tool_reportbuilder\report_column;
 
@@ -100,7 +101,9 @@ class programuser_entity extends entity_base {
             ->set_type(constants::DB_TYPE_TIMESTAMP)
             ->add_field("$this->tablealias.startdate")
             ->add_field("$this->tablealias.startdatelocked")
-            ->add_callback([programuser_format::class, 'startdate']);
+            ->add_callback([programuser_format::class, 'startdate'])
+            ->add_aggregation_callback('min', [format::class, 'userdate'])
+            ->add_aggregation_callback('max', [format::class, 'userdate']);
         $columns[] = $newcolumn;
 
         // Column duedate.
@@ -113,7 +116,9 @@ class programuser_entity extends entity_base {
             ->set_type(constants::DB_TYPE_TIMESTAMP)
             ->add_field("$this->tablealias.duedate")
             ->add_field("$this->tablealias.duedatelocked")
-            ->add_callback([programuser_format::class, 'duedate']);
+            ->add_callback([programuser_format::class, 'duedate'])
+            ->add_aggregation_callback('min', [format::class, 'userdate'])
+            ->add_aggregation_callback('max', [format::class, 'userdate']);
         $columns[] = $newcolumn;
 
         // Column enddate.
@@ -126,7 +131,9 @@ class programuser_entity extends entity_base {
             ->set_type(constants::DB_TYPE_TIMESTAMP)
             ->add_field("$this->tablealias.enddate")
             ->add_field("$this->tablealias.enddatelocked")
-            ->add_callback([programuser_format::class, 'enddate']);
+            ->add_callback([programuser_format::class, 'enddate'])
+            ->add_aggregation_callback('min', [format::class, 'userdate'])
+            ->add_aggregation_callback('max', [format::class, 'userdate']);
         $columns[] = $newcolumn;
 
         // Column programstatus.
@@ -140,7 +147,9 @@ class programuser_entity extends entity_base {
             ->add_field("$this->tablealias.programid")
             ->add_field("$this->tablealias.certificationid")
             ->add_field("$this->tablealias.userid")
-            ->add_callback([programuser_format::class, 'programstatus']);
+            ->add_callback([programuser_format::class, 'programstatus'])
+            ->disable_aggregation('min')
+            ->disable_aggregation('max');
         $columns[] = $newcolumn;
 
         // Column programprogress.
@@ -150,7 +159,7 @@ class programuser_entity extends entity_base {
             $this->get_entity_name()
         ))
             ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_NUMBER)
+            ->set_type(constants::DB_TYPE_TEXT)
             ->add_field("$this->tablealias.programid")
             ->add_field("$this->tablealias.userid")
             ->add_callback([programuser_format::class, 'programprogress']);
@@ -246,6 +255,17 @@ class programuser_entity extends entity_base {
     protected function get_filters_or_conditions(bool $iscondition): array {
         $filters = [];
 
+        // Filter allocationtype.
+        $filters[] = (new report_filter(
+            select::class,
+            'allocationtype',
+            new lang_string('allocationsource', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_field_sql("$this->tablealias.allocationtype")
+            ->set_options(self::get_allocation_sources());
+
         // Filter startdate.
         $filters[] = (new report_filter(
             $iscondition ? date_condition::class : date_filter::class,
@@ -318,8 +338,21 @@ class programuser_entity extends entity_base {
 
         // TODO programstatus custom filter field sql needed.
         // TODO programprogress custom filter field sql needed.
-        // TODO allocationtype custom filter field sql needed.
 
         return $filters;
+    }
+
+    /**
+     * Returns array with allocation sources/types.
+     *
+     * @return array
+     * @throws \coding_exception
+     */
+    private static function get_allocation_sources(): array {
+        return [
+            \tool_program\constants::ALLOCATION_MANUAL => get_string('manual', 'tool_program'),
+            \tool_program\constants::ALLOCATION_DYNAMIC => get_string('dynamic', 'tool_program'),
+            \tool_program\constants::ALLOCATION_CERTIFICATION => get_string('certification', 'tool_program')
+        ];
     }
 }

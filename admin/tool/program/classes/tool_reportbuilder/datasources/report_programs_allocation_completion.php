@@ -26,7 +26,6 @@ namespace tool_program\tool_reportbuilder\datasources;
 
 use lang_string;
 use moodle_exception;
-use tool_program\api;
 use tool_program\local\helpers\program_entity;
 use tool_program\local\helpers\programcompletion_entity;
 use tool_program\local\helpers\programcompletion_format;
@@ -74,14 +73,14 @@ class report_programs_allocation_completion extends datasource {
         $this->set_filters();
 
         // Add default columns.
-        if ($column = $this->get_column('tool_program:programnamewithimage')) {
+        if ($column = $this->get_column('tool_program:fullnamewithimage')) {
             $column->set_is_default(true, 1);
             $column->set_is_sortable(true, true, 1, SORT_ASC);
         }
 
-        if ($column = $this->get_column('user:fullname')) {
+        if ($column = $this->get_column('user:fullnamewithlink')) {
             $column->set_is_default(true, 2);
-            $column->set_is_sortable(true, true, 2);
+            $column->set_is_sortable(true, true, 2, SORT_ASC);
         }
 
         if ($column = $this->get_column('tool_program_users:timecreated')) {
@@ -99,7 +98,7 @@ class report_programs_allocation_completion extends datasource {
             $column->set_is_sortable(true, true, 5);
         }
 
-        if ($column = $this->get_column('tool_program_set_completion:completed')) {
+        if ($column = $this->get_column('tool_program_users:programstatus')) {
             $column->set_is_default(true, 6);
             $column->set_is_sortable(true, true, 6);
         }
@@ -107,16 +106,6 @@ class report_programs_allocation_completion extends datasource {
         if ($column = $this->get_column('tool_program_set_completion:completeddate')) {
             $column->set_is_default(true, 7);
             $column->set_is_sortable(true, true, 7);
-        }
-
-        if ($column = $this->get_column('tool_program:programnamewithimage')) {
-            $column->set_is_default(true, 1);
-            $column->set_is_sortable(true, true, 1, SORT_ASC);
-        }
-
-        if ($column = $this->get_column('user:username')) {
-            $column->set_is_default(true, 2);
-            $column->set_is_sortable(true, true, 2, SORT_ASC);
         }
 
         // Add default conditions.
@@ -127,8 +116,10 @@ class report_programs_allocation_completion extends datasource {
         // Add default filters.
         $filters = $this->get_filters();
         $filters['tool_program:programselector']->set_is_default(true, [1]);
+        $filters['tool_program_set_completion:programstatus']->set_is_default(true);
         $filters['tool_program_users:timecreated']->set_is_default(true);
         $filters['tool_program_set_completion:completeddate']->set_is_default(true);
+        $filters['user:fullname']->set_is_default(true);
         $filters['tool_organisation_jobs:position']->set_is_default(true);
         $filters['tool_organisation_jobs:department']->set_is_default(true);
     }
@@ -148,7 +139,7 @@ class report_programs_allocation_completion extends datasource {
     protected function set_columns(): void {
         $this->add_entity(new program_entity('', 'tp'));
         $this->add_entity(new programuser_entity('', 'tpu'));
-        $this->add_entity(new programcompletion_entity('', 'tpsc'));
+        $this->add_entity(new programcompletion_entity('', 'tpsc', [], 'tpu'));
         $this->add_entity(new user_entity('', 'u'));
         if (class_exists(jobs_entity::class)) {
             $this->add_entity(new jobs_entity('', 'toj'));

@@ -182,11 +182,13 @@ class program_entity extends entity_base {
             $this->get_entity_name()
         ))
             ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
+            ->set_type(constants::DB_TYPE_TEXT)
             ->add_field("$this->tablealias.startdatetype")
             ->add_field("$this->tablealias.startdateabsolute")
             ->add_field("$this->tablealias.startdaterelative")
-            ->add_callback([program_format::class, 'startdate']);
+            ->add_callback([program_format::class, 'startdate'])
+            ->disable_aggregation('groupconcat')
+            ->disable_aggregation('groupconcatdistinct');;
         $columns[] = $newcolumn;
 
         // Column duedate.
@@ -196,11 +198,13 @@ class program_entity extends entity_base {
             $this->get_entity_name()
         ))
             ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
+            ->set_type(constants::DB_TYPE_TEXT)
             ->add_field("$this->tablealias.duedatetype")
             ->add_field("$this->tablealias.duedateabsolute")
             ->add_field("$this->tablealias.duedaterelative")
-            ->add_callback([program_format::class, 'duedate']);
+            ->add_callback([program_format::class, 'duedate'])
+            ->disable_aggregation('groupconcat')
+            ->disable_aggregation('groupconcatdistinct');;
         $columns[] = $newcolumn;
 
         // Column enddate.
@@ -210,11 +214,13 @@ class program_entity extends entity_base {
             $this->get_entity_name()
         ))
             ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
+            ->set_type(constants::DB_TYPE_TEXT)
             ->add_field("$this->tablealias.enddatetype")
             ->add_field("$this->tablealias.enddateabsolute")
             ->add_field("$this->tablealias.enddaterelative")
-            ->add_callback([program_format::class, 'enddate']);
+            ->add_callback([program_format::class, 'enddate'])
+            ->disable_aggregation('groupconcat')
+            ->disable_aggregation('groupconcatdistinct');;
         $columns[] = $newcolumn;
 
         // Column archived.
@@ -370,11 +376,22 @@ class program_entity extends entity_base {
     protected function get_filters_or_conditions(bool $iscondition): array {
         $filters = [];
 
+        // Filter Program selector.
+        $filters[] = (new report_filter(
+            select::class,
+            'programselector',
+            new lang_string('programs', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_field_sql("$this->tablealias.id")
+            ->set_options(api::get_programs_in_tenant_fieldset());
+
         // Filter fullname.
         $filters[] = (new report_filter(
             text::class,
             'fullname',
-            new lang_string('fullname', 'tool_program'),
+            new lang_string('programname', 'tool_program'),
             $this->get_entity_name()
         ))
             ->add_join($this->join)
@@ -484,17 +501,6 @@ class program_entity extends entity_base {
             $this->get_entity_name()
         ))
             ->add_join($this->join);
-
-        // Filter Program selector.
-        $filters[] = (new report_filter(
-            select::class,
-            'programselector',
-            new lang_string('programs', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.id")
-            ->set_options(api::get_programs_in_tenant_fieldset());
 
         return $filters;
     }
