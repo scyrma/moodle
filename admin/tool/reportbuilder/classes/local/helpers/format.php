@@ -24,6 +24,8 @@
 
 namespace tool_reportbuilder\local\helpers;
 
+use tool_reportbuilder\aggregation_base;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -109,6 +111,23 @@ class format {
     }
 
     /**
+     * Returns formatted countries list
+     *
+     * @param string $value
+     * @param \stdClass $row
+     * @return string
+     */
+    public static function countries_list($value, \stdClass $row) {
+        $namedcountries = [];
+        $separator = aggregation_base::get_list_separator();
+        $countries = explode ($separator, $value);
+        foreach ($countries as $country) {
+            $namedcountries[] = self::country($country, $row);
+        }
+        return implode($separator, array_filter($namedcountries));
+    }
+
+    /**
      * Render a cell with the report link.
      *
      * The params array must contains be the url without and optionally a set of attributes.
@@ -183,4 +202,19 @@ class format {
         $component = substr($value, 0, strpos($value, '\\'));
         return get_string('pluginname', $component);
     }
+
+    /**
+     * Formats as number and adds a '%' in the end
+     *
+     * @param mixed $value
+     * @param \stdClass $row
+     * @return null|string
+     */
+    public static function percent($value, \stdClass $row): string {
+        if (is_numeric($value)) {
+            return sprintf("%.2f", $value) . '%';
+        }
+        return '';
+    }
+
 }

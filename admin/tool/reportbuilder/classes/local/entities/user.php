@@ -27,7 +27,6 @@ namespace tool_reportbuilder\local\entities;
 use tool_organisation\organisation;
 use tool_organisation\tool_reportbuilder\filter\department_select;
 use tool_organisation\tool_reportbuilder\filter\position_select;
-use tool_reportbuilder\aggregation_base;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\entity_base;
 use tool_reportbuilder\local\filter\checkbox;
@@ -156,6 +155,7 @@ class user extends entity_base {
             new \lang_string('fullname'),
             $this->get_entity_name()
         ))
+            ->add_join($this->userjoin)
             ->add_field($sql, 'fullname', $params)
             ->set_is_sortable(true)
             ->add_aggregation_fields('count', $this->usertablealias . '.id')
@@ -194,6 +194,7 @@ class user extends entity_base {
                 $fielddisplayname,
                 $this->get_entity_name()
             ))
+                ->add_join($this->userjoin)
                 ->add_field($sql, $fieldname, $params)
                 ->set_is_sortable($fieldname !== 'picture')
                 ->add_aggregation_fields('count', $this->usertablealias . '.id')
@@ -207,7 +208,7 @@ class user extends entity_base {
         $userfields = $this->get_user_fields();
 
         foreach ($userfields as $userkey => $userfield) {
-            $columns[] = (new report_column(
+            $column = (new report_column(
                 $userkey,
                 $userfield,
                 $this->get_entity_name()
@@ -215,10 +216,22 @@ class user extends entity_base {
                 ->add_join($this->userjoin)
                 ->add_field($this->usertablealias . '.' . $userkey)
                 ->set_type($this->get_type($userkey))
-                ->add_callback([$this, 'format'], $userkey)
-                ->add_aggregation_callback('groupconcat', [$this, 'format_aggregation'], $userkey)
-                ->add_aggregation_callback('groupconcatdistinct', [$this, 'format_aggregation'], $userkey)
                 ->set_is_sortable($this->is_sortable($userkey));
+
+            if ($this->get_type($userkey) == constants::DB_TYPE_DATETIME) {
+                $column->add_callback([format::class, 'userdate']);
+            } else if ($userkey === 'country') {
+                $column->add_callback([format::class, 'country']);
+            } else if ($this->get_type($userkey) == constants::DB_TYPE_BOOLEAN) {
+                $column->add_callback([format::class, 'checkbox_as_text']);
+            }
+
+            if ($userkey === 'country') {
+                $column
+                    ->add_aggregation_callback('groupconcat', [format::class, 'countries_list'])
+                    ->add_aggregation_callback('groupconcatdistinct', [format::class, 'countries_list']);
+            }
+            $columns[] = $column;
         }
 
         $columns = array_merge($columns, $this->add_user_custom_fields());
@@ -288,7 +301,7 @@ class user extends entity_base {
                 return constants::DB_TYPE_LONGTEXT;
                 break;
             default:
-                return null;
+                return constants::DB_TYPE_TEXT;
                 break;
         }
     }
@@ -416,6 +429,7 @@ class user extends entity_base {
                 $filter->set_options($profilefield->options);
             }
 
+            $filter->add_join($this->userjoin);
             $filter->add_join("LEFT JOIN {user_info_data} $d ON $d.userid = u.id AND $d.fieldid = $profilefield->fieldid");
 
             $columns[] = $filter;
@@ -521,7 +535,8 @@ class user extends entity_base {
             new lang_string('hascurrentjobs', 'tool_reportbuilder'),
             $this->get_entity_name(),
             \tool_organisation\helper::get_has_current_jobs_sql()
-        ));
+        ))
+            ->add_join($this->userjoin);
         $conditions[] = $currentjobsfilter;
 
         // Add user profile fields filters.
@@ -598,67 +613,6 @@ class user extends entity_base {
      */
     public function get_filters() : array {
         return $this->get_conditions_or_filters(false);
-    }
-
-    /**
-     * Formats the user field for display
-     *
-     * @param mixed $value
-     * @param \stdClass $row
-     * @param string $fieldname
-     * @return string
-     */
-    public function format($value, \stdClass $row, string $fieldname) {
-        try {
-            $type = \core_user::get_property_type($fieldname);
-        } catch (\Exception $e) {
-            $type = PARAM_NOTAGS;
-        }
-
-        $value = clean_param($value, $type);
-
-        if ($fieldname === 'lastaccess') {
-            return format::userdate($value, $row);
-        } else if ($fieldname === 'country') {
-            return format::country($value, $row);
-        } else if ($fieldname === 'confirmed') {
-            return format::checkbox_as_text($value);
-        } else if ($fieldname === 'suspended') {
-            return format::checkbox_as_text($value);
-        } else {
-            return $value;
-        }
-    }
-
-    /**
-     * Formats the user field for display
-     *
-     * @param string $value Current field value
-     * @param \stdClass $row Complete row
-     * @param string $fieldname Current fieldname
-     * @return string
-     * @throws \coding_exception
-     */
-    public function format_aggregation(?string $value, \stdClass $row, string $fieldname) {
-        try {
-            $type = \core_user::get_property_type($fieldname);
-        } catch (\Exception $e) {
-            $type = PARAM_NOTAGS;
-        }
-
-        if ($fieldname === 'country') {
-            $namedcountries = [];
-            $separator = aggregation_base::get_list_separator();
-            $countries = explode ($separator, $value);
-            foreach ($countries as $country) {
-                $value = clean_param($country, $type);
-                $namedcountries[] = format::country($value, $row);
-            }
-            return implode($separator, array_filter($namedcountries));
-        }
-
-        $value = clean_param($value, $type);
-        return $value;
     }
 
     /**

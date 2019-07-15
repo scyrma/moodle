@@ -426,3 +426,38 @@ Feature: Manage report builder aggregations
     And I click on "Select an aggregation for the column 'Field 5'" "link"
     And I set the field "New aggregation for the column 'Field 5'" to "Unique values"
     And I log out
+
+  @javascript
+  Scenario: Make sure column sorting is not possible for some aggregation types.
+    When I log in as "manager1"
+    Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
+    And I change window size to "large"
+    And I follow "Example report"
+    And I click on "Add field 'Full name' to the report" "button"
+    And I click on "Add field 'Last access' to the report" "button"
+    And I click on "Show/hide filters sidebar" "button"
+    And I follow "Sorting"
+    And I should see "Full name" in the "region-report-sorting" "region"
+    And I should see "Last access" in the "region-report-sorting" "region"
+    # Change aggregation to each type and observe sorting tab changes.
+    When I click on "Select an aggregation for the column 'Full name'" "link"
+    And I set the field "New aggregation for the column 'Full name'" to "Count"
+    Then I should see "Full name" in the "region-report-sorting" "region"
+    And I should see "Last access" in the "region-report-sorting" "region"
+    When I click on "Select an aggregation for the column 'Full name'" "link"
+    And I set the field "New aggregation for the column 'Full name'" to "Count unique"
+    Then I should see "Full name" in the "region-report-sorting" "region"
+    And I should see "Last access" in the "region-report-sorting" "region"
+    When I click on "Select an aggregation for the column 'Full name'" "link"
+    And I set the field "New aggregation for the column 'Full name'" to "Comma separate values"
+    Then I should not see "Full name" in the "region-report-sorting" "region"
+    And I should see "Last access" in the "region-report-sorting" "region"
+    When I click on "Select an aggregation for the column 'Full name'" "link"
+    And I set the field "New aggregation for the column 'Full name'" to "Comma separate distinct values"
+    Then I should not see "Full name" in the "region-report-sorting" "region"
+    And I should see "Last access" in the "region-report-sorting" "region"
+    When I click on "Select an aggregation for the column 'Full name'" "link"
+    And I set the field "New aggregation for the column 'Full name'" to "Unique values"
+    Then I should see "Full name" in the "region-report-sorting" "region"
+    And I should see "Last access" in the "region-report-sorting" "region"
+    And I log out

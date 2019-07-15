@@ -23,11 +23,22 @@ Feature: Manage a report
     When I log in as "manager1"
     Given the following custom reports exist:
       | name    | tenant  | source |
-      | Report1 | Tenant1 | tool_reportbuilder\test\mock_report |
+      | Report1 | Tenant1 | tool_reportbuilder\test\mock_report_nodefault |
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report1" "table_row"
+    # Check there are no columns in report.
+    And I should see "Add a column to the report"
+    And I click on "Show/hide filters sidebar" "button"
+    And I follow "Sorting"
+    And I should see "Sortable columns not yet added" in the "region-report-sorting" "region"
+    And I click on "Show/hide filters sidebar" "button"
+    # Add field.
     And I click on "Add field 'Surname' to the report" "button"
     And I should see "Surname" in the "report-table" "table"
+    And I should not see "Add a column to the report"
+    And I click on "Show/hide filters sidebar" "button"
+    And I follow "Sorting"
+    And I should see "Surname" in the "region-report-sorting" "region"
     And I log out
 
   @javascript
@@ -35,12 +46,41 @@ Feature: Manage a report
     When I log in as "manager1"
     Given the following custom reports exist:
       | name    | tenant  | source |
+      | Report1 | Tenant1 | tool_reportbuilder\test\mock_report_nodefault |
+    Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
+    And I click on "Edit content" "link" in the "Report1" "table_row"
+    And I click on "Add field 'Surname' to the report" "button"
+    And I click on "Show/hide filters sidebar" "button"
+    And I follow "Sorting"
+    And I should see "Surname" in the "region-report-sorting" "region"
+    And I click on "Delete column 'Surname'" "link"
+    And I should see "Add a column to the report"
+    And I should not see "Surname" in the "region-report-sorting" "region"
+    And I should see "Sortable columns not yet added" in the "region-report-sorting" "region"
+    And I log out
+
+  @javascript
+  Scenario: Rename a column
+    When I log in as "manager1"
+    Given the following custom reports exist:
+      | name    | tenant  | source |
       | Report1 | Tenant1 | tool_reportbuilder\test\mock_report |
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Add field 'Surname' to the report" "button"
-    And I click on "Delete column 'Surname'" "link"
-    And I should not see "Surname" in the "report-table" "table"
+    And I should see "Surname" in the "report-table" "table"
+    And I click on "Show/hide filters sidebar" "button"
+    And I follow "Sorting"
+    And I should see "Surname" in the "region-report-sorting" "region"
+    And "Enable sorting on column 'Surname'" "button" should exist in the "region-report-sorting" "region"
+    And I click on "Edit header for the column 'Surname'" "link" in the "report-table" "table"
+    And I set the field "New value for 'Surname'" to "Testable"
+    And I press key "13" in the field "New value for 'Surname'"
+    And I should see "Testable" in the "report-table" "table"
+    And I should not see "Surname" in the "region-report-sorting" "region"
+    And "Enable sorting on column 'Surname'" "button" should not exist in the "region-report-sorting" "region"
+    And I should see "Testable" in the "region-report-sorting" "region"
+    And "Enable sorting on column 'Testable'" "button" should exist in the "region-report-sorting" "region"
     And I log out
 
   @javascript
@@ -104,7 +144,7 @@ Feature: Manage a report
     And I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I should see "First name" in the "//table[contains(@class,'report-table')]//th[1]" "xpath_element"
-    And I click on "Edit column header" "link" in the "//table[contains(@class,'report-table')]//th[1]" "xpath_element"
+    And I click on "Edit header for the column 'First name'" "link" in the "//table[contains(@class,'report-table')]//th[1]" "xpath_element"
     And the field "New value for 'First name'" matches value ""
     And the field "New value for 'First name'" does not match value "First name"
     And I set the field "New value for 'First name'" to "<span lang=\"en\" class=\"multilang\">Test&\"1</span><span lang=\"es\" class=\"multilang\">Prueba&\"1</span>"

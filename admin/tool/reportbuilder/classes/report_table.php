@@ -378,10 +378,6 @@ class report_table extends \table_sql {
             if ($callbacks) {
                 $obj = (object)$values;
                 foreach ($callbacks as $callback) {
-                    if ($sourcecolumn->get_name() == 'fullname' && $sourcecolumn->get_entity() == 'user') {
-                        $callback[1]['hasaggregation'] = !empty($this->columnsaggregation[$columnkey]) ?
-                            $this->columnsaggregation[$columnkey] : '';
-                    }
                     $formattedrow[$columnkey] = call_user_func_array($callback[0],
                         [$formattedrow[$columnkey], $obj, $callback[1]]);
                 }

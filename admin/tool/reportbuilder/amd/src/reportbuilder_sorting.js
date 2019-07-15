@@ -105,18 +105,10 @@ define(
          */
         Sorting.prototype._inplaceChanged = function() {
             $('body').on('updated', '[data-inplaceeditable]', function(e) {
-                if (e.ajaxreturn.itemtype === 'columnname' && e.ajaxreturn.component === 'tool_reportbuilder') {
-                    var newvalue = e.ajaxreturn.displayvalue;
-                    var element = this.reportBuilder.find(SELECTORS.SORTINGREGIONTAB + " [data-id='" + e.ajaxreturn.itemid + "']");
-                    Templates.render(TEMPLATES.LOADING, {visible: true}).then(function(html, js) {
-                        Templates.appendNodeContents(element, html, js);
-                        return null;
-                    }).fail(Notification.exception).then(function() {
-                        // TODO why are there two fails here?
-                        element.find('.js-column-name').html(newvalue);
-                        element.find('.overlay-icon-container').remove();
-                        return null;
-                    }).fail(Notification.exception);
+                // Aggregation or column header changed.
+                if (e.ajaxreturn.component === 'tool_reportbuilder' &&
+                    (e.ajaxreturn.itemtype === 'aggregation' || e.ajaxreturn.itemtype === 'columnname')) {
+                    this._getReportColumns();
                 }
             }.bind(this));
         };

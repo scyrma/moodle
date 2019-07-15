@@ -49,9 +49,10 @@ abstract class aggregation_base {
      *
      * Override if needed.
      *
+     * @param bool $columnissortable Sortable flag for the column.
      * @return bool
      */
-    public static function is_sortable() : bool {
+    public static function is_sortable(bool $columnissortable) : bool {
         return true;
     }
 

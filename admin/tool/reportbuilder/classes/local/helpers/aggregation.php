@@ -80,11 +80,12 @@ class aggregation {
      * Helper function to check if aggregation supports sorting.
      *
      * @param string $aggregation Aggregation type
+     * @param bool $columnissortable Sortable flag for the column.
      * @return bool
      */
-    public static function is_sortable(string $aggregation) {
+    public static function is_sortable(string $aggregation, bool $columnissortable) {
         $classaggre = "\\tool_reportbuilder\\local\aggregate\\$aggregation";
-        return $classaggre::is_sortable();
+        return $classaggre::is_sortable($columnissortable);
     }
 
     /**

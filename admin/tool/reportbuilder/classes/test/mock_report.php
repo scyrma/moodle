@@ -66,12 +66,11 @@ class mock_report extends \tool_reportbuilder\datasource {
         $this->annotate_entity('user', new \lang_string('entityuser', 'tool_reportbuilder'));
 
         $fields = array('firstname', 'idnumber');
-        $headers = array(new \lang_string('firstname'), new \lang_string('idnumber'));
 
         foreach ($fields as $key => $field) {
             $newcolumn = (new report_column(
                 $field,
-                $headers[$key],
+                new \lang_string($field),
                 'user'))
                 ->add_field($field)
                 ->set_is_default(true, $key)

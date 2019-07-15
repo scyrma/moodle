@@ -222,7 +222,7 @@ class columns {
     public static function get_header_inplace_editable(string $displayvalue, string $heading, int $id) : inplace_editable {
         return new inplace_editable('tool_reportbuilder', 'columnname', $id,
             has_capability('tool/reportbuilder:edit', \context_system::instance()),
-            $displayvalue, $heading, get_string('customizeheader', 'tool_reportbuilder'),
+            $displayvalue, $heading, get_string('customizeheader', 'tool_reportbuilder', $displayvalue),
             get_string('newvaluefor', 'tool_reportbuilder', $displayvalue));
     }
 
@@ -257,9 +257,9 @@ class columns {
                     'columncount' => $columnscount[$columnkey]
                 ],
                 $output
-            );;
+            );
             $columnsdata[] = $columnexported;
-            if ($reportcolumn->get_is_sortable()) {
+            if ($reportcolumn->get_is_sortable($columnexported->aggregate)) {
                 $columnssorting[$column->get('sortorder')] = $columnexported;
             }
         }

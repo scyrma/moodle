@@ -82,4 +82,14 @@ class groupconcat extends aggregation_base {
     public static function get_shortname(): string {
         return 'groupconcat';
     }
+
+    /**
+     * If this aggregation supports sorting.
+     *
+     * @param bool $columnissortable Sortable flag for the column.
+     * @return bool
+     */
+    public static function is_sortable(bool $columnissortable) : bool {
+        return false;
+    }
 }

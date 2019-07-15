@@ -26,6 +26,7 @@ namespace tool_reportbuilder;
 
 use core\session\exception;
 use tool_reportbuilder\local\helpers\aggregation;
+use tool_reportbuilder\local\helpers\format;
 use tool_wp\db;
 
 defined('MOODLE_INTERNAL') || die();
@@ -389,13 +390,49 @@ class report_column {
      * @return array
      */
     public function get_callbacks(string $aggre = null) : array {
-        if ($aggre && array_key_exists($aggre, $this->callbacksaggre)) {
+        // First check if a specific aggregation callback is set.
+        if ($aggre && array_key_exists($aggre, $this->callbacksaggre) && !empty($this->callbacksaggre[$aggre])) {
             return $this->callbacksaggre[$aggre];
         }
-        if ($aggre && $aggre !== 'unique') {
-            return [];
+        // For aggregations 'unique', 'min' and 'max' use the same callback as for non-aggregated field,
+        // otherwise return "no callback".
+        if (!$aggre || $aggre === 'unique' || $aggre === 'min' || $aggre === 'max' || $aggre === 'sum') {
+            return $this->callbacks;
         }
-        return $this->callbacks;
+        // If callback for 'percent' is not specified, use default.
+        if ($aggre === 'percent') {
+            return [[[format::class, 'percent'], []]];
+        }
+        // If groupconcat callback is not specified and this is a boolean field - do some magic.
+        if ($this->callbacks &&
+                ($this->get_type() == constants::DB_TYPE_BOOLEAN) &&
+                ($aggre === 'groupconcat' || $aggre === 'groupconcatdistinct')) {
+            return [[[self::class, 'apply_callbacks_to_list'], $this->callbacks]];
+        }
+        return [];
+    }
+
+    /**
+     * Splits the value by separator, applies callbacks and joins back
+     *
+     * @param mixed $value result of the 'groupconcat' or 'groupconcatdistinct' aggregation
+     * @param \stdClass $obj
+     * @param callable[] $callbacks callbacks that the original column had
+     * @return null|string
+     */
+    public static function apply_callbacks_to_list($value, \stdClass $obj, array $callbacks) {
+        if (!strlen($value)) {
+            return $value;
+        }
+        $separator = aggregation_base::get_list_separator();
+        $values = preg_split('/' . preg_quote($separator, '/') . '/', $value);
+        foreach ($values as $idx => $v) {
+            foreach ($callbacks as $callback) {
+                $v = call_user_func_array($callback[0], [$v, $obj, $callback[1]]);
+            }
+            $values[$idx] = $v;
+        }
+        return join($separator, $values);
     }
 
     /**
@@ -440,8 +477,8 @@ class report_column {
      * @return bool
      */
     public function get_is_sortable($aggre = '') : bool {
-        if ($aggre && !aggregation::is_sortable($aggre)) {
-            return false;
+        if ($aggre) {
+            return aggregation::is_sortable($aggre, $this->issortable);
         }
         return $this->issortable;
     }
