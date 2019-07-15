@@ -21,7 +21,10 @@
         "tabheading": "Outcomes",
         "ruleisenabled": "1",
         "menucards": [],
-        "outcomeinstances": []
+        "instances": [],
+        "noinstances": "1",
+        "noinstancesurl": "https://moodlesite/theme/image.php/workplace/tool_dynamicrule/1561379437/no-instance",
+        "addinstancesstr": "Add conditions to this rule"
     }
 }}
 
@@ -42,9 +45,10 @@
         <div id="scroller-inner" class="flex-1 overflow-hidden min-height">
             <div class="position-absolute w-100 px-md-2 scroll-y">
                 <div id="outcomes-container" class="h-100 scroll-y">
-                    {{#outcomeinstances}}
+                    {{> tool_dynamicrule/no_instances}}
+                    {{#instances}}
                         {{> tool_dynamicrule/form_instance}}
-                    {{/outcomeinstances}}
+                    {{/instances}}
                 </div>
             </div>
         </div>

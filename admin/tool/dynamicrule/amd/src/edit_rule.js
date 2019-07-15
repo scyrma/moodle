@@ -49,7 +49,9 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
         MATCHING_USERS_COUNTER: '#matching-users-counter',
         MATCHING_USERS_LIST: '#viewmatchingusers',
         SCROLLER: '#scroller',
-        SCROLLER_INNER: '#scroller-inner'
+        SCROLLER_INNER: '#scroller-inner',
+        EMPTY_MESSAGE: '[data-region=empty-message]',
+        NOT_SAVED_LABEL: '#form-instance-notsaved-label'
     };
 
     var editRule = {
@@ -61,11 +63,15 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
          * Removes the node with some visual effect.
          *
          * @param {$} node to remove.
+         * @param {String} type of instance (condition or outcome)
          */
-        removeCardNode: function(node) {
+        removeCardNode: function(node, type) {
             node.fadeTo("fast", "0", function() {
                 node.slideUp("fast", function() {
                     node.remove();
+                    if ($('#' + type + 's-container .instance-card').length == 0) {
+                        $(SELECTORS.EMPTY_MESSAGE).removeClass('hidden');
+                    }
                 });
             });
         },
@@ -99,6 +105,10 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                 {'key': 'edit' + type, component: 'tool_dynamicrule'},
                 {'key': type + 'notsaved', component: 'tool_dynamicrule'},
             ]);
+            var container = $(editRule.getContainerSelectorByType(type)),
+            wrapper = '',
+            notsavedlabel = '';
+
             $.when(strings).then(function(s) {
                 // Put together context and render the template.
                 params.title = menuItemNode.prop('title');
@@ -112,21 +122,28 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                 return Templates.render('tool_dynamicrule/form_instance', params);
             })
             .then(function(html) {
-                var e = $('<div>').append(html);
-                var cardNode = e.find(">:first-child");
-                var container = $(editRule.getContainerSelectorByType(type));
+                var cardNode = $(html);
                 container.append(cardNode);
-                var wrapper = cardNode.find('.form-container');
+                wrapper = cardNode.find('.form-container');
+                // Store label as form will overwrite wrapper content.
+                notsavedlabel = wrapper.find(SELECTORS.NOT_SAVED_LABEL);
+
                 var form = editRule.initInstanceForm(cardNode, type);
-                return form.load(params).then(function() {
-                    wrapper.show();
-                    var scroller = container.closest(SELECTORS.SCROLLER);
-                    var scrollerInner = container.closest(SELECTORS.SCROLLER_INNER);
-                    if (container.height() > scrollerInner.height()) {
-                        scroller.animate({scrollTop: container.height()}, 200);
-                    }
-                    return null;
-                });
+                $(SELECTORS.EMPTY_MESSAGE).addClass('hidden');
+                return form.load(params);
+            })
+            .then(function() {
+                // Add label and show form.
+                wrapper.prepend(notsavedlabel);
+                wrapper.show();
+
+                // Add scrolling if needed.
+                var scroller = container.closest(SELECTORS.SCROLLER);
+                var scrollerInner = container.closest(SELECTORS.SCROLLER_INNER);
+                if (container.height() > scrollerInner.height()) {
+                    scroller.animate({scrollTop: container.height()}, 200);
+                }
+                return null;
             })
             .fail(Notification.exception);
         },
@@ -163,7 +180,6 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                 instanceclass: cardNode.data('instanceclass')
             };
             var wrapper = cardNode.find('.form-container');
-
             var form = editRule.initInstanceForm(cardNode, type);
 
             cardNode.find('.card-body').fadeTo("fast", "0.2");
@@ -190,7 +206,7 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                 editRule.submitInstanceForm(cardNode, data);
             };
             form.onCancel = function() {
-                editRule.cancelInstanceForm(cardNode);
+                editRule.cancelInstanceForm(cardNode, type);
             };
 
             return form;
@@ -223,8 +239,9 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
          * Cancel form for given instance type.
          *
          * @param {$} cardNode card node
+         * @param {String} type of instance (condition or outcome)
          */
-        cancelInstanceForm: function(cardNode) {
+        cancelInstanceForm: function(cardNode, type) {
             var instanceid = cardNode.data('instanceid');
             if (instanceid > 0) {
                 cardNode.find('.card-body').fadeTo("fast", "0.2", function() {
@@ -235,7 +252,7 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                 });
             } else {
                 // Removing new unsaved from instance.
-                editRule.removeCardNode(cardNode);
+                editRule.removeCardNode(cardNode, type);
             }
         },
 
@@ -262,7 +279,7 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                         ])[0]
                         .then(function() {
                             // Remove the form element with a visual effect.
-                            editRule.removeCardNode(cardNode);
+                            editRule.removeCardNode(cardNode, type);
                             editRule.updateCountMatchingUsers();
                             editRule.updateEnableButton();
                             return null;
@@ -272,7 +289,7 @@ function($, Tabs, ModalForm, Templates, Ajax, Notification, Fragment, Str, Modal
                 }).fail(Notification.exception);
             } else {
                 // Removing new unsaved from instance.
-                editRule.removeCardNode(cardNode);
+                editRule.removeCardNode(cardNode, type);
             }
         },
 

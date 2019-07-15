@@ -109,9 +109,12 @@ class tab_ruleconditions extends tab {
             'canenablerule' => $this->can_enable_rule(),
             'enablehelp' => $enablehelp->export_for_template($output),
             'menucards' => $menucards,
-            'conditioninstances' => $conditioninstances,
+            'instances' => $conditioninstances,
             'countmatchingusers' => get_string('countmatchingusers', 'tool_dynamicrule', $countmatchingusers),
             'listurl' => (new \moodle_url('/admin/tool/dynamicrule/index.php'))->out(),
+            'noinstances' => empty($conditioninstances),
+            'noinstancesurl' => $output->image_url('no-instance', 'tool_dynamicrule')->out(),
+            'addinstancesstr' => get_string('addconditions', 'tool_dynamicrule'),
         ];
 
         return $params;

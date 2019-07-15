@@ -123,8 +123,11 @@ class tab_ruleoutcomes extends tab {
             'enablehelp' => $enablehelp->export_for_template($output),
             'canenablerule' => $this->can_enable_rule(),
             'menucards' => $menucards,
-            'outcomeinstances' => $outcomeinstances,
+            'instances' => $outcomeinstances,
             'listurl' => (new \moodle_url('/admin/tool/dynamicrule/index.php'))->out(),
+            'noinstances' => empty($outcomeinstances),
+            'noinstancesurl' => $output->image_url('no-instance', 'tool_dynamicrule')->out(),
+            'addinstancesstr' => get_string('addoutcomes', 'tool_dynamicrule'),
         ];
 
         return $params;
