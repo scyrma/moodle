@@ -25,9 +25,7 @@
 namespace tool_certification\local\helpers;
 
 use core\output\inplace_editable;
-use tool_certification\api;
 use tool_certification\certification;
-use tool_certification\constants;
 use tool_certification\permission;
 use html_writer;
 use stdClass;
@@ -46,6 +44,46 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format {
+
+    /**
+     * Formats a short string
+     *
+     * @param string $rawstring
+     * @return string
+     */
+    public static function string(?string $rawstring): string {
+        return format_string($rawstring, true, ['context' => context_system::instance(), 'escape' => false]);
+    }
+
+    /**
+     * Formats a boolean
+     *
+     * @param bool $rawboolean
+     * @param string|null $customyesstr
+     * @param string|null $customnostr
+     * @return string
+     */
+    public static function yesno(bool $rawboolean, ?string $customyesstr = null, ?string $customnostr = null): string {
+        if ($rawboolean) {
+            return $customyesstr ?? get_string('yes');
+        }
+        return $customnostr ?? get_string('no');
+    }
+
+    /**
+     * Formats a date
+     *
+     * @param int $rawtimestamp
+     * @param string|null $customformat
+     * @return string
+     */
+    public static function date(int $rawtimestamp, ?string $customformat = null): string {
+        if (!($rawtimestamp > 0)) {
+            return '';
+        }
+        $format = $customformat ?? get_string('strftimedatefullshort');
+        return userdate($rawtimestamp, $format);
+    }
 
     /**
      * Column name with inplace editable.
@@ -138,106 +176,6 @@ class format {
     }
 
     /**
-     * Displays column duedate.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     * @throws coding_exception
-     */
-    public static function duedate(?string $value, stdClass $row): string {
-        global $OUTPUT;
-        $icon = '';
-        if (1 === (int)$row->duedatelocked) {
-            $icon = $OUTPUT->pix_icon('req', get_string('dateoverrided', 'tool_certification'));
-        }
-        if (0 === (int)$value) {
-            return get_string('notset', 'tool_certification');
-        }
-        return userdate($row->duedate, get_string('strftimedatefullshort')) . ' ' . $icon;
-    }
-
-    /**
-     * Displays column startdate.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     * @throws coding_exception
-     */
-    public static function startdate(?string $value, stdClass $row): string {
-        global $OUTPUT;
-        $icon = '';
-        if (1 === (int)$row->startdatelocked) {
-            $icon = $OUTPUT->pix_icon('req', get_string('dateoverrided', 'tool_certification'));
-        }
-        if (0 === (int)$value) {
-            return get_string('notset', 'tool_certification');
-        }
-        return userdate($row->startdate, get_string('strftimedatefullshort')) . ' ' . $icon;
-    }
-
-    /**
-     * Displays column expirydate.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     * @throws coding_exception
-     */
-    public static function userexpirydate(?string $value, stdClass $row): string {
-        global $OUTPUT;
-        if (api::is_user_certified($row->userid, $row->certificationid)) {
-            $icon = '';
-            if (1 === (int)$row->expirydatelocked) {
-                $icon = $OUTPUT->pix_icon('req', get_string('dateoverrided', 'tool_certification'));
-            }
-            if (0 === (int)$row->expirydate) {
-                return get_string('never', 'tool_certification') . $icon;
-            }
-            return userdate($row->expirydate, get_string('strftimedatefullshort')) . $icon;
-        }
-        return '';
-    }
-
-    /**
-     * Displays allocation source.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function allocation_source(?string $value, stdClass $row): ?string {
-        switch ((int)$row->allocationtype) {
-            case constants::ALLOCATION_MANUAL:
-                return get_string('manual', 'tool_certification');
-                break;
-            case constants::ALLOCATION_DYNAMIC:
-                return get_string('dynamic', 'tool_certification');
-                break;
-            default:
-                throw new \moodle_exception('errorallocationsourcenotfound', 'tool_certification');
-                break;
-        }
-    }
-
-    /**
-     * Displays column status.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function status(?string $value, stdClass $row): string {
-        $statuses = api::get_user_allocation_status($row->certificationid, $row->userid);
-        $statuseshtml = [];
-        foreach ($statuses as $status) {
-            $statuseshtml[] = html_writer::span($status['statusstr'], $status['status']);
-        }
-        return implode(' ', $statuseshtml);
-    }
-
-    /**
      * Displays column programstatus.
      *
      * @param string $value
@@ -315,135 +253,6 @@ class format {
 
         // If this report is viewed by a manager who can view reports but not allocate - no link.
         return format_string($row->programname);
-    }
-
-    /**
-     * Returns archived not archived string
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @param string $format
-     * @return string
-     */
-    public static function archived($value, stdClass $row, $format = null): string {
-        if (1 === (int) $value) {
-            return get_string('archived', 'tool_certification');
-        }
-        return get_string('notarchived', 'tool_certification');
-    }
-
-    /**
-     * Displays column program name on report.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @param array $args
-     * @return string
-     */
-    public static function programname(?string $value, stdClass $row, $args): string {
-        return format_string($row->fullname);
-    }
-
-    /**
-     * Displays columns allocation dates on report.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     * @throws coding_exception
-     */
-    public static function allocationdate(?string $value, stdClass $row): string {
-        if (1 === (int)$row->allocationstartdatetype) {
-            return userdate($row->allocationstartdateabsolute, get_string('strftimedatefullshort'));
-        }
-        if (1 === (int)$row->allocationenddatetype) {
-            return userdate($row->allocationenddateabsolute, get_string('strftimedatefullshort'));
-        }
-        return '';
-    }
-
-    /**
-     * Displays columns Certification Start Date on report.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     * @throws coding_exception
-     * @throws \moodle_exception
-     */
-    public static function certificationstartdate(?string $value, stdClass $row): ?string {
-        switch ($row->startdatetype) {
-            case constants::DATE_ABSOLUTE:
-                return userdate($row->startdateabsolute, get_string('strftimedatefullshort'));
-                break;
-            case constants::DATE_USER_ALLOCATION_DATE:
-                return get_string('allocationdate', 'tool_certification');
-                break;
-            case constants::DATE_RELATIVE_TO_ALLOCATION_DATE:
-                $str = get_string('afterallocationdate', 'tool_certification');
-                return $row->startdaterelative . ' ' . $str;
-                break;
-            default:
-                throw new coding_exception('errorstartdatetypenotfound');
-                break;
-        }
-    }
-
-    /**
-     * Displays columns Certification Due Date on report.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     * @throws coding_exception
-     */
-    public static function certificationduedate(?string $value, stdClass $row): string {
-        if ((int) $row->startdatetype === constants::DATE_ABSOLUTE) {
-            $duedate = strtotime('+' . $row->duedaterelative, $row->startdateabsolute);
-            return userdate($duedate, get_string('strftimedatefullshort'));
-        }
-        return $row->duedaterelative . ' ' . get_string('afterstartdate', 'tool_certification');
-    }
-
-    /**
-     * Displays columns Certification Expiry Date on report.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     * @throws coding_exception
-     * @throws \moodle_exception
-     */
-    public static function certificationexpirydate(?string $value, stdClass $row): ?string {
-        switch ($row->expirydatetype) {
-            case constants::DATE_NEVER:
-                return get_string('never', 'tool_certification');
-                break;
-            case constants::DATE_ABSOLUTE:
-                return userdate($row->expirydateabsolute, get_string('strftimedatefullshort'));
-                break;
-            case constants::DATE_AFTER_COMPLETION:
-                $str = get_string('aftercompletion', 'tool_certification');
-                return $row->duedaterelative . ' ' . $str;
-                break;
-            case constants::DATE_AFTER_ALLOCATION_DATE:
-                $str = get_string('afterallocationdate', 'tool_certification');
-                return $row->duedaterelative . ' ' . $str;
-                break;
-            case constants::DATE_AFTER_DUE_DATE:
-                if ((int) $row->startdatetype === constants::DATE_ABSOLUTE) {
-                    $duedate = strtotime('+' . $row->duedaterelative, $row->startdateabsolute);
-                    $expirydate = strtotime('+' . $row->expirydaterelative, $duedate);
-                    return userdate($expirydate, get_string('strftimedatefullshort'));
-                }
-
-                $str = get_string('afterduedate', 'tool_certification');
-                return $row->duedaterelative . ' ' . $str;
-                break;
-            default:
-                throw new coding_exception('errorexpirydatetypenotfound');
-                break;
-        }
     }
 
     /**

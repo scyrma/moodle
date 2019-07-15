@@ -54,7 +54,7 @@ class deallocation extends outcome_base {
             'multiple' => false,
             'valuehtmlcallback' => $this->get_format_certification_fullname_callback()
         ];
-        $selectstr = get_string('selectcertification', 'tool_certification') . ':';
+        $selectstr = get_string('selectcertificationoutcome', 'tool_certification');
         $missingcertstr = get_string('missingcertification', 'tool_certification');
         $mform->addElement('autocomplete', 'certificationid', $selectstr, [], $options);
         $mform->addRule('certificationid', $missingcertstr, 'required', null, 'client');

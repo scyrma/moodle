@@ -272,4 +272,15 @@ class behat_tool_certification extends behat_base {
             $generator->complete_certification($certification, $userid);
         }
     }
+
+    /**
+     * Navigate to one more week date in the calendar.
+     *
+     * @Given /^I view the calendar for "(?P<week>\d+)" more weeks$/
+     * @param int $weeks the number of weeks
+     */
+    public function i_view_the_calendar_for_one_more_week(int $weeks): void {
+        $time = strtotime("+$weeks week");
+        $this->getSession()->visit($this->locate_path('/calendar/view.php?view=day&course=1&time='.$time));
+    }
 }

@@ -1637,4 +1637,44 @@ class api {
         }
         self::set_user_as_certified($userid, $certificationid);
     }
+
+    /**
+     * Returns a list of certifications where the user is allocated to.
+     *
+     * @param int $userid
+     * @return certification[]
+     */
+    private static function get_certifications_by_userid(int $userid): array {
+        global $DB;
+
+        $certifications = [];
+        $sql = 'SELECT c.*
+                FROM {' . certification::TABLE . '} c
+                WHERE id IN (
+                    SELECT cu.certificationid
+                    FROM {' . certification_user::TABLE . '} cu
+                    WHERE cu.userid = :userid
+                ) ';
+        $certificationrecords = $DB->get_records_sql($sql, ['userid' => $userid]);
+        foreach ($certificationrecords as $certificationrecord) {
+            $certifications[$certificationrecord->id] = new certification(0, $certificationrecord);
+        }
+
+        return $certifications;
+    }
+
+    /**
+     * Removes a deleted user from all certifications (and associated programs).
+     * Used in the user_deleted observer.
+     *
+     * @param int $userid
+     */
+    public static function remove_deleted_user_from_certifications(int $userid): void {
+        $certifications = self::get_certifications_by_userid($userid);
+        if (!empty($certifications)) {
+            foreach ($certifications as $certification) {
+                self::deallocate_user($certification->get('id'), $userid);
+            }
+        }
+    }
 }

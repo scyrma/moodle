@@ -63,14 +63,14 @@ class certification_certified extends condition_sql {
             'multiple' => false,
             'valuehtmlcallback' => $this->get_format_certification_fullname_callback()
         ];
-        $selectstr = get_string('selectcertification', 'tool_certification') . ':';
+        $selectstr = get_string('selectcertificationcondition', 'tool_certification');
         $missingcertstr = get_string('missingcertification', 'tool_certification');
         $mform->addElement('autocomplete', 'certificationid', $selectstr, [], $options);
         $mform->addRule('certificationid', $missingcertstr, 'required', null, 'client');
         $mform->addHelpButton('certificationid', 'selectcertificationcondition', 'tool_certification');
         $mform->setType('certificationid', PARAM_INT);
 
-        $datelabelstr = get_string('certifieddateisonorafter', 'tool_certification') . ':';
+        $datelabelstr = get_string('certifieddateisonorafter', 'tool_certification');
         $enablestr = get_string('enable');
         $group = [];
         $group[] =& $mform->createElement('date_selector', 'conditiondate', '');

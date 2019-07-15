@@ -29,6 +29,7 @@ use tool_certification\event\user_allocation_created;
 use tool_certification\event\user_allocation_deleted;
 use tool_program\event\program_completed;
 use tool_certification\api;
+use core\event\user_deleted;
 
 /**
  * Class tool_certification_observer
@@ -72,5 +73,14 @@ class tool_certification_observer {
      */
     public static function user_allocation_deleted(user_allocation_deleted $event): void {
         api::send_certification_user_deallocated_notification($event->relateduserid, $event->other['certificationid']);
+    }
+
+    /**
+     * User deleted observer
+     *
+     * @param user_deleted $event
+     */
+    public static function user_deleted(user_deleted $event): void {
+        api::remove_deleted_user_from_certifications($event->objectid);
     }
 }

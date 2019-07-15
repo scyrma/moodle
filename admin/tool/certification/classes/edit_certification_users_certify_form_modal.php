@@ -60,7 +60,7 @@ class edit_certification_users_certify_form_modal extends \tool_wp\modal_form {
 
         $neverstr = get_string('never', 'tool_certification');
         $defaultstr = get_string('default');
-        $expirydatestr = get_string('expirydate', 'tool_certification');
+        $expirydatestr = get_string('certifyexpirydate', 'tool_certification');
         $selectdatestr = get_string('selectdate', 'tool_certification');
 
         $certification = new certification($certificationid);

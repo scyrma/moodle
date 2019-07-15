@@ -80,9 +80,9 @@ Feature: Active table pagination
     And I should see "Cert l" in the "#certification_manager_list_active_tab table.report-table" "css_element"
     # Begin - Check events in action still working.
     Then I click on ".archive_certification" "css_element" in the "#certification_manager_list_active_tab td.cell.c3" "css_element"
-    Then I click on "Cancel" "button" in the ".modal-dialog" "css_element"
+    Then I click on "Cancel" "button" in the ".confirmation-dialogue" "css_element"
     Then I click on ".duplicate_certification" "css_element" in the "#certification_manager_list_active_tab td.cell.c3" "css_element"
-    Then I click on "Cancel" "button" in the ".modal-dialog" "css_element"
+    Then I click on "Cancel" "button" in the ".confirmation-dialogue" "css_element"
     # End - Check events in action still working.
     And I should see "Prev" in the ".tool_reportbuilder_report ul.pagination" "css_element"
     And I click on "Prev" "link" in the ".tool_reportbuilder_report ul.pagination" "css_element"

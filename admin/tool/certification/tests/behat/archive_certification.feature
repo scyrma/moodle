@@ -44,8 +44,7 @@ Feature: Archive and restore a certification
     And "Program" "text" should appear before "table.report-table thead th.c3" "css_element"
     # Archive certification
     Then I click on ".archive_certification" "css_element" in the "Certification1" "table_row"
-    Then I should see "Confirm" in the ".modal-dialog .modal-title" "css_element"
-    Then I press "Archive"
+    Then I click on "Archive" "button" in the ".confirmation-dialogue" "css_element"
     Then I click on "Active" "link"
     And I should not see "Certification1"
     And I should not see "Certification2"

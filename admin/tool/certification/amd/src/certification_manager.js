@@ -31,20 +31,14 @@ define([
     'core/str',
     'tool_wp/tabs',
     'tool_wp/modal_form',
-    'core/config',
-    'core/modal_factory',
-    'core/modal_events',
 ], function($,
             ajax,
             templates,
             fragment,
-            notification,
+            Notification,
             Str,
             Tabs,
-            ModalForm,
-            Config,
-            ModalFactory,
-            ModalEvents) {
+            ModalForm) {
 
     /** @type {Object} The list of selectors for the certification area. */
     var SELECTORS = {
@@ -96,59 +90,24 @@ define([
 
         var element = $(e.currentTarget);
         var certificationid = element.data('certificationid');
-        var certname = element.closest('tr')
+        var name = element.closest('tr')
             .find('.inplaceeditable[data-itemtype=certificationname]').text();
-        var stringkeys = [{
-            key: 'confirm',
-            component: 'tool_certification'
-        },
-        {
-            key: 'archivedconfirmation',
-            component: 'tool_certification',
-            param: certname
-        },
-        {
-            key: 'archive',
-            component: 'tool_certification',
-        },
-        {
-            key: 'no'
-        }];
-
-        Str.get_strings(stringkeys).then(function(langStrings) {
-            var title = langStrings[0];
-            var confirmMessage = langStrings[1];
-            var buttonText = langStrings[2];
-            return ModalFactory.create({
-                title: title,
-                body: confirmMessage,
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(buttonText);
-                // Handle save event.
-                modal.getRoot().on(ModalEvents.save, function() {
-                    var request = {
-                        methodname: SERVICES.ARCHIVECERTIFICATION,
-                        args: {
-                            certificationid: certificationid
-                        }
-                    };
-
-                    ajax.call([request])[0].done(function(data) {
-                        if (data) {
-                            Tabs.loadTab(null, null);
-                        }
-                    }).fail(Notification.exception);
-                });
-
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-
-                return modal;
+        Str.get_strings([
+            {key: 'confirm'},
+            {key: 'archivedconfirmation', component: 'tool_certification', param: name},
+            {key: 'archive', component: 'tool_certification'},
+            {key: 'cancel'}
+        ]).done(function(s) {
+            Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                var promises = ajax.call([
+                    {methodname: SERVICES.ARCHIVECERTIFICATION, args: {certificationid: certificationid}}
+                ]);
+                promises[0].done(function(data) {
+                    if (data) {
+                        Tabs.loadTab(null, null);
+                    }
+                }).fail(Notification.exception);
             });
-        }).done(function(modal) {
-            modal.show();
         }).fail(Notification.exception);
     };
 
@@ -188,57 +147,23 @@ define([
 
         var element = $(e.currentTarget);
         var certificationid = element.data('certificationid');
-        var certname = element.closest('tr').find('.c0').text();
-        var stringkeys = [{
-            key: 'confirm',
-            component: 'tool_certification'
-        },
-        {
-            key: 'confirmdeletecertification',
-            component: 'tool_certification',
-            param: certname
-        },
-        {
-            key: 'delete',
-        },
-        {
-            key: 'no'
-        }];
-
-        Str.get_strings(stringkeys).then(function(langStrings) {
-            var title = langStrings[0];
-            var confirmMessage = langStrings[1];
-            var buttonText = langStrings[2];
-            return ModalFactory.create({
-                title: title,
-                body: confirmMessage,
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(buttonText);
-                // Handle save event.
-                modal.getRoot().on(ModalEvents.save, function() {
-                    var request = {
-                        methodname: SERVICES.DELETECERTIFICATION,
-                        args: {
-                            certificationid: certificationid
-                        }
-                    };
-
-                    ajax.call([request])[0].done(function(data) {
-                        if (data) {
-                            Tabs.loadTab(null, null);
-                        }
-                    }).fail(Notification.exception);
-                });
-
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-
-                return modal;
+        var name = element.closest('tr').find('.c0').text();
+        Str.get_strings([
+            {key: 'confirm'},
+            {key: 'confirmdeletecertification', component: 'tool_certification', param: name},
+            {key: 'delete'},
+            {key: 'cancel'}
+        ]).done(function(s) {
+            Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                var promises = ajax.call([
+                    {methodname: SERVICES.DELETECERTIFICATION, args: {certificationid: certificationid}}
+                ]);
+                promises[0].done(function(data) {
+                    if (data) {
+                        Tabs.loadTab(null, null);
+                    }
+                }).fail(Notification.exception);
             });
-        }).done(function(modal) {
-            modal.show();
         }).fail(Notification.exception);
     };
 
@@ -274,51 +199,21 @@ define([
 
         var element = $(e.currentTarget);
         var certificationid = element.data('certificationid');
-        var certname = element.closest('tr')
+        var name = element.closest('tr')
             .find('.inplaceeditable[data-itemtype=certificationname]').text();
-        var stringkeys = [{
-            key: 'confirm',
-            component: 'tool_certification'
-        },
-        {
-            key: 'confirmduplicate',
-            component: 'tool_certification',
-            param: certname
-        },
-        {
-            key: 'ok',
-        },
-        {
-            key: 'cancel'
-        }];
-
-        Str.get_strings(stringkeys).then(function(langStrings) {
-            var title = langStrings[0];
-            var confirmMessage = langStrings[1];
-            var buttonText = langStrings[2];
-            return ModalFactory.create({
-                title: title,
-                body: confirmMessage,
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(buttonText);
-                // Handle save event.
-                modal.getRoot().on(ModalEvents.save, function() {
-                    var str = Str.get_string('newcertification', 'tool_certification');
-                    var modal = showDetailsModal($(e.currentTarget), 0, certificationid, str);
-                    modal.onSubmitSuccess = function(response) {
-                        window.location.href = response;
-                    };
-                });
-
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-
-                return modal;
+        Str.get_strings([
+            {key: 'confirm'},
+            {key: 'confirmduplicate', component: 'tool_certification', param: name},
+            {key: 'ok'},
+            {key: 'cancel'}
+        ]).done(function(s) {
+            Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                var str = Str.get_string('newcertification', 'tool_certification');
+                var modal = showDetailsModal($(e.currentTarget), 0, certificationid, str);
+                modal.onSubmitSuccess = function(response) {
+                    window.location.href = response;
+                };
             });
-        }).done(function(modal) {
-            modal.show();
         }).fail(Notification.exception);
     };
 

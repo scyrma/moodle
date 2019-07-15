@@ -26,6 +26,7 @@ namespace tool_certification\local\reports;
 defined('MOODLE_INTERNAL') || die();
 
 use tool_certification\certification;
+use tool_certification\local\helpers\certificationuser_format;
 use tool_certification\permission;
 use tool_reportbuilder\local\entities\user as user_entity;
 use tool_organisation\organisation;
@@ -50,13 +51,22 @@ class users_table extends system_report {
      */
     protected function initialise() {
         $certificationid = $this->get_parameter('id', 0, PARAM_INT);
+        $tenantid = tenancy::get_tenant_id();
+
         $this->set_columns();
         $this->set_main_table('tool_certification_users', 'tcu');
         $this->add_base_join('INNER JOIN {tool_certification} tc ON tc.id = tcu.certificationid');
+        $this->add_base_join('INNER JOIN {user} u ON u.id = tcu.userid');
         $this->add_base_condition_simple('tcu.certificationid', $certificationid);
-        $this->add_base_condition_simple('tc.tenantid', tenancy::get_tenant_id());
+        $this->add_base_condition_simple('tc.tenantid', $tenantid);
         $this->add_base_condition_simple('tc.archived', 0);
+        $this->add_base_condition_simple('u.deleted', 0);
         $this->add_base_fields('tcu.id, tcu.certificationid, tcu.userid'); // Fields necessary for actions.
+
+        // Check tenant id on users in case they have been moved to another tenant.
+        [$join, $where, $params] = tenancy::get_users_sql('u', $tenantid);
+        $this->add_base_join($join);
+        $this->add_base_condition_sql($where, $params);
 
         if (!permission::has_allocateuser_capability(context_system::instance())
             && class_exists('\\tool_organisation\\organisation')) {
@@ -122,7 +132,7 @@ class users_table extends system_report {
         ))
             ->add_fields('duedate, duedatelocked')
             ->set_is_default(true, 2)
-            ->add_callback([\tool_certification\local\helpers\format::class, 'duedate']);
+            ->add_callback([certificationuser_format::class, 'duedate']);
         $this->add_column($newcolumn);
 
         // Column "allocationtype".
@@ -134,7 +144,7 @@ class users_table extends system_report {
             ->add_field('tcu.allocationtype')
             ->set_is_default(true, 3)
             ->set_is_sortable(true, true, 1, SORT_DESC)
-            ->add_callback([\tool_certification\local\helpers\format::class, 'allocation_source']);
+            ->add_callback([certificationuser_format::class, 'allocationtype']);
         $this->add_column($newcolumn);
 
         // Column "status".
@@ -145,7 +155,7 @@ class users_table extends system_report {
         ))
             ->add_fields('tcu.status, tcu.userid, tcu.certificationid')
             ->set_is_default(true, 4);
-        $newcolumn->add_callback([\tool_certification\local\helpers\format::class, 'status']);
+        $newcolumn->add_callback([certificationuser_format::class, 'status']);
         $this->add_column($newcolumn);
 
         // Column "user expirydate".
@@ -156,7 +166,7 @@ class users_table extends system_report {
         ))
             ->add_fields('tcu.expirydate, tcu.expirydatelocked, tcu.userid, tcu.certificationid')
             ->set_is_default(true, 4);
-        $newcolumn->add_callback([\tool_certification\local\helpers\format::class, 'userexpirydate']);
+        $newcolumn->add_callback([certificationuser_format::class, 'expirydate']);
         $this->add_column($newcolumn);
 
         // Column "programstatus".

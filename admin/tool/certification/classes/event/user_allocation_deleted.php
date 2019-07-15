@@ -95,7 +95,9 @@ class user_allocation_deleted extends base {
      * @return string
      */
     public function get_description(): string {
-        return "The user with id '$this->userid' deallocated the user with id ".$this->other['userid'].".";
+        return "The user with id '$this->userid' deallocated " .
+            "the user with id '$this->relateduserid' " .
+            "from certification with id '" . $this->other['certificationid'] . "'.";
     }
 
     /**

@@ -24,20 +24,16 @@
 
 namespace tool_certification\tool_reportbuilder\datasources;
 
-use lang_string;
 use moodle_exception;
-use tool_certification\local\helpers\certification_fields;
-use tool_certification\local\helpers\format;
+use tool_certification\local\helpers\certification_entity;
+use tool_certification\local\helpers\certificationuser_entity;
+use tool_program\local\helpers\program_entity;
 use tool_reportbuilder\datasource;
-use tool_reportbuilder\local\filter\text;
-use tool_reportbuilder\report_filter;
-use tool_reportbuilder\report_column;
+use tool_reportbuilder\local\entities\course;
+use tool_reportbuilder\local\entities\user;
+use lang_string;
 
 defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-
-require_once($CFG->libdir . '/tablelib.php');
 
 /**
  * Class report_certifications
@@ -57,12 +53,33 @@ class report_certifications extends datasource {
 
         $this->set_downloadable(false);
         $this->set_columns();
-        $this->set_conditions();
-        $this->set_filters();
 
         $this->get_column('tool_certification:fullname')
-            ->set_is_default(true)
-            ->set_is_sortable(true, true, 1);
+            ->set_is_default(true, 1)
+            ->set_is_sortable(true, true, 1, SORT_ASC);
+
+        $this->get_column('tool_program:fullnamewithimage')
+            ->set_is_default(true, 2);
+
+        $this->get_column('tool_certification:duedate')
+            ->set_is_default(true, 3);
+
+        $this->get_column('tool_certification:expirydate')
+            ->set_is_default(true, 4);
+
+        // Add default conditions.
+        $conditions = $this->get_conditions();
+        $conditions['tool_certification:archived']->set_is_default(true, ['archived_op' => 2, 'archived' => 0]);
+        $conditions['tool_program:archived']->set_is_default(true, ['archived_op' => 2, 'archived' => 0]);
+        $conditions['tool_program:visible']->set_is_default(true, ['visible_op' => 1, 'visible' => 1]);
+
+        // Add default filters.
+        $filters = $this->get_filters();
+        $filters['tool_certification:fullname']->set_is_default(true);
+        $filters['tool_program:programselector']->set_is_default(true);
+        $filters['tool_program:course']->set_is_default(true);
+        $filters['tool_certification:timecreated']->set_is_default(true);
+        $filters['tool_certification:timemodified']->set_is_default(true);
     }
 
     /**
@@ -75,20 +92,24 @@ class report_certifications extends datasource {
     }
 
     /**
-     * Gets an instance of certification_fields_helper that is used to add typical certification columns, filters and conditions
+     * Returns the certification_user/user join.
      *
-     * @return certification_fields
+     * @return string
      */
-    protected function get_certification_fields_helper(): certification_fields {
-        return new certification_fields(
-            '',
-            'tc',
-            [
-                'program',
-                'allocationstartdatetype',
-                'allocationenddatetype',
-            ]
-        );
+    private static function get_users_join(): string {
+        return 'LEFT JOIN {tool_certification_users} tcu ON tcu.certificationid = tc.id
+                LEFT JOIN {user} u ON u.id = tcu.userid';
+    }
+
+    /**
+     * Returns the certification_user/user join.
+     *
+     * @return string
+     */
+    private static function get_courses_join(): string {
+        return 'LEFT JOIN {tool_program_sets} tps ON tps.programid = tp.id
+                LEFT JOIN {tool_program_courses} tpc ON tpc.setid = tps.id
+                LEFT JOIN {course} c ON c.id = tpc.courseid';
     }
 
     /**
@@ -96,91 +117,12 @@ class report_certifications extends datasource {
      *
      */
     protected function set_columns(): void {
-        $this->add_entity($this->get_certification_fields_helper());
-
-        // Program name.
-        $newcolumn = (new report_column(
-            'certificationprogram',
-            new lang_string('program', 'tool_certification'),
-            'tool_certification'
-        ))
-            ->add_field('tp.fullname');
-        $newcolumn->add_callback([format::class, 'programname']);
-        $this->add_column($newcolumn);
-
-        // Certification start date.
-        $newcolumn = (new report_column(
-            'startdate',
-            new lang_string('startdate', 'tool_certification'),
-            'tool_certification'
-        ))
-            ->add_field('tc.startdatetype')
-            ->add_field('tc.startdateabsolute')
-            ->add_field('tc.startdaterelative');
-        $newcolumn->add_callback([format::class, 'certificationstartdate']);
-        $this->add_column($newcolumn);
-
-        // Certification due date.
-        $newcolumn = (new report_column(
-            'duedate',
-            new lang_string('duedate', 'tool_certification'),
-            'tool_certification'
-        ))
-            ->add_field('tc.startdatetype')
-            ->add_field('tc.startdateabsolute')
-            ->add_field('tc.duedaterelative');
-        $newcolumn->add_callback([format::class, 'certificationduedate']);
-        $this->add_column($newcolumn);
-
-        // Certification expiry date.
-        $newcolumn = (new report_column(
-            'expirydate',
-            new lang_string('expirydate', 'tool_certification'),
-            'tool_certification'
-        ))
-            ->add_field('tc.expirydatetype')
-            ->add_field('tc.expirydateabsolute')
-            ->add_field('tc.expirydaterelative')
-            ->add_field('tc.startdatetype')
-            ->add_field('tc.startdateabsolute')
-            ->add_field('tc.duedaterelative');
-        $newcolumn->add_callback([format::class, 'certificationexpirydate']);
-        $this->add_column($newcolumn);
-    }
-
-    /**
-     * Set the filters of the report
-     */
-    protected function set_filters(): void {
-        $this->add_filters_conditions_helper('add_filter');
-    }
-
-    /**
-     * Available conditions to be selected in the report.
-     */
-    protected function set_conditions(): void {
-        $this->add_filters_conditions_helper('add_condition');
-    }
-
-    /**
-     * Helper that add filters or conditions depend how is called
-     *
-     * @param string $method
-     */
-    protected function add_filters_conditions_helper(string $method): void {
-        if (!in_array($method, ['add_filter', 'add_condition'])) {
-            throw new moodle_exception('Helper action not allowed.');
-        }
-
-        // Filter for program.
-        $this->$method(
-            new report_filter(
-                text::class,
-                'certificationprogram',
-                new lang_string('program', 'tool_certification'),
-                'tool_certification',
-                'tp.fullname'
-            )
-        );
+        $this->add_entity(new certification_entity('', 'tc'));
+        $this->add_entity(new program_entity('', 'tp'));
+        $this->add_entity(new certificationuser_entity(self::get_users_join(), 'tcu'));
+        $this->add_entity(new user(self::get_users_join(), 'u'));
+        $this->add_entity(new course(self::get_courses_join(), 'c'));
+        // Modify name on course entity from 'Course' to 'Program course'.
+        $this->annotate_entity('course', new lang_string('programcourse', 'tool_certification'));
     }
 }

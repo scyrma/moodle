@@ -26,6 +26,7 @@ use tool_certification\event\certification_completion_created;
 use tool_certification\event\user_allocation_created;
 use tool_certification\event\user_allocation_deleted;
 use tool_program\event\program_completed;
+use core\event\user_deleted;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -45,5 +46,9 @@ $observers = [
     [
         'eventname' => user_allocation_deleted::class,
         'callback' => 'tool_certification_observer::user_allocation_deleted'
+    ],
+    [
+        'eventname' => user_deleted::class,
+        'callback' => 'tool_certification_observer::user_deleted'
     ],
 ];

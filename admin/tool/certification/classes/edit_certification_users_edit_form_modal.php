@@ -66,7 +66,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
         $mform->setType('id', PARAM_INT);
 
         $mform->addElement('hidden', 'certificationuserid', $certificationuserid);
-        $mform->setType('userid', PARAM_INT);
+        $mform->setType('certificationuserid', PARAM_INT);
 
         $options = [
             constants::STATUS_OVERRIDE_DEFAULT => $defaultstr,
@@ -108,7 +108,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
         $iscertified = api::is_user_certified($userid, $certificationid);
         if ($iscertified) {
             $neverstr = get_string('never', 'tool_certification');
-            $expirydatestr = get_string('expirydate', 'tool_certification');
+            $expirydatestr = get_string('certifyexpirydate', 'tool_certification');
             $selectdatestr = get_string('selectdate', 'tool_certification');
 
             // Expiry date.

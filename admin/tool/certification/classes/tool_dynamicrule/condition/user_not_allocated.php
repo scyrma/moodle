@@ -60,7 +60,7 @@ class user_not_allocated extends \tool_dynamicrule\condition_sql {
             'multiple' => false,
             'valuehtmlcallback' => $this->get_format_certification_fullname_callback()
         ];
-        $selectstr = get_string('selectcertification', 'tool_certification');
+        $selectstr = get_string('selectcertificationcondition', 'tool_certification');
         $missingcertstr = get_string('missingcertification', 'tool_certification');
         $mform->addElement('autocomplete', 'certificationid', $selectstr, [], $options);
         $mform->addHelpButton('certificationid', 'selectcertificationcondition', 'tool_certification');

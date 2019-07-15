@@ -83,7 +83,7 @@ Feature: Archived table pagination
     Then I click on "2" "link" in the ".tool_reportbuilder_report ul.pagination" "css_element"
     And I should not see "Cert k" in the "#certification_manager_list_archived_tab table.report-table" "css_element"
     Then I click on ".delete_certification" "css_element" in the "Cert l" "table_row"
-    Then I click on "Cancel" "button" in the ".modal-dialog" "css_element"
+    Then I click on "Cancel" "button" in the ".confirmation-dialogue" "css_element"
     # End - Check events in action still working.
     And I should see "Prev" in the ".tool_reportbuilder_report ul.pagination" "css_element"
     And I click on "Prev" "link" in the ".tool_reportbuilder_report ul.pagination" "css_element"

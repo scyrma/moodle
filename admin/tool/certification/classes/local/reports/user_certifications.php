@@ -30,6 +30,7 @@ use lang_string;
 use tool_certification\api;
 use tool_certification\certification;
 use tool_certification\certification_user;
+use tool_certification\local\helpers\certificationuser_format;
 use tool_certification\local\helpers\format;
 use tool_certification\permission;
 use tool_program\persistent\program;
@@ -148,7 +149,7 @@ class user_certifications extends system_report {
             ->add_field("{$cu}.duedate")
             ->add_field("{$cu}.duedatelocked")
             ->set_is_default(true, 4)
-            ->add_callback([format::class, 'duedate']);
+            ->add_callback([certificationuser_format::class, 'duedate']);
         $this->add_column($newcolumn);
 
         // Column "status".
@@ -160,7 +161,7 @@ class user_certifications extends system_report {
             ->add_field("{$cu}.userid")
             ->add_field("{$cu}.certificationid")
             ->set_is_default(true, 5)
-            ->add_callback([format::class, 'status']);
+            ->add_callback([certificationuser_format::class, 'status']);
         $this->add_column($newcolumn);
     }
 

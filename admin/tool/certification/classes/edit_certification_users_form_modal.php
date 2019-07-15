@@ -62,7 +62,6 @@ class edit_certification_users_form_modal extends \tool_wp\modal_form {
         ];
         $mform->addElement('select', 'status', get_string('status', 'tool_certification'), $choices);
         $mform->setDefault('status', constants::STATUS_OVERRIDE_DEFAULT);
-        $mform->addHelpButton('status', 'status', 'tool_certification');
 
         $this->add_action_buttons();
     }

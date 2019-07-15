@@ -145,8 +145,7 @@ Feature: Create certification
     And I navigate to "Courses > Certifications" in site administration
     And I should see "Certification example 1"
     Then I click on ".duplicate_certification" "css_element" in the "Certification example 1" "table_row"
-    And I should see "Confirm" in the ".modal-content" "css_element"
-    And I press "OK"
+    Then I click on "OK" "button" in the ".confirmation-dialogue" "css_element"
     And I should see "New certification"
     And I should see "Certification example 1"
     And I set the field "Certification full name" to "Certification example 2B"

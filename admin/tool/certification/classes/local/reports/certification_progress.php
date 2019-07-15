@@ -31,6 +31,7 @@ use moodle_url;
 use pix_icon;
 use tool_certification\certification;
 use tool_certification\certification_user;
+use tool_certification\local\helpers\certificationuser_format;
 use tool_certification\permission;
 use \tool_certification\local\helpers\format;
 use tool_reportbuilder\report_action;
@@ -113,7 +114,7 @@ class certification_progress extends system_report {
         ))
             ->add_fields('tcu.startdate, tcu.startdatelocked')
             ->set_is_default(true, 2)
-            ->add_callback([format::class, 'startdate']);
+            ->add_callback([certificationuser_format::class, 'startdate']);
         $this->add_column($newcolumn);
 
         // Column "duedate".
@@ -124,7 +125,7 @@ class certification_progress extends system_report {
         ))
             ->add_fields('tcu.duedate, tcu.duedatelocked')
             ->set_is_default(true, 3)
-            ->add_callback([format::class, 'duedate']);
+            ->add_callback([certificationuser_format::class, 'duedate']);
         $this->add_column($newcolumn);
 
         // Column "expirydate".
@@ -135,7 +136,7 @@ class certification_progress extends system_report {
         ))
             ->add_fields('tcu.expirydate, tcu.expirydatelocked, tcu.userid, tcu.certificationid')
             ->set_is_default(true, 4)
-            ->add_callback([format::class, 'userexpirydate']);
+            ->add_callback([certificationuser_format::class, 'expirydate']);
         $this->add_column($newcolumn);
 
         // Column "allocationdate".
@@ -157,7 +158,7 @@ class certification_progress extends system_report {
         ))
             ->add_field('tcu.allocationtype')
             ->set_is_default(true, 6)
-            ->add_callback([format::class, 'allocation_source']);
+            ->add_callback([certificationuser_format::class, 'allocationtype']);
         $this->add_column($newcolumn);
 
         // Column "program".
@@ -179,7 +180,7 @@ class certification_progress extends system_report {
         ))
             ->add_fields('tcu.userid,tcu.certificationid')
             ->set_is_default(true, 8)
-            ->add_callback([format::class, 'status']);
+            ->add_callback([certificationuser_format::class, 'status']);
         $this->add_column($newcolumn);
 
         // Column "program status".
