@@ -217,3 +217,46 @@ Feature: Test multitenancy core patches
     Then I should see "Invalid login, please try again"
     And I should not see "Acceptance test site"
     And I should see "SITENAME4"
+
+  Scenario: User inside a tenant can only award badges to users from the same tenant
+    When I log in as "admin"
+    And I navigate to "Badges > Add a new badge" in site administration
+    And I set the following fields to these values:
+      | Name | Site Badge 1 |
+      | Description | Site badge 1 description |
+      | issuername | Tester of site badge |
+    And I upload "badges/tests/behat/badge.png" file to "Image" filemanager
+    And I press "Create badge"
+    And I set the field "type" to "Manual issue by role"
+    And I set the field "Tenant administrator" to "1"
+    And I press "Save"
+    And I press "Enable access"
+    And I press "Continue"
+    And I log out
+    When I log in as "tenantadmin1"
+    And I navigate to "Badges > Manage badges" in site administration
+    And I click on "0" "link" in the "Site Badge 1" "table_row"
+    And I press "Award badge"
+    Then I should see "Tenantadmin 1"
+    And I should see "User 11"
+    And I should see "User 12"
+    And I should see "User 13"
+    And I should see "User 14"
+    And I should not see "Tenantadmin 2"
+    And I should not see "User 21"
+    And I should not see "User 22"
+    And I should not see "User 23"
+    And I should not see "User 24"
+    And I set the field "potentialrecipients[]" to "User 11 (user11@invalid.com)"
+    And I press "Award badge"
+    And I follow "Site Badge 1"
+    And I follow "Recipients (1)"
+    And I should see "User 11"
+    And I log out
+    And I log in as "tenantadmin2"
+    And I navigate to "Badges > Manage badges" in site administration
+    And I should see "0" in the "Site Badge 1" "table_row"
+    And I follow "Site Badge 1"
+    And I should see "This badge has not been earned yet."
+    And I follow "Recipients (0)"
+    And I should not see "User 11"

@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
  * Custom code to be run on installing the plugin.
  */
 function xmldb_tool_tenant_install() {
-    global $DB;
+    global $CFG, $DB;
 
     // Create tenant-related roles.
     update_capabilities('tool_tenant'); // TODO MDL-65668 remove.
@@ -51,6 +51,19 @@ function xmldb_tool_tenant_install() {
         $manager = new \tool_tenant\manager();
         $manager->update_tenant(\tool_tenant\tenancy::get_tenant_id(), (object)['categoryid' => $category->id]);
     }
+
+    // Login background file object.
+    $filerecord = new stdClass;
+    $filerecord->component = 'tool_tenant';
+    $filerecord->contextid = context_system::instance()->id;
+    $filerecord->userid    = get_admin()->id;
+    $filerecord->filearea  = 'loginbackground';
+    $filerecord->filepath  = '/';
+    $filerecord->filename  = 'login-image.png';
+    $filerecord->itemid    = \tool_tenant\tenancy::get_tenant_id();
+
+    $fs = get_file_storage();
+    $fs->create_file_from_pathname($filerecord, $CFG->dirroot . '/admin/tool/tenant/pix/' . $filerecord->filename);
 
     return true;
 }

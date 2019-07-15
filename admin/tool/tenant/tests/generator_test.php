@@ -48,8 +48,6 @@ class tool_tenant_generator_testcase extends advanced_testcase {
     public function test_create_tenant() {
         global $DB;
         $this->resetAfterTest();
-        // There are no tenants in the beginning.
-        $this->assertEquals(0, $DB->count_records('tool_tenant'));
 
         // As soon as we request anything from tenancy there is a default tenant.
         \tool_tenant\tenancy::get_default_tenant_id();

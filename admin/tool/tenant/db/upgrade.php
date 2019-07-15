@@ -86,5 +86,14 @@ function xmldb_tool_tenant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019061200, 'tool', 'tenant');
     }
 
+    if ($oldversion < 2019071100) {
+        if ($roleid = $DB->get_field('role', 'id', ['shortname' => 'tool_tenant_admin'])) {
+            $syscontext = context_system::instance();
+            assign_capability('moodle/badges:awardbadge', CAP_ALLOW, $roleid, $syscontext->id);
+            assign_capability('moodle/badges:viewawarded', CAP_ALLOW, $roleid, $syscontext->id);
+        }
+        upgrade_plugin_savepoint(true, 2019071100, 'tool', 'tenant');
+    }
+
     return true;
 }

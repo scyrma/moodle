@@ -24,6 +24,7 @@
 
 namespace tool_tenant\form;
 
+use tool_tenant\manager;
 use tool_wp\modal_form;
 
 defined('MOODLE_INTERNAL') || die();
@@ -36,6 +37,13 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class add_tenant_form extends modal_form {
+
+    /** @var int */
+    const CATEGORY_NONE = 0;
+    /** @var int */
+    const CATEGORY_NEW = 1;
+    /** @var int */
+    const CATEGORY_EXISTING = 2;
 
     /**
      * Form definition
@@ -54,8 +62,11 @@ class add_tenant_form extends modal_form {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addElement('text', 'sitename', get_string('sitename', 'tool_tenant'));
         $mform->setType('sitename', PARAM_TEXT);
+        $mform->addHelpButton('sitename', 'sitename', 'tool_tenant');
+
         $mform->addElement('text', 'idnumber', get_string('idnumber', 'tool_tenant'));
         $mform->setType('idnumber', PARAM_RAW);
+        $mform->addHelpButton('idnumber', 'idnumber', 'tool_tenant');
 
         $mform->addElement('header', 'management', get_string('management', 'tool_tenant'));
 
@@ -73,8 +84,21 @@ class add_tenant_form extends modal_form {
             $mform->addElement('autocomplete', 'tenantadmin', get_string('administrators', 'tool_tenant'), [], $options);
         }
 
-        $mform->addElement('select', 'categoryid', get_string('category'), $this->get_available_categories());
+        $objs = array();
+        $objs[] = $mform->createElement('radio', 'categoryradio', '',
+            get_string('nocategory', 'tool_tenant'), self::CATEGORY_NONE);
+        if (has_capability('moodle/category:manage', \context_system::instance())) {
+            $objs[] = $mform->createElement('radio', 'categoryradio', '',
+                get_string('createnewcategory', 'tool_tenant'), self::CATEGORY_NEW);
+        }
+        $objs[] = $mform->createElement('radio', 'categoryradio', '',
+            get_string('chooseexistingcategory', 'tool_tenant'), self::CATEGORY_EXISTING);
+        $objs[] = $mform->createElement('select', 'categoryid', get_string('category'), $this->get_available_categories());
         $mform->setType('categoryid', PARAM_INT);
+        $mform->disabledIf('categoryid', 'categoryradio', 'ne', 2);
+
+        $mform->addElement('group', 'categorygroup', get_string('category', 'tool_tenant'), $objs, '<br/>', false);
+        $mform->addHelpButton('categorygroup', 'category', 'tool_tenant');
 
         // Add the buttons just in case we ever use this form not inside a modal.
         $this->add_action_buttons();
@@ -100,8 +124,7 @@ class add_tenant_form extends modal_form {
             }
         }
         // Add a no category option.
-        $categories[0] = get_string('nocategory', 'tool_tenant');
-        ksort($categories);
+        $categories = [0 => get_string('choosedots')] + $categories;
         return $categories;
     }
 
@@ -120,11 +143,20 @@ class add_tenant_form extends modal_form {
      * @return array An array of errors if the validation fails.
      */
     public function validation($tenant, $files) {
+        global $DB;
         // We should check that the selected category has not been used elsewhere.
         $err = [];
 
-        if (!\tool_tenant\manager::can_change_category($tenant['id'], $tenant['categoryid'])) {
-            $err['categoryid'] = get_string('categorytaken', 'tool_tenant');
+        if ($tenant['categoryradio'] == self::CATEGORY_EXISTING &&
+                !\tool_tenant\manager::can_change_category($tenant['id'], $tenant['categoryid'])) {
+            $err['categorygroup'] = get_string('categorytaken', 'tool_tenant');
+        }
+        if ($tenant['categoryradio'] == self::CATEGORY_NEW) {
+            // User selected "Create new category". Check that category with this name does not exist.
+            if ($DB->record_exists('course_categories', ['name' => $tenant['name'], 'parent' => 0])) {
+                $err['categorygroup'] = get_string('categorynameexist', 'tool_tenant',
+                    s($tenant['name']));
+            }
         }
         if (count($err) == 0) {
             return true;
@@ -154,19 +186,43 @@ class add_tenant_form extends modal_form {
      */
     protected function prepare_data_for_form(\tool_tenant\tenant $tenant, array $tenantadmins) : \stdClass {
         $data = $tenant->to_record();
+        if ($data->categoryid) {
+            $data->categoryradio = self::CATEGORY_EXISTING;
+        } else {
+            $data->categoryradio = self::CATEGORY_NONE;
+        }
         $data->tenantadmin = $tenantadmins;
         return $data;
+    }
+
+    /**
+     * Resolves the category id, creates a new category if necessary
+     *
+     * @param \stdClass $data
+     */
+    protected function resolve_category_id(\stdClass $data) {
+        if ($data->categoryradio == self::CATEGORY_NONE) {
+            // No category.
+            $data->categoryid = 0;
+        }
+        if ($data->categoryradio == self::CATEGORY_NEW) {
+            // Create a new category.
+            $coursecat = \core_course_category::create(['name' => $data->name]);
+            $data->categoryid = $coursecat->id;
+        }
+        unset($data->categoryradio);
     }
 
     /**
      * Process form submission
      *
      * @param \stdClass $data
-     * @return mixed|void
+     * @return \string
      */
     public function process(\stdClass $data) {
         $manager = new \tool_tenant\manager();
         $id = $data->id;
+        $this->resolve_category_id($data);
         if (!$id) {
             $tenants = $manager->get_tenants();
             $last = end($tenants);
@@ -175,6 +231,7 @@ class add_tenant_form extends modal_form {
             unset($data->tenantadmin);
             $tenant = $manager->create_tenant($data);
             $tenant->save();
+            $id = $tenant->get('id');
         } else {
             // Check for a change in category.
             $oldtenant = $manager->get_tenant($id);
@@ -188,6 +245,7 @@ class add_tenant_form extends modal_form {
             // Update other tenant information.
             $manager->update_tenant($id, $data);
         }
+        return manager::get_edit_tenant_url($id)->out(false);
     }
 
     /**

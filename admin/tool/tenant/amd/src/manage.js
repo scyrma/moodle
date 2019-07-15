@@ -77,8 +77,12 @@ function($, SortableList, Ajax, Notification, Str, Tabs, ModalForm) {
                 triggerElement: $(e.currentTarget),
                 saveButtonText: Str.get_string('save')
             });
-            modal.onSubmitSuccess = function() {
-                Tabs.loadTab('activetenants', {action: "add"});
+            modal.onSubmitSuccess = function(manageurl) {
+                if (tenantId) {
+                    Tabs.loadTab('activetenants', {action: "add"});
+                } else {
+                    window.location.href = manageurl;
+                }
             };
         });
     };

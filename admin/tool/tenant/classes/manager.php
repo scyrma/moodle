@@ -780,6 +780,8 @@ class manager {
             'moodle/site:uploadusers',
             'moodle/site:viewuseridentity',
             'moodle/site:doclinks',
+            'moodle/badges:awardbadge',
+            'moodle/badges:viewawarded'
         ];
     }
 

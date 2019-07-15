@@ -153,7 +153,7 @@ class add_user_form extends modal_form {
             if (!check_password_policy($usernew->newpassword, $errmsg)) {
                 $err['newpassword'] = $errmsg;
             }
-        } else if (!$user) {
+        } else if (!$user && !$usernew->createpassword) {
             $err['newpassword'] = get_string('required');
         }
 

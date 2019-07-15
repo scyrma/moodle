@@ -42,14 +42,18 @@ Feature: Manage tenants
       | Tenant name | New tenant 1 |
       | Site name   | Site name for tenant 1 |
       | ID number   | 123          |
+      | Choose an existing category | 1 |
       | Category    | Miscellaneous |
     And I press "Save" in the modal form dialogue
+    And "New tenant 1" "text" should exist in the ".page-header-headings" "css_element"
+    And I navigate to "Users > Organisation > Manage tenants" in site administration
     And "New tenant 1" "text" should appear after "Default tenant" "text"
     And I should see "Miscellaneous" in the "region-main" "region"
     And I follow "Edit tenant 'New tenant 1'"
     And the field "Tenant name" matches value "New tenant 1"
     And the field "Site name" matches value "Site name for tenant 1"
     And the field "ID number" matches value "123"
+    And the field "Choose an existing category" matches value "1"
     And the field "Category" matches value "Miscellaneous"
     And I set the following fields to these values:
       | Tenant name | New tenant 1 edited |
@@ -58,6 +62,7 @@ Feature: Manage tenants
     And "New tenant 1 edited" "text" should appear after "Default tenant" "text"
     And I should see "Bacon" in the "region-main" "region"
     And I follow "Add tenant"
+    And I set the field "Choose an existing category" to "1"
     And I should not see "Bacon" in the "Category" "select"
     And I set the following fields to these values:
       | Tenant name | Second tenant |
@@ -65,6 +70,7 @@ Feature: Manage tenants
       | ID number   | 321           |
       | Category    | Miscellaneous |
     And I press "Save" in the modal form dialogue
+    And I navigate to "Users > Organisation > Manage tenants" in site administration
     And I follow "Edit tenant 'Second tenant'"
     And I should see "Miscellaneous" in the "Category" "select"
     And I press "Cancel" in the modal form dialogue
@@ -80,14 +86,50 @@ Feature: Manage tenants
     And "New tenant 1 edited" "text" should not exist in the "#activetenants" "css_element"
     And I log out
 
+  Scenario: Create a tenant and automatically create a new category
+    When I log in as "user1"
+    And I navigate to "Users > Organisation > Manage tenants" in site administration
+    And I follow "Add tenant"
+    Then I should see "No category"
+    And I should not see "Create a new category"
+    And I should see "Choose an existing category"
+    And I press "Cancel" in the modal form dialogue
+    And I log out
+    And I log in as "admin"
+    And I set the following system permissions of "Tenants add manager" role:
+      | capability             | permission |
+      | moodle/category:manage | Allow      |
+    And I log out
+    And I log in as "user1"
+    And I navigate to "Users > Organisation > Manage tenants" in site administration
+    And I follow "Add tenant"
+    And I set the following fields to these values:
+      | Tenant name | New tenant 1 |
+      | Site name   | Site name for tenant 1 |
+      | ID number   | 123          |
+      | Create a new category | 1 |
+    And I press "Save" in the modal form dialogue
+    And I navigate to "Users > Organisation > Manage tenants" in site administration
+    And "New tenant 1" "text" should appear after "Default tenant" "text"
+    And the following should not exist in the "activetenantstable" table:
+      | Tenant name  | Category     |
+      | New tenant 1 | New tenant 1 |
+    And I follow "Edit tenant 'New tenant 1'"
+    And the field "Choose an existing category" matches value "1"
+    And the field "Category" matches value "New tenant 1"
+    And I press "Cancel" in the modal form dialogue
+    And I log out
+
   Scenario: Allocate a user to a tenant and set as tenant admin
     When I log in as "admin"
     And I navigate to "Users > Organisation > Manage tenants" in site administration
     And I follow "Add tenant"
     And I set the following fields to these values:
       | Tenant name | Tenant3 |
+      | Choose an existing category | 1 |
       | Category    | Miscellaneous |
     And I press "Save" in the modal form dialogue
+    And I navigate to "Users > Organisation > Manage tenants" in site administration
     And "4" "text" should exist in the "Default tenant" table tree node
     And I follow "Default tenant"
     And I set the field "Select user 'User 1'" to "1"
@@ -110,16 +152,19 @@ Feature: Manage tenants
     And I set the following fields to these values:
       | Tenant name | New tenant 1 |
     And I press "Save" in the modal form dialogue
+    And I navigate to "Users > Organisation > Manage tenants" in site administration
     And "New tenant 1" "text" should appear after "Default tenant" "text"
     And I follow "Add tenant"
     And I set the following fields to these values:
       | Tenant name | New tenant 2 |
     And I press "Save" in the modal form dialogue
+    And I navigate to "Users > Organisation > Manage tenants" in site administration
     And "New tenant 2" "text" should appear after "New tenant 1" "text"
     And I follow "Add tenant"
     And I set the following fields to these values:
       | Tenant name | New tenant 3 |
     And I press "Save" in the modal form dialogue
+    And I navigate to "Users > Organisation > Manage tenants" in site administration
     And "New tenant 3" "text" should appear after "New tenant 1" "text"
     And I click on "Archive tenant" "link" in the "New tenant 1" table tree node
     And I click on "Yes" "button"
