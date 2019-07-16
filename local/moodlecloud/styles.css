@@ -1,10 +1,12 @@
-@media (max-width: 430px)  {
+@media (max-width: 450px)  {
     #nav-moodlecloud-quota-popover-container {
         display: none;
     }
+}
 
+@media (max-width: 870px)  {
     .fixed-top .logo-wr {
-        display: none;
+        display: none !important;
     }
 }
 
