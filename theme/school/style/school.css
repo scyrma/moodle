@@ -10,9 +10,7 @@
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-.fa, .block_settings .block_tree [aria-expanded="true"]:before,
-.block_navigation .block_tree [aria-expanded="true"]:before, .block_settings .block_tree [aria-expanded="false"]:before,
-.block_navigation .block_tree [aria-expanded="false"]:before, .mform fieldset.collapsible legend a.fheader:before,
+.fa, .mform fieldset.collapsible legend a.fheader:before,
 .mform fieldset.collapsed legend a.fheader:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -70,15 +68,11 @@
 .fa-pull-right {
   float: right; }
 
-.fa.fa-pull-left, .block_settings .block_tree .fa-pull-left[aria-expanded="true"]:before,
-.block_navigation .block_tree .fa-pull-left[aria-expanded="true"]:before, .block_settings .block_tree .fa-pull-left[aria-expanded="false"]:before,
-.block_navigation .block_tree .fa-pull-left[aria-expanded="false"]:before, .mform fieldset.collapsible legend a.fa-pull-left.fheader:before,
+.fa.fa-pull-left, .mform fieldset.collapsible legend a.fa-pull-left.fheader:before,
 .mform fieldset.collapsed legend a.fa-pull-left.fheader:before {
   margin-right: .3em; }
 
-.fa.fa-pull-right, .block_settings .block_tree .fa-pull-right[aria-expanded="true"]:before,
-.block_navigation .block_tree .fa-pull-right[aria-expanded="true"]:before, .block_settings .block_tree .fa-pull-right[aria-expanded="false"]:before,
-.block_navigation .block_tree .fa-pull-right[aria-expanded="false"]:before, .mform fieldset.collapsible legend a.fa-pull-right.fheader:before,
+.fa.fa-pull-right, .mform fieldset.collapsible legend a.fa-pull-right.fheader:before,
 .mform fieldset.collapsed legend a.fa-pull-right.fheader:before {
   margin-left: .3em; }
 
@@ -89,15 +83,11 @@
 .pull-left {
   float: left; }
 
-.fa.pull-left, .block_settings .block_tree .pull-left[aria-expanded="true"]:before,
-.block_navigation .block_tree .pull-left[aria-expanded="true"]:before, .block_settings .block_tree .pull-left[aria-expanded="false"]:before,
-.block_navigation .block_tree .pull-left[aria-expanded="false"]:before, .mform fieldset.collapsible legend a.pull-left.fheader:before,
+.fa.pull-left, .mform fieldset.collapsible legend a.pull-left.fheader:before,
 .mform fieldset.collapsed legend a.pull-left.fheader:before {
   margin-right: .3em; }
 
-.fa.pull-right, .block_settings .block_tree .pull-right[aria-expanded="true"]:before,
-.block_navigation .block_tree .pull-right[aria-expanded="true"]:before, .block_settings .block_tree .pull-right[aria-expanded="false"]:before,
-.block_navigation .block_tree .pull-right[aria-expanded="false"]:before, .mform fieldset.collapsible legend a.pull-right.fheader:before,
+.fa.pull-right, .mform fieldset.collapsible legend a.pull-right.fheader:before,
 .mform fieldset.collapsed legend a.pull-right.fheader:before {
   margin-left: .3em; }
 
@@ -11643,14 +11633,26 @@ div.editor_atto_toolbar button .icon {
 .block_navigation .block_tree [aria-expanded="true"]:before {
   content: "";
   margin-right: 0;
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
   width: 16px; }
 
 .block_settings .block_tree [aria-expanded="false"]:before,
 .block_navigation .block_tree [aria-expanded="false"]:before {
   content: "";
-  font-size: 16px;
   margin-right: 0;
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
   width: 16px; }
 
 .dir-rtl .block_settings .block_tree [aria-expanded="false"]:before,
@@ -12815,6 +12817,13 @@ span.editinstructions {
   width: auto;
   height: 32px;
   font-size: 32px; }
+
+.activity-navigation .row {
+  align-items: center; }
+
+.activity-navigation #prev-activity-link,
+.activity-navigation #next-activity-link {
+  white-space: pre-wrap; }
 
 /* Anchor link offset fix. This makes hash links scroll 60px down to account for the fixed header. */
 :target::before {
@@ -17894,12 +17903,8 @@ body::not(.pagelayout-frontpage) .logo-wr {
     margin-top: 28px;
     max-height: 250px;
     overflow-y: auto; }
-    .blog_box .testimonial-text .fa.fa-quote-left, .blog_box .testimonial-text .block_settings .block_tree .fa-quote-left[aria-expanded="true"]:before, .block_settings .block_tree .blog_box .testimonial-text .fa-quote-left[aria-expanded="true"]:before,
-    .blog_box .testimonial-text .block_navigation .block_tree .fa-quote-left[aria-expanded="true"]:before, .block_navigation .block_tree .blog_box .testimonial-text .fa-quote-left[aria-expanded="true"]:before, .blog_box .testimonial-text .block_settings .block_tree .fa-quote-left[aria-expanded="false"]:before, .block_settings .block_tree .blog_box .testimonial-text .fa-quote-left[aria-expanded="false"]:before,
-    .blog_box .testimonial-text .block_navigation .block_tree .fa-quote-left[aria-expanded="false"]:before, .block_navigation .block_tree .blog_box .testimonial-text .fa-quote-left[aria-expanded="false"]:before, .blog_box .testimonial-text .mform fieldset.collapsible legend a.fa-quote-left.fheader:before, .mform fieldset.collapsible legend .blog_box .testimonial-text a.fa-quote-left.fheader:before,
-    .blog_box .testimonial-text .mform fieldset.collapsed legend a.fa-quote-left.fheader:before, .mform fieldset.collapsed legend .blog_box .testimonial-text a.fa-quote-left.fheader:before, .blog_box .testimonial-text .fa.fa-quote-right, .blog_box .testimonial-text .block_settings .block_tree .fa-quote-right[aria-expanded="true"]:before, .block_settings .block_tree .blog_box .testimonial-text .fa-quote-right[aria-expanded="true"]:before,
-    .blog_box .testimonial-text .block_navigation .block_tree .fa-quote-right[aria-expanded="true"]:before, .block_navigation .block_tree .blog_box .testimonial-text .fa-quote-right[aria-expanded="true"]:before, .blog_box .testimonial-text .block_settings .block_tree .fa-quote-right[aria-expanded="false"]:before, .block_settings .block_tree .blog_box .testimonial-text .fa-quote-right[aria-expanded="false"]:before,
-    .blog_box .testimonial-text .block_navigation .block_tree .fa-quote-right[aria-expanded="false"]:before, .block_navigation .block_tree .blog_box .testimonial-text .fa-quote-right[aria-expanded="false"]:before, .blog_box .testimonial-text .mform fieldset.collapsible legend a.fa-quote-right.fheader:before, .mform fieldset.collapsible legend .blog_box .testimonial-text a.fa-quote-right.fheader:before,
+    .blog_box .testimonial-text .fa.fa-quote-left, .blog_box .testimonial-text .mform fieldset.collapsible legend a.fa-quote-left.fheader:before, .mform fieldset.collapsible legend .blog_box .testimonial-text a.fa-quote-left.fheader:before,
+    .blog_box .testimonial-text .mform fieldset.collapsed legend a.fa-quote-left.fheader:before, .mform fieldset.collapsed legend .blog_box .testimonial-text a.fa-quote-left.fheader:before, .blog_box .testimonial-text .fa.fa-quote-right, .blog_box .testimonial-text .mform fieldset.collapsible legend a.fa-quote-right.fheader:before, .mform fieldset.collapsible legend .blog_box .testimonial-text a.fa-quote-right.fheader:before,
     .blog_box .testimonial-text .mform fieldset.collapsed legend a.fa-quote-right.fheader:before, .mform fieldset.collapsed legend .blog_box .testimonial-text a.fa-quote-right.fheader:before {
       margin-right: .5em;
       margin-left: .5em; }
@@ -18117,6 +18122,12 @@ span.site-name {
   font-size: 32px;
   overflow: hidden; }
 
+#page-site-index .usermenu {
+  transform: translateY(-10px); }
+
+#page-site-index .navbar-nav .dropdown.nav-item {
+  margin-bottom: 10px; }
+
 .usermenu {
   margin: 0 0 0 10px;
   min-width: 235px;
@@ -18221,9 +18232,7 @@ body:not(#page-site-index) .usermenu {
     content: '';
     border: 0;
     right: 0; }
-  .navbar .popover-region-toggle .fa, .navbar .popover-region-toggle .block_settings .block_tree [aria-expanded="true"]:before, .block_settings .block_tree .navbar .popover-region-toggle [aria-expanded="true"]:before,
-  .navbar .popover-region-toggle .block_navigation .block_tree [aria-expanded="true"]:before, .block_navigation .block_tree .navbar .popover-region-toggle [aria-expanded="true"]:before, .navbar .popover-region-toggle .block_settings .block_tree [aria-expanded="false"]:before, .block_settings .block_tree .navbar .popover-region-toggle [aria-expanded="false"]:before,
-  .navbar .popover-region-toggle .block_navigation .block_tree [aria-expanded="false"]:before, .block_navigation .block_tree .navbar .popover-region-toggle [aria-expanded="false"]:before, .navbar .popover-region-toggle .mform fieldset.collapsible legend a.fheader:before, .mform fieldset.collapsible legend .navbar .popover-region-toggle a.fheader:before,
+  .navbar .popover-region-toggle .fa, .navbar .popover-region-toggle .mform fieldset.collapsible legend a.fheader:before, .mform fieldset.collapsible legend .navbar .popover-region-toggle a.fheader:before,
   .navbar .popover-region-toggle .mform fieldset.collapsed legend a.fheader:before, .mform fieldset.collapsed legend .navbar .popover-region-toggle a.fheader:before {
     color: #fff;
     font-size: 18px; }
