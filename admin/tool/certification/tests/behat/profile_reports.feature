@@ -53,7 +53,6 @@ Feature: Check user report capabilities for certifications on profile
     And I should see "User a"
     And I should not see "User b"
     And I click on "//button[contains(.,'User a')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Details"
     And I should see "Job assignments"
     And I should see "Ongoing certifications: 1"
     Then I click on "Ongoing certifications: 1" "link"

@@ -1289,7 +1289,6 @@ class tool_certification_api_testcase extends advanced_testcase {
         }
     }
 
-
     public function test_get_default_certification_dates() {
         self::setAdminUser();
         $certification = $this->generator->generate_certification();
@@ -1338,5 +1337,36 @@ class tool_certification_api_testcase extends advanced_testcase {
         $certification->update();
         $dates = api::get_default_certification_dates($certification);
         $this->assertEquals('2 week after completion', $dates->expirydate);
+    }
+
+    public function test_remove_deleted_user_from_certifications() {
+        global $DB;
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        $certification1 = $this->generator->generate_certification();
+        $certificationid1 = $certification1->get('id');
+        $this->generator->allocate_user($user1->id, $certificationid1);
+        $this->generator->allocate_user($user2->id, $certificationid1);
+
+        $certification2 = $this->generator->generate_certification();
+        $certificationid2 = $certification2->get('id');
+        $this->generator->allocate_user($user1->id, $certificationid2);
+
+        $exists = $DB->record_exists('tool_certification_users', ['certificationid' => $certificationid1, 'userid' => $user1->id]);
+        $this->assertTrue($exists);
+        $exists = $DB->record_exists('tool_certification_users', ['certificationid' => $certificationid1, 'userid' => $user2->id]);
+        $this->assertTrue($exists);
+        $exists = $DB->record_exists('tool_certification_users', ['certificationid' => $certificationid2, 'userid' => $user1->id]);
+        $this->assertTrue($exists);
+
+        delete_user($user1);
+
+        $exists = $DB->record_exists('tool_certification_users', ['certificationid' => $certificationid1, 'userid' => $user1->id]);
+        $this->assertFalse($exists);
+        $exists = $DB->record_exists('tool_certification_users', ['certificationid' => $certificationid1, 'userid' => $user2->id]);
+        $this->assertTrue($exists);
+        $exists = $DB->record_exists('tool_certification_users', ['certificationid' => $certificationid2, 'userid' => $user1->id]);
+        $this->assertFalse($exists);
     }
 }

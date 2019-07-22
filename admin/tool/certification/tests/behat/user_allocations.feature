@@ -36,20 +36,20 @@ Feature: Manage users allocations
     And the following departments exist in organisation structure:
       | tenant     | name            | parent         |
       | Tenant1    | Framework_t1    |                |
-      | Tenant1    | Deparment_t1_d1  | Framework_t1   |
+      | Tenant1    | Deparment_t1_d1 | Framework_t1   |
     And the following positions exist in organisation structure:
     # globalmanager and departmentmanager are boolean flag
     # globalpermissions and departmentpermission are accumulated numeric value assigned to globalmanager & departmentmanager
     # 1-Allocate users to programs/certifications, 2-View users reports, 4-Receive notifications(1+2+4,1+4,etc)
       | tenant     | name            | parent         | globalmanager | globalpermissions | departmentmanager | departmentpermissions |
-      | Tenant1    | Framework_t1    |                |      0        |       0           |       0          |        0              |
+      | Tenant1    | Framework_t1    |                |      0        |       0           |       0           |        0              |
       | Tenant1    | Position_t1_f1  | Framework_t1   |      0        |       0           |       1           |        3              |
       | Tenant1    | Position_t1_f2  | Position_t1_f1 |      0        |       0           |       0           |        0              |
     And the following job assignments exist in organisation structure:
-      | user  | department     | position     |
+      | user     | department      | position       |
       | manager1 | Deparment_t1_d1 | Position_t1_f1 |
-      | user1 | Deparment_t1_d1 | Position_t1_f2 |
-      | user3 | Deparment_t1_d1 | Position_t1_f2 |
+      | user1    | Deparment_t1_d1 | Position_t1_f2 |
+      | user3    | Deparment_t1_d1 | Position_t1_f2 |
 
   Scenario: There are no existing allocations
     When I log in as "manager1"
@@ -102,3 +102,18 @@ Feature: Manage users allocations
     And I should not see "User 1"
     And I should see "User 3"
     Then I log out
+    # Check notifications are triggered.
+    Then I log in as "user3"
+    And I am on site homepage
+    When I click on ".popover-region-notifications" "css_element"
+    And I click on "View full notification" "link" in the ".popover-region-notifications" "css_element"
+    Then I should see "Allocated to certification 'Certification1'"
+    And I should see "You have been allocated to certification 'Certification1'"
+    And I log out
+    Then I log in as "user1"
+    And I am on site homepage
+    When I click on ".popover-region-notifications" "css_element"
+    And I click on "View full notification" "link" in the ".popover-region-notifications" "css_element"
+    Then I should see "Deallocated from certification 'Certification1'"
+    And I should see "You have been deallocated from certification 'Certification1'"
+    And I log out

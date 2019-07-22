@@ -137,7 +137,6 @@ Feature: Check datasources for certifications
     # Manager1 is manager over User e
     And I should see "User e"
     And I click on "//button[contains(.,'User a')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Details"
     And I should see "Job assignments"
     And I should see "Ongoing certifications: 2"
     Then I click on "Ongoing certifications: 2" "link"
@@ -149,14 +148,12 @@ Feature: Check datasources for certifications
     And I should see "Certification_2B"
     Then I follow "Dashboard"
     And I click on "//button[contains(.,'User b')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Details"
     And I should see "Job assignments"
     And I should see "Ongoing certifications: 1"
     Then I click on "Ongoing certifications: 1" "link"
     And I should see "Certification_1A"
     Then I follow "Dashboard"
     And I click on "//button[contains(.,'User d')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Details"
     And I should see "Job assignments"
     And I should not see "Ongoing certifications: 1"
     And I log out
@@ -169,7 +166,6 @@ Feature: Check datasources for certifications
     # Orgmanager is not manager over User e
     And I should not see "User e"
     And I click on "//button[contains(.,'User a')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Details"
     And I should see "Job assignments"
     And I should see "Ongoing certifications: 2"
     Then I click on "Ongoing certifications: 2" "link"
@@ -181,7 +177,6 @@ Feature: Check datasources for certifications
     And I should see "Certification_2B"
     Then I follow "Dashboard"
     And I click on "//button[contains(.,'User b')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Details"
     And I should see "Job assignments"
     And I should see "Ongoing certifications: 1"
     Then I click on "Ongoing certifications: 1" "link"
