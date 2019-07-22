@@ -147,4 +147,16 @@ class job_manager {
         global $DB;
         return $DB->delete_records(job::TABLE, ['userid' => $userid]);
     }
+
+    /**
+     * Check if Jobs tab can be accessed by current user.
+     *
+     * @return bool
+     */
+    public static function is_tab_available() {
+        $deptforjobs = (new \tool_organisation\department_manager())->has_any_department_for_jobcreate();
+        $posforjobs = (new \tool_organisation\position_manager())->has_any_position_for_jobcreate();
+        $cap = has_any_capability(['tool/organisation:assignjobs'], \context_system::instance());
+        return $cap && $deptforjobs && $posforjobs;
+    }
 }

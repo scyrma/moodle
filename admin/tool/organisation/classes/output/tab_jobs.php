@@ -57,11 +57,7 @@ class tab_jobs extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-
-        $deptforjobs = (new \tool_organisation\department_manager())->has_any_department_for_jobcreate();
-        $posforjobs = (new \tool_organisation\position_manager())->has_any_position_for_jobcreate();
-        $cap = has_any_capability(['tool/organisation:assignjobs'], \context_system::instance());
-        return $cap && $deptforjobs && $posforjobs;
+        return \tool_organisation\job_manager::is_tab_available();
     }
 
     /**

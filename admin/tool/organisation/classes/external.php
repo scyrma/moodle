@@ -418,6 +418,39 @@ class tool_organisation_external extends external_api {
     }
 
     /**
+     * Parameters for the 'tool_organisation_is_jobs_tab_available' WS.
+     *
+     * @return \external_function_parameters
+     */
+    public static function is_jobs_tab_available_parameters() {
+        return new \external_function_parameters([]);
+    }
+
+    /**
+     * Check if job assignments tab is available to logged user.
+     *
+     * @return null
+     */
+    public static function is_jobs_tab_available() {
+        $context = context_system::instance();
+        self::validate_context($context);
+        if (has_capability('tool/organisation:assignjobs', $context)) {
+            return \tool_organisation\job_manager::is_tab_available();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Return structure for the 'tool_organisation_is_jobs_tab_available' WS.
+     *
+     * @return \external_value
+     */
+    public static function is_jobs_tab_available_returns() {
+        return new \external_value(PARAM_BOOL, 'True if tab is available, false otherwise.');
+    }
+
+    /**
      * Sum permissions.
      *
      * @param array $permissions

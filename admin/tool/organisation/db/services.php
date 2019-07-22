@@ -80,4 +80,12 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
+
+    'tool_organisation_is_jobs_tab_available' => [
+        'classname' => tool_organisation_external::class,
+        'methodname' => 'is_jobs_tab_available',
+        'description' => 'Check if jobs tab can be accessed',
+        'type' => 'read',
+        'ajax' => true,
+    ],
 ];

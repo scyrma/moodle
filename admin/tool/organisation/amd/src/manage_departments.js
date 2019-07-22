@@ -100,6 +100,7 @@ function($, SortableList, Ajax, Notification, Str, Tabs, ModalForm) {
             });
             modal.onSubmitSuccess = function() {
                 Tabs.loadTab(null, {frameworkid: $(e.currentTarget).data('frameworkid')});
+                conditionallyToggleJobsTab();
             };
         });
     };
@@ -157,6 +158,7 @@ function($, SortableList, Ajax, Notification, Str, Tabs, ModalForm) {
                             options.frameworkid = triggerElement.closest('[data-region=departmentframework]').data('framework-id');
                         }
                         Tabs.loadTab(null, options);
+                        conditionallyToggleJobsTab();
                     }).fail(function(ex) {
                         Str.get_strings([
                             {key: 'warning'},
@@ -168,6 +170,19 @@ function($, SortableList, Ajax, Notification, Str, Tabs, ModalForm) {
                 });
             }).fail(Notification.exception);
         });
+    };
+
+    var conditionallyToggleJobsTab = function() {
+        Ajax.call([
+            {methodname: 'tool_organisation_is_jobs_tab_available', args: {}}
+        ])[0].then(function(data) {
+            if (data === true) {
+                $('#jobs-tab').removeClass('disabled');
+            } else {
+                $('#jobs-tab').addClass('disabled');
+            }
+            return null;
+        }).fail(Notification.exception);
     };
 
     return {
