@@ -3821,4 +3821,35 @@ class tool_program_api_testcase extends advanced_testcase {
         $this->assertFalse($DB->record_exists('tool_program_courses', ['id' => $programcourseid2]));
         $this->assertTrue($DB->record_exists('tool_program_courses', ['id' => $programcourseid3]));
     }
+
+    public function test_remove_deleted_user_from_programs() {
+        global $DB;
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        $program1 = $this->generator->generate_program_with_base_set();
+        $programid1 = $program1->get('id');
+        $this->generator->allocate_user_to_program($programid1, $user1->id);
+        $this->generator->allocate_user_to_program($programid1, $user2->id);
+
+        $program2 = $this->generator->generate_program_with_base_set();
+        $programid2 = $program2->get('id');
+        $this->generator->allocate_user_to_program($programid2, $user1->id);
+
+        $exists = $DB->record_exists('tool_program_users', ['programid' => $programid1, 'userid' => $user1->id]);
+        $this->assertTrue($exists);
+        $exists = $DB->record_exists('tool_program_users', ['programid' => $programid1, 'userid' => $user2->id]);
+        $this->assertTrue($exists);
+        $exists = $DB->record_exists('tool_program_users', ['programid' => $programid2, 'userid' => $user1->id]);
+        $this->assertTrue($exists);
+
+        delete_user($user1);
+
+        $exists = $DB->record_exists('tool_program_users', ['programid' => $programid1, 'userid' => $user1->id]);
+        $this->assertFalse($exists);
+        $exists = $DB->record_exists('tool_program_users', ['programid' => $programid1, 'userid' => $user2->id]);
+        $this->assertTrue($exists);
+        $exists = $DB->record_exists('tool_program_users', ['programid' => $programid2, 'userid' => $user1->id]);
+        $this->assertFalse($exists);
+    }
 }
