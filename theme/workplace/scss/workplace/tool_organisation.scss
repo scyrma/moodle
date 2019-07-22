@@ -4,13 +4,16 @@
     table > tbody > tr > td:empty {
         display: none;
     }
-    table.flexible tbody {
-        tr {
-            background-color: transparent;
-        }
-        td {
-            border: 0;
-            padding: 0.3rem 1rem;
+    table.flexible {
+        padding: 0 1rem;
+        tbody {
+            tr {
+                background-color: transparent;
+            }
+            td {
+                border: 0;
+                padding: 0;
+            }
         }
     }
 
@@ -58,5 +61,10 @@
         i {
             margin-right: 7px;
         }
+    }
+}
+.pagelayout-mydashboard {
+    .table-responsive {
+        margin: 0 1rem;
     }
 }

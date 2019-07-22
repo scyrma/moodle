@@ -5,6 +5,10 @@
         background-size: cover;
     }
 
+    > div {
+        border-radius: $card-border-radius;
+    }
+
     .completed .icon {
         color: $success;
     }

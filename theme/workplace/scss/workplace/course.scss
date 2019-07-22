@@ -73,9 +73,11 @@ body.pagelayout-course.format-wplist {
             text-decoration: none;
         }
     }
+
     .course-section-toggle:hover {
         text-decoration: none;
     }
+
     .addsectionwrapper {
         background-color: $gray010;
         padding: 41px 5px;
@@ -85,19 +87,31 @@ body.pagelayout-course.format-wplist {
             color: $gray040;
         }
     }
+
     .dropactivity {
         display: none;
     }
+
     .section.movemodule .dropactivity {
         display: none;
     }
+
     .nomodules .dropactivity {
         display: block;
     }
+
     div.wplist-group-item:hover {
         background-color: $gray010;
     }
+
+    // Erases the first section border top
+    #section-0 {
+        .section-header {
+            border-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
 }
+
 body.path-mod-forum.format-wplist {
     .forumsearch {
         text-align: right;
@@ -107,6 +121,7 @@ body.path-mod-forum.format-wplist {
         }
     }
 }
+
 // Quiz popper menu height is related to the region-main height.
 body.path-mod-quiz.format-wplist {
     @include media-breakpoint-up(sm) {

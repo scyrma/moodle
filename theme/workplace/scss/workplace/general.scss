@@ -26,6 +26,7 @@ body.notloggedin #nav-drawer {
 
 #region-main {
     border: 0;
+    border-radius: $card-border-radius;
     h2 {
         margin-bottom: 1.5rem;
     }
@@ -53,6 +54,7 @@ body.notloggedin #nav-drawer {
     margin-bottom: 1rem;
     box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.2);
     background-color: $white;
+    border-radius: $card-border-radius;
 }
 
 .dashboard-card,
@@ -278,7 +280,17 @@ $headerlogo: null !default;
         margin: 0;
         opacity: .8;
     }
-    .nav-link {
+    .nav-link,
+    .show > .nav-link {
+        outline: 0;
+        color: color-yiq($brand);
+
+        &:hover,
+        &:focus,
+        &:active {
+            color: color-yiq($brand);
+        }
+
         .icon {
             &.wp-launcher,
             &.wp-bell,
@@ -288,7 +300,7 @@ $headerlogo: null !default;
                 border-radius: 50%;
                 &:hover {
                     opacity: 1;
-                    background-color: rgba(0, 0, 0, .1);
+                    background-color: rgba(0, 0, 0, 0.1);
                 }
             }
         }
@@ -298,6 +310,29 @@ $headerlogo: null !default;
         margin-top: 0;
         margin-right: .4rem;
         margin-left: .8rem;
+
+        ::-webkit-input-placeholder {
+            color: color-yiq($brand);
+        }
+
+        :-ms-input-placeholder {
+            color: color-yiq($brand);
+        }
+
+        ::placeholder {
+            color: color-yiq($brand);
+        }
+        input {
+            border-radius: 3px;
+            background-color: rgba(0, 0, 0, 0.15);
+            border: 0;
+            color: color-yiq($brand);
+
+            &:focus {
+                box-shadow: none;
+            }
+        }
+
         &.expanded {
             width: 162px;
         }
@@ -308,9 +343,28 @@ $headerlogo: null !default;
     }
     .popover-region {
         margin-right: 0;
+        &.collapsed .popover-region-container {
+            -o-transition: opacity 0ms;
+            -webkit-transition: opacity 0ms;
+            transition: opacity 0ms;
+        }
+    }
+    .popover-region-container {
+        -o-transition: opacity 0ms;
+        -webkit-transition: opacity 0ms;
+        transition: opacity 0ms;
+        top: 3.6rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        .popover-region-footer-container {
+            border-bottom: 1px solid #ddd;
+        }
     }
     .popover-region-toggle {
         width: auto;
+        &::after,
+        &::before {
+            display: none;
+        }
     }
     .dropdown-menu.workplace-menu {
         width: auto;
@@ -651,14 +705,19 @@ $footertext: null !default;
         flex: 1;
     }
     .workplace-drawer-list .drawer-item {
-        padding: 0.7rem 0;
+        padding: 0;
         line-height: 2.5rem;
         min-height: 2.5rem;
         height: auto;
-        color: $drawertext;
+        color: color-yiq($drawer);
         text-decoration: none;
+        display: block;
         &:hover {
-            color: $accent;
+            background-color: rgba(0, 0, 0, 0.1);
+            .icon,
+            .navname {
+                opacity: 1;
+            }
         }
         .icon {
             font-size: 1.2rem;
@@ -667,14 +726,18 @@ $footertext: null !default;
             height: 24px;
             margin: 13px;
             position: relative;
-
+            opacity: 0.5;
         }
         .active .icon {
-            color: $accent;
+            opacity: 1;
         }
         .navname {
             display: inline;
-            opacity: 0.7;
+            opacity: 0.5;
+            max-width: calc(#{$drawer-width} - 60px);
+            &.active {
+                opacity: 1;
+            }
         }
     }
     .workplace-drawer-list.participants,
@@ -682,6 +745,11 @@ $footertext: null !default;
         border-top: 1px solid rgba(0, 0, 0, 0.3);
         margin-top: 0.5rem;
         padding-top: 0.5rem;
+    }
+    .workplace-drawer-list.participants {
+        a[data-parent-key="mycourses"] {
+            display: none;
+        }
     }
 }
 
@@ -778,7 +846,7 @@ $footertext: null !default;
     }
 
     body.drawer-open-left {
-        margin-left: 285px;
+        margin-left: $drawer-width;
         .nav-drawer-tooltips {
             display: none;
         }
@@ -792,11 +860,21 @@ $footertext: null !default;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         z-index: $zindex-dropdown - 1;
+        -webkit-transition: width 0.5s ease, left 0.5s ease;
+        -moz-transition: width 0.5s ease, left 0.5s ease;
+        -o-transition: width 0.5s ease, left 0.5s ease;
         transition: width 0.5s ease, left 0.5s ease;
         background-color: transparent;
         left: 0;
         &::-webkit-scrollbar {
             display: none;
+        }
+        .workplace-drawer-wrapper {
+            width: inherit;
+            -webkit-transition: width 0.5s ease;
+            -moz-transition: width 0.5s ease;
+            -o-transition: width 0.5s ease;
+            transition: width 0.5s ease;
         }
         &.closed {
             width: 60px;
@@ -829,6 +907,7 @@ $footertext: null !default;
 .userpicture {
     border-radius: 50%;
 }
+
 #region-main-settings-menu.has-blocks,
 #region-main.has-blocks {
     width: inherit;
