@@ -57,7 +57,7 @@ class schedule extends modal_form {
         $mform->setType('id', PARAM_INT);
 
         // Basic fields.
-        $mform->addElement('header', 'general', get_string('newschedule', 'tool_reportbuilder'));
+        $mform->addElement('header', 'general', get_string('basicinformation', 'tool_reportbuilder'));
 
         $mform->addElement('text', 'name', get_string('schedulename', 'tool_reportbuilder'), ['size' => 30]);
         $mform->setType('name', PARAM_TEXT);
@@ -88,7 +88,6 @@ class schedule extends modal_form {
         $mform->setType('scheduled', PARAM_INT);
 
         $recurrences = schedules::get_recurrences();
-        $recurrences[0] = get_string('choose', 'tool_reportbuilder');
         ksort($recurrences);
         $mform->addElement('select', 'recurrence', get_string('recurrence', 'tool_reportbuilder'), $recurrences);
         $mform->addRule('recurrence', null, 'required', null, 'client');
@@ -134,7 +133,12 @@ class schedule extends modal_form {
         $mform->addElement('html', \html_writer::end_div());
 
         $mform->addElement('html', \html_writer::div(
-            get_string('shedulewarning', 'tool_reportbuilder'),
+            get_string('privacywarning', 'tool_reportbuilder'),
+            'alert alert-warning py-3 p alert-dismissible border-warning fade show')
+        );
+
+        $mform->addElement('html', \html_writer::div(
+            get_string('schedulewarning', 'tool_reportbuilder'),
             'alert alert-warning py-3 p alert-dismissible border-warning fade show')
         );
 
@@ -250,5 +254,24 @@ class schedule extends modal_form {
         }
 
         $this->set_data($formdata);
+    }
+
+    /**
+     *
+     * Custom form validations
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     * @throws \coding_exception
+     */
+    public function validation($data, $files): array {
+        $errors = parent::validation($data, $files);
+        foreach ($data['emails'] as $email) {
+            if (!validate_email($email)) {
+                $errors['emails'] .= get_string('invalidemail', 'tool_reportbuilder', $email) . '</br>';
+            }
+        }
+        return $errors;
     }
 }

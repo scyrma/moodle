@@ -206,10 +206,11 @@ class send extends \tool_reportbuilder\output\report_exporter {
         $tousers = $this->get_mails();
         $fromuser = \core_user::get_user($this->schedule->get('usercreated'));
         mtrace("Sending schedule: " . $this->schedule->get('name'));
+
         foreach ($tousers as $touser) {
             $send = email_to_user(
-                $fromuser,
                 $touser,
+                $fromuser,
                 $this->subject,
                 $this->message,
                 $this->message,
@@ -231,12 +232,15 @@ class send extends \tool_reportbuilder\output\report_exporter {
 
     /**
      * Based on the audience, get all valid emails to send.
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     private function get_mails() {
         global $DB;
 
         $emails = [];
         $userstosendemail = [];
+
         $audiencejson = $this->schedule->get('audience');
         $reportid = $this->schedule->get('reportid');
         $report = new reportbuilder($reportid);
@@ -244,24 +248,26 @@ class send extends \tool_reportbuilder\output\report_exporter {
         $audiences = json_decode($audiencejson);
 
         // Get users based on the userid.
-        $users = $audiences->users;
-        foreach ($users as $userid) {
-            $usertenantid = \tool_tenant\tenancy::get_tenant_id($userid);
-            if ((int)$usertenantid !== (int)$reporttenantid) {
-                if (debugging()) {
-                    mtrace("The user ($userid) does not belong to tenant ($reporttenantid)");
+        if (is_object($audiences) && object_property_exists($audiences, 'users')) {
+            $users = $audiences->users;
+            foreach ($users as $userid) {
+                $usertenantid = \tool_tenant\tenancy::get_tenant_id($userid);
+                if ((int)$usertenantid !== (int)$reporttenantid) {
+                    if (debugging()) {
+                        mtrace("The user ($userid) does not belong to tenant ($reporttenantid)");
+                    }
+                    continue;
                 }
-                continue;
-            }
-            $user = \core_user::get_user($userid);
-            if (!in_array($user->email, $emails)) {
-                $emails[$user->email] = $user->email;
-                $userstosendemail[] = $user;
+                $user = \core_user::get_user($userid);
+                if (!in_array($user->email, $emails)) {
+                    $emails[$user->email] = $user->email;
+                    $userstosendemail[] = $user;
+                }
             }
         }
 
         // Get users of the department selected.
-        if ($audiences->departmentid) {
+        if (is_object($audiences) && object_property_exists($audiences, 'departmentid')) {
             $deparment = new department($audiences->departmentid);
             $deparmenttenantid = $deparment->get('tenantid');
             if ((int)$reporttenantid !== (int)$deparmenttenantid) {
@@ -289,7 +295,7 @@ class send extends \tool_reportbuilder\output\report_exporter {
         }
 
         // Get users of the department selected.
-        if ($audiences->positionid) {
+        if (is_object($audiences) && object_property_exists($audiences, 'positionid')) {
             $position = new position($audiences->positionid);
             $positiontenantid = $position->get('tenantid');
             if ((int)$reporttenantid !== (int)$positiontenantid) {
@@ -317,11 +323,13 @@ class send extends \tool_reportbuilder\output\report_exporter {
         }
 
         // Custom users.
-        $users = $audiences->emails;
-        foreach ($users as $user) {
-            if (!in_array($user, $emails)) {
-                $emails[$user] = $user;
-                $userstosendemail[] = $this->make_fake_user($user);
+        if (is_object($audiences) && object_property_exists($audiences, 'emails')) {
+            $users = $audiences->emails;
+            foreach ($users as $user) {
+                if (!in_array($user, $emails)) {
+                    $emails[$user] = $user;
+                    $userstosendemail[] = $this->make_fake_user($user);
+                }
             }
         }
 

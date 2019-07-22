@@ -93,11 +93,11 @@ define([
             ]);
 
             Helper.onDelegateEvent(this.node, CustomEvents.events.activate, SELECTORS.ADDSCHEDULE,
-                this._showModal.bind(this)
+                this._addSchedule.bind(this)
             );
 
             Helper.onDelegateEvent(this.node, CustomEvents.events.activate, SELECTORS.EDIT,
-                this._showModal.bind(this)
+                this._editSchedule.bind(this)
             );
 
             Helper.onDelegateEvent(this.node, CustomEvents.events.activate, SELECTORS.DUPLICATE,
@@ -115,20 +115,44 @@ define([
         };
 
         /**
+         * Add a new schedule
+         *
+         * @param {Event} data
+         * @param {Event} e
+         * @private
+         */
+        SchedulesManager.prototype._addSchedule = function(data, e) {
+            this._showModal(data, e, true);
+        };
+
+        /**
+         * Edit a schedule
+         *
+         * @param {Event} data
+         * @param {Event} e
+         * @private
+         */
+        SchedulesManager.prototype._editSchedule = function(data, e) {
+            this._showModal(data, e, false);
+        };
+
+        /**
          * Show modal for create or edit a schedule.
          * @param {Event} data
          * @param {Event} e
+         * @param {boolean} newschedule
          */
-        SchedulesManager.prototype._showModal = function(data, e) {
+        SchedulesManager.prototype._showModal = function(data, e, newschedule) {
             e.originalEvent.preventDefault();
             var currentTarget = $(data.currentTarget);
             var modal = new ModalForm({
                 formClass: 'tool_reportbuilder\\form\\schedule',
                 args: {'id': currentTarget.data('id'), 'reportid': this.reportid},
                 modalConfig: {
-                    title: Str.get_string('schedule', 'tool_reportbuilder'),
+                    title: newschedule ? Str.get_string('newschedule', 'tool_reportbuilder') :
+                        Str.get_string('editschedule', 'tool_reportbuilder'),
                     preShowCallback: function(triggerElement, modal) {
-                        modal.setSaveButtonText(Str.get_string('save'));
+                        modal.setSaveButtonText(Str.get_string('save', 'tool_reportbuilder'));
                     }
                 },
                 contextId: Config.contextid,
