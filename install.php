@@ -92,6 +92,13 @@ require_once(__DIR__.'/lib/installlib.php');
 
 // TODO: add lang detection here if empty $_REQUEST['lang']
 
+if (file_exists(__DIR__.'/admin/tool/wp/classes/language.php')) {
+    require_once(__DIR__.'/admin/tool/wp/classes/language.php');
+    if (is_callable(['\tool_wp\language', 'get_default_install_language'])) {
+        $lang = \tool_wp\language::get_default_install_language(__DIR__.'/install/lang');
+    }
+}
+
 // distro specific customisation
 $distro = null;
 if (file_exists('install/distrolib.php')) {
