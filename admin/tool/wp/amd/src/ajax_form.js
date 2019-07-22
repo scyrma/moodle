@@ -27,8 +27,9 @@ define([
     'core/notification',
     'core/templates',
     'core/event',
-    'core/yui'
-], function($, Ajax, Notification, Templates, Event, Y) {
+    'core/yui',
+    'tool_wp/helper'
+], function($, Ajax, Notification, Templates, Event, Y, Helper) {
     /**
      * Constructor
      *
@@ -126,9 +127,10 @@ define([
             }
         }])[0]
         .then(function(response) {
-            promise.resolve(response.html, this.processCollectedJavascript(response.javascript));
+            promise.resolve(response.html, Helper.processCollectedJavascript(response.javascript));
             return null;
-        }.bind(this)).fail(function(ex) {
+        })
+        .fail(function(ex) {
             promise.reject(ex);
         });
         return promise.promise();
@@ -311,7 +313,7 @@ define([
         .then(function(response) {
             if (!response.submitted) {
                 // Form was not submitted, it could be either because validation failed or because no-submit button was pressed.
-                this.updateForm(container, response.html, this.processCollectedJavascript(response.javascript));
+                this.updateForm(container, response.html, Helper.processCollectedJavascript(response.javascript));
                 this.enableButtons(container);
                 this.onValidationError();
             } else {
@@ -326,48 +328,9 @@ define([
                 this.enableButtons(container);
                 this.onSubmitSuccess(data, container);
             }
+            return null;
         }.bind(this))
         .fail(this.onSubmitError.bind(this));
-    };
-
-    /**
-     * Converts the JS that was received from collecting JS requirements on the $PAGE so it can be added to the existing page
-     *
-     * Copied from core/fragment
-     *
-     * @param {string} js
-     * @return {string}
-     */
-    AjaxForm.prototype.processCollectedJavascript = function(js) {
-        var jsNodes = $(js);
-        var allScript = '';
-        jsNodes.each(function(index, scriptNode) {
-            scriptNode = $(scriptNode);
-            var tagName = scriptNode.prop('tagName');
-            if (tagName && (tagName.toLowerCase() === 'script')) {
-                if (scriptNode.attr('src')) {
-                    // We only reload the script if it was not loaded already.
-                    var exists = false;
-                    $('script').each(function(index, s) {
-                        if ($(s).attr('src') === scriptNode.attr('src')) {
-                            exists = true;
-                        }
-                        return !exists;
-                    });
-                    if (!exists) {
-                        allScript += ' { ';
-                        allScript += ' node = document.createElement("script"); ';
-                        allScript += ' node.type = "text/javascript"; ';
-                        allScript += ' node.src = decodeURI("' + encodeURI(scriptNode.attr('src')) + '"); ';
-                        allScript += ' document.getElementsByTagName("head")[0].appendChild(node); ';
-                        allScript += ' } ';
-                    }
-                } else {
-                    allScript += ' ' + scriptNode.text();
-                }
-            }
-        });
-        return allScript;
     };
 
     return AjaxForm;
