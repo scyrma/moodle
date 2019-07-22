@@ -10041,6 +10041,11 @@ function setup_lang_from_browser() {
         return;
     }
 
+    /** @uses \tool_wp\language::get_recommended_language */
+    if ($lang = component_class_callback('tool_wp\language', 'get_recommended_language', [])) {
+        return $lang;
+    }
+
     if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) { // There isn't list of browser langs, nothing to do.
         return;
     }
