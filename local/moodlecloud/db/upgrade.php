@@ -112,5 +112,35 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018030601, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2019072200) {
+        // MC-1333 - adding new fields for site registration
+        $huburl = HUB_MOODLEORGHUBURL;
+        $cleanhuburl = clean_param($huburl, PARAM_ALPHANUMEXT);
+        $site = get_site();
+
+        $newfields = ['contactphone', 'imageurl', 'street', 'regioncode', 'countrycode', 'geolocation'];
+
+        foreach ($newfields as $field) {
+            $fullfieldname = 'site_' . $field . '_' . $cleanhuburl;
+            $fieldexists = get_config('core', $fullfieldname);
+
+            if (!$fieldexists) {
+                set_config($fullfieldname, '');
+            }
+        }
+
+        // MC-1345 - saving custom CSS
+        $themes = ['moodlecloud', 'school'];
+
+        foreach ($themes as $theme) {
+            $themecomponent = 'theme_' . $theme;
+            $customcss = get_config($themecomponent, 'customcss');
+            set_config('customcss_old', $customcss, $themecomponent);
+            set_config('customcss', '', $themecomponent);
+        }
+
+        upgrade_plugin_savepoint(true, 2019072200, 'local', 'moodlecloud');
+    }
+
     return true;
 }
