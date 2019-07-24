@@ -3862,6 +3862,11 @@ class core_course_external extends external_api {
         $requiredproperties = course_summary_exporter::define_properties();
         $fields = join(',', array_keys($requiredproperties));
         $hiddencourses = get_hidden_courses_on_timeline();
+        if (class_exists('\\tool_program\\api')) {
+            // Workplace - Courses enrolled only with the enrol program plugin are permanently hidden form course overview block.
+            $workplaceexcludedcourses = \tool_program\api::get_course_ids_with_only_enrol_program_instance($USER->id);
+            $hiddencourses = array_unique(array_merge($hiddencourses, $workplaceexcludedcourses));
+        }
         $courses = [];
 
         // If the timeline requires the hidden courses then restrict the result to only $hiddencourses else exclude.

@@ -697,6 +697,10 @@ if (!$cache and moodle_needs_upgrading()) {
 // If this is the first install, indicate that this site is fully configured
 // except the admin password
 if (during_initial_install()) {
+    // Call Workplace hook to change settings after install.
+    /** @uses \tool_wp\install_hook::execute() */
+    component_class_callback('tool_wp\install_hook', 'execute', []);
+
     set_config('rolesactive', 1); // after this, during_initial_install will return false.
     set_config('adminsetuppending', 1);
     set_config('registrationpending', 1); // Remind to register site after all other setup is finished.

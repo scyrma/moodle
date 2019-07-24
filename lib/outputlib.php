@@ -1107,6 +1107,8 @@ class theme_config {
             }
         }
 
+        // Allow themes to change the css url to something like theme/mytheme/mycss.php.
+        component_callback('theme_' . $this->name, 'alter_css_urls', [&$urls]);
         return $urls;
     }
 
@@ -1547,7 +1549,7 @@ class theme_config {
      * @return string Return compiled css.
      */
     public function get_precompiled_css_content() {
-        $configs = [$this] + $this->parent_configs;
+        $configs = array_reverse($this->parent_configs) + [$this];
         $css = '';
 
         foreach ($configs as $config) {
