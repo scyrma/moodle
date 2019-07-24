@@ -124,7 +124,7 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
             $fullfieldname = 'site_' . $field . '_' . $cleanhuburl;
             $fieldexists = get_config('core', $fullfieldname);
 
-            if (!$fieldexists) {
+            if ($fieldexists === false) {
                 set_config($fullfieldname, '');
             }
         }
