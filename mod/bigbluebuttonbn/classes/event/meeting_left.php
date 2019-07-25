@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_bigbluebuttonbn recording imported event.
+ * The mod_bigbluebuttonbn meeting left event.
  *
  * @package   mod_bigbluebuttonbn
- * @copyright 2010-2017 Blindside Networks Inc
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v2 or later
+ * @copyright 2010 onwards, Blindside Networks Inc
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author    Jesus Federico  (jesus [at] blindsidenetworks [dt] com)
  */
 
@@ -28,20 +28,24 @@ namespace mod_bigbluebuttonbn\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_bigbluebuttonbn recording imported event (triggered when a recording is imported).
+ * The mod_bigbluebuttonbn meeting left event (triggered by bbb_view.php when the user lefts the meeting using the logout button).
  *
- * @copyright 2010-2017 Blindside Networks Inc
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v2 or later
+ * @package   mod_bigbluebuttonbn
+ * @copyright 2010 onwards, Blindside Networks Inc
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class bigbluebuttonbn_recording_imported extends base
+class meeting_left extends base
 {
     /**
      * Init method.
+     * @param string $crud
+     * @param integer $edulevel
      */
-    protected function init() {
-        parent::init();
-        $this->description = "The user with id '##userid' has imported a recording with id ".
-            "'##other' in the course id '##contextinstanceid'.";
+    protected function init($crud = 'r', $edulevel = self::LEVEL_PARTICIPATING) {
+        parent::init($crud, $edulevel);
+        $this->description = "The user with id '##userid' has left a bigbluebutton meeting for ".
+            "the bigbluebuttonbn activity with id '##objectid' for the course id ".
+            "'##courseid'.";
     }
 
     /**
@@ -50,7 +54,7 @@ class bigbluebuttonbn_recording_imported extends base
      * @return string
      */
     public static function get_name() {
-        return 'Recording imported';
+        return get_string('event_meeting_left', 'bigbluebuttonbn');
     }
 
     /**
