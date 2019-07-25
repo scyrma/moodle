@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_bigbluebuttonbn recording deleted event.
+ * The mod_bigbluebuttonbn meeting ended event.
  *
  * @package   mod_bigbluebuttonbn
- * @copyright 2010-2017 Blindside Networks Inc
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v2 or later
+ * @copyright 2010 onwards, Blindside Networks Inc
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author    Jesus Federico  (jesus [at] blindsidenetworks [dt] com)
  */
 
@@ -28,20 +28,24 @@ namespace mod_bigbluebuttonbn\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_bigbluebuttonbn recording deleted event (triggered when a recording is deleted).
+ * The mod_bigbluebuttonbn meeting ended event (triggered by bbb_ajax.php and index.php when the meeting is ended by the user).
  *
- * @copyright 2010-2017 Blindside Networks Inc
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v2 or later
+ * @package   mod_bigbluebuttonbn
+ * @copyright 2010 onwards, Blindside Networks Inc
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class bigbluebuttonbn_recording_deleted extends base
+class meeting_ended extends base
 {
     /**
      * Init method.
+     * @param string $crud
+     * @param integer $edulevel
      */
-    protected function init() {
-        parent::init();
-        $this->description = "The user with id '##userid' has deleted a recording with id ".
-            "'##other' from the course id '##contextinstanceid'.";
+    protected function init($crud = 'r', $edulevel = self::LEVEL_OTHER) {
+        parent::init($crud, $edulevel);
+        $this->description = "A bigbluebutton meeting for the bigbluebuttonbn activity with id ".
+            "'##objectid' for the course id '##courseid' has been forcibly ".
+            "ended by the user with id '##userid'.";
     }
 
     /**
@@ -50,7 +54,7 @@ class bigbluebuttonbn_recording_deleted extends base
      * @return string
      */
     public static function get_name() {
-        return 'Recording deleted';
+        return get_string('event_meeting_ended', 'bigbluebuttonbn');
     }
 
     /**
