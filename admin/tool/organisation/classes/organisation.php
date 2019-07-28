@@ -124,7 +124,7 @@ class organisation {
         if ($USER->id != $userid) {
             return null;
         }
-        $curtime = helper::round_time();
+        $curtime = helper::round_time(time());
         if (!$time || helper::round_time($time) == $curtime) {
             return 'key-' . $userid . '-' . $curtime;
         }

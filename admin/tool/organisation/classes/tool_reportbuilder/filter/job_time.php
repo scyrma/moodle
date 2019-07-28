@@ -24,6 +24,7 @@
 
 namespace tool_organisation\tool_reportbuilder\filter;
 
+use tool_organisation\helper;
 use tool_reportbuilder\filter_base;
 
 defined('MOODLE_INTERNAL') || die();
@@ -77,12 +78,12 @@ class job_time extends filter_base {
         }
 
         $alias = $this->reportfilter->get_field_sql();
-        $now = time();
+        $now = helper::round_time(time());
 
         switch ($value) {
             case 1:
-                $where = "$now > {$alias}.startdate
-                AND ($now < {$alias}.enddate OR {$alias}.enddate = 0 OR {$alias}.enddate IS NULL)";
+                $where = "$now >= {$alias}.startdate
+                AND ($now <= {$alias}.enddate OR {$alias}.enddate = 0 OR {$alias}.enddate IS NULL)";
                 break;
             case 2:
                 $where = "$now > {$alias}.enddate AND {$alias}.enddate <> 0";

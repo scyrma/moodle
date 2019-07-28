@@ -109,7 +109,7 @@ class tool_uploaduser {
                     $job->save();
                 } else {
                     if (empty($user->{'jobstartdate'.$i})) {
-                        $params['startdate'] = time();
+                        $params['startdate'] = strtotime('today');
                     } else {
                         if (!self::validate_date($user->{'jobstartdate'.$i})) {
                             $upt->track('tool_wp', get_string('errorinvalidjobstartdate', 'tool_organisation'), 'error');

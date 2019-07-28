@@ -65,6 +65,8 @@ class user_department extends \tool_dynamicrule\condition_sql {
      * @param \MoodleQuickForm $mform The form to add elements to
      */
     public function get_config_form(\MoodleQuickForm $mform) {
+        global $CFG;
+
         $mform->addElement('selectgroups', 'departmentid', get_string('entitydepartment', 'tool_organisation'),
             organisation::get_all_departments_menu(['' => '']));
         $mform->addRule('departmentid', null, 'required', null, 'client');
@@ -73,8 +75,8 @@ class user_department extends \tool_dynamicrule\condition_sql {
         $mform->addElement('advcheckbox', 'withsubdepartments',
             '', get_string('withsubdepartments', 'tool_organisation'));
 
-        $mform->addElement('date_selector', 'jobstartdate',
-            get_string('jobstartdateafter', 'tool_organisation'), array('optional' => true));
+        $options = ['optional' => true, 'timezone' => $CFG->timezone];
+        $mform->addElement('date_selector', 'jobstartdate', get_string('jobstartdateafter', 'tool_organisation'), $options);
         $mform->setDefault('jobstartdate', time());
     }
 

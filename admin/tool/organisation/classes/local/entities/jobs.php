@@ -103,6 +103,8 @@ class jobs extends entity_base {
      * @return report_column[]
      */
     public function get_columns(): array {
+        global $CFG;
+
         $columns = [];
 
         // Column position.
@@ -161,10 +163,7 @@ class jobs extends entity_base {
             ->set_type(constants::DB_TYPE_TIMESTAMP)
             ->set_is_sortable(true)
             ->add_field("$this->tablealias.startdate")
-            ->add_callback([format::class, 'userdate']);
-        // Aggregation.
-        $newcolumn->add_aggregation_callback('max', [format::class, 'userdate'])
-            ->add_aggregation_callback('min', [format::class, 'userdate']);
+            ->add_callback([\tool_organisation\local\helpers\format::class, 'jobdate']);
         $columns[] = $newcolumn;
 
         // Column enddate.
@@ -177,10 +176,7 @@ class jobs extends entity_base {
             ->set_type(constants::DB_TYPE_TIMESTAMP)
             ->set_is_sortable(true)
             ->add_field("$this->tablealias.enddate")
-            ->add_callback([format::class, 'userdate']);
-        // Aggregation.
-        $newcolumn->add_aggregation_callback('max', [format::class, 'userdate'])
-            ->add_aggregation_callback('min', [format::class, 'userdate']);
+            ->add_callback([\tool_organisation\local\helpers\format::class, 'jobdate']);
         $columns[] = $newcolumn;
 
         // Column globalmanagementicons.

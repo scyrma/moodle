@@ -45,6 +45,7 @@ class add_jobassign_form extends modal_form {
      * Form definition
      */
     public function definition() {
+        global $CFG;
 
         $mform = $this->_form;
 
@@ -79,11 +80,13 @@ class add_jobassign_form extends modal_form {
         $mform->setType('departmentid', PARAM_INT);
 
         // Start and end dates.
-        $mform->addElement('date_selector', 'startdate', get_string('startdate', 'tool_organisation'));
+        $options = ['timezone' => $CFG->timezone];
+        $mform->addElement('date_selector', 'startdate', get_string('startdate', 'tool_organisation'), $options);
         $mform->addHelpButton('startdate', 'startdate', 'tool_organisation');
-        $mform->setDefault('startdate', helper::round_time());
+        $mform->setDefault('startdate', time());
 
-        $mform->addElement('date_selector', 'enddate', get_string('enddate', 'tool_organisation'), array('optional' => true));
+        $options['optional'] = true;
+        $mform->addElement('date_selector', 'enddate', get_string('enddate', 'tool_organisation'), $options);
         $mform->addHelpButton('enddate', 'enddate', 'tool_organisation');
 
         // Add the buttons just in case we ever use this form not inside a modal.

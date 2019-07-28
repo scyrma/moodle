@@ -53,6 +53,8 @@ class user_position extends \tool_dynamicrule\condition_sql {
      * @param \MoodleQuickForm $mform The form to add elements to
      */
     public function get_config_form(\MoodleQuickForm $mform) {
+        global $CFG;
+
         $mform->addElement('selectgroups', 'positionid', get_string('entityposition', 'tool_organisation'),
             organisation::get_all_positions_menu(['' => '']));
         $mform->addRule('positionid', null, 'required', null, 'client');
@@ -61,8 +63,8 @@ class user_position extends \tool_dynamicrule\condition_sql {
         $mform->addElement('advcheckbox', 'withsubpositions',
             '', get_string('withsubpositions', 'tool_organisation'));
 
-        $mform->addElement('date_selector', 'jobstartdate',
-            get_string('jobstartdateafter', 'tool_organisation'), array('optional' => true));
+        $options = ['optional' => true, 'timezone' => $CFG->timezone];
+        $mform->addElement('date_selector', 'jobstartdate', get_string('jobstartdateafter', 'tool_organisation'), $options);
         $mform->setDefault('jobstartdate', time());
     }
 

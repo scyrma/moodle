@@ -125,6 +125,8 @@ class jobs_list extends system_report {
      * Set the columns for the report.
      */
     protected function set_columns() {
+        global $CFG;
+
         $this->annotate_entity('user', new \lang_string('entityuser', 'tool_reportbuilder'));
         $this->annotate_entity('tool_organisation_jobs', new \lang_string('entityjob', 'tool_organisation'));
         $this->annotate_entity('tool_organisation_position', new \lang_string('entityposition', 'tool_organisation'));
@@ -182,7 +184,7 @@ class jobs_list extends system_report {
             ))
                 ->add_field($field)
                 ->set_is_default(true)
-                ->add_callback([format::class, 'userdate'], get_string('strftimedatefullshort'));
+                ->add_callback([\tool_organisation\local\helpers\format::class, 'jobdate']);
             $this->add_column($newcolumn);
         }
 
@@ -227,6 +229,6 @@ class jobs_list extends system_report {
      * @return string
      */
     public function get_row_class(\stdClass $row): string {
-        return ($row->enddate && $row->enddate < time()) ? 'dimmed_text' : '';
+        return ($row->enddate && $row->enddate < helper::round_time(time())) ? 'dimmed_text' : '';
     }
 }

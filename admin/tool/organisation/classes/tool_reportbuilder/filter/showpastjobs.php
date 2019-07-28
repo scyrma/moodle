@@ -52,8 +52,8 @@ class showpastjobs extends filter_base {
         $ptime1 = db::generate_param_name();
         $ptime2 = db::generate_param_name();
         $where = "j.startdate <= :{$ptime1} AND (j.enddate = 0 OR j.enddate >= :{$ptime2})";
-        $time = time();
-        $params = [$ptime1 => $time, $ptime2 => $time + DAYSECS - 1];
+        $time = helper::round_time(time());
+        $params = [$ptime1 => $time, $ptime2 => $time];
         return [$where, $params];
     }
 

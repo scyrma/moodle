@@ -122,4 +122,18 @@ class format {
         }
         return join($separator, $values);
     }
+
+    /**
+     * Formatter for job start/end dates - show only date and always in the server timezone
+     *
+     * We want to make sure that jobs dates are always shown the same regardless of user
+     * timezone.
+     *
+     * @param mixed $value
+     * @param stdClass $row
+     */
+    public static function jobdate($value, ?stdClass $row = null) {
+        global $CFG;
+        return $value ? userdate($value, get_string('strftimedatefullshort'), $CFG->timezone) : '';
+    }
 }

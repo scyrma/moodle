@@ -144,14 +144,15 @@ class job extends persistent_exporter {
      * @return array
      */
     protected function get_other_values(\renderer_base $output) {
+        global $CFG;
         $format = get_string('strftimedatefullshort');
         if ($this->get('startdate') && $this->get('enddate')) {
             $a = new \stdClass();
-            $a->from = userdate($this->get('startdate'), $format);
-            $a->to = userdate($this->get('enddate'), $format);
+            $a->from = \tool_organisation\local\helpers\format::jobdate($this->get('startdate'));
+            $a->to = \tool_organisation\local\helpers\format::jobdate($this->get('enddate'));
             $dates = get_string('jobfromto', 'tool_organisation', $a);
         } else {
-            $a = userdate($this->get('startdate'), $format);
+            $a = userdate($this->get('startdate'), $format, $CFG->timezone);
             $dates = get_string('jobfrom', 'tool_organisation', $a);
         }
         return [

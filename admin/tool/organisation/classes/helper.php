@@ -220,14 +220,22 @@ class helper {
     }
 
     /**
-     * Rounds time to the last midnight
+     * Rounds timestamp to the date format
+     *
+     * This method uses exactly the same expression as 'dateselector' element.
+     * Both always use the server timezone to avoid showing job start/end date a day early or late
+     * because of user timezone not matching the server timezone.
      *
      * @param int $time
      * @return int
      */
-    public static function round_time(int $time = 0) {
-        // TODO SP-141 server midnight instead of user midnight?
-        return usergetmidnight($time ?: time());
+    public static function round_time($time) {
+        global $CFG;
+        if (!$time) {
+            return 0;
+        }
+        $date = getdate($time);
+        return make_timestamp($date['year'], $date['mon'], $date['mday'], 0, 0, 0, $CFG->timezone, true);
     }
 
     /**
@@ -271,11 +279,11 @@ class helper {
         $ptime2 = db::generate_param_name();
         $time = $time ?: time();
         $time = self::round_time($time);
-        $params = [$ptenant => tenancy::get_tenant_id(), $ptime1 => $time, $ptime2 => $time + DAYSECS - 1];
+        $params = [$ptenant => tenancy::get_tenant_id(), $ptime1 => $time, $ptime2 => $time];
 
         $where = "{$jobalias}.tenantid = :{$ptenant}
-            AND {$jobalias}.startdate <= :{$ptime2}
-            AND ({$jobalias}.enddate = 0 OR {$jobalias}.enddate >= :{$ptime1})";
+            AND {$jobalias}.startdate <= :{$ptime1}
+            AND ({$jobalias}.enddate = 0 OR {$jobalias}.enddate >= :{$ptime2})";
 
         return [$where, $params];
     }

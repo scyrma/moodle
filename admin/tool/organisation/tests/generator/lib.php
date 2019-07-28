@@ -143,7 +143,7 @@ class tool_organisation_generator extends component_generator_base {
             $data->tenantid = \tool_tenant\tenancy::get_tenant_id($data->userid);
         }
         if (empty($data->startdate)) {
-            $data->startdate = time() - DAYSECS;
+            $data->startdate = \tool_organisation\helper::round_time(time() - DAYSECS);
         }
         $job = new \tool_organisation\job(0, $data);
         $job->save();
