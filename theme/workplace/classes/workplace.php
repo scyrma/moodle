@@ -48,7 +48,7 @@ class workplace {
      * Remove items from the flat navigation menu.
      */
     public function removenav() {
-        global $PAGE, $DB, $COURSE;
+        global $PAGE, $DB, $COURSE, $CFG;
         $flatnav = $PAGE->flatnav;
 
         $addcustomnav = false;
@@ -86,12 +86,12 @@ class workplace {
             }
             if ($firstaction && $action->key == 'myhome') {
                 $flatnav->remove($action->key);
-                $flatnav->add($action, $firstaction->key);
+                $flatnav->add($action, 'calendar');
             }
             if ($action->key == 'mycourses') {
                 $flatnav->remove($action->key);
             }
-            if ($action->key == 'home') {
+            if (($action->key == 'home') && ($CFG->defaulthomepage == 1)) {
                 $flatnav->remove($action->key);
             }
             if ($addcustomnav && $action->key == $coursemoduleid) {

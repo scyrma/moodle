@@ -24,6 +24,7 @@
 
 namespace theme_workplace\output;
 
+use theme_workplace\api;
 use tool_reportbuilder\permission;
 
 defined('MOODLE_INTERNAL') || die;
@@ -122,7 +123,7 @@ class core_renderer extends \theme_boost\output\core_renderer {
         }
 
         // Get some navigation opts.
-        if (isloggedin()) {
+        if (isloggedin() && !isguestuser()) {
             $opts = user_get_user_navigation_info($user, $PAGE, ['avatarsize' => '50']);
 
             $template->email = $user->email;
@@ -156,21 +157,15 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 $template->mnetusercontents = $opts->metadata['mnetidprovidername'];
             }
 
-            $courses = enrol_get_my_courses();
-
-            $requiredproperties = \core_course\external\course_summary_exporter::define_properties();
-            $fields = join(',', array_keys($requiredproperties));
-
-            $courses = course_get_enrolled_courses_for_logged_in_user(0, 0, 'ul.timeaccess desc', $fields,
-                    COURSE_DB_QUERY_LIMIT, []);
-
             $template->courses = [];
-            foreach ($courses as $course) {
-                $context = \context_course::instance($course->id);
-
-                $exporter = new \core_course\external\course_summary_exporter($course, ['context' => $context]);
-
-                $template->courses[] = $exporter->export($this);
+            $courses = api::get_enrolled_courses_for_current_user_by_lowest_enddate();
+            if ($courses) {
+                foreach ($courses as $course) {
+                    \context_helper::preload_from_record($course);
+                    $context = \context_course::instance($course->id);
+                    $exporter = new \core_course\external\course_summary_exporter($course, ['context' => $context]);
+                    $template->courses[] = $exporter->export($this);
+                }
             }
 
             $template->navitems = [];
