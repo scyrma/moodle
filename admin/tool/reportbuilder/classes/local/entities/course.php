@@ -27,6 +27,7 @@ namespace tool_reportbuilder\local\entities;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\entity_base;
 use tool_reportbuilder\local\filter\checkbox;
+use tool_reportbuilder\local\filter\course_selector;
 use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
 use tool_reportbuilder\local\filter\select;
@@ -221,6 +222,17 @@ class course extends entity_base {
             }
             $conditions[] = $filter;
         }
+
+        // Filter course selector.
+        $conditions[] = (new report_filter(
+            course_selector::class,
+            'courseselector',
+            new \lang_string('selectcourses', 'tool_reportbuilder'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->coursejoin)
+            ->set_field_sql($this->coursetablealias);
+
         return $conditions;
     }
 

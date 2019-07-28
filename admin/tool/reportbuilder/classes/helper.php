@@ -48,20 +48,17 @@ class helper {
      */
     public static function get_sources($default = false): array {
         $sources = array();
-        $plugins = \core_component::get_component_names();
         if ($default) {
             $sources[''][''] = get_string('selectsource', 'tool_reportbuilder');
         }
 
-        foreach ($plugins as $plugin) {
-            $datasources = \core_component::get_component_classes_in_namespace($plugin, 'tool_reportbuilder\\datasources');
-            foreach ($datasources as $class => $path) {
-                if (is_subclass_of($class, datasource::class)) {
-                    $component = substr($class, 0, strpos($class, '\\'));
-                    $pluginname = get_string('pluginname', $component);
+        $datasources = \core_component::get_component_classes_in_namespace(null, 'tool_reportbuilder\\datasources');
+        foreach ($datasources as $class => $path) {
+            if (is_subclass_of($class, datasource::class)) {
+                $component = substr($class, 0, strpos($class, '\\'));
+                $pluginname = get_string('pluginname', $component);
 
-                    $sources[$pluginname][$class] = call_user_func(array($class, 'get_name'));
-                }
+                $sources[$pluginname][$class] = call_user_func(array($class, 'get_name'));
             }
         }
 

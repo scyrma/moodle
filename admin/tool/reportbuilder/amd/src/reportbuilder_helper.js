@@ -33,6 +33,14 @@ define(
 
         "use strict";
         return {
+            /**
+             * Replace a node content in the page with some visual effect.
+             *
+             * @param {JQuery} node - Element or selector to replace.
+             * @param {String} html - HTML to insert / replace.
+             * @param {String} js - Javascript to run after the insertion.
+             * @return {Promise}
+             */
             niceReplaceNodeContents: function(node, html, js) {
                 // TODO 1. there are five different copies of this function or similar (search by "fadeOut").
                 // TODO 2. wherever this kind of function is used we need to use their return as a promise,
@@ -48,6 +56,14 @@ define(
 
                 return promise.promise();
             },
+            /**
+             * Replace a node in the page with some visual effect.
+             *
+             * @param {JQuery} node - Element or selector to replace.
+             * @param {String} html - HTML to insert / replace.
+             * @param {String} js - Javascript to run after the insertion.
+             * @return {Promise}
+             */
             replaceNode: function(node, html, js) {
                 var promise = $.Deferred();
 

@@ -92,15 +92,7 @@ class conditions extends external_api {
         conditions_helper::add_condition($reportid, $conditionkey);
 
         $output = $PAGE->get_renderer('tool_reportbuilder');
-        $source = manager::get_report($params['reportid']);
-        $activeconditions = conditions_helper::get_active_conditions($source->get_id());
-        $conditions = $source->get_conditions();
-        $conditionsinuse = conditions_helper::get_conditions($activeconditions, $conditions, $output);
-        $conditions = new report_conditions($source, true, $conditionsinuse);
-        return array(
-            'conditionsform'     => $conditions->display_active(),
-            'hasconditionsselected' => true
-        );
+        return self::conditions_return($params['reportid'], $output);
     }
 
     /**
@@ -109,10 +101,7 @@ class conditions extends external_api {
      * @return \external_single_structure
      */
     public static function add_report_condition_returns() {
-        return new \external_single_structure(array(
-            'conditionsform' => new \external_value(PARAM_RAW, 'Conditions form'),
-            'hasconditionsselected' => new external_value(PARAM_BOOL, 'Has filters selected')
-        ));
+        return self::conditions_return_parameters();
     }
 
     /**
@@ -280,19 +269,32 @@ class conditions extends external_api {
      * @throws \coding_exception
      */
     private static function conditions_return(int $reportid, \renderer_base $output): array {
+        global $PAGE, $OUTPUT;
+
+        // Hack alert: Set a default URL to stop the annoying debug.
+        $PAGE->set_url('/');
+        // Hack alert: Forcing bootstrap_renderer to initiate moodle page.
+        $OUTPUT->header();
+
+        $PAGE->start_collecting_javascript_requirements();
+
         $source = manager::get_report($reportid);
         $activeconditions = conditions_helper::get_active_conditions($source->get_id());
         $conditions = $source->get_conditions();
         $conditionsinuse = conditions_helper::get_conditions($activeconditions, $conditions, $output);
         $conditions = new report_conditions($source, true, $conditionsinuse);
         $availableconditions = $source->get_conditions_select($conditionsinuse);
+        $conditionsform = $conditions->display_active();
+
+        $jsfooter = $PAGE->requires->get_end_code();
 
         return array(
-            'conditionsform'     => $conditions->display_active(),
+            'conditionsform'     => $conditionsform,
             'availableconditions' => $availableconditions,
             'hasconditionsselected' => !empty($activeconditions) ? true : false,
             'noconditionsurl' => $output->image_url('no-filters', 'tool_reportbuilder')->out(),
-            'hasavailableconditions' => $availableconditions ? true : false
+            'hasavailableconditions' => $availableconditions ? true : false,
+            'javascript' => $jsfooter
         );
     }
 
@@ -325,6 +327,7 @@ class conditions extends external_api {
             'noconditionsurl' => new external_value(PARAM_URL, 'URL of the no filter icon'),
             'hasavailableconditions' => new \external_value(PARAM_BOOL,
                 'If have available conditions in order to show the select'),
+            'javascript' => new \external_value(PARAM_RAW, 'Conditions javascript code'),
         ));
     }
 }

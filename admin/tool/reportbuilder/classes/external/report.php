@@ -71,8 +71,16 @@ class report extends \external_api {
      * @throws \dml_exception
      */
     public static function get_reportbuilder(int $reportid, int $editon) {
-        global $PAGE;
+        global $PAGE, $OUTPUT;
+
         $PAGE->set_context(\context_system::instance());
+        // Hack alert: Set a default URL to stop the annoying debug.
+        $PAGE->set_url('/');
+        // Hack alert: Forcing bootstrap_renderer to initiate moodle page.
+        $OUTPUT->header();
+
+        $PAGE->start_collecting_javascript_requirements();
+
         $report = new report_view($reportid, $editon);
         $output = $PAGE->get_renderer('tool_reportbuilder');
         $context = $report->export_for_template($output);
@@ -85,6 +93,8 @@ class report extends \external_api {
             $event = report_viewed::create_from_object($report, 'preview');
             $event->trigger();
         }
+
+        $context->javascript = $PAGE->requires->get_end_code();
 
         return $context;
     }

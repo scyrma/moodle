@@ -35,7 +35,8 @@ define(
         'core/str',
         'tool_reportbuilder/reportbuilder_events',
         'tool_reportbuilder/reportbuilder_helper',
-        'tool_wp/ajax_form'
+        'tool_wp/ajax_form',
+        'tool_wp/helper'
     ],
     function(
         $,
@@ -50,7 +51,8 @@ define(
         Str,
         Events,
         Helper,
-        AjaxForm
+        AjaxForm,
+        WpHelper
     ) {
 
         "use strict";
@@ -279,7 +281,7 @@ define(
         };
 
         /**
-         * Add a filter.
+         * Add a condition.
          *
          * @param {Event} e
          * @private
@@ -305,9 +307,7 @@ define(
                 ]);
 
                 return promises[0].fail(Notification.exception);
-            }.bind(this)).fail(function(ex) {
-                Notification.exception(ex);
-            }).then(function(data) {
+            }.bind(this)).then(function(data) {
                 this._reloadSelectedConditions(data);
                 M.util.js_complete('tool_reportbuilder_add_condition');
             }.bind(this)).fail(Notification.exception);
@@ -321,9 +321,9 @@ define(
         Conditions.prototype._reloadSelectedConditions = function(context) {
             M.util.js_pending('tool_reportbuilder_reload_conditions'); // Tell Behat to wait.
             Templates.render(TEMPLATES.ACTIVECONDITIONS, context)
-                .then(function(html, js) {
+                .then(function(html) {
                     return Helper.niceReplaceNodeContents(this.reportBuilder.find(SELECTORS.ACTIVECONDITIONS),
-                        html, js);
+                        html, WpHelper.processCollectedJavascript(context.javascript));
                 }.bind(this))
                 .then(function() {
                     M.util.js_complete('tool_reportbuilder_reload_conditions');
@@ -333,7 +333,7 @@ define(
         };
 
         /**
-         * Reload the selected conditions region with the selected condition.
+         * Reload the available conditions region with the available condition.
          * @param {Object} context
          * @private
          */

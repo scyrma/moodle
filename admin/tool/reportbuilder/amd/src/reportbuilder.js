@@ -36,21 +36,24 @@ define(
         'tool_reportbuilder/reportbuilder_columns',
         'tool_reportbuilder/reportbuilder_filters',
         'tool_reportbuilder/reportbuilder_sorting',
-        'tool_reportbuilder/reportbuilder_conditions'
+        'tool_reportbuilder/reportbuilder_conditions',
+        'tool_wp/helper'
     ],
     function($,
-             jqui,
-             Notification,
-             Fragment,
-             Ajax,
-             Config,
-             Template,
-             Log,
-             Table,
-             Column,
-             Filters,
-             Sorting,
-             Conditions) {
+        jqui,
+        Notification,
+        Fragment,
+        Ajax,
+        Config,
+        Template,
+        Log,
+        Table,
+        Column,
+        Filters,
+        Sorting,
+        Conditions,
+        WpHelper
+    ) {
 
         "use strict";
 
@@ -224,16 +227,21 @@ define(
          */
         ReportBuilder.prototype._showPreview = function() {
             M.util.js_pending('tool_reportbuilder_show_preview'); // Tell Behat to wait.
-            var promises = Ajax.call([
-                {methodname: SERVICES.GETREPORT, args: {reportid: this.getReportId(), editon: false}}
-            ]);
+            var js = '';
 
-            promises[0].done(function(response) {
-                Template.render(TEMPLATES.TABLETAB, response).done(function(html, js) {
-                    Template.replaceNode(SELECTORS.BUILDER, html, js);
-                    M.util.js_complete('tool_reportbuilder_show_preview');
-                }).fail(Notification.exception);
-            }).fail(Notification.exception);
+            Ajax.call([
+                {methodname: SERVICES.GETREPORT, args: {reportid: this.getReportId(), editon: false}}
+            ])[0]
+            .then(function(response) {
+                js = response.javascript;
+                return Template.render(TEMPLATES.TABLETAB, response);
+            })
+            .then(function(html) {
+                Template.replaceNode(SELECTORS.BUILDER, html, WpHelper.processCollectedJavascript(js));
+                M.util.js_complete('tool_reportbuilder_show_preview');
+                return null;
+            })
+            .fail(Notification.exception);
         };
 
         /**
@@ -242,17 +250,22 @@ define(
          */
         ReportBuilder.prototype._showEdit = function() {
             M.util.js_pending('tool_reportbuilder_show_edit'); // Tell Behat to wait.
-            var promises = Ajax.call([
-                {methodname: SERVICES.GETREPORT, args: {reportid: this.getReportId(), editon: true}}
-            ]);
+            var js = '';
 
-            promises[0].done(function(response) {
-                Template.render(TEMPLATES.TABLETAB, response).done(function(html, js) {
-                    Template.replaceNode(SELECTORS.BUILDER, html, js);
-                    this.conditions.formHandler();
-                    M.util.js_complete('tool_reportbuilder_show_edit');
-                }.bind(this)).fail(Notification.exception);
-            }.bind(this)).fail(Notification.exception);
+            Ajax.call([
+                {methodname: SERVICES.GETREPORT, args: {reportid: this.getReportId(), editon: true}}
+            ])[0]
+            .then(function(response) {
+                js = response.javascript;
+                return Template.render(TEMPLATES.TABLETAB, response);
+            })
+            .then(function(html) {
+                Template.replaceNode(SELECTORS.BUILDER, html, WpHelper.processCollectedJavascript(js));
+                this.conditions.formHandler();
+                M.util.js_complete('tool_reportbuilder_show_edit');
+                return null;
+            }.bind(this))
+            .fail(Notification.exception);
         };
 
         /**

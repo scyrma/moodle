@@ -319,3 +319,49 @@ Feature: Manage conditions in report builder
     Then "//select[@id='addconditonselect']//option[starts-with(@value,'user:profilefield_custom_textarea')]" "xpath_element" should exist
     Then "//select[@id='addconditonselect']//option[starts-with(@value,'user:profilefield_custom_textinputhidden')]" "xpath_element" should not exist
     And I log out
+
+  @javascript
+  Scenario: Ensure that last access condition works when added without refresh page
+    Given the following custom reports exist:
+      | name    | tenant  | source |
+      | Report1 | Tenant1 | tool_reportbuilder\tool_reportbuilder\datasources\report_users_list |
+    When I log in as "user11"
+    Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
+    And I click on "Edit content" "link" in the "Report1" "table_row"
+    And I click on "Show/hide filters sidebar" "button"
+    And I click on "#addconditonselect" "css_element"
+    And I click on "Last access" "text" in the "#addconditonselect" "css_element"
+    Then I should see "Any value"
+    And "[name=\"user:lastaccess_op2\"]" "css_element" should not be visible
+    And "[name=\"user:lastaccess\"]" "css_element" should not be visible
+    And I set the field "user:lastaccess_op" to "Previous"
+    And "[name=\"user:lastaccess_op2\"]" "css_element" should be visible
+    And I set the field "user:lastaccess_op" to "Last ... days"
+    And "[name=\"user:lastaccess\"]" "css_element" should be visible
+    And "[name=\"user:lastaccess_op2\"]" "css_element" should not be visible
+
+  @javascript
+  Scenario: Ensure that course selector condition works when added without refresh page
+    Given the following "courses" exist:
+      | fullname | shortname | category |
+      | Course 1 | C1        | CAT1     |
+      | Course 2 | C2        | CAT1     |
+    And the following "course enrolments" exist:
+      | user   | course | role           |
+      | user12 | C1     | student        |
+    When I log in as "user11"
+    And I navigate to "Report builder" in workplace launcher
+    And I follow "New report"
+    And I set the following fields to these values:
+      | Report name | Report1 |
+      | Report source | Course completion from datastore |
+    And I press "Save" in the modal form dialogue
+    And I click on "Show/hide filters sidebar" "button"
+    And I click on "#addconditonselect" "css_element"
+    And I click on "Select courses" "text" in the "#addconditonselect" "css_element"
+    Then I should see "No selection"
+    And I open the autocomplete suggestions list
+    And I should see "Course 1" in the ".form-autocomplete-suggestions" "css_element"
+    And I should see "Course 2" in the ".form-autocomplete-suggestions" "css_element"
+    And I click on "Course 1" "text" in the ".form-autocomplete-suggestions" "css_element"
+    And I press key "27" in the field "Select courses"
