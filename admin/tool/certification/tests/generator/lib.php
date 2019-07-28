@@ -104,9 +104,25 @@ class tool_certification_generator extends component_generator_base {
         $newcertificationdata['program'] = $programid;
         unset($newcertificationdata['certification_tags']);
 
+        $certificationtags = '';
+        if (isset($certificationdata['certification_tags'])) {
+            $certificationtags = $certificationdata['certification_tags'];
+            unset($certificationdata['certification_tags']);
+        }
+
         $newcertificationdata = array_merge($newcertificationdata, $certificationdata);
         $certification = new certification(0, (object) $newcertificationdata);
         $certification->create();
+        $id = $certification->get('id');
+
+        // Check if tool_dynamicrule is installed.
+        if (class_exists('\\tool_dynamicrule\\rules_list')) {
+            \tool_certification\api::add_default_dynamicrule_conditions_to_certification($id, $certification->get('tenantid'));
+        }
+
+        // Save certification tags.
+        $context = context_system::instance();
+        core_tag_tag::set_item_tags('tool_certification', 'tool_certification', $id, $context, $certificationtags);
 
         return $certification;
     }

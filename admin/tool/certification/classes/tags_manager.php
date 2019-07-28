@@ -23,13 +23,14 @@
 
 namespace tool_certification;
 
-use context;
-use context_helper;
 use context_system;
 use core_tag\output\tagindex;
 use core_tag\output\tagfeed;
 use core_tag_index_builder;
 use core_tag_tag;
+use tool_tenant\tenancy;
+use html_writer;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -54,45 +55,40 @@ class tags_manager {
                                                $page = 0): tagindex {
         global $OUTPUT;
 
+        // Show certifications only to users who have permission to edit details or allocate users.
+        // Certifications can only be displayed in system context.
+        $canview = permission::can_view_list(context_system::instance());
+        if (!$canview || ($ctxid && context_system::instance()->id !== (int) $ctxid)) {
+            return new tagindex($tag, 'tool_certification', 'tool_certification', '', $exclusivemode,
+                $fromctxid, $ctxid, $recursivectx, $page, 0);
+        }
+
         $perpage = $exclusivemode ? 20 : 5;
 
         // Build select query.
-        $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
-        $query = "SELECT pr.id AS certificationid, $ctxselect
-                FROM {tool_certification} pr
+        $query = "SELECT cer.id AS certificationid
+                FROM {tool_certification} cer
                 JOIN {tag_instance} tt
-                  ON pr.id = tt.itemid
+                  ON cer.id = tt.itemid
                 JOIN {context} ctx
                   ON ctx.instanceid = 0
                  AND ctx.contextlevel = :certificationcontextlevel
                WHERE tt.itemtype = :itemtype
                  AND tt.tagid = :tagid
                  AND tt.component = :component
-                 AND pr.id %ITEMFILTER% ";
+                 AND cer.id %ITEMFILTER%
+                 AND cer.archived = 0
+                 AND cer.tenantid = :tenantid";
 
         $params = [
             'itemtype' => 'tool_certification',
             'tagid' => $tag->id,
             'component' => 'tool_certification',
-            'certificationcontextlevel' => CONTEXT_SYSTEM
+            'certificationcontextlevel' => CONTEXT_SYSTEM,
+            'tenantid' => tenancy::get_tenant_id()
         ];
 
-        // Certifications can only be displayed in system context.
-        if ($ctxid && context_system::instance()->id !== (int) $ctxid) {
-            return new tagindex($tag, 'tool_certification', 'tool_certification', '',
-                $exclusivemode, $fromctxid, $ctxid, $recursivectx, $page, 0);
-        }
-
-        $query .= ' ORDER BY';
-        if ($fromctxid) {
-            // In order-clause specify that modules from inside "fromctx" context should be returned first.
-            $fromcontext = context::instance_by_id($fromctxid);
-            $query .= ' (CASE WHEN ctx.id = :fromcontextid OR ctx.path LIKE :frompath THEN 0 ELSE 1 END),';
-            $params['fromcontextid'] = $fromcontext->id;
-            $params['frompath'] = $fromcontext->path . '/%';
-        }
-        $query .= ' pr.id';
-
+        $query .= ' ORDER BY cer.id';
         $totalpages = $page + 1;
 
         // Use core_tag_index_builder to build and filter the list of items.
@@ -101,15 +97,8 @@ class tags_manager {
             $page * $perpage, $perpage + 1);
 
         // Use core_tag_index_builder to build and filter the list of items.
-        $context = context_system::instance();
         while ($item = $builder->has_item_that_needs_access_check()) {
-            context_helper::preload_from_record($item);
-            // Show certifications only to users who have permission to edit details.
-            $builder->walk(function($taggeditem) use ($builder, $context) {
-                $certification = new certification($taggeditem->certificationid);
-                $accessible = permission::can_edit_details($certification, $context);
-                $builder->set_accessible($taggeditem, $accessible);
-            });
+            $builder->set_accessible($item, true);
         }
 
         $items = $builder->get_items();
@@ -124,11 +113,11 @@ class tags_manager {
             $tagfeed = new tagfeed();
             $icon = $OUTPUT->pix_icon('menu/certifications', '', 'theme');
             foreach ($items as $item) {
-                context_helper::preload_from_record($item);
                 $certification = new certification($item->certificationid);
-                $url = new \moodle_url('/admin/tool/certification/edit.php', ['id' => $item->certificationid]);
-                $imgwithlink = \html_writer::link($url, $icon);
-                $tagfeed->add($imgwithlink, format_string($certification->get('fullname')));
+                $url = new moodle_url('/admin/tool/certification/edit.php', ['id' => $item->certificationid]);
+                $imgwithlink = html_writer::link($url, $icon);
+                $namewithlink = html_writer::link($url, format_string($certification->get('fullname')));
+                $tagfeed->add($imgwithlink, $namewithlink);
             }
             $content = $OUTPUT->render_from_template('core_tag/tagfeed', $tagfeed->export_for_template($OUTPUT));
         }

@@ -156,6 +156,19 @@ class behat_tool_certification extends behat_base {
     }
 
     /**
+     * Preprocess certification
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function preprocess_certification($data): array {
+        if (isset($data['certification_tags'])) {
+            $data['certification_tags'] = explode(',', $data['certification_tags']);
+        }
+        return $data;
+    }
+
+    /**
      * Process certification
      *
      * @param stdClass|array $record
