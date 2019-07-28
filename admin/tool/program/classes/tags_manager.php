@@ -24,8 +24,6 @@
 
 namespace tool_program;
 
-use context;
-use context_helper;
 use context_system;
 use core_tag\output\tagindex;
 use core_tag\output\tagfeed;
@@ -33,6 +31,7 @@ use core_tag_index_builder;
 use core_tag_tag;
 use html_writer;
 use tool_program\persistent\program;
+use tool_tenant\tenancy;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -59,11 +58,18 @@ class tags_manager {
         $page = 0): tagindex {
         global $OUTPUT;
 
+        // Show programs only to users who have permission to edit details or allocate users.
+        // Programs can only be displayed in system context.
+        $canview = permission::can_view_list(context_system::instance());
+        if (!$canview || ($ctxid && context_system::instance()->id !== (int) $ctxid)) {
+            return new tagindex($tag, 'tool_program', 'tool_program', '', $exclusivemode, $fromctxid,
+                $ctxid, $recursivectx, $page, 0);
+        }
+
         $perpage = $exclusivemode ? 20 : 5;
 
         // Build select query.
-        $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
-        $query = "SELECT pr.id AS programid, $ctxselect
+        $query = "SELECT pr.id AS programid
                 FROM {tool_program} pr
                 JOIN {tag_instance} tt
                   ON pr.id = tt.itemid
@@ -73,31 +79,20 @@ class tags_manager {
                WHERE tt.itemtype = :itemtype
                  AND tt.tagid = :tagid
                  AND tt.component = :component
-                 AND pr.id %ITEMFILTER% ";
+                 AND pr.id %ITEMFILTER%
+                 AND pr.archived = 0
+                 AND pr.visible = 1
+                 AND pr.tenantid = :tenantid";
 
         $params = [
             'itemtype' => 'tool_program',
             'tagid' => $tag->id,
             'component' => 'tool_program',
-            'programcontextlevel' => CONTEXT_SYSTEM
+            'programcontextlevel' => CONTEXT_SYSTEM,
+            'tenantid' => tenancy::get_tenant_id()
         ];
 
-        // Programs can only be displayed in system context.
-        if ($ctxid && context_system::instance()->id !== (int) $ctxid) {
-            return new tagindex($tag, 'tool_program', 'tool_program', '',
-                $exclusivemode, $fromctxid, $ctxid, $recursivectx, $page, 0);
-        }
-
-        $query .= ' ORDER BY';
-        if ($fromctxid) {
-            // In order-clause specify that modules from inside "fromctx" context should be returned first.
-            $fromcontext = context::instance_by_id($fromctxid);
-            $query .= ' (CASE WHEN ctx.id = :fromcontextid OR ctx.path LIKE :frompath THEN 0 ELSE 1 END),';
-            $params['fromcontextid'] = $fromcontext->id;
-            $params['frompath'] = $fromcontext->path . '/%';
-        }
-        $query .= ' pr.id';
-
+        $query .= ' ORDER BY pr.id';
         $totalpages = $page + 1;
 
         // Use core_tag_index_builder to build and filter the list of items.
@@ -105,15 +100,8 @@ class tags_manager {
         $builder = new core_tag_index_builder('tool_program', 'tool_program', $query, $params, $page * $perpage, $perpage + 1);
 
         // Use core_tag_index_builder to build and filter the list of items.
-        $context = context_system::instance();
         while ($item = $builder->has_item_that_needs_access_check()) {
-            context_helper::preload_from_record($item);
-            // Show programs only to users who have permission to edit details.
-            $builder->walk(function($taggeditem) use ($builder, $context) {
-                $program = new program($taggeditem->programid);
-                $accessible = permission::can_edit_details($program, $context);
-                $builder->set_accessible($taggeditem, $accessible);
-            });
+            $builder->set_accessible($item, true);
         }
 
         $items = $builder->get_items();
@@ -129,11 +117,11 @@ class tags_manager {
             $icon = $OUTPUT->pix_icon('menu/programs', '', 'theme');
 
             foreach ($items as $item) {
-                context_helper::preload_from_record($item);
                 $program = new program($item->programid);
                 $url = new \moodle_url('/admin/tool/program/edit.php', ['id' => $item->programid]);
                 $imgwithlink = html_writer::link($url, $icon);
-                $tagfeed->add($imgwithlink, format_string($program->get('fullname')));
+                $namewithlink = html_writer::link($url, format_string($program->get('fullname')));
+                $tagfeed->add($imgwithlink, $namewithlink);
             }
             $content = $OUTPUT->render_from_template('core_tag/tagfeed', $tagfeed->export_for_template($OUTPUT));
         }

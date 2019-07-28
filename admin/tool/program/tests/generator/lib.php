@@ -51,7 +51,7 @@ class tool_program_generator extends testing_module_generator {
             'tenantid' => 1,
             'idnumber' => '1',
             'description' => 'A program description',
-            'descriptionformat' => FORMAT_MOODLE,
+            'descriptionformat' => FORMAT_HTML,
             'archived' => 0,
             'visible' => constants::VISIBILITY_AVAILABLE,
             'startdatetype' => constants::DATE_ABSOLUTE,
@@ -82,7 +82,7 @@ class tool_program_generator extends testing_module_generator {
         $programdata->description_editor = [
             'itemid' => 1,
             'text' => $programdata->description ?? 'A program description',
-            'format' => $programdata->descriptionformat ?? FORMAT_MOODLE,
+            'format' => $programdata->descriptionformat ?? FORMAT_HTML,
         ];
         unset($programdata->description, $programdata->descriptionformat);
     }

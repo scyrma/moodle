@@ -90,7 +90,9 @@ class api {
             'status' => 1,
             'archived' => 1,
             'visible' => 1,
-            'allowdirectallocation' => 1
+            'allowdirectallocation' => 1,
+            'descriptionformat' => 1,
+            'description' => 1
         ]);
 
         // If no tenantid provided, default to current user tenant id.

@@ -155,6 +155,8 @@ class behat_tool_program extends behat_base {
             $data['program_tags'] = [
                 'hello', 'world'
             ];
+        } else {
+            $data['program_tags'] = explode(',', $data['program_tags']);
         }
 
         return $data;
@@ -170,7 +172,7 @@ class behat_tool_program extends behat_base {
         if (!array_key_exists('fullname', $record)) {
             $record['fullname'] = 'New program ' . (++$this->instancecount);
         }
-
+        $record['descriptionformat'] = FORMAT_HTML;
         return api::create_program((object) $record);
     }
 
