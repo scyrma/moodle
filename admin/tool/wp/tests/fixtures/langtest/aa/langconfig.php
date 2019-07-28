@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Hack to the settings tree
+ * Fixtures for the language tests.
  *
  * @package     tool_wp
  * @copyright   2019 Marina Glancy
@@ -24,17 +24,5 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-if (!defined('BEHAT_SITE_RUNNING')) {
-    // Rename the "Courses" tab into "Learning".
-    if ($coursestab = $ADMIN->locate('courses')) {
-        $coursestab->visiblename = new lang_string('coursesadmintab', 'tool_wp');
-    }
-}
-
-// Automatically hide the parent languages for workplace language packs.
-if ($hassiteconfig && ($langsettings = $ADMIN->locate('langsettings'))) {
-    $setting = new admin_setting_configcheckbox('wphideparentlang',
-        new lang_string('confighideparentlang', 'tool_wp'),
-        new lang_string('confighideparentlangdesc', 'tool_wp'), 1);
-    $langsettings->add($setting);
-}
+$string['thislanguage'] = 'AA native name';
+$string['thislanguageint'] = 'AA international name';

@@ -29,8 +29,9 @@ define([
     'core/notification',
     'core/yui',
     'core/event',
+    'core/str',
     'tool_wp/helper'
-], function($, ModalFactory, ModalEvents, Ajax, Notification, Y, Event, Helper) {
+], function($, ModalFactory, ModalEvents, Ajax, Notification, Y, Event, Str, Helper) {
     /**
      * Constructor
      *
@@ -67,9 +68,16 @@ define([
      * @private
      */
     ModalForm.prototype.init = function() {
-        ModalFactory.create(
-            this.config.modalConfig,
-            this.config.triggerElement)
+        var requiredStrings = [
+            {key: 'collapseall', component: 'moodle'},
+            {key: 'expandall', component: 'moodle'}
+        ];
+
+        // Ensure strings required for shortforms are always available.
+        Str.get_strings(requiredStrings)
+        .then(function() {
+            return ModalFactory.create(this.config.modalConfig, this.config.triggerElement);
+        }.bind(this))
         .then(function(modal) {
             // Keep a reference to the modal.
             this.modal = modal;
