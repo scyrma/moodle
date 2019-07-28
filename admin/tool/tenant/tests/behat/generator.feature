@@ -69,5 +69,6 @@ Feature: Tenants generator
     And I should not see "Course13"
     And I should not see "Course2"
     And I follow "Course11"
+    And I click on "Expand all" "button"
     And I should see "URL1"
     And I log out

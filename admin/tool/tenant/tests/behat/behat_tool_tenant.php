@@ -146,7 +146,7 @@ class behat_tool_tenant extends behat_base {
 
         $data = array('backupfile' => $CFG->dirroot . '/admin/tool/tenant/tests/fixtures/backup.mbz',
             'summary' => '', 'category' => $categoryid, 'fullname' => $fullname, 'shortname' => $shortname,
-            'enablecompletion' => true);
+            'enablecompletion' => true, 'format' => 'wplist');
         $mode = tool_uploadcourse_processor::MODE_CREATE_NEW;
         $updatemode = tool_uploadcourse_processor::UPDATE_ALL_WITH_DATA_ONLY;
         $co = new tool_uploadcourse_course($mode, $updatemode, $data);
