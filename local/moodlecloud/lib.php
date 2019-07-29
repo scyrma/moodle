@@ -59,8 +59,10 @@ function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
             [
                 'userpercentage' => $userpercentage,
                 'userpercentagestatus' => ['ok', 'warn', 'danger'][min(2, floor($userpercentage * 3))],
+                'userpercentagedashoffset' => 440 * (1 - $userpercentage),
                 'storagepercentage' => $storagepercentage,
                 'storagepercentagestatus' => ['ok', 'warn', 'danger'][min(2, floor($storagepercentage * 3))],
+                'storagepercentagedashoffset' => 440 * (1 - $storagepercentage),
                 'users' => MOODLECLOUD_USER_QUOTA - userquota::number_of_user_slots_remaining(),
                 'totalusers' => MOODLECLOUD_USER_QUOTA,
                 'mb' => round(file_system_s3::unique_storage_size_used()/(1024**2)),
