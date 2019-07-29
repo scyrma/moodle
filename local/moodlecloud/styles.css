@@ -59,6 +59,10 @@
     color: red;
 }
 
+.nav-item {
+    z-index: 9 !important;
+}
+
 /* Firefox */
 #nav-moodlecloud-quota-popover-container progress.ok::-moz-progress-bar {
     background: green;
