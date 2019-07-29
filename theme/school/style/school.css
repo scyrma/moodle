@@ -20705,3 +20705,6 @@ h6 {
 .message-app.drawer {
   height: calc(100% - 50px);
   top: 50px; }
+
+.message.bg-secondary {
+  color: #fff !important; }
