@@ -770,9 +770,12 @@ $footertext: null !default;
         display: inline-block;
     }
 
+    &:not(.disabled) {
+        color: $gray070 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
     i {
         font-size: 34px;
-        color: $gray070;
         margin-right: 15px;
         height: 20px;
         width: 40px;
