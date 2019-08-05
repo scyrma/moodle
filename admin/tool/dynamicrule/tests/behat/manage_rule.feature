@@ -78,7 +78,7 @@ Feature: Creating and editing
     And I navigate to "Dynamic rules" in site administration
     And I should see "No conditions on this rule"
     And I should see "No actions on this rule"
-    And "Cannot enable rule 'Rule1' unless it has conditions and actions, is not broken and is not archived" "link" should be visible
+    And "Cannot enable rule 'Rule1' unless it has conditions, actions and doesn't contain any errors" "link" should be visible
 
   Scenario: Editing basic dynamic rule details
     Given the following dynamic rules exist:
@@ -196,7 +196,7 @@ Feature: Creating and editing
     And I should see "Rule1"
     And I should not see "Rule2"
     And "Edit rule 'Rule1'" "link" should exist
-    And "Cannot enable rule 'Rule1' unless it has conditions and actions, is not broken and is not archived" "link" should be visible
+    And "Cannot enable rule 'Rule1' unless it has conditions, actions and doesn't contain any errors" "link" should be visible
     And "Archive rule 'Rule1'" "link" should exist
     And "Unarchive rule 'Rule1'" "link" should not exist
     And "Delete rule 'Rule1'" "link" should not exist
@@ -217,8 +217,8 @@ Feature: Creating and editing
       | Rule2 | Tenant1 |
     When I log in as "manager1"
     And I navigate to "Dynamic rules" in site administration
-    Then "Cannot enable rule 'Rule1' unless it has conditions and actions, is not broken and is not archived" "link" should be visible
-    And "Cannot enable rule 'Rule2' unless it has conditions and actions, is not broken and is not archived" "link" should be visible
+    Then "Cannot enable rule 'Rule1' unless it has conditions, actions and doesn't contain any errors" "link" should be visible
+    And "Cannot enable rule 'Rule2' unless it has conditions, actions and doesn't contain any errors" "link" should be visible
     And "Disable rule 'Rule1'" "link" should not be visible
     And "Disable rule 'Rule2'" "link" should not be visible
     When I follow "Edit rule 'Rule1'"
@@ -239,20 +239,20 @@ Feature: Creating and editing
     And "Enable rule 'Rule2'" "link" should not be visible
     And "Disable rule 'Rule1'" "link" should be visible
     And "Disable rule 'Rule2'" "link" should not be visible
-    And "Cannot enable rule 'Rule2' unless it has conditions and actions, is not broken and is not archived" "link" should be visible
+    And "Cannot enable rule 'Rule2' unless it has conditions, actions and doesn't contain any errors" "link" should be visible
     # Test that after refreshing the state is the same
     When I navigate to "Dynamic rules" in site administration
     And "Enable rule 'Rule1'" "link" should not be visible
     And "Enable rule 'Rule2'" "link" should not be visible
     And "Disable rule 'Rule1'" "link" should be visible
     And "Disable rule 'Rule2'" "link" should not be visible
-    And "Cannot enable rule 'Rule2' unless it has conditions and actions, is not broken and is not archived" "link" should be visible
+    And "Cannot enable rule 'Rule2' unless it has conditions, actions and doesn't contain any errors" "link" should be visible
     When I click on "Disable rule 'Rule1'" "link"
     Then "Enable rule 'Rule1'" "link" should be visible
     And "Enable rule 'Rule2'" "link" should not be visible
     And "Disable rule 'Rule1'" "link" should not be visible
     And "Disable rule 'Rule2'" "link" should not be visible
-    And "Cannot enable rule 'Rule2' unless it has conditions and actions, is not broken and is not archived" "link" should be visible
+    And "Cannot enable rule 'Rule2' unless it has conditions, actions and doesn't contain any errors" "link" should be visible
 
   Scenario: Archiving and unarchiving rules
     Given the following dynamic rules exist:
