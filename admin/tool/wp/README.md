@@ -150,6 +150,30 @@ Relevant behat step:
     "something" "text" should exist in the "Node name" table tree node
     "something else" "text" should not exist in the "Node name" table tree node
 
+Notifications
+-------------
+
+The *tool_wp/notification* AMD module is a wrapper around the *core/notification* module and should be
+used to display notification dialogs to users.
+
+Example of usage in Javascript:
+
+    require(['tool_wp/notification'], function(WpNotification) {
+        WpNotification.addNotification({
+            type: 'success',
+            message: 'Good morning'
+        }); 
+    });
+
+Example of usage in PHP:
+
+    $notification = (object) [
+        'type' => 'success',
+        'message' => 'Good morning',
+    ];
+
+    $PAGE->requires->js_call_amd('tool_wp/notification', 'addNotification', [$notification]);
+
 Content with header
 -------------------
 
