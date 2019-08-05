@@ -82,6 +82,10 @@ define(
                 }
                 this._reloadTable($(e.currentTarget));
             }.bind(this));
+            $('body').on(Events.RELOADTABLEWITHOUTPAGINATION, SELECTORS.REPORT, function(e) {
+                this.currentpage = 0;
+                this._reloadTable($(e.currentTarget));
+            }.bind(this));
 
         };
 

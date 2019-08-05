@@ -29,6 +29,7 @@ define([], function() {
         RELOADTABLE: 'reportbuilder:reloadtable',
         RELOADFILTERS: 'reportbuilder:reloadfilters',
         TABLECOLUMNADDED: 'reportbuilder:tablecolumnadded',
-        TABLECOLUMNREMOVED: 'reportbuilder:tablecolumnremoved'
+        TABLECOLUMNREMOVED: 'reportbuilder:tablecolumnremoved',
+        RELOADTABLEWITHOUTPAGINATION: 'reportbuilder:reloadtablewithoutpagination'
     };
 });

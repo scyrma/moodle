@@ -81,7 +81,11 @@ define([
             }.bind(this));
 
             this.reportBuilder.onCustomEvent(Events.RELOADTABLE, function() {
-                this._reloadTable();
+                this._reloadTable(this.currentpage);
+            }.bind(this));
+
+            this.reportBuilder.onCustomEvent(Events.RELOADTABLEWITHOUTPAGINATION, function() {
+                this._reloadTable(0);
             }.bind(this));
 
             this._inplaceChanged();
@@ -96,7 +100,7 @@ define([
         Table.prototype._inplaceChanged = function() {
             $('body').on('updated', '[data-inplaceeditable]', function(e) {
                 if (e.ajaxreturn.itemtype === 'aggregation' && e.ajaxreturn.component === 'tool_reportbuilder') {
-                    this._reloadTable({editon: true});
+                    this._reloadTable(0);
                 }
             }.bind(this));
         };
@@ -273,16 +277,17 @@ define([
 
         /**
          * Reload the table after add or remove a column.
+         * @param {integer} page
          * @return {Promise}
          * @private
          */
-        Table.prototype._reloadTable = function() {
+        Table.prototype._reloadTable = function(page) {
             var table = this.reportBuilder.find(SELECTORS.REPORTTABLE);
             var parameters = this.reportBuilder.find(SELECTORS.REPORTTABLE).attr('data-parameters');
             var editon = !!table.closest('[data-reportid]').data('editon');
             var params = {
                 reportid: this.reportBuilder.getReportId(),
-                page: this.currentpage,
+                page: page,
                 parameters: parameters,
                 editon: editon
             };

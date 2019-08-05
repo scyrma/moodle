@@ -145,7 +145,7 @@ define(
         FiltersManager.prototype.formHandler = function() {
             var form = new AjaxForm('.active_filters_form_wrapper', 'tool_reportbuilder\\form\\filters');
             form.onSubmitSuccess = function(data, container) {
-                Helper.triggerEvent(this.getTable(container), Events.RELOADTABLE);
+                Helper.triggerEvent(this.getTable(container), Events.RELOADTABLEWITHOUTPAGINATION);
                 this.reloadForm(container);
             }.bind(this);
 
@@ -179,7 +179,7 @@ define(
                 return promises[0];
             }).then(function() {
                 this.reloadForm(formWrapper);
-                Helper.triggerEvent(this.getTable(formWrapper), Events.RELOADTABLE);
+                Helper.triggerEvent(this.getTable(formWrapper), Events.RELOADTABLEWITHOUTPAGINATION);
             }.bind(this)).fail(Notification.exception);
         };
 
@@ -210,7 +210,7 @@ define(
                 return promises[0].fail(Notification.exception);
             }).then(function() {
                 this.reloadForm(formWrapper);
-                Helper.triggerEvent(this.getTable(formWrapper), Events.RELOADTABLE);
+                Helper.triggerEvent(this.getTable(formWrapper), Events.RELOADTABLEWITHOUTPAGINATION);
             }.bind(this)).fail(Notification.exception);
         };
 

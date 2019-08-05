@@ -59,7 +59,7 @@
         {{/ hascolumns}}
         <div class="col-8 d-flex flex-column fill-column {{^ispreview}}col-lg-9{{/ispreview}}{{#ispreview}}col-12{{/ispreview}}">
             <div class="flex-1 overflow-hidden min-height">
-                <div class="position-absolute w-100 px-md-2 scroll-y">
+                <div class="{{^ispreview}}position-absolute{{/ispreview}} w-100 px-md-2 scroll-y">
                     <div id="conditions-container" class="h-100 d-flex scroll-y">
                         <div class="card flex-fill no-overflow">
                             <div class="card-header d-flex">

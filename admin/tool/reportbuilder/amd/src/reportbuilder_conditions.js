@@ -123,7 +123,7 @@ define(
             var formwrapper = '.tool_reportbuilder_report_active_conditions';
             var form = new AjaxForm(formwrapper, 'tool_reportbuilder\\form\\conditions');
             form.onSubmitSuccess = function() {
-                this.reportBuilder.trigger(Events.RELOADTABLE);
+                this.reportBuilder.trigger(Events.RELOADTABLEWITHOUTPAGINATION);
             }.bind(this);
 
             var listener = function(e) {
@@ -158,7 +158,7 @@ define(
                     ]);
                     return promises[0];
                 }.bind(this)).then(function(data) {
-                    this.reportBuilder.trigger(Events.RELOADTABLE);
+                    this.reportBuilder.trigger(Events.RELOADTABLEWITHOUTPAGINATION);
                     this._reloadSelectedConditions(data);
                     M.util.js_complete('tool_reportbuilder_reset_all'); // Tell Behat to wait.
                 }.bind(this)).fail(Notification.exception);
@@ -208,7 +208,7 @@ define(
                     ]);
                     return promises[0];
                 }.bind(this)).then(function(data) {
-                    this.reportBuilder.trigger(Events.RELOADTABLE);
+                    this.reportBuilder.trigger(Events.RELOADTABLEWITHOUTPAGINATION);
                     this._reloadSelectedConditions(data);
                     M.util.js_complete('tool_reportbuilder_reset'); // Tell Behat to wait.
                 }.bind(this)).fail(Notification.exception);
@@ -250,7 +250,7 @@ define(
                 Ajax.call([request])[0].done(function(data) {
                     if (data) {
                         Str.get_string('removeconditionsuccess', 'tool_reportbuilder', conditionname).then(function(message) {
-                            this.reportBuilder.trigger(Events.RELOADTABLE);
+                            this.reportBuilder.trigger(Events.RELOADTABLEWITHOUTPAGINATION);
                             this._reloadSelectedConditions(data);
                             this._reloadAvailableConditions(data);
                             WpNotification.addNotification({
