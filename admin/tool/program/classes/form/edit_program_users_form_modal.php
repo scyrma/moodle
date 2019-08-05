@@ -99,11 +99,6 @@ class edit_program_users_form_modal extends \tool_wp\modal_form {
      */
     public function process(\stdClass $data) {
         $program = new program($data->id);
-        if ($program->is_archived()) {
-            // Can not allocate user if program is archived.
-            throw new \moodle_exception('errorprogramisarchived', 'tool_program');
-        }
-
         $certificationid = 0; // Manually allocated users have no certification id.
         foreach ($data->userlist as $userid) {
             if (permission::can_be_allocated($program, $userid, $certificationid)) {

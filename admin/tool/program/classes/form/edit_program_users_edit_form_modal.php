@@ -176,7 +176,6 @@ class edit_program_users_edit_form_modal extends modal_form {
     public function process(stdClass $data): void {
         $programuser = new program_user($data->programuserid);
         $program = new program($data->id);
-        permission::require_can_manage_user_allocation($programuser, context_system::instance());
 
         $data->startdatelocked = $data->startdatetype;
 

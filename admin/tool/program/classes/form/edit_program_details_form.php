@@ -189,9 +189,6 @@ class edit_program_details_form extends modal_form {
         if (!empty($this->_ajaxformdata['id']) && 0 !== (int)$this->_ajaxformdata['id']) {
             $context = context_system::instance();
             $program = new program($this->_ajaxformdata['id']);
-
-            permission::require_can_edit_details($program, $context);
-
             $programdata = $program->to_record();
             $programdata->program_tags = core_tag_tag::get_item_tags_array(
                 'tool_program', 'tool_program', $programdata->id);
