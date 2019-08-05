@@ -349,6 +349,7 @@ class manager {
             $context = \context_coursecat::instance($categoryid);
             // Assign the tenant user role.
             \role_assign(self::get_tenant_user_role(), $userid, $context->id, 'tool_tenant', $tenantid);
+            \cache_helper::purge_by_event('changesincoursecat');
         }
     }
 
@@ -371,6 +372,7 @@ class manager {
             'roleid' => self::get_tenant_user_role()]);
 
         if (!$categoryid) {
+            \cache_helper::purge_by_event('changesincoursecat');
             return;
         }
 
@@ -383,6 +385,7 @@ class manager {
         foreach ($users as $userid) {
             role_assign($userroleid, $userid, $context->id, 'tool_tenant', $tenantid);
         }
+        \cache_helper::purge_by_event('changesincoursecat');
     }
 
     /**
@@ -416,6 +419,7 @@ class manager {
                 role_assign($managerrole, $tenantadminid, $catcontext->id, 'tool_tenant', $tenantid);
             }
         }
+        \cache_helper::purge_by_event('changesincoursecat');
     }
 
     /**
