@@ -65,12 +65,13 @@ class user_certifications extends system_report {
         $cu = 'cu'; // Certification users table alias.
         $cc = 'cc'; // Certification user completions table alias.
         $pr = 'pr'; // Programs table alias.
-        $this->set_columns($c, $cu, $pr);
+        $this->set_columns($c, $cu, $pr, $cc);
         $type = $this->get_parameter('type', -1, PARAM_INT);
         $this->set_filters($type, $cu, $cc);
 
         $this->set_main_table('user', $u);
         $this->add_base_condition_simple("{$u}.id", $this->userid);
+        $this->add_base_condition_simple("{$u}.deleted", 0);
         $this->add_base_join(api::get_status_sql_join($u, $c, $cu, $cc, $pr));
 
         // Base condition is a visibility check (non archived, within correct tenant).
@@ -109,8 +110,9 @@ class user_certifications extends system_report {
      * @param string $c Certifications table alias.
      * @param string $cu Certification users table alias.
      * @param string $pr Programs table alias.
+     * @param string $cc Certification completion table alias.
      */
-    protected function set_columns($c = 'c', $cu = 'cu', $pr = 'pr'): void {
+    protected function set_columns($c = 'c', $cu = 'cu', $pr = 'pr', $cc = 'cc'): void {
         $this->annotate_entity(certification_user::TABLE, new lang_string('entitycertificationusers', 'tool_certification'));
         $this->annotate_entity(certification::TABLE, new lang_string('entitycertification', 'tool_certification'));
         $this->annotate_entity(program::TABLE, new lang_string('entityprogram', 'tool_program'));
@@ -158,8 +160,7 @@ class user_certifications extends system_report {
             new lang_string('status', 'tool_certification'),
             'tool_certification_users'
         ))
-            ->add_field("{$cu}.userid")
-            ->add_field("{$cu}.certificationid")
+            ->add_field(api::get_status_sql_cases(0, $cu, $cc), 'status')
             ->set_is_default(true, 5)
             ->add_callback([certificationuser_format::class, 'status']);
         $this->add_column($newcolumn);
@@ -179,18 +180,11 @@ class user_certifications extends system_report {
             'filterablestatus',
             new lang_string('status', 'tool_certification'),
             'tool_certification_users',
-            api::get_status_sql_cases($statusid, $cu, $cc)
+            api::get_status_sql_cases($statusid, $cu, $cc, true)
         ))
             ->set_is_default(true)
             ->set_options(api::get_certification_statuses_fieldset());
         $this->add_filter($filter);
-    }
-
-    /**
-     * Set conditions.
-     */
-    protected function set_conditions(): void {
-        // No conditions defined.
     }
 
     /**

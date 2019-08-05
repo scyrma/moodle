@@ -26,6 +26,7 @@ namespace tool_certification\local\reports;
 defined('MOODLE_INTERNAL') || die();
 
 use tool_certification\permission;
+use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
@@ -106,7 +107,7 @@ class archived_table extends system_report {
             ->add_field('ct.timearchived')
             ->set_is_default(true, 1)
             ->set_is_sortable(true)
-            ->add_callback([\tool_certification\local\helpers\format::class, 'archived_on']);
+            ->add_callback([format::class, 'userdate']);
         $this->add_column($newcolumn);
     }
 

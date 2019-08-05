@@ -1,5 +1,5 @@
 @tool @tool_certification @moodleworkplace @theme_workplace @javascript
-Feature: Edit users allocations
+Feature: Edit certification users allocations
   In order to edit the users allocation
   As a manager
   I need to see all existing allocations
@@ -14,9 +14,9 @@ Feature: Edit users allocations
       | Program1 | 0        | Tenant1 |
       | Program2 | 0        | Tenant2 |
     Given the following tool certification data "certifications" exist:
-      | fullname | archived | tenant  | program   |
-      | Certification1 | 0  | Tenant1 | Program1  |
-      | Certification2 | 0  | Tenant2 | Program1  |
+      | fullname       | archived | tenant  | program   |
+      | Certification1 | 0        | Tenant1 | Program1  |
+      | Certification2 | 0        | Tenant2 | Program1  |
     Given the following "users" exist:
       | username | firstname | lastname | email                |
       | user1    | User      | a        | user1@example.com    |
@@ -33,35 +33,19 @@ Feature: Edit users allocations
       | certification  | user   |
       | Certification1 | user1  |
       | Certification1 | user2  |
-    And the following departments exist in organisation structure:
-      | tenant     | name            | parent         |
-      | Tenant1    | Framework_t1    |                |
-      | Tenant1    | Deparment_t1_d1  | Framework_t1   |
-    And the following positions exist in organisation structure:
-    # globalmanager and departmentmanager are boolean flag
-    # globalpermissions and departmentpermission are accumulated numeric value assigned to globalmanager & departmentmanager
-    # 1-Allocate users to programs/certifications, 2-View users reports, 4-Receive notifications(1+2+4,1+4,etc)
-      | tenant     | name            | parent         | globalmanager | globalpermissions | departmentmanager | departmentpermissions |
-      | Tenant1    | Framework_t1    |                |      0        |       0           |       0          |        0              |
-      | Tenant1    | Position_t1_f1    | Framework_t1   |      0        |       0           |       1           |        3              |
-      | Tenant1    | Position_t1_f2    | Position_t1_f1   |      0        |       0           |       0           |        0              |
-    And the following job assignments exist in organisation structure:
-      | user  | department     | position     |
-      | manager1 | Deparment_t1_d1 | Position_t1_f1 |
-      | user1 | Deparment_t1_d1 | Position_t1_f2 |
-      | user2 | Deparment_t1_d1 | Position_t1_f2 |
+    Given user "manager1" has a department manager position over users "user1,user2" with permissions "3"
     And the following "roles" exist:
-      | shortname  | name                 | archetype |
+      | shortname           | name                 | archetype |
       | certificationeditor | Certification editor |           |
     And the following "role assigns" exist:
-      | user  | role       | contextlevel | reference |
+      | user     | role                | contextlevel | reference |
       | manager1 | certificationeditor | System       |           |
       | manager2 | certificationeditor | System       |           |
     And I log in as "admin"
     And I set the following system permissions of "Certification editor" role:
-      | capability                          | permission |
-      | moodle/site:configview              | Allow      |
-      | tool/certification:edit             | Allow      |
+      | capability               | permission |
+      | moodle/site:configview   | Allow      |
+      | tool/certification:edit  | Allow      |
     And I log out
 
   Scenario: We edit one user allocation
@@ -89,10 +73,11 @@ Feature: Edit users allocations
     And I should not see "Expiry date" in the ".modal-dialog .modal-body" "css_element"
     And I select "Suspended" from the "status" singleselect
     Then I press "Save changes" in the modal form dialogue
-    Then I should see "Suspended"
+    Then I should see "Suspended" in the "User a" "table_row"
     Then I click on ".confirm_certify_user" "css_element" in the "User a" "table_row"
     And I should see "Certify"
     Then I press "Certify"
+    Then I should see "Suspended" in the "User a" "table_row"
     And I should see "Certified" in the "User a" "table_row"
     Then I click on ".edit_user" "css_element" in the "User a" "table_row"
     Then I should see "Allocation for 'User a'" in the ".modal-dialog .modal-title" "css_element"

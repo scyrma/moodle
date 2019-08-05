@@ -33,6 +33,7 @@ use context_system;
 use coding_exception;
 use moodle_url;
 use tool_organisation\organisation;
+use tool_program\constants;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -44,46 +45,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format {
-
-    /**
-     * Formats a short string
-     *
-     * @param string $rawstring
-     * @return string
-     */
-    public static function string(?string $rawstring): string {
-        return format_string($rawstring, true, ['context' => context_system::instance(), 'escape' => false]);
-    }
-
-    /**
-     * Formats a boolean
-     *
-     * @param bool $rawboolean
-     * @param string|null $customyesstr
-     * @param string|null $customnostr
-     * @return string
-     */
-    public static function yesno(bool $rawboolean, ?string $customyesstr = null, ?string $customnostr = null): string {
-        if ($rawboolean) {
-            return $customyesstr ?? get_string('yes');
-        }
-        return $customnostr ?? get_string('no');
-    }
-
-    /**
-     * Formats a date
-     *
-     * @param int $rawtimestamp
-     * @param string|null $customformat
-     * @return string
-     */
-    public static function date(int $rawtimestamp, ?string $customformat = null): string {
-        if (!($rawtimestamp > 0)) {
-            return '';
-        }
-        $format = $customformat ?? get_string('strftimedatefullshort');
-        return userdate($rawtimestamp, $format);
-    }
 
     /**
      * Column name with inplace editable.
@@ -142,7 +103,7 @@ class format {
     public static function program(?string $value, stdClass $row) : string {
         if (!isset($row->program)) {
             // Value of the field {tool_certification}.program .
-            throw new \moodle_exception('errormissingassociatedprogram', 'tool_certification');
+            return '';
         }
 
         if (!$row->programid) {
@@ -161,18 +122,6 @@ class format {
             'id' => $row->programid,
         ]);
         return html_writer::link($programurl, format_string($row->programfullname));
-    }
-
-    /**
-     * Displays column archivedon.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function archived_on(?string $value, stdClass $row): string {
-        $time = userdate($value, get_string('strftimedatetimeshort'));
-        return format_string($time, true);
     }
 
     /**

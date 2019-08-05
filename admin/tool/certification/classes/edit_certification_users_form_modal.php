@@ -92,10 +92,6 @@ class edit_certification_users_form_modal extends \tool_wp\modal_form {
     public function process(\stdClass $data) {
         $context = context_system::instance();
         $certification = new certification($data->id);
-        if ($certification->is_archived()) {
-            // Can not allocate user if certification is archived.
-            throw new \moodle_exception('errorcertificationisarchived', 'tool_certification');
-        }
 
         foreach ($data->userlist as $userid) {
             if (permission::can_allocate($certification, $context, $userid)) {

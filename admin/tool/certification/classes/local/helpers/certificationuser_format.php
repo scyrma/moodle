@@ -25,6 +25,7 @@
 namespace tool_certification\local\helpers;
 
 use coding_exception;
+use DateTime;
 use html_writer;
 use stdClass;
 use tool_certification\api;
@@ -114,17 +115,14 @@ class certificationuser_format {
         if (!isset($row->userid) && !isset($row->certificationid)) {
             return '';
         }
-        if (api::is_user_certified($row->userid, $row->certificationid)) {
-            $icon = '';
-            if (1 === (int)$row->expirydatelocked) {
-                $icon = $OUTPUT->pix_icon('req', get_string('dateoverrided', 'tool_certification'));
-            }
-            if (0 === (int)$row->expirydate) {
-                return get_string('never', 'tool_certification') . $icon;
-            }
-            return userdate($row->expirydate, get_string('strftimedatefullshort')) . $icon;
+        $icon = '';
+        if (1 === (int)$row->expirydatelocked) {
+            $icon = $OUTPUT->pix_icon('req', get_string('dateoverrided', 'tool_certification'));
         }
-        return '';
+        if (0 === (int)$row->expirydate) {
+            return get_string('never', 'tool_certification') . $icon;
+        }
+        return userdate($row->expirydate, get_string('strftimedatefullshort')) . $icon;
     }
 
     /**
@@ -135,11 +133,32 @@ class certificationuser_format {
      * @return string
      */
     public static function status(?string $value, stdClass $row): string {
-        $statuses = api::get_user_allocation_status($row->certificationid, $row->userid);
-        $statuseshtml = [];
-        foreach ($statuses as $status) {
-            $statuseshtml[] = html_writer::span($status['statusstr'], $status['status']);
+        switch ((int)$row->status) {
+            case constants::STATUS_FUTUREALLOCATION:
+                $str = get_string('futureallocation', 'tool_certification');
+                return html_writer::span($str, 'cert_user_status_futureallocation');
+                break;
+            case constants::STATUS_EXPIRED:
+                return html_writer::span(get_string('expired', 'tool_certification'), 'cert_user_status_expired');
+                break;
+            case constants::STATUS_CERTIFIED:
+                return html_writer::span(get_string('certified', 'tool_certification'), 'cert_user_status_certified');
+                break;
+            case constants::STATUS_OPEN:
+                return html_writer::span(get_string('open', 'tool_certification'), 'cert_user_status_open');
+                break;
+            case constants::STATUS_OVERDUE:
+                return html_writer::span(get_string('overdue', 'tool_certification'), 'cert_user_status_overdue');
+                break;
+            case constants::STATUS_SUSPENDED:
+                return html_writer::span(get_string('suspended', 'tool_certification'), 'cert_user_status_suspended');
+                break;
+            case constants::STATUS_CERTIFIED_AND_SUSPENDED:
+                return html_writer::span(get_string('suspended', 'tool_certification'), 'cert_user_status_suspended') .
+                    html_writer::span(get_string('certified', 'tool_certification'), 'cert_user_status_certified');
+            default:
+                return '';
+                break;
         }
-        return implode(' ', $statuseshtml);
     }
 }

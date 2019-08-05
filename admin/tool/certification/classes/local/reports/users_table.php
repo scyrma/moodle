@@ -25,6 +25,7 @@ namespace tool_certification\local\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_certification\api;
 use tool_certification\certification;
 use tool_certification\local\helpers\certificationuser_format;
 use tool_certification\permission;
@@ -130,7 +131,7 @@ class users_table extends system_report {
             new lang_string('duedate', 'tool_certification'),
             'tool_certification_users'
         ))
-            ->add_fields('duedate, duedatelocked')
+            ->add_fields('tcu.duedate, tcu.duedatelocked')
             ->set_is_default(true, 2)
             ->add_callback([certificationuser_format::class, 'duedate']);
         $this->add_column($newcolumn);
@@ -148,12 +149,18 @@ class users_table extends system_report {
         $this->add_column($newcolumn);
 
         // Column "status".
+        $tccjoin = 'LEFT JOIN {tool_certification_compltion} tcc
+        ON tcc.certificationid = tcu.certificationid
+        AND tcc.userid = tcu.userid
+        AND tcc.timerevoked = 0';
+
         $newcolumn = (new report_column(
             'status',
             new lang_string('certificationstatus', 'tool_certification'),
             'tool_certification_users'
         ))
-            ->add_fields('tcu.status, tcu.userid, tcu.certificationid')
+            ->add_field(api::get_status_sql_cases(0, 'tcu', 'tcc'), 'status')
+            ->add_join($tccjoin)
             ->set_is_default(true, 4);
         $newcolumn->add_callback([certificationuser_format::class, 'status']);
         $this->add_column($newcolumn);
@@ -175,8 +182,7 @@ class users_table extends system_report {
             new lang_string('programstatus', 'tool_certification'),
             'tool_certification_users'
         ))
-            ->add_join('LEFT JOIN {tool_certification} cer ON tcu.certificationid = cer.id')
-            ->add_fields('tcu.status, tcu.userid, tcu.certificationid, cer.program')
+            ->add_fields('tcu.status, tcu.userid, tcu.certificationid, tc.program')
             ->set_is_default(true, 5);
         $newcolumn->add_callback([\tool_certification\local\helpers\format::class, 'programstatus']);
         $this->add_column($newcolumn);

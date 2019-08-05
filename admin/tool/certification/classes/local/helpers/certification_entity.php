@@ -24,12 +24,14 @@
 
 namespace tool_certification\local\helpers;
 
+use tool_certification\api;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\db;
 use tool_reportbuilder\entity_base;
 use tool_reportbuilder\local\filter\checkbox;
 use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
+use tool_reportbuilder\local\filter\select;
 use tool_reportbuilder\local\filter\text;
 use tool_reportbuilder\report_filter;
 use tool_reportbuilder\report_column;
@@ -181,6 +183,8 @@ class certification_entity extends entity_base {
             ->add_field("$this->tablealias.duedatetype")
             ->add_field("$this->tablealias.duedateabsolute")
             ->add_field("$this->tablealias.duedaterelative")
+            ->add_field("$this->tablealias.startdatetype")
+            ->add_field("$this->tablealias.startdateabsolute")
             ->add_callback([certification_format::class, 'duedate'])
             ->disable_aggregation('groupconcat')
             ->disable_aggregation('groupconcatdistinct');
@@ -364,6 +368,17 @@ class certification_entity extends entity_base {
         ))
             ->add_join($this->join)
             ->set_field_sql("$this->tablealias.timecreated");
+
+        // Filter certification selector.
+        $filters[] = (new report_filter(
+            select::class,
+            'certificationselector',
+            new lang_string('certifications', 'tool_certification'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_field_sql("$this->tablealias.id")
+            ->set_options(api::get_certifications_in_tenant_fieldset());
 
         return $filters;
     }

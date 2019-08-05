@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 use lang_string;
 use moodle_url;
 use pix_icon;
+use tool_certification\api;
 use tool_certification\certification;
 use tool_certification\certification_user;
 use tool_certification\local\helpers\certificationuser_format;
@@ -60,7 +61,10 @@ class certification_progress extends system_report {
         $this->add_base_condition_simple('tc.id', $certificationid);
         $this->add_base_condition_simple('tc.tenantid', tenancy::get_tenant_id());
         $this->add_base_join('INNER JOIN {tool_program} tp ON tp.id = tc.program');
+        $this->add_base_join('LEFT JOIN {tool_certification_compltion} tcc ON tcc.userid = tcu.userid
+            AND tcc.certificationid = tc.id AND tcc.timerevoked = 0');
         $this->add_base_fields('tcu.userid');
+        $this->add_base_condition_simple('u.deleted', 0);
 
         $this->set_columns();
         $this->add_actions();
@@ -178,7 +182,7 @@ class certification_progress extends system_report {
             new lang_string('certificationstatus', 'tool_certification'),
             'tool_certification_users'
         ))
-            ->add_fields('tcu.userid,tcu.certificationid')
+            ->add_field(api::get_status_sql_cases(0, 'tcu', 'tcc'), 'status')
             ->set_is_default(true, 8)
             ->add_callback([certificationuser_format::class, 'status']);
         $this->add_column($newcolumn);
@@ -211,8 +215,6 @@ class certification_progress extends system_report {
             new lang_string('completiondate', 'tool_program'),
             'tool_certification_users'
         ))
-            ->add_join('LEFT JOIN {tool_certification_compltion} tcc ON tcc.userid = tcu.userid
-            AND tcc.certificationid = tc.id AND tcc.timerevoked = 0')
             ->add_fields('tcc.timecreated')
             ->set_is_default(true, 11)
             ->add_callback([\tool_reportbuilder\local\helpers\format::class, 'userdate']);

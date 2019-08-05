@@ -24,7 +24,6 @@
 
 namespace tool_certification\tool_reportbuilder\datasources;
 
-use moodle_exception;
 use tool_certification\local\helpers\certification_entity;
 use tool_certification\local\helpers\certificationuser_entity;
 use tool_program\local\helpers\program_entity;
@@ -97,8 +96,11 @@ class report_certifications extends datasource {
      * @return string
      */
     private static function get_users_join(): string {
+        // Added tcc join here because status in certification user uses completion table.
         return 'LEFT JOIN {tool_certification_users} tcu ON tcu.certificationid = tc.id
-                LEFT JOIN {user} u ON u.id = tcu.userid';
+                LEFT JOIN {user} u ON u.id = tcu.userid
+                LEFT JOIN {tool_certification_compltion} tcc
+                ON tcc.certificationid = tcu.certificationid AND tcc.userid = tcu.userid AND tcc.timerevoked = 0';
     }
 
     /**

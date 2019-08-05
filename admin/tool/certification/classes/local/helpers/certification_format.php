@@ -146,34 +146,4 @@ class certification_format {
                 break;
         }
     }
-
-    /**
-     * Displays column allocation start date on report.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     * @throws coding_exception
-     */
-    public static function allocationstartdate(?string $value, stdClass $row): string {
-        if (isset($row->allocationstartdatetype) && 1 === (int)$row->allocationstartdatetype) {
-            return userdate($row->allocationstartdateabsolute, get_string('strftimedatefullshort'));
-        }
-        return '';
-    }
-
-    /**
-     * Displays column allocation end date on report.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     * @throws coding_exception
-     */
-    public static function allocationenddate(?string $value, stdClass $row): string {
-        if (isset($row->allocationenddatetype) && 1 === (int)$row->allocationenddatetype) {
-            return userdate($row->allocationenddatebsolute, get_string('strftimedatefullshort'));
-        }
-        return '';
-    }
 }

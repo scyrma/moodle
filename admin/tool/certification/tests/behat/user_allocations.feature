@@ -14,9 +14,9 @@ Feature: Manage users allocations
       | Program1 | 0        | Tenant1 |
       | Program2 | 0        | Tenant2 |
     Given the following tool certification data "certifications" exist:
-      | fullname | archived | tenant  | program   |
-      | Certification1 | 0  | Tenant1 | Program1  |
-      | Certification2 | 0  | Tenant2 | Program1  |
+      | fullname       | archived | tenant  | program   |
+      | Certification1 | 0        | Tenant1 | Program1  |
+      | Certification2 | 0        | Tenant2 | Program1  |
     Given the following "users" exist:
       | username | firstname | lastname | email                |
       | user1    | User      | 1        | user1@example.com    |
@@ -33,23 +33,7 @@ Feature: Manage users allocations
       | user4    | Tenant1 |
       | manager1 | Tenant1 |
       | manager2 | Tenant2 |
-    And the following departments exist in organisation structure:
-      | tenant     | name            | parent         |
-      | Tenant1    | Framework_t1    |                |
-      | Tenant1    | Deparment_t1_d1 | Framework_t1   |
-    And the following positions exist in organisation structure:
-    # globalmanager and departmentmanager are boolean flag
-    # globalpermissions and departmentpermission are accumulated numeric value assigned to globalmanager & departmentmanager
-    # 1-Allocate users to programs/certifications, 2-View users reports, 4-Receive notifications(1+2+4,1+4,etc)
-      | tenant     | name            | parent         | globalmanager | globalpermissions | departmentmanager | departmentpermissions |
-      | Tenant1    | Framework_t1    |                |      0        |       0           |       0           |        0              |
-      | Tenant1    | Position_t1_f1  | Framework_t1   |      0        |       0           |       1           |        3              |
-      | Tenant1    | Position_t1_f2  | Position_t1_f1 |      0        |       0           |       0           |        0              |
-    And the following job assignments exist in organisation structure:
-      | user     | department      | position       |
-      | manager1 | Deparment_t1_d1 | Position_t1_f1 |
-      | user1    | Deparment_t1_d1 | Position_t1_f2 |
-      | user3    | Deparment_t1_d1 | Position_t1_f2 |
+    Given user "manager1" has a department manager position over users "user1,user3" with permissions "3"
 
   Scenario: There are no existing allocations
     When I log in as "manager1"

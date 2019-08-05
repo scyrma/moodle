@@ -25,9 +25,12 @@
 namespace tool_certification\local\helpers;
 
 use lang_string;
+use tool_reportbuilder\constants;
 use tool_reportbuilder\entity_base;
+use tool_reportbuilder\local\filter\checkbox;
 use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
+use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\report_filter;
 
@@ -88,15 +91,63 @@ class certificationcompletion_entity extends entity_base {
         $columns = [];
 
         // User certified date.
-        $newcolumn = (new report_column(
+        $columns[] = (new report_column(
             'certifieddate',
             new lang_string('certifieddate', 'tool_certification'),
             $this->get_entity_name()
         ))
             ->add_join($this->join)
-            ->add_field('tcc.timecreated');
-        $newcolumn->add_callback([\tool_reportbuilder\local\helpers\format::class, 'userdate']);
-        $columns[] = $newcolumn;
+            ->set_type(constants::DB_TYPE_TIMESTAMP)
+            ->set_is_sortable(true)
+            ->add_field("$this->tablealias.timecreated")
+            ->add_callback([\tool_reportbuilder\local\helpers\format::class, 'userdate']);
+
+        // Column Expiry date.
+        $columns[] = (new report_column(
+            'expirydate',
+            new lang_string('expirydate', 'tool_certification'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TIMESTAMP)
+            ->add_field("$this->tablealias.expirydate")
+            ->set_is_sortable(true)
+            ->add_callback([certificationcompletion_format::class, 'expirydate']);
+
+        // Column Expired.
+        $columns[] = (new report_column(
+            'expired',
+            new lang_string('expired', 'tool_certification'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_BOOLEAN)
+            ->add_field("
+                CASE
+                WHEN ($this->tablealias.expirydate < " . time() . " AND $this->tablealias.expirydate > 0
+                    AND $this->tablealias.id IS NOT NULL AND $this->tablealias.timerevoked = 0)
+                THEN 1
+                WHEN $this->tablealias.id IS NULL
+                THEN NULL
+                ELSE 0
+                END", 'expired')
+            ->set_is_sortable(true)
+            ->add_callback([certificationcompletion_format::class, 'expired']);
+
+        // Column Certified/completed.
+        $columns[] = (new report_column(
+            'certified',
+            new lang_string('certified', 'tool_certification'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_BOOLEAN)
+            ->add_field("CASE WHEN $this->tablealias.id IS NOT NULL THEN 1 ELSE 0 END", 'certified')
+            ->set_is_sortable(true)
+            ->add_callback([format::class, 'checkbox_as_text']);
+
+        // TODO Manually certified by.
+        // TODO Revoked by.
 
         return $columns;
     }
@@ -134,7 +185,39 @@ class certificationcompletion_entity extends entity_base {
             'certifieddate',
             new lang_string('certifieddate', 'tool_certification'),
             $this->get_entity_name(),
-            'tcc.timecreated'
+            "$this->tablealias.timecreated"
+        ))
+            ->add_join($this->join);
+
+        // Filter for certified.
+        $filters[] = (new report_filter(
+            checkbox::class,
+            'certified',
+            new lang_string('certified', 'tool_certification'),
+            $this->get_entity_name(),
+            "CASE WHEN {$this->tablealias}.id IS NOT NULL THEN 1 ELSE 0 END"
+        ))
+            ->add_join($this->join);
+
+        // Filter for expired.
+        $filters[] = (new report_filter(
+            checkbox::class,
+            'expired',
+            new lang_string('expired', 'tool_certification'),
+            $this->get_entity_name(),
+            "CASE WHEN ($this->tablealias.id IS NOT NULL AND $this->tablealias.expirydate < " . time() .
+                    " AND $this->tablealias.timerevoked = 0) THEN 1 ELSE 0 END"
+        ))
+            ->add_join($this->join);
+
+        // Filter for expirydate.
+        $filters[] = (new report_filter(
+            $iscondition ? date_condition::class : date_filter::class,
+            'expirydate',
+            new lang_string('expirydate', 'tool_certification'),
+            $this->get_entity_name(),
+            "CASE WHEN ($this->tablealias.id IS NOT NULL AND $this->tablealias.expirydate > 0 AND
+                    $this->tablealias.timerevoked = 0) THEN $this->tablealias.expirydate ELSE NULL END"
         ))
             ->add_join($this->join);
 

@@ -25,6 +25,7 @@
 namespace tool_certification\local\helpers;
 
 use lang_string;
+use tool_certification\api;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\entity_base;
 use tool_reportbuilder\local\filter\checkbox;
@@ -51,6 +52,8 @@ class certificationuser_entity extends entity_base {
     protected $tablealias = 'tcu';
     /** @var array */
     protected $excludecolumns = [];
+    /** @var string */
+    protected $tableccalias = 'tcc';
 
     /**
      * program_fields constructor.
@@ -58,11 +61,14 @@ class certificationuser_entity extends entity_base {
      * @param string $join
      * @param string $tablealias
      * @param array $excludecolumns
+     * @param string $tableccalias
      */
-    public function __construct(string $join = '', string $tablealias = 'tcu', array $excludecolumns = []) {
+    public function __construct(string $join = '', string $tablealias = 'tcu', array $excludecolumns = [],
+                                string $tableccalias = 'tcc') {
         $this->join = $join;
         $this->tablealias = $tablealias;
         $this->excludecolumns = array_combine($excludecolumns, $excludecolumns);
+        $this->tableccalias = $tableccalias;
     }
 
     /**
@@ -92,7 +98,7 @@ class certificationuser_entity extends entity_base {
         $columns = [];
 
         // Column allocationtype.
-        $newcolumn = (new report_column(
+        $columns[] = (new report_column(
             'allocationtype',
             new lang_string('allocationsource', 'tool_certification'),
             $this->get_entity_name()
@@ -102,10 +108,9 @@ class certificationuser_entity extends entity_base {
             ->add_field("$this->tablealias.allocationtype")
             ->set_is_sortable(true)
             ->add_callback([certificationuser_format::class, 'allocationtype']);
-        $columns[] = $newcolumn;
 
         // Column startdate.
-        $newcolumn = (new report_column(
+        $columns[] = (new report_column(
             'startdate',
             new lang_string('startdate', 'tool_certification'),
             $this->get_entity_name()
@@ -118,10 +123,9 @@ class certificationuser_entity extends entity_base {
             ->add_callback([certificationuser_format::class, 'startdate'])
             ->add_aggregation_callback('min', [format::class, 'userdate'])
             ->add_aggregation_callback('max', [format::class, 'userdate']);
-        $columns[] = $newcolumn;
 
         // Column duedate.
-        $newcolumn = (new report_column(
+        $columns[] = (new report_column(
             'duedate',
             new lang_string('duedate', 'tool_certification'),
             $this->get_entity_name()
@@ -134,10 +138,9 @@ class certificationuser_entity extends entity_base {
             ->add_callback([certificationuser_format::class, 'duedate'])
             ->add_aggregation_callback('min', [format::class, 'userdate'])
             ->add_aggregation_callback('max', [format::class, 'userdate']);
-        $columns[] = $newcolumn;
 
         // Column expirydate.
-        $newcolumn = (new report_column(
+        $columns[] = (new report_column(
             'expirydate',
             new lang_string('expirydate', 'tool_certification'),
             $this->get_entity_name()
@@ -151,10 +154,9 @@ class certificationuser_entity extends entity_base {
             ->add_callback([certificationuser_format::class, 'expirydate'])
             ->disable_aggregation('groupconcat')
             ->disable_aggregation('groupconcatdistinct');
-        $columns[] = $newcolumn;
 
         // Column suspended.
-        $newcolumn = (new report_column(
+        $columns[] = (new report_column(
             'suspended',
             new lang_string('suspended', 'tool_certification'),
             $this->get_entity_name()
@@ -165,10 +167,9 @@ class certificationuser_entity extends entity_base {
             " THEN 1 ELSE 0 END", 'suspended')
             ->set_is_sortable(true)
             ->add_callback([format::class, 'checkbox_as_text']);
-        $columns[] = $newcolumn;
 
         // Column timesuspended.
-        $newcolumn = (new report_column(
+        $columns[] = (new report_column(
             'timesuspended',
             new lang_string('timesuspended', 'tool_certification'),
             $this->get_entity_name()
@@ -178,10 +179,9 @@ class certificationuser_entity extends entity_base {
             ->add_field("$this->tablealias.timesuspended")
             ->set_is_sortable(true)
             ->add_callback([format::class, 'userdate']);
-        $columns[] = $newcolumn;
 
         // Column timecreated.
-        $newcolumn = (new report_column(
+        $columns[] = (new report_column(
             'timecreated',
             new lang_string('allocationdate', 'tool_certification'),
             $this->get_entity_name()
@@ -191,10 +191,9 @@ class certificationuser_entity extends entity_base {
             ->add_field("$this->tablealias.timecreated")
             ->set_is_sortable(true)
             ->add_callback([format::class, 'userdate']);
-        $columns[] = $newcolumn;
 
         // Column timemodified.
-        $newcolumn = (new report_column(
+        $columns[] = (new report_column(
             'timemodified',
             new lang_string('timemodified', 'tool_certification'),
             $this->get_entity_name()
@@ -204,7 +203,19 @@ class certificationuser_entity extends entity_base {
             ->add_field("$this->tablealias.timemodified")
             ->set_is_sortable(true)
             ->add_callback([format::class, 'userdate']);
-        $columns[] = $newcolumn;
+
+        // Column certificationstatus.
+        $columns[] = (new report_column(
+            'certificationstatus',
+            new lang_string('certificationstatus', 'tool_certification'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_field(api::get_status_sql_cases(0, $this->tablealias, $this->tableccalias), 'status')
+            ->add_callback([certificationuser_format::class, 'status'])
+            ->disable_aggregation('groupconcat')
+            ->disable_aggregation('groupconcatdistinct');
 
         return $columns;
     }
@@ -317,6 +328,17 @@ class certificationuser_entity extends entity_base {
         ))
             ->add_join($this->join)
             ->set_field_sql("$this->tablealias.timemodified");
+
+        // Filter by status.
+        $filters[] = (new report_filter(
+            select::class,
+            'filterablestatus',
+            new lang_string('certificationstatus', 'tool_certification'),
+            $this->get_entity_name(),
+            api::get_status_sql_cases(0, $this->tablealias, $this->tableccalias, true)
+        ))
+            ->add_join($this->join)
+            ->set_options(api::get_certification_statuses_fieldset());
 
         return $filters;
     }

@@ -1252,7 +1252,7 @@ class api {
             INNER JOIN {" . program::TABLE . "} {$pr}
                     ON {$pr}.id = {$c}.program
              LEFT JOIN {" . certification_completion::TABLE . "} {$cc}
-                    ON {$cc}.certificationid = {$cu}.certificationid AND {$cc}.userid = {$u}.id
+                    ON {$cc}.certificationid = {$cu}.certificationid AND {$cc}.userid = {$u}.id AND {$cc}.timerevoked = 0
         ";
     }
 
@@ -1262,9 +1262,10 @@ class api {
      * @param int $statusid status
      * @param string $cu Table alias for table certification users
      * @param string $cc Table alias for table certification user completions
+     * @param bool $filter Check if is a filter or column. On columns can get multiple statuses like certified and suspended.
      * @return string
      */
-    public static function get_status_sql_cases(int $statusid, string $cu = 'cu', string $cc = 'cc'): string {
+    public static function get_status_sql_cases(int $statusid, string $cu = 'cu', string $cc = 'cc', $filter = false): string {
 
         $now = time();
         $statusoverridesuspendedvalue = constants::STATUS_OVERRIDE_SUSPENDED;
@@ -1274,7 +1275,8 @@ class api {
         $certifiedvalue = constants::STATUS_CERTIFIED;
         $openvalue = constants::STATUS_OPEN;
         $overduevalue = constants::STATUS_OVERDUE;
-        $unkownvalue = constants::STATUS_UNKOWN;
+        $unknownvalue = constants::STATUS_UNKNOWN;
+        $certifiedandsuspendedvalue = constants::STATUS_CERTIFIED_AND_SUSPENDED;
         $certified = "{$cc}.id IS NOT NULL AND {$cc}.timerevoked = 0";
         $notcertified = "({$cc}.id IS NULL OR {$cc}.timerevoked <> 0)";
         $suspended = "{$cu}.status = {$statusoverridesuspendedvalue}";
@@ -1283,7 +1285,9 @@ class api {
         $expired = "{$cc}.expirydate > 0 AND {$now} > {$cc}.expirydate";
         $open = "({$now} > {$cu}.startdate OR {$cu}.startdate = 0) AND ({$now} < {$cu}.duedate OR {$cu}.duedate = 0)";
         $overdue = "{$cu}.duedate > 0 AND {$now} > {$cu}.duedate";
-        $certifiedandsuspendedvalue = ($statusid === $suspendedvalue || $statusid === $certifiedvalue) ? $statusid : $unkownvalue;
+        if ($filter) {
+            $certifiedandsuspendedvalue = ($statusid === $suspendedvalue) ? $suspendedvalue : $certifiedvalue;
+        }
 
         return "
             (CASE
@@ -1301,7 +1305,7 @@ class api {
                 THEN {$openvalue}
                 WHEN {$overdue}
                 THEN {$overduevalue}
-                ELSE {$unkownvalue}
+                ELSE {$unknownvalue}
             END)
         ";
     }
@@ -1325,7 +1329,7 @@ class api {
         string $cid = 'certificationid'): array {
 
         $join = self::get_status_sql_join($u, $c, $cu, $cc, $pr, $cid);
-        $statuscondition = self::get_status_sql_cases($statusid, $cu, $cc);
+        $statuscondition = self::get_status_sql_cases($statusid, $cu, $cc, true);
         $whereoperator = $isnegated ? '<>' : '=';
         $where = "{$statuscondition} {$whereoperator} $statusid ";
         $params = [$cid => $certificationid];
@@ -1434,7 +1438,7 @@ class api {
         $cc = 'cc'; // Certification completions table alias.
         $pr = 'pr'; // Programs table alias.
         $join = self::get_status_sql_join($u, $c, $cu, $cc, $pr);
-        $statuscase = self::get_status_sql_cases($status, $cu, $cc);
+        $statuscase = self::get_status_sql_cases($status, $cu, $cc, true);
         $usertenantid = tenancy::get_tenant_id($userid);
 
         $sql = "SELECT DISTINCT {$c}.id

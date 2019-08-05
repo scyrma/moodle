@@ -191,15 +191,12 @@ class edit_certification_details_form extends modal_form {
      */
     public function process(\stdClass $data) {
         if (0 === (int)$data->id) {
-            permission::require_can_create(context_system::instance());
             $newcertification = api::create_certification($data);
             if ($newcertification) {
                 $certificationid = $newcertification->get('id');
                 return (new \moodle_url('/admin/tool/certification/edit.php', ['id' => $certificationid]))->out(false);
             }
         } else {
-            $certification = new certification($data->id);
-            permission::require_can_edit_details($certification, context_system::instance());
             api::update_certification_details($data);
             return $data->id;
         }

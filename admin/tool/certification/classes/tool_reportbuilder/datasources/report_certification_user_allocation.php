@@ -26,11 +26,16 @@ namespace tool_certification\tool_reportbuilder\datasources;
 
 use tool_certification\local\helpers\certification_entity;
 use tool_certification\local\helpers\certificationcompletion_entity;
+use tool_certification\local\helpers\certificationrevoke_entity;
 use tool_certification\local\helpers\certificationuser_entity;
 use tool_organisation\local\entities\jobs as jobs_entity;
 use tool_program\local\helpers\program_entity;
+use tool_program\local\helpers\programuser_format;
+use tool_reportbuilder\constants;
 use tool_reportbuilder\local\entities\user;
+use tool_reportbuilder\report_column;
 use tool_tenant\tenancy;
+use lang_string;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -51,11 +56,20 @@ class report_certification_user_allocation extends \tool_reportbuilder\datasourc
      * Initialise report
      */
     protected function initialise(): void {
+        $tenantid = tenancy::get_tenant_id();
         $this->set_main_table('tool_certification_users', 'tcu');
-        $this->add_base_join('INNER JOIN {user} u ON tcu.userid = u.id');
+        $this->add_base_join('INNER JOIN {user} u ON tcu.userid = u.id AND u.deleted = 0');
         $this->add_base_join('INNER JOIN {tool_certification} tc ON tc.id = tcu.certificationid');
         $this->add_base_join('INNER JOIN {tool_program} tp ON tp.id = tc.program');
-        $this->add_base_condition_simple('tc.tenantid', tenancy::get_tenant_id());
+        // Added tcc join here because status in certification user uses completion table.
+        $this->add_base_join('LEFT JOIN {tool_certification_compltion} tcc
+        ON tcc.certificationid = tcu.certificationid AND tcc.userid = tcu.userid AND tcc.timerevoked = 0');
+        $this->add_base_condition_simple('tc.tenantid', $tenantid);
+
+        // Check tenant id on users in case they have been moved to another tenant.
+        [$join, $where, $params] = tenancy::get_users_sql('u', $tenantid);
+        $this->add_base_join($join);
+        $this->add_base_condition_sql($where, $params);
 
         $this->add_organisation_condition('u');
 
@@ -78,15 +92,13 @@ class report_certification_user_allocation extends \tool_reportbuilder\datasourc
         $filters = $this->get_filters();
         $filters['tool_certification:fullname']->set_is_default(true);
         $filters['tool_program:programselector']->set_is_default(true);
-
-        // TODO add more filters:
-        // Certification status
-        // Allocation date
-        // Completion date
-        // Expiration
-        // User
-        // Department
-        // Position.
+        $filters['tool_certification_users:timecreated']->set_is_default(true);
+        $filters['tool_certification_users:filterablestatus']->set_is_default(true);
+        $filters['tool_certification_compltion:expirydate']->set_is_default(true);
+        $filters['tool_certification_compltion:certifieddate']->set_is_default(true);
+        $filters['user:fullname']->set_is_default(true);
+        $filters['tool_organisation_jobs:position']->set_is_default(true);
+        $filters['tool_organisation_jobs:department']->set_is_default(true);
     }
 
     /**
@@ -103,15 +115,41 @@ class report_certification_user_allocation extends \tool_reportbuilder\datasourc
      *
      */
     protected function set_columns(): void {
-        $this->add_entity(new certificationuser_entity('', 'tcu'));
-        $this->add_entity(new certificationcompletion_entity('LEFT JOIN {tool_certification_compltion} tcc
-                ON tcc.certificationid = tcu.certificationid AND tcc.userid = tcu.userid', 'tcc'));
+        $this->add_entity(new certificationuser_entity('', 'tcu', [], 'tcc'));
+        $this->add_entity(new certificationcompletion_entity('', 'tcc'));
         $this->add_entity(new certification_entity('', 'tc'));
         $this->add_entity(new user('', 'u'));
         if (class_exists('tool_organisation\local\entities\jobs')) {
             $this->add_entity(new jobs_entity('LEFT JOIN {tool_organisation_job} toj ON u.id = toj.userid', 'toj'));
         }
         $this->add_entity(new program_entity('', 'tp'));
+
+        // We can have multiple records on completion table when certifying and revoking same user from same certification.
+        // We retrieve just the latest record it was revoked.
+        $revokedjoin = 'LEFT JOIN
+        (SELECT MAX(id) AS id, certificationid, userid
+        FROM {tool_certification_compltion}
+        WHERE timerevoked > 0
+        GROUP BY certificationid, userid) tcrmax
+        ON tcrmax.certificationid = tcu.certificationid AND tcrmax.userid = tcu.userid
+        LEFT JOIN {tool_certification_compltion} tccr ON tccr.id = tcrmax.id';
+        $this->add_entity(new certificationrevoke_entity($revokedjoin, 'tccr'));
+
+        // Column certificationprogress.
+        $column = (new report_column(
+            'certificationprogress',
+            new lang_string('certificationprogress', 'tool_certification'),
+            'tool_certification_compltion'
+        ))
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_field('tc.program', 'programid')
+            ->add_field('tcu.userid')
+            ->add_callback([programuser_format::class, 'programprogress'])
+            ->disable_aggregation('count')
+            ->disable_aggregation('countdistinct')
+            ->disable_aggregation('groupconcat')
+            ->disable_aggregation('groupconcatdistinct');
+        $this->add_column($column);
     }
 
     /**

@@ -62,15 +62,6 @@ class constants {
     /** @var int The user was allocated manually from a certification */
     public const ALLOCATION_CERTIFICATION = 2;
 
-    /** @var int */
-    public const RECERT_EXPIRY_DATE_NEVER_DATE = 0;
-    /** @var int */
-    public const RECERT_EXPIRY_DATE_AFTR_PREV_COMPL = 1;
-    /** @var int */
-    public const RECERT_EXPIRY_DATE_AFTR_PREV_EXP = 2;
-    /** @var int */
-    public const RECERT_EXPIRY_DATE_AFTR_LATEST = 3;
-
     /** @var int User allocation to a certification is suspended */
     public const STATUS_OVERRIDE_SUSPENDED = 0;
     /** @var int User allocation to a certification is not suspended */
@@ -103,6 +94,8 @@ class constants {
     public const STATUS_OPEN = 4;
     /** @var int User allocation is overdue */
     public const STATUS_OVERDUE = 5;
+    /** @var int User allocation is certified and suspended */
+    public const STATUS_CERTIFIED_AND_SUSPENDED = 6;
     /** @var int User allocation status is a non-specified one */
-    public const STATUS_UNKOWN = -1;
+    public const STATUS_UNKNOWN = -1;
 }
