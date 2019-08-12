@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$ADMIN->add('root', new admin_externalpage('tool_dynamicrule', get_string('pluginname', 'tool_dynamicrule'),
-    new moodle_url('/admin/tool/dynamicrule/index.php'), ['tool/dynamicrule:manage']));
+$ADMIN->add('root', new \tool_wp\admin_externalpage('tool_dynamicrule', get_string('pluginname', 'tool_dynamicrule'),
+    new moodle_url('/admin/tool/dynamicrule/index.php'),
+    [\tool_dynamicrule\permission::class, 'can_view_rules_list']));
 

@@ -26,6 +26,7 @@ namespace tool_dynamicrule\form;
 
 use tool_dynamicrule\outcome;
 use tool_dynamicrule\outcome_base;
+use tool_dynamicrule\permission;
 use tool_wp\modal_form;
 
 defined('MOODLE_INTERNAL') || die();
@@ -125,11 +126,11 @@ class outcome_instance extends modal_form {
      * by calling $this->optional_param()
      */
     public function require_access() {
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
         $outcome = $this->get_outcome();
         $ruleid = $outcome->get_ruleid() ?: $this->optional_param('ruleid', null, PARAM_INT);
         // Validate that rule exists/belongs to the same tenant.
-        \tool_dynamicrule\api::get_rule($ruleid);
+        $rule = \tool_dynamicrule\api::get_rule($ruleid);
+        permission::require_can_edit_rule($rule);
     }
 
     /**

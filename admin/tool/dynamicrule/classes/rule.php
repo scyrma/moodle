@@ -24,6 +24,8 @@
 
 namespace tool_dynamicrule;
 
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -37,6 +39,23 @@ class rule extends \core\persistent {
 
     /** @var string table. */
     const TABLE = 'tool_dynamicrule';
+
+    /**
+     * rule constructor.
+     *
+     * @param int $id
+     * @param stdClass|null $record
+     */
+    public function __construct(int $id = 0, stdClass $record = null) {
+        if ($record) {
+            $record = (object)array_intersect_key((array)$record, self::properties_definition());
+        }
+        if ($id && $record) {
+            debugging('Either id or record need to be specified in the persistent constructor but not both',
+                DEBUG_DEVELOPER);
+        }
+        parent::__construct($id, $record);
+    }
 
     /**
      * Return the definition of the properties of this model.
@@ -127,14 +146,6 @@ class rule extends \core\persistent {
     }
 
     /**
-     * Disables the rule.
-     */
-    public function disable() {
-        $this->set('enabled', 0);
-        $this->save();
-    }
-
-    /**
      * Return if the rule is archived.
      *
      * @return bool
@@ -150,15 +161,6 @@ class rule extends \core\persistent {
      */
     public function is_broken() : bool {
         return (bool)$this->get('broken');
-    }
-
-    /**
-     * Return true if rule can be enabled.
-     *
-     * @return bool
-     */
-    public function can_enable() : bool {
-        return !$this->is_broken() && !$this->is_archived() && $this->has_conditions() && $this->has_outcomes();
     }
 
     /**

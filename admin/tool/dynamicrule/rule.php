@@ -28,13 +28,10 @@ require_once($CFG->libdir . '/adminlib.php');
 $ruleid = required_param('id', PARAM_INT);
 
 admin_externalpage_setup('tool_dynamicrule', '', ['id' => $ruleid], '/admin/tool/dynamicrule/rule.php');
-require_capability('tool/dynamicrule:manage', \context_system::instance());
 
 $rule = \tool_dynamicrule\api::get_rule($ruleid);
-if ($rule->is_archived()) {
-    throw new invalid_parameter_exception('Rule must not be archived to edit.');
-}
-$rule->disable();
+\tool_dynamicrule\permission::require_can_edit_rule($rule);
+\tool_dynamicrule\api::disable_rule($ruleid);
 $title = $rule->get_formatted_name();
 
 $PAGE->set_title($title);

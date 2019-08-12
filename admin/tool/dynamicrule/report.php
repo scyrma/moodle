@@ -27,10 +27,10 @@ require_once($CFG->libdir . '/adminlib.php');
 
 $ruleid = required_param('id', PARAM_INT);
 
-admin_externalpage_setup('tool_dynamicrule', '', ['id' => $ruleid], '/admin/tool/dynamicrule/report.php');
-require_capability('tool/dynamicrule:manage', \context_system::instance());
+admin_externalpage_setup('tool_dynamicrule', '', ['id' => $ruleid]);
 
 $rule = \tool_dynamicrule\api::get_rule($ruleid);
+\tool_dynamicrule\permission::require_can_view_matching_users($rule);
 $title = $rule->get_formatted_name();
 
 $PAGE->set_title($title);

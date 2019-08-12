@@ -120,10 +120,10 @@ class rule_matches_report extends system_report {
         $ruleid = $this->get_parameter('ruleid', 0, PARAM_INT);
         try {
             $rule = \tool_dynamicrule\api::get_rule($ruleid);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
-        return has_capability('tool/dynamicrule:manage', \context_system::instance());
+        return permission::can_view_matching_users($rule);
     }
 
     /**

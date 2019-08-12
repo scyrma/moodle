@@ -24,7 +24,10 @@
 
 namespace tool_dynamicrule\form;
 
+use tool_dynamicrule\api;
 use tool_dynamicrule\condition_base;
+use tool_dynamicrule\permission;
+use tool_dynamicrule\rule;
 use tool_wp\modal_form;
 
 defined('MOODLE_INTERNAL') || die();
@@ -124,11 +127,11 @@ class condition_instance extends modal_form {
      * by calling $this->optional_param()
      */
     public function require_access() {
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
         $condition = $this->get_condition();
         $ruleid = $condition->get_ruleid() ?: $this->optional_param('ruleid', null, PARAM_INT);
         // Validate that rule exists/belongs to the same tenant.
-        \tool_dynamicrule\api::get_rule($ruleid);
+        $rule = \tool_dynamicrule\api::get_rule($ruleid);
+        permission::require_can_edit_rule($rule);
     }
 
     /**

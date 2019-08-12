@@ -55,7 +55,7 @@ class rules_list extends system_report {
         }
         $this->set_downloadable(false);
         $this->set_attributes(['class' => 'dynamicrules-list']);
-        $this->add_base_fields('r.id, r.name, \'\' AS title, r.enabled, r.archived, r.component'); // Needed for actions.
+        $this->add_base_fields('r.id, r.name, \'\' AS title, r.enabled, r.archived, r.component, r.tenantid'); // For actions.
         $this->set_show_actions_header(false);
 
         // Add subqueries for rules inside the component or rules without component respectively.
@@ -91,7 +91,7 @@ class rules_list extends system_report {
             new \lang_string('name'),
             'rule'
         ))
-            ->add_fields('r.name, r.id')
+            ->add_fields('r.name, r.id, r.tenantid, r.archived, r.component')
             ->set_is_default(true)
             ->set_is_available(empty($component))
             ->set_is_sortable(true, true)
@@ -135,7 +135,12 @@ class rules_list extends system_report {
             $itemid = $this->get_parameter('itemid', 0, PARAM_INT);
             return component_callback($component, 'can_view_dynamic_rules', [$componentarea, $itemid]);
         }
-        return has_capability('tool/dynamicrule:manage', \context_system::instance());
+        $showarchived = $this->get_parameter('archived', false, PARAM_BOOL);
+        if ($showarchived) {
+            return permission::can_view_archived_rules_list();
+        } else {
+            return permission::can_view_rules_list();
+        }
     }
 
     /**
@@ -149,9 +154,9 @@ class rules_list extends system_report {
         global $OUTPUT;
 
         $formattedname = format_string($row->name, true, ['escape' => false]);
-        $rule = new rule(0, $row);
+        $rule = new rule($row->id);
 
-        if ($rule->can_enable()) {
+        if (permission::can_enable_rule($rule)) {
             // Rule is enabled icon.
             $title = get_string('disablerule', 'tool_dynamicrule', $formattedname);
             $disablelink = new \action_link(
@@ -328,12 +333,29 @@ class rules_list extends system_report {
      * @return bool
      */
     public static function action_callback(\stdClass $row, string $stringkey, ?bool $archived = null) {
+        $rule = new rule(0, $row);
         $row->name = format_string($row->name, true, ['escape' => false]);
         $row->title = get_string($stringkey, 'tool_dynamicrule', $row->name);
-        return (($row->component === null && $stringkey !== 'editactions') ||
-            ($row->component !== null && $stringkey === 'editactions')) &&
-            ($archived === null || (bool)$row->archived == $archived) &&
-            has_capability('tool/dynamicrule:manage', \context_system::instance());
+        $component = $rule->get('component');
+
+        if ($stringkey === 'editactions') {
+            return $component && permission::can_edit_rule_outcomes($rule);
+        } else if ($stringkey === 'editrule' || $stringkey === 'editdetails') {
+            return !$component && permission::can_edit_rule($rule);
+        } else if ($stringkey === 'viewreport') {
+            // TODO why can't we show it for rules inside programs/certifications?
+            return !$component && permission::can_view_matching_users($rule);
+        } else if ($stringkey === 'duplicate') {
+            return permission::can_duplicate_rule($rule);
+        } else if ($stringkey === 'archiverule') {
+            return permission::can_archive_rule($rule);
+        } else if ($stringkey === 'unarchiverule') {
+            return permission::can_restore_rule($rule);
+        } else if ($stringkey === 'deleterule') {
+            return permission::can_delete_rule($rule);
+        } else {
+            return false;
+        }
     }
 
     /**

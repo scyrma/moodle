@@ -27,6 +27,7 @@ namespace tool_dynamicrule;
 defined('MOODLE_INTERNAL') || die();
 
 use tool_dynamicrule\rule;
+use tool_dynamicrule\permission;
 use tool_wp\db;
 
 /**
@@ -47,7 +48,7 @@ class api {
      * @throws \moodle_exception
      */
     public static function get_rule(int $id, $bypasstenantcheck = false) : rule {
-        if (rule::record_exists($id)) {
+        if ($id && rule::record_exists($id)) {
             $rule = new rule($id);
             // Make sure rule belongs to current user tenant.
             if (!$bypasstenantcheck && ($rule->get('tenantid') != \tool_tenant\tenancy::get_tenant_id())) {
@@ -132,7 +133,7 @@ class api {
         $rule = self::get_rule($ruleid);
 
         // Make sure rule is archived.
-        if ($rule->get('archived') == 0) {
+        if (!$rule->is_archived()) {
             throw new \invalid_parameter_exception('Rule must be archived prior to be deleted.');
         }
 
@@ -173,7 +174,7 @@ class api {
      */
     public static function enable_rule(int $ruleid) : bool {
         $rule = self::get_rule($ruleid);
-        if ($rule->can_enable($ruleid)) {
+        if (!$rule->is_broken() && !$rule->is_archived() && $rule->has_conditions() && $rule->has_outcomes()) {
             $rule->set('enabled', 1);
             if ($enabled = $rule->update()) {
                 // Queue rule processing as adhock task, so we do not keep user waiting.
@@ -185,16 +186,6 @@ class api {
             return $enabled;
         }
         return false;
-    }
-
-    /**
-     * Return true if rule can be enabled.
-     *
-     * @param int $ruleid
-     * @return bool
-     */
-    public static function can_enable_rule(int $ruleid) : bool {
-        return self::get_rule($ruleid)->can_enable();
     }
 
     /**
@@ -835,7 +826,7 @@ class api {
      */
     public static function get_name_inplace_editable($rule) {
         $formattedname = $displayname = $rule->get_formatted_name();
-        $editable = has_capability('tool/dynamicrule:manage', \context_system::instance());
+        $editable = permission::can_edit_rule($rule);
         if ($editable) {
             $editurl = new \moodle_url('/admin/tool/dynamicrule/rule.php', ['id' => $rule->get('id')]);
             $displayname = \html_writer::link($editurl, $formattedname);
@@ -844,7 +835,7 @@ class api {
             'tool_dynamicrule',
             'rulename',
             $rule->get('id'),
-            has_capability('tool/dynamicrule:manage', \context_system::instance()),
+            $editable,
             $displayname,
             $rule->get('name'),
             get_string('editrulename', 'tool_dynamicrule', $formattedname),
@@ -860,6 +851,11 @@ class api {
      */
     public static function get_potential_badges(string $search): array {
         global $DB;
+
+        if (!permission::can_manage_rules()) {
+            return [];
+        }
+
         // We check for non archived badges.
         // Until MDL-65065 is not fixed we will use badges with no criteria and only check status 4.
         $query = 'SELECT *
@@ -896,6 +892,10 @@ class api {
      */
     public static function get_potential_competencies(string $search): array {
         global $DB;
+
+        if (!permission::can_manage_rules()) {
+            return [];
+        }
 
         $query = "SELECT *
             FROM {competency}

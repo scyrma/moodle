@@ -27,6 +27,7 @@ namespace tool_dynamicrule\output;
 defined('MOODLE_INTERNAL') || die();
 
 use renderer_base;
+use tool_dynamicrule\permission;
 use tool_wp\output\tab;
 
 /**
@@ -44,7 +45,8 @@ class tab_ruleconditions extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-        return (bool) \tool_dynamicrule\api::get_rule($this->get_rule_id());
+        $rule = \tool_dynamicrule\api::get_rule($this->get_rule_id());
+        return permission::can_edit_rule($rule);
     }
 
     /**
@@ -54,14 +56,6 @@ class tab_ruleconditions extends tab {
     protected function get_rule_id(): int {
         return !empty($this->data['ruleid']) ?
             clean_param($this->data['ruleid'], PARAM_INT) : 0;
-    }
-
-    /**
-     * return true if rule can be enabled
-     * @return bool
-     */
-    protected function can_enable_rule(): bool {
-        return (new \tool_dynamicrule\rule($this->get_rule_id()))->can_enable();
     }
 
     /**
@@ -103,10 +97,11 @@ class tab_ruleconditions extends tab {
         $countmatchingusers = \tool_dynamicrule\api::count_matching_users($this->get_rule_id());
 
         $enablehelp = new \help_icon('enablehelp', 'tool_dynamicrule');
+        $rule = \tool_dynamicrule\api::get_rule($this->get_rule_id());
 
         $params = [
             'tabheading' => get_string('conditions', 'tool_dynamicrule'),
-            'canenablerule' => $this->can_enable_rule(),
+            'canenablerule' => permission::can_enable_rule($rule),
             'enablehelp' => $enablehelp->export_for_template($output),
             'menucards' => $menucards,
             'instances' => $conditioninstances,

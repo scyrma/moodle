@@ -107,5 +107,13 @@ function xmldb_tool_dynamicrule_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019060100, 'tool', 'dynamicrule');
     }
 
+    if ($oldversion < 2019072900) {
+        // Delete "orphaned" conditions following current_date removal in WP-636.
+        $classname = 'tool_dynamicrule\tool_dynamicrule\condition\current_date';
+        $DB->delete_records('tool_dynamicrule_condition', ['classname' => $classname]);
+
+        upgrade_plugin_savepoint(true, 2019072900, 'tool', 'dynamicrule');
+    }
+
     return true;
 }

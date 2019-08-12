@@ -793,9 +793,75 @@ class tool_dynamicrule_api_testcase extends advanced_testcase {
     }
 
     /**
-     * Test rule_delete
+     * Test enable_rule.
      */
-    public function test_rule_delete() {
+    public function test_enable_rule() {
+        $rule0 = $this->get_generator()->create_rule();
+
+        // Test new rule.
+        $this->assertFalse(\tool_dynamicrule\api::enable_rule($rule0->id));
+        $rule = \tool_dynamicrule\api::get_rule($rule0->id);
+        $this->assertFalse($rule->is_enabled());
+
+        // Test rule with condition.
+        $this->get_generator()->create_condition_alwaystrue($rule0->id);
+        $this->assertFalse(\tool_dynamicrule\api::enable_rule($rule0->id));
+        $rule = \tool_dynamicrule\api::get_rule($rule0->id);
+        $this->assertTrue($rule->has_conditions());
+        $this->assertFalse($rule->is_enabled());
+
+        // Test rule with condition and outcome (should be possible to enable).
+        $outcomeclass = 'tool_dynamicrule\tool_dynamicrule\outcome\notification';
+        $this->get_generator()->create_outcome($outcomeclass, $rule0->id);
+        $this->assertTrue(\tool_dynamicrule\api::enable_rule($rule0->id));
+        $rule = \tool_dynamicrule\api::get_rule($rule0->id);
+        $this->assertTrue($rule->has_outcomes());
+        $this->assertTrue($rule->is_enabled());
+
+        // Disable rule which we just enabled.
+        \tool_dynamicrule\api::disable_rule($rule0->id);
+        $rule = \tool_dynamicrule\api::get_rule($rule0->id);
+        $this->assertFalse($rule->is_enabled());
+
+        // Test archived rule with condition and outcome.
+        \tool_dynamicrule\api::archive_rule($rule0->id);
+        $this->assertFalse(\tool_dynamicrule\api::enable_rule($rule0->id));
+        $rule = \tool_dynamicrule\api::get_rule($rule0->id);
+        $this->assertTrue($rule->is_archived());
+        $this->assertFalse($rule->is_enabled());
+
+        // Restore it.
+        \tool_dynamicrule\api::unarchive_rule($rule0->id);
+        $rule = \tool_dynamicrule\api::get_rule($rule0->id);
+        $this->assertFalse($rule->is_archived());
+
+        // Test broken rule with condition and outcome.
+        \tool_dynamicrule\api::mark_rule_as_broken($rule0->id);
+        $this->assertFalse(\tool_dynamicrule\api::enable_rule($rule0->id));
+        $rule = \tool_dynamicrule\api::get_rule($rule0->id);
+        $this->assertTrue($rule->is_broken());
+        $this->assertFalse($rule->is_enabled());
+    }
+
+    /**
+     * Test disable_rule.
+     */
+    public function test_disable_rule() {
+        $rule0 = $this->get_generator()->create_rule(['enabled' => 1]);
+        $rule = \tool_dynamicrule\api::get_rule($rule0->id);
+        $this->assertTrue($rule->is_enabled());
+
+        // Disable rule.
+        \tool_dynamicrule\api::disable_rule($rule0->id);
+
+        $rule = \tool_dynamicrule\api::get_rule($rule0->id);
+        $this->assertFalse($rule->is_enabled());
+    }
+
+    /**
+     * Test delete_rule
+     */
+    public function test_delete_rule() {
         $rule0 = $this->get_generator()->create_rule(['archived' => 1]);
         $rule1 = $this->get_generator()->create_rule(['archived' => 1]);
 
@@ -891,7 +957,7 @@ class tool_dynamicrule_api_testcase extends advanced_testcase {
     }
 
     /**
-     * Test rule_unarchive
+     * Test unarchive_rule
      */
     public function test_unarchive_rule() {
         global $DB;

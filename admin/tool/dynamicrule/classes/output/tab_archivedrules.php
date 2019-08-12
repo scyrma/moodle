@@ -27,6 +27,7 @@ namespace tool_dynamicrule\output;
 defined('MOODLE_INTERNAL') || die();
 
 use renderer_base;
+use tool_dynamicrule\permission;
 use tool_wp\output\content_with_heading;
 use tool_wp\output\tab;
 use tool_dynamicrule\api;
@@ -46,7 +47,7 @@ class tab_archivedrules extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-        return true;
+        return permission::can_view_archived_rules_list();
     }
 
     /**

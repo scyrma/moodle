@@ -38,7 +38,7 @@ class external extends \external_api {
     /**
      * Returns the structure of parameters for enable_rule function.
      *
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function enable_rule_parameters() {
         $params = ['id' => new \external_value(PARAM_INT, 'The ID of the rule to be enabled', VALUE_REQUIRED)];
@@ -49,12 +49,13 @@ class external extends \external_api {
      * Enables the given rule
      *
      * @param int $ruleid The ID of the rule
-     * @return \stdClass
+     * @return bool
      */
     public static function enable_rule($ruleid) {
         $params = self::validate_parameters(self::enable_rule_parameters(), ['id' => $ruleid]);
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-        return \tool_dynamicrule\api::enable_rule($params['id']);
+        $rule = \tool_dynamicrule\api::get_rule($params['id']);
+        permission::require_can_enable_rule($rule);
+        return \tool_dynamicrule\api::enable_rule($rule->get('id'));
     }
 
     /**
@@ -69,7 +70,7 @@ class external extends \external_api {
     /**
      * Returns the structure of parameters for can_enable_rule function.
      *
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function can_enable_rule_parameters() {
         $params = ['id' => new \external_value(PARAM_INT, 'The ID of the rule that is being checked', VALUE_REQUIRED)];
@@ -80,12 +81,14 @@ class external extends \external_api {
      * Return true if the rule can be enabled.
      *
      * @param int $ruleid The ID of the rule
-     * @return \stdClass
+     * @return bool
      */
     public static function can_enable_rule($ruleid) {
         $params = self::validate_parameters(self::can_enable_rule_parameters(), ['id' => $ruleid]);
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-        return \tool_dynamicrule\api::can_enable_rule($params['id']);
+        $rule = \tool_dynamicrule\api::get_rule($params['id']);
+        // We require rule edit permission.
+        permission::require_can_edit_rule($rule);
+        return permission::can_enable_rule($rule);
     }
 
     /**
@@ -100,7 +103,7 @@ class external extends \external_api {
     /**
      * Returns the structure of parameters for disable_rule function.
      *
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function disable_rule_parameters() {
         $params = ['id' => new \external_value(PARAM_INT, 'The ID of the rule to be disabled', VALUE_REQUIRED)];
@@ -115,8 +118,9 @@ class external extends \external_api {
      */
     public static function disable_rule($ruleid) {
         $params = self::validate_parameters(self::disable_rule_parameters(), ['id' => $ruleid]);
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-        return \tool_dynamicrule\api::disable_rule($params['id']);
+        $rule = \tool_dynamicrule\api::get_rule($params['id']);
+        permission::require_can_edit_rule($rule);
+        return \tool_dynamicrule\api::disable_rule($rule->get('id'));
     }
 
     /**
@@ -131,7 +135,7 @@ class external extends \external_api {
     /**
      * Returns the structure of parameters for archive_rule function.
      *
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function archive_rule_parameters() {
         $params = ['id' => new \external_value(PARAM_INT, 'The ID of the rule to be archived', VALUE_REQUIRED)];
@@ -146,8 +150,9 @@ class external extends \external_api {
      */
     public static function archive_rule($ruleid) {
         $params = self::validate_parameters(self::archive_rule_parameters(), ['id' => $ruleid]);
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-        return \tool_dynamicrule\api::archive_rule($params['id']);
+        $rule = \tool_dynamicrule\api::get_rule($params['id']);
+        permission::require_can_archive_rule($rule);
+        return \tool_dynamicrule\api::archive_rule($rule->get('id'));
     }
 
     /**
@@ -162,7 +167,7 @@ class external extends \external_api {
     /**
      * Returns the structure of parameters for unarchive_rule function.
      *
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function unarchive_rule_parameters() {
         $params = ['id' => new \external_value(PARAM_INT, 'The ID of the rule to be unarchived', VALUE_REQUIRED)];
@@ -173,12 +178,13 @@ class external extends \external_api {
      * Unarchives the given rule
      *
      * @param int $ruleid The ID of the rule
-     * @return \stdClass
+     * @return bool
      */
     public static function unarchive_rule($ruleid) {
         $params = self::validate_parameters(self::unarchive_rule_parameters(), ['id' => $ruleid]);
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-        return \tool_dynamicrule\api::unarchive_rule($params['id']);
+        $rule = \tool_dynamicrule\api::get_rule($params['id']);
+        permission::require_can_restore_rule($rule);
+        return \tool_dynamicrule\api::unarchive_rule($rule->get('id'));
     }
 
     /**
@@ -193,7 +199,7 @@ class external extends \external_api {
     /**
      * Returns the structure of parameters for delete_rule function.
      *
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function delete_rule_parameters() {
         $params = ['id' => new \external_value(PARAM_INT, 'The ID of the rule to be deleted', VALUE_REQUIRED)];
@@ -208,8 +214,9 @@ class external extends \external_api {
      */
     public static function delete_rule($ruleid) {
         $params = self::validate_parameters(self::delete_rule_parameters(), ['id' => $ruleid]);
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-        return \tool_dynamicrule\api::delete_rule($params['id']);
+        $rule = \tool_dynamicrule\api::get_rule($params['id']);
+        permission::require_can_delete_rule($rule);
+        return \tool_dynamicrule\api::delete_rule($rule->get('id'));
     }
 
     /**
@@ -224,7 +231,7 @@ class external extends \external_api {
     /**
      * Returns the structure of parameters for duplicate_rule function.
      *
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function duplicate_rule_parameters() {
         $params = ['id' => new \external_value(PARAM_INT, 'The ID of the rule to be deleted', VALUE_REQUIRED)];
@@ -239,8 +246,9 @@ class external extends \external_api {
      */
     public static function duplicate_rule($ruleid) {
         $params = self::validate_parameters(self::duplicate_rule_parameters(), ['id' => $ruleid]);
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-        return \tool_dynamicrule\api::duplicate_rule($params['id']);
+        $rule = \tool_dynamicrule\api::get_rule($params['id']);
+        permission::require_can_duplicate_rule($rule);
+        return \tool_dynamicrule\api::duplicate_rule($rule->get('id'));
     }
 
     /**
@@ -255,7 +263,7 @@ class external extends \external_api {
 
     /**
      * Returns the structure of parameters for count_matching_users function.
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function count_matching_users_parameters() {
         $params = ['id' => new \external_value(PARAM_INT, 'The ID of the rule to count matching users', VALUE_REQUIRED)];
@@ -270,11 +278,8 @@ class external extends \external_api {
      */
     public static function count_matching_users($ruleid) {
         $params = self::validate_parameters(self::archive_rule_parameters(), ['id' => $ruleid]);
-
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-
-        // Make sure rule belongs to current user tenant.
         $rule = \tool_dynamicrule\api::get_rule($params['id']);
+        permission::require_can_view_matching_users($rule);
 
         return \tool_dynamicrule\api::count_matching_users($params['id']);
     }
@@ -289,7 +294,7 @@ class external extends \external_api {
 
     /**
      * Returns the structure of parameters for delete_condition function.
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function delete_condition_parameters() {
         $params = ['instanceid' => new \external_value(PARAM_INT, 'The ID of the condition to be deleted', VALUE_REQUIRED)];
@@ -304,13 +309,9 @@ class external extends \external_api {
      */
     public static function delete_condition($instanceid) {
         $params = self::validate_parameters(self::delete_condition_parameters(), ['instanceid' => $instanceid]);
-
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-
         $condition = new condition($params['instanceid']);
-
-        // This validates rule belongs to current user tenant.
         $rule = \tool_dynamicrule\api::get_rule($condition->get('ruleid'));
+        permission::require_can_edit_rule($rule);
 
         return $condition->delete();
     }
@@ -325,7 +326,7 @@ class external extends \external_api {
 
     /**
      * Returns the structure of parameters for delete_outcome function.
-     * @return external_single_structure
+     * @return \external_function_parameters
      */
     protected static function delete_outcome_parameters() {
         $params = ['instanceid' => new \external_value(PARAM_INT, 'The ID of the outcome to be deleted', VALUE_REQUIRED)];
@@ -340,13 +341,9 @@ class external extends \external_api {
      */
     public static function delete_outcome($instanceid) {
         $params = self::validate_parameters(self::delete_outcome_parameters(), ['instanceid' => $instanceid]);
-
-        require_capability('tool/dynamicrule:manage', \context_system::instance());
-
         $outcome = new outcome($params['instanceid']);
-
-        // This validates rule belongs to current user tenant.
         $rule = \tool_dynamicrule\api::get_rule($outcome->get('ruleid'));
+        permission::require_can_edit_rule($rule);
 
         return $outcome->delete();
     }
@@ -362,7 +359,7 @@ class external extends \external_api {
     /**
      * Parameters for the badge selector WS.
      *
-     * @return external_function_parameters
+     * @return \external_function_parameters
      */
     public static function potential_badge_selector_parameters(): \external_function_parameters {
         return new \external_function_parameters([
@@ -379,13 +376,14 @@ class external extends \external_api {
     public static function potential_badge_selector(string $search): array {
         $params = self::validate_parameters(self::potential_badge_selector_parameters(), ['search' => $search]);
         self::validate_context(\context_system::instance());
+        // No permission check here, the api will return [] if user can not manage rules.
         return \tool_dynamicrule\api::get_potential_badges($params['search']);
     }
 
     /**
      * Return for badge selector.
      *
-     * @return external_multiple_structure
+     * @return \external_multiple_structure
      */
     public static function potential_badge_selector_returns(): \external_multiple_structure {
         return new \external_multiple_structure(new \external_single_structure([
@@ -397,7 +395,7 @@ class external extends \external_api {
     /**
      * Parameters for the competency selector WS.
      *
-     * @return external_function_parameters
+     * @return \external_multiple_structure
      */
     public static function potential_competency_selector_parameters(): \external_function_parameters {
         return new \external_function_parameters([
@@ -414,13 +412,14 @@ class external extends \external_api {
     public static function potential_competency_selector(string $search): array {
         $params = self::validate_parameters(self::potential_competency_selector_parameters(), ['search' => $search]);
         self::validate_context(\context_system::instance());
+        // No permission check here, the api will return [] if user can not manage rules.
         return \tool_dynamicrule\api::get_potential_competencies($params['search']);
     }
 
     /**
      * Return for competency selector.
      *
-     * @return external_multiple_structure
+     * @return \external_multiple_structure
      */
     public static function potential_competency_selector_returns(): \external_multiple_structure {
         return new \external_multiple_structure(new \external_single_structure([

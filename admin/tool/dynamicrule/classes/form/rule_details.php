@@ -26,6 +26,9 @@ namespace tool_dynamicrule\form;
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_dynamicrule\api;
+use tool_dynamicrule\permission;
+use tool_dynamicrule\rule;
 use tool_wp\modal_form;
 
 /**
@@ -36,6 +39,22 @@ use tool_wp\modal_form;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_details extends modal_form {
+
+    /** @var rule */
+    protected $rule;
+
+    /**
+     * Current rule
+     *
+     * @return rule
+     */
+    protected function get_rule(): rule {
+        if (!$this->rule) {
+            $id = !empty($this->_ajaxformdata['id']) ? $this->_ajaxformdata['id'] : 0;
+            $this->rule = $id ? api::get_rule($id) : new rule();
+        }
+        return $this->rule;
+    }
 
     /**
      * Form definition.
@@ -75,14 +94,19 @@ class rule_details extends modal_form {
      * Check permissions.
      */
     public function require_access() {
-        return require_capability('tool/dynamicrule:manage', \context_system::instance());
+        $rule = $this->get_rule();
+        if ($rule->get('id')) {
+            permission::require_can_edit_rule($rule);
+        } else {
+            permission::require_can_create_rule();
+        }
     }
 
     /**
      * Process form submission.
      *
      * @param \stdClass $data
-     * @return mixed|void
+     * @return string
      */
     public function process(\stdClass $data) {
         $record = new \stdClass();
@@ -124,15 +148,15 @@ class rule_details extends modal_form {
                 return array('limitingrule' => get_string('matchlimitinvalid', 'tool_dynamicrule'));
             }
         }
+        return [];
     }
 
     /**
      * Set data in the modal form.
      */
     public function set_data_for_modal() {
-        $id = !empty($this->_ajaxformdata['id']) ? $this->_ajaxformdata['id'] : null;
-        if ((int)$id) {
-            $rule = \tool_dynamicrule\api::get_rule($id);
+        $rule = $this->get_rule();
+        if ($rule->get('id')) {
             $rulerecord = $rule->to_record();
 
             // Tweak the form display.

@@ -38,6 +38,7 @@ function tool_dynamicrule_output_fragment_matching_users(array $args) {
     }
 
     $PAGE->set_context(\context_system::instance());
+    \tool_dynamicrule\permission::can_view_matching_users(\tool_dynamicrule\api::get_rule($args['ruleid']));
     $report = \tool_reportbuilder\system_report_factory::create(\tool_dynamicrule\matching_users_report::class, $args);
     return $report->output();
 }
@@ -60,8 +61,9 @@ function tool_dynamicrule_inplace_editable($itemtype, $itemid, $newvalue) {
     external_api::validate_context(context_system::instance());
 
     if ($itemtype === 'rulename') {
-        \tool_dynamicrule\api::update_rule($itemid, (object)['name' => $newvalue]);
         $rule = \tool_dynamicrule\api::get_rule($itemid);
+        \tool_dynamicrule\permission::require_can_edit_rule($rule);
+        $rule = \tool_dynamicrule\api::update_rule($itemid, (object)['name' => $newvalue]);
         return  \tool_dynamicrule\api::get_name_inplace_editable($rule);
     }
 

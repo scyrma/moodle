@@ -27,6 +27,7 @@ namespace tool_dynamicrule\output;
 defined('MOODLE_INTERNAL') || die();
 
 use renderer_base;
+use tool_dynamicrule\permission;
 use tool_wp\output\tab;
 
 /**
@@ -44,7 +45,8 @@ class tab_ruleoutcomes extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-        return (bool) \tool_dynamicrule\api::get_rule($this->get_rule_id());
+        $rule = \tool_dynamicrule\api::get_rule($this->get_rule_id());
+        return permission::can_edit_rule($rule);
     }
 
     /**
@@ -65,15 +67,6 @@ class tab_ruleoutcomes extends tab {
     public function is_for_modal(): bool {
         return !empty($this->data['formodal']) ?
             clean_param($this->data['formodal'], PARAM_BOOL) : false;
-    }
-
-    /**
-     * Return true if rule can be enabled.
-     *
-     * @return bool
-     */
-    protected function can_enable_rule(): bool {
-        return (new \tool_dynamicrule\rule($this->get_rule_id()))->can_enable();
     }
 
     /**
@@ -118,10 +111,12 @@ class tab_ruleoutcomes extends tab {
             $enablehelp = new \help_icon('enablehelp', 'tool_dynamicrule');
         }
 
+        $rule = \tool_dynamicrule\api::get_rule($this->get_rule_id());
+
         $params = [
             'tabheading' => get_string('outcomes', 'tool_dynamicrule'),
             'enablehelp' => $enablehelp->export_for_template($output),
-            'canenablerule' => $this->can_enable_rule(),
+            'canenablerule' => permission::can_enable_rule($rule),
             'menucards' => $menucards,
             'instances' => $outcomeinstances,
             'listurl' => (new \moodle_url('/admin/tool/dynamicrule/index.php'))->out(),

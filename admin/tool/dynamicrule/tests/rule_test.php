@@ -77,15 +77,6 @@ class tool_dynamicrule_rule_testcase extends advanced_testcase {
     }
 
     /**
-     * Test disable.
-     */
-    public function test_disable() {
-        $rule1 = \tool_dynamicrule\api::get_rule($this->get_generator()->create_rule(['enabled' => 1])->id);
-        $rule1->disable();
-        $this->assertFalse($rule1->is_enabled());
-    }
-
-    /**
      * Test is_archived.
      */
     public function test_is_archived() {
