@@ -66,10 +66,11 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         $mockreport = $generator->create_report(
                 ['source' => mock_report::class]
         );
+        $mockreportobj = $mockreport->get_persistent()->to_record();
 
         // Catch the events.
         $sink = $this->redirectEvents();
-        \tool_reportbuilder\helper::delete_report($mockreport->id);
+        \tool_reportbuilder\helper::delete_report($mockreport);
         $events = $sink->get_events();
 
         // Validate the event.
@@ -78,8 +79,8 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         $this->assertInstanceOf(report_deleted::class, $event);
         $this->assertEquals('tool_reportbuilder', $event->objecttable);
         $this->assertEquals(0, $event->courseid);
-        $this->assertEquals($mockreport->name, $event->other['name']);
-        $this->assertEquals($mockreport->source, $event->other['source']);
+        $this->assertEquals($mockreportobj->name, $event->other['name']);
+        $this->assertEquals($mockreportobj->source, $event->other['source']);
         $this->assertDebuggingNotCalled();
         $sink->close();
     }
@@ -98,6 +99,7 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         $mockreport = $generator->create_report(
             ['source' => mock_report::class]
         );
+        $mockreportobj = $mockreport->get_persistent()->to_record();
         $events = $sink->get_events();
 
         // Validate the event.
@@ -106,8 +108,8 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         $this->assertInstanceOf(report_created::class, $event);
         $this->assertEquals('tool_reportbuilder', $event->objecttable);
         $this->assertEquals(0, $event->courseid);
-        $this->assertEquals($mockreport->name, $event->other['name']);
-        $this->assertEquals($mockreport->source, $event->other['source']);
+        $this->assertEquals($mockreportobj->name, $event->other['name']);
+        $this->assertEquals($mockreportobj->source, $event->other['source']);
         $this->assertDebuggingNotCalled();
         $sink->close();
     }
@@ -124,9 +126,10 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         $mockreport = $generator->create_report(
             ['source' => mock_report::class]
         );
+        $mockreportobj = $mockreport->get_persistent()->to_record();
 
         $data = (object) [
-            'id' => $mockreport->id,
+            'id' => $mockreport->get_id(),
             'name' => 'New report update'
         ];
 
@@ -142,7 +145,7 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         $this->assertEquals('tool_reportbuilder', $event->objecttable);
         $this->assertEquals(0, $event->courseid);
         $this->assertEquals('New report update', $event->other['name']);
-        $this->assertEquals($mockreport->source, $event->other['source']);
+        $this->assertEquals($mockreportobj->source, $event->other['source']);
         $this->assertDebuggingNotCalled();
         $sink->close();
     }
@@ -161,7 +164,7 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         );
 
         $data = (object) [
-            'reportid' => $mockreport->id,
+            'reportid' => $mockreport->get_id(),
             'name' => 'Schedule test',
             'scheduled' => 1,
             'lastsenton' => '',
@@ -184,7 +187,7 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         $this->assertInstanceOf(schedule_created::class, $event);
         $this->assertEquals('tool_reportbuilder_scheduled', $event->objecttable);
         $this->assertEquals(0, $event->courseid);
-        $this->assertEquals($mockreport->id, $event->other['reportid']);
+        $this->assertEquals($mockreport->get_id(), $event->other['reportid']);
         $this->assertDebuggingNotCalled();
         $sink->close();
     }
@@ -203,7 +206,7 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         );
 
         $data = (object) [
-            'reportid' => $mockreport->id,
+            'reportid' => $mockreport->get_id(),
             'name' => 'Schedule test 2',
             'scheduled' => 1,
             'lastsenton' => '',
@@ -228,7 +231,7 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
         $this->assertInstanceOf(schedule_deleted::class, $event);
         $this->assertEquals('tool_reportbuilder_scheduled', $event->objecttable);
         $this->assertEquals(0, $event->courseid);
-        $this->assertEquals($mockreport->id, $event->other['reportid']);
+        $this->assertEquals($mockreport->get_id(), $event->other['reportid']);
         $this->assertDebuggingNotCalled();
         $sink->close();
     }

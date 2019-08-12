@@ -221,7 +221,7 @@ class columns {
      */
     public static function get_header_inplace_editable(string $displayvalue, string $heading, int $id) : inplace_editable {
         return new inplace_editable('tool_reportbuilder', 'columnname', $id,
-            has_capability('tool/reportbuilder:edit', \context_system::instance()),
+            true, // This function is only called after we checked that user can edit field.
             $displayvalue, $heading, get_string('customizeheader', 'tool_reportbuilder', $displayvalue),
             get_string('newvaluefor', 'tool_reportbuilder', $displayvalue));
     }

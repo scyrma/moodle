@@ -24,6 +24,7 @@
 namespace tool_reportbuilder\output\tabs;
 
 use tool_reportbuilder\manager;
+use tool_reportbuilder\permission;
 use tool_reportbuilder\report_base;
 
 defined('MOODLE_INTERNAL') || die();
@@ -40,6 +41,21 @@ class table extends \tool_wp\output\tab {
     /** @var string  */
     const TEMPLATE = 'tool_reportbuilder/tab_table';
 
+    /** @var report_base */
+    protected $report;
+
+    /**
+     * Current report
+     *
+     * @return report_base
+     */
+    public function get_report() {
+        if (!$this->report) {
+            $this->report = manager::get_report($this->data['reportid']);
+        }
+        return $this->report;
+    }
+
     /**
      * Export this for use in a mustache template context.
      *
@@ -50,8 +66,7 @@ class table extends \tool_wp\output\tab {
      * @throws \dml_exception
      */
     public function export_for_template(\renderer_base $output) {
-        $report = manager::get_report($this->data['reportid']);
-        $content = $report->export($output, true);
+        $content = $this->get_report()->export($output, true);
         $content->reportid = $this->data['reportid'];
         $content->tabheading = $this->get_tab_label();
         return $content;
@@ -75,11 +90,7 @@ class table extends \tool_wp\output\tab {
      * @throws \dml_exception
      */
     public function is_available(): bool {
-        $context = \context_system::instance();
-        if (!$this->data['reportid'] || !has_capability('tool/reportbuilder:edit', $context)) {
-            return false;
-        }
-        return true;
+        return permission::can_edit($this->get_report());
     }
 
     /**

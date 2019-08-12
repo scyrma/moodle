@@ -127,12 +127,12 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         $this->setUser($user);
 
         // User without manager position.
-        $canview = \tool_reportbuilder\permission::can_view_as_a_manager();
+        $canview = \tool_reportbuilder\permission::can_view_some_as_a_manager();
         $this->assertFalse($canview);
 
         $this->assign_job_with_report_permissions($user->id);
         // User without manager position.
-        $canview = \tool_reportbuilder\permission::can_view_as_a_manager();
+        $canview = \tool_reportbuilder\permission::can_view_some_as_a_manager();
         $this->assertTrue($canview);
     }
 
@@ -151,16 +151,14 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         $report1 = $reportgenerator->create_report([
             'source' => \tool_reportbuilder\test\mock_report::class
            ]);
-        $report = new \tool_reportbuilder\reportbuilder($report1->id);
-        $canview = \tool_reportbuilder\permission::can_view_report_as_a_manager($report);
+        $canview = \tool_reportbuilder\permission::can_view_report_as_a_manager($report1);
         $this->assertFalse($canview);
 
         // Report with organization filter but the user can not view as a manager.
         $report1 = $reportgenerator->create_report([
             'source' => \tool_reportbuilder\test\mock_report2::class
         ]);
-        $report = new \tool_reportbuilder\reportbuilder($report1->id);
-        $canview = \tool_reportbuilder\permission::can_view_report_as_a_manager($report);
+        $canview = \tool_reportbuilder\permission::can_view_report_as_a_manager($report1);
         $this->assertFalse($canview);
 
         // Report with organization filter and the user can view as a manager.
@@ -168,8 +166,7 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         $report1 = $reportgenerator->create_report([
             'source' => \tool_reportbuilder\test\mock_report2::class
         ]);
-        $report = new \tool_reportbuilder\reportbuilder($report1->id);
-        $canview = \tool_reportbuilder\permission::can_view_report_as_a_manager($report);
+        $canview = \tool_reportbuilder\permission::can_view_report_as_a_manager($report1);
         $this->assertTrue($canview);
     }
 
@@ -215,28 +212,28 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         ]);
 
         // Try edit without capability.
-        $canedit = \tool_reportbuilder\permission::can_edit($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_edit($report1);
         $this->assertFalse($canedit);
 
         // Try edit with capability.
-        $canedit = \tool_reportbuilder\permission::can_edit($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_edit($report1);
         $this->assertFalse($canedit);
 
         $this->assign_edit_capability($this->user1);
 
         // Try edit.
-        $canedit = \tool_reportbuilder\permission::can_edit($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_edit($report1);
         $this->assertTrue($canedit);
 
         // Try edit report for other tenant.
-        $canedit = \tool_reportbuilder\permission::can_edit($report2->id);
+        $canedit = \tool_reportbuilder\permission::can_edit($report2);
         $this->assertFalse($canedit);
 
         // Try edit a system report.
         $systemreport = \tool_reportbuilder\system_report_factory::create(
             \tool_reportbuilder\local\systemreports\reports_list::class
         );
-        $canedit = \tool_reportbuilder\permission::can_edit($systemreport->get_id());
+        $canedit = \tool_reportbuilder\permission::can_edit($systemreport);
         $this->assertFalse($canedit);
     }
 
@@ -258,28 +255,28 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         ]);
 
         // Try edit without capability.
-        $canedit = \tool_reportbuilder\permission::can_delete($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_delete($report1);
         $this->assertFalse($canedit);
 
         // Try edit with capability.
-        $canedit = \tool_reportbuilder\permission::can_delete($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_delete($report1);
         $this->assertFalse($canedit);
 
         $this->assign_edit_capability($this->user1);
 
         // Try edit.
-        $canedit = \tool_reportbuilder\permission::can_delete($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_delete($report1);
         $this->assertTrue($canedit);
 
         // Try edit report for other tenant.
-        $canedit = \tool_reportbuilder\permission::can_delete($report2->id);
+        $canedit = \tool_reportbuilder\permission::can_delete($report2);
         $this->assertFalse($canedit);
 
         // Try edit a system report.
         $systemreport = \tool_reportbuilder\system_report_factory::create(
             \tool_reportbuilder\local\systemreports\reports_list::class
         );
-        $canedit = \tool_reportbuilder\permission::can_delete($systemreport->get_id());
+        $canedit = \tool_reportbuilder\permission::can_delete($systemreport);
         $this->assertFalse($canedit);
     }
 
@@ -301,28 +298,28 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         ]);
 
         // Try edit without capability.
-        $canedit = \tool_reportbuilder\permission::can_duplicate($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_duplicate($report1);
         $this->assertFalse($canedit);
 
         // Try edit with capability.
-        $canedit = \tool_reportbuilder\permission::can_duplicate($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_duplicate($report1);
         $this->assertFalse($canedit);
 
         $this->assign_edit_capability($this->user1);
 
         // Try edit.
-        $canedit = \tool_reportbuilder\permission::can_duplicate($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_duplicate($report1);
         $this->assertTrue($canedit);
 
         // Try edit report for other tenant.
-        $canedit = \tool_reportbuilder\permission::can_duplicate($report2->id);
+        $canedit = \tool_reportbuilder\permission::can_duplicate($report2);
         $this->assertFalse($canedit);
 
         // Try edit a system report.
         $systemreport = \tool_reportbuilder\system_report_factory::create(
             \tool_reportbuilder\local\systemreports\reports_list::class
         );
-        $canedit = \tool_reportbuilder\permission::can_duplicate($systemreport->get_id());
+        $canedit = \tool_reportbuilder\permission::can_duplicate($systemreport);
         $this->assertFalse($canedit);
     }
 
@@ -344,28 +341,28 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         ]);
 
         // Try edit without capability.
-        $canedit = \tool_reportbuilder\permission::can_schedule($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_schedule($report1);
         $this->assertFalse($canedit);
 
         // Try edit with capability.
-        $canedit = \tool_reportbuilder\permission::can_schedule($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_schedule($report1);
         $this->assertFalse($canedit);
 
         $this->assign_edit_capability($this->user1);
 
         // Try edit.
-        $canedit = \tool_reportbuilder\permission::can_schedule($report1->id);
+        $canedit = \tool_reportbuilder\permission::can_schedule($report1);
         $this->assertTrue($canedit);
 
         // Try edit report for other tenant.
-        $canedit = \tool_reportbuilder\permission::can_schedule($report2->id);
+        $canedit = \tool_reportbuilder\permission::can_schedule($report2);
         $this->assertFalse($canedit);
 
         // Try edit a system report.
         $systemreport = \tool_reportbuilder\system_report_factory::create(
             \tool_reportbuilder\local\systemreports\reports_list::class
         );
-        $canedit = \tool_reportbuilder\permission::can_schedule($systemreport->get_id());
+        $canedit = \tool_reportbuilder\permission::can_schedule($systemreport);
         $this->assertFalse($canedit);
     }
 
@@ -377,16 +374,14 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         $systemreport = \tool_reportbuilder\system_report_factory::create(
             \tool_reportbuilder\local\systemreports\reports_list::class
         );
-        $report = new \tool_reportbuilder\reportbuilder($systemreport->get_id());
-        $issystemreport = \tool_reportbuilder\permission::is_system_report($report);
+        $issystemreport = \tool_reportbuilder\permission::is_system_report($systemreport);
         $this->assertTrue($issystemreport);
 
         // Not is a system report.
         $systemreport = $this->get_report_generator()->create_report([
             'source' => \tool_reportbuilder\test\mock_report::class
         ]);
-        $report = new \tool_reportbuilder\reportbuilder($systemreport->id);
-        $issystemreport = \tool_reportbuilder\permission::is_system_report($report);
+        $issystemreport = \tool_reportbuilder\permission::is_system_report($systemreport);
         $this->assertFalse($issystemreport);
     }
 
@@ -417,12 +412,10 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
             'source' => \tool_reportbuilder\test\mock_report::class
         ]);
 
-        $report = new \tool_reportbuilder\reportbuilder($report1->id);
-        $issametenant = \tool_reportbuilder\permission::check_belongs_same_tenant($report);
+        $issametenant = \tool_reportbuilder\permission::check_belongs_same_tenant($report1);
         $this->assertTrue($issametenant);
 
-        $report = new \tool_reportbuilder\reportbuilder($report2->id);
-        $issametenant = \tool_reportbuilder\permission::check_belongs_same_tenant($report);
+        $issametenant = \tool_reportbuilder\permission::check_belongs_same_tenant($report2);
         $this->assertFalse($issametenant);
     }
 
@@ -453,8 +446,9 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
 
         $this->setUser($user1);
 
-        $this->expectExceptionMessage('error/cannotdeletereport');
-        \tool_reportbuilder\permission::require_can_delete($report2->id);
+        $this->expectExceptionMessage(
+            'Sorry, but you do not currently have permissions to do that (Edit a report configuration).');
+        \tool_reportbuilder\permission::require_can_delete($report2);
     }
 
     /**
@@ -484,8 +478,9 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
 
         $this->setUser($user1);
 
-        $this->expectExceptionMessage('error/cannoteditreport');
-        \tool_reportbuilder\permission::require_can_edit($report2->id);
+        $this->expectExceptionMessage(
+            'Sorry, but you do not currently have permissions to do that (Edit a report configuration).');
+        \tool_reportbuilder\permission::require_can_edit($report2);
 
     }
 
@@ -502,7 +497,8 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
 
         $this->setUser($user1);
 
-        $this->expectExceptionMessage('error/cannotcreatereport');
+        $this->expectExceptionMessage('Sorry, but you do not currently have permissions to do that ' .
+            '(Edit a report configuration)');
         \tool_reportbuilder\permission::require_can_create();
 
     }
@@ -544,5 +540,75 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         $tenant = $this->get_tenant_generator()->create_tenant();
         $this->get_tenant_generator()->allocate_user($userid, $tenant->id);
         $this->get_report_generator()->assign_job_with_report_permissions($userid, []);
+    }
+
+    /**
+     * Tests that various "require" methods return descriptive error message
+     */
+    public function test_require() {
+        $report = $this->get_report_generator()->create_report([
+            'source' => \tool_reportbuilder\test\mock_report::class
+        ]);
+        $schedule = $this->get_report_generator()->create_schedule(['reportid' => $report->get_id()]);
+        $schedule = new \tool_reportbuilder\local\models\schedules($schedule->id);
+
+        try {
+            \tool_reportbuilder\permission::require_can_view($report);
+            $this->fail('Exception expected');
+        } catch (moodle_exception $exception) {
+            $this->assertEquals('Sorry, but you do not currently have permissions to do that (View reports).',
+                $exception->getMessage());
+        }
+
+        try {
+            \tool_reportbuilder\permission::require_can_delete($report);
+            $this->fail('Exception expected');
+        } catch (moodle_exception $exception) {
+            $this->assertEquals('Sorry, but you do not currently have permissions to do that ' .
+                '(Edit a report configuration).', $exception->getMessage());
+        }
+
+        try {
+            \tool_reportbuilder\permission::require_can_view_access_tab($report);
+            $this->fail('Exception expected');
+        } catch (moodle_exception $exception) {
+            $this->assertEquals('Sorry, but you do not currently have permissions to do that ' .
+                '(Edit a report configuration).', $exception->getMessage());
+        }
+
+        try {
+            \tool_reportbuilder\permission::require_can_manage_schedules();
+            $this->fail('Exception expected');
+        } catch (moodle_exception $exception) {
+            $this->assertEquals('You don\'t have permission to manage schedules', $exception->getMessage());
+        }
+
+        try {
+            \tool_reportbuilder\permission::require_can_create_schedule();
+            $this->fail('Exception expected');
+        } catch (moodle_exception $exception) {
+            $this->assertEquals('You don\'t have permission to manage schedules', $exception->getMessage());
+        }
+
+        try {
+            \tool_reportbuilder\permission::require_can_send_schedule($schedule);
+            $this->fail('Exception expected');
+        } catch (moodle_exception $exception) {
+            $this->assertEquals('You don\'t have permission to manage schedules', $exception->getMessage());
+        }
+
+        try {
+            \tool_reportbuilder\permission::require_can_delete_schedule($schedule);
+            $this->fail('Exception expected');
+        } catch (moodle_exception $exception) {
+            $this->assertEquals('You don\'t have permission to manage schedules', $exception->getMessage());
+        }
+
+        try {
+            \tool_reportbuilder\permission::require_can_edit_schedule($schedule);
+            $this->fail('Exception expected');
+        } catch (moodle_exception $exception) {
+            $this->assertEquals('You don\'t have permission to manage schedules', $exception->getMessage());
+        }
     }
 }

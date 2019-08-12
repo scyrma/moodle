@@ -24,6 +24,7 @@
 
 namespace tool_reportbuilder\output\tabs;
 
+use tool_reportbuilder\permission;
 use tool_reportbuilder\system_report_factory;
 use tool_reportbuilder\local\systemreports\schedules_list;
 
@@ -54,10 +55,8 @@ class schedule extends \tool_wp\output\tab {
      * @throws \dml_exception
      */
     public function export_for_template(\renderer_base $output) {
-        $context = \context_system::instance();
-        $canmanage = has_capability('tool/reportbuilder:edit', $context);
         $btnstr = '';
-        if ($canmanage) {
+        if (permission::can_create_schedule()) {
             $btnstr = get_string('addschedule', 'tool_reportbuilder');
         }
 
@@ -90,11 +89,7 @@ class schedule extends \tool_wp\output\tab {
      * @throws \dml_exception
      */
     public function is_available(): bool {
-        $context = \context_system::instance();
-        if (!$this->data['reportid'] || !has_capability('tool/reportbuilder:edit', $context)) {
-            return false;
-        }
-        return true;
+        return permission::can_manage_schedules();
     }
 
     /**

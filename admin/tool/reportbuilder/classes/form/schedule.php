@@ -28,6 +28,7 @@ use tool_organisation\organisation;
 use tool_reportbuilder\event\schedule_updated;
 use tool_reportbuilder\helper;
 use tool_reportbuilder\local\helpers\schedules;
+use tool_reportbuilder\permission;
 use tool_wp\modal_form;
 
 defined('MOODLE_INTERNAL') || die;
@@ -43,6 +44,21 @@ class schedule extends modal_form {
     /** @var string Persistent class name. */
     protected static $persistentclass = 'tool_reportbuilder\\models\\schedules';
 
+    /** @var \tool_reportbuilder\local\models\schedules */
+    protected $schedule;
+
+    /**
+     * Current schedule
+     *
+     * @return \tool_reportbuilder\local\models\schedules
+     */
+    protected function get_schedule(): ?\tool_reportbuilder\local\models\schedules {
+        if (!$this->schedule && ($id = $this->optional_param('id', 0, PARAM_INT))) {
+            $this->schedule = \tool_reportbuilder\local\helpers\schedules::get_schedule($id);
+        }
+        return $this->schedule;
+    }
+
     /**
      * Define the form - called by parent constructor
      */
@@ -50,8 +66,8 @@ class schedule extends modal_form {
 
         $mform = $this->_form;
 
-        $reportid = $this->_ajaxformdata['reportid'];
-        $id = $this->_ajaxformdata['id'];
+        $reportid = $this->optional_param('reportid', 0, PARAM_INT);
+        $id = $this->optional_param('id', 0, PARAM_INT);
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
@@ -64,7 +80,7 @@ class schedule extends modal_form {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        if (empty($reportid) || (int)$id === 0) {
+        if (!$reportid && !$id) {
             $sources = helper::get_reports_select();
             $sources = ['' => get_string('choose', 'tool_reportbuilder')] + $sources;
             $mform->addElement('select', 'reportid', get_string('report', 'tool_reportbuilder'), $sources);
@@ -207,19 +223,18 @@ class schedule extends modal_form {
         $data->usercreated = $USER->id;
         $data->audience = json_encode($audience);
 
-        if (empty($data->id)) {
+        $schedule = $this->get_schedule();
+        if (!$schedule) {
             return schedules::add_schedule($data);
         } else {
-            /** @var \tool_reportbuilder\local\models\schedules $persistent */
-            $persistent = new \tool_reportbuilder\local\models\schedules($data->id);
-            $persistent->from_record($data);
-            $persistent->update();
+            $schedule->from_record($data);
+            $schedule->update();
 
             // Trigger schedule updated event.
-            $event = schedule_updated::create_from_object($persistent);
+            $event = schedule_updated::create_from_object($schedule);
             $event->trigger();
 
-            return $persistent;
+            return $schedule;
         }
     }
 
@@ -227,19 +242,21 @@ class schedule extends modal_form {
      * Check if current user has access to this form, otherwise throw exception
      */
     public function require_access() {
-        $context = \context_system::instance();
-        return has_capability('tool/reportbuilder:edit', $context);
+        if ($schedule = $this->get_schedule()) {
+            permission::require_can_edit_schedule($schedule);
+        } else {
+            permission::require_can_create_schedule();
+        }
     }
 
     /**
      * Set Data for the modal form.
      */
     public function set_data_for_modal() {
-        $scheduleid = $this->_ajaxformdata['id'];
 
         $formdata = new \stdClass();
-        if ($scheduleid) {
-            $formdata = \tool_reportbuilder\local\helpers\schedules::get_schedule($scheduleid)->to_record();
+        if ($schedule = $this->get_schedule()) {
+            $formdata = $schedule->to_record();
             $audiences = json_decode($formdata->audience);
             $messagetext = $formdata->message;
             $formdata->message = [];

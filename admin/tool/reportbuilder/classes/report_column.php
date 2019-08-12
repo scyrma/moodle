@@ -135,6 +135,17 @@ class report_column {
     }
 
     /**
+     * Set another visiblename instead of the default.
+     *
+     * @param \lang_string|null $visiblename
+     * @return report_column
+     */
+    public function set_visiblename(?\lang_string $visiblename) {
+        $this->visiblename = $visiblename;
+        return $this;
+    }
+
+    /**
      * Get entity.
      *
      * @return mixed

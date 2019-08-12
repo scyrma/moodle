@@ -56,7 +56,7 @@ class index_page implements \templatable, \renderable {
         $tabsoutput = new \tool_wp\output\tabs($attributestab);
         $data = [];
         $tabsoutput->add_tab(new \tool_reportbuilder\output\tabs\reports($data));
-        if (permission::can_create()) {
+        if (permission::can_view_all_schedules_list()) {
             $tabsoutput->add_tab(new \tool_reportbuilder\output\tabs\schedules($data));
         }
         $tabscontent = $tabsoutput->export_for_template($output);
@@ -79,8 +79,16 @@ class index_page implements \templatable, \renderable {
 
         $PAGE->set_url($url);
 
-        $identifier = permission::can_create() ? 'myreports' : 'customreports';
-        $PAGE->set_title(get_string($identifier, 'tool_reportbuilder'));
-        $PAGE->set_heading(get_string($identifier, 'tool_reportbuilder'));
+        $cancreate = permission::can_create();
+
+        $identifier = $cancreate ? 'myreports' : 'customreports';
+        $strtitle = get_string($identifier, 'tool_reportbuilder');
+
+        if (!$cancreate) {
+            $PAGE->navbar->add($strtitle);
+        }
+
+        $PAGE->set_title($strtitle);
+        $PAGE->set_heading($strtitle);
     }
 }

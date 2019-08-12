@@ -30,6 +30,7 @@ use tool_reportbuilder\local\filter\select;
 use tool_reportbuilder\helper;
 use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\local\helpers\schedules;
+use tool_reportbuilder\permission;
 use tool_reportbuilder\report_filter;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
@@ -56,7 +57,7 @@ class schedules_list extends system_report {
         if ($reportid = $this->get_parameter('reportid', 0, PARAM_INT)) {
             $this->add_base_condition_simple('reportid', $reportid);
         }
-        $this->add_base_fields('sch.id, sch.name, rb.tenantid'); // Necessary for actions.
+        $this->add_base_fields('sch.id, sch.name, sch.reportid, rb.tenantid'); // Necessary for actions.
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
@@ -71,8 +72,7 @@ class schedules_list extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        // TODO: Implement can_view() method.
-        return true;
+        return permission::can_view_all_schedules_list();
     }
 
     /**
@@ -179,8 +179,7 @@ class schedules_list extends system_report {
      * @throws \moodle_exception
      */
     private function add_actions() {
-        $context = \context_system::instance();
-        if (has_capability('tool/reportbuilder:edit', $context)) {
+        if (permission::can_manage_schedules()) {
 
             // Edit icon.
             $icon = new \pix_icon('i/settings', get_string('editschedule', 'tool_reportbuilder'), 'core');

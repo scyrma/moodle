@@ -58,7 +58,7 @@ class report_conditions extends report_filter {
         $this->report = $report; // TODO: delete it...
         $this->editing = $editing;
 
-        $conditions = new conditions($report->get_id());
+        $conditions = new conditions($report);
         $filterfields = $conditions->get_report_conditions();
 
         $filterform = new \tool_reportbuilder\form\conditions(

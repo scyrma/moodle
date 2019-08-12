@@ -228,7 +228,7 @@ class filters {
             $displayvalue = $filter->get_header();
         }
         return new \core\output\inplace_editable('tool_reportbuilder', 'filtername', $id,
-            has_capability('tool/reportbuilder:edit', \context_system::instance()),
+            true,  // This function is only called after we checked that user can edit field.
             $displayvalue, $heading, get_string('customizefilter', 'tool_reportbuilder'),
             get_string('newvaluefor', 'tool_reportbuilder', $displayvalue));
     }

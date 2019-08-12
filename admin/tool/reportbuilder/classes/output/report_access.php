@@ -31,6 +31,9 @@ use renderer_base;
 use stdClass;
 use templatable;
 use tool_organisation\organisation;
+use tool_reportbuilder\manager;
+use tool_reportbuilder\permission;
+use tool_reportbuilder\report_base;
 use tool_reportbuilder\reportbuilder;
 use tool_tenant\tenancy;
 use context_system;
@@ -45,17 +48,17 @@ use user_picture;
  */
 class report_access implements templatable, renderable {
     /**
-     * @var int|string
+     * @var report_base
      */
-    protected $reportid;
+    protected $report;
 
     /**
      * report_access constructor.
      *
-     * @param int|string $reportid
+     * @param report_base $report
      */
-    public function __construct($reportid) {
-        $this->reportid = $reportid;
+    public function __construct(report_base $report) {
+        $this->report = $report;
     }
 
     /**
@@ -67,10 +70,10 @@ class report_access implements templatable, renderable {
     public function export_for_template(renderer_base $output) {
         global $OUTPUT;
         $context = context_system::instance();
-        $report = new reportbuilder($this->reportid);
-        $source = $report->get('source');
-        $tenantid = $report->get('tenantid');
-        $supportsorg = (new $source($this->reportid))->supports_organisation_filter();
+        $reportbase = $this->report;
+        $tenantid = $reportbase->get_tenant_id();
+        $supportsorg = ($reportbase instanceof \tool_reportbuilder\datasource) &&
+            $reportbase->supports_organisation_filter();
 
         // We get all users by edit and read capability.
         $userswithcapabilities = [];
@@ -108,7 +111,7 @@ class report_access implements templatable, renderable {
         $managers = [];
         if ($userslist) {
             foreach ($userslist as $record) {
-                $managers[$record->positionid]['position'] = format_string($record->positionname);
+                $managers[$record->positionid]['position'] = format_string($record->positionname, true, ['escape' => false]);
                 $managers[$record->positionid]['data'][] = (object)[
                     'fullname'     => fullname($record),
                     'profileimage' => $OUTPUT->user_picture((object)['id' => $record->userid], array('class' => 'userpicture'))

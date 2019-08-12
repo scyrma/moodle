@@ -29,6 +29,7 @@ use tool_reportbuilder\event\report_updated;
 use tool_reportbuilder\manager;
 use tool_reportbuilder\local\models\reportbuilder_conditions;
 use tool_reportbuilder\output\reportbuilder_condition_exporter;
+use tool_reportbuilder\report_base;
 use tool_reportbuilder\report_filter;
 use tool_reportbuilder\reportbuilder;
 
@@ -43,15 +44,15 @@ defined('MOODLE_INTERNAL') || die;
  */
 class conditions {
 
-    /** @var int $reportid */
-    protected $reportid;
+    /** @var report_base $report */
+    protected $report;
 
     /**
      * conditions constructor.
-     * @param int $reportid
+     * @param report_base $report
      */
-    public function __construct(int $reportid) {
-        $this->reportid = $reportid;
+    public function __construct(report_base $report) {
+        $this->report = $report;
     }
 
     /**
@@ -113,7 +114,7 @@ class conditions {
      */
     public static function remove_condition(int $conditionid) : reportbuilder_conditions {
         $persistent = new reportbuilder_conditions($conditionid, null);
-        $helper = new self($persistent->get('reportid'));
+        $helper = new self(manager::get_report($persistent->get('reportid')));
         $helper->remove_condition_values($persistent->get_unique_identifier());
         $persistent->delete();
         return $persistent;
@@ -189,7 +190,7 @@ class conditions {
     public static function get_header_inplace_editable(report_filter $condition, string $heading, int $id) : inplace_editable {
         $displayvalue = self::get_formatted_header($condition, $heading);
         return new inplace_editable('tool_reportbuilder', 'condition', $id,
-            has_capability('tool/reportbuilder:edit', \context_system::instance()),
+            true, // This function is only called after we checked that user can edit field.
             $displayvalue, $heading, get_string('customizecondition', 'tool_reportbuilder'),
             get_string('newvaluefor', 'tool_reportbuilder', $displayvalue));
     }
@@ -203,7 +204,7 @@ class conditions {
      * @throws \core\invalid_persistent_exception
      */
     public function add_report_conditions(?string $encodedjsonform) : bool {
-        $persistent = new reportbuilder($this->reportid);
+        $persistent = $this->report->get_persistent();
         $persistent->set('conditions', $encodedjsonform);
 
         if ($persistent->update()) {
@@ -223,7 +224,7 @@ class conditions {
      * @throws \coding_exception
      */
     public function get_report_conditions() : ?array {
-        $persistent = new reportbuilder($this->reportid);
+        $persistent = $this->report->get_persistent();
         $conditions = $persistent->get('conditions');
         if (empty($conditions)) {
             return [];
@@ -239,7 +240,7 @@ class conditions {
      * @throws \core\invalid_persistent_exception
      */
     public function reset_all(): bool {
-        $reportpersistent = new reportbuilder($this->reportid);
+        $reportpersistent = $this->report->get_persistent();
         $reportpersistent->set('conditions', null);
 
         if ($reportpersistent->update()) {

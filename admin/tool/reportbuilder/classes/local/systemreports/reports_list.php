@@ -35,6 +35,7 @@ use tool_reportbuilder\permission;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\report_filter;
+use tool_reportbuilder\reportbuilder;
 use tool_reportbuilder\system_report;
 use tool_wp\db;
 
@@ -55,7 +56,7 @@ class reports_list extends system_report {
         $this->set_columns();
         $this->set_main_table('tool_reportbuilder', 'rb');
         $this->add_base_condition_simple('rb.type', constants::TYPE_DATASOURCE);
-        $this->add_base_fields('rb.id, rb.name, rb.tenantid'); // Necessary for actions.
+        $this->add_base_fields('rb.id, rb.name, rb.tenantid, rb.source, rb.type, rb.idnumber'); // Necessary for actions.
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
@@ -74,8 +75,7 @@ class reports_list extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        // TODO: Implement can_view() method.
-        return true;
+        return permission::can_view_reports_list();
     }
 
     /**
@@ -98,8 +98,8 @@ class reports_list extends system_report {
     protected function set_columns() : void {
         $this->annotate_entity('tool_reportbuilder', new \lang_string('entityreportbuilder', 'tool_reportbuilder'));
 
-        $cancreate = permission::can_create();
-        $fields = $cancreate ? array('name', 'source', 'timecreated', 'timemodified') : array('name');
+        $canmanage = permission::can_manage_reports();
+        $fields = ['name', 'source', 'timecreated', 'timemodified'];
         $headers = array(
             new \lang_string('reportname', 'tool_reportbuilder'),
             new \lang_string('plugin'),
@@ -119,12 +119,14 @@ class reports_list extends system_report {
                 ->set_is_default(true);
 
             if ($field === 'name') {
-                $newcolumn->add_callback(function($value, $row) {
+                $newcolumn->add_callback(function($value, $row) use ($canmanage) {
                     global $OUTPUT;
-                    $ie = manager::get_name_inplace_editable($value, $row->rbid, permission::can_view_edit_icon($row));
+                    $ie = manager::get_name_inplace_editable($value, $row->rbid, $canmanage);
                     return $ie->render($OUTPUT);
                 })
                     ->set_is_sortable(true, true);
+            } else {
+                $newcolumn->set_is_available($canmanage);
             }
             if ($field === 'source') {
                 $newcolumn
@@ -140,19 +142,18 @@ class reports_list extends system_report {
             $this->add_column($newcolumn);
         }
 
-        if ($cancreate) {
-            // User modified field.
-            $this->add_column((new report_column(
-                'usermodified',
-                new \lang_string('modifiedby', 'tool_reportbuilder'),
-                'tool_reportbuilder'
-            ))
-                ->add_fields(user_entity::get_all_user_name_fields(true, 'u') . ', rb.usermodified')
-                ->add_join('join {user} u ON u.id = rb.usermodified')
-                ->set_is_default(true)
-                ->add_callback([format::class, 'fullname']))
-                ->set_is_sortable(true);
-        }
+        // User modified field.
+        $this->add_column((new report_column(
+            'usermodified',
+            new \lang_string('modifiedby', 'tool_reportbuilder'),
+            'tool_reportbuilder'
+        ))
+            ->add_fields(user_entity::get_all_user_name_fields(true, 'u') . ', rb.usermodified')
+            ->add_join('join {user} u ON u.id = rb.usermodified')
+            ->set_is_default(true)
+            ->set_is_available($canmanage)
+            ->add_callback([format::class, 'fullname']))
+            ->set_is_sortable(true);
     }
 
     /**
@@ -162,54 +163,52 @@ class reports_list extends system_report {
      * @throws \moodle_exception
      */
     private function add_actions() {
-        $context = \context_system::instance();
-        if (permission::can_create()) {
-            // Go to report editor.
-            $editurl = new \moodle_url('/admin/tool/reportbuilder/manage.php', ['id' => ':id']);
-            $icon = new \pix_icon('t/right', get_string('editreport', 'tool_reportbuilder'), 'core');
-            $action = new report_action($editurl, $icon);
-            $action->add_callback([\tool_reportbuilder\permission::class, 'can_view_edit_icon']);
-            $this->add_action($action);
+        // Go to report editor.
+        $editurl = new \moodle_url('/admin/tool/reportbuilder/manage.php', ['id' => ':id']);
+        $icon = new \pix_icon('t/right', get_string('editreport', 'tool_reportbuilder'), 'core');
+        $action = new report_action($editurl, $icon);
+        $action->add_callback([\tool_reportbuilder\permission::class, 'can_view_edit_icon']);
+        $this->add_action($action);
 
-            // Edit details.
-            $icon = new \pix_icon('i/settings', get_string('editreportdetails', 'tool_reportbuilder'), 'core');
-            $action = (new report_action(new \moodle_url('#'), $icon,
-                    ['data-action' => 'editdetails', 'data-id' => ':id', 'data-reportname' => ':name']))
-                ->add_callback([\tool_reportbuilder\permission::class, 'can_view_edit_icon'])
-                ->add_callback(function($row) {
-                    $row->name = format_string($row->name, true, ['escape' => false]);
-                    return true;
-                });
-            $this->add_action($action);
+        // Edit details.
+        $icon = new \pix_icon('i/settings', get_string('editreportdetails', 'tool_reportbuilder'), 'core');
+        $action = (new report_action(new \moodle_url('#'), $icon,
+                ['data-action' => 'editdetails', 'data-id' => ':id', 'data-reportname' => ':name']))
+            ->add_callback([\tool_reportbuilder\permission::class, 'can_view_edit_icon'])
+            ->add_callback(function($row) {
+                $row->name = format_string($row->name, true, ['escape' => false]);
+                return true;
+            });
+        $this->add_action($action);
 
-            // Duplicate action.
-            if (false) {
-                // TODO WP-259 not implemented.
-                $icon = new \pix_icon('e/manage_files', get_string('duplicatereport', 'tool_reportbuilder'), 'core');
-                $action = new report_action(new \moodle_url('#'), $icon,
-                    array(
-                        'data-action' => 'duplicate',
-                        'data-id' => ':id'
-                    )
-                );
-                $this->add_action($action);
-            }
-
-            // Delete icon.
-            $icon = new \pix_icon('i/trash', get_string('deletereport', 'tool_reportbuilder'), 'core');
-            $action = (new report_action(new \moodle_url('#'), $icon,
+        // Duplicate action.
+        if (false) {
+            // TODO WP-259 not implemented.
+            $icon = new \pix_icon('e/manage_files', get_string('duplicatereport', 'tool_reportbuilder'), 'core');
+            $action = new report_action(new \moodle_url('#'), $icon,
                 array(
-                    'data-action' => 'delete',
-                    'data-reportname' => ':name',
+                    'data-action' => 'duplicate',
                     'data-id' => ':id'
                 )
-            ))
-                ->add_callback([\tool_reportbuilder\permission::class, 'can_view_delete_icon'])
-                ->add_callback(function($row) {
-                    $row->name = format_string($row->name, true, ['escape' => false]);
-                    return true;
-                });
+            );
+            $action->add_callback([\tool_reportbuilder\permission::class, 'can_view_duplicate_icon']);
             $this->add_action($action);
         }
+
+        // Delete icon.
+        $icon = new \pix_icon('i/trash', get_string('deletereport', 'tool_reportbuilder'), 'core');
+        $action = (new report_action(new \moodle_url('#'), $icon,
+            array(
+                'data-action' => 'delete',
+                'data-reportname' => ':name',
+                'data-id' => ':id'
+            )
+        ))
+            ->add_callback([\tool_reportbuilder\permission::class, 'can_view_delete_icon'])
+            ->add_callback(function($row) {
+                $row->name = format_string($row->name, true, ['escape' => false]);
+                return true;
+            });
+        $this->add_action($action);
     }
 }

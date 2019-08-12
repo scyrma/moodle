@@ -27,8 +27,8 @@ namespace tool_reportbuilder\external;
 
 use tool_reportbuilder\event\report_viewed;
 use tool_reportbuilder\helper;
+use tool_reportbuilder\manager;
 use tool_reportbuilder\output\report_view;
-use required_capability_exception;
 use tool_reportbuilder\permission;
 use tool_reportbuilder\reportbuilder;
 
@@ -130,8 +130,9 @@ class report extends \external_api {
      * @throws \moodle_exception
      */
     public static function delete_report(int $reportid) {
-        permission::require_can_delete($reportid);
-        return ['result' => helper::delete_report($reportid)];
+        $report = manager::get_report($reportid);
+        permission::require_can_delete($report);
+        return ['result' => helper::delete_report($report)];
     }
 
     /**

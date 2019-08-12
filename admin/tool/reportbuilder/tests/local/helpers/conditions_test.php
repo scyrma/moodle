@@ -50,15 +50,15 @@ class tool_reportbuilder_conditions_helper_testcase extends advanced_testcase {
         ]);
 
         $record = new stdClass();
-        $record->id = $report->id;
+        $record->id = $report->get_id();
         $record->conditions = 'dummycontent';
 
         $DB->update_record('tool_reportbuilder', $record);
 
-        $conditionshelper = new \tool_reportbuilder\local\helpers\conditions($report->id);
+        $conditionshelper = new \tool_reportbuilder\local\helpers\conditions($report);
         $conditionshelper->reset_all();
 
-        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->id]);
+        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->get_id()]);
 
         $this->assertEquals(null, $conditions);
     }
@@ -79,15 +79,15 @@ class tool_reportbuilder_conditions_helper_testcase extends advanced_testcase {
         ]);
 
         $record = new stdClass();
-        $record->id = $report->id;
+        $record->id = $report->get_id();
         $record->conditions = 'dummycontent';
 
         $DB->update_record('tool_reportbuilder', $record);
 
-        $conditionshelper = new \tool_reportbuilder\local\helpers\conditions($report->id);
+        $conditionshelper = new \tool_reportbuilder\local\helpers\conditions($report);
         $conditionshelper->reset_all();
 
-        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->id]);
+        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->get_id()]);
 
         $this->assertEquals(null, $conditions);
 

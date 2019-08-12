@@ -27,6 +27,7 @@ namespace tool_reportbuilder\local\helpers;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\event\schedule_created;
 use tool_reportbuilder\event\schedule_deleted;
+use tool_reportbuilder\permission;
 use tool_tenant\tenancy;
 
 defined('MOODLE_INTERNAL') || die();
@@ -99,23 +100,6 @@ class schedules {
      */
     public static function get_schedule(int $scheduleid) : \tool_reportbuilder\local\models\schedules {
         return new \tool_reportbuilder\local\models\schedules($scheduleid);
-    }
-
-    /**
-     * Check if the user can edit the given schedule.
-     *
-     * @param int $scheduleid
-     *
-     * @return bool
-     * @throws \coding_exception
-     */
-    public static function can_edit_schedule(int $scheduleid) : bool {
-        $schedule = self::get_schedule($scheduleid);
-        if (tenancy::get_tenant_id() !== (int) $schedule->get_tenantid()) {
-            return false;
-        }
-
-        return true;
     }
 
     /**

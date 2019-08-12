@@ -35,9 +35,9 @@ $editon = optional_param('editon', 1, PARAM_BOOL);
 $url = new moodle_url('/admin/tool/reportbuilder/manage.php', ['id' => $reportid]);
 admin_externalpage_setup('tool_reportbuilder', '', ['id' => $reportid]);
 
-$rbpersistent = new \tool_reportbuilder\reportbuilder($reportid);
-$title = format_string($rbpersistent->get('name'));
-\tool_reportbuilder\permission::require_can_edit($reportid);
+$report = \tool_reportbuilder\manager::get_report($reportid);
+$title = format_string($report->get_reportname());
+\tool_reportbuilder\permission::require_can_edit($report);
 $PAGE->navbar->add($title);
 
 $PAGE->set_title($title);
@@ -46,7 +46,7 @@ $PAGE->set_heading($title);
 $output = $PAGE->get_renderer('tool_reportbuilder');
 
 $edit = new \tool_wp\output\page_header_button(get_string('editreportdetails', 'tool_reportbuilder'),
-    ['data-action' => 'editdetails', 'data-id' => $reportid, 'data-reportname' => format_string($rbpersistent->get('name'))]);
+    ['data-action' => 'editdetails', 'data-id' => $reportid, 'data-reportname' => $title]);
 $PAGE->set_button($edit->render($output) . $PAGE->button);
 
 $tabs = \tool_reportbuilder\manager::get_tabs($reportid);

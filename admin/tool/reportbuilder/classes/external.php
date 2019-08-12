@@ -47,122 +47,6 @@ use tool_reportbuilder\local\report\reportbuilder_filter;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class external extends external_api {
-    /**
-     * Toggle the state of the given column.
-     *
-     * @param int $columnid
-     *
-     * @return array
-     * @throws \coding_exception
-     * @throws \core\invalid_persistent_exception
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \restricted_context_exception
-     */
-    public static function toggle_report_column($columnid) {
-        $params = self::validate_parameters(self::toggle_report_column_parameters(),
-            [
-                'columnid' => $columnid
-            ]
-        );
-
-        // TODO: very important check if the column is from user with permission to modify the report of the column.
-        self::validate_context(context_system::instance());
-
-        $persistent = new reportbuilder_column($params['columnid']);
-        $currentvalue = $persistent->get('hidden');
-        $newvalue = $currentvalue == 1 ? 0 : 1;
-        $persistent->set('hidden', $newvalue);
-        $persistent->update();
-
-        // Trigger report updated event.
-        $report = new reportbuilder($persistent->get('reportid'));
-        $event = report_updated::create_from_object($report);
-        $event->trigger();
-
-        return [
-            'newcolumnstate' => $newvalue
-        ];
-    }
-
-    /**
-     * Describes the parameters for toggle_report_column webservice.
-     *
-     * @return external_function_parameters
-     */
-    public static function toggle_report_column_parameters() {
-        return new external_function_parameters(
-            array(
-                'columnid' => new external_value(PARAM_INT, 'Id of the column to toggle')
-            )
-        );
-    }
-
-    /**
-     * Returns description of method toggle_report_column.
-     *
-     * @return \external_single_structure
-     */
-    public static function toggle_report_column_returns() {
-        return new \external_single_structure([
-            'newcolumnstate' => new external_value(PARAM_INT, 'The new column visibility status', VALUE_REQUIRED)
-        ]);
-    }
-
-    /**
-     * Describes the parameters for get_report_filter webservice.
-     *
-     * @return external_function_parameters
-     */
-    public static function get_report_filter_parameters() {
-        return new external_function_parameters(
-            array(
-                'reportid' => new external_value(PARAM_INT, 'The report id to get the filters')
-            )
-        );
-    }
-
-    /**
-     * Get the filters of the given report.
-     *
-     * @param int $reportid
-     *
-     * @return array
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
-     * @throws \restricted_context_exception
-     */
-    public static function get_report_filter($reportid) {
-        // TODO SP-422 this WS initialises non-existing class. Where is it used?
-        global $PAGE;
-        $PAGE->set_context(context_system::instance());
-
-        $params = self::validate_parameters(self::get_report_table_parameters(),
-            [
-                'reportid' => $reportid,
-            ]
-        );
-
-        $filtering = new report_filtering($params['reportid']);
-
-        self::validate_context(context_system::instance());
-
-        return [
-            'filters' => $filtering->display_active()
-        ];
-    }
-
-    /**
-     * Returns description of method get_report_filter.
-     *
-     * @return \external_single_structure
-     */
-    public static function get_report_filter_returns() {
-        return new \external_single_structure([
-            'filters' => new external_value(PARAM_RAW, 'Table data', VALUE_REQUIRED)
-        ]);
-    }
 
     /**
      * Returns description of method add_report_column.
@@ -221,7 +105,8 @@ class external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        permission::require_can_edit($params['reportid']);
+        $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
 
         $filterpersistent = new reportbuilder_filter($params['filterid'], null);
 
@@ -230,8 +115,6 @@ class external extends external_api {
         }
 
         $filterpersistent->delete();
-
-        $report = manager::get_report($params['reportid']);
 
         $activefilters = filters_helper::get_active_filters($report->get_id());
         $reportfilters = $report->get_filters();
@@ -320,7 +203,8 @@ class external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        permission::require_can_edit($params['reportid']);
+        $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
 
         $filtersorders = json_decode($params['filtersinorder']);
 
@@ -333,15 +217,12 @@ class external extends external_api {
             $filterpersistent->update();
         }
 
-        $report = manager::get_report($params['reportid']);
-
         $activefilters = filters_helper::get_active_filters($report->get_id());
         $reportfilters = $report->get_filters();
         $filtersdata = filters_helper::get_filters_with_data($activefilters, $reportfilters);
 
         // Trigger report updated event.
-        $persistent = new reportbuilder($params['reportid']);
-        $event = report_updated::create_from_object($persistent);
+        $event = report_updated::create_from_object($report->get_persistent());
         $event->trigger();
 
         return array(
@@ -388,9 +269,8 @@ class external extends external_api {
 
         self::validate_context(context_system::instance());
 
-        permission::require_can_edit($params['reportid']);
-
         $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
         columns_helper::add_column_from_key($report, $params['columnkey']);
 
         return true;
@@ -435,9 +315,9 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
 
-        permission::require_can_edit($params['reportid']);
-
         $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
+
         columns_helper::remove_column($report, $params['columnid']);
 
         return true;
@@ -493,9 +373,9 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
 
-        permission::require_can_edit($params['reportid']);
-        $output = $PAGE->get_renderer('tool_reportbuilder');
         $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
+        $output = $PAGE->get_renderer('tool_reportbuilder');
 
         list($columnsdata, $columnssorting) = columns_helper::export($report, $output);
 
@@ -562,7 +442,8 @@ class external extends external_api {
 
         self::validate_context(context_system::instance());
 
-        permission::require_can_edit($params['reportid']);
+        $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
 
         $persistent = new reportbuilder_column($params['columnid']);
         if ((int)$persistent->get('reportid') != $params['reportid']) {
@@ -574,8 +455,7 @@ class external extends external_api {
         $persistent->update();
 
         // Trigger report updated event.
-        $report = new reportbuilder($params['reportid']);
-        $event = report_updated::create_from_object($report);
+        $event = report_updated::create_from_object($report->get_persistent());
         $event->trigger();
 
         return [
@@ -629,7 +509,8 @@ class external extends external_api {
 
         self::validate_context(context_system::instance());
 
-        permission::require_can_edit($params['reportid']);
+        $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
 
         $persistent = new reportbuilder_column($params['columnid']);
         if ((int)$persistent->get('reportid') != $params['reportid']) {
@@ -641,8 +522,7 @@ class external extends external_api {
         $persistent->update();
 
         // Trigger report updated event.
-        $persistent = new reportbuilder($params['reportid']);
-        $event = report_updated::create_from_object($persistent);
+        $event = report_updated::create_from_object($report->get_persistent());
         $event->trigger();
 
         return [
@@ -700,7 +580,8 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
 
-        permission::require_can_edit($params['reportid']);
+        $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
 
         $columnsinorder = json_decode($params['columnsinorder']);
 

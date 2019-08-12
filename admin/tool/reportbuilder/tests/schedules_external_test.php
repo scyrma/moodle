@@ -67,7 +67,7 @@ class tool_reportbuilder_schedules_external_testcase extends externallib_advance
         $this->setUser($user);
         $newschedule = $generator->create_schedule([]);
         $this->assertEquals(1, $DB->count_records('tool_reportbuilder_scheduled'));
-        $this->expectException(required_capability_exception::class);
+        $this->expectException(moodle_exception::class);
         tool_reportbuilder\external\schedule::delete_schedule($newschedule->id);
 
         // Try delete a schedule of other tenant.
@@ -82,7 +82,7 @@ class tool_reportbuilder_schedules_external_testcase extends externallib_advance
         $newschedule = $generator->create_schedule([]);
         $this->setUser($user2->id);
 
-        $this->expectException(required_capability_exception::class);
+        $this->expectException(moodle_exception::class);
         tool_reportbuilder\external\schedule::delete_schedule($newschedule->id);
     }
 

@@ -26,22 +26,6 @@
 defined('MOODLE_INTERNAL') || die;
 
 $functions = [
-    'tool_reportbuilder_toggle_report_column' => [
-        'classname' => tool_reportbuilder\external::class,
-        'methodname' => 'toggle_report_column',
-        'classpath' => '',
-        'description' => 'Toggle the visibility of a column',
-        'ajax' => true,
-        'type' => 'write',
-    ],
-    'tool_reportbuilder_get_report_filters' => [
-        'classname' => tool_reportbuilder\external::class,
-        'methodname' => 'get_report_filter',
-        'classpath' => '',
-        'description' => 'Get the filters',
-        'ajax' => true,
-        'type' => 'read',
-    ],
     'tool_reportbuilder_add_report_column' => [
         'classname' => tool_reportbuilder\external::class,
         'methodname' => 'add_report_column',

@@ -52,7 +52,7 @@ class tool_reportbuilder_schedules_helper_testcase extends advanced_testcase {
         ]);
 
         $data = new stdClass();
-        $data->reportid = $newreport->id;
+        $data->reportid = $newreport->get_id();
         $data->name = 'Example schedule';
         $data->lastsenton = 0;
         $data->scheduled = time();
@@ -110,9 +110,6 @@ class tool_reportbuilder_schedules_helper_testcase extends advanced_testcase {
         $this->resetAfterTest();
         /** @var tool_reportbuilder_generator $generator */
         $generator = $this->get_generator();
-        $newschedule = $generator->create_schedule([]);
-        $canedit = \tool_reportbuilder\local\helpers\schedules::can_edit_schedule($newschedule->id);
-        $this->assertTrue($canedit);
 
         // Create a new tenant, user and schedule and check if can be deleted by user of other tenant.
         $tenant1 = $this->get_tenant_generator()->create_tenant();
@@ -126,7 +123,8 @@ class tool_reportbuilder_schedules_helper_testcase extends advanced_testcase {
         $newschedule = $generator->create_schedule([]);
         $this->setUser($user2->id);
         // User2 can not deleted the schedule of the user1.
-        $canedit = \tool_reportbuilder\local\helpers\schedules::can_edit_schedule($newschedule->id);
+        $canedit = \tool_reportbuilder\permission::can_edit_schedule(
+            \tool_reportbuilder\local\helpers\schedules::get_schedule($newschedule->id));
         $this->assertFalse($canedit);
     }
 

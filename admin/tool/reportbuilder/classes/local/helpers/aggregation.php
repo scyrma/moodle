@@ -55,7 +55,7 @@ class aggregation {
             int $id, string $formatedheader, ?int $columntype, array $disabledaggregations) : inplace_editable {
 
         $inplace = new inplace_editable('tool_reportbuilder', 'aggregation', $id,
-            has_capability('tool/reportbuilder:edit', \context_system::instance()),
+            true, // This function is only called after we checked that user can edit field.
             null, $currentvalue, get_string('selectaggregation', 'tool_reportbuilder', $formatedheader),
             get_string('newaggregationfor', 'tool_reportbuilder', $formatedheader));
 
@@ -104,7 +104,7 @@ class aggregation {
 
         $columnpersistent = new \tool_reportbuilder\reportbuilder_column($columnid, null);
         $report = \tool_reportbuilder\manager::get_report($columnpersistent->get('reportid'));
-        \tool_reportbuilder\permission::require_can_edit($report->get_id());
+        \tool_reportbuilder\permission::require_can_edit($report);
         $columnpersistent->set('aggregate', $aggregation);
         $columnpersistent->save();
         $key = $columnpersistent->get_unique_identifier();

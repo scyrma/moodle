@@ -59,7 +59,7 @@ class tool_reportbuilder_generator_testcase extends advanced_testcase {
         $this->assertEquals(1, $DB->count_records('tool_reportbuilder'));
 
         $this->assertEquals(\tool_tenant\tenancy::get_default_tenant_id(),
-            $DB->get_field('tool_reportbuilder', 'tenantid', ['id' => $report0->id]));
+            $DB->get_field('tool_reportbuilder', 'tenantid', ['id' => $report0->get_id()]));
 
         // Now create a new tenant and generate a report for this tenant.
         $tenant1 = $this->getDataGenerator()->get_plugin_generator('tool_tenant')->create_tenant();
@@ -69,7 +69,7 @@ class tool_reportbuilder_generator_testcase extends advanced_testcase {
         ]);
 
         $this->assertEquals($tenant1->id,
-            $DB->get_field('tool_reportbuilder', 'tenantid', ['id' => $report1->id]));
+            $DB->get_field('tool_reportbuilder', 'tenantid', ['id' => $report1->get_id()]));
     }
 
     /**
@@ -94,17 +94,17 @@ class tool_reportbuilder_generator_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         // Create a report without default columns.
-        $mockreport = $this->get_generator()->create_report(
+        $mockreportid = $this->get_generator()->create_report(
             ['source' => \tool_reportbuilder\test\mock_report::class, 'adddefault' => 0]
-        );
-        $this->assertEquals(0, $DB->count_records('tool_reportbuilder_column', ['reportid' => $mockreport->id]));
+        )->get_id();
+        $this->assertEquals(0, $DB->count_records('tool_reportbuilder_column', ['reportid' => $mockreportid]));
 
         // Add a column.
-        $this->get_generator()->add_column($mockreport->id, 'user:firstname');
-        $this->assertEquals(1, $DB->count_records('tool_reportbuilder_column', ['reportid' => $mockreport->id]));
+        $this->get_generator()->add_column($mockreportid, 'user:firstname');
+        $this->assertEquals(1, $DB->count_records('tool_reportbuilder_column', ['reportid' => $mockreportid]));
 
         // Add the same column again.
-        $this->get_generator()->add_column($mockreport->id, 'user:firstname');
-        $this->assertEquals(2, $DB->count_records('tool_reportbuilder_column', ['reportid' => $mockreport->id]));
+        $this->get_generator()->add_column($mockreportid, 'user:firstname');
+        $this->assertEquals(2, $DB->count_records('tool_reportbuilder_column', ['reportid' => $mockreportid]));
     }
 }

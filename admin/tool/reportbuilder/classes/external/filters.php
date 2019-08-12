@@ -187,9 +187,9 @@ class filters extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        permission::require_can_edit($params['reportid']);
-
         $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
+
         $filtersdefinitions = $report->get_filters();
         $filter = $filtersdefinitions[$params['filterkey']]; // TODO SP-422 throw exception if not found.
 

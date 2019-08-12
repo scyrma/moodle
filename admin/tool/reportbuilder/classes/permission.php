@@ -25,6 +25,7 @@
 namespace tool_reportbuilder;
 
 use moodle_exception;
+use tool_reportbuilder\local\models\schedules;
 use tool_tenant\tenancy;
 
 defined('MOODLE_INTERNAL') || die();
@@ -39,13 +40,21 @@ defined('MOODLE_INTERNAL') || die();
 class permission {
 
     /**
+     * has_edit_capability
+     *
+     * @return bool
+     */
+    protected static function has_edit_capability(): bool {
+        $context = \context_system::instance();
+        return has_capability('tool/reportbuilder:edit', $context);
+    }
+
+    /**
      * User can view any report.
      *
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
      */
-    public static function can_view_any() {
+    public static function can_view_any(): bool {
         if (self::can_create() || has_capability('tool/reportbuilder:read', \context_system::instance())) {
             return true;
         }
@@ -54,12 +63,20 @@ class permission {
     }
 
     /**
+     * User can manage reports in the current tenant (loose check for displaying additional data on the "Manage reports" page)
+     *
+     * @return bool
+     */
+    public static function can_manage_reports(): bool {
+        return self::has_edit_capability();
+    }
+
+    /**
      * Check if the current user can view some reports as a manager.
      *
      * @return bool
-     * @throws moodle_exception
      */
-    public static function can_view_as_a_manager() : bool {
+    public static function can_view_some_as_a_manager() : bool {
         if (!class_exists('tool_organisation\\organisation')) {
             return false;
         }
@@ -70,31 +87,22 @@ class permission {
     /**
      * The report supports organisation position filter and the user has a manager position that allows to view reports.
      *
-     * @param reportbuilder $report
+     * @param report_base $report
      * @return bool
-     * @throws \coding_exception
-     * @throws moodle_exception
      */
-    public static function can_view_report_as_a_manager(reportbuilder $report) : bool {
-        /** @var datasource $classname */
-        $classname = $report->get('source');
-        if (class_exists($classname) && is_subclass_of($classname, datasource::class)
-                && $classname::supports_organisation_filter()) {
-            return self::can_view_as_a_manager();
-        }
-        return false;
+    public static function can_view_report_as_a_manager(report_base $report) : bool {
+        return ($report instanceof datasource) &&
+            $report->supports_organisation_filter() &&
+            self::can_view_some_as_a_manager();
     }
 
     /**
      * Return if the user can view the "Manage reports" page
      *
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws moodle_exception
      */
     public static function can_view_reports_list() : bool {
-        if (self::can_create() || self::can_view_any() || self::can_view_as_a_manager()) {
+        if (self::can_create() || self::can_view_any() || self::can_view_some_as_a_manager()) {
             return true;
         }
 
@@ -106,12 +114,11 @@ class permission {
      *
      * @param \stdClass $row Complete row
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws moodle_exception
      */
     public static function can_view_edit_icon(\stdClass $row): bool {
-        return self::can_create() && ($row->tenantid == tenancy::get_tenant_id());
+        $persistent = new reportbuilder(0, $row);
+        $report = manager::get_report_from_persistent($persistent);
+        return self::can_edit($report);
     }
 
     /**
@@ -124,7 +131,9 @@ class permission {
      * @throws moodle_exception
      */
     public static function can_view_delete_icon(\stdClass $row): bool {
-        return self::can_view_edit_icon($row);
+        $persistent = new reportbuilder(0, $row);
+        $report = manager::get_report_from_persistent($persistent);
+        return self::can_delete($report);
     }
 
     /**
@@ -132,63 +141,62 @@ class permission {
      *
      * @param \stdClass $row
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws moodle_exception
      */
     public static function can_view_duplicate_icon(\stdClass $row) : bool {
-        return self::can_create();
+        $persistent = new reportbuilder(0, $row);
+        $report = manager::get_report_from_persistent($persistent);
+        return self::can_duplicate($report);
     }
 
     /**
      * User can view the report if not is a system report and can view any report (cap check) or the report support the
      * organisations position filter and the user has a manager position that allow it.
      *
-     * @param int $reportid The id of the report to check
+     * @param report_base $report the report to check
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
+     */
+    public static function can_view(report_base $report) : bool {
+        return !self::is_system_report($report) &&
+            (self::can_view_any() || self::can_view_report_as_a_manager($report));
+    }
+
+    /**
+     * User can view the report if not is a system report and can view any report (cap check) or the report support the
+     * organisations position filter and the user has a manager position that allow it.
+     *
+     * @param report_base $report the report to check
      * @throws moodle_exception
      */
-    public static function require_can_view(int $reportid) : bool {
-        $report = new reportbuilder($reportid);
-        if (!self::is_system_report($report) && (self::can_view_any() || self::can_view_report_as_a_manager($report))) {
-            return true;
+    public static function require_can_view(report_base $report): void {
+        if (!self::can_view($report)) {
+            throw new \required_capability_exception(\context_system::instance(),
+                'tool/reportbuilder:read', 'nopermissions', 'error');
         }
-
-        throw new moodle_exception('errorcannotviewreports');
     }
 
     /**
      * Can create reports.
      *
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
      */
-    public static function can_create() {
-        $context = \context_system::instance();
-        return has_capability('tool/reportbuilder:edit', $context);
+    public static function can_create(): bool {
+        return self::has_edit_capability();
     }
 
     /**
      * User can edit the given report.
      *
-     * @param int $reportid The id of the report to edit.
+     * @param report_base $report the report to edit.
      *
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws moodle_exception
      */
-    public static function can_edit(int $reportid) : bool {
-        if ($reportid <= 0) {
+    public static function can_edit(report_base $report) : bool {
+        if (!$report->get_id()) {
             return false;
         }
-        $report = new reportbuilder($reportid);
 
         // Belongs to same tenant.
-        if (!self::check_belongs_same_tenant($report)) {
+        if ($report->get_tenant_id() != tenancy::get_tenant_id()) {
             return false;
         }
 
@@ -202,111 +210,229 @@ class permission {
     /**
      * User can delete the given report.
      *
-     * @param int $reportid The id of the report to delete.
+     * @param report_base $report the report to delete.
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws moodle_exception
      */
-    public static function can_delete(int $reportid) : bool {
-        return self::can_edit($reportid);
+    public static function can_delete(report_base $report) : bool {
+        return self::can_edit($report);
     }
 
     /**
      * User can duplicate the given report.
      *
-     * @param int $reportid
+     * @param report_base $report
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws moodle_exception
      */
-    public static function can_duplicate(int $reportid) : bool {
-        return self::can_edit($reportid);
+    public static function can_duplicate(report_base $report) : bool {
+        return self::can_edit($report) && self::can_create();
     }
 
     /**
      * User can create a schedule for the given report.
      *
-     * @param int $reportid
+     * @param report_base $report
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws moodle_exception
      */
-    public static function can_schedule(int $reportid) : bool {
-        return self::can_edit($reportid);
+    public static function can_schedule(report_base $report) : bool {
+        return self::can_edit($report);
     }
 
     /**
      * Check if the given report is a system report.
      *
-     * @param reportbuilder $report
+     * @param report_base $report
      * @return bool
-     * @throws \coding_exception
      */
-    public static function is_system_report(reportbuilder $report) : bool {
-        $type = $report->get('type');
-        if ($type == constants::TYPE_SYSTEM) {
-            return true;
-        }
-        return false;
+    public static function is_system_report(report_base $report) : bool {
+        return ($report instanceof system_report) &&
+            $report->get_persistent()->get('type') == constants::TYPE_SYSTEM;
     }
 
     /**
      * Check if the report belongs to the same tenant.
      *
-     * @param reportbuilder $report
+     * @param report_base $report
      * @return bool
-     * @throws \coding_exception
      */
-    public static function check_belongs_same_tenant(reportbuilder $report): bool {
-        global $USER;
-        // Belongs to same tenant.
-        $tenantcert = $report->get('tenantid');
-        $tenantuser = tenancy::get_tenant_id($USER->id);
-
-        if ((int) $tenantcert !== (int) $tenantuser) {
-            return false;
-        }
-        return true;
+    public static function check_belongs_same_tenant(report_base $report): bool {
+        return $report->get_tenant_id() == tenancy::get_tenant_id();
     }
 
     /**
      * Checks if user can delete the given report.
      *
-     * @param int $reportid The ID of the report to check.
-     * @throws \coding_exception
+     * @param report_base $report
      * @throws moodle_exception
      */
-    public static function require_can_delete($reportid): void {
-        if (!self::can_delete($reportid)) {
-            throw new moodle_exception('cannotdeletereport');
+    public static function require_can_delete(report_base $report): void {
+        if (!self::can_delete($report)) {
+            throw new \required_capability_exception(\context_system::instance(),
+                'tool/reportbuilder:edit', 'nopermissions', 'error');
         }
     }
 
     /**
      * Checks if user can edit the given report.
      *
-     * @param int $reportid The ID of the report to check.
-     * @throws \coding_exception
+     * @param report_base $report the report to check.
      * @throws moodle_exception
      */
-    public static function require_can_edit($reportid): void {
-        if (!self::can_edit($reportid)) {
-            throw new moodle_exception('cannoteditreport');
+    public static function require_can_edit(report_base $report): void {
+        if (!self::can_edit($report)) {
+            throw new \required_capability_exception(\context_system::instance(),
+                'tool/reportbuilder:edit', 'nopermissions', 'error');
         }
     }
 
     /**
      * Checks if user can create reports
      *
-     * @throws \coding_exception
      * @throws moodle_exception
      */
     public static function require_can_create(): void {
         if (!self::can_create()) {
-            throw new moodle_exception('cannotcreatereport');
+            throw new \required_capability_exception(\context_system::instance(),
+                'tool/reportbuilder:edit', 'nopermissions', 'error');
+        }
+    }
+
+    /**
+     * can_view_all_schedules_list
+     *
+     * @return bool
+     */
+    public static function can_view_all_schedules_list(): bool {
+        return self::has_edit_capability();
+    }
+
+    /**
+     * can_create_schedule
+     *
+     * @return bool
+     */
+    public static function can_create_schedule(): bool {
+        return self::has_edit_capability();
+    }
+
+    /**
+     * User can create schedules (in general)
+     *
+     * @throws moodle_exception
+     */
+    public static function require_can_create_schedule() {
+        if (!self::can_create_schedule()) {
+            throw new moodle_exception('errormanageschedules', 'tool_reportbuilder');
+        }
+    }
+
+    /**
+     * User can manage schedules (in general)
+     *
+     * @return bool
+     */
+    public static function can_manage_schedules(): bool {
+        return self::has_edit_capability();
+    }
+
+    /**
+     * User can manage schedules (in general)
+     *
+     * @throws moodle_exception
+     */
+    public static function require_can_manage_schedules() {
+        if (!self::can_manage_schedules()) {
+            throw new moodle_exception('errormanageschedules', 'tool_reportbuilder');
+        }
+    }
+
+    /**
+     * can_edit_schedule
+     *
+     * @param schedules $schedule
+     * @return bool
+     */
+    public static function can_edit_schedule(schedules $schedule): bool {
+        return $schedule->get('id') &&
+            self::has_edit_capability() &&
+            $schedule->get_tenantid() == tenancy::get_tenant_id();
+    }
+
+    /**
+     * can_delete_schedule
+     *
+     * @param schedules $schedule
+     * @return bool
+     */
+    public static function can_delete_schedule(schedules $schedule): bool {
+        return self::can_edit_schedule($schedule);
+    }
+
+    /**
+     * can_send_schedule
+     *
+     * @param schedules $schedule
+     * @return bool
+     */
+    public static function can_send_schedule(schedules $schedule): bool {
+        return self::can_edit_schedule($schedule);
+    }
+
+    /**
+     * require_can_edit_schedule
+     *
+     * @param schedules $schedule
+     * @throws moodle_exception
+     */
+    public static function require_can_edit_schedule(schedules $schedule) {
+        if (!self::can_edit_schedule($schedule)) {
+            throw new moodle_exception('errormanageschedules', 'tool_reportbuilder');
+        }
+    }
+
+    /**
+     * require_can_delete_schedule
+     *
+     * @param schedules $schedule
+     * @throws moodle_exception
+     */
+    public static function require_can_delete_schedule(schedules $schedule) {
+        if (!self::can_delete_schedule($schedule)) {
+            throw new moodle_exception('errormanageschedules', 'tool_reportbuilder');
+        }
+    }
+
+    /**
+     * require_can_send_schedule
+     *
+     * @param schedules $schedule
+     * @throws moodle_exception
+     */
+    public static function require_can_send_schedule(schedules $schedule) {
+        if (!self::can_send_schedule($schedule)) {
+            throw new moodle_exception('errormanageschedules', 'tool_reportbuilder');
+        }
+    }
+
+    /**
+     * User can view the "Access" tab for the given report
+     *
+     * @param report_base $report
+     * @return bool
+     */
+    public static function can_view_access_tab(report_base $report): bool {
+        return self::can_edit($report);
+    }
+
+    /**
+     * User can view the "Access" tab for the given report
+     *
+     * @param report_base $report
+     * @throws \moodle_exception
+     */
+    public static function require_can_view_access_tab(report_base $report): void {
+        if (!self::can_view_access_tab($report)) {
+            throw new \required_capability_exception(\context_system::instance(),
+                'tool/reportbuilder:edit', 'nopermissions', 'error');
         }
     }
 }

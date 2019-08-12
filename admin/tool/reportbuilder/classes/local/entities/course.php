@@ -331,6 +331,7 @@ class course extends entity_base {
      */
     public function format($value, \stdClass $row, string $fieldname) {
         if ($this->get_type($fieldname) == constants::DB_TYPE_DATETIME) {
+            // TODO include time?
             return format::userdate($value, $row);
         } else if (($options = $this->get_options_for($fieldname)) !== null && array_key_exists($value, $options)) {
             return $options[$value];

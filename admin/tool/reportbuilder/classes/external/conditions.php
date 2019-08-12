@@ -31,8 +31,10 @@ use external_api;
 use external_function_parameters;
 use external_value;
 use tool_reportbuilder\local\filter\report_conditions;
+use tool_reportbuilder\local\models\reportbuilder_conditions;
 use tool_reportbuilder\manager;
 use tool_reportbuilder\local\helpers\conditions as conditions_helper;
+use tool_reportbuilder\permission;
 
 global $CFG;
 require_once("$CFG->libdir/externallib.php");
@@ -87,7 +89,8 @@ class conditions extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/reportbuilder:edit', $context);
+        $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
 
         conditions_helper::add_condition($reportid, $conditionkey);
 
@@ -137,9 +140,10 @@ class conditions extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/reportbuilder:edit', $context);
 
         $condition = conditions_helper::remove_condition($params['conditionid']);
+        $report = manager::get_report($condition->get('reportid'));
+        permission::require_can_edit($report);
 
         $output = $PAGE->get_renderer('tool_reportbuilder');
         return self::conditions_return($condition->get('reportid'), $output);
@@ -188,8 +192,10 @@ class conditions extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
+        $report = manager::get_report($params['reportid']);
+        permission::require_can_edit($report);
 
-        $conditionhelper = new conditions_helper($params['reportid']);
+        $conditionhelper = new conditions_helper($report);
         $conditionhelper->reset_all();
 
         $output = $PAGE->get_renderer('tool_reportbuilder');
@@ -234,6 +240,7 @@ class conditions extends external_api {
      */
     public static function reset_condition(int $reportid, int $conditionid) {
         global $PAGE;
+        // TODO reportid parameter is not needed.
         $params = self::validate_parameters(self::reset_condition_parameters(),
             [
                 'reportid'  => $reportid,
@@ -243,12 +250,16 @@ class conditions extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
+        $persistent = new reportbuilder_conditions($params['conditionid']);
+        $reportid = $persistent->get('reportid');
+        $report = manager::get_report($reportid);
+        permission::require_can_edit($report);
 
-        $condition = new conditions_helper($params['reportid']);
+        $condition = new conditions_helper($report);
         $condition->reset($params['conditionid']);
 
         $output = $PAGE->get_renderer('tool_reportbuilder');
-        return self::conditions_return($params['reportid'], $output);
+        return self::conditions_return($reportid, $output);
     }
 
     /**

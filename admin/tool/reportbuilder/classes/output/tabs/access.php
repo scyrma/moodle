@@ -24,7 +24,10 @@
 
 namespace tool_reportbuilder\output\tabs;
 
+use tool_reportbuilder\manager;
 use tool_reportbuilder\output\report_access;
+use tool_reportbuilder\permission;
+use tool_reportbuilder\report_base;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -40,6 +43,21 @@ class access extends \tool_wp\output\tab {
     /** @var string  */
     const TEMPLATE = 'tool_reportbuilder/report_access';
 
+    /** @var report_base */
+    protected $report;
+
+    /**
+     * Current report
+     *
+     * @return report_base
+     */
+    public function get_report() {
+        if (!$this->report) {
+            $this->report = manager::get_report($this->data['reportid']);
+        }
+        return $this->report;
+    }
+
     /**
      * Export this for use in a mustache template context.
      *
@@ -48,9 +66,9 @@ class access extends \tool_wp\output\tab {
      * @return array|\stdClass
      */
     public function export_for_template(\renderer_base $output) {
-        $reportid = $this->data['reportid'];
+        $report = $this->get_report();
 
-        $reportaccess = new report_access($reportid);
+        $reportaccess = new report_access($report);
         $data = $reportaccess->export_for_template($output);
 
         return [
@@ -58,7 +76,7 @@ class access extends \tool_wp\output\tab {
             'userswithcapabilities' => $data->users,
             'managers'              => $data->managers,
             'supportsorg'           => $data->supportsorg,
-            'id'                    => $reportid
+            'id'                    => $report->get_id()
         ];
     }
 
@@ -79,11 +97,7 @@ class access extends \tool_wp\output\tab {
      * @throws \dml_exception
      */
     public function is_available(): bool {
-        $context = \context_system::instance();
-        if (!$this->data['reportid'] || !has_capability('tool/reportbuilder:edit', $context)) {
-            return false;
-        }
-        return true;
+        return permission::can_view_access_tab($this->get_report());
     }
 
     /**

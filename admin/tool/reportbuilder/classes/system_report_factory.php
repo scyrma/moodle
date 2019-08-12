@@ -52,16 +52,16 @@ class system_report_factory {
             throw new \coding_exception("This class is not a system report");
         }
 
-        $reportid = static::generate_reportid($reportclass);
+        $persistent = static::generate_reportid($reportclass);
         /** @var system_report $report */
-        $report = manager::get_report($reportid, $parameters);
+        $report = manager::get_report_from_persistent($persistent, $parameters);
 
         // TODO SP-422 there are a lot of DB queries here, much more than necessary,
         // especially when there are no changes to the structure.
         $columns = $report->get_columns();
         $filters = $report->get_filters();
-        manager::check_columns($reportid, $columns);
-        manager::check_filters($reportid, $filters);
+        manager::check_columns($report->get_id(), $columns);
+        manager::check_filters($report->get_id(), $filters);
         $currentcolumns = columns_helper::get_active_columns($report);
         $currentfilters = filters_helper::get_active_filters($report->get_id());
         manager::delete_old_columns($currentcolumns, $columns);
@@ -95,10 +95,11 @@ class system_report_factory {
      * @throws \coding_exception
      * @throws \core\invalid_persistent_exception
      */
-    protected static function generate_reportid(string $reportclass) : int {
+    protected static function generate_reportid(string $reportclass) : reportbuilder {
+        /** @var reportbuilder $persistent */
         $persistent = reportbuilder::get_record(['source' => $reportclass, 'tenantid' => tenancy::get_tenant_id()]);
         if ($persistent) {
-            return $persistent->get('id');
+            return $persistent;
         }
 
         $manager = new manager();

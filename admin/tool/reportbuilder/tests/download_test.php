@@ -60,7 +60,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
             [
                 'source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_users_list::class,
                 'tenantid' => \tool_tenant\tenancy::get_default_tenant_id()
-            ])->id;
+            ])->get_id();
 
         $user1 = $this->getDataGenerator()->create_user(['firstname' => 'User', 'lastname' => 'Lastname 1']);
         $tenant1 = $this->get_tenant_generator()->create_tenant();
@@ -139,7 +139,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
             [
                 'source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_users_list::class,
                 'tenantid' => \tool_tenant\tenancy::get_default_tenant_id()
-            ])->id;
+            ])->get_id();
 
         $user1 = $this->getDataGenerator()->create_user(['firstname' => 'User', 'lastname' => 'Lastname 1']);
         $tenant1 = $this->get_tenant_generator()->create_tenant();
@@ -224,7 +224,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
             [
                 'source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_users_list::class,
                 'tenantid' => \tool_tenant\tenancy::get_default_tenant_id()
-            ])->id;
+            ])->get_id();
 
         $user1 = $this->getDataGenerator()->create_user(['firstname' => 'User', 'lastname' => 'Lastname 1']);
         $tenant1 = $this->get_tenant_generator()->create_tenant();
@@ -298,7 +298,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
             [
                 'source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_users_list::class,
                 'tenantid' => \tool_tenant\tenancy::get_default_tenant_id()
-            ])->id;
+            ])->get_id();
 
         $user1 = $this->getDataGenerator()->create_user(['firstname' => 'User', 'lastname' => 'Lastname 1']);
         $tenant1 = $this->get_tenant_generator()->create_tenant();
@@ -379,7 +379,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
             [
                 'source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_users_list::class,
                 'tenantid' => \tool_tenant\tenancy::get_default_tenant_id()
-            ])->id;
+            ])->get_id();
 
         $user1 = $this->getDataGenerator()->create_user(['firstname' => 'User', 'lastname' => 'Lastname 1']);
         $tenant1 = $this->get_tenant_generator()->create_tenant();
@@ -451,7 +451,7 @@ class tool_reportbuilder_download_testcase extends advanced_testcase {
             [
                 'source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_users_list::class,
                 'tenantid' => \tool_tenant\tenancy::get_default_tenant_id()
-            ])->id;
+            ])->get_id();
 
         $user1 = $this->getDataGenerator()->create_user(['firstname' => 'User', 'lastname' => 'Lastname 1']);
         $tenant1 = $this->get_tenant_generator()->create_tenant();

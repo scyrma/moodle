@@ -240,7 +240,6 @@ class send extends \tool_reportbuilder\output\report_exporter {
 
         $emails = [];
         $userstosendemail = [];
-
         $audiencejson = $this->schedule->get('audience');
         $reportid = $this->schedule->get('reportid');
         $report = new reportbuilder($reportid);
@@ -351,6 +350,7 @@ class send extends \tool_reportbuilder\output\report_exporter {
         $userinfo->middlename = '';
         $userinfo->alternatename = '';
         $userinfo->email = $usermail;
+        $userinfo->id = 'fake';
 
         return $userinfo;
     }

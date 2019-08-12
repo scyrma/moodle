@@ -51,11 +51,11 @@ class manager {
      *
      * @param stdClass $formdata
      *
-     * @return int
+     * @return reportbuilder
      * @throws \coding_exception
      * @throws \core\invalid_persistent_exception
      */
-    public static function save_report(stdClass $formdata) : int {
+    public static function save_report(stdClass $formdata) : reportbuilder {
         global $USER;
         unset($formdata->submitbutton);
         $adddefault = $formdata->adddefault;
@@ -82,7 +82,7 @@ class manager {
             self::add_default_configuration($persistent);
         }
 
-        return $persistent->get('id');
+        return $persistent;
     }
 
     /**
@@ -92,10 +92,8 @@ class manager {
      * @throws \coding_exception
      */
     protected static function add_default_configuration(reportbuilder $reportbuilder): void {
-        $source = $reportbuilder->get('source');
         $reportid = $reportbuilder->get('id');
-        /** @var report_base $report */
-        $report = new $source($reportid);
+        $report = self::get_report_from_persistent($reportbuilder);
 
         // Add default columns.
         $columns = $report->get_columns();
@@ -143,7 +141,7 @@ class manager {
                 $defaultvalues[$record->entity . ':' . $key] = $value;
             }
         }
-        $conditions = new conditions_helper($reportid);
+        $conditions = new conditions_helper(self::get_report_from_persistent($reportbuilder));
         $conditions->add_report_conditions(json_encode($defaultvalues));
 
         // Add default filters.
@@ -177,21 +175,23 @@ class manager {
     }
 
     /**
-     * Get the report source (class).
+     * Get report from persistent object
      *
-     * @param int $id
-     *
-     * @return string
+     * @param reportbuilder $persistent
+     * @param array $parameters
+     * @param int $page
+     * @return report_base
      * @throws \coding_exception
      */
-    protected static function get_report_source($id) {
-        $persistent = new reportbuilder($id);
+    public static function get_report_from_persistent(reportbuilder $persistent,
+                                                      array $parameters = [], int $page = 0): report_base {
+        /** @var report_base $classname */
         $classname = $persistent->get('source');
         if (!$classname || !class_exists($classname) || !is_subclass_of($classname, report_base::class)) {
             throw new \coding_exception('Error retrieving report');
             // TODO change to moodle_exception with a string error.
         }
-        return $classname;
+        return new $classname($persistent, $parameters, $page);
     }
 
     /**
@@ -203,8 +203,8 @@ class manager {
      * @return report_base
      */
     public static function get_report(int $reportid, array $parameters = [], int $page = 0) : report_base {
-        $classname = self::get_report_source($reportid);
-        return new $classname($reportid, $parameters, $page);
+        $persistent = new reportbuilder($reportid);
+        return self::get_report_from_persistent($persistent, $parameters, $page);
     }
 
     /**

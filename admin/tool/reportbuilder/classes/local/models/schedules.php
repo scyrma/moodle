@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 
 use core\persistent;
 use tool_reportbuilder\constants;
+use tool_reportbuilder\manager;
+use tool_reportbuilder\report_base;
 use tool_reportbuilder\reportbuilder;
 use \tool_reportbuilder\local\helpers\schedules as scheduleshelper;
 
@@ -42,6 +44,21 @@ class schedules extends persistent {
 
     /** The table name. */
     const TABLE = 'tool_reportbuilder_scheduled';
+
+    /** @var report_base */
+    protected $report;
+
+    /**
+     * Get report
+     *
+     * @return report_base
+     */
+    public function get_report(): report_base {
+        if (!$this->report) {
+            $this->report = manager::get_report($this->get('reportid'));
+        }
+        return $this->report;
+    }
 
     /**
      * Return the definition of the properties of this model.
@@ -102,7 +119,6 @@ class schedules extends persistent {
      * @throws \coding_exception
      */
     public function get_tenantid() {
-        $report = new reportbuilder($this->get('reportid'));
-        return $report->get('tenantid');
+        return $this->get_report()->get_tenant_id();
     }
 }

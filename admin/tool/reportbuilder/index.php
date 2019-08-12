@@ -27,7 +27,7 @@
 require_once(__DIR__ . '/../../../config.php');
 
 $outputpage = new \tool_reportbuilder\output\index_page();
-/** @var core_renderer $output */
+/** @var tool_reportbuilder_renderer $output */
 $output = $PAGE->get_renderer('tool_reportbuilder');
 echo $output->header();
 echo $output->render($outputpage);

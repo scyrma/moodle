@@ -26,6 +26,7 @@ namespace tool_reportbuilder\form;
 
 use tool_reportbuilder\filter_base;
 use tool_reportbuilder\manager;
+use tool_reportbuilder\report_base;
 use tool_wp\modal_form;
 use tool_reportbuilder\local\helpers\conditions as conditions_helper;
 
@@ -43,8 +44,8 @@ require_once($CFG->dirroot.'/user/filters/lib.php');
  */
 class conditions extends modal_form {
     // TODO: filters and conditions need an independent form ¡¡¡¡.
-    /** @var int $reportid Report id */
-    protected $reportid;
+    /** @var report_base */
+    protected $report;
     /** @var filter_base[] $fields */
     protected $fields;
     /**
@@ -54,8 +55,6 @@ class conditions extends modal_form {
      */
     public function definition(): void {
         $this->set_display_vertical();
-
-        $this->reportid = $this->get_report_id();
 
         $mform = $this->_form;
         $this->fields = $this->get_active_conditions();
@@ -92,12 +91,14 @@ class conditions extends modal_form {
      *
      * @return int
      */
-    private function get_report_id(): int {
-        $reportid = $this->_customdata['reportid'];
-        if ($reportid) {
-            return $reportid;
+    private function get_report(): report_base {
+        if (!$this->report) {
+            $reportid = !empty($this->_customdata['reportid']) ?
+                $this->_customdata['reportid'] :
+                $this->optional_param('reportid', null, PARAM_INT);
+            $this->report = manager::get_report($reportid);
         }
-        return $this->optional_param('reportid', null, PARAM_INT);
+        return $this->report;
     }
 
     /**
@@ -110,8 +111,8 @@ class conditions extends modal_form {
         global $PAGE;
         $fields = [];
         $output = $PAGE->get_renderer('tool_reportbuilder');
-        $source = manager::get_report($this->get_report_id());
-        $activeconditions = conditions_helper::get_active_conditions($this->get_report_id());
+        $source = $this->get_report();
+        $activeconditions = conditions_helper::get_active_conditions($source->get_id());
         $conditions = $source->get_conditions();
         $conditionsinuse = conditions_helper::get_conditions($activeconditions, $conditions, $output);
         foreach ($conditionsinuse as $keyfilter => $filter) {
@@ -147,7 +148,7 @@ class conditions extends modal_form {
      * @throws \coding_exception
      */
     private function get_active_values() {
-        $conditions = new conditions_helper($this->get_report_id());
+        $conditions = new conditions_helper($this->get_report());
         return $conditions->get_report_conditions();
     }
 
@@ -160,7 +161,7 @@ class conditions extends modal_form {
      * @throws \moodle_exception
      */
     public function require_access() {
-        return \tool_reportbuilder\permission::can_edit($this->get_report_id());
+        return \tool_reportbuilder\permission::can_edit($this->get_report());
     }
 
     /**
@@ -172,10 +173,10 @@ class conditions extends modal_form {
      * @throws \core\invalid_persistent_exception
      */
     public function process(?\stdClass $data) {
-        $reportid = $data->reportid;
+        $report = $this->get_report();
+        $conditions = new conditions_helper($report);
         unset($data->reportid);
         unset($data->canreset);
-        $conditions = new conditions_helper($reportid);
         $conditions->add_report_conditions(json_encode($data));
     }
 

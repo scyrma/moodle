@@ -117,4 +117,26 @@ abstract class system_report extends report_base {
             }
         }
     }
+
+    /**
+     * CSS classes to add to the row (override if necessary)
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function get_row_class(\stdClass $row) : string {
+        return '';
+    }
+
+    /**
+     * Called before rendering each row (override if necessary)
+     *
+     * Can be used to pre-fetch or create some objects and store them in this class.
+     * They can later be used in the callbacks for the actions and columns.
+     *
+     * @param \stdClass $row
+     */
+    public function row_callback(\stdClass $row): void {
+        return;
+    }
 }

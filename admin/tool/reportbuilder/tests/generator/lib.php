@@ -60,14 +60,14 @@ class tool_reportbuilder_generator extends component_generator_base {
      *
      * @param array|stdClass $record
      *
-     * @return stdClass report object (record from db)
+     * @return \tool_reportbuilder\report_base
      * @throws \core\invalid_persistent_exception
      * @throws coding_exception
      */
-    public function create_report($record) : stdClass {
+    public function create_report($record) : \tool_reportbuilder\report_base {
         $record = (array)$record;
         if (!array_key_exists('source', $record) || !class_exists($record['source']) ||
-                !is_subclass_of($record['source'], \tool_reportbuilder\datasource::class)) {
+            !is_subclass_of($record['source'], \tool_reportbuilder\datasource::class)) {
             throw new coding_exception('Record must contain "source" property that is a valid datasource class name');
         }
         if (!array_key_exists('name', $record)) {
@@ -75,15 +75,14 @@ class tool_reportbuilder_generator extends component_generator_base {
         }
         $record += ['type' => \tool_reportbuilder\constants::TYPE_DATASOURCE, 'description' => '',
             'adddefault' => 1];
-        $id = \tool_reportbuilder\manager::save_report((object)$record);
-        $obj = new \tool_reportbuilder\reportbuilder($id);
+        $obj = \tool_reportbuilder\manager::save_report((object)$record);
         if (!empty($record['tenantid']) && $record['tenantid'] != $obj->get('tenantid')) {
             // The save_report() method will always use current tenant. Override it if necessary.
             $obj->set('tenantid', $record['tenantid']);
             $obj->save();
         }
 
-        return $obj->to_record();
+        return \tool_reportbuilder\manager::get_report_from_persistent($obj);
     }
 
     /**
@@ -131,7 +130,7 @@ class tool_reportbuilder_generator extends component_generator_base {
      * @param array $values
      */
     public function set_report_conditions_values(int $reportid, array $values) {
-        $helper = new tool_reportbuilder\local\helpers\conditions($reportid);
+        $helper = new tool_reportbuilder\local\helpers\conditions(\tool_reportbuilder\manager::get_report($reportid));
         $helper->add_report_conditions(json_encode($values));
     }
 
@@ -202,7 +201,7 @@ class tool_reportbuilder_generator extends component_generator_base {
             $newreport = $this->create_report([
                 'source' => tool_reportbuilder\tool_reportbuilder\datasources\report_course_completion::class,
             ]);
-            $record['reportid'] = $newreport->id;
+            $record['reportid'] = $newreport->get_id();
         }
 
         $persistent = \tool_reportbuilder\local\helpers\schedules::add_schedule((object) $record);

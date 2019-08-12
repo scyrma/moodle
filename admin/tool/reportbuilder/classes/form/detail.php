@@ -25,6 +25,7 @@
 namespace tool_reportbuilder\form;
 
 use tool_reportbuilder\constants;
+use tool_reportbuilder\datasource;
 use tool_reportbuilder\helper;
 use tool_reportbuilder\manager;
 use tool_reportbuilder\report_base;
@@ -44,22 +45,19 @@ require_once("$CFG->libdir/formslib.php");
  */
 class detail extends modal_form {
 
-    /** @var \tool_reportbuilder\reportbuilder */
-    protected $reportbuilder;
+    /** @var report_base */
+    protected $report = null;
 
     /**
-     * Getter for the report
+     * Current report
      *
-     * @return null|\tool_reportbuilder\reportbuilder
+     * @return report_base
      */
-    protected function get_reportbuilder() : ?\tool_reportbuilder\reportbuilder {
-        if (!$this->reportbuilder) {
-            $reportid = !empty($this->_ajaxformdata['id']) ? $this->_ajaxformdata['id'] : null;
-            if ((int)$reportid) {
-                $this->reportbuilder = new \tool_reportbuilder\reportbuilder($reportid);
-            }
+    protected function get_report(): ?report_base {
+        if (!$this->report && !empty($this->_ajaxformdata['id'])) {
+            $this->report = manager::get_report((int)$this->_ajaxformdata['id']);
         }
-        return $this->reportbuilder;
+        return $this->report;
     }
 
     /**
@@ -71,7 +69,7 @@ class detail extends modal_form {
     public function definition() {
 
         $mform = $this->_form;
-        $report = $this->get_reportbuilder();
+        $report = $this->get_report();
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
@@ -96,10 +94,8 @@ class detail extends modal_form {
             $mform->addElement('advcheckbox', 'adddefault', get_string('adddefault', 'tool_reportbuilder'));
             $mform->setDefault('adddefault', 1);
         } else {
-            /** @var report_base $class */
-            $class = $report->get('source');
             $mform->addElement('static', 'sourcename',
-                get_string('reportsource', 'tool_reportbuilder'), $class::get_name());
+                get_string('reportsource', 'tool_reportbuilder'), $report->get_name());
         }
 
         $buttontext = get_string('saveandcontinue', 'tool_reportbuilder');
@@ -120,7 +116,7 @@ class detail extends modal_form {
             $reportid = manager::update_report($data);
         } else {
             $data->type = constants::TYPE_DATASOURCE;
-            $reportid = manager::save_report($data);
+            $reportid = manager::save_report($data)->get('id');
         }
 
         return (new \moodle_url('/admin/tool/reportbuilder/manage.php', ['id' => $reportid]))->out(false);
@@ -133,12 +129,12 @@ class detail extends modal_form {
      * If necessary, form data is available in $this->_ajaxformdata
      */
     public function require_access() {
-        $report = $this->get_reportbuilder();
+        $report = $this->get_report();
 
         if (!$report) {
             \tool_reportbuilder\permission::require_can_create();
         } else {
-            \tool_reportbuilder\permission::require_can_edit($report->get('id'));
+            \tool_reportbuilder\permission::require_can_edit($report);
         }
     }
 
@@ -149,8 +145,8 @@ class detail extends modal_form {
      * to preprocess editor and filemanager elements
      */
     public function set_data_for_modal() {
-        if ($report = $this->get_reportbuilder()) {
-            $this->set_data($report->to_record());
+        if ($report = $this->get_report()) {
+            $this->set_data($report->get_persistent()->to_record());
         }
     }
 }

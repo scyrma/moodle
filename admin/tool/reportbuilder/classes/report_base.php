@@ -83,14 +83,14 @@ abstract class report_base {
     /**
      * report_base constructor.
      *
-     * @param int $reportid
+     * @param reportbuilder $persistent
      * @param array $parameters additional parameters, simple keys with simple values
      * @param int $page
      *
      * @throws \coding_exception
      */
-    public final function __construct(int $reportid, array $parameters = [], int $page = 0) {
-        $this->reportpersistent = new reportbuilder($reportid);
+    public final function __construct(reportbuilder $persistent, array $parameters = [], int $page = 0) {
+        $this->reportpersistent = $persistent;
         $this->page = $page;
         $this->parameters = $parameters;
         $this->initialise();
@@ -99,6 +99,14 @@ abstract class report_base {
         columns_helper::fix_columns_default_sortorder($this->columns);
     }
 
+    /**
+     * Returns persistent class used when initialising this report
+     *
+     * @return reportbuilder
+     */
+    public final function get_persistent(): reportbuilder {
+        return $this->reportpersistent;
+    }
     /**
      * Initialise report
      *
@@ -695,14 +703,12 @@ abstract class report_base {
     }
 
     /**
-     * CSS classes to add to the row (override if necessary)
+     * Tenant this report belongs to
      *
-     * @param \stdClass $row
-     * @return string
+     * @return int
      */
-    public function get_row_class(\stdClass $row) : string {
-        // TODO SP-422 only for system reports?
-        return '';
+    public final function get_tenant_id(): int {
+        return $this->reportpersistent->get('tenantid');
     }
 
     /**

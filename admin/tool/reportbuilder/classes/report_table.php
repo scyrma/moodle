@@ -54,6 +54,8 @@ class report_table extends \table_sql {
     protected $actions = array();
     /** @var callable */
     protected $rowclasscallback = null;
+    /** @var callable $rowcallback */
+    protected $rowcallback = null;
     /** @var \renderable[] */
     protected $editableheaders = [];
     /** @var \renderable[] */
@@ -69,14 +71,14 @@ class report_table extends \table_sql {
      * @param int  $pagesize
      * @param int  $useinitialsbar
      * @param int  $page
-     * @param bool $isuserview
+     * @param bool $editon User is able to edit this report and editing mode is on
      * @return string
      *
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public final function render(int $pagesize, int $useinitialsbar, int $page, bool $isuserview) {
-        $this->isuserview = !$isuserview;
+    public final function render(int $pagesize, int $useinitialsbar, int $page, bool $editon) {
+        $this->isuserview = !$editon;
 
         $context = \context_system::instance();
         ob_start();
@@ -89,8 +91,7 @@ class report_table extends \table_sql {
         $this->close_recordset();
         // Edit page needs see the table even doesn't have any content.
         if (
-            has_capability('tool/reportbuilder:edit', $context)
-            && !$this->isuserview
+            !$this->isuserview
             && $this->totalrows === 0
         ) {
             if (!$this->started_output) {
@@ -357,6 +358,12 @@ class report_table extends \table_sql {
         if (is_array($row)) {
             $row = (object)$row;
         }
+
+        // Execute row callback.
+        if (!empty($this->rowcallback)) {
+            call_user_func_array($this->rowcallback, [$row]);
+        }
+
         $formattedrow = array();
         foreach ($this->columns as $columnkey => $column) {
             if ($column === 'actions') {
@@ -401,6 +408,15 @@ class report_table extends \table_sql {
         }
 
         return $icons;
+    }
+
+    /**
+     * Allows to set a callback to execute before each row is formatted.
+     *
+     * @param callable $rowcallback
+     */
+    public function set_row_callback(callable $rowcallback) {
+        $this->rowcallback = $rowcallback;
     }
 
     /**

@@ -25,6 +25,7 @@
 namespace tool_reportbuilder\external;
 
 use tool_reportbuilder\local\helpers\schedules;
+use tool_reportbuilder\permission;
 use tool_reportbuilder\task\send_schedule;
 
 defined('MOODLE_INTERNAL') || die();
@@ -75,11 +76,8 @@ class schedule extends \external_api {
 
         $context = \context_system::instance();
         self::validate_context($context);
-        require_capability('tool/reportbuilder:edit', $context);
-
-        if (!schedules::can_edit_schedule($scheduleid)) {
-            throw new \moodle_exception('schedulecannotbedeleted');
-        }
+        $schedule = schedules::get_schedule($scheduleid);
+        permission::require_can_delete_schedule($schedule);
 
         return schedules::delete_schedule($params['scheduleid']);
     }
@@ -124,11 +122,8 @@ class schedule extends \external_api {
 
         $context = \context_system::instance();
         self::validate_context($context);
-        require_capability('tool/reportbuilder:edit', $context);
-
-        if (!schedules::can_edit_schedule($scheduleid)) {
-            throw new \moodle_exception('schedulecannotbesend');
-        }
+        $schedule = schedules::get_schedule($params['scheduleid']);
+        permission::require_can_send_schedule($schedule);
 
         $sendschedule = new send_schedule();
         $sendschedule->set_custom_data(array(

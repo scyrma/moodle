@@ -92,15 +92,24 @@ class report_view implements \templatable, \renderable {
         $context = \context_system::instance();
         $PAGE->set_context($context);
 
-        permission::require_can_view($this->reportid);
+        permission::require_can_view($this->report);
 
         admin_externalpage_setup('tool_reportbuilder');
 
+        $PAGE->set_url($url);
+
+        $cancreate = permission::can_create();
+
+        $identifier = $cancreate ? 'myreports' : 'customreports';
+        $strtitle = get_string($identifier, 'tool_reportbuilder');
+
+        if (!$cancreate) {
+            $PAGE->navbar->add($strtitle, new \moodle_url('/admin/tool/reportbuilder/index.php'));
+        }
+
         $PAGE->navbar->add(format_string($this->report->get_reportname()));
 
-        $PAGE->set_url($url);
-        $identifier = permission::can_create() ? 'myreports' : 'customreports';
-        $PAGE->set_title(get_string($identifier, 'tool_reportbuilder'));
-        $PAGE->set_heading(get_string($identifier, 'tool_reportbuilder'));
+        $PAGE->set_title($strtitle);
+        $PAGE->set_heading($strtitle);
     }
 }

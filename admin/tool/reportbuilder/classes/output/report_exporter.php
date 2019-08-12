@@ -31,6 +31,7 @@ use tool_reportbuilder\local\helpers\columns as columns_helper;
 use tool_reportbuilder\local\helpers\conditions as conditions_helper;
 use tool_reportbuilder\local\helpers\filters as filters_helper;
 use tool_reportbuilder\local\helpers\aggregation as aggregation_helper;
+use tool_reportbuilder\permission;
 use tool_reportbuilder\report_base;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\report_table;
@@ -70,6 +71,21 @@ class report_exporter extends \core\external\persistent_exporter {
 
     /** @var report_conditions */
     protected $conditions;
+
+    /**
+     * report_exporter constructor.
+     *
+     * @param \core\persistent $persistent
+     * @param array $related
+     */
+    public function __construct(\core\persistent $persistent, array $related = array()) {
+        parent::__construct($persistent, $related);
+
+        // Make sure user can never turn editing on if he does not have permission to edit.
+        /** @var report_base $source */
+        $source = $this->related['source'];
+        $this->related['editon'] = $this->related['editon'] && permission::can_edit($source);
+    }
 
     /**
      * Returns the specific class the persistent should be an instance of.
@@ -526,7 +542,10 @@ class report_exporter extends \core\external\persistent_exporter {
         $currentclasses = explode(" ", $table->attributes['class']);
         $table->set_attribute('class', implode(' ', $currentclasses + $tableclasses));
 
-        $table->set_row_class_callback([$source, 'get_row_class']);
+        if ($source instanceof \tool_reportbuilder\system_report) {
+            $table->set_row_callback([$source, 'row_callback']);
+            $table->set_row_class_callback([$source, 'get_row_class']);
+        }
 
         return $table;
     }

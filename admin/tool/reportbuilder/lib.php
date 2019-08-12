@@ -86,7 +86,7 @@ function tool_reportbuilder_inplace_editable($itemtype, $itemid, $newvalue) {
 
     if ($itemtype === 'reportname') {
         $report = \tool_reportbuilder\manager::get_report($itemid); // Todo: move to helper.
-        \tool_reportbuilder\permission::require_can_edit($report->get_id());
+        \tool_reportbuilder\permission::require_can_edit($report);
         \tool_reportbuilder\manager::update_report((object)['id' => $itemid, 'name' => $newvalue]);
         $reportbuilder = new \tool_reportbuilder\reportbuilder($itemid);
         return \tool_reportbuilder\manager::get_name_inplace_editable($reportbuilder->get('name'), $reportbuilder->get('id'), true);
@@ -95,7 +95,7 @@ function tool_reportbuilder_inplace_editable($itemtype, $itemid, $newvalue) {
     if ($itemtype === 'columnname') {
         $columnpersistent = new \tool_reportbuilder\reportbuilder_column($itemid, null); // Todo: move to helper.
         $report = \tool_reportbuilder\manager::get_report($columnpersistent->get('reportid'));
-        \tool_reportbuilder\permission::require_can_edit($report->get_id());
+        \tool_reportbuilder\permission::require_can_edit($report);
         $columnpersistent->set('heading', $newvalue);
         $columnpersistent->save();
         $newvalue = $columnpersistent->get('heading');
@@ -107,7 +107,7 @@ function tool_reportbuilder_inplace_editable($itemtype, $itemid, $newvalue) {
     if ($itemtype === 'filtername') {
         $columnpersistent = new \tool_reportbuilder\local\report\reportbuilder_filter($itemid, null); // Todo: move to helper.
         $report = \tool_reportbuilder\manager::get_report($columnpersistent->get('reportid'));
-        \tool_reportbuilder\permission::require_can_edit($report->get_id());
+        \tool_reportbuilder\permission::require_can_edit($report);
         $columnpersistent->set('heading', $newvalue);
         $columnpersistent->save();
         $newvalue = $columnpersistent->get('heading');
@@ -118,7 +118,7 @@ function tool_reportbuilder_inplace_editable($itemtype, $itemid, $newvalue) {
     if ($itemtype === 'condition') {
         $columnpersistent = new \tool_reportbuilder\local\models\reportbuilder_conditions($itemid, null); // Todo: move to helper.
         $report = \tool_reportbuilder\manager::get_report($columnpersistent->get('reportid'));
-        \tool_reportbuilder\permission::require_can_edit($report->get_id());
+        \tool_reportbuilder\permission::require_can_edit($report);
         $columnpersistent->set('heading', $newvalue);
         $columnpersistent->save();
         $newvalue = $columnpersistent->get('heading');
@@ -185,7 +185,7 @@ function tool_reportbuilder_potential_users_selector(string $area) {
     if ($area !== 'usersmanually') {
         return null;
     }
-    require_capability('tool/reportbuilder:edit', context_system::instance());
+    \tool_reportbuilder\permission::require_can_manage_schedules();
     list($join, $where, $params) = \tool_tenant\tenancy::get_users_sql('u');
     return [$join, $where, $params];
 }

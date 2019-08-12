@@ -107,19 +107,19 @@ class helper {
     /**
      * Function for delete reports.
      *
-     * @param int $reportid
+     * @param report_base $report
      *
      * @return bool
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function delete_report(int $reportid) {
+    public static function delete_report(report_base $report) {
         global $PAGE;
         $PAGE->set_context(\context_system::instance());
 
-        $report = new reportbuilder($reportid);
-        $event = report_deleted::create_from_object($report);
-        if ($report->delete()) {
+        $persistent = $report->get_persistent();
+        $event = report_deleted::create_from_object($persistent);
+        if ($persistent->delete()) {
             $event->trigger();
             return true;
         }

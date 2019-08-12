@@ -106,7 +106,7 @@ class tool_reportbuilder_datasource_report_users_testcase extends advanced_testc
 
         // Create a report from the report_users_list datasource with default columns/conditions.
         $reportid = $generator->create_report(
-            ['source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_users_list::class])->id;
+            ['source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_users_list::class])->get_id();
 
         // Execute report for different users.
 
@@ -139,7 +139,7 @@ class tool_reportbuilder_datasource_report_users_testcase extends advanced_testc
         return $this->get_generator()->create_report(
             ['source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_users_list::class,
                 'tenantid' => $tenantid,
-                'adddefault' => (int)$adddefault])->id;
+                'adddefault' => (int)$adddefault])->get_id();
     }
 
     /**

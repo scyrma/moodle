@@ -111,7 +111,7 @@ class tool_reportbuilder_datasource_report_course_completion_testcase extends ad
         return $this->get_generator()->create_report(
             ['source' => \tool_reportbuilder\tool_reportbuilder\datasources\report_course_completion::class,
                 'tenantid' => $tenantid,
-                'adddefault' => (int)$adddefault])->id;
+                'adddefault' => (int)$adddefault])->get_id();
     }
 
     /**

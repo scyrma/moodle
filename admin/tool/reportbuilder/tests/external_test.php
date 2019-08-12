@@ -52,10 +52,10 @@ class tool_reportbuilder_external_testcase extends externallib_advanced_testcase
         $record = new stdClass();
         $record->name = 'Test report';
         $record->source = \tool_reportbuilder\test\mock_report::class;
-        $reportobj = $this->get_generator()->create_report($record);
+        $report = $this->get_generator()->create_report($record);
 
-        $this->reportid = $reportobj->id;
-        $this->tableuniqid = $reportobj->idnumber;
+        $this->reportid = $report->get_id();
+        $this->tableuniqid = $report->get_report_uniqid();
         $table = new \tool_reportbuilder\report_table($this->tableuniqid);
         $table->setup = true;
         $this->table = $table;
@@ -207,16 +207,16 @@ class tool_reportbuilder_external_testcase extends externallib_advanced_testcase
 
         // Generate a report for a default tenant.
         $report0 = $this->get_generator()->create_report(
-                [
-                        'source' => tool_reportbuilder\tool_reportbuilder\datasources\report_course_completion::class,
-                ]
+            [
+                'source' => tool_reportbuilder\tool_reportbuilder\datasources\report_course_completion::class,
+            ]
         );
 
         $this->assertEquals($previusrecords + 1, $DB->count_records('tool_reportbuilder'));
 
         // TODO: Add content to tables column, cond, filter, scheduled.
 
-        \tool_reportbuilder\helper::delete_report($report0->id);
+        \tool_reportbuilder\helper::delete_report($report0);
 
         $this->assertEquals($previusrecords, $DB->count_records('tool_reportbuilder'));
     }

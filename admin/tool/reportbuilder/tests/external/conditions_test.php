@@ -55,13 +55,13 @@ class tool_reportbuilder_conditions_test_testcase extends externallib_advanced_t
         ]);
 
         $record = new stdClass();
-        $record->id = $report->id;
+        $record->id = $report->get_id();
         $record->conditions = 'dummycontent';
 
         $DB->update_record('tool_reportbuilder', $record);
-        \tool_reportbuilder\external\conditions::reset_all($report->id);
+        \tool_reportbuilder\external\conditions::reset_all($report->get_id());
 
-        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->id]);
+        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->get_id()]);
 
         $this->assertEquals(null, $conditions);
     }
@@ -95,15 +95,15 @@ class tool_reportbuilder_conditions_test_testcase extends externallib_advanced_t
         $conditionsdata['user:firstname_op'] = 'conditionop';
         $conditionsdata['condition1_op'] = 'conditionop';
 
-        $conditionid = $generator->add_condition($report->id, 'user:firstname');
+        $conditionid = $generator->add_condition($report->get_id(), 'user:firstname');
         $record = new stdClass();
-        $record->id = $report->id;
+        $record->id = $report->get_id();
         $record->conditions = json_encode($conditionsdata);
         $DB->update_record('tool_reportbuilder', $record);
 
-        \tool_reportbuilder\external\conditions::reset_condition($report->id, $conditionid);
+        \tool_reportbuilder\external\conditions::reset_condition($report->get_id(), $conditionid);
 
-        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->id]);
+        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->get_id()]);
         $this->assertEquals('{"condition1":"conditionvalue","condition1_op":"conditionop"}', $conditions);
     }
 
