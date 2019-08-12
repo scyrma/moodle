@@ -502,6 +502,7 @@ class api {
 
         // Allocate user to this program.
         $newuser = new program_user(0, $insertdata);
+        $newuser->set_program($program);
         $newuser->create();
 
         if (!$newuser->is_certification_allocation()) {
@@ -1587,12 +1588,12 @@ class api {
      * @return program[]
      */
     public static function get_user_accessible_programs(int $userid): array {
+        // TODO this is never called for user other than current user.
         /** @var program[] $programs */
         $programs = self::get_programs_by_userid($userid);
-        $context = context_system::instance();
         $accessibleprograms = [];
         foreach ($programs as $pkey => $program) {
-            if (permission::can_view_program($program, $userid, $context)) {
+            if (permission::can_view_program($program, $userid)) {
                 $accessibleprograms[$pkey] = $program;
             }
         }
@@ -1616,8 +1617,9 @@ class api {
                     SELECT pu.programid
                     FROM {' . program_user::TABLE . '} pu
                     WHERE pu.userid = :userid
-                ) ';
-        $programrecords = $DB->get_records_sql($sql, ['userid' => $userid]);
+                ) AND p.tenantid = :tenantid';
+        $programrecords = $DB->get_records_sql($sql,
+            ['userid' => $userid, 'tenantid' => tenancy::get_tenant_id($userid)]);
         foreach ($programrecords as $programrecord) {
             $programs[$programrecord->id] = new program(0, $programrecord);
         }
@@ -1828,6 +1830,7 @@ class api {
      * @return bool
      */
     public static function belongs_to_non_archived_certification(program $program): bool {
+        // TODO WP-946 WP-966 WP-960 performs DB queries and is used in a check executed once per report row.
         $params = ['program' => $program->get('id'), 'archived' => 0, 'tenantid' => $program->get('tenantid')];
         return (bool) certification::get_records($params);
     }
@@ -2102,14 +2105,14 @@ class api {
     /**
      * Reset program completion/progress for the given program user.
      *
-     * @param program $program
      * @param program_user $programuser
      * @param bool $marknotcompleted
      * @param bool $resetcourses
      * @return bool
      */
-    public static function reset_program_progress(program $program, program_user $programuser, bool $marknotcompleted = true,
+    public static function reset_program_progress(program_user $programuser, bool $marknotcompleted = true,
         bool $resetcourses = true): bool {
+        $program = $programuser->get_program();
         $programtree = new program_tree($program);
         $baseset = $programtree->get_baseset();
         if (!$user = $programuser->get_user()) {
@@ -2526,6 +2529,19 @@ class api {
         }
 
         return false;
+    }
+
+    /**
+     * Wether the user has any allocations to the program (used to check if progress report can be displayed).
+     *
+     * @param int $programid
+     * @param int $userid
+     * @return bool
+     */
+    public static function has_any_allocations(int $programid, int $userid): bool {
+        /** @var program_user[]|false $allocations */
+        $allocations = program_user::get_records(['programid' => $programid, 'userid' => $userid]);
+        return !empty($allocations);
     }
 
     /**

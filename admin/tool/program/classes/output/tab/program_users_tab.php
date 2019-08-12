@@ -44,6 +44,10 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_users_tab extends tab {
+
+    /** @var program current program */
+    protected $program = null;
+
     /**
      * Function to export the renderer data in a format that is suitable for a
      * mustache template. This means:
@@ -68,8 +72,7 @@ class program_users_tab extends tab {
         $exporteddata['userstable'] = $userstable;
 
         // We check if we have permission to show allocation button.
-        $program = new program($this->data['id']);
-        $canshowbutton = permission::can_allocate($program, context_system::instance());
+        $canshowbutton = permission::can_allocate_anybody($this->get_program());
         if ($canshowbutton) {
             $exporteddata['addbuttontitle'] = get_string('allocateusers', 'tool_program');
         }
@@ -87,20 +90,24 @@ class program_users_tab extends tab {
     }
 
     /**
+     * Current program
+     *
+     * @return program
+     */
+    protected function get_program() : program {
+        if (!$this->program) {
+            $this->program = new program(!empty($this->data['id']) ? $this->data['id'] : 0);
+        }
+        return $this->program;
+    }
+
+    /**
      * Check permission of the current user to access this tab
      *
      * @return bool
      */
     public function is_available(): bool {
-        if (0 === (int) $this->data['id']) {
-            return false;
-        }
-
-        $context = context_system::instance();
-        $program = new program($this->data['id']);
-        $canallocate = permission::can_allocate_anybody_as_organisation_manager();
-        $caneditdetails = permission::can_edit_details($program, $context);
-        return ($caneditdetails || $canallocate || permission::has_allocateuser_capability($context));
+        return permission::can_view_allocated_users($this->get_program());
     }
 
     /**

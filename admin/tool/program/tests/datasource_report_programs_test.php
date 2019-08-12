@@ -110,7 +110,7 @@ class tool_program_datasource_report_programs_testcase extends advanced_testcase
         $generator = $this->get_reportbuilder_generator();
 
         // Create a report from the report_programs datasource with default columns/conditions.
-        $reportid = $generator->create_report(['source' => report_programs::class])->id;
+        $reportid = $generator->create_report(['source' => report_programs::class])->get_id();
 
         // Execute report for different users.
 
@@ -139,7 +139,7 @@ class tool_program_datasource_report_programs_testcase extends advanced_testcase
             'source' => report_programs::class,
             'tenantid' => $tenantid,
             'adddefault' => (int) $adddefault
-        ])->id;
+        ])->get_id();
     }
 
     /**

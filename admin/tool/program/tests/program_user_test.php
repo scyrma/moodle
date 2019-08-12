@@ -150,10 +150,6 @@ class tool_program_user_testcase extends advanced_testcase {
         $user1 = self::getDataGenerator()->create_user(['firstname' => 'xxzz']);
         $user2 = self::getDataGenerator()->create_user(['firstname' => 'zz']);
 
-        // Both users are potential users for a new program.
-        $results = tool_wp_external::potential_users_selector('zz', 'tool_program', 'allocate', 0);
-        $this->assertEquals([$user1->id, $user2->id], array_keys($results), '', 0, 10, true);
-
         // Both users are potential users for an existing program.
         $results = tool_wp_external::potential_users_selector('zz', 'tool_program', 'allocate', $program1->get('id'));
         $this->assertEquals([$user1->id, $user2->id], array_keys($results), '', 0, 10, true);

@@ -60,7 +60,7 @@ class tags_manager {
 
         // Show programs only to users who have permission to edit details or allocate users.
         // Programs can only be displayed in system context.
-        $canview = permission::can_view_list(context_system::instance());
+        $canview = permission::can_view_list();
         if (!$canview || ($ctxid && context_system::instance()->id !== (int) $ctxid)) {
             return new tagindex($tag, 'tool_program', 'tool_program', '', $exclusivemode, $fromctxid,
                 $ctxid, $recursivectx, $page, 0);

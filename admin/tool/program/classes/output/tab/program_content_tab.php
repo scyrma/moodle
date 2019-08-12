@@ -43,6 +43,10 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_content_tab extends tab {
+
+    /** @var program current program */
+    protected $program = null;
+
     /**
      * Function to export the renderer data in a format that is suitable for a
      * mustache template. This means:
@@ -54,10 +58,10 @@ class program_content_tab extends tab {
      */
     public function export_for_template(renderer_base $output) {
         $context = context::instance_by_id($this->data['contextid']);
-        $program = new program($this->data['id']);
+        $program = $this->get_program();
         $rv = ['tabheading' => get_string('content', 'tool_program')];
         $rv += (new program_content_table($program, $context))->export_for_template($output);
-        $rv += ['editmode' => permission::can_edit_details($program, $context)];
+        $rv += ['editmode' => permission::can_edit_details($program)];
         return $rv;
     }
 
@@ -71,20 +75,24 @@ class program_content_tab extends tab {
     }
 
     /**
+     * Current program
+     *
+     * @return program
+     */
+    protected function get_program() : program {
+        if (!$this->program) {
+            $this->program = new program(!empty($this->data['id']) ? $this->data['id'] : 0);
+        }
+        return $this->program;
+    }
+
+    /**
      * Check permission of the current user to access this tab
      *
      * @return bool
      */
     public function is_available(): bool {
-        if (0 === (int) $this->data['id']) {
-            return false;
-        }
-
-        $context = context_system::instance();
-        $program = new program($this->data['id']);
-        $canallocate = permission::can_allocate_anybody_as_organisation_manager();
-        $caneditdetails = permission::can_edit_details($program, $context);
-        return ($caneditdetails || $canallocate || permission::has_allocateuser_capability($context));
+        return permission::can_view_details($this->get_program());
     }
 
     /**

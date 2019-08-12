@@ -30,6 +30,7 @@ use moodle_url;
 use pix_icon;
 use tool_program\local\helpers\program_format;
 use tool_program\permission;
+use tool_program\persistent\program;
 use tool_reportbuilder\local\helpers\format as reportbuilder_format;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
@@ -46,6 +47,9 @@ use tool_tenant\tenancy;
  */
 class archived_programs_report extends system_report {
 
+    /** @var program */
+    protected $lastprogram;
+
     /**
      * Initialise report
      */
@@ -54,7 +58,7 @@ class archived_programs_report extends system_report {
         $this->set_main_table('tool_program', 'tp');
         $this->add_base_condition_simple('tp.archived', 1);
         $this->add_base_condition_simple('tp.tenantid', tenancy::get_tenant_id());
-        $this->add_base_fields('tp.id'); // Field necessary for actions.
+        $this->add_base_fields('tp.id, tp.archived, tp.visible, tp.tenantid'); // Field necessary for actions.
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
@@ -66,7 +70,7 @@ class archived_programs_report extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return permission::can_view_list(context_system::instance());
+        return permission::can_view_archived_list();
     }
 
     /**
@@ -115,41 +119,55 @@ class archived_programs_report extends system_report {
      * Set the actions icons of the report.
      */
     private function add_actions(): void {
-        $context = context_system::instance();
 
-        if (permission::can_view_list($context)) {
-            // Progress report icon.
-            $reporturl = new moodle_url('/admin/tool/program/usersprogress.php', ['id' => ':id']);
-            $reporticon = new pix_icon('bar-chart', get_string('progressreport', 'tool_program'), 'tool_wp');
-            $action = new report_action($reporturl, $reporticon, [
-                'class' => 'action-icon report_program',
-                'data-programid' => ':id'
-            ]);
-            $this->add_action($action);
-        }
+        // Progress report icon.
+        $reporturl = new moodle_url('/admin/tool/program/usersprogress.php', ['id' => ':id']);
+        $reporticon = new pix_icon('bar-chart', get_string('progressreport', 'tool_program'), 'tool_wp');
+        $action = new report_action($reporturl, $reporticon, [
+            'class' => 'action-icon report_program',
+            'data-programid' => ':id'
+        ]);
+        $action->add_callback(function() {
+            return permission::can_view_users_progress($this->lastprogram);
+        });
+        $this->add_action($action);
 
-        if (permission::has_edit_capability($context)) {
-            // Restore icon.
-            $retoreeurl = new moodle_url('/admin/tool/program/restore.php', ['id' => ':id']);
-            $restorestr = get_string('restore', 'tool_program');
-            $restoreicon = new pix_icon('arrow-circle-left', $restorestr, 'tool_wp');
-            $action = new report_action($retoreeurl, $restoreicon, [
-                'class' => 'action-icon restore_program',
-                'data-programid' => ':id',
-                'data-action' => 'restore',
-                'data-archive' => 1
-            ]);
-            $this->add_action($action);
+        // Restore icon.
+        $retoreeurl = new moodle_url('/admin/tool/program/restore.php', ['id' => ':id']);
+        $restorestr = get_string('restore', 'tool_program');
+        $restoreicon = new pix_icon('arrow-circle-left', $restorestr, 'tool_wp');
+        $action = new report_action($retoreeurl, $restoreicon, [
+            'class' => 'action-icon restore_program',
+            'data-programid' => ':id',
+            'data-action' => 'restore',
+            'data-archive' => 1
+        ]);
+        $action->add_callback(function() {
+            return permission::can_restore($this->lastprogram);
+        });
+        $this->add_action($action);
 
-            // Delete icon.
-            $deleteurl = new moodle_url('/admin/tool/program/delete.php', ['id' => ':id']);
-            $deleteicon = new pix_icon('i/trash', get_string('delete'), 'core');
-            $action = new report_action($deleteurl, $deleteicon, [
-                'class' => 'action-icon delete_program',
-                'data-action' => 'delete',
-                'data-programid' => ':id'
-            ]);
-            $this->add_action($action);
-        }
+        // Delete icon.
+        $deleteurl = new moodle_url('/admin/tool/program/delete.php', ['id' => ':id']);
+        $deleteicon = new pix_icon('i/trash', get_string('delete'), 'core');
+        $action = new report_action($deleteurl, $deleteicon, [
+            'class' => 'action-icon delete_program',
+            'data-action' => 'delete',
+            'data-programid' => ':id'
+        ]);
+        $action->add_callback(function() {
+            return permission::can_delete($this->lastprogram);
+        });
+        $this->add_action($action);
+
+    }
+
+    /**
+     * Remembers the current program
+     *
+     * @param \stdClass $row
+     */
+    public function row_callback(\stdClass $row): void {
+        $this->lastprogram = new program(0, $row);
     }
 }

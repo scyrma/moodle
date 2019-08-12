@@ -2200,6 +2200,7 @@ class tool_program_api_testcase extends advanced_testcase {
 
         // Test status not suspended and program dates are set to "none" value.
         $unlockeddatesparams->status = constants::STATUS_OVERRIDE_DEFAULT;
+        $program = $programuser->get_program();
         $program->set('startdatetype', constants::DATE_NONE);
         $program->set('duedatetype', constants::DATE_NONE);
         $program->set('enddatetype', constants::DATE_NONE);
@@ -3595,7 +3596,7 @@ class tool_program_api_testcase extends advanced_testcase {
         $programuser = $this->generator->allocate_user_to_program($data->program->get('id'), $data->user->id);
 
         // Test with default marknotcompleted and resetcourses.
-        $res = api::reset_program_progress($data->program, $programuser);
+        $res = api::reset_program_progress($programuser);
         $this->assertTrue($res);
         $res = $DB->record_exists(program_set_completion::TABLE, ['setid' => $childsetid, 'userid' => $data->user->id]);
         $this->assertFalse($res);
@@ -3616,7 +3617,7 @@ class tool_program_api_testcase extends advanced_testcase {
         $res = $DB->record_exists(program_set_completion::TABLE, ['setid' => $basesetid, 'userid' => $data->user->id]);
         $this->assertTrue($res);
 
-        $res = api::reset_program_progress($data->program, $programuser, false);
+        $res = api::reset_program_progress($programuser, false);
         $this->assertTrue($res);
 
         $res = $DB->record_exists(program_set_completion::TABLE, ['setid' => $childsetid, 'userid' => $data->user->id]);

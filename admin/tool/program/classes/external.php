@@ -92,7 +92,7 @@ class external extends external_api {
         self::validate_context($context);
         $programset = new program_set($setid);
         $program = $programset->get_program();
-        permission::require_can_edit_details($program, $context);
+        permission::require_can_edit_details($program);
 
         $warnings = [];
         $result = api::delete_set($programset);
@@ -144,7 +144,7 @@ class external extends external_api {
         self::validate_context($context);
         $programcourse = new program_course($programcourseid);
         $program = $programcourse->get_program();
-        permission::require_can_edit_details($program, $context);
+        permission::require_can_edit_details($program);
 
         $warnings = [];
         $result = api::delete_program_course($programcourse);
@@ -222,6 +222,7 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         $program = new program($programid);
+        permission::require_can_edit_details($program);
         $courses = $program->get_courses();
 
         $warnings = [];
@@ -303,7 +304,7 @@ class external extends external_api {
         self::validate_context($context);
         /** @var program_user|false $programuser */
         $programuser = program_user::get_record(['programid' => $programid, 'userid' => $userid, 'certificationid' => 0]);
-        permission::require_can_manage_user_allocation($programuser, $context);
+        permission::require_can_edit_user_allocation($programuser ?: null);
 
         $warnings = [];
         $result = api::deallocate_user($programid, $userid);
@@ -413,7 +414,7 @@ class external extends external_api {
         $setid = (int) $data['setid'];
         $programset = new program_set($setid);
         $program = $programset->get_program();
-        permission::require_can_edit_details($program, $context);
+        permission::require_can_edit_details($program);
 
         $warnings = [];
 
@@ -534,7 +535,7 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         $program = new program($programid);
-        permission::require_can_edit_details($program, $context);
+        permission::require_can_edit_details($program);
 
         $program = new program($programid);
         $result = api::update_program_visibility($program, $visibility);
@@ -583,7 +584,7 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         $program = new program($programid);
-        permission::require_can_delete($program, $context);
+        permission::require_can_delete($program);
 
         $result = api::delete_program($program);
 
@@ -631,7 +632,7 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         $program = new program($programid);
-        permission::require_can_archive($program, $context);
+        permission::require_can_archive($program);
         $result = api::archive_program($program);
 
         return [
@@ -678,7 +679,7 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         $program = new program($programid);
-        permission::require_can_restore($program, $context);
+        permission::require_can_restore($program);
         $result = api::restore_program($program);
 
         return [
@@ -725,7 +726,7 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         $program = new program($programid);
-        permission::require_can_edit_details($program, $context);
+        permission::require_can_duplicate($program);
 
         $duplicatedprogram = api::duplicate_program($program);
         $duplicatedprogramid = $duplicatedprogram->get('id');
@@ -841,10 +842,9 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         $programuser = new program_user($programuserid);
-        $program = $programuser->get_program();
-        permission::require_can_reset_progress($program, $context);
+        permission::require_can_reset_progress($programuser);
 
-        $result = api::reset_program_progress($program, $programuser);
+        $result = api::reset_program_progress($programuser);
 
         return [
             'result' => $result
@@ -857,74 +857,6 @@ class external extends external_api {
      * @return external_single_structure
      */
     public static function reset_program_progress_returns(): external_single_structure {
-        return new external_single_structure([
-            'result' => new external_value(PARAM_BOOL),
-        ]);
-    }
-
-    /**
-     * Parameters for allocate user into a program.
-     *
-     * @return external_function_parameters
-     */
-    public static function allocate_user_parameters(): external_function_parameters {
-        return new external_function_parameters([
-            'programid' => new external_value(PARAM_INT, 'ID of the program'),
-            'programuserdata' => new external_single_structure([
-                'userid' => new external_value(PARAM_INT, 'User id'),
-                'certificationid' => new external_value(PARAM_INT, 'Certification ID'),
-                'allocationtype' => new external_value(PARAM_INT, 'Type of allocation'),
-                'startdate' => new external_value(PARAM_INT, 'Start date of the program for this user'),
-                'startdatelocked' => new external_value(PARAM_INT, 'Status of the override for this user start date'),
-                'enddate' => new external_value(PARAM_INT, 'End date of the program for this user'),
-                'enddatelocked' => new external_value(PARAM_INT, 'Status of the override for this user end date'),
-                'duedate' => new external_value(PARAM_INT, 'Due date of the program for this user'),
-                'duedatelocked' => new external_value(PARAM_INT, 'Status of the override for this user due date'),
-                'status' => new external_value(PARAM_INT, 'Status for this user if is active or suspended'),
-            ]),
-        ]);
-    }
-
-    /**
-     * Allocate user into a program.
-     *
-     * @param int $programid
-     * @param array $programuserdata
-     * @return array
-     */
-    public static function allocate_user(int $programid, array $programuserdata): array {
-        // Parameter validation.
-        $params = self::validate_parameters(self::allocate_user_parameters(), [
-            'programid' => $programid,
-            'programuserdata' => $programuserdata,
-        ]);
-        $programid = $params['programid'];
-        $programuserdata = $params['programuserdata'];
-
-        // From web services we don't call require_login(), but rather validate_context.
-        $context = context_system::instance();
-        self::validate_context($context);
-
-        $program = new program($programid);
-        if (permission::can_be_allocated($program, $programuserdata['userid'], $programuserdata['certificationid'])) {
-            $programuser = api::allocate_user($program, (object)$programuserdata);
-            if ($programuser) {
-                return [
-                    'result' => true,
-                ];
-            }
-        }
-        return [
-            'result' => false,
-        ];
-    }
-
-    /**
-     * Return for allocate user into a program.
-     *
-     * @return external_single_structure
-     */
-    public static function allocate_user_returns(): external_single_structure {
         return new external_single_structure([
             'result' => new external_value(PARAM_BOOL),
         ]);

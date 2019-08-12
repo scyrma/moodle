@@ -51,7 +51,20 @@ class program_progress_report extends system_report {
     /**
      * @var int $programid
      */
-    private $programid;
+    private $program;
+
+    /**
+     * Current program
+     *
+     * @return program
+     */
+    protected function get_program(): program {
+        if (!$this->program) {
+            $programid = $this->get_parameter('programid', 0, PARAM_INT);
+            $this->program = new program($programid);
+        }
+        return $this->program;
+    }
 
     /**
      * Initialise report
@@ -60,7 +73,6 @@ class program_progress_report extends system_report {
      */
     protected function initialise(): void {
         $this->userid = $this->get_parameter('userid', 0, PARAM_INT);
-        $this->programid = $this->get_parameter('programid', 0, PARAM_INT);
 
         $u = 'u'; // User table alias.
         $p = 'p'; // Program table alias.
@@ -71,7 +83,7 @@ class program_progress_report extends system_report {
 
         $userparam = db::generate_param_name();
         $this->set_main_table(program::TABLE, $p);
-        $this->add_base_condition_simple("$p.id", $this->programid);
+        $this->add_base_condition_simple("$p.id", $this->get_program()->get('id'));
         $this->add_base_join("
             INNER JOIN (
                    SELECT $ps.*,
@@ -118,7 +130,7 @@ class program_progress_report extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return permission::can_view_reports($this->userid);
+        return permission::can_view_user_programs_progress($this->userid, $this->get_program());
     }
 
     /**

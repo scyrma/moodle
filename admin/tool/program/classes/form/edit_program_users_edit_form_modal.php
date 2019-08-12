@@ -52,13 +52,27 @@ class edit_program_users_edit_form_modal extends modal_form {
     /** @var int Date has been overriden and set to never (not set) */
     protected const DATE_OVERRIDE_NEVER = 2;
 
+    /** @var program_user */
+    protected $programuser;
+
+    /**
+     * Current program user
+     *
+     * @return program_user
+     */
+    protected function get_program_user(): program_user {
+        if (!$this->programuser) {
+            $this->programuser = new program_user($this->_ajaxformdata['programuserid']);
+        }
+        return $this->programuser;
+    }
+
     /**
      * Form definition. Abstract method - always override!
      */
     protected function definition(): void {
         $mform = $this->_form;
-        $programid = $this->_ajaxformdata['id'];
-        $programuserid = $this->_ajaxformdata['programuserid'];
+        $programuserid = $this->get_program_user()->get('id');
 
         $startdatestr = get_string('startdate', 'tool_program');
         $duedatestr = get_string('duedate', 'tool_program');
@@ -69,11 +83,8 @@ class edit_program_users_edit_form_modal extends modal_form {
         $suspendedstr = get_string('suspended', 'tool_program');
         $neverstr = get_string('never', 'tool_program');
 
-        $program = new program($programid);
+        $program = $this->get_program_user()->get_program();
         $dates = api::get_default_program_dates($program);
-
-        $mform->addElement('hidden', 'id', $programid);
-        $mform->setType('id', PARAM_INT);
 
         $mform->addElement('hidden', 'programuserid', $programuserid);
         $mform->setType('programuserid', PARAM_INT);
@@ -137,25 +148,21 @@ class edit_program_users_edit_form_modal extends modal_form {
      * Require capabilities.
      */
     public function require_access(): void {
-        $programuser = new program_user($this->_ajaxformdata['programuserid']);
-        permission::require_can_manage_user_allocation($programuser, context_system::instance());
+        permission::require_can_edit_user_allocation($this->get_program_user());
     }
 
     /**
      * Set Data for the modal form.
      */
     public function set_data_for_modal(): void {
-        $programuserid = $this->_ajaxformdata['programuserid'];
-        $programid = $this->_ajaxformdata['id'];
-        $programuser = new program_user($programuserid);
+        $programuser = $this->get_program_user();
         $userid = $programuser->get('userid');
 
         $duedatetype = self::calculate_type($programuser, 'duedate');
         $enddatetype = self::calculate_type($programuser, 'enddate');
 
         $formdata = [
-            'programid' => $programid,
-            'programuserid' => $programuserid,
+            'programuserid' => $programuser->get('id'),
             'userid' => $userid,
             'status' => $programuser->get('status'),
             'startdate' => $programuser->get('startdate'),
@@ -175,7 +182,7 @@ class edit_program_users_edit_form_modal extends modal_form {
      */
     public function process(stdClass $data): void {
         $programuser = new program_user($data->programuserid);
-        $program = new program($data->id);
+        $program = $programuser->get_program();
 
         $data->startdatelocked = $data->startdatetype;
 

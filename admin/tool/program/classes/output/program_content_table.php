@@ -61,7 +61,7 @@ class program_content_table extends table_tree {
      * @param context $context
      */
     public function __construct(program $program, context $context) {
-        $this->editable = permission::can_edit_details($program, $context);
+        $this->editable = permission::can_edit_details($program);
         $programtree = new program_tree($program);
         $this->exporter = new program_tree_exporter(null,
             ['context' => $context, 'programtree' => $programtree]);

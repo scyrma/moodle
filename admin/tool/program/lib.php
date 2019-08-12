@@ -102,7 +102,7 @@ function tool_program_output_fragment_programs_manager_users_list(array $args) {
     $programid = $args['id'];
     $context = $args['context'];
     $program = new program($programid);
-    permission::require_can_manage_users_list($program, $context);
+    permission::require_can_view_allocated_users($program);
 
     // Check if tool_reportbuilder is installed.
     if (class_exists('\\tool_reportbuilder\\system_report_factory')) {
@@ -134,10 +134,10 @@ function tool_program_output_fragment_program_overview(array $args) {
     $allocationid = $args['allocationid'];
     $programuser = new program_user($allocationid);
     $user = $programuser->get_user();
-    permission::require_can_view_reports($user->id);
+    $program = $programuser->get_program();
+    permission::require_can_view_user_programs_progress($user->id, $program);
 
     global $PAGE;
-    $program = $programuser->get_program();
     $programtreeprogress = new program_tree_progress($program, $user->id);
     $output = $PAGE->get_renderer('tool_program');
     $renderable = new program_progress_overview($user, $program, $programtreeprogress);
@@ -160,7 +160,7 @@ function tool_program_inplace_editable(string $itemtype, int $itemid, string $ne
     switch ($itemtype) {
         case 'programname':
             $program = new program($itemid);
-            permission::require_can_edit_details($program, $context);
+            permission::require_can_edit_details($program);
             $program->set('fullname', $newvalue);
             $program->update();
             $edithint = get_string('editprogramname', 'tool_program');
@@ -172,7 +172,7 @@ function tool_program_inplace_editable(string $itemtype, int $itemid, string $ne
         case 'setname':
             $programset = new program_set($itemid);
             $program = $programset->get_program();
-            permission::require_can_edit_details($program, $context);
+            permission::require_can_edit_details($program);
             $programset->set('name', $newvalue);
             $programset->update();
             $itemid = $programset->get('id');
@@ -195,31 +195,27 @@ function tool_program_inplace_editable(string $itemtype, int $itemid, string $ne
  * @return array
  */
 function tool_program_potential_users_selector($area, $itemid) {
-    if ($area !== 'allocate') {
+    if ($area !== 'allocate' || !$itemid) {
         return null;
     }
 
-    if ($itemid) {
-        $program = new program($itemid);
-        permission::require_can_allocate($program, context_system::instance());
-    }
+    $program = new program($itemid);
+    permission::require_can_allocate_anybody($program);
 
     [$join, $where, $params] = tenancy::get_users_sql();
 
-    if ($itemid) {
-        // Exclude users already allocated to the program.
-        $join .= ' LEFT JOIN {' . program_user::TABLE . '} pru' .
-            ' ON pru.userid = u.id AND programid = :programid AND allocationtype = :programallocation';
-        $where .= ' AND pru.id IS NULL';
-        $params['programid'] = $itemid;
-        $params['programallocation'] = constants::ALLOCATION_MANUAL;
-    }
+    // Exclude users already allocated to the program.
+    $join .= ' LEFT JOIN {' . program_user::TABLE . '} pru' .
+        ' ON pru.userid = u.id AND programid = :programid AND allocationtype = :programallocation';
+    $where .= ' AND pru.id IS NULL';
+    $params['programid'] = $itemid;
+    $params['programallocation'] = constants::ALLOCATION_MANUAL;
 
     if (class_exists('\\tool_organisation\\organisation')) {
-        $user = organisation::get_user_with_jobs();
-        $canallocate = $user && $user->is_manager(organisation::PERM_ALLOCATE_PROGRAMS);
         // Check if only can manage his own users and show only these users.
-        if ($canallocate && !permission::has_allocateuser_capability(context_system::instance())) {
+        if (!permission::has_allocateuser_capability($program->get_context()) &&
+                permission::can_allocate_anybody_as_organisation_manager()) {
+            $user = organisation::get_user_with_jobs();
             [$where0, $params0] = $user->get_managed_users_select('u', organisation::PERM_ALLOCATE_PROGRAMS);
             $paramsmerged = array_merge($params0, $params);
             return [$join, $where0 . ' AND ' . $where, $paramsmerged];
@@ -249,9 +245,9 @@ function tool_program_myprofile_navigation(tree $tree, $user, $iscurrentuser, $c
         $category = $tree->__get('categories')['learning'];
     }
 
-    $canviewreports = permission::can_view_reports($user->id);
+    $canviewreports = permission::can_view_user_programs_progress($user->id);
 
-    if ($iscurrentuser || $canviewreports) {
+    if ($canviewreports) {
         // Display active programs.
         $programs = api::get_programs_by_status_and_userid(constants::STATUS_OPEN, $user->id);
         if (!empty($programs)) {
@@ -303,9 +299,9 @@ function tool_program_myprofile_navigation(tree $tree, $user, $iscurrentuser, $c
  * @return bool
  */
 function tool_program_can_view_dynamic_rules(string $area, int $itemid): bool {
-    $program = new program($itemid);
-    $context = context_system::instance();
-    $canallocate = permission::can_allocate_anybody_as_organisation_manager();
-    $caneditdetails = permission::can_edit_details($program, $context);
-    return ($caneditdetails || $canallocate || permission::has_allocateuser_capability($context));
+    if ($area === 'program') {
+        $program = new program($itemid);
+        return permission::can_view_details($program);
+    }
+    return false;
 }

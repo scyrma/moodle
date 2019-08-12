@@ -92,7 +92,7 @@ class programs_progress_report extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return permission::can_view_reports($this->userid);
+        return permission::can_view_user_programs_progress($this->userid);
     }
 
     /**

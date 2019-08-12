@@ -145,7 +145,7 @@ class edit_program_details_form extends modal_form {
             permission::require_can_create(context_system::instance());
         } else {
             $program = new program($programid);
-            permission::require_can_edit_details($program, context_system::instance());
+            permission::require_can_edit_details($program);
         }
     }
 

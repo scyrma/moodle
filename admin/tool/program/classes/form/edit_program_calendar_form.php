@@ -35,6 +35,7 @@ use tool_program\api;
 use tool_program\constants;
 use tool_program\permission;
 use tool_program\persistent\program;
+use tool_tenant\tenancy;
 use tool_wp\modal_form;
 
 /**
@@ -45,12 +46,27 @@ use tool_wp\modal_form;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_program_calendar_form extends modal_form {
+
+    /** @var program current program */
+    protected $program = null;
+
+    /**
+     * Current program
+     *
+     * @return program
+     */
+    protected function get_program() : program {
+        if (!$this->program) {
+            $this->program = new program(!empty($this->_ajaxformdata['id']) ? $this->_ajaxformdata['id'] : 0);
+        }
+        return $this->program;
+    }
+
     /**
      * Form definition.
      */
     protected function definition(): void {
         $mform = $this->_form;
-        $programid = (int)$this->_ajaxformdata['id'];
 
         $startdatestr = get_string('startdate', 'tool_program');
         $duedatestr = get_string('duedate', 'tool_program');
@@ -63,8 +79,8 @@ class edit_program_calendar_form extends modal_form {
         $afterduedatestr = get_string('afterduedate', 'tool_program');
         $afterallocationwindowstartsstr = get_string('afterallocationwindowstarts', 'tool_program');
 
-        $program = new program($programid);
-        $caneditdetails = permission::can_edit_details($program, context_system::instance());
+        $program = $this->get_program();
+        $caneditdetails = permission::can_edit_details($program);
 
         $mform->addElement('hidden', 'id', 0);
         $mform->setType('id', PARAM_INT);
@@ -210,8 +226,7 @@ class edit_program_calendar_form extends modal_form {
      * Require access.
      */
     public function require_access(): void {
-        $program = new program($this->_ajaxformdata['id']);
-        permission::require_can_edit_details($program, \context_system::instance());
+        permission::require_can_view_details($this->get_program());
     }
 
     /**
@@ -221,19 +236,17 @@ class edit_program_calendar_form extends modal_form {
      * @return bool
      */
     public function process(stdClass $data): bool {
-        return api::update_program_calendar($data);
+        if (permission::can_edit_details($this->get_program())) {
+            return api::update_program_calendar($data);
+        }
+        return false;
     }
 
     /**
      * Sets data for form.
      */
     public function set_data_for_modal(): void {
-        if (!empty($this->_ajaxformdata['id'])) {
-            $program = new program($this->_ajaxformdata['id']);
-        } else {
-            $program = new program();
-        }
-        $programdata = $program->to_record();
+        $programdata = $this->get_program()->to_record();
         $this->set_data($programdata);
     }
 }

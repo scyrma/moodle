@@ -112,7 +112,7 @@ class tool_program_datasource_report_programs_allocations_testcase extends advan
         $generator = $this->get_reportbuilder_generator();
 
         // Create a report from the report_programs datasource with default columns/conditions.
-        $reportid = $generator->create_report(['source' => report_programs_allocation_completion::class])->id;
+        $reportid = $generator->create_report(['source' => report_programs_allocation_completion::class])->get_id();
 
         // Execute report for different users.
 
@@ -146,7 +146,7 @@ class tool_program_datasource_report_programs_allocations_testcase extends advan
             'source' => report_programs_allocation_completion::class,
             'tenantid' => $tenantid,
             'adddefault' => (int) $adddefault
-        ])->id;
+        ])->get_id();
     }
 
     /**

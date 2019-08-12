@@ -30,16 +30,16 @@ require_once(__DIR__ . '/../../../config.php');
 
 // Get URL parameters.
 $programid = required_param('programid', PARAM_INT);
+$program = new program($programid);
 $userid = required_param('userid', PARAM_INT);
 
 $context = context_system::instance();
 require_login();
 
 // Check if can view reports of this user.
-permission::require_can_view_reports($userid);
-$user = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
+permission::require_can_view_user_programs_progress($userid, $program);
+$user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', MUST_EXIST);
 $username = fullname($user);
-$program = new program($programid);
 $options = ['context' => $context, 'escape' => false];
 $programname = format_string($program->get('fullname'), true, $options);
 $programsstr = get_string('programs', 'tool_program');

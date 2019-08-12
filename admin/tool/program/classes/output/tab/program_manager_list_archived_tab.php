@@ -84,7 +84,7 @@ class program_manager_list_archived_tab extends tab {
      * @return bool
      */
     public function is_available(): bool {
-        return permission::can_view_list(context_system::instance());
+        return permission::can_view_archived_list();
     }
 
     /**

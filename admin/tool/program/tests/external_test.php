@@ -140,51 +140,6 @@ class tool_program_external_testcase extends externallib_advanced_testcase {
         $this->assertCount(count($cleanresult), $result);
     }
 
-    public function test_allocate_user(): void {
-        global $DB;
-        $program = $this->generator->generate_program_with_base_set((object) [
-            'tenantid' => $this->defaulttenantid,
-        ]);
-
-        $programuserdata = [
-            'userid' => $this->user->id,
-            'certificationid' => 0,
-            'allocationtype' => constants::ALLOCATION_MANUAL,
-            'startdate' => strtotime('-7 day'),
-            'startdatelocked' => constants::DATE_UNLOCKED,
-            'enddate' => strtotime('+7 day'),
-            'enddatelocked' => constants::DATE_UNLOCKED,
-            'duedate' => strtotime('+7 day'),
-            'duedatelocked' => constants::DATE_UNLOCKED,
-            'status' => 1,
-        ];
-
-        $result = external::allocate_user($program->get('id'), $programuserdata);
-
-        $this->assertNotEmpty($result);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertFalse($result['result']);
-
-        $cleanresult = external_api::clean_returnvalue(external::allocate_user_returns(), $result);
-        $this->assertDebuggingNotCalled();
-        $this->assertCount(count($cleanresult), $result);
-
-        $this->generator->assign_allocateuser_capability($this->user->id, context_system::instance());
-
-        $result = external::allocate_user($program->get('id'), $programuserdata);
-
-        $this->assertNotEmpty($result);
-        $this->assertArrayHasKey('result', $result);
-        $this->assertTrue($result['result']);
-        $params = ['programid' => $program->get('id'), 'certificationid' => 0, 'userid' => $this->user->id];
-        $record = $DB->record_exists('tool_program_users', $params);
-        $this->assertNotEmpty($record);
-
-        $cleanresult = external_api::clean_returnvalue(external::allocate_user_returns(), $result);
-        $this->assertDebuggingNotCalled();
-        $this->assertCount(count($cleanresult), $result);
-    }
-
     public function test_deallocate_user(): void {
         global $DB;
         $program = $this->generator->generate_program_with_base_set((object) [
@@ -606,8 +561,9 @@ class tool_program_external_testcase extends externallib_advanced_testcase {
 
     public function test_reset_program_progress(): void {
         $data = $this->generator->generate_program_filled_with_user_completion();
-        self::setUser($data->user);
-        $this->generator->assign_edit_capability($data->user->id, context_system::instance());
+        $manager = $this->getDataGenerator()->create_user();
+        self::setUser($manager);
+        $this->generator->assign_allocateuser_capability($manager->id, context_system::instance());
 
         $programuser = $this->generator->allocate_user_to_program($data->program->get('id'), $data->user->id);
 

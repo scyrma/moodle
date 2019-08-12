@@ -75,18 +75,18 @@ class tool_program_permission_testcase extends advanced_testcase {
      */
     protected function assign_job_with_allocate_permission(int $userid) : void {
         $tenantgenerator = $this->get_tenantgenerator();
-        $tenant = $tenantgenerator->create_tenant();
+        $tenantid = \tool_tenant\tenancy::get_tenant_id($userid);
 
         /** @var tool_organisation_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
 
-        $pf = $generator->create_position(['tenantid' => $tenant->id]);
+        $pf = $generator->create_position(['tenantid' => $tenantid]);
         // Global permission to allocate users.
         $pa = $generator->create_position(['parentid' => $pf->id, 'globalmanager' => 1, 'globalpermissions' => 1]);
-        $df = $generator->create_department(['tenantid' => $tenant->id]);
+        $df = $generator->create_department(['tenantid' => $tenantid]);
         $da = $generator->create_department(['parentid' => $df->id]);
 
-        $tenantgenerator->allocate_user($userid, $tenant->id);
+        $tenantgenerator->allocate_user($userid, $tenantid);
 
         $manager = new \tool_organisation\job_manager();
         $manager->create_job((object)['userid' => $userid,
@@ -178,25 +178,25 @@ class tool_program_permission_testcase extends advanced_testcase {
         api::allocate_user($program, $userdata);
         self::setUser($user);
 
-        $canview = permission::can_view_program($program, $userid, $context);
+        $canview = permission::can_view_program($program, $userid);
         $this->assertTrue($canview);
 
         // We archive program.
         api::archive_program($program);
-        $canview = permission::can_view_program($program, $userid, $context);
+        $canview = permission::can_view_program($program, $userid);
         $this->assertFalse($canview);
 
         api::restore_program($program);
-        $canview = permission::can_view_program($program, $userid, $context);
+        $canview = permission::can_view_program($program, $userid);
         $this->assertTrue($canview);
 
         // We hide program.
         api::update_program_visibility($program, 0);
-        $canview = permission::can_view_program($program, $userid, $context);
+        $canview = permission::can_view_program($program, $userid);
         $this->assertFalse($canview);
 
         api::update_program_visibility($program, 1);
-        $canview = permission::can_view_program($program, $userid, $context);
+        $canview = permission::can_view_program($program, $userid);
         $this->assertTrue($canview);
     }
 
@@ -246,41 +246,40 @@ class tool_program_permission_testcase extends advanced_testcase {
         $program->update();
 
         // We can allocate user with these conditions set.
-        $this->assertTrue(permission::can_allocate($program, $context));
+        $this->assertTrue(permission::can_allocate_anybody($program));
 
         // We archive program.
         $program->set('archived', 1);
         $program->update();
-        $this->assertFalse(permission::can_allocate($program, $context));
+        $this->assertFalse(permission::can_allocate_anybody($program));
 
         // We modify allocation window program.
         $program->set('archived', 0);
         $program->set('allocationstartdateabsolute', $twodaysmore);
         $program->update();
-        $this->assertFalse(permission::can_allocate($program, $context));
+        $this->assertFalse(permission::can_allocate_anybody($program));
 
         // We modify tenant id on certification.
         $program->set('allocationstartdateabsolute', $onedayless);
         $program->set('tenantid', $data->othertenantid);
         $program->update();
-        $this->assertFalse(permission::can_allocate($program, $context));
+        $this->assertFalse(permission::can_allocate_anybody($program));
 
         // We restore good values.
         $program->set('tenantid', $data->defaulttenantid);
         $program->update();
-        $this->assertTrue(permission::can_allocate($program, $context));
+        $this->assertTrue(permission::can_allocate_anybody($program));
 
         // We hide program.
         $program->set('visible', 0);
         $program->update();
-        $this->assertTrue(permission::can_allocate($program, $context));
+        $this->assertTrue(permission::can_allocate_anybody($program));
     }
 
     /**
      * Test if user can allocate user to a program
      */
     public function test_require_can_allocate(): void {
-        $context = context_system::instance();
         // Create one user.
         $user = self::getDataGenerator()->create_user();
         self::setUser($user);
@@ -291,7 +290,7 @@ class tool_program_permission_testcase extends advanced_testcase {
 
         $str = get_string('errorcantallocateusers', 'tool_program');
         $this->expectExceptionMessage($str);
-        permission::require_can_allocate($program, $context);
+        permission::require_can_allocate_anybody($program);
     }
 
     /**
@@ -309,7 +308,7 @@ class tool_program_permission_testcase extends advanced_testcase {
         $this->generator->add_dummy_program_tags($programdata);
         $program = api::create_program($programdata);
 
-        $return = permission::can_edit_details($program, $context);
+        $return = permission::can_edit_details($program);
         $this->assertFalse($return);
 
         // We assign capability to user.
@@ -317,15 +316,15 @@ class tool_program_permission_testcase extends advanced_testcase {
 
         $program->set('archived', '0');
         $program->update();
-        $this->assertTrue(permission::can_edit_details($program, $context));
+        $this->assertTrue(permission::can_edit_details($program));
 
         $program->set('tenantid', '0');
         $program->update();
-        $this->assertFalse(permission::can_edit_details($program, $context));
+        $this->assertFalse(permission::can_edit_details($program));
 
         $str = get_string('errornopermissionmanageprograms', 'tool_program');
         $this->expectExceptionMessage($str);
-        permission::require_can_edit_details($program, $context);
+        permission::require_can_edit_details($program);
     }
 
     /**
@@ -369,7 +368,6 @@ class tool_program_permission_testcase extends advanced_testcase {
      * Test if user can archive a program
      */
     public function test_require_can_archive(): void {
-        $context = context_system::instance();
         // Create one user.
         $user = self::getDataGenerator()->create_user();
         self::setUser($user);
@@ -380,7 +378,7 @@ class tool_program_permission_testcase extends advanced_testcase {
 
         $str = get_string('errornopermissionmanageprograms', 'tool_program');
         $this->expectExceptionMessage($str);
-        permission::require_can_archive($program, $context);
+        permission::require_can_archive($program);
     }
 
     /**
@@ -401,22 +399,22 @@ class tool_program_permission_testcase extends advanced_testcase {
         $program->update();
 
         // We check without capability.
-        $this->assertFalse(permission::can_restore($program, $context));
+        $this->assertFalse(permission::can_restore($program));
 
         // We assign capability to user.
         $this->generator->assign_edit_capability($data->user->id, $context);
-        $this->assertTrue(permission::can_restore($program, $context));
+        $this->assertTrue(permission::can_restore($program));
 
         // We check with different tenantid.
         $program->set('tenantid', $data->othertenantid);
         $program->update();
-        $this->assertFalse(permission::can_restore($program, $context));
+        $this->assertFalse(permission::can_restore($program));
 
         // We check with program not archived.
         $program->set('tenantid', $data->defaulttenantid);
         $program->set('archived', 0);
         $program->update();
-        $this->assertFalse(permission::can_restore($program, $context));
+        $this->assertFalse(permission::can_restore($program));
     }
 
     /**
@@ -434,7 +432,7 @@ class tool_program_permission_testcase extends advanced_testcase {
 
         $str = get_string('errornopermissionmanageprograms', 'tool_program');
         $this->expectExceptionMessage($str);
-        permission::require_can_restore($program, $context);
+        permission::require_can_restore($program);
     }
 
     /**
@@ -454,29 +452,28 @@ class tool_program_permission_testcase extends advanced_testcase {
         $program->update();
 
         // We check with no capability.
-        $this->assertFalse(permission::can_delete($program, $context));
+        $this->assertFalse(permission::can_delete($program));
 
         // We assign capability to user.
         $this->generator->assign_edit_capability($data->user->id, $context);
-        $this->assertTrue(permission::can_delete($program, $context));
+        $this->assertTrue(permission::can_delete($program));
 
         // We check with different tenant id.
         $program->set('tenantid', $data->othertenantid);
         $program->update();
-        $this->assertFalse(permission::can_delete($program, $context));
+        $this->assertFalse(permission::can_delete($program));
 
         // We check with program not archived.
         $program->set('tenantid', $data->defaulttenantid);
         $program->set('archived', 0);
         $program->update();
-        $this->assertFalse(permission::can_delete($program, $context));
+        $this->assertFalse(permission::can_delete($program));
     }
 
     /**
      * Test if user can delete a program
      */
     public function test_require_can_delete(): void {
-        $context = context_system::instance();
         // Create one user.
         $user = self::getDataGenerator()->create_user();
         self::setUser($user);
@@ -487,7 +484,7 @@ class tool_program_permission_testcase extends advanced_testcase {
 
         $str = get_string('errornopermissionmanageprograms', 'tool_program');
         $this->expectExceptionMessage($str);
-        permission::require_can_delete($program, $context);
+        permission::require_can_delete($program);
     }
 
     /**
@@ -531,32 +528,32 @@ class tool_program_permission_testcase extends advanced_testcase {
         $this->generator->add_dummy_program_tags($programdata);
         $program = api::create_program($programdata);
 
-        $canbeallocated = permission::can_be_allocated($program, $data->user->id, $certificationid);
+        $canbeallocated = permission::can_allocate_user($program, $data->user->id);
         $this->assertFalse($canbeallocated);
 
         // We assign capability to user.
         $this->generator->assign_allocateuser_capability($data->user->id, context_system::instance());
 
-        $canbeallocated = permission::can_be_allocated($program, $data->user->id, $certificationid);
+        $canbeallocated = permission::can_allocate_user($program, $data->user->id);
         $this->assertTrue($canbeallocated);
 
         // Other tenant id.
         $program->set('tenantid', $data->othertenantid);
         $program->update();
-        $canbeallocated = permission::can_be_allocated($program, $data->user->id, $certificationid);
+        $canbeallocated = permission::can_allocate_user($program, $data->user->id);
         $this->assertFalse($canbeallocated);
 
         // Same tenant id.
         $program->set('tenantid', $data->defaulttenantid);
         $program->update();
-        $canbeallocated = permission::can_be_allocated($program, $data->user->id, $certificationid);
+        $canbeallocated = permission::can_allocate_user($program, $data->user->id);
         $this->assertTrue($canbeallocated);
 
         // Allocation window closed.
         $program->set('allocationstartdateabsolute', strtotime(' +1 day'));
         $program->set('allocationstartdatetype', constants::DATE_ABSOLUTE);
         $program->update();
-        $canbeallocated = permission::can_be_allocated($program, $data->user->id, $certificationid);
+        $canbeallocated = permission::can_allocate_user($program, $data->user->id);
         $this->assertFalse($canbeallocated);
 
         // Already allocated and can not be allocated more than once to same program directly.
@@ -568,112 +565,8 @@ class tool_program_permission_testcase extends advanced_testcase {
             'certificationid' => 0,
         ];
         api::allocate_user($program, $userdata);
-        $canbeallocated = permission::can_be_allocated($program, $data->user->id, $certificationid);
+        $canbeallocated = permission::can_allocate_user($program, $data->user->id);
         $this->assertFalse($canbeallocated);
-
-        $certgenerator = $this->get_certificationgenerator();
-        $certificationdata = [
-            'tenantid' => $data->defaulttenantid,
-            'allocationstartdatetype' => \tool_certification\constants::ALLOCATION_SET,
-            'allocationstartdateabsolute' => strtotime(' +1 day'),
-            'allocationenddatetype' => \tool_certification\constants::ALLOCATION_SET,
-            'allocationenddateabsolute' => strtotime(' +2 day')
-        ];
-        $certification = $certgenerator->generate_certification($certificationdata);
-        $canbeallocated = permission::can_be_allocated($program, $data->user->id, $certification->get('id'));
-        $this->assertFalse($canbeallocated);
-    }
-
-    /**
-     * Test if user can view delete icon
-     */
-    public function test_can_view_delete_icon(): void {
-        $row = new stdClass();
-        $context = context_system::instance();
-        $data = $this->generator->create_tenant_and_user();
-        self::setUser($data->user);
-
-        $programdata = $this->generator->get_dummy_program_data();
-        $this->generator->add_dummy_program_tags($programdata);
-        $program = api::create_program($programdata);
-        $program->set('archived', '0');
-        $program->set('tenantid', $data->othertenantid);
-        $program->update();
-
-        $this->assertEquals('0', $program->get('archived'));
-        $this->assertEquals($data->othertenantid, $program->get('tenantid'));
-
-        // Test with not same tenant, archived and no capability.
-        $row->id = $program->get('id');
-        $canview = permission::can_view_delete_icon($row);
-        $this->assertFalse($canview);
-
-        // Test with not same tenant, archived and capability.
-        $this->generator->assign_edit_capability($data->user->id, $context);
-        $canview = permission::can_view_delete_icon($row);
-        $this->assertFalse($canview);
-
-        $program->set('archived', '1');
-        $program->update();
-
-        // Test with not same tenant, not archived and capability.
-        $this->assertEquals('1', $program->get('archived'));
-        $canview = permission::can_view_delete_icon($row);
-        $this->assertFalse($canview);
-
-        // We assign certification to default tenantid.
-        $program->set('tenantid', $data->defaulttenantid);
-        $program->update();
-
-        // All conditions.
-        $canview = permission::can_view_delete_icon($row);
-        $this->assertTrue($canview);
-    }
-
-    /**
-     * Test if user can view restore icon
-     */
-    public function test_can_view_restore_icon(): void {
-        $row = new stdClass();
-        $context = context_system::instance();
-        $data = $this->generator->create_tenant_and_user();
-        self::setUser($data->user);
-
-        $programdata = $this->generator->get_dummy_program_data();
-        $this->generator->add_dummy_program_tags($programdata);
-        $programdata->archived = 0;
-        $program = api::create_program($programdata);
-        $program->set('tenantid', $data->othertenantid);
-        $program->update();
-
-        $this->assertEquals('0', $program->get('archived'));
-        $this->assertEquals($data->othertenantid, $program->get('tenantid'));
-
-        // Test with not same tenant, archived and no capability.
-        $row->id = $program->get('id');
-        $canview = permission::can_view_restore_icon($row);
-        $this->assertFalse($canview);
-
-        // Test with not same tenant, archived and capability.
-        $this->generator->assign_edit_capability($data->user->id, $context);
-        $canview = permission::can_view_restore_icon($row);
-        $this->assertFalse($canview);
-
-        $program->set('archived', '1');
-        $program->update();
-
-        // Test with not same tenant, not archived and capability.
-        $this->assertEquals('1', $program->get('archived'));
-        $canview = permission::can_view_restore_icon($row);
-        $this->assertFalse($canview);
-
-        // We assign certification to default tenantid.
-        $program->set('tenantid', $data->defaulttenantid);
-        $program->update();
-
-        // All conditions.
-        $canview = permission::can_view_restore_icon($row);
-        $this->assertTrue($canview);
     }
 
     public function test_check_access(): void {
@@ -697,7 +590,10 @@ class tool_program_permission_testcase extends advanced_testcase {
         $this->assertTrue($access);
     }
 
-    public function test_can_view_reports(): void {
+    /**
+     * Check if user can see programs progress of another user
+     */
+    public function test_can_view_user_programs_progress(): void {
         $tenantgenerator = $this->get_tenantgenerator();
         $tenant = $tenantgenerator->create_tenant();
 
@@ -709,51 +605,85 @@ class tool_program_permission_testcase extends advanced_testcase {
         $this->setUser($manager);
 
         // Manager can view its own reports.
-        $canview = permission::can_view_reports($manager->id);
+        $canview = permission::can_view_user_programs_progress($manager->id);
         $this->assertTrue($canview);
 
         // Check no permission to view.
-        $canview = permission::can_view_reports($user->id);
+        $canview = permission::can_view_user_programs_progress($user->id);
         $this->assertFalse($canview);
 
         $this->generate_manager_user_structure($manager->id, $user->id, $tenant->id);
 
         // Check permission to view.
-        $canview = permission::can_view_reports($user->id);
+        $canview = permission::can_view_user_programs_progress($user->id);
         $this->assertTrue($canview);
     }
 
-    public function test_can_deallocate(): void {
-        $context = context_system::instance();
-        // We generate default tenant and user.
-        $data = $this->generator->create_tenant_and_user();
-        $this->setUser($data->user);
+    /**
+     * Check if user can see program progress of another user
+     */
+    public function test_can_view_user_program_progress(): void {
+        $tenantgenerator = $this->get_tenantgenerator();
+        $tenant = $tenantgenerator->create_tenant();
 
-        $user2 = $this->getDataGenerator()->create_user();
+        $manager = $this->getDataGenerator()->create_user();
+        $user = $this->getDataGenerator()->create_user();
+        $tenantgenerator->allocate_user($manager->id, $tenant->id);
+        $tenantgenerator->allocate_user($user->id, $tenant->id);
+        $this->generate_manager_user_structure($manager->id, $user->id, $tenant->id);
 
-        // We assign capability to user.
-        $this->generator->assign_allocateuser_capability($data->user->id, $context);
+        $program = $this->generator->generate_program_with_base_set((object)['tenantid' => $tenant->id]);
 
-        $program = $this->generator->generate_program((object)['tenantid' => $data->defaulttenantid, 'archived' => 0]);
+        // Manager can see programs progress report on the given user but can not see
+        // report on particular program (because user is not allocated to it).
+        $this->setUser($manager);
+        $canview = permission::can_view_user_programs_progress($user->id);
+        $this->assertTrue($canview);
+        $canview = permission::can_view_user_programs_progress($user->id, $program);
+        $this->assertFalse($canview);
 
-        // We can allocate user with these conditions set.
-        $this->assertTrue(permission::can_deallocate($program, $context, $user2->id));
+        $userdata = (object) [
+            'userid' => $user->id,
+            'certificationid' => 0,
+        ];
+        api::allocate_user($program, $userdata);
 
-        // We archive certification.
-        $program->set('archived', 1);
+        $canview = permission::can_view_user_programs_progress($user->id, $program);
+        $this->assertTrue($canview);
+    }
+
+    /**
+     * Check if user can see program progress of another user
+     */
+    public function test_can_view_user_program_progress_self(): void {
+        $tenantgenerator = $this->get_tenantgenerator();
+        $tenant = $tenantgenerator->create_tenant();
+
+        $user = $this->getDataGenerator()->create_user();
+        $tenantgenerator->allocate_user($user->id, $tenant->id);
+
+        $program = $this->generator->generate_program_with_base_set((object)['tenantid' => $tenant->id]);
+
+        $this->setUser($user->id);
+        // User can not see their progress on a program they are not allocated to.
+        $canview = permission::can_view_user_programs_progress($user->id, $program);
+        $this->assertFalse($canview);
+
+        $userdata = (object) [
+            'userid' => $user->id,
+            'certificationid' => 0,
+        ];
+        api::allocate_user($program, $userdata);
+        // User can see their progress on a program they are allocated to.
+        $canview = permission::can_view_user_programs_progress($user->id, $program);
+        $this->assertTrue($canview);
+
+        $program->set('visible', false);
         $program->update();
-        $this->assertFalse(permission::can_deallocate($program, $context, $user2->id));
 
-        // We modify tenant id on certification.
-        $program->set('archived', 0);
-        $program->set('tenantid', $data->othertenantid);
-        $program->update();
-        $this->assertFalse(permission::can_deallocate($program, $context, $user2->id));
-
-        // We restore good values.
-        $program->set('tenantid', $data->defaulttenantid);
-        $program->update();
-        $this->assertTrue(permission::can_deallocate($program, $context, $user2->id));
+        // User can not see their progress on a program they are allocated to if the program is hidden.
+        $canview = permission::can_view_user_programs_progress($user->id, $program);
+        $this->assertFalse($canview);
     }
 
     public function test_require_can_view_list(): void {
@@ -769,7 +699,7 @@ class tool_program_permission_testcase extends advanced_testcase {
         $program = $this->generator->generate_program();
 
         $this->expectExceptionMessage($str);
-        permission::require_can_manage_users_list($program, $context);
+        permission::require_can_view_allocated_users($program);
     }
 
     public function test_can_view_allocated_users(): void {
@@ -791,29 +721,29 @@ class tool_program_permission_testcase extends advanced_testcase {
         // We assign capability to user.
         $this->generator->assign_allocateuser_capability($data->user->id, $context);
 
-        $canview = permission::can_view_allocated_users($program, $context);
+        $canview = permission::can_view_allocated_users($program);
         $this->assertTrue($canview);
 
         $program->set('archived', 1);
         $program->update();
-        $canview = permission::can_view_allocated_users($program, $context);
+        $canview = permission::can_view_allocated_users($program);
         $this->assertFalse($canview);
 
         $program->set('archived', 0);
         $program->set('tenantid', $data->othertenantid);
         $program->update();
-        $canview = permission::can_view_allocated_users($program, $context);
+        $canview = permission::can_view_allocated_users($program);
         $this->assertFalse($canview);
 
         $program->set('tenantid', $data->defaulttenantid);
         $program->set('allocationstartdateabsolute', strtotime(' +1 day'));
         $program->update();
-        $canview = permission::can_view_allocated_users($program, $context);
+        $canview = permission::can_view_allocated_users($program);
         $this->assertFalse($canview);
 
         $program->set('allocationstartdateabsolute', strtotime(' -1 day'));
         $program->update();
-        $canview = permission::can_view_allocated_users($program, $context);
+        $canview = permission::can_view_allocated_users($program);
         $this->assertTrue($canview);
     }
 
@@ -830,16 +760,16 @@ class tool_program_permission_testcase extends advanced_testcase {
         ];
         $programuser = api::allocate_user($program, $userdata);
 
-        $canmanage = permission::can_manage_user_allocation($programuser, $context);
+        $canmanage = permission::can_edit_user_allocation($programuser, $context);
         $this->assertFalse($canmanage);
 
         $this->generator->assign_allocateuser_capability($data->user->id, $context);
-        $canmanage = permission::can_manage_user_allocation($programuser, $context);
+        $canmanage = permission::can_edit_user_allocation($programuser, $context);
         $this->assertTrue($canmanage);
 
         $programuser->set('certificationid', 99);
         $programuser->update();
-        $canmanage = permission::can_manage_user_allocation($programuser, $context);
+        $canmanage = permission::can_edit_user_allocation($programuser, $context);
         $this->assertFalse($canmanage);
 
         $programuser->set('certificationid', 0);
@@ -848,11 +778,11 @@ class tool_program_permission_testcase extends advanced_testcase {
         $user2 = $this->getDataGenerator()->create_user();
         $this->get_tenantgenerator()->allocate_user($user2->id, $data->defaulttenantid);
         self::setUser($user2);
-        $canmanage = permission::can_manage_user_allocation($programuser, $context);
+        $canmanage = permission::can_edit_user_allocation($programuser, $context);
         $this->assertFalse($canmanage);
 
         $this->generate_manager_user_structure($user2->id, $data->user->id, $data->defaulttenantid);
-        $canmanage = permission::can_manage_user_allocation($programuser, $context);
+        $canmanage = permission::can_edit_user_allocation($programuser, $context);
         $this->assertTrue($canmanage);
     }
 
@@ -870,7 +800,7 @@ class tool_program_permission_testcase extends advanced_testcase {
 
         $str = get_string('errornopermissionmanageusers', 'tool_program');
         $this->expectExceptionMessage($str);
-        permission::require_can_manage_user_allocation($programuser, $context);
+        permission::require_can_edit_user_allocation($programuser);
     }
 
     public function test_require_can_be_allocated(): void {
@@ -880,83 +810,37 @@ class tool_program_permission_testcase extends advanced_testcase {
 
         $str = get_string('errorusercantbeallocated', 'tool_program');
         $this->expectExceptionMessage($str);
-        permission::require_can_be_allocated($program, $data->user->id, 0);
-    }
-
-    public function test_can_view_archive_icon(): void {
-        $row = new stdClass();
-        $data = $this->generator->create_tenant_and_user();
-        $this->setUser($data->user);
-
-        $programdata = $this->generator->get_dummy_program_data();
-        $programdata->tenantid = $data->defaulttenantid;
-        $program = $this->generator->generate_program($programdata);
-        $row->id = $program->get('id');
-
-        $canview = permission::can_view_archive_icon($row);
-        $this->assertTrue($canview);
-
-        $certgenerator = $this->get_certificationgenerator();
-        $certificationdata = [
-            'tenantid' => $data->defaulttenantid,
-            'program'  => $program->get('id'),
-            'archived' => 0,
-        ];
-        $certification = $certgenerator->generate_certification($certificationdata);
-
-        $canview = permission::can_view_archive_icon($row);
-        $this->assertFalse($canview);
-
-        $certification->set('archived', 1);
-        $certification->update();
-
-        $canview = permission::can_view_archive_icon($row);
-        $this->assertTrue($canview);
-    }
-
-    public function test_can_view_allocate_icon(): void {
-        $row = new stdClass();
-        $data = $this->generator->create_tenant_and_user();
-        self::setUser($data->user);
-
-        $programdata = $this->generator->get_dummy_program_data();
-        $programdata->tenantid = $data->defaulttenantid;
-        $program = $this->generator->generate_program($programdata);
-        $row->id = $program->get('id');
-        $canview = permission::can_view_allocate_icon($row);
-        $this->assertTrue($canview);
-
-        $program->set('allocationstartdateabsolute', strtotime('+1 day'));
-        $program->update();
-
-        $canview = permission::can_view_allocate_icon($row);
-        $this->assertFalse($canview);
+        permission::require_can_allocate_user($program, $data->user->id);
     }
 
     public function test_can_reset_progress(): void {
         $context = context_system::instance();
         $data = $this->generator->create_tenant_and_user();
-        self::setUser($data->user);
+        $manager = $this->getDataGenerator()->create_user();
+        self::setUser($manager);
 
         $programdata = $this->generator->get_dummy_program_data();
         $programdata->tenantid = $data->defaulttenantid;
         $program = $this->generator->generate_program($programdata);
-        $canreset = permission::can_reset_progress($program, $context);
+        $programuser = $this->generator->allocate_user_to_program($program->get('id'), $data->user->id);
+        $programuser->set_program($program);
+
+        $canreset = permission::can_reset_progress($programuser);
         $this->assertFalse($canreset);
 
-        $this->generator->assign_edit_capability($data->user->id, $context);
-        $canreset = permission::can_reset_progress($program, $context);
+        $this->generator->assign_allocateuser_capability($manager->id, $context);
+        $canreset = permission::can_reset_progress($programuser);
         $this->assertTrue($canreset);
 
         $program->set('tenantid', $data->othertenantid);
         $program->update();
-        $canreset = permission::can_reset_progress($program, $context);
+        $canreset = permission::can_reset_progress($programuser);
         $this->assertFalse($canreset);
 
         $program->set('tenantid', $data->defaulttenantid);
         $program->set('archived', 1);
         $program->update();
-        $canreset = permission::can_reset_progress($program, $context);
+        $canreset = permission::can_reset_progress($programuser);
         $this->assertFalse($canreset);
     }
 
@@ -964,31 +848,11 @@ class tool_program_permission_testcase extends advanced_testcase {
         $data = $this->generator->create_tenant_and_user();
         self::setUser($data->user);
         $program = $this->generator->generate_program();
+        $programuser = $this->generator->allocate_user_to_program($program->get('id'), $data->user->id);
 
         $str = get_string('errorcannotresetprogram', 'tool_program');
         $this->expectExceptionMessage($str);
-        permission::require_can_reset_progress($program, context_system::instance());
-    }
-
-    public function test_can_view_reset_completion_icon(): void {
-        $row = new stdClass();
-        $context = context_system::instance();
-        $data = $this->generator->create_tenant_and_user();
-        self::setUser($data->user);
-
-        $row->certificationid = 99;
-        $canview = permission::can_view_reset_completion_icon($row);
-        $this->assertFalse($canview);
-
-        $programdata = $this->generator->get_dummy_program_data();
-        $programdata->tenantid = $data->defaulttenantid;
-        $program = $this->generator->generate_program($programdata);
-
-        $row->programid = $program->get('id');
-        $row->certificationid = 0;
-        $this->generator->assign_edit_capability($data->user->id, $context);
-        $canview = permission::can_view_reset_completion_icon($row);
-        $this->assertTrue($canview);
+        permission::require_can_reset_progress($programuser);
     }
 
     public function test_require_can_self_enrol_to_course(): void {
@@ -1061,12 +925,12 @@ class tool_program_permission_testcase extends advanced_testcase {
         $tenantgenerator->allocate_user($user->id, $tenant->id);
 
         $this->setUser($manager);
-        $canview = permission::can_view_reports_as_organisation_manager($user->id);
+        $canview = permission::can_view_user_programs_progress_as_organisation_manager($user->id);
         $this->assertFalse($canview);
 
         $this->generate_manager_user_structure($manager->id, $user->id, $tenant->id);
 
-        $canview = permission::can_view_reports_as_organisation_manager($user->id);
+        $canview = permission::can_view_user_programs_progress_as_organisation_manager($user->id);
         $this->assertTrue($canview);
     }
 

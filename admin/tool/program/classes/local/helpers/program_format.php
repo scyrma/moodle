@@ -120,27 +120,6 @@ class program_format {
     }
 
     /**
-     * Column name with inplace editable.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function fullnameeditable(string $value, stdClass $row): string {
-        global $OUTPUT;
-        $edithint = get_string('editprogramname', 'tool_program');
-        $displayvalue = format_string($value);
-        $url = new moodle_url('/admin/tool/program/edit.php', ['id' => $row->id]);
-        $editlabel = get_string('newvaluefor', 'form', $displayvalue);
-        $displayvalue = html_writer::link($url, $displayvalue);
-        $editable = permission::can_edit_details(new program($row->id), context_system::instance());
-        $inlineeditable = new inplace_editable('tool_program', 'programname', $row->id, $editable,
-            $displayvalue, $value, $edithint, $editlabel);
-
-        return $OUTPUT->render($inlineeditable);
-    }
-
-    /**
      * Returns formatted id number
      *
      * @param string $value
@@ -379,6 +358,7 @@ class program_format {
      * @return string
      */
     public static function relatedcertifications(?string $value, stdClass $row): string {
+        // TODO WP-946 WP-966 performs DB queries.
         $certlist = certification::get_records(['program' => $row->id, 'tenantid' => tenancy::get_tenant_id()]);
         if (empty($certlist)) {
             return '';

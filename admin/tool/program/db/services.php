@@ -128,11 +128,4 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
-    'tool_program_allocate_user' => [
-        'classname' => tool_program\external::class,
-        'methodname' => 'allocate_user',
-        'description' => 'Allocate user into a program',
-        'type' => 'write',
-        'ajax' => true,
-    ],
 ];

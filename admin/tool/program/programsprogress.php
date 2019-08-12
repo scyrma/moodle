@@ -36,7 +36,7 @@ $context = context_system::instance();
 require_login();
 
 // Check if can view reports of this user.
-permission::require_can_view_reports($userid);
+permission::require_can_view_user_programs_progress($userid);
 
 if ($type !== -1 && !array_key_exists($type, api::get_program_statuses_fieldset())) {
     throw new moodle_exception('errorreporttypedoesnotexist', 'tool_program');
@@ -46,7 +46,7 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_url(new moodle_url("/$CFG->admin/tool/program/programsprogress.php", ['userid' => $userid, 'type' => $type]));
 $PAGE->set_context($context);
 
-$user = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
+$user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', MUST_EXIST);
 $username = fullname($user);
 $programsstr = get_string('programs', 'tool_program');
 $PAGE->navbar->add($username, new moodle_url('/user/profile.php', ['id' => $userid]));

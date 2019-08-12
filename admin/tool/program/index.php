@@ -25,16 +25,11 @@
 use tool_program\permission;
 
 require_once(__DIR__ . '/../../../config.php');
+require_once($CFG->dirroot . '/lib/adminlib.php');
+
 
 // Check permissions.
-require_login();
-$context = context_system::instance();
-permission::require_can_view_list($context);
-
-$PAGE->set_pagelayout('admin');
-$programsmanagerurl = new moodle_url('/admin/tool/program/index.php');
-$PAGE->set_url($programsmanagerurl);
-$PAGE->set_context($context);
+admin_externalpage_setup('programs');
 
 $programstr = get_string('programs', 'tool_program');
 $PAGE->set_title($programstr);

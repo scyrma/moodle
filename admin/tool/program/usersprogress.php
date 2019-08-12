@@ -35,7 +35,7 @@ $programid = required_param('id', PARAM_INT);
 require_login();
 $program = new program($programid);
 $context = context_system::instance();
-permission::require_can_view_list($context);
+permission::require_can_view_users_progress($program);
 
 $PAGE->set_pagelayout('admin');
 $progressurl = new moodle_url("/$CFG->admin/tool/program/usersprogress.php", ['id' => $programid]);

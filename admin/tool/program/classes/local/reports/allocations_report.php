@@ -26,16 +26,19 @@ namespace tool_program\local\reports;
 defined('MOODLE_INTERNAL') || die();
 
 use stdClass;
+use tool_certification\local\helpers\certificationuser_format;
 use tool_organisation\organisation;
+use tool_program\api;
 use tool_program\constants;
 use tool_program\local\helpers\programuser_format;
 use tool_program\permission;
+use tool_program\persistent\program;
+use tool_program\persistent\program_user;
 use tool_reportbuilder\local\entities\user as user_entity;
 use tool_reportbuilder\local\helpers\format as reportbuilder_format;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
-use context_system;
 use tool_tenant\tenancy;
 use moodle_url;
 use pix_icon;
@@ -50,11 +53,27 @@ use lang_string;
  */
 class allocations_report extends system_report {
 
+    /** @var program */
+    protected $program;
+
+    /**
+     * Current program
+     *
+     * @return program
+     */
+    protected function get_program(): program {
+        if (!$this->program) {
+            $programid = $this->get_parameter('id', 0, PARAM_INT);
+            $this->program = new program($programid);
+        }
+        return $this->program;
+    }
+
     /**
      * Initialise report
      */
     protected function initialise(): void {
-        $programid = $this->get_parameter('id', 0, PARAM_INT);
+        $programid = $this->get_program()->get('id');
         $tenantid = tenancy::get_tenant_id();
 
         $this->set_columns();
@@ -72,7 +91,7 @@ class allocations_report extends system_report {
         $this->add_base_join($join);
         $this->add_base_condition_sql($where, $params);
 
-        if (!permission::has_allocateuser_capability(context_system::instance())) {
+        if (!permission::has_allocateuser_capability($this->get_program()->get_context())) {
             // Managers with no system capability are only allowed to see the users they manage.
             if ($manager = organisation::get_user_with_jobs()) {
                 [$where, $params] = $manager->get_managed_users_select('u', organisation::PERM_ALLOCATE_PROGRAMS);
@@ -91,7 +110,7 @@ class allocations_report extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return permission::can_view_list(context_system::instance());
+        return permission::can_view_allocated_users($this->get_program());
     }
 
     /**
@@ -132,7 +151,7 @@ class allocations_report extends system_report {
             new lang_string('duedate', 'tool_program'),
             'tool_program_users'
         ))
-            ->add_fields('duedate, duedatelocked')
+            ->add_fields('tpu.duedate, tpu.duedatelocked')
             ->set_is_default(true, 2)
             ->add_callback([programuser_format::class, 'duedate']);
         $this->add_column($newcolumn);
@@ -161,14 +180,22 @@ class allocations_report extends system_report {
         $this->add_column($newcolumn);
 
         // Column "certification status".
+        $tccjoin = 'LEFT JOIN {tool_certification_users} tcu
+        ON tcu.certificationid = tpu.certificationid AND tcu.userid = tpu.userid
+        LEFT JOIN {tool_certification_compltion} tcc
+        ON tcc.certificationid = tcu.certificationid
+        AND tcc.userid = tcu.userid
+        AND tcc.timerevoked = 0';
+
         $newcolumn = (new report_column(
             'certificationstatus',
             new lang_string('certificationstatus', 'tool_program'),
             'tool_program_users'
         ))
-            ->add_fields('tpu.userid, tpu.certificationid')
+            ->add_join($tccjoin)
+            ->add_field(api::get_status_sql_cases(0, 'tcu', 'tcc'), 'status')
             ->set_is_default(true, 5)
-            ->add_callback([programuser_format::class, 'certificationstatus']);
+            ->add_callback([certificationuser_format::class, 'status']);
         $this->add_column($newcolumn);
 
         // Column "program status".
@@ -187,38 +214,42 @@ class allocations_report extends system_report {
      * Set the actions icons of the report.
      */
     private function add_actions(): void {
-        $canallocate = permission::can_allocate_anybody_as_organisation_manager();
-        if ($canallocate || permission::has_allocateuser_capability(context_system::instance())) {
-            // User allocation edit icon.
-            $editurl = new moodle_url('/admin/tool/program/edit.php', ['id' => ':id']);
-            $editicon = new pix_icon('i/settings', get_string('edit'), 'core');
-            $action = new report_action($editurl, $editicon, [
-                'class' => 'action-icon edit_user',
-                'data-action' => 'user_edit_form',
-                'data-userid' => ':userid',
-                'data-programuserid' => ':id',
-                'data-programid' => ':programid'
-            ]);
-            // Can not edit if is allocation from certification.
-            $action->add_callback(static function($row) {
-                return (0 === (int) $row->certificationid);
-            });
-            $this->add_action($action);
+        $program = $this->get_program();
 
-            // User allocation delete icon.
-            $deleteurl = new moodle_url('/admin/tool/program/delete.php', ['id' => ':id']);
-            $deleteicon = new pix_icon('i/trash', get_string('delete'), 'core');
-            $action = new report_action($deleteurl, $deleteicon, [
-                'class' => 'action-icon confirm_deallocate_user',
-                'data-userid' => ':userid',
-                'data-id' => ':programid'
-            ]);
-            // Can not edit if is allocation from certification.
-            $action->add_callback(static function($row) {
-                return (0 === (int) $row->certificationid);
-            });
-            $this->add_action($action);
-        }
+        // User allocation edit icon.
+        $editurl = new moodle_url('/admin/tool/program/edit.php', ['id' => ':id']);
+        $editicon = new pix_icon('i/settings', get_string('edit'), 'core');
+        $action = new report_action($editurl, $editicon, [
+            'class' => 'action-icon edit_user',
+            'data-action' => 'user_edit_form',
+            'data-userid' => ':userid',
+            'data-programuserid' => ':id',
+            'data-programid' => ':programid'
+        ]);
+        // Can not edit if is allocation from certification.
+        $action->add_callback(static function($row) use ($program) {
+            $programuser = new program_user(0, $row);
+            $programuser->set_program($program);
+            return permission::can_edit_user_allocation($programuser);
+        });
+        $this->add_action($action);
+
+        // User allocation delete icon.
+        $deleteurl = new moodle_url('/admin/tool/program/delete.php', ['id' => ':id']);
+        $deleteicon = new pix_icon('i/trash', get_string('delete'), 'core');
+        $action = new report_action($deleteurl, $deleteicon, [
+            'class' => 'action-icon confirm_deallocate_user',
+            'data-userid' => ':userid',
+            'data-id' => ':programid'
+        ]);
+        // Can not edit if is allocation from certification.
+        $action->add_callback(static function($row) use ($program) {
+            $programuser = new program_user(0, $row);
+            $programuser->set_program($program);
+            return permission::can_edit_user_allocation($programuser);
+        });
+        $this->add_action($action);
+
     }
 
     /**

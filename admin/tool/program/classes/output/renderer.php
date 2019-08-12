@@ -59,7 +59,7 @@ class renderer extends plugin_renderer_base {
         // We use tabs from tool_wp plugin.
         $tabsoutput = new tabs($attributes);
         $tabsoutput->add_tab(new program_manager_list_active_tab($attributes));
-        if (permission::has_edit_capability(context_system::instance())) {
+        if (permission::can_view_archived_list()) {
             $tabsoutput->add_tab(new program_manager_list_archived_tab($attributes));
         }
 

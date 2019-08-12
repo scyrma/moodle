@@ -45,7 +45,8 @@ Feature: Program users belong to same program tenant and have not been deleted
     And I navigate to "Users > Organisation > Manage tenants" in site administration
     And I click on "Manage tenant 'Tenant1'" "link" in the "Tenant1" table tree node
     And I set the field "Select user 'User 3'" to "1"
-    And I set the field "Allocate selected users to tenant" to "Tenant2"
+    And I set the field "With selected users..." to "Tenant2"
+    And I press "Allocate users"
     Then I log out
     Then I log in as "manager1"
     Then I navigate to "Courses > Programs" in site administration

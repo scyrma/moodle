@@ -66,15 +66,8 @@ class program_calendar_tab extends tab_form {
      * @return bool
      */
     public function is_available(): bool {
-        if (empty($this->data['id'])) {
-            return false;
-        }
-
-        $context = context_system::instance();
-        $program = new program($this->data['id']);
-        $canallocate = permission::can_allocate_anybody_as_organisation_manager();
-        $caneditdetails = permission::can_edit_details($program, $context);
-        return ($caneditdetails || $canallocate || permission::has_allocateuser_capability($context));
+        $program = new program(!empty($this->data['id']) ? $this->data['id'] : 0);
+        return permission::can_view_details($program);
     }
 
     /**

@@ -184,6 +184,23 @@ class program extends persistent {
     }
 
     /**
+     * Create an instance of this class.
+     *
+     * @param int $id If set, this is the id of an existing record, used to load the data.
+     * @param stdClass $record If set will be passed to {@link self::from_record()}.
+     */
+    public function __construct(int $id = 0, stdClass $record = null) {
+        if ($record) {
+            $record = (object)array_intersect_key((array)$record, self::properties_definition());
+        }
+        if ($id && $record) {
+            debugging('Either id or record need to be specified in the persistent constructor but not both',
+                DEBUG_DEVELOPER);
+        }
+        parent::__construct($id, $record);
+    }
+
+    /**
      * Gets list of sets for this program.
      *
      * @return program_set[]
@@ -354,17 +371,6 @@ class program extends persistent {
     }
 
     /**
-     * We check if programid exists.
-     *
-     * @param int $programid
-     * @return bool
-     */
-    public static function program_exists(int $programid): bool {
-        global $DB;
-        return $DB->record_exists(self::TABLE, ['id' => $programid]);
-    }
-
-    /**
      * Gets Base set from program (defined as the set with parent = 0 from that program).
      *
      * @return program_set|false
@@ -421,5 +427,14 @@ class program extends persistent {
         }
 
         return $files;
+    }
+
+    /**
+     * Program context
+     *
+     * @return \context
+     */
+    public function get_context(): \context {
+        return \context_system::instance();
     }
 }

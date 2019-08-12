@@ -78,7 +78,7 @@ class edit_program_users_form_modal extends \tool_wp\modal_form {
      */
     public function require_access(): void {
         $program = new program($this->_ajaxformdata['id']);
-        permission::require_can_allocate($program, \context_system::instance());
+        permission::require_can_allocate_anybody($program);
     }
 
     /**
@@ -99,13 +99,12 @@ class edit_program_users_form_modal extends \tool_wp\modal_form {
      */
     public function process(\stdClass $data) {
         $program = new program($data->id);
-        $certificationid = 0; // Manually allocated users have no certification id.
         foreach ($data->userlist as $userid) {
-            if (permission::can_be_allocated($program, $userid, $certificationid)) {
+            if (permission::can_allocate_user($program, $userid)) {
                 $programuserdata = (object) [
                     'userid' => $userid,
                     'allocationtype' => constants::ALLOCATION_MANUAL,
-                    'certificationid' => $certificationid,
+                    'certificationid' => 0,
                     'status' => $data->status
                 ];
                 api::allocate_user($program, $programuserdata);

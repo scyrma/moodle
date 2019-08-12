@@ -48,7 +48,7 @@ class tool_program_generator extends testing_module_generator {
     public function get_dummy_program_data(): stdClass {
         return (object) [
             'fullname' => 'A program name',
-            'tenantid' => 1,
+            'tenantid' => tenancy::get_default_tenant_id(),
             'idnumber' => '1',
             'description' => 'A program description',
             'descriptionformat' => FORMAT_HTML,

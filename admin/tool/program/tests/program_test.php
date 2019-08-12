@@ -268,20 +268,6 @@ class tool_program_program_testcase extends advanced_testcase {
     // TODO SP-85: write test for test_get_image_url method.
 
     /**
-     * Test program exists
-     */
-    public function test_program_exists(): void {
-
-        // We check if program exists before creating it.
-        $result = program::program_exists('0');
-        $this->assertFalse($result);
-
-        // We check if program exists before creating it.
-        $result = program::program_exists($this->program1->get('id'));
-        $this->assertTrue($result);
-    }
-
-    /**
      * Test get base set
      */
     public function test_get_base_set(): void {

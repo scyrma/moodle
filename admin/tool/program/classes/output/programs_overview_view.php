@@ -69,6 +69,7 @@ class programs_overview_view implements templatable, renderable {
      * @return stdClass
      */
     public function export_for_template(renderer_base $output): stdClass {
+        // TODO this exporter is never called for userid other than current user.
         $certifications = api::get_certifications_by_userid($this->userid);
         $certallocations = certification_user::get_records(['userid' => $this->userid]);
         $programs = api::get_user_accessible_programs($this->userid);

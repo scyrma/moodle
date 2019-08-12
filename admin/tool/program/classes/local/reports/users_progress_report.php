@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 use lang_string;
 use moodle_url;
 use pix_icon;
+use tool_certification\api;
+use tool_certification\local\helpers\certificationuser_format;
 use tool_organisation\organisation;
 use tool_program\local\helpers\format;
 use tool_program\local\helpers\programcompletion_format;
@@ -52,16 +54,33 @@ use tool_tenant\tenancy;
  */
 class users_progress_report extends system_report {
 
+    /** @var program */
+    protected $program;
+
+    /**
+     * Current program
+     *
+     * @return program
+     */
+    protected function get_program(): program {
+        if (!$this->program) {
+            $programid = $this->get_parameter('programid', 0, PARAM_INT);
+            $this->program = new program($programid);
+        }
+        return $this->program;
+    }
+
     /**
      * Initialise report
      */
     protected function initialise(): void {
-        $programid = $this->get_parameter('programid', 0, PARAM_INT);
+        $programid = $this->get_program()->get('id');
         $pu = 'pu'; // Program users table alias.
         $pr = 'pr'; // Programs table alias
         $ps = 'ps'; // Program sets table alias.
         $psc = 'psc'; // Program set completions table alias.
         $u = 'u'; // User table alias.
+        $tenantid = tenancy::get_tenant_id();
 
         $this->set_columns($pu, $u, $ps, $psc);
         $this->set_main_table(program_user::TABLE, $pu);
@@ -70,9 +89,15 @@ class users_progress_report extends system_report {
         $this->add_base_join("INNER JOIN {" . program::TABLE . "} $pr ON $pr.id = $pu.programid");
         $this->add_base_join("INNER JOIN {" . program_set::TABLE . "} $ps ON $ps.programid = $pu.programid AND $ps.parent = 0");
         $this->add_base_join("INNER JOIN {user} $u ON $u.id = $pu.userid");
-        $this->add_base_condition_simple("{$pr}.tenantid", tenancy::get_tenant_id());
+        $this->add_base_condition_simple("{$pr}.tenantid", $tenantid);
+        $this->add_base_condition_simple("{$u}.deleted", 0);
 
-        if (!permission::has_allocateuser_capability(context_system::instance())) {
+        // Check tenant id on users in case they have been moved to another tenant.
+        [$join, $where, $params] = tenancy::get_users_sql('u', $tenantid);
+        $this->add_base_join($join);
+        $this->add_base_condition_sql($where, $params);
+
+        if (!permission::has_allocateuser_capability($this->get_program()->get_context())) {
             // Managers with no system capability are only allowed to see the users they manage.
             if ($manager = organisation::get_user_with_jobs()) {
                 [$where, $params] = $manager->get_managed_users_select($u, organisation::PERM_ALLOCATE_PROGRAMS);
@@ -91,7 +116,7 @@ class users_progress_report extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return permission::can_view_list(context_system::instance());
+        return permission::can_view_users_progress($this->get_program());
     }
 
     /**
@@ -138,7 +163,7 @@ class users_progress_report extends system_report {
             new lang_string('startdate', 'tool_program'),
             'tool_program_users'
         ))
-            ->add_fields('startdate, startdatelocked')
+            ->add_fields("$pu.startdate, $pu.startdatelocked")
             ->set_is_default(true, 2)
             ->add_callback([programuser_format::class, 'startdate']);
         $this->add_column($newcolumn);
@@ -149,7 +174,7 @@ class users_progress_report extends system_report {
             new lang_string('duedate', 'tool_program'),
             'tool_program_users'
         ))
-            ->add_fields('duedate, duedatelocked')
+            ->add_fields("$pu.duedate, $pu.duedatelocked")
             ->set_is_default(true, 3)
             ->add_callback([programuser_format::class, 'duedate']);
         $this->add_column($newcolumn);
@@ -160,7 +185,7 @@ class users_progress_report extends system_report {
             new lang_string('enddate', 'tool_program'),
             'tool_program_users'
         ))
-            ->add_fields('enddate, enddatelocked')
+            ->add_fields("$pu.enddate, $pu.enddatelocked")
             ->set_is_default(true, 4)
             ->add_callback([programuser_format::class, 'enddate']);
         $this->add_column($newcolumn);
@@ -199,14 +224,22 @@ class users_progress_report extends system_report {
         $this->add_column($newcolumn);
 
         // Column "certification status".
+        $tccjoin = "LEFT JOIN {tool_certification_users} tcu
+        ON tcu.certificationid = $pu.certificationid AND tcu.userid = $pu.userid
+        LEFT JOIN {tool_certification_compltion} tcc
+        ON tcc.certificationid = tcu.certificationid
+        AND tcc.userid = tcu.userid
+        AND tcc.timerevoked = 0";
+
         $newcolumn = (new report_column(
             'certificationstatus',
             new lang_string('certificationstatus', 'tool_program'),
             'tool_program_users'
         ))
-            ->add_fields("$pu.userid, $pu.certificationid")
+            ->add_join($tccjoin)
+            ->add_field(api::get_status_sql_cases(0, 'tcu', 'tcc'), 'status')
             ->set_is_default(true, 8)
-            ->add_callback([programuser_format::class, 'certificationstatus']);
+            ->add_callback([certificationuser_format::class, 'status']);
         $this->add_column($newcolumn);
 
         // Column "program status".

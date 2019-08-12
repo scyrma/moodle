@@ -45,6 +45,26 @@ class program_user extends persistent {
      */
     public const TABLE = 'tool_program_users';
 
+    /** @var program */
+    protected $program;
+
+    /**
+     * Create an instance of this class.
+     *
+     * @param int $id If set, this is the id of an existing record, used to load the data.
+     * @param stdClass $record If set will be passed to {@link self::from_record()}.
+     */
+    public function __construct(int $id = 0, stdClass $record = null) {
+        if ($record) {
+            $record = (object)array_intersect_key((array)$record, self::properties_definition());
+        }
+        if ($id && $record) {
+            debugging('Either id or record need to be specified in the persistent constructor but not both',
+                DEBUG_DEVELOPER);
+        }
+        parent::__construct($id, $record);
+    }
+
     /**
      * Return the definition of the properties of this model.
      *
@@ -117,7 +137,19 @@ class program_user extends persistent {
      * @return program|false
      */
     public function get_program() {
-        return program::get_record(['id' => $this->get('programid')]);
+        if (!$this->program) {
+            $this->program = program::get_record(['id' => $this->get('programid')]);
+        }
+        return $this->program;
+    }
+
+    /**
+     * Sets the program to use in get_program()
+     *
+     * @param program $program
+     */
+    public function set_program(program $program) {
+        $this->program = $program;
     }
 
     /**

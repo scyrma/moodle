@@ -75,12 +75,11 @@ class program_handler extends \core_customfield\handler {
      * @return bool true if the current can edit custom fields, false otherwise
      */
     public function can_edit(field_controller $field, int $instanceid = 0) : bool {
-        $context = context_system::instance();
         if ($instanceid) {
             $program = new program($instanceid);
-            return permission::can_edit_details($program, $context);
+            return permission::can_edit_details($program);
         } else {
-            return permission::can_create($context);
+            return permission::can_create();
         }
     }
 

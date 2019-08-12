@@ -34,7 +34,6 @@ $programid = required_param('id', PARAM_INT); // Program id.
 // Check permissions.
 require_login();
 $context = context_system::instance();
-permission::require_can_view_list($context);
 
 $PAGE->set_pagelayout('admin');
 $editprogramurl = new moodle_url('/admin/tool/program/edit.php', ['id' => $programid]);
@@ -42,9 +41,8 @@ $PAGE->set_url($editprogramurl);
 $PAGE->set_context($context);
 
 $program = new program($programid);
-if ($program->is_archived()) {
-    throw new moodle_exception('errorprogramisarchived', 'tool_program');
-}
+permission::require_can_view_details($program);
+
 $baseset = $program->get_base_set();
 $basesetid = $baseset->get('id');
 $fullname = format_string($program->get('fullname'));
@@ -60,7 +58,7 @@ $PAGE->set_heading($fullname);
 $output = $PAGE->get_renderer('tool_program');
 
 // Add extra button: Edit details.
-if (permission::can_edit_details($program, context_system::instance())) {
+if (permission::can_edit_details($program)) {
     $editdetailsstr = get_string('editdetails', 'tool_program');
     $buttonparams = ['data-action' => 'editdetails', 'data-programid' => $programid, 'data-programname' => $fullname];
     $edit = new page_header_button($editdetailsstr, $buttonparams);

@@ -57,12 +57,6 @@ class tool_uploaduser {
                 }
 
                 $tenantid = \tool_tenant\tenancy::get_tenant_id($user->id);
-                if ($tenantid != \tool_tenant\tenancy::get_tenant_id()) {
-                    // Only can allocate within the same tenant.
-                    $upt->track('tool_wp', get_string('errorcantallocateusers', 'tool_program'), 'error');
-                    continue;
-                }
-
                 $conditions = [
                     'idnumber' => $user->{'program'.$i},
                     'tenantid' => $tenantid,
@@ -76,33 +70,31 @@ class tool_uploaduser {
                     continue;
                 }
 
-                $context = \context_system::instance();
-                if (!permission::can_allocate($programobj, $context)) {
-                    $upt->track('tool_wp', get_string('errorcantallocateusers', 'tool_program'), 'error');
-                    continue;
-                }
-
                 // We must check if allocation in program already exists.
                 $params = [
                     'userid' => $user->id,
                     'programid' => $programobj->get('id'),
+                    'certificationid' => 0,
                     'allocationtype' => constants::ALLOCATION_MANUAL
                 ];
 
                 /** @var persistent\program_user $programuser */
                 $programuser = persistent\program_user::get_record($params);
+                $canmanage = $programuser ? permission::can_edit_user_allocation($programuser) :
+                    permission::can_allocate_user($programobj, $user->id);
+
+                if (!$canmanage) {
+                    $upt->track('tool_wp', get_string('errorcantallocateusers', 'tool_program'), 'error');
+                    continue;
+                }
+                if (!self::validate_date_params($user, $i)) {
+                    $upt->track('tool_wp', get_string('errorinvaliddate', 'tool_program'), 'error');
+                    continue;
+                }
                 if ($programuser) {
-                    if (!self::validate_date_params($user, $i)) {
-                        $upt->track('tool_wp', get_string('errorinvaliddate', 'tool_program'), 'error');
-                        continue;
-                    }
                     $params = array_merge((array)$programuser->to_record(), self::date_params($user, $i));
                     api::update_program_user_dates_and_status($programuser, (object)$params);
                 } else {
-                    if (!self::validate_date_params($user, $i)) {
-                        $upt->track('tool_wp', get_string('errorinvaliddate', 'tool_program'), 'error');
-                        continue;
-                    }
                     $params = array_merge($params, self::date_params($user, $i));
                     api::allocate_user($programobj, (object)$params);
                 }

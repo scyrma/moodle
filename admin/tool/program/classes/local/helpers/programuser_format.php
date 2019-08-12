@@ -194,25 +194,6 @@ class programuser_format {
     }
 
     /**
-     * Displays column certification status.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function certificationstatus(string $value, stdClass $row): string {
-        if (0 === (int) $row->certificationid) {
-            return '-';
-        }
-        $statuses = \tool_certification\api::get_user_allocation_status($row->certificationid, $row->userid);
-        $statuseshtml = [];
-        foreach ($statuses as $status) {
-            $statuseshtml[] = html_writer::span($status['statusstr'], $status['status']);
-        }
-        return implode(' ', $statuseshtml);
-    }
-
-    /**
      * Displays column program status.
      *
      * @param string $value

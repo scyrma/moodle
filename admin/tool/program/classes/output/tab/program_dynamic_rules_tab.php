@@ -45,6 +45,10 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_dynamic_rules_tab extends tab {
+
+    /** @var program current program */
+    protected $program = null;
+
     /**
      * Function to export the renderer data in a format that is suitable for a
      * mustache template. This means:
@@ -74,12 +78,12 @@ class program_dynamic_rules_tab extends tab {
             return $content->export_for_template($output);
         }
 
-        $canmanagedynamicrules = has_capability('tool/dynamicrule:manage', context_system::instance());
+        $canmanagedynamicrules = \tool_dynamicrule\permission::can_manage_rules();
 
         $params = [
             'component'     => 'tool_program',
             'componentarea' => 'program',
-            'itemid'        => $this->data['id'],
+            'itemid'        => $this->get_program()->get('id'),
             'readonly'      => !$canmanagedynamicrules
         ];
         $report = system_report_factory::create(rules_list::class, $params);
@@ -98,20 +102,24 @@ class program_dynamic_rules_tab extends tab {
     }
 
     /**
+     * Current program
+     *
+     * @return program
+     */
+    protected function get_program() : program {
+        if (!$this->program) {
+            $this->program = new program(!empty($this->data['id']) ? $this->data['id'] : 0);
+        }
+        return $this->program;
+    }
+
+    /**
      * Check permission of the current user to access this tab
      *
      * @return bool
      */
     public function is_available(): bool {
-        if (0 === (int) $this->data['id']) {
-            return false;
-        }
-
-        $program = new program($this->data['id']);
-        $context = context_system::instance();
-        $canallocate = permission::can_allocate_anybody_as_organisation_manager();
-        $caneditdetails = permission::can_edit_details($program, $context);
-        return ($caneditdetails || $canallocate || permission::has_allocateuser_capability($context));
+        return permission::can_view_details($this->get_program());
     }
 
     /**

@@ -69,7 +69,7 @@ class edit_program_add_courses_form extends \tool_wp\modal_form {
     public function require_access(): void {
         $programset = program_set::get_record(['id' => $this->_ajaxformdata['parentsetid']]);
         $program = new program($programset->get('programid'));
-        permission::require_can_edit_details($program, \context_system::instance());
+        permission::require_can_edit_details($program);
     }
 
     /**
