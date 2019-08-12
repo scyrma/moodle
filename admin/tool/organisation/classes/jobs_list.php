@@ -33,6 +33,8 @@ use tool_reportbuilder\report_filter;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
 use tool_reportbuilder\report_action;
+use lang_string;
+use tool_tenant\tenancy;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -52,8 +54,17 @@ class jobs_list extends system_report {
         $this->set_columns();
         $this->set_filters();
         $this->set_main_table('tool_organisation_job', 'j');
-        $this->add_base_fields('j.id, j.userid, j.enddate,u.firstname as fullusername,' .
+        $this->add_base_join('JOIN {user} u ON u.id = j.userid');
+        $this->add_base_fields('j.id, j.userid, j.departmentid, j.tenantid, j.positionid, ' .
+            'j.enddate, u.firstname as fullusername,' .
             user_entity::get_all_user_name_fields(true, 'u')); // Necessary for actions and row class.
+        $this->add_base_condition_simple('u.deleted', 0);
+
+        // Check tenant id on users in case they have been moved to another tenant.
+        [$join, $where, $params] = tenancy::get_users_sql('u', tenancy::get_tenant_id());
+        $this->add_base_join($join);
+        $this->add_base_condition_sql($where, $params);
+
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
@@ -65,8 +76,7 @@ class jobs_list extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        // TODO: Implement can_view() method.
-        return true;
+        return permission::can_view_jobs();
     }
 
     /**
@@ -79,7 +89,7 @@ class jobs_list extends system_report {
         $f = new report_filter(
             showpastjobs::class,
             'showpastjobs',
-            new \lang_string('showpastjobs', 'tool_organisation'),
+            new lang_string('showpastjobs', 'tool_organisation'),
             'tool_organisation_jobs',
             'j.id'
         );
@@ -90,7 +100,7 @@ class jobs_list extends system_report {
         $f = new report_filter(
             job_position::class,
             'position',
-            new \lang_string('position', 'tool_organisation'),
+            new lang_string('position', 'tool_organisation'),
             'tool_organisation_jobs',
             'p'
         );
@@ -102,7 +112,7 @@ class jobs_list extends system_report {
         $f = new report_filter(
             job_department::class,
             'department',
-            new \lang_string('department', 'tool_organisation'),
+            new lang_string('department', 'tool_organisation'),
             'tool_organisation_jobs',
             'd'
         );
@@ -125,20 +135,17 @@ class jobs_list extends system_report {
      * Set the columns for the report.
      */
     protected function set_columns() {
-        global $CFG;
-
-        $this->annotate_entity('user', new \lang_string('entityuser', 'tool_reportbuilder'));
-        $this->annotate_entity('tool_organisation_jobs', new \lang_string('entityjob', 'tool_organisation'));
-        $this->annotate_entity('tool_organisation_position', new \lang_string('entityposition', 'tool_organisation'));
-        $this->annotate_entity('tool_organisation_department', new \lang_string('entitydepartment', 'tool_organisation'));
+        $this->annotate_entity('user', new lang_string('entityuser', 'tool_reportbuilder'));
+        $this->annotate_entity('tool_organisation_jobs', new lang_string('entityjob', 'tool_organisation'));
+        $this->annotate_entity('tool_organisation_position', new lang_string('entityposition', 'tool_organisation'));
+        $this->annotate_entity('tool_organisation_department', new lang_string('entitydepartment', 'tool_organisation'));
 
         // Add user column.
         $usercolumn = (new report_column(
             'userid',
-            new \lang_string('fullname', 'tool_organisation'),
+            new lang_string('fullname', 'tool_organisation'),
             'user'
         ))
-            ->add_join('join {user} u ON u.id = j.userid')
             ->add_fields(user_entity::get_all_user_name_fields(true, 'u') . ', j.userid, j.positionid')
             ->set_is_default(true)
             ->set_is_sortable(true, true);
@@ -148,7 +155,7 @@ class jobs_list extends system_report {
         // Add position column.
         $positioncolumn = (new report_column(
             'position',
-            new \lang_string('position', 'tool_organisation'),
+            new lang_string('position', 'tool_organisation'),
             'tool_organisation_position'
         ))
             ->add_join('left join {tool_organisation_position} p ON p.id = j.positionid')
@@ -163,7 +170,7 @@ class jobs_list extends system_report {
         // Add department column.
         $departmentcolumn = (new report_column(
             'department',
-            new \lang_string('department', 'tool_organisation'),
+            new lang_string('department', 'tool_organisation'),
             'tool_organisation_department'
         ))
             ->add_join('left join {tool_organisation_department} d ON d.id = j.departmentid')
@@ -179,7 +186,7 @@ class jobs_list extends system_report {
         foreach (['startdate', 'enddate'] as $field) {
             $newcolumn = (new report_column(
                 $field,
-                new \lang_string($field, 'tool_organisation'),
+                new lang_string($field, 'tool_organisation'),
                 'tool_organisation_jobs'
             ))
                 ->add_field($field)
@@ -197,29 +204,25 @@ class jobs_list extends system_report {
      * @throws \moodle_exception
      */
     private function add_actions() {
-        $context = \context_system::instance();
-        if (has_capability('tool/organisation:assignjobs', $context)) {
+        $url = new \moodle_url('#');
 
-            $url = new \moodle_url('#');
+        $icon = new \pix_icon('i/settings', get_string('editjob', 'tool_organisation'), 'core');
+        $action = new report_action($url, $icon, ['data-action' => 'editjob', 'data-id' => ':id',
+            'data-userid' => ':userid', 'data-fullusername' => ':fullusername']);
+        $action->add_callback(function($row) {
+            $row->fullusername = format::fullname('', $row);
+            return permission::can_edit_job(new job(0, $row));
+        });
+        $this->add_action($action);
 
-            $icon = new \pix_icon('i/settings', get_string('editjob', 'tool_organisation'), 'core');
-            $action = new report_action($url, $icon, ['data-action' => 'editjob', 'data-id' => ':id',
-                'data-userid' => ':userid', 'data-fullusername' => ':fullusername']);
-            $action->add_callback(function($row) {
-                $row->fullusername = format::fullname('', $row);
-                return true;
-            });
-            $this->add_action($action);
-
-            $icon = new \pix_icon('t/add', get_string('addjob', 'tool_organisation'), 'core');
-            $action = new report_action($url, $icon, ['data-action' => 'addjob',
-                'data-userid' => ':userid', 'data-fullusername' => ':fullusername']);
-            $action->add_callback(function($row) {
-                $row->fullusername = format::fullname('', $row);
-                return true;
-            });
-            $this->add_action($action);
-        }
+        $icon = new \pix_icon('t/add', get_string('addjob', 'tool_organisation'), 'core');
+        $action = new report_action($url, $icon, ['data-action' => 'addjob',
+            'data-userid' => ':userid', 'data-fullusername' => ':fullusername']);
+        $action->add_callback(function($row) {
+            $row->fullusername = format::fullname('', $row);
+            return permission::can_assign_job_to_user($row->userid);
+        });
+        $this->add_action($action);
     }
 
     /**

@@ -61,8 +61,8 @@ class tool_uploaduser {
 
                 // Current user must be in the same tenant as the user as must have capability to assign jobs.
                 $context = \context_system::instance();
-                if (!has_capability('tool/organisation:assignjobs', $context) || $tenantid != tenancy::get_tenant_id()) {
-                    $error = get_string('nopermission', 'error', get_capability_string('tool/organisation:assignjobs'));
+                if (!permission::can_assign_job_to_user($user->id)) {
+                    $error = get_string('nopermissions', 'error', get_capability_string('tool/organisation:assignjobs'));
                     $upt->track('tool_wp', $error, 'error');
                     continue;
                 }

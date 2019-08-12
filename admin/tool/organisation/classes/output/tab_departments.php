@@ -27,6 +27,7 @@ namespace tool_organisation\output;
 use renderer_base;
 use tool_organisation\department;
 use tool_organisation\department_manager;
+use tool_organisation\permission;
 use tool_wp\output\tab;
 
 defined('MOODLE_INTERNAL') || die();
@@ -46,7 +47,7 @@ class tab_departments extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-        return has_any_capability(['tool/organisation:managedepartments'], \context_system::instance());
+        return permission::can_view_departments();
     }
 
     /**

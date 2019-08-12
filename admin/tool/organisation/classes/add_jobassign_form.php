@@ -41,6 +41,21 @@ require_once($CFG->dirroot.'/admin/tool/organisation/lib.php');
  */
 class add_jobassign_form extends modal_form {
 
+    /** @var job */
+    protected $job;
+
+    /**
+     * Current job being edited
+     *
+     * @return job
+     */
+    protected function get_job(): ?job {
+        if (!$this->job && !empty($this->_ajaxformdata['id'])) {
+            $this->job = (new job_manager())->get_job(['id' => $this->_ajaxformdata['id']]);
+        }
+        return $this->job;
+    }
+
     /**
      * Form definition
      */
@@ -123,7 +138,13 @@ class add_jobassign_form extends modal_form {
      * Check access
      */
     public function require_access() {
-        return require_capability('tool/organisation:assignjobs', \context_system::instance());
+        if ($job = $this->get_job()) {
+            permission::require_can_edit_job($job);
+        } else if (!empty($this->_ajaxformdata['userid'])) {
+            permission::require_can_assign_job_to_user($this->_ajaxformdata['userid']);
+        } else {
+            permission::require_can_assign_job_to_anybody();
+        }
     }
 
     /**
@@ -176,8 +197,10 @@ class add_jobassign_form extends modal_form {
         if (!$id) {
             $users = !empty($data->userid) ? [$data->userid] : (!empty($data->users) ? $data->users : []);
             foreach ($users as $userid) {
-                $data->userid = $userid;
-                $manager->create_job($this->prepare_data_for_storing($data, 0));
+                if (permission::can_assign_job_to_user($userid)) {
+                    $data->userid = $userid;
+                    $manager->create_job($this->prepare_data_for_storing($data, 0));
+                }
             }
         } else {
             $manager->update_job($id, $this->prepare_data_for_storing($data, $id));
@@ -189,11 +212,8 @@ class add_jobassign_form extends modal_form {
      */
     public function set_data_for_modal() {
         $data = (object)$this->_ajaxformdata;
-        if (!empty($data->id)) {
+        if ($job = $this->get_job()) {
             // Edit job form.
-            $manager = new job_manager();
-            $condition = ['id' => $data->id];
-            $job = $manager->get_job($condition);
             $this->set_data($this->prepare_data_for_form($job));
         } else if (!empty($data->userid)) {
             // Create new job form with a tenantid and userid.

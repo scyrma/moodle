@@ -50,7 +50,7 @@ class department extends hierarchy {
             'tool_organisation',
             'department_name',
             $this->get('id'),
-            has_capability('tool/organisation:managedepartments', \context_system::instance()),
+            permission::can_create_department($this),
             $this->get_formatted_name(),
             $this->get('name'),
             get_string('editdepartmentname', 'tool_organisation'),

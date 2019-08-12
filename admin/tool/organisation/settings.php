@@ -24,13 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$caps = [
-    'tool/organisation:managedepartments',
-    'tool/organisation:managepositions',
-    'tool/organisation:assignjobs',
-    // TODO SP-393 add view capabilities.
-];
-
 if ($item = $ADMIN->locate('tool_organisation')) {
     // The category "Organisation" was already added by tool_tenant. Rename it to use the string from this plugin.
     $item->visiblename = new lang_string('organisationadmintab', 'tool_organisation');
@@ -41,6 +34,7 @@ if ($item = $ADMIN->locate('tool_organisation')) {
 }
 
 // Add item "Organisation structure".
-$ADMIN->add('tool_organisation', new admin_externalpage('tool_organisation_structure',
+$ADMIN->add('tool_organisation', new \tool_wp\admin_externalpage('tool_organisation_structure',
     get_string('orgstructure', 'tool_organisation'),
-    new moodle_url('/admin/tool/organisation/index.php'), $caps));
+    new moodle_url('/admin/tool/organisation/index.php'),
+    [\tool_organisation\permission::class, 'can_view_index']));

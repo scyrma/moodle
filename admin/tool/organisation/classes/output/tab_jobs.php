@@ -27,6 +27,7 @@ namespace tool_organisation\output;
 use renderer_base;
 use tool_organisation\department_manager;
 use tool_organisation\jobs_list;
+use tool_organisation\permission;
 use tool_organisation\position_manager;
 use tool_reportbuilder\system_report_factory;
 use tool_wp\output\tab;
@@ -57,7 +58,8 @@ class tab_jobs extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-        return \tool_organisation\job_manager::is_tab_available();
+        return permission::can_view_jobs() &&
+            \tool_organisation\job_manager::is_tab_available();
     }
 
     /**

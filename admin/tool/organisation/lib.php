@@ -39,7 +39,7 @@ function tool_organisation_inplace_editable($itemtype, $itemid, $newvalue) {
     if ($itemtype === 'department_name') {
         \external_api::validate_context(context_system::instance());
         $manager = new \tool_organisation\department_manager();
-        require_capability('tool/organisation:managedepartments', \context_system::instance());
+        \tool_organisation\permission::require_can_edit_department($manager->get_department($itemid));
         $department = $manager->update_department($itemid, (object)['name' => $newvalue]);
         return $department->get_editable_name();
     }
@@ -47,7 +47,7 @@ function tool_organisation_inplace_editable($itemtype, $itemid, $newvalue) {
     if ($itemtype === 'position_name') {
         \external_api::validate_context(context_system::instance());
         $manager = new \tool_organisation\position_manager();
-        require_capability('tool/organisation:managepositions', \context_system::instance());
+        \tool_organisation\permission::require_can_edit_position($manager->get_position($itemid));
         $position = $manager->update_position($itemid, (object)['name' => $newvalue]);
         return $position->get_editable_name();
     }
@@ -63,7 +63,7 @@ function tool_organisation_potential_users_selector(string $area) {
     if ($area !== 'jobassign') {
         return null;
     }
-    require_capability('tool/organisation:assignjobs', context_system::instance());
+    \tool_organisation\permission::require_can_assign_job_to_anybody();
     list($join, $where, $params) = \tool_tenant\tenancy::get_users_sql('u');
     return [$join, $where, $params];
 }

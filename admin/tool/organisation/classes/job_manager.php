@@ -53,7 +53,7 @@ class job_manager {
         if (!$record = $DB->get_record(job::TABLE, $conditions)) {
             throw new \moodle_exception('jobnotfound', 'tool_organisation');
         }
-        return new job(null, $record);
+        return new job(0, $record);
     }
 
 
@@ -156,7 +156,6 @@ class job_manager {
     public static function is_tab_available() {
         $deptforjobs = (new \tool_organisation\department_manager())->has_any_department_for_jobcreate();
         $posforjobs = (new \tool_organisation\position_manager())->has_any_position_for_jobcreate();
-        $cap = has_any_capability(['tool/organisation:assignjobs'], \context_system::instance());
-        return $cap && $deptforjobs && $posforjobs;
+        return $deptforjobs && $posforjobs;
     }
 }

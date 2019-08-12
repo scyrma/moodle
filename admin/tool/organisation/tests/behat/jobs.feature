@@ -180,14 +180,33 @@ Feature: Organisation structure jobs management
     And I click on "User 11" "text" in the ".modal-dialog .form-autocomplete-suggestions" "css_element"
     And I press key "27" in the field "Select users"
     And I set the following visible fields to these values:
-      | positionid        | Position111_    |
-      | departmentid      | Department111_  |
-      | startdate[year]   | 2017            |
-      | enddate[enabled]  | 1               |
-      | enddate[year]     | 2018            |
+      | positionid       | Position111_    |
+      | departmentid     | Department111_  |
+      | startdate[year]  | 2017            |
+      | enddate[enabled] | 1               |
+      | enddate[year]    | 2018            |
     And I press "Save" in the modal form dialogue
     Then I should not see "Position111_"
     Then I click on "Show/hide filters sidebar" "button"
+    And I set the field "Show past jobs" to "1"
+    And "Position111_" "text" should exist in the "User 11" "table_row"
+
+  Scenario: Always show future jobs
+    When I log in as "user1"
+    And I navigate to "Users > Organisation > Organisation structure" in site administration
+    And I follow "New job"
+    And I open the autocomplete suggestions list in the dialog
+    And I click on "User 11" "text" in the ".modal-dialog .form-autocomplete-suggestions" "css_element"
+    And I press key "27" in the field "Select users"
+    And I set the following visible fields to these values:
+      | positionid       | Position111_        |
+      | departmentid     | Department111_      |
+      | startdate[day]   | ## tomorrow ## j ## |
+      | startdate[month] | ## tomorrow ## n ## |
+      | startdate[year]  | ## tomorrow ## Y ## |
+    And I press "Save" in the modal form dialogue
+    Then "Position111_" "text" should exist in the "User 11" "table_row"
+    And I click on "Show/hide filters sidebar" "button"
     And I set the field "Show past jobs" to "1"
     And "Position111_" "text" should exist in the "User 11" "table_row"
 
@@ -268,3 +287,33 @@ Feature: Organisation structure jobs management
     And I click on "Delete position 'Position1'" "link"
     And I click on "Delete" "button" in the ".confirmation-dialogue" "css_element"
     Then I should see "Position cannot be deleted because there are jobs associated with it."
+
+  Scenario: Jobs from deleted users in Moodle should not appear in the jobs list
+    Given the following job assignments exist in organisation structure:
+      | user   | department     | position      |
+      | user1  | Department111_ | Position111_  |
+      | user11 | Department111_ | Position1111_ |
+      | user12 | Department111_ | Position1111_ |
+    When I log in as "user1"
+    And I navigate to "Organisation structure" in workplace launcher
+    And I follow "Job assignments"
+    And I should see "User 11"
+    And I should see "User 12"
+    And I log out
+    Then I log in as "admin"
+    And I navigate to "Users > Accounts > Bulk user actions" in site administration
+    And the "Available" select box should contain "User 11"
+    And I set the field "Available" to "User 11"
+    And I press "Add to selection"
+    And I set the field "id_action" to "Delete"
+    And I press "Go"
+    And I press "Yes"
+    And I should see "Changes saved"
+    And I press "Continue"
+    And I log out
+    Then I log in as "user1"
+    And I navigate to "Organisation structure" in workplace launcher
+    And I follow "Job assignments"
+    And I should not see "User 11"
+    And I should see "User 12"
+    And I log out

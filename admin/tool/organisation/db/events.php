@@ -15,22 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Events for tool_organisation.
  *
- * @package     tool_organisation
- * @copyright   2018 Marina Glancy
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_organisation
+ * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+use core\event\user_deleted;
 
-// This plugin is part of Moodle Workplace product.
-$plugin->component    = 'tool_organisation';
-$plugin->release      = '3.7.1';
-$plugin->version      = 2019071501;
-$plugin->requires     = 2019052001;
-$plugin->maturity     = MATURITY_STABLE;
-$plugin->dependencies = [
-    'tool_tenant'     => 2019070700,
-    'tool_wp'         => 2019070700,
+defined('MOODLE_INTERNAL') || die;
+
+$observers = [
+    [
+        'eventname' => user_deleted::class,
+        'callback' => 'tool_organisation_observer::user_deleted'
+    ],
 ];

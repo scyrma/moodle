@@ -37,6 +37,36 @@ defined('MOODLE_INTERNAL') || die();
  */
 class add_department_form extends modal_form {
 
+    /** @var department */
+    protected $parent = null;
+
+    /** @var department */
+    protected $department = null;
+
+    /**
+     * Parent department
+     *
+     * @return null|department
+     */
+    protected function get_parent(): ?department {
+        if (!$this->parent && !empty($this->_ajaxformdata['parentid'])) {
+            $this->parent = (new department_manager())->get_department($this->_ajaxformdata['parentid']);
+        }
+        return $this->parent;
+    }
+
+    /**
+     * Current department
+     *
+     * @return null|department
+     */
+    protected function get_department(): ?department {
+        if (!$this->department && !empty($this->_ajaxformdata['id'])) {
+            $this->department = (new department_manager())->get_department($this->_ajaxformdata['id']);
+        }
+        return $this->department;
+    }
+
     /**
      * Form definition
      */
@@ -69,7 +99,11 @@ class add_department_form extends modal_form {
      * Check access
      */
     public function require_access() {
-        return require_capability('tool/organisation:managedepartments', \context_system::instance());
+        if ($department = $this->get_department()) {
+            permission::require_can_edit_department($department);
+        } else {
+            permission::require_can_create_department($this->get_parent());
+        }
     }
 
     /**
@@ -133,16 +167,11 @@ class add_department_form extends modal_form {
      * Set data in the modal form
      */
     public function set_data_for_modal() {
-        $data = (object)$this->_ajaxformdata;
-        if (!empty($data->id)) {
+        if ($department = $this->get_department()) {
             // Edit department form.
-            $manager = new department_manager();
-            $department = $manager->get_department($data->id);
             $this->set_data($this->prepare_data_for_form($department));
-        } else if (!empty($data->parentid)) {
+        } else if ($parent = $this->get_parent()) {
             // Create new department form with a parent department specified.
-            $manager = new department_manager();
-            $parent = $manager->get_department($data->parentid); // Validate that parent exists.
             $this->set_data(['parentid' => $parent->get('id')]);
         }
     }

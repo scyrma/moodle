@@ -64,8 +64,10 @@ class tool_organisation_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/organisation:managedepartments', $context);
-        (new \tool_organisation\department_manager())->move($params['id'], $params['parentid'], $params['beforeid']);
+        $manager = new \tool_organisation\department_manager();
+        $department = $manager->get_department($id);
+        \tool_organisation\permission::require_can_edit_department($department);
+        $manager->move($params['id'], $params['parentid'], $params['beforeid']);
     }
 
     /**
@@ -105,8 +107,10 @@ class tool_organisation_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/organisation:managepositions', $context);
-        (new \tool_organisation\position_manager())->move($params['id'], $params['parentid'], $params['beforeid']);
+        $manager = new \tool_organisation\position_manager();
+        $position = $manager->get_position($params['id']);
+        \tool_organisation\permission::require_can_edit_position($position);
+        $manager->move($params['id'], $params['parentid'], $params['beforeid']);
     }
 
     /**
@@ -140,9 +144,11 @@ class tool_organisation_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/organisation:managepositions', $context);
+        $manager = new \tool_organisation\position_manager();
+        $position = $manager->get_position($params['id']);
+        \tool_organisation\permission::require_can_edit_position($position);
 
-        (new \tool_organisation\position_manager())->delete_position($id);
+        $manager->delete_position($id);
     }
 
     /**
@@ -175,8 +181,10 @@ class tool_organisation_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/organisation:managedepartments', $context);
-        (new \tool_organisation\department_manager())->delete_department($id);
+        $manager = new \tool_organisation\department_manager();
+        $department = $manager->get_department($params['id']);
+        \tool_organisation\permission::require_can_edit_department($department);
+        $manager->delete_department($id);
     }
 
     /**
@@ -203,7 +211,6 @@ class tool_organisation_external extends external_api {
      * @param int $id
      */
     public static function job_delete(int $id) {
-        global $DB;
 
         $params = self::validate_parameters(self::job_delete_parameters(),
             ['id' => $id]);
@@ -211,8 +218,10 @@ class tool_organisation_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/organisation:assignjobs', $context);
-        (new \tool_organisation\job_manager())->delete_job($id);
+        $manager = new \tool_organisation\job_manager();
+        $job = $manager->get_job(['id' => $id]);
+        \tool_organisation\permission::require_can_edit_job($job);
+        $manager->delete_job($id);
     }
 
     /**
@@ -252,10 +261,10 @@ class tool_organisation_external extends external_api {
         $params = self::validate_parameters(self::create_departments_parameters(), ['departments' => $departments]);
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/organisation:managedepartments', $context);
         $manager = new \tool_organisation\department_manager();
         $result = [];
         foreach ($params['departments'] as $d) {
+            $parent = null;
             if (!empty($d['parent'])) {
                 $parentconditions = ['idnumber' => $d['parent'], 'tenantid' => \tool_tenant\tenancy::get_tenant_id()];
                 $parent = \tool_organisation\department::get_record($parentconditions);
@@ -273,6 +282,7 @@ class tool_organisation_external extends external_api {
             }
             try {
                 unset($d['parent']);
+                \tool_organisation\permission::require_can_create_department($parent);
                 $department = $manager->create_department((object)$d);
                 $result[] = [
                     'id' => $department->get('id'),
@@ -293,7 +303,7 @@ class tool_organisation_external extends external_api {
 
     /**
      * Return structure for the 'tool_create_departments' WS
-     * @return \external_multiple_structure
+     * @return \external_single_structure
      */
     public static function create_departments_returns() {
         return new external_single_structure([
@@ -354,11 +364,12 @@ class tool_organisation_external extends external_api {
         $params = self::validate_parameters(self::create_positions_parameters(), ['positions' => $positions]);
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/organisation:managepositions', $context);
+        \tool_organisation\permission::require_can_create_department();
         $manager = new \tool_organisation\position_manager();
         $warnings = [];
         $result = [];
         foreach ($params['positions'] as $p) {
+            $parent = null;
             if (!empty($p['parent'])) {
                 $parentconditions = ['idnumber' => $p['parent'], 'tenantid' => \tool_tenant\tenancy::get_tenant_id()];
                 $parent = \tool_organisation\position::get_record($parentconditions);
@@ -381,6 +392,7 @@ class tool_organisation_external extends external_api {
                 $p['departmentpermissions'] = self::sum_permissions($p['departmentpermissions']);
             }
             try {
+                \tool_organisation\permission::require_can_create_position($parent);
                 unset($p['parent']);
                 $position = $manager->create_position((object)$p);
                 $result[] = [
@@ -402,7 +414,7 @@ class tool_organisation_external extends external_api {
 
     /**
      * Return structure for the 'tool_create_positions' WS
-     * @return \external_multiple_structure
+     * @return \external_single_structure
      */
     public static function create_positions_returns() {
         return new external_single_structure([
@@ -434,11 +446,8 @@ class tool_organisation_external extends external_api {
     public static function is_jobs_tab_available() {
         $context = context_system::instance();
         self::validate_context($context);
-        if (has_capability('tool/organisation:assignjobs', $context)) {
-            return \tool_organisation\job_manager::is_tab_available();
-        } else {
-            return false;
-        }
+        return \tool_organisation\permission::can_view_jobs() &&
+            \tool_organisation\job_manager::is_tab_available();
     }
 
     /**

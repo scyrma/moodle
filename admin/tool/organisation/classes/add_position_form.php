@@ -40,6 +40,36 @@ require_once($CFG->dirroot.'/admin/tool/organisation/lib.php');
  */
 class add_position_form extends modal_form {
 
+    /** @var position */
+    protected $parent = null;
+
+    /** @var position */
+    protected $position = null;
+
+    /**
+     * Parent position
+     *
+     * @return null|position
+     */
+    protected function get_parent(): ?position {
+        if (!$this->parent && !empty($this->_ajaxformdata['parentid'])) {
+            $this->parent = (new position_manager())->get_position($this->_ajaxformdata['parentid']);
+        }
+        return $this->parent;
+    }
+
+    /**
+     * Current position
+     *
+     * @return null|position
+     */
+    protected function get_position(): ?position {
+        if (!$this->position && !empty($this->_ajaxformdata['id'])) {
+            $this->position = (new position_manager())->get_position($this->_ajaxformdata['id']);
+        }
+        return $this->position;
+    }
+
     /**
      * Form definition
      */
@@ -106,7 +136,11 @@ class add_position_form extends modal_form {
      * Check access
      */
     public function require_access() {
-        return require_capability('tool/organisation:managepositions', \context_system::instance());
+        if ($position = $this->get_position()) {
+            permission::require_can_edit_position($position);
+        } else {
+            permission::require_can_create_position($this->get_parent());
+        }
     }
 
     /**
@@ -199,16 +233,11 @@ class add_position_form extends modal_form {
      * Set data in the modal form
      */
     public function set_data_for_modal() {
-        $data = (object)$this->_ajaxformdata;
-        if (!empty($data->id)) {
-            // Edit position form.
-            $manager = new position_manager();
-            $position = $manager->get_position($data->id);
+        if ($position = $this->get_position()) {
+            // Edit posityion form.
             $this->set_data($this->prepare_data_for_form($position));
-        } else if (!empty($data->parentid)) {
+        } else if ($parent = $this->get_parent()) {
             // Create new position form with a parent position specified.
-            $manager = new position_manager();
-            $parent = $manager->get_position($data->parentid); // Validate that parent exists.
             $this->set_data(['parentid' => $parent->get('id')]);
         }
     }
@@ -217,9 +246,8 @@ class add_position_form extends modal_form {
      * Check whether this form is for position framework or child positions
      */
     protected function is_position_framework_form() {
-        $data = (object)$this->_ajaxformdata;
-        $manager = new position_manager();
-        $isframework = !empty($data->id) ? $manager->get_position($data->id)->is_framework() : empty($data->parentid);
-        return $isframework;
+        $position = $this->get_position();
+        return (!$position && !$this->get_parent()) ||
+            ($position && $position->is_framework());
     }
 }

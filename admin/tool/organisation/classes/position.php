@@ -86,7 +86,7 @@ class position extends hierarchy {
             'tool_organisation',
             'position_name',
             $this->get('id'),
-            has_capability('tool/organisation:managepositions', \context_system::instance()),
+            permission::can_edit_position($this),
             $this->get_formatted_name(),
             $this->get('name'),
             get_string('editpositionname', 'tool_organisation'),
