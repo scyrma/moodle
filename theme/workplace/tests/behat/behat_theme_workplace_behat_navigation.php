@@ -78,4 +78,20 @@ class behat_theme_workplace_behat_navigation extends behat_navigation {
         $this->execute('behat_general::i_click_on_in_the', [$nodetext, 'link', '.workplace-menu', 'css_element']);
     }
 
+    /**
+     * Click on an entry in the user menu.
+     *
+     * @param string $nodetext
+     */
+    public function i_follow_in_the_user_menu($nodetext) {
+        try {
+            parent::i_follow_in_the_user_menu($nodetext);
+        } catch (ElementNotFoundException $ex) {
+            // Locate user menu entry based on "original-title" data XPath.
+            $xpath = "//a[@data-original-title='" . $this->escape($nodetext) . "']";
+            $csspath = '.usermenu .dropdown-menu';
+
+            $this->execute('behat_general::i_click_on_in_the', [$xpath, 'xpath_element', $csspath, 'css_element']);
+        }
+    }
 }
