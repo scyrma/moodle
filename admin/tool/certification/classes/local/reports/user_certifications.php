@@ -92,7 +92,7 @@ class user_certifications extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return permission::can_view_reports($this->userid);
+        return permission::can_view_user_progress($this->get_parameter('userid', 0, PARAM_INT));
     }
 
     /**
@@ -123,8 +123,7 @@ class user_certifications extends system_report {
             new lang_string('certificationname', 'tool_certification'),
             'tool_certification'
         ))
-            ->add_field("{$c}.fullname")
-            ->add_field("{$c}.id", 'certificationid')
+            ->add_fields("{$c}.fullname, {$c}.id, {$c}.tenantid, {$c}.archived")
             ->set_is_default(true, 2)
             ->set_is_sortable(true, true)
             ->add_callback([format::class, 'usercertificationname'], ['userid' => $this->userid]);
@@ -136,8 +135,7 @@ class user_certifications extends system_report {
             new lang_string('programname', 'tool_certification'),
             'tool_program'
         ))
-            ->add_field("{$pr}.fullname", 'programname')
-            ->add_field("{$pr}.id", 'programid')
+            ->add_fields("{$pr}.fullname, {$pr}.id, {$pr}.tenantid, {$pr}.archived, {$pr}.visible")
             ->set_is_default(true, 3)
             ->add_callback([format::class, 'userprogramname'], ['userid' => $this->userid]);
         $this->add_column($newcolumn);

@@ -43,6 +43,23 @@ class certification extends persistent {
     public const TABLE = 'tool_certification';
 
     /**
+     * Create an instance of this class.
+     *
+     * @param int $id If set, this is the id of an existing record, used to load the data.
+     * @param \stdClass $record If set will be passed to {@link self::from_record()}.
+     */
+    public function __construct(int $id = 0, \stdClass $record = null) {
+        if ($record) {
+            $record = (object)array_intersect_key((array)$record, self::properties_definition());
+        }
+        if ($id && $record) {
+            debugging('Either id or record need to be specified in the persistent constructor but not both',
+                DEBUG_DEVELOPER);
+        }
+        parent::__construct($id, $record);
+    }
+
+    /**
      * Return the definition of the properties of this model.
      *
      * @return array
@@ -146,11 +163,6 @@ class certification extends persistent {
                 'optional' => true,
                 'default' => 0,
             ],
-            'visible' => [
-                'type' => PARAM_BOOL,
-                'optional' => true,
-                'default' => true,
-            ],
             'archived' => [
                 'type' => PARAM_BOOL,
                 'optional' => true,
@@ -160,11 +172,6 @@ class certification extends persistent {
                 'type' => PARAM_INT,
                 'optional' => true,
                 'default' => 0,
-            ],
-            'allowdirectallocation' => [
-                'type' => PARAM_BOOL,
-                'optional' => true,
-                'default' => true,
             ],
         ];
     }
@@ -194,5 +201,14 @@ class certification extends persistent {
      */
     public function get_certification_program() {
         return program::get_record(['id' => $this->get('program')]);
+    }
+
+    /**
+     * Certification context
+     *
+     * @return \context
+     */
+    public function get_context(): \context {
+        return \context_system::instance();
     }
 }

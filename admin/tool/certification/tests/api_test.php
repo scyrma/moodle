@@ -174,7 +174,7 @@ class tool_certification_api_testcase extends advanced_testcase {
 
         // We test to delete without archiving first.
         try {
-            api::delete_certification($certificationid);
+            api::delete_certification($certification);
             $this->fail('Exception expected');
         } catch (Exception $e) {
             $this->assertInstanceOf('moodle_exception', $e);
@@ -187,7 +187,7 @@ class tool_certification_api_testcase extends advanced_testcase {
         $certification->update();
 
         // We try to delete again.
-        api::delete_certification($certificationid);
+        api::delete_certification($certification);
 
         $softdeletedcertrecord = $DB->get_record('tool_certification', ['id' => $certificationid]);
         $this->assertFalse($softdeletedcertrecord);
@@ -203,13 +203,12 @@ class tool_certification_api_testcase extends advanced_testcase {
         $certificationdata = $this->generator->get_dummy_certificationdata();
         $certificationdata->program = $program->get('id');
         $certification = api::create_certification($certificationdata);
-        $certificationid = $certification->get('id');
 
         $sink = $this->redirectEvents();
 
         // We test to delete without archiving first.
         try {
-            api::delete_certification($certificationid);
+            api::delete_certification($certification);
             $this->fail('Exception expected');
         } catch (Exception $e) {
             $this->assertInstanceOf('moodle_exception', $e);
@@ -222,7 +221,8 @@ class tool_certification_api_testcase extends advanced_testcase {
         $certification->update();
 
         // We try to delete again.
-        api::delete_certification($certificationid);
+        $certificationid = $certification->get('id');
+        api::delete_certification($certification);
 
         $events = $sink->get_events();
         $sink->close();
@@ -231,11 +231,10 @@ class tool_certification_api_testcase extends advanced_testcase {
         $this->assertInstanceOf(certification_deleted::class, $event);
 
         $program = $certification->get_certification_program();
-        $certificationid = $certification->get('id');
 
         // Check that the event data is valid.
         $this->assertEquals(context_system::instance()->id, $event->contextid);
-        $this->assertEquals($certification->get('id'), $event->objectid);
+        $this->assertEquals($certificationid, $event->objectid);
         $this->assertEquals($USER->id, $event->userid);
         $this->assertEquals($program->get('id'), $event->other['programid']);
 
@@ -635,7 +634,7 @@ class tool_certification_api_testcase extends advanced_testcase {
         $certification = api::create_certification($certificationdata);
         $certificationid = $certification->get('id');
 
-        $canbeallocated = api::user_can_be_allocated($certificationid);
+        $canbeallocated = api::is_certification_allocation_open($certification);
         $this->assertTrue($canbeallocated);
 
         // Allocation starts in 1 day.
@@ -647,7 +646,7 @@ class tool_certification_api_testcase extends advanced_testcase {
         $certification->set('allocationenddateabsolute', $twodaysmore);
         $certification->update();
 
-        $canbeallocated = api::user_can_be_allocated($certificationid);
+        $canbeallocated = api::is_certification_allocation_open($certification);
         $this->assertFalse($canbeallocated);
 
         // Allocation started 1 day ago.
@@ -659,7 +658,7 @@ class tool_certification_api_testcase extends advanced_testcase {
         $certification->set('allocationenddateabsolute', $twodaysmore);
         $certification->update();
 
-        $canbeallocated = api::user_can_be_allocated($certificationid);
+        $canbeallocated = api::is_certification_allocation_open($certification);
         $this->assertTrue($canbeallocated);
 
         // Allocation start date is not set.
@@ -670,7 +669,7 @@ class tool_certification_api_testcase extends advanced_testcase {
         $certification->set('allocationenddateabsolute', $twodaysmore);
         $certification->update();
 
-        $canbeallocated = api::user_can_be_allocated($certificationid);
+        $canbeallocated = api::is_certification_allocation_open($certification);
         $this->assertTrue($canbeallocated);
 
         // Allocation end date is not set.
@@ -681,7 +680,7 @@ class tool_certification_api_testcase extends advanced_testcase {
         $certification->set('allocationenddateabsolute', '0');
         $certification->update();
 
-        $canbeallocated = api::user_can_be_allocated($certificationid);
+        $canbeallocated = api::is_certification_allocation_open($certification);
         $this->assertTrue($canbeallocated);
     }
 
@@ -1103,6 +1102,14 @@ class tool_certification_api_testcase extends advanced_testcase {
         $search = 'program';
         $progslist = api::get_potential_programs($search);
 
+        // Regular user can't search programs.
+        $this->assertEmpty($progslist);
+
+        // Assign user capability to edit certifications, then he will be able to search programs.
+        $this->generator->assign_edit_capability($data->user->id, context_system::instance());
+        $this->setUser($data->user);
+
+        $progslist = api::get_potential_programs($search);
         $this->assertNotEmpty($progslist);
         $this->assertCount(2, $progslist);
         $this->assertArrayHasKey($program->get('id'), $progslist);

@@ -258,7 +258,6 @@ class api {
     public static function allocate_user(certification $certification, stdClass $data): certification_user {
         // Prevent passing extra data to the persistent.
         $insertdata = array_intersect_key((array) $data, [
-            'certificationid' => 1,
             'userid' => 1,
             'startdate' => 1,
             'startdatelocked' => 1,
@@ -271,6 +270,7 @@ class api {
             'status' => 1,
             'allocationtype' => 1,
         ]);
+        $insertdata['certificationid'] = $certification->get('id');
 
         $certificationid = $certification->get('id');
         $programid = $certification->get('program');
@@ -292,6 +292,7 @@ class api {
 
         // We allocate user to this certification.
         $newuser = new certification_user(0, (object) $insertdata);
+        $newuser->set_certification($certification);
         $newuser->create();
 
         // We check if allocation in program already exists with this user and certification.
@@ -438,11 +439,10 @@ class api {
     /**
      * Deletes a certification.
      *
-     * @param int $certificationid
+     * @param certification $certification
      * @return bool
      */
-    public static function delete_certification(int $certificationid): bool {
-        $certification = new certification($certificationid);
+    public static function delete_certification(certification $certification): bool {
 
         // Check that certification is archived.
         if (!$certification->get('archived')) {
@@ -454,7 +454,7 @@ class api {
         // Deallocate users from certification and associated program.
         $certusers = $certification->get_certification_users();
         foreach ($certusers as $certuser) {
-            self::deallocate_user($certificationid, $certuser->get('userid'));
+            self::deallocate_user($certification->get('id'), $certuser->get('userid'));
         }
 
         // Create event.
@@ -691,7 +691,7 @@ class api {
         if ($iscertified) {
             switch ((int) $validateddata->expirydatetype) {
                 case constants::DATE_NONE:
-                    $certification = new certification($certificationid);
+                    $certification = $certificationuser->get_certification();
                     self::recalculate_certification_user_dates($certification, $certificationuser);
                     break;
                 case constants::DATE_NEVER:
@@ -850,12 +850,11 @@ class api {
     /**
      * Checks if allocate user window is available to allocate user.
      *
-     * @param int $certificationid
+     * @param certification $certification
      * @return bool
      */
-    public static function user_can_be_allocated(int $certificationid): bool {
+    public static function is_certification_allocation_open(certification $certification): bool {
         // We check allocate window from certifications.
-        $certification = new certification($certificationid);
         $now = time();
 
         $allocstartdatetype = (int) $certification->get('allocationstartdatetype');
@@ -1049,6 +1048,8 @@ class api {
     /**
      * Get potential programs for the program selector.
      *
+     * @uses \tool_dynamicrule\permission::can_manage_rules
+     *
      * @param string $search
      * @return array
      * @throws dml_exception
@@ -1056,14 +1057,19 @@ class api {
     public static function get_potential_programs(string $search): array {
         global $USER, $DB;
 
+        if (!component_class_callback('\tool_dynamicrule\permission', 'can_manage_rules', [], false) &&
+                !permission::has_edit_capability()) {
+            return [];
+        }
+
         $tenantuser = tenancy::get_tenant_id($USER->id);
 
         $query = "SELECT id, fullname
             FROM {tool_program}
-            WHERE archived = 0 AND tenantid = '$tenantuser'";
+            WHERE archived = 0 AND tenantid = :tenantid";
 
         $i = 0;
-        $params = [];
+        $params = ['tenantid' => $tenantuser];
 
         foreach (preg_split('/ +/', trim($search), -1, PREG_SPLIT_NO_EMPTY) as $word) {
             $i++;
@@ -1089,6 +1095,8 @@ class api {
     /**
      * Get potential certifications for the certification selector.
      *
+     * @uses \tool_dynamicrule\permission::can_manage_rules
+     *
      * @param string $search
      * @return array
      * @throws dml_exception
@@ -1096,14 +1104,19 @@ class api {
     public static function get_potential_certifications(string $search): array {
         global $USER, $DB;
 
+        if (!component_class_callback('\tool_dynamicrule\permission', 'can_manage_rules', [], false) &&
+                !permission::has_edit_capability()) {
+            return [];
+        }
+
         $tenantuser = tenancy::get_tenant_id($USER->id);
 
         $query = "SELECT id, fullname
             FROM {tool_certification}
-            WHERE archived = 0 AND tenantid = '$tenantuser'";
+            WHERE archived = 0 AND tenantid = :temantid";
 
         $i = 0;
-        $params = [];
+        $params = ['tenantid' => $tenantuser];
 
         foreach (preg_split('/ +/', trim($search), -1, PREG_SPLIT_NO_EMPTY) as $word) {
             $i++;

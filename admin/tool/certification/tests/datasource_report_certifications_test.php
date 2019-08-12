@@ -110,7 +110,7 @@ class tool_certification_datasource_report_certifications_testcase extends advan
         $generator = $this->get_reportbuilder_generator();
 
         // Create a report from the report_certifications datasource with default columns/conditions.
-        $reportid = $generator->create_report(['source' => report_certifications::class])->id;
+        $reportid = $generator->create_report(['source' => report_certifications::class])->get_id();
 
         // Execute report for different users.
 
@@ -139,7 +139,7 @@ class tool_certification_datasource_report_certifications_testcase extends advan
             'source' => report_certifications::class,
             'tenantid' => $tenantid,
             'adddefault' => (int) $adddefault
-        ])->id;
+        ])->get_id();
     }
 
     /**

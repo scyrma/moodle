@@ -33,6 +33,7 @@ use tool_reportbuilder\local\filter\date_filter;
 use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\report_filter;
+use \tool_wp\db;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -91,38 +92,43 @@ class certificationcompletion_entity extends entity_base {
         $columns = [];
 
         // User certified date.
-        $columns[] = (new report_column(
-            'certifieddate',
-            new lang_string('certifieddate', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->set_is_sortable(true)
-            ->add_field("$this->tablealias.timecreated")
-            ->add_callback([\tool_reportbuilder\local\helpers\format::class, 'userdate']);
+        if (!in_array('certifieddate', $this->excludecolumns, true)) {
+            $columns[] = (new report_column(
+                'certifieddate',
+                new lang_string('certifieddate', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->set_is_sortable(true)
+                ->add_field("$this->tablealias.timecreated")
+                ->add_callback([\tool_reportbuilder\local\helpers\format::class, 'userdate']);
+        }
 
         // Column Expiry date.
-        $columns[] = (new report_column(
-            'expirydate',
-            new lang_string('expirydate', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.expirydate")
-            ->set_is_sortable(true)
-            ->add_callback([certificationcompletion_format::class, 'expirydate']);
+        if (!in_array('expirydate', $this->excludecolumns, true)) {
+            $columns[] = (new report_column(
+                'expirydate',
+                new lang_string('expirydate', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.expirydate")
+                ->set_is_sortable(true)
+                ->add_callback([certificationcompletion_format::class, 'expirydate']);
+        }
 
         // Column Expired.
-        $columns[] = (new report_column(
-            'expired',
-            new lang_string('expired', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_BOOLEAN)
-            ->add_field("
+        if (!in_array('expired', $this->excludecolumns, true)) {
+            $columns[] = (new report_column(
+                'expired',
+                new lang_string('expired', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_BOOLEAN)
+                ->add_field("
                 CASE
                 WHEN ($this->tablealias.expirydate < " . time() . " AND $this->tablealias.expirydate > 0
                     AND $this->tablealias.id IS NOT NULL AND $this->tablealias.timerevoked = 0)
@@ -131,20 +137,65 @@ class certificationcompletion_entity extends entity_base {
                 THEN NULL
                 ELSE 0
                 END", 'expired')
-            ->set_is_sortable(true)
-            ->add_callback([certificationcompletion_format::class, 'expired']);
+                ->set_is_sortable(true)
+                ->add_callback([certificationcompletion_format::class, 'expired']);
+        }
 
         // Column Certified/completed.
-        $columns[] = (new report_column(
-            'certified',
-            new lang_string('certified', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_BOOLEAN)
-            ->add_field("CASE WHEN $this->tablealias.id IS NOT NULL THEN 1 ELSE 0 END", 'certified')
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'checkbox_as_text']);
+        if (!in_array('certified', $this->excludecolumns, true)) {
+            $columns[] = (new report_column(
+                'certified',
+                new lang_string('certified', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_BOOLEAN)
+                ->add_field("CASE WHEN $this->tablealias.id IS NOT NULL THEN 1 ELSE 0 END", 'certified')
+                ->set_is_sortable(true)
+                ->add_callback([format::class, 'checkbox_as_text']);
+        }
+
+        // Column Certified as: Manually/Upon completion.
+        if (!in_array('certifiedtype', $this->excludecolumns, true)) {
+            $tpu = db::generate_alias();
+            $tps = db::generate_alias();
+            $tpsc = db::generate_alias();
+            $joinprograms = "
+            LEFT JOIN {tool_program_users} $tpu
+            ON $tpu.certificationid = $this->tablealias.certificationid
+            AND $tpu.userid = $this->tablealias.userid
+            LEFT JOIN {tool_program_sets} $tps
+            ON $tps.programid = $tpu.programid AND $tps.parent = 0
+            LEFT JOIN {tool_program_set_completion} $tpsc
+            ON $tpsc.setid = $tps.id AND $tpsc.userid = $this->tablealias.userid";
+
+            $columns[] = (new report_column(
+                'certifiedtype',
+                new lang_string('certifiedtype', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->add_join($joinprograms)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->set_is_sortable(true)
+                ->add_field("
+                    CASE
+                    WHEN $this->tablealias.id IS NOT NULL
+                    AND $this->tablealias.timerevoked = 0
+                    AND $tpsc.id IS NOT NULL
+                    AND $tpsc.completeddate > 0
+                    THEN 1
+                    WHEN $this->tablealias.id IS NOT NULL
+                    AND $this->tablealias.timerevoked = 0
+                    AND $tpsc.id IS NULL
+                    THEN 2
+                    ELSE 0
+                    END
+                ", 'certifiedtype')
+                ->add_callback([certificationcompletion_format::class, 'certifiedtype'])
+                ->add_aggregation_callback('groupconcat', [certificationcompletion_format::class, 'certifiedtype'])
+                ->add_aggregation_callback('groupconcatdistinct', [certificationcompletion_format::class, 'certifiedtype']);
+        }
 
         // TODO Manually certified by.
         // TODO Revoked by.

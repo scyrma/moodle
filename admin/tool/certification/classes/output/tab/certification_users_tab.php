@@ -66,7 +66,7 @@ class certification_users_tab extends \tool_wp\output\tab {
 
         // We check if we have permission to show allocation button.
         $certification = new certification($this->data['id']);
-        if (permission::can_allocate($certification, context_system::instance())) {
+        if (permission::can_allocate_anybody($certification)) {
             $exporteddata['addbuttontitle'] = get_string('allocateusers', 'tool_certification');
         }
         $exporteddata['tabheading'] = get_string('users', 'tool_certification');
@@ -90,9 +90,8 @@ class certification_users_tab extends \tool_wp\output\tab {
             return false;
         }
 
-        $context = context_system::instance();
         $certification = new certification($this->data['id']);
-        return (permission::can_edit_details($certification, $context) || permission::can_manage_user_allocation($context));
+        return permission::can_view_allocated_users($certification);
 
     }
     /**

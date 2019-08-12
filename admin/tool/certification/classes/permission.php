@@ -47,7 +47,8 @@ class permission {
      * @return bool
      * @throws \coding_exception
      */
-    public static function has_edit_capability(context $context): bool {
+    public static function has_edit_capability(?context $context = null): bool {
+        $context = $context ?: context_system::instance();
         return has_capability('tool/certification:edit', $context);
     }
 
@@ -58,7 +59,8 @@ class permission {
      * @return bool
      * @throws \coding_exception
      */
-    public static function has_allocateuser_capability(context $context): bool {
+    public static function has_allocateuser_capability(?context $context = null): bool {
+        $context = $context ?: context_system::instance();
         return has_capability('tool/certification:allocateuser', $context);
     }
 
@@ -82,7 +84,7 @@ class permission {
      * @return bool
      * @throws \coding_exception
      */
-    public static function can_create(context $context): bool {
+    public static function can_create(?context $context = null): bool {
         return self::has_edit_capability($context);
     }
 
@@ -90,12 +92,14 @@ class permission {
      * User can edit certification details.
      *
      * @param certification $certification
-     * @param context $context
      * @return bool
      * @throws \coding_exception
      */
-    public static function can_edit_details(certification $certification, context $context): bool {
-        if (!self::has_edit_capability($context)) {
+    public static function can_edit_details(certification $certification): bool {
+        if (!$certification->get('id')) {
+            return false;
+        }
+        if (!self::has_edit_capability($certification->get_context())) {
             return false;
         }
         // Certification is not archived.
@@ -110,23 +114,35 @@ class permission {
     }
 
     /**
+     * User can duplicate certification
+     *
+     * @param certification $certification
+     * @return bool
+     */
+    public static function can_duplicate(certification $certification): bool {
+        return self::can_view_details($certification) && self::can_create();
+    }
+
+    /**
      * User can allocate users.
      *
      * @param certification $certification
-     * @param context $context
      * @param int $userid
      * @return bool
      * @throws \coding_exception
      */
-    public static function can_allocate(certification $certification, context $context, int $userid = null): bool {
+    protected static function can_allocate(certification $certification, int $userid = null): bool {
+        if (!$certification->get('id')) {
+            return false;
+        }
         // Check if user has allocateuser capability OR allocate permission from Organisation.
-        if ($userid !== null) {
+        if ($userid) {
             $canallocate = self::can_allocate_as_organisation_manager($userid);
         } else {
             $canallocate = self::can_allocate_anybody_as_organisation_manager();
         }
 
-        if (!$canallocate && !self::has_allocateuser_capability($context)) {
+        if (!$canallocate && !self::has_allocateuser_capability($certification->get_context())) {
             return false;
         }
         // Certification is not archived.
@@ -134,27 +150,51 @@ class permission {
             return false;
         }
         // Allocation window is valid.
-        if (!api::user_can_be_allocated($certification->get('id'))) {
+        if (!api::is_certification_allocation_open($certification)) {
             return false;
         }
         // Belongs to same tenant.
         if (!self::check_belongs_same_tenant($certification)) {
             return false;
         }
+        // TODO check user is not allocated yet?
         return true;
+    }
+
+    /**
+     * User can allocate at least some users to the certification
+     *
+     * @param certification $certification
+     * @return bool
+     */
+    public static function can_allocate_anybody(certification $certification) {
+        return self::can_allocate($certification);
+    }
+
+    /**
+     * Current user can allocate a given user to the certification
+     *
+     * @param certification $certification
+     * @param int $userid
+     * @return bool
+     */
+    public static function can_allocate_user(certification $certification, int $userid) {
+        return self::can_allocate($certification, $userid);
     }
 
     /**
      * User can archive certification.
      *
      * @param certification $certification
-     * @param context $context
      * @return bool
      * @throws \coding_exception
      */
-    public static function can_archive(certification $certification, context $context): bool {
+    public static function can_archive(certification $certification): bool {
+        if (!$certification->get('id')) {
+            return false;
+        }
         // Capability to manage certifications.
-        if (!self::has_edit_capability($context)) {
+        if (!self::has_edit_capability($certification->get_context())) {
             return false;
         }
         // Certification is not archived.
@@ -172,13 +212,15 @@ class permission {
      * User can restore a certification.
      *
      * @param certification $certification
-     * @param context $context
      * @return bool
      * @throws \coding_exception
      */
-    public static function can_restore(certification $certification, context $context): bool {
+    public static function can_restore(certification $certification): bool {
+        if (!$certification->get('id')) {
+            return false;
+        }
         // Capability to manage certifications.
-        if (!self::has_edit_capability($context)) {
+        if (!self::has_edit_capability($certification->get_context())) {
             return false;
         }
         // Certification is not archived.
@@ -196,13 +238,15 @@ class permission {
      * User can delete a certification.
      *
      * @param certification $certification
-     * @param context $context
      * @return bool
      * @throws \coding_exception
      */
-    public static function can_delete(certification $certification, context $context): bool {
+    public static function can_delete(certification $certification): bool {
+        if (!$certification->get('id')) {
+            return false;
+        }
         // Capability to manage certifications.
-        if (!self::has_edit_capability($context)) {
+        if (!self::has_edit_capability($certification->get_context())) {
             return false;
         }
         // Certification is archived.
@@ -223,23 +267,68 @@ class permission {
      * @return bool
      * @throws \coding_exception
      */
-    public static function can_view_list(context $context): bool {
+    public static function can_view_list(?context $context = null): bool {
         // Check if user has allocateuser capability OR allocate permission from Organisation.
         $canallocate = self::can_allocate_anybody_as_organisation_manager();
         return (self::has_edit_capability($context) || self::has_allocateuser_capability($context) || $canallocate);
     }
 
     /**
-     * Can manage user list.
+     * User can view archived certifications list.
+     *
+     * @param context $context
+     * @return bool
+     * @throws \coding_exception
+     */
+    public static function can_view_archived_list(?context $context = null): bool {
+        return self::has_edit_capability($context);
+    }
+
+    /**
+     * Check if current user is able to view allocated users.
      *
      * @param certification $certification
-     * @param context $context
-     * @throws \coding_exception
+     * @return bool
+     */
+    public static function can_view_allocated_users(certification $certification): bool {
+        $sametenanant = tenancy::get_tenant_id() == $certification->get('tenantid');
+        return $certification->get('id') &&
+            $sametenanant &&
+            (self::has_edit_capability($certification->get_context())
+                || self::has_allocateuser_capability($certification->get_context())
+                || self::can_allocate_anybody_as_organisation_manager());
+    }
+
+    /**
+     * Check if current user can view details of the program (can edit/can allocate/can view allocations)
+     *
+     * @param certification $certification
+     * @return bool
+     */
+    public static function can_view_details(certification $certification): bool {
+        return self::can_edit_details($certification)
+            || self::can_view_allocated_users($certification);
+    }
+
+    /**
+     * Check if current user can view certification progress report on all or some users
+     *
+     * @param certification $certification
+     * @return bool
+     */
+    public static function can_view_users_progress(certification $certification): bool {
+        return self::can_view_allocated_users($certification);
+    }
+
+    /**
+     * Can view list of allocated users
+     *
+     * @param certification $certification
      * @throws moodle_exception
      */
-    public static function require_can_manage_users_list(certification $certification, context $context): void {
+    public static function require_can_view_allocated_users(certification $certification): void {
         // Capability to manage certifications.
-        if (!self::can_edit_details($certification, $context) && !self::can_manage_user_allocation($context)) {
+        if (!self::can_view_allocated_users($certification)) {
             throw new moodle_exception('errorcantmanageusers', 'tool_certification');
         }
     }
@@ -251,7 +340,7 @@ class permission {
      * @throws \coding_exception
      * @throws moodle_exception
      */
-    public static function require_can_create(context $context): void {
+    public static function require_can_create(?context $context = null): void {
         if (!self::can_create($context)) {
             throw new moodle_exception('errornopermissionmanagecertifications', 'tool_certification');
         }
@@ -264,7 +353,7 @@ class permission {
      * @throws \coding_exception
      * @throws moodle_exception
      */
-    public static function require_can_view_list(context $context): void {
+    public static function require_can_view_list(?context $context = null): void {
         if (!self::can_view_list($context)) {
             throw new moodle_exception('errornopermissionmanagecertifications', 'tool_certification');
         }
@@ -288,12 +377,24 @@ class permission {
      * User can edit certification details.
      *
      * @param certification $certification
-     * @param context $context
      * @throws \coding_exception
      * @throws moodle_exception
      */
-    public static function require_can_edit_details(certification $certification, context $context): void {
-        if (!self::can_edit_details($certification, $context)) {
+    public static function require_can_edit_details(certification $certification): void {
+        if (!self::can_edit_details($certification)) {
+            throw new moodle_exception('errornopermissionmanagecertifications', 'tool_certification');
+        }
+    }
+
+    /**
+     * User can view certification details.
+     *
+     * @param certification $certification
+     * @throws \coding_exception
+     * @throws moodle_exception
+     */
+    public static function require_can_view_details(certification $certification): void {
+        if (!self::can_view_details($certification)) {
             throw new moodle_exception('errornopermissionmanagecertifications', 'tool_certification');
         }
     }
@@ -302,12 +403,11 @@ class permission {
      * User can archive a certification.
      *
      * @param certification $certification
-     * @param context $context
      * @throws \coding_exception
      * @throws moodle_exception
      */
-    public static function require_can_archive(certification $certification, context $context): void {
-        if (!self::can_archive($certification, $context)) {
+    public static function require_can_archive(certification $certification): void {
+        if (!self::can_archive($certification)) {
             throw new moodle_exception('errornopermissionmanagecertifications', 'tool_certification');
         }
     }
@@ -316,12 +416,11 @@ class permission {
      * User can restore a certification.
      *
      * @param certification $certification
-     * @param context $context
      * @throws \coding_exception
      * @throws moodle_exception
      */
-    public static function require_can_restore(certification $certification, context $context): void {
-        if (!self::can_restore($certification, $context)) {
+    public static function require_can_restore(certification $certification): void {
+        if (!self::can_restore($certification)) {
             throw new moodle_exception('errorcantrestorecertification', 'tool_certification');
         }
     }
@@ -330,13 +429,12 @@ class permission {
      * User can delete a certification.
      *
      * @param certification $certification
-     * @param context $context
      * @throws \coding_exception
      * @throws moodle_exception
      */
-    public static function require_can_delete(certification $certification, context $context): void {
+    public static function require_can_delete(certification $certification): void {
         // Capability to manage certifications.
-        if (!self::can_delete($certification, $context)) {
+        if (!self::can_delete($certification)) {
             throw new moodle_exception('errorcantdeletecertification', 'tool_certification');
         }
     }
@@ -345,30 +443,37 @@ class permission {
      * Checks if we can allocate users.
      *
      * @param certification $certification
-     * @param context $context
      * @throws \coding_exception
      * @throws moodle_exception
      */
-    public static function require_can_allocate(certification $certification, context $context): void {
+    public static function require_can_allocate_anybody(certification $certification): void {
         // Capability to manage certifications.
-        if (!self::can_allocate($certification, $context)) {
+        if (!self::can_allocate_anybody($certification)) {
             throw new moodle_exception('errorcantmanageusers', 'tool_certification');
         }
     }
 
     /**
-     * Checks if user can deallocate users.
+     * Checks if user can manage allocation of an individual user or deallocate him.
      *
-     * @param certification $certification
-     * @param context $context
-     * @param int $userid
+     * @param certification_user $certificationuser
      * @return bool
-     * @throws \coding_exception
      */
-    public static function can_deallocate(certification $certification, context $context, int $userid): bool {
+    public static function can_edit_user_allocation(certification_user $certificationuser): bool {
+        $userid = $certificationuser->get('userid');
+        if (!$certificationuser->get('id') || !$userid || !$certificationuser->get('certificationid')) {
+            return false;
+        }
+        if (constants::ALLOCATION_MANUAL != $certificationuser->get('allocationtype')) {
+            return false;
+        }
+        $certification = $certificationuser->get_certification();
+        if (tenancy::get_tenant_id() != tenancy::get_tenant_id($userid)) {
+            return false;
+        }
         // Check if user has allocateuser capability OR allocate permission from Organisation.
         $canallocate = self::can_allocate_as_organisation_manager($userid);
-        if (!$canallocate && !self::has_allocateuser_capability($context)) {
+        if (!$canallocate && !self::has_allocateuser_capability($certification->get_context())) {
             return false;
         }
         // Certification is not archived.
@@ -383,54 +488,27 @@ class permission {
     }
 
     /**
-     * Checks if user can deallocate users.
+     * Checks if user can edit user allocation.
      *
-     * @param certification $certification
-     * @param context $context
-     * @param int $userid
-     * @throws \coding_exception
+     * @param certification_user $certificationuser
      * @throws moodle_exception
      */
-    public static function require_can_deallocate(certification $certification, context $context, int $userid): void {
+    public static function require_can_edit_user_allocation(?certification_user $certificationuser): void {
         // Capability to manage certifications.
-        if (!self::can_deallocate($certification, $context, $userid)) {
+        if (!$certificationuser || !self::can_edit_user_allocation($certificationuser)) {
             throw new moodle_exception('errorcantmanageusers', 'tool_certification');
         }
     }
 
     /**
-     * Check if current user can manage the allocation of users.
+     * Can view report on users progress for a particular certification
      *
-     * @param context $context
-     * @return bool
+     * @param certification $certification
      */
-    public static function can_manage_user_allocation(context $context): bool {
-        // Check if user has allocateuser capability OR allocate permission from Organisation.
-        $canallocate = self::can_allocate_anybody_as_organisation_manager();
-        return !(!$canallocate && !self::has_allocateuser_capability($context));
-    }
-
-    /**
-     * Check if current user can deallocate a user in a given certification.
-     *
-     * @param stdClass $row
-     * @return bool
-     */
-    public static function can_view_deallocate_icon(stdClass $row): bool {
-        // Check if user has allocateuser capability OR allocate permission from Organisation.
-        $canallocate = self::can_allocate_as_organisation_manager($row->userid);
-        return !(!$canallocate && !self::has_allocateuser_capability(context_system::instance()));
-    }
-
-    /**
-     * Checks if current user can view icon to allocate users to a certification.
-     *
-     * @param stdClass $row
-     * @return bool
-     */
-    public static function can_view_allocate_icon(stdClass $row): bool {
-        // Allocation window is valid.
-        return api::user_can_be_allocated($row->id);
+    public static function require_can_view_users_progress(certification $certification): void {
+        if (!self::can_view_users_progress($certification)) {
+            throw new moodle_exception('errornopermissionviewreports', 'tool_program');
+        }
     }
 
     /**
@@ -469,6 +547,9 @@ class permission {
      * @return bool
      */
     protected static function can_allocate_as_organisation_manager(int $userid) : bool {
+        if (tenancy::get_tenant_id($userid) != tenancy::get_tenant_id()) {
+            return false;
+        }
         if (class_exists('\\tool_organisation\\organisation')) {
             $user = organisation::get_user_with_jobs();
             return $user && $user->is_manager_over_user($userid, organisation::PERM_ALLOCATE_PROGRAMS);
@@ -486,9 +567,7 @@ class permission {
      * @throws moodle_exception
      */
     public static function check_access(): bool {
-        $context = context_system::instance();
-        $canallocate = self::can_allocate_anybody_as_organisation_manager();
-        return !(!$canallocate && !self::has_edit_capability($context) && !self::has_allocateuser_capability($context));
+        return self::can_view_list();
     }
 
     /**
@@ -497,37 +576,53 @@ class permission {
      * @param int $userid
      * @return bool
      */
-    public static function can_view_reports(int $userid): bool {
+    public static function can_view_user_progress(int $userid): bool {
         global $USER;
-        return $userid === (int) $USER->id || self::can_view_reports_as_organisation_manager($userid);
+        return $userid == $USER->id ||
+            self::can_allocate_as_organisation_manager($userid) ||
+            self::can_view_reports_as_organisation_manager($userid) ||
+            (self::has_allocateuser_capability() &&
+                tenancy::get_tenant_id() == tenancy::get_tenant_id($userid));
+    }
+
+    /**
+     * Require that current user can view reports for userid.
+     *
+     * @param int $userid
+     * @throws moodle_exception
+     */
+    public static function require_can_view_user_progress(int $userid) {
+        if (!self::can_view_user_progress($userid)) {
+            throw new moodle_exception('errornopermissionviewreports', 'tool_certification');
+        }
     }
 
     /**
      * Check if current user can certify a given user.
      *
-     * @param stdClass $row
+     * @param certification_user $certificationuser
+     * @param bool $certificationcompleted user has completed the certification
      * @return bool
      */
-    public static function can_view_certify_user_icon(stdClass $row): bool {
-        return !api::is_user_certified($row->userid, $row->certificationid);
+    public static function can_certify_user(certification_user $certificationuser,
+                                                      bool $certificationcompleted): bool {
+        return self::can_edit_user_allocation($certificationuser) &&
+            !$certificationcompleted;
     }
 
     /**
      * Check if current user can revoke the certification from a given user.
      *
-     * @param stdClass $row
+     * @param certification_user $certificationuser
+     * @param bool $certificationcompleted user has completed the certification
      * @return bool
      */
-    public static function can_view_revoke_user_icon(stdClass $row): bool {
-        $certification = new certification($row->certificationid);
-
-        // User is certified.
-        $isusercertified = api::is_user_certified($row->userid, $row->certificationid);
-
-        // Program is completed. Otherwise cannot revoke.
-        $programid = $certification->get('program');
-        $programcompletion = api::is_program_completed($programid, $row->userid);
-
-        return ($isusercertified && !$programcompletion);
+    public static function can_revoke_user_certification(certification_user $certificationuser,
+                                                     bool $certificationcompleted): bool {
+        // Check user is certified and program is not completed. Otherwise cannot revoke.
+        $certification = $certificationuser->get_certification();
+        return self::can_edit_user_allocation($certificationuser) &&
+            $certificationcompleted &&
+            !api::is_program_completed($certification->get('program'), $certificationuser->get('userid'));
     }
 }

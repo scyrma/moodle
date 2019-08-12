@@ -49,16 +49,30 @@ use tool_tenant\tenancy;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certification_progress extends system_report {
+    /** @var certification */
+    protected $certification;
+
+    /**
+     * Get current certiication
+     *
+     * @return certification
+     */
+    protected function get_certification(): certification {
+        if (!$this->certification) {
+            $certificationid = $this->get_parameter('certificationid', 0, PARAM_INT);
+            $this->certification = new certification($certificationid);
+        }
+        return $this->certification;
+    }
     /**
      * Initialise report
      */
     protected function initialise(): void {
-        $certificationid = $this->get_parameter('certificationid', 0, PARAM_INT);
 
         $this->set_main_table('tool_certification_users', 'tcu');
         $this->add_base_join('INNER JOIN {user} u ON tcu.userid = u.id');
         $this->add_base_join('INNER JOIN {tool_certification} tc ON tc.id = tcu.certificationid');
-        $this->add_base_condition_simple('tc.id', $certificationid);
+        $this->add_base_condition_simple('tc.id', $this->get_certification()->get('id'));
         $this->add_base_condition_simple('tc.tenantid', tenancy::get_tenant_id());
         $this->add_base_join('INNER JOIN {tool_program} tp ON tp.id = tc.program');
         $this->add_base_join('LEFT JOIN {tool_certification_compltion} tcc ON tcc.userid = tcu.userid
@@ -78,7 +92,7 @@ class certification_progress extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return permission::can_view_list(context_system::instance());
+        return permission::can_view_users_progress($this->get_certification());
     }
 
     /**

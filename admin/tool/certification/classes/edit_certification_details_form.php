@@ -180,7 +180,7 @@ class edit_certification_details_form extends modal_form {
             permission::require_can_create(context_system::instance());
         } else {
             $certification = new certification($certificationid);
-            permission::require_can_edit_details($certification, context_system::instance());
+            permission::require_can_edit_details($certification);
         }
     }
 

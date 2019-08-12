@@ -35,7 +35,7 @@ $certificationid = required_param('id', PARAM_INT);
 require_login();
 $certification = new certification($certificationid);
 $context = context_system::instance();
-permission::require_can_view_list($context);
+permission::require_can_view_users_progress($certification);
 
 $PAGE->set_pagelayout('admin');
 $progressurl = new moodle_url("/$CFG->admin/tool/certification/progress.php", ['id' => $certificationid]);

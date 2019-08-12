@@ -31,6 +31,7 @@ use tool_reportbuilder\entity_base;
 use tool_reportbuilder\local\filter\checkbox;
 use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
+use tool_reportbuilder\local\filter\number;
 use tool_reportbuilder\local\filter\select;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\report_filter;
@@ -217,6 +218,26 @@ class certificationuser_entity extends entity_base {
             ->disable_aggregation('groupconcat')
             ->disable_aggregation('groupconcatdistinct');
 
+        // Column daystakingcertification.
+        $columns[] = (new report_column(
+            'daystakingcertification',
+            new lang_string('daystakingcertification', 'tool_certification'),
+            $this->get_entity_name()
+        ))
+            ->set_type(constants::DB_TYPE_NUMBER)
+            ->set_is_sortable(true)
+            ->add_field($this->get_daystakingcertification_sql(), 'daystakingcertification');
+
+        // Column dayssinceallocation.
+        $columns[] = (new report_column(
+            'dayssinceallocation',
+            new lang_string('dayssinceallocation', 'tool_certification'),
+            $this->get_entity_name()
+        ))
+            ->set_type(constants::DB_TYPE_NUMBER)
+            ->set_is_sortable(true)
+            ->add_field($this->get_dayssinceallocation_sql(), 'dayssinceallocation');
+
         return $columns;
     }
 
@@ -340,6 +361,26 @@ class certificationuser_entity extends entity_base {
             ->add_join($this->join)
             ->set_options(api::get_certification_statuses_fieldset());
 
+        // Filter by daystakingcertification.
+        $filters[] = (new report_filter(
+            number::class,
+            'daystakingcertification',
+            new lang_string('daystakingcertification', 'tool_certification'),
+            $this->get_entity_name(),
+            $this->get_daystakingcertification_sql()
+        ))
+            ->add_join($this->join);
+
+        // Filter by dayssinceallocation.
+        $filters[] = (new report_filter(
+            number::class,
+            'dayssinceallocation',
+            new lang_string('dayssinceallocation', 'tool_certification'),
+            $this->get_entity_name(),
+            $this->get_dayssinceallocation_sql()
+        ))
+            ->add_join($this->join);
+
         return $filters;
     }
 
@@ -354,5 +395,49 @@ class certificationuser_entity extends entity_base {
             \tool_certification\constants::ALLOCATION_MANUAL => get_string('manual', 'tool_certification'),
             \tool_certification\constants::ALLOCATION_DYNAMIC => get_string('dynamic', 'tool_certification'),
         ];
+    }
+
+    /**
+     * Returns daystakingcertification sql
+     *
+     * @return string
+     */
+    private function get_daystakingcertification_sql(): string {
+        return "
+                CASE
+                WHEN $this->tableccalias.id IS NOT NULL
+                AND $this->tableccalias.timerevoked = 0
+                AND $this->tablealias.startdate > 0
+                AND $this->tableccalias.timecreated > $this->tablealias.startdate
+                THEN ($this->tableccalias.timecreated - $this->tablealias.startdate) / (60 * 60 * 24)
+                WHEN $this->tableccalias.id IS NOT NULL
+                AND $this->tableccalias.timerevoked = 0
+                AND $this->tablealias.startdate > 0
+                AND $this->tableccalias.timecreated <= $this->tablealias.startdate
+                THEN 0
+                WHEN ($this->tableccalias.id IS NOT NULL
+                AND $this->tableccalias.timerevoked = 0
+                AND $this->tablealias.startdate = 0)
+                OR $this->tableccalias.id IS NULL
+                THEN (".time()." - $this->tablealias.timecreated) / (60 * 60 * 24)
+                ELSE NULL
+                END
+                ";
+    }
+
+    /**
+     * Returns dayssinceallocation sql
+     *
+     * @return string
+     */
+    private function get_dayssinceallocation_sql(): string {
+        return "
+                CASE
+                WHEN $this->tableccalias.id IS NOT NULL AND $this->tableccalias.timerevoked = 0
+                AND $this->tableccalias.timecreated > $this->tablealias.timecreated
+                THEN ($this->tableccalias.timecreated - $this->tablealias.timecreated) / (60 * 60 * 24)
+                ELSE (".time()." - $this->tablealias.timecreated) / (60 * 60 * 24)
+                END
+                ";
     }
 }

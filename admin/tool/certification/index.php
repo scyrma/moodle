@@ -25,16 +25,10 @@
 use tool_certification\permission;
 
 require_once(__DIR__ . '/../../../config.php');
+require_once($CFG->dirroot . '/lib/adminlib.php');
 
 // Check permissions.
-$context = context_system::instance();
-require_login();
-permission::require_can_view_list($context);
-
-$PAGE->set_pagelayout('admin');
-$certificationsmanagerurl = new moodle_url('/admin/tool/certification/index.php');
-$PAGE->set_url($certificationsmanagerurl);
-$PAGE->set_context($context);
+admin_externalpage_setup('certifications');
 
 // Navigation note: Shows the certification list.
 $certificatonsstr = get_string('certifications', 'tool_certification');

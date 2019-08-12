@@ -67,13 +67,6 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
-    'tool_certification_allocate_user' => [
-        'classname' => tool_certification\external::class,
-        'methodname' => 'allocate_user',
-        'description' => 'Allocate user into a certification',
-        'type' => 'write',
-        'ajax' => true,
-    ],
     'tool_certification_certify_user' => [
         'classname' => tool_certification\external::class,
         'methodname' => 'certify_user',

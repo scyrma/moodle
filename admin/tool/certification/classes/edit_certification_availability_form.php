@@ -39,15 +39,29 @@ use tool_wp\modal_form;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_certification_availability_form extends modal_form {
+    /** @var certification */
+    protected $certification;
+
+    /**
+     * Current certification
+     *
+     * @return certification
+     */
+    protected function get_certification(): certification {
+        if (!$this->certification) {
+            $this->certification = new certification((int)$this->_ajaxformdata['id']);
+        }
+        return $this->certification;
+    }
+
     /**
      * Form definition.
      */
     protected function definition(): void {
         $mform = $this->_form;
-        $certificationid = (int)$this->_ajaxformdata['id'];
 
-        $certification = new certification($certificationid);
-        $caneditdetails = permission::can_edit_details($certification, context_system::instance());
+        $certification = $this->get_certification();
+        $caneditdetails = permission::can_edit_details($certification);
 
         $startdatestr = get_string('startdate', 'tool_certification');
         $enddatestr = get_string('enddate', 'tool_certification');
@@ -109,8 +123,7 @@ class edit_certification_availability_form extends modal_form {
      * Require access.
      */
     public function require_access(): void {
-        $certification = new certification($this->_ajaxformdata['id']);
-        permission::require_can_edit_details($certification, context_system::instance());
+        permission::require_can_view_details($this->get_certification());
     }
 
     /**
@@ -119,19 +132,17 @@ class edit_certification_availability_form extends modal_form {
      * @return bool
      */
     public function process(stdClass $data): bool {
-        return api::update_certification_calendar($data);
+        if (permission::can_edit_details($this->get_certification())) {
+            return api::update_certification_calendar($data);
+        }
+        return false;
     }
 
     /**
      * Sets data for form.
      */
     public function set_data_for_modal(): void {
-        if (!empty($this->_ajaxformdata['id'])) {
-            $certification = new certification($this->_ajaxformdata['id']);
-        } else {
-            $certification = new certification();
-        }
-        $certificationdata = $certification->to_record();
+        $certificationdata = $this->get_certification()->to_record();
         $this->set_data($certificationdata);
     }
 }

@@ -77,13 +77,6 @@ class tool_uploaduser {
                     continue;
                 }
 
-                $context = \context_system::instance();
-                if (!permission::can_allocate($certificationobj, $context)) {
-                    $errorstr = get_string('cannotallocateuser', 'tool_certification');
-                    $upt->track('tool_wp', $errorstr, 'error');
-                    continue;
-                }
-
                 $params = [
                     'userid' => $user->id,
                     'certificationid' => $certificationobj->get('id'),
@@ -92,18 +85,23 @@ class tool_uploaduser {
 
                 /** @var certification_user $certuser */
                 $certuser = certification_user::get_record($params);
+
+                $canallocate = $certuser ? permission::can_edit_user_allocation($certuser)
+                    : permission::can_allocate_user($certificationobj, $user->id);
+
+                if (!$canallocate) {
+                    $errorstr = get_string('cannotallocateuser', 'tool_certification');
+                    $upt->track('tool_wp', $errorstr, 'error');
+                    continue;
+                }
+                if (!self::validate_date_params($user, $i)) {
+                    $upt->track('tool_wp', get_string('errorinvaliddate', 'tool_organisation'), 'error');
+                    continue;
+                }
                 if ($certuser) {
-                    if (!self::validate_date_params($user, $i)) {
-                        $upt->track('tool_wp', get_string('errorinvaliddate', 'tool_organisation'), 'error');
-                        continue;
-                    }
                     $params = array_merge((array)$certuser->to_record(), self::date_params($user, $i));
                     api::update_certification_user_dates_and_status($certuser, (object)$params);
                 } else {
-                    if (!self::validate_date_params($user, $i)) {
-                        $upt->track('tool_wp', get_string('errorinvaliddate', 'tool_organisation'), 'error');
-                        continue;
-                    }
                     $params['status'] = constants::STATUS_OVERRIDE_DEFAULT;
                     $params = array_merge($params, self::date_params($user, $i));
                     api::allocate_user($certificationobj, (object)$params);

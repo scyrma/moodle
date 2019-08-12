@@ -71,7 +71,7 @@ class certification_dynamic_rules_tab extends \tool_wp\output\tab {
             return $content->export_for_template($output);
         }
 
-        $canmanagedynamicrules = has_capability('tool/dynamicrule:manage', context_system::instance());
+        $canmanagedynamicrules = \tool_dynamicrule\permission::can_manage_rules();
 
         $params = [
             'component'     => 'tool_certification',
@@ -104,8 +104,7 @@ class certification_dynamic_rules_tab extends \tool_wp\output\tab {
             return false;
         }
         $certification = new certification($this->data['id']);
-        return (permission::can_edit_details($certification, context_system::instance())
-            || permission::can_manage_user_allocation(context_system::instance()));
+        return permission::can_view_details($certification);
     }
 
     /**

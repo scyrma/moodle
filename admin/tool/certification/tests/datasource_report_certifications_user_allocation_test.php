@@ -111,7 +111,7 @@ class tool_certification_datasource_report_certification_user_allocation_testcas
         $generator = $this->get_reportbuilder_generator();
 
         // Create a report from the report_certification_user_allocation datasource with default columns/conditions.
-        $reportid = $generator->create_report(['source' => report_certification_user_allocation::class])->id;
+        $reportid = $generator->create_report(['source' => report_certification_user_allocation::class])->get_id();
 
         // Execute report for different users.
 
@@ -145,7 +145,7 @@ class tool_certification_datasource_report_certification_user_allocation_testcas
             'source' => report_certification_user_allocation::class,
             'tenantid' => $tenantid,
             'adddefault' => (int) $adddefault
-        ])->id;
+        ])->get_id();
     }
 
     /**

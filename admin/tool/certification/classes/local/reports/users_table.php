@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use tool_certification\api;
 use tool_certification\certification;
+use tool_certification\certification_user;
 use tool_certification\local\helpers\certificationuser_format;
 use tool_certification\permission;
 use tool_reportbuilder\local\entities\user as user_entity;
@@ -46,23 +47,46 @@ use tool_tenant\tenancy;
  * @package tool_certification
  */
 class users_table extends system_report {
+    /** @var certification */
+    protected $certification;
+
+    /** @var certification_user */
+    protected $lastcertuser;
+
+    /**
+     * Current certification
+     *
+     * @return certification
+     */
+    protected function get_certification(): certification {
+        if (!$this->certification) {
+            $this->certification = new certification($this->get_parameter('id', 0, PARAM_INT));
+        }
+        return $this->certification;
+    }
 
     /**
      * Initialise report
      */
     protected function initialise() {
-        $certificationid = $this->get_parameter('id', 0, PARAM_INT);
+        $certificationid = $this->get_certification()->get('id');
         $tenantid = tenancy::get_tenant_id();
 
         $this->set_columns();
         $this->set_main_table('tool_certification_users', 'tcu');
         $this->add_base_join('INNER JOIN {tool_certification} tc ON tc.id = tcu.certificationid');
         $this->add_base_join('INNER JOIN {user} u ON u.id = tcu.userid');
+        $this->add_base_join('LEFT JOIN {tool_certification_compltion} tcc
+            ON tcc.certificationid = tcu.certificationid
+            AND tcc.userid = tcu.userid
+            AND tcc.timerevoked = 0');
         $this->add_base_condition_simple('tcu.certificationid', $certificationid);
         $this->add_base_condition_simple('tc.tenantid', $tenantid);
         $this->add_base_condition_simple('tc.archived', 0);
         $this->add_base_condition_simple('u.deleted', 0);
-        $this->add_base_fields('tcu.id, tcu.certificationid, tcu.userid'); // Fields necessary for actions.
+        $tcufields = 'tcu.'.join(', tcu.', array_diff(array_keys(certification_user::properties_definition()),
+                ['usermodified', 'description']));
+        $this->add_base_fields($tcufields . ', '. 'tcc.id AS completionid'); // Fields necessary for actions.
 
         // Check tenant id on users in case they have been moved to another tenant.
         [$join, $where, $params] = tenancy::get_users_sql('u', $tenantid);
@@ -88,7 +112,7 @@ class users_table extends system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        return permission::can_view_list(context_system::instance());
+        return permission::can_view_allocated_users($this->get_certification());
     }
 
     /**
@@ -149,18 +173,12 @@ class users_table extends system_report {
         $this->add_column($newcolumn);
 
         // Column "status".
-        $tccjoin = 'LEFT JOIN {tool_certification_compltion} tcc
-        ON tcc.certificationid = tcu.certificationid
-        AND tcc.userid = tcu.userid
-        AND tcc.timerevoked = 0';
-
         $newcolumn = (new report_column(
             'status',
             new lang_string('certificationstatus', 'tool_certification'),
             'tool_certification_users'
         ))
             ->add_field(api::get_status_sql_cases(0, 'tcu', 'tcc'), 'status')
-            ->add_join($tccjoin)
             ->set_is_default(true, 4);
         $newcolumn->add_callback([certificationuser_format::class, 'status']);
         $this->add_column($newcolumn);
@@ -195,63 +213,72 @@ class users_table extends system_report {
      * @throws \moodle_exception
      */
     private function add_actions(): void {
-        $context = context_system::instance();
-        $certificationid = $this->get_parameter('id', 0, PARAM_INT);
-        $certification = new certification($certificationid);
 
-        if (permission::can_manage_user_allocation($context)) {
-            // User allocation edit icon.
-            $editurl = new \moodle_url('/admin/tool/certification/edit.php', ['id' => ':id']);
-            $editicon = new \pix_icon('i/settings', get_string('edit'), 'core');
-            $action = new report_action($editurl, $editicon, [
-                'class' => 'action-icon edit_user',
-                'data-action' => 'user_edit_form',
-                'data-userid' => ':userid',
-                'data-certificationuserid' => ':id',
-                'data-certificationid' => ':certificationid'
-            ]);
-            $this->add_action($action);
-        }
+        // User allocation edit icon.
+        $editicon = new \pix_icon('i/settings', get_string('edit'), 'core');
+        $action = new report_action(new \moodle_url('#'), $editicon, [
+            'class' => 'action-icon edit_user',
+            'data-action' => 'user_edit_form',
+            'data-userid' => ':userid',
+            'data-certificationuserid' => ':id',
+            'data-certificationid' => ':certificationid'
+        ]);
+        $action->add_callback(function() {
+            return permission::can_edit_user_allocation($this->lastcertuser);
+        });
+        $this->add_action($action);
 
-        if (permission::can_edit_details($certification, $context)) {
-            // Certify icon.
-            $certifyurl = new \moodle_url('/admin/tool/certification/certify.php');
-            $certifystr = get_string('certifyuser', 'tool_certification');
-            $certifyicon = new \pix_icon('e/tick', $certifystr, 'core');
-            $action = new report_action($certifyurl, $certifyicon, [
-                'class' => 'action-icon confirm_certify_user',
-                'data-certificationuserid' => ':id',
-                'data-userid' => ':userid',
-                'data-id' => ':certificationid'
-            ]);
-            $action->add_callback([\tool_certification\permission::class, 'can_view_certify_user_icon']);
-            $this->add_action($action);
+        // Certify icon.
+        $certifyurl = new \moodle_url('/admin/tool/certification/certify.php');
+        $certifystr = get_string('certifyuser', 'tool_certification');
+        $certifyicon = new \pix_icon('e/tick', $certifystr, 'core');
+        $action = new report_action($certifyurl, $certifyicon, [
+            'class' => 'action-icon confirm_certify_user',
+            'data-certificationuserid' => ':id',
+            'data-userid' => ':userid',
+            'data-id' => ':certificationid'
+        ]);
+        $action->add_callback(function(\stdClass $row) {
+            return permission::can_certify_user($this->lastcertuser, (bool)$row->completionid);
+        });
+        $this->add_action($action);
 
-            // Revoke icon.
-            $revokeurl = new \moodle_url('/admin/tool/certification/revoke.php');
-            $revokestr = get_string('revokecertification', 'tool_certification');
-            $revokeicon = new \pix_icon('arrow-circle-left', $revokestr, 'tool_wp');
-            $action = new report_action($revokeurl, $revokeicon, [
-                'class' => 'action-icon confirm_revoke_user',
-                'data-certificationuserid' => ':id',
-                'data-userid' => ':userid',
-                'data-id' => ':certificationid'
-            ]);
-            $action->add_callback([\tool_certification\permission::class, 'can_view_revoke_user_icon']);
-            $this->add_action($action);
-        }
+        // Revoke icon.
+        $revokeurl = new \moodle_url('/admin/tool/certification/revoke.php');
+        $revokestr = get_string('revokecertification', 'tool_certification');
+        $revokeicon = new \pix_icon('arrow-circle-left', $revokestr, 'tool_wp');
+        $action = new report_action($revokeurl, $revokeicon, [
+            'class' => 'action-icon confirm_revoke_user',
+            'data-certificationuserid' => ':id',
+            'data-userid' => ':userid',
+            'data-id' => ':certificationid'
+        ]);
+        $action->add_callback(function(\stdClass $row) {
+            return permission::can_revoke_user_certification($this->lastcertuser, (bool)$row->completionid);
+        });
+        $this->add_action($action);
 
-        if (permission::can_manage_user_allocation($context)) {
-            // User allocation delete icon.
-            $deleteurl = new \moodle_url('/admin/tool/certification/delete.php', ['id' => ':id']);
-            $deleteicon = new \pix_icon('i/trash', get_string('delete'), 'core');
-            $action = new report_action($deleteurl, $deleteicon, [
-                'class' => 'action-icon confirm_deallocate_user',
-                'data-userid' => ':userid',
-                'data-id' => ':certificationid'
-            ]);
-            $action->add_callback([\tool_certification\permission::class, 'can_view_deallocate_icon']);
-            $this->add_action($action);
-        }
+        // User allocation delete icon.
+        $deleteurl = new \moodle_url('/admin/tool/certification/delete.php', ['id' => ':id']);
+        $deleteicon = new \pix_icon('i/trash', get_string('delete'), 'core');
+        $action = new report_action($deleteurl, $deleteicon, [
+            'class' => 'action-icon confirm_deallocate_user',
+            'data-userid' => ':userid',
+            'data-id' => ':certificationid'
+        ]);
+        $action->add_callback(function() {
+            return permission::can_edit_user_allocation($this->lastcertuser);
+        });
+        $this->add_action($action);
+    }
+
+    /**
+     * Executed before each row
+     *
+     * @param \stdClass $row
+     */
+    public function row_callback(\stdClass $row): void {
+        $this->lastcertuser = new certification_user(0, $row);
+        $this->lastcertuser->set_certification($this->get_certification());
     }
 }

@@ -56,7 +56,7 @@ class renderer extends plugin_renderer_base {
         $tabsoutput = new tabs($attributes);
 
         $tabsoutput->add_tab(new certification_manager_list_active_tab($attributes));
-        if (permission::has_edit_capability($context)) {
+        if (permission::can_view_archived_list($context)) {
             $tabsoutput->add_tab(new certification_manager_list_archived_tab($attributes));
         }
 

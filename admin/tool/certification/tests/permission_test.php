@@ -169,23 +169,23 @@ class tool_certification_permission_testcase extends advanced_testcase {
 
         // We check can_edit_certification.
         $this->assertInstanceOf('tool_certification\certification', $certification);
-        $return = permission::can_edit_details($certification, $context);
+        $return = permission::can_edit_details($certification);
         $this->assertFalse($return);
 
         // We assign capability to user.
         $this->get_generator()->assign_edit_capability($data->user->id, $context);
 
         $this->assertTrue(permission::check_belongs_same_tenant($certification));
-        $this->assertFalse(permission::can_edit_details($certification, $context));
+        $this->assertFalse(permission::can_edit_details($certification));
 
         $str = get_string('errornopermissionmanagecertifications', 'tool_certification');
         $this->expectExceptionMessage($str);
-        permission::require_can_edit_details($certification, $context);
+        permission::require_can_edit_details($certification);
 
         $certification->set('archived', '0');
         $certification->update();
 
-        $this->assertTrue(permission::can_edit_details($certification, $context));
+        $this->assertTrue(permission::can_edit_details($certification));
     }
 
     public function test_require_can_edit_details(): void {
@@ -198,7 +198,7 @@ class tool_certification_permission_testcase extends advanced_testcase {
 
         $str = get_string('errornopermissionmanagecertifications', 'tool_certification');
         $this->expectExceptionMessage($str);
-        permission::require_can_edit_details($certification, $context);
+        permission::require_can_edit_details($certification);
     }
 
     public function test_can_archive(): void {
@@ -210,22 +210,22 @@ class tool_certification_permission_testcase extends advanced_testcase {
         $certification = $this->get_generator()->generate_certification(['tenantid' => $data->defaulttenantid, 'archived' => 0]);
 
         // We check with no capability.
-        $this->assertFalse(permission::can_archive($certification, $context));
+        $this->assertFalse(permission::can_archive($certification));
 
         // We assign capability to user.
         $this->get_generator()->assign_edit_capability($data->user->id, $context);
-        $this->assertTrue(permission::can_archive($certification, $context));
+        $this->assertTrue(permission::can_archive($certification));
 
         // We check with different tenantid.
         $certification->set('tenantid', $data->othertenantid);
         $certification->update();
-        $this->assertFalse(permission::can_archive($certification, $context));
+        $this->assertFalse(permission::can_archive($certification));
 
         // We check with certification already archived.
         $certification->set('tenantid', $data->defaulttenantid);
         $certification->set('archived', 1);
         $certification->update();
-        $this->assertFalse(permission::can_archive($certification, $context));
+        $this->assertFalse(permission::can_archive($certification));
     }
 
     public function test_require_can_archive(): void {
@@ -238,7 +238,7 @@ class tool_certification_permission_testcase extends advanced_testcase {
 
         $str = get_string('errornopermissionmanagecertifications', 'tool_certification');
         $this->expectExceptionMessage($str);
-        permission::require_can_archive($certification, $context);
+        permission::require_can_archive($certification);
     }
 
     public function test_can_restore(): void {
@@ -251,22 +251,22 @@ class tool_certification_permission_testcase extends advanced_testcase {
         $certification = $this->get_generator()->generate_certification(['tenantid' => $data->defaulttenantid, 'archived' => 1]);
 
         // We check without capability.
-        $this->assertFalse(permission::can_restore($certification, $context));
+        $this->assertFalse(permission::can_restore($certification));
 
         // We assign capability to user.
         $this->get_generator()->assign_edit_capability($data->user->id, $context);
-        $this->assertTrue(permission::can_restore($certification, $context));
+        $this->assertTrue(permission::can_restore($certification));
 
         // We check with different tenantid.
         $certification->set('tenantid', $data->othertenantid);
         $certification->update();
-        $this->assertFalse(permission::can_restore($certification, $context));
+        $this->assertFalse(permission::can_restore($certification));
 
         // We check with certification not archived.
         $certification->set('tenantid', $data->defaulttenantid);
         $certification->set('archived', 0);
         $certification->update();
-        $this->assertFalse(permission::can_restore($certification, $context));
+        $this->assertFalse(permission::can_restore($certification));
     }
 
     public function test_require_can_restore(): void {
@@ -279,7 +279,7 @@ class tool_certification_permission_testcase extends advanced_testcase {
 
         $str = get_string('errorcantrestorecertification', 'tool_certification');
         $this->expectExceptionMessage($str);
-        permission::require_can_restore($certification, $context);
+        permission::require_can_restore($certification);
     }
 
     public function test_can_delete(): void {
@@ -291,22 +291,22 @@ class tool_certification_permission_testcase extends advanced_testcase {
         $certification = $this->get_generator()->generate_certification(['tenantid' => $data->defaulttenantid, 'archived' => 1]);
 
         // We check with no capability.
-        $this->assertFalse(permission::can_delete($certification, $context));
+        $this->assertFalse(permission::can_delete($certification));
 
         // We assign capability to user.
         $this->get_generator()->assign_edit_capability($data->user->id, $context);
-        $this->assertTrue(permission::can_delete($certification, $context));
+        $this->assertTrue(permission::can_delete($certification));
 
         // We check with different tenant id.
         $certification->set('tenantid', $data->othertenantid);
         $certification->update();
-        $this->assertFalse(permission::can_delete($certification, $context));
+        $this->assertFalse(permission::can_delete($certification));
 
         // We check with certification not archived.
         $certification->set('tenantid', $data->defaulttenantid);
         $certification->set('archived', 0);
         $certification->update();
-        $this->assertFalse(permission::can_delete($certification, $context));
+        $this->assertFalse(permission::can_delete($certification));
     }
 
     public function test_require_can_delete(): void {
@@ -319,7 +319,7 @@ class tool_certification_permission_testcase extends advanced_testcase {
 
         $str = get_string('errorcantdeletecertification', 'tool_certification');
         $this->expectExceptionMessage($str);
-        permission::require_can_delete($certification, $context);
+        permission::require_can_delete($certification);
     }
 
     public function test_can_allocate(): void {
@@ -343,29 +343,29 @@ class tool_certification_permission_testcase extends advanced_testcase {
         $certification->update();
 
         // We can allocate user with these conditions set.
-        $this->assertTrue(permission::can_allocate($certification, $context));
+        $this->assertTrue(permission::can_allocate_anybody($certification));
 
         // We archive certification.
         $certification->set('archived', 1);
         $certification->update();
-        $this->assertFalse(permission::can_allocate($certification, $context));
+        $this->assertFalse(permission::can_allocate_anybody($certification));
 
         // We modify allocation window certification.
         $certification->set('archived', 0);
         $certification->set('allocationstartdateabsolute', $twodaysmore);
         $certification->update();
-        $this->assertFalse(permission::can_allocate($certification, $context));
+        $this->assertFalse(permission::can_allocate_anybody($certification));
 
         // We modify tenant id on certification.
         $certification->set('allocationstartdateabsolute', $onedayless);
         $certification->set('tenantid', $data->othertenantid);
         $certification->update();
-        $this->assertFalse(permission::can_allocate($certification, $context));
+        $this->assertFalse(permission::can_allocate_anybody($certification));
 
         // We restore good values.
         $certification->set('tenantid', $data->defaulttenantid);
         $certification->update();
-        $this->assertTrue(permission::can_allocate($certification, $context));
+        $this->assertTrue(permission::can_allocate_anybody($certification));
     }
 
     public function test_require_can_allocate(): void {
@@ -378,7 +378,7 @@ class tool_certification_permission_testcase extends advanced_testcase {
 
         $str = get_string('errorcantmanageusers', 'tool_certification');
         $this->expectExceptionMessage($str);
-        permission::require_can_allocate($certification, $context);
+        permission::require_can_allocate_anybody($certification);
     }
 
     public function test_can_deallocate(): void {
@@ -395,23 +395,23 @@ class tool_certification_permission_testcase extends advanced_testcase {
         $certification = $this->get_generator()->generate_certification(['tenantid' => $data->defaulttenantid, 'archived' => 0]);
 
         // We can allocate user with these conditions set.
-        $this->assertTrue(permission::can_deallocate($certification, $context, $user2->id));
+        $this->assertTrue(permission::can_allocate_user($certification, $user2->id));
 
         // We archive certification.
         $certification->set('archived', 1);
         $certification->update();
-        $this->assertFalse(permission::can_deallocate($certification, $context, $user2->id));
+        $this->assertFalse(permission::can_allocate_user($certification, $user2->id));
 
         // We modify tenant id on certification.
         $certification->set('archived', 0);
         $certification->set('tenantid', $data->othertenantid);
         $certification->update();
-        $this->assertFalse(permission::can_deallocate($certification, $context, $user2->id));
+        $this->assertFalse(permission::can_allocate_user($certification, $user2->id));
 
         // We restore good values.
         $certification->set('tenantid', $data->defaulttenantid);
         $certification->update();
-        $this->assertTrue(permission::can_deallocate($certification, $context, $user2->id));
+        $this->assertTrue(permission::can_allocate_user($certification, $user2->id));
     }
 
     public function test_require_can_deallocate(): void {
@@ -425,7 +425,7 @@ class tool_certification_permission_testcase extends advanced_testcase {
 
         $str = get_string('errorcantmanageusers', 'tool_certification');
         $this->expectExceptionMessage($str);
-        permission::require_can_deallocate($certification, $context, $user2->id);
+        permission::require_can_edit_user_allocation(null);
     }
 
     public function test_can_create(): void {
@@ -508,90 +508,7 @@ class tool_certification_permission_testcase extends advanced_testcase {
         $certification = $this->get_generator()->generate_certification();
 
         $this->expectExceptionMessage($str);
-        permission::require_can_manage_users_list($certification, $context);
-    }
-
-    public function test_can_view_certify_user_icon(): void {
-        $row = new stdClass();
-        $data = $this->get_generator()->create_tenant_and_user();
-        $this->setUser($data->user);
-
-        $certification = $this->get_generator()->generate_certification(['tenantid' => $data->defaulttenantid, 'archived' => 0]);
-
-        $userdata = (object) [
-            'certificationid' => $certification->get('id'),
-            'userid' => $data->user->id,
-            'status' => constants::STATUS_OVERRIDE_DEFAULT
-        ];
-        \tool_certification\api::allocate_user($certification, $userdata);
-        $row->certificationid = $certification->get('id');
-        $row->userid = $data->user->id;
-
-        $canview = permission::can_view_certify_user_icon($row);
-        $this->assertTrue($canview);
-
-        $this->get_generator()->complete_certification($certification, $data->user->id);
-
-        $canview = permission::can_view_certify_user_icon($row);
-        $this->assertFalse($canview);
-    }
-
-    public function test_can_view_revoke_user_icon(): void {
-        $row = new stdClass();
-        $context = context_system::instance();
-        $data = $this->get_generator()->create_tenant_and_user();
-        $this->setUser($data->user);
-
-        $certification = $this->get_generator()->generate_certification(['tenantid' => $data->defaulttenantid]);
-
-        $userdata = (object) [
-            'certificationid' => $certification->get('id'),
-            'userid' => $data->user->id,
-            'status' => constants::STATUS_OVERRIDE_DEFAULT
-        ];
-        \tool_certification\api::allocate_user($certification, $userdata);
-        $row->certificationid = $certification->get('id');
-        $row->userid = $data->user->id;
-
-        $canview = permission::can_view_revoke_user_icon($row);
-        $this->assertFalse($canview);
-
-        $this->get_generator()->assign_edit_capability($data->user->id, $context);
-
-        // Completion does not exist.
-        $canview = permission::can_view_revoke_user_icon($row);
-        $this->assertFalse($canview);
-
-        $this->get_generator()->complete_certification($certification, $data->user->id);
-
-        // Completion exists.
-        $canview = permission::can_view_revoke_user_icon($row);
-        $this->assertTrue($canview);
-    }
-
-    public function test_can_view_allocate_icon(): void {
-        $row = new stdClass();
-        $context = context_system::instance();
-        // We generate default tenant and user.
-        $data = $this->get_generator()->create_tenant_and_user();
-        $this->setUser($data->user);
-
-        $certificationdata = [
-            'archived' => 0,
-            'tenantid' => $data->defaulttenantid,
-            'allocationstartdatetype' => constants::ALLOCATION_SET,
-            'allocationstartdateabsolute' => strtotime(' +1 day'),
-            'allocationenddatetype' => constants::ALLOCATION_SET,
-            'allocationenddateabsolute' => strtotime(' +2 day'),
-        ];
-        $certification = $this->get_generator()->generate_certification($certificationdata);
-        $row->id = $certification->get('id');
-        $row->userid = $data->user->id;
-
-        $this->assertFalse(permission::can_view_allocate_icon($row));
-
-        $certification->set('allocationstartdateabsolute', strtotime(' -1 day'));
-        $certification->update();
+        permission::require_can_view_allocated_users($certification);
     }
 
     public function test_can_view_reports_as_organisation_manager(): void {
@@ -625,17 +542,17 @@ class tool_certification_permission_testcase extends advanced_testcase {
         $this->setUser($manager);
 
         // Manager can view its own reports.
-        $canview = permission::can_view_reports($manager->id);
+        $canview = permission::can_view_user_progress($manager->id);
         $this->assertTrue($canview);
 
         // Check no permission to view.
-        $canview = permission::can_view_reports($user->id);
+        $canview = permission::can_view_user_progress($user->id);
         $this->assertFalse($canview);
 
         $this->generate_manager_user_structure($manager->id, $user->id, $tenant->id);
 
         // Check permission to view.
-        $canview = permission::can_view_reports($user->id);
+        $canview = permission::can_view_user_progress($user->id);
         $this->assertTrue($canview);
     }
 

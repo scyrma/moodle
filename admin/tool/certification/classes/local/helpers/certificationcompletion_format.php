@@ -69,4 +69,25 @@ class certificationcompletion_format {
         }
         return $value ? get_string('yes') : get_string('no');
     }
+
+    /**
+     * Displays certifiedtype (Certified as: Manually/Upon completion).
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function certifiedtype(?string $value, stdClass $row): string {
+        switch ((int)$row->certifiedtype) {
+            case 1:
+                return get_string('uponcompletion', 'tool_certification');
+                break;
+            case 2:
+                return get_string('manual', 'tool_certification');
+                break;
+            case 0:
+            default:
+                return '';
+        }
+    }
 }

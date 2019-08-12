@@ -116,6 +116,7 @@ class tool_certification_external_testcase extends externallib_advanced_testcase
 
     public function test_potential_program_selector() {
         $data = $this->get_generator()->create_tenant_and_user();
+        $this->get_generator()->assign_edit_capability($data->user->id, context_system::instance());
         $this->setUser($data->user);
 
         // We create a dummy program.
@@ -149,39 +150,6 @@ class tool_certification_external_testcase extends externallib_advanced_testcase
         $this->assertArrayNotHasKey($program1->get('id'), $progs);
         $this->assertArrayNotHasKey($program2->get('id'), $progs);
         $this->assertArrayNotHasKey($program3->get('id'), $progs);
-    }
-
-    public function test_allocate_user() {
-        global $DB;
-        $context = context_system::instance();
-        // We generate default tenant and user.
-        $data = $this->get_generator()->create_tenant_and_user();
-        $this->setUser($data->user);
-        $this->assertEquals($data->defaulttenantid, \tool_tenant\tenancy::get_tenant_id());
-
-        // We generate certification with default tenant and check function.
-        $certification = $this->get_generator()->generate_certification(['tenantid' => $data->defaulttenantid, 'archived' => 0]);
-
-        $params = [
-            'certificationid' => $certification->get('id'),
-            'userid' => $data->user->id,
-            'allocationtype' => \tool_certification\constants::ALLOCATION_MANUAL,
-            ];
-
-        $record = $DB->record_exists('tool_certification_users', $params);
-        $this->assertFalse($record);
-
-        $userdata = $this->get_generator()->get_dummy_userdata($certification->get('id'), $data->user->id);
-        \tool_certification\external::allocate_user($userdata);
-
-        $record = $DB->record_exists('tool_certification_users', $params);
-        $this->assertFalse($record);
-
-        $this->get_generator()->assign_allocateuser_capability($data->user->id, $context);
-        \tool_certification\external::allocate_user($userdata);
-
-        $record = $DB->record_exists('tool_certification_users', $params);
-        $this->assertTrue($record);
     }
 
     public function test_deallocate_user() {

@@ -33,14 +33,8 @@ $type = optional_param('type', -1, PARAM_INT); // Pre-load table filtering by th
 
 $context = context_system::instance();
 require_login();
+permission::require_can_view_user_progress($userid);
 
-// Check if can view reports if is subordinate.
-$canviewreports = permission::can_view_reports($userid);
-
-// User can see its own reports OR manager can see them if user is a subordinate.
-if (((int) $USER->id !== (int) $userid) && !$canviewreports) {
-    throw new moodle_exception('errornopermissionviewreports', 'tool_certification');
-}
 if ($type !== -1 && !array_key_exists($type, api::get_certification_statuses_fieldset())) {
     throw new moodle_exception('errorreporttypedoesnotexist', 'tool_certification');
 }

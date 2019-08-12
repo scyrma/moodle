@@ -44,7 +44,7 @@ class certification_manager_list_archived_tab extends \tool_wp\output\tab {
      * 1. No complex types - only stdClass, array, int, string, float, bool
      * 2. Any additional info that is required for the template is pre-calculated (e.g. capability checks).
      *
-     * @param renderer_base $output Used to do a final render of any components that need to be rendered for export.
+     * @param \renderer_base $output Used to do a final render of any components that need to be rendered for export.
      * @return array
      */
     public function export_for_template(\renderer_base $output): array {
@@ -77,7 +77,7 @@ class certification_manager_list_archived_tab extends \tool_wp\output\tab {
      * @return bool
      */
     public function is_available(): bool {
-        return permission::can_view_list(context_system::instance());
+        return permission::can_view_archived_list();
     }
     /**
      * Template to use to display tab contents

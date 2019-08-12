@@ -30,16 +30,14 @@ require_once($CFG->libdir . '/tablelib.php');
 
 // Get URL parameters.
 $certificationid = required_param('id', PARAM_INT); // Certification id.
+$certification = new certification($certificationid);
 $duplicatecertification = optional_param('duplicatecertification', 0, PARAM_INT); // If we are duplicating.
 
 // Check permissions.
 $context = context_system::instance();
 $PAGE->set_context($context);
 require_login();
-permission::require_can_view_list($context);
-
-// Editing certification.
-$certification = new certification($certificationid);
+permission::require_can_view_details($certification);
 
 $titlestr = get_string('editcertificationsettings', 'tool_certification');
 $fullname = format_string($certification->get('fullname'));
@@ -57,7 +55,7 @@ $PAGE->set_heading($fullname);
 /** @var tool_certification\output\renderer|core_renderer $output */
 $output = $PAGE->get_renderer('tool_certification');
 
-if (permission::can_edit_details($certification, $context)) {
+if (permission::can_edit_details($certification)) {
     $edit = new \tool_wp\output\page_header_button(get_string('editdetails', 'tool_certification'),
         ['data-action' => 'editdetails', 'data-certificationid' => $certificationid, 'data-certificationname' => $fullname]);
     $PAGE->set_button($edit->render($output) . $PAGE->button);

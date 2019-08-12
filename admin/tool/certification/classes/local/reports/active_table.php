@@ -25,6 +25,7 @@ namespace tool_certification\local\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_certification\certification;
 use tool_certification\permission;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
@@ -43,6 +44,9 @@ use tool_tenant\tenancy;
  */
 class active_table extends system_report {
 
+    /** @var certification */
+    protected $lastcertification;
+
     /**
      * Initialise report
      */
@@ -52,7 +56,9 @@ class active_table extends system_report {
         $this->add_base_condition_simple('ct.archived', 0);
         $this->add_base_condition_simple('ct.tenantid', tenancy::get_tenant_id());
         $this->add_base_join('left join {tool_program} p ON p.id = ct.program');
-        $this->add_base_fields('ct.id, ct.archived, ct.fullname, p.id as programid, p.archived as programarchived, '.
+        $certfields = 'ct.'.join(', ct.', array_diff(array_keys(certification::properties_definition()),
+                ['usermodified', 'description']));
+        $this->add_base_fields($certfields . ', p.archived as programarchived, '.
             'p.visible as programvisible'); // Necessary for actions and row class.
         $this->add_actions();
         $this->set_show_actions_header(true);
@@ -131,83 +137,87 @@ class active_table extends system_report {
      * @throws \moodle_exception
      */
     private function add_actions(): void {
-        $context = context_system::instance();
-        $haseditcapability = permission::has_edit_capability($context);
 
-        if ($haseditcapability) {
-            // Edit content.
-            $editurl = new moodle_url('/admin/tool/certification/edit.php', ['id' => ':id']);
-            $editicon = new pix_icon('t/right', get_string('editcontent', 'tool_certification'), 'core');
-            $action = new report_action($editurl, $editicon, [
-                'class' => 'action-icon edit_certification',
-                'data-certificationid' => ':id'
-            ]);
-            $this->add_action($action);
+        // Edit content.
+        $editurl = new moodle_url('/admin/tool/certification/edit.php', ['id' => ':id']);
+        $editicon = new pix_icon('t/right', get_string('editcontent', 'tool_certification'), 'core');
+        $action = new report_action($editurl, $editicon, [
+            'class' => 'action-icon edit_certification',
+            'data-certificationid' => ':id'
+        ]);
+        $action->add_callback(function() {
+            return permission::can_edit_details($this->lastcertification);
+        });
+        $this->add_action($action);
 
-            // Edit details.
-            $icon = new pix_icon('i/settings', get_string('editdetails', 'tool_certification'), 'core');
-            $action = (new report_action(new moodle_url('#'), $icon, [
-                'class' => 'action-icon edit_details',
-                'data-action' => 'editdetails',
-                'data-id' => ':id'
-            ]))
-                ->add_callback(static function($row) {
-                    $row->fullname = format_string($row->fullname, true, ['escape' => false]);
-                    return true;
-                });
-            $this->add_action($action);
+        // Edit details.
+        $icon = new pix_icon('i/settings', get_string('editdetails', 'tool_certification'), 'core');
+        $action = (new report_action(new moodle_url('#'), $icon, [
+            'class' => 'action-icon edit_details',
+            'data-action' => 'editdetails',
+            'data-id' => ':id'
+        ]))
+            ->add_callback(function($row) {
+                $row->fullname = format_string($row->fullname, true, ['escape' => false]);
+                return permission::can_edit_details($this->lastcertification);
+            });
+        $this->add_action($action);
 
-            // Only users with edit details capability can duplicate.
-            $duplicateurl = new moodle_url('/admin/tool/certification/duplicate.php', ['id' => ':id']);
-            $duplicatestr = get_string('duplicate', 'tool_certification');
-            $duplicaticon = new pix_icon('e/manage_files', $duplicatestr, 'core');
-            $action = new report_action($duplicateurl, $duplicaticon, [
-                'class' => 'action-icon duplicate_certification',
-                'data-action' => 'duplicate',
-                'data-certificationid' => ':id'
-            ]);
-            $this->add_action($action);
-        }
+        // Only users with edit details capability can duplicate.
+        $duplicateurl = new moodle_url('/admin/tool/certification/duplicate.php', ['id' => ':id']);
+        $duplicatestr = get_string('duplicate', 'tool_certification');
+        $duplicaticon = new pix_icon('e/manage_files', $duplicatestr, 'core');
+        $action = new report_action($duplicateurl, $duplicaticon, [
+            'class' => 'action-icon duplicate_certification',
+            'data-action' => 'duplicate',
+            'data-certificationid' => ':id'
+        ]);
+        $action->add_callback(function() {
+            return permission::can_duplicate($this->lastcertification);
+        });
+        $this->add_action($action);
 
-        $canallocate = permission::can_allocate_anybody_as_organisation_manager();
-        if ($canallocate || permission::has_allocateuser_capability($context)) {
-            // Go to allocate users tab.
-            $usersurl = new moodle_url('/admin/tool/certification/edit.php#!certification_users_tab', ['id' => ':id']);
-            $str = get_string('allocateusers', 'tool_certification');
-            $usericon = new pix_icon('i/enrolusers', $str, 'core');
-            $action = new report_action($usersurl, $usericon, [
-                'class' => 'action-icon allocate_users',
-                'data-programid' => ':id',
-                'data-action' => 'allocateusers',
-            ]);
-            $action->add_callback([permission::class, 'can_view_allocate_icon']);
-            $this->add_action($action);
-        }
+        // Go to allocate users tab.
+        $usersurl = new moodle_url('/admin/tool/certification/edit.php#!certification_users_tab', ['id' => ':id']);
+        $str = get_string('allocateusers', 'tool_certification');
+        $usericon = new pix_icon('i/enrolusers', $str, 'core');
+        $action = new report_action($usersurl, $usericon, [
+            'class' => 'action-icon allocate_users',
+            'data-certificationid' => ':id',
+            'data-action' => 'allocateusers',
+        ]);
+        $action->add_callback(function() {
+            return permission::can_allocate_anybody($this->lastcertification);
+        });
+        $this->add_action($action);
 
-        if (permission::can_view_list($context)) {
-            // Progress report.
-            $reporturl = new moodle_url('/admin/tool/certification/progress.php', ['id' => ':id']);
-            $reporticon = new pix_icon('bar-chart', get_string('progressreport', 'tool_certification'), 'tool_wp');
-            $action = new report_action($reporturl, $reporticon, [
-                'class' => 'action-icon report_certification',
-                'data-certificationid' => ':id'
-            ]);
-            $this->add_action($action);
-        }
+        // Progress report.
+        $reporturl = new moodle_url('/admin/tool/certification/progress.php', ['id' => ':id']);
+        $reporticon = new pix_icon('bar-chart', get_string('progressreport', 'tool_certification'), 'tool_wp');
+        $action = new report_action($reporturl, $reporticon, [
+            'class' => 'action-icon report_certification',
+            'data-certificationid' => ':id'
+        ]);
+        $action->add_callback(function() {
+            return permission::can_view_users_progress($this->lastcertification);
+        });
+        $this->add_action($action);
 
-        if ($haseditcapability) {
-            // Only users with edit details capability can archive.
-            $archiveurl = new moodle_url('/admin/tool/certification/archive.php', ['id' => ':id']);
-            $archivestr = get_string('archive', 'tool_certification');
-            $archiveicon = new pix_icon('archive', $archivestr, 'tool_wp');
-            $action = new report_action($archiveurl, $archiveicon, [
-                'class' => 'action-icon archive_certification',
-                'data-action' => 'archive',
-                'data-certificationid' => ':id',
-                'data-archive' => ':archived'
-            ]);
-            $this->add_action($action);
-        }
+        // Only users with edit details capability can archive.
+        $archiveurl = new moodle_url('/admin/tool/certification/archive.php', ['id' => ':id']);
+        $archivestr = get_string('archive', 'tool_certification');
+        $archiveicon = new pix_icon('archive', $archivestr, 'tool_wp');
+        $action = new report_action($archiveurl, $archiveicon, [
+            'class' => 'action-icon archive_certification',
+            'data-action' => 'archive',
+            'data-certificationid' => ':id',
+            'data-archive' => ':archived'
+        ]);
+        $action->add_callback(function() {
+            return permission::can_archive($this->lastcertification);
+        });
+        $this->add_action($action);
+
     }
 
     /**
@@ -217,6 +227,15 @@ class active_table extends system_report {
      * @return string
      */
     public function get_row_class(\stdClass $row): string {
-        return (!$row->programid || $row->programarchived || !$row->programvisible) ? 'dimmed_text' : '';
+        return (!$row->program || $row->programarchived || !$row->programvisible) ? 'dimmed_text' : '';
+    }
+
+    /**
+     * Executed before each row
+     *
+     * @param \stdClass $row
+     */
+    public function row_callback(\stdClass $row): void {
+        $this->lastcertification = new certification(0, $row);
     }
 }

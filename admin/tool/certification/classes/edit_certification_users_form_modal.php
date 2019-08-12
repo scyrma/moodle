@@ -34,12 +34,27 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_certification_users_form_modal extends \tool_wp\modal_form {
+    /** @var certification */
+    protected $certification;
+
+    /**
+     * Current certification
+     *
+     * @return certification
+     */
+    protected function get_certification(): certification {
+        if (!$this->certification) {
+            $this->certification = new certification((int)$this->_ajaxformdata['id']);
+        }
+        return $this->certification;
+    }
+
     /**
      * Form definition. Abstract method - always override!
      */
     protected function definition() {
         $mform = $this->_form;
-        $certificationid = $this->_ajaxformdata['id'];
+        $certificationid = $this->get_certification()->get('id');
 
         $mform->addElement('hidden', 'id', $certificationid);
         $mform->setType('id', PARAM_INT);
@@ -50,7 +65,7 @@ class edit_certification_users_form_modal extends \tool_wp\modal_form {
             'multiple' => true,
             'data-component' => 'tool_certification',
             'data-area' => 'allocate',
-            'data-itemid' => $certificationid ?: 0
+            'data-itemid' => $certificationid
         );
         $mform->addElement('autocomplete', 'userlist', get_string('selectusers', 'enrol_manual'), array(), $options);
         $mform->addRule('userlist', get_string('nousersselected', 'tool_certification'), 'required', null, 'client');
@@ -70,8 +85,7 @@ class edit_certification_users_form_modal extends \tool_wp\modal_form {
      * Require capabilities.
      */
     public function require_access(): void {
-        $certification = new certification($this->_ajaxformdata['id']);
-        permission::require_can_allocate($certification, context_system::instance());
+        permission::require_can_allocate_anybody($this->get_certification());
     }
 
     /**
@@ -79,7 +93,7 @@ class edit_certification_users_form_modal extends \tool_wp\modal_form {
      */
     public function set_data_for_modal() {
         $formdata = [
-            'id' => $this->_ajaxformdata['id'],
+            'id' => $this->get_certification()->get('id'),
         ];
         $this->set_data($formdata);
     }
@@ -90,11 +104,10 @@ class edit_certification_users_form_modal extends \tool_wp\modal_form {
      * @return mixed|void
      */
     public function process(\stdClass $data) {
-        $context = context_system::instance();
-        $certification = new certification($data->id);
+        $certification = $this->get_certification();
 
         foreach ($data->userlist as $userid) {
-            if (permission::can_allocate($certification, $context, $userid)) {
+            if (permission::can_allocate_user($certification, $userid)) {
                 $certuserdata = (object) [
                     'certificationid' => $data->id,
                     'userid' => $userid,

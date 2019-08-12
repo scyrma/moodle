@@ -73,7 +73,7 @@ class external extends external_api {
         self::validate_context($context);
         $certification = new certification($certificationid);
         // Check if current user has permission to archive.
-        permission::require_can_archive($certification, $context);
+        permission::require_can_archive($certification);
 
         $result = api::archive_certification($certificationid);
 
@@ -118,7 +118,7 @@ class external extends external_api {
         self::validate_context($context);
         $certification = new certification($certificationid);
         // Check if current user has permission to archive.
-        permission::require_can_restore($certification, $context);
+        permission::require_can_restore($certification);
 
         $result = api::restore_certification($certificationid);
 
@@ -165,9 +165,9 @@ class external extends external_api {
 
         $certification = new certification($certificationid);
         // Check if current user has permission.
-        permission::require_can_delete($certification, $context);
+        permission::require_can_delete($certification);
 
-        $result = api::delete_certification($certificationid);
+        $result = api::delete_certification($certification);
 
         return [
             'result' => $result,
@@ -289,8 +289,9 @@ class external extends external_api {
         $context = context_system::instance();
         self::validate_context($context);
         // Check permissions to allocate users.
-        $certification = new certification($certificationid);
-        permission::require_can_deallocate($certification, $context, $userid);
+        /** @var certification_user $certificationuser */
+        $certificationuser = certification_user::get_record($params);
+        permission::require_can_edit_user_allocation($certificationuser ?: null);
 
         api::deallocate_user($certificationid, $userid);
     }
@@ -299,73 +300,6 @@ class external extends external_api {
      * Return for deallocate_user.
      */
     public static function deallocate_user_returns() {
-    }
-
-    /**
-     * Parameters for allocate user into a program.
-     *
-     * @return external_function_parameters
-     */
-    public static function allocate_user_parameters(): external_function_parameters {
-        return new external_function_parameters([
-            'certificationuserdata' => new external_single_structure([
-                'certificationid' => new external_value(PARAM_INT, 'ID of the certification'),
-                'userid' => new external_value(PARAM_INT, 'User id'),
-                'allocationtype' => new external_value(PARAM_INT, 'Type of allocation'),
-                'startdate' => new external_value(PARAM_INT, 'Start date of the certification for this user'),
-                'startdatelocked' => new external_value(PARAM_INT, 'Status of the override for this user start date'),
-                'enddate' => new external_value(PARAM_INT, 'End date of the certification for this user'),
-                'enddatelocked' => new external_value(PARAM_INT, 'Status of the override for this user end date'),
-                'duedate' => new external_value(PARAM_INT, 'Due date of the certification for this user'),
-                'duedatelocked' => new external_value(PARAM_INT, 'Status of the override for this user due date'),
-                'expirydate' => new external_value(PARAM_INT, 'Status of the override for this user expiry date'),
-                'expirydatelocked' => new external_value(PARAM_INT, 'Status of the override for this user expiry date'),
-                'status' => new external_value(PARAM_INT, 'Status for this user if is active or suspended'),
-            ], '', VALUE_REQUIRED),
-        ]);
-    }
-
-    /**
-     * Allocate user into a certification.
-     *
-     * @param array $certificationuserdata
-     * @return array
-     */
-    public static function allocate_user(array $certificationuserdata): array {
-        // Parameter validation.
-        $params = self::validate_parameters(self::allocate_user_parameters(), [
-            'certificationuserdata' => $certificationuserdata,
-        ]);
-        $certificationuserdata = $params['certificationuserdata'];
-        $certificationid = $certificationuserdata['certificationid'];
-
-        // From web services we don't call require_login(), but rather validate_context.
-        $context = context_system::instance();
-        self::validate_context($context);
-
-        $certification = new certification($certificationid);
-        if (permission::can_allocate($certification, $context, $certificationuserdata['userid'])) {
-            $certificationuser = api::allocate_user($certification, (object)$certificationuserdata);
-            if ($certificationuser) {
-                return [
-                    'result' => true,
-                ];
-            }
-        }
-        return [
-            'result' => false,
-        ];
-    }
-
-    /**
-     * Return for allocate user into a certification.
-     *
-     * @return external_single_structure
-     */
-    public static function allocate_user_returns(): external_single_structure {
-        return new external_single_structure([
-            'result' => new external_value(PARAM_BOOL, '', VALUE_REQUIRED),
-        ]);
     }
 
     /**

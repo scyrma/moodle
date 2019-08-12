@@ -47,6 +47,7 @@ class tool_certification_generator extends component_generator_base {
     public function get_dummy_certificationdata(): stdClass {
         return (object) [
             'fullname' => 'A certification fullname',
+            'tenantid' => \tool_tenant\tenancy::get_default_tenant_id(),
             'idnumber' => '1',
             'certification_tags' => [
                 'hello', 'world'
@@ -64,6 +65,7 @@ class tool_certification_generator extends component_generator_base {
             'allocationstartdateabsolute' => 0,
             'allocationenddatetype' => constants::ALLOCATION_NOT_SET,
             'allocationenddateabsolute' => 0,
+            'archived' => false,
         ];
     }
 
@@ -76,6 +78,7 @@ class tool_certification_generator extends component_generator_base {
     public function get_dummy_program(array $programdata = []): stdClass {
         $newprogramdata = [
             'fullname' => 'A program fullname',
+            'tenantid' => \tool_tenant\tenancy::get_default_tenant_id(),
             'idnumber' => '14',
             'program_tags' => ['hello', 'world']
         ];
@@ -111,6 +114,9 @@ class tool_certification_generator extends component_generator_base {
         }
 
         $newcertificationdata = array_merge($newcertificationdata, $certificationdata);
+        if (empty($newcertificationdata['tenantid'])) {
+            $newcertificationdata['tenantid'] = \tool_tenant\tenancy::get_default_tenant_id();
+        }
         $certification = new certification(0, (object) $newcertificationdata);
         $certification->create();
         $id = $certification->get('id');

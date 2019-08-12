@@ -34,6 +34,7 @@ use coding_exception;
 use moodle_url;
 use tool_organisation\organisation;
 use tool_program\constants;
+use tool_program\persistent\program;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -64,7 +65,7 @@ class format {
         $displayvalue = html_writer::link($url, $displayvalue);
 
         $certification = new certification($row->id);
-        $canedit = permission::can_edit_details($certification, context_system::instance());
+        $canedit = permission::can_edit_details($certification);
         $inlineeditable = new inplace_editable('tool_certification', 'certificationname',
             $row->id, $canedit, $displayvalue, $value, $edithint, $editlabel);
 
@@ -160,16 +161,18 @@ class format {
 
         // If this is not current user but a user who can allocate.
         // Then show link to the allocation page for this certification.
-        $canallocate = permission::can_manage_user_allocation(context_system::instance());
-        if (((int) $USER->id !== $userid) && $canallocate) {
+        $certification = new certification(0, $row);
+        $certificationname = format_string($certification->get('fullname'));
+        $canallocate = permission::can_view_allocated_users($certification);
+        if ($USER->id != $userid && $canallocate) {
             $certurl = new moodle_url('/admin/tool/certification/edit.php#!certification_users_tab', [
-                'id' => $row->certificationid,
+                'id' => $certification->get('id'),
             ]);
-            return html_writer::link($certurl, format_string($row->fullname));
+            return html_writer::link($certurl, $certificationname);
         }
 
         // If this report is viewed by a manager who can view reports but not allocate - no link.
-        return format_string($row->fullname);
+        return $certificationname;
     }
 
     /**
@@ -183,25 +186,27 @@ class format {
     public static function userprogramname(?string $value, stdClass $row, $args): string {
         global $USER;
         $userid = ((int) $args['userid'] > 0) ? (int) $args['userid'] : 0;
+        $program = new program(0, $row);
+        $programname = format_string($program->get('fullname'));
 
         // If this is the current user show link to program.
         if ((int) $USER->id === $userid) {
             $certurl = new moodle_url('/my');
-            return html_writer::link($certurl, format_string($row->programname));
+            return html_writer::link($certurl, $programname);
         }
 
         // If this is not current user but a user who can allocate.
         // Then show link to the allocation page for this program.
-        $canallocate = permission::can_manage_user_allocation(context_system::instance());
-        if (((int) $USER->id !== $userid) && $canallocate) {
+        $canallocate = \tool_program\permission::can_view_allocated_users($program);
+        if ($USER->id != $userid && $canallocate) {
             $certurl = new moodle_url('/admin/tool/program/edit.php#!program_users_tab', [
-                'id' => $row->programid,
+                'id' => $program->get('id'),
             ]);
-            return html_writer::link($certurl, format_string($row->programname));
+            return html_writer::link($certurl, $programname);
         }
 
         // If this report is viewed by a manager who can view reports but not allocate - no link.
-        return format_string($row->programname);
+        return $programname;
     }
 
     /**

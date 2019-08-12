@@ -39,17 +39,30 @@ require_once($CFG->libdir . '/formslib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
+    /** @var certification_user */
+    protected $certificationuser;
+
+    /**
+     * Current certification_user
+     *
+     * @return certification_user
+     */
+    protected function get_certification_user(): certification_user {
+        if (!$this->certificationuser) {
+            $certificationuserid = $this->_ajaxformdata['certificationuserid'];
+            $this->certificationuser = new certification_user($certificationuserid);
+        }
+        return $this->certificationuser;
+    }
+
     /**
      * Form definition. Abstract method - always override!
      */
     protected function definition() {
         $mform = $this->_form;
 
-        $certificationid = $this->_ajaxformdata['id'];
-        $certificationuserid = $this->_ajaxformdata['certificationuserid'];
-
-        $certification = new certification($certificationid);
-        $certificationuser = new certification_user($certificationuserid);
+        $certificationuser = $this->get_certification_user();
+        $certification = $certificationuser->get_certification();
         $userid = $certificationuser->get('userid');
 
         // Loads default startdate, duedate and expirydate.
@@ -62,10 +75,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
         $statusstr = get_string('status', 'tool_certification');
         $suspendedstr = get_string('suspended', 'tool_certification');
 
-        $mform->addElement('hidden', 'id', $certificationid);
-        $mform->setType('id', PARAM_INT);
-
-        $mform->addElement('hidden', 'certificationuserid', $certificationuserid);
+        $mform->addElement('hidden', 'certificationuserid');
         $mform->setType('certificationuserid', PARAM_INT);
 
         $options = [
@@ -105,7 +115,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
         $mform->addHelpButton('userduedateformgroup', 'userduedate', 'tool_certification');
 
         // If user is certified allow to set manually an expiry date.
-        $iscertified = api::is_user_certified($userid, $certificationid);
+        $iscertified = api::is_user_certified($userid, $certification->get('id'));
         if ($iscertified) {
             $neverstr = get_string('never', 'tool_certification');
             $expirydatestr = get_string('certifyexpirydate', 'tool_certification');
@@ -135,22 +145,16 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
      * Require capabilities.
      */
     public function require_access(): void {
-        $certification = new certification($this->_ajaxformdata['id']);
-        permission::require_can_manage_users_list($certification, context_system::instance());
+        permission::require_can_edit_user_allocation($this->get_certification_user());
     }
 
     /**
      * Set Data for the modal form.
      */
     public function set_data_for_modal() {
-        $certificationuserid = $this->_ajaxformdata['certificationuserid'];
-        $certificationid = $this->_ajaxformdata['id'];
-        $certificationuser = new certification_user($certificationuserid);
+        $certificationuser = $this->get_certification_user();
         $userid = $certificationuser->get('userid');
-
-        if (constants::ALLOCATION_MANUAL !== (int) $certificationuser->get('allocationtype')) {
-            throw new \moodle_exception('allocationnoteditable', 'tool_certification');
-        }
+        $certificationid = $certificationuser->get('certificationid');
 
         // Calculate expirydatetype (never, absolute or none).
         $expirydate = (int) $certificationuser->get('expirydate');
@@ -165,9 +169,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
         }
 
         $formdata = [
-            'certificationid' => $certificationid,
-            'certificationuserid' => $certificationuserid,
-            'userid' => $userid,
+            'certificationuserid' => $certificationuser->get('id'),
             'status' => $certificationuser->get('status'),
             'startdatetype' => $certificationuser->get('startdatelocked'),
             'startdate' => $certificationuser->get('startdate'),
@@ -185,7 +187,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
      * @return mixed|void
      */
     public function process(\stdClass $data) {
-        $certificationuser = new certification_user($data->certificationuserid);
+        $certificationuser = $this->get_certification_user();
 
         $data->duedatelocked = $data->duedatetype;
         $data->startdatelocked = $data->startdatetype;
@@ -196,7 +198,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
                     // Recalculate user dates.
                     $certificationuser->set('expirydatelocked', constants::DATE_UNLOCKED);
                     $certificationuser->update();
-                    $certification = new certification($data->id);
+                    $certification = $certificationuser->get_certification();
                     api::recalculate_certification_user_dates($certification, $certificationuser);
 
                     // We get user calculated default date.

@@ -38,21 +38,29 @@ require_once($CFG->libdir . '/formslib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_certification_users_certify_form_modal extends \tool_wp\modal_form {
+    /** @var certification_user */
+    protected $certificationuser;
+
+    /**
+     * Current certification_user
+     *
+     * @return certification_user
+     */
+    protected function get_certification_user(): certification_user {
+        if (!$this->certificationuser) {
+            $certificationuserid = $this->_ajaxformdata['certificationuserid'];
+            $this->certificationuser = new certification_user($certificationuserid);
+        }
+        return $this->certificationuser;
+    }
+
     /**
      * Form definition. Abstract method - always override!
      */
     protected function definition() {
         $mform = $this->_form;
-        $certificationid = $this->_ajaxformdata['id'];
-        $userid = $this->_ajaxformdata['userid'];
 
-        $mform->addElement('hidden', 'id', $certificationid);
-        $mform->setType('id', PARAM_INT);
-
-        $mform->addElement('hidden', 'userid', $userid);
-        $mform->setType('userid', PARAM_INT);
-
-        $mform->addElement('hidden', 'certificationuserid', $userid);
+        $mform->addElement('hidden', 'certificationuserid');
         $mform->setType('certificationuserid', PARAM_INT);
 
         $markcompletedstr = get_string('markcertificationcompletednotice', 'tool_certification');
@@ -63,7 +71,7 @@ class edit_certification_users_certify_form_modal extends \tool_wp\modal_form {
         $expirydatestr = get_string('certifyexpirydate', 'tool_certification');
         $selectdatestr = get_string('selectdate', 'tool_certification');
 
-        $certification = new certification($certificationid);
+        $certification = $this->get_certification_user()->get_certification();
         $defaultdates = api::get_default_certification_dates($certification);
 
         // Expiry date.
@@ -96,26 +104,18 @@ class edit_certification_users_certify_form_modal extends \tool_wp\modal_form {
      * Require capabilities.
      */
     public function require_access(): void {
-        $certification = new certification($this->_ajaxformdata['id']);
-        permission::require_can_edit_details($certification, context_system::instance());
+        $certificationuser = $this->get_certification_user();
+        permission::require_can_edit_user_allocation($certificationuser);
     }
 
     /**
      * Set Data for the certify user modal form.
      */
     public function set_data_for_modal() {
-        $certificationuserid = $this->_ajaxformdata['certificationuserid'];
-        $userid = $this->_ajaxformdata['userid'];
-        $certificationid = $this->_ajaxformdata['id'];
-        $certificationuser = new certification_user($certificationuserid);
+        $certificationuser = $this->get_certification_user();
 
-        if (constants::ALLOCATION_MANUAL !== (int) $certificationuser->get('allocationtype')) {
-            throw new \moodle_exception('allocationnoteditable', 'tool_certification');
-        }
         $formdata = [
-            'userid' => $userid,
-            'id' => $certificationid,
-            'certificationuserid' => $certificationuserid,
+            'certificationuserid' => $certificationuser->get('id'),
         ];
         $this->set_data($formdata);
     }
@@ -126,8 +126,8 @@ class edit_certification_users_certify_form_modal extends \tool_wp\modal_form {
      * @return mixed|void
      */
     public function process(\stdClass $data) {
-        $certification = new certification($data->id);
-        $certificationuser = new certification_user($data->certificationuserid);
+        $certificationuser = $this->get_certification_user();
+        $certification = $certificationuser->get_certification();
 
         switch ($data->expirydatetype) {
             case constants::DATE_NONE:
@@ -166,6 +166,7 @@ class edit_certification_users_certify_form_modal extends \tool_wp\modal_form {
         $certificationuser->set('expirydate', $expirydate);
         $certificationuser->update();
 
-        api::set_user_as_certified($data->userid, $data->id, (bool) $data->suspendprogallocation, $expirydate);
+        api::set_user_as_certified($certificationuser->get('userid'), $certification->get('id'),
+            (bool) $data->suspendprogallocation, $expirydate);
     }
 }

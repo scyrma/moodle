@@ -44,7 +44,7 @@ function tool_certification_output_fragment_certifications_manager_users_list(ar
     $certificationid = $args['id'];
     $context = $args['context'];
     $certification = new certification($certificationid);
-    \tool_certification\permission::require_can_manage_users_list($certification, $context);
+    \tool_certification\permission::require_can_view_allocated_users($certification);
 
     // Check if tool_reportbuilder is installed.
     if (class_exists('\\tool_reportbuilder\\system_report_factory')) {
@@ -76,7 +76,7 @@ function tool_certification_inplace_editable(string $itemtype, int $itemid, stri
     switch ($itemtype) {
         case 'certificationname':
             $certification = new certification($itemid);
-            permission::require_can_edit_details($certification, $context);
+            permission::require_can_edit_details($certification);
             $certification->set('fullname', $newvalue);
             $certification->update();
             $edithint = get_string('editcertificationname', 'tool_certification');
@@ -106,7 +106,7 @@ function tool_certification_potential_users_selector(string $area, int $itemid) 
 
     if ($itemid) {
         $certification = new certification($itemid);
-        permission::require_can_allocate($certification, context_system::instance());
+        permission::require_can_allocate_anybody($certification);
     }
 
     list($join, $where, $params) = \tool_tenant\tenancy::get_users_sql('u');
@@ -149,7 +149,7 @@ function tool_certification_myprofile_navigation(core_user\output\myprofile\tree
         $category = $tree->__get('categories')['learning'];
     }
 
-    $canviewreports = permission::can_view_reports($user->id);
+    $canviewreports = permission::can_view_user_progress($user->id);
 
     if ($iscurrentuser || $canviewreports) {
         // Display ongoing certifications.
@@ -222,7 +222,9 @@ function tool_certification_myprofile_navigation(core_user\output\myprofile\tree
  * @return bool
  */
 function tool_certification_can_view_dynamic_rules(string $area, int $itemid): bool {
-    $certification = new certification($itemid);
-    return (permission::can_edit_details($certification, context_system::instance())
-        || permission::can_manage_user_allocation(context_system::instance()));
+    if ($area === 'certification') {
+        $certification = new certification($itemid);
+        return permission::can_view_details($certification);
+    }
+    return false;
 }

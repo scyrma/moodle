@@ -68,8 +68,7 @@ class certification_calendar_tab extends \tool_wp\output\tab_form {
             return false;
         }
         $certification = new certification($this->data['id']);
-        return (permission::can_edit_details($certification, context_system::instance())
-            || permission::can_manage_user_allocation(context_system::instance()));
+        return permission::can_view_details($certification);
     }
 
     /**
