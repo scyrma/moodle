@@ -61,7 +61,7 @@ class tool_tenant_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/tenant:manage', $context);
+        \tool_tenant\permission::require_can_move_tenant($params['id']);
         (new \tool_tenant\manager())->change_sortorder($params['id'], $params['beforeid']);
     }
 
@@ -87,9 +87,7 @@ class tool_tenant_external extends external_api {
     public static function get_tenants() {
         $context = context_system::instance();
         self::validate_context($context);
-        if (!has_any_capability(['tool/tenant:manage', 'tool/tenant:allocate'], $context)) {
-            throw new moodle_exception('errorcannotgettenants', 'tool_tenant');
-        }
+        \tool_tenant\permission::require_can_view_tenants_list();
         $manager = new \tool_tenant\manager();
         return array_map(function($t) {
             return (object) [
@@ -146,7 +144,7 @@ class tool_tenant_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('tool/tenant:allocate', $context);
+        \tool_tenant\permission::require_can_move_users_between_tenants();
         $manager = new \tool_tenant\manager();
         $result = ['result' => true];
         foreach ($params['allocations'] as $a) {
@@ -156,7 +154,7 @@ class tool_tenant_external extends external_api {
                 $result['warnings'][] = [
                     'item' => $a['userid'],
                     'warningcode' => 'couldnotallocatetotenant',
-                    'message' => get_string('couldnnotallocate', (object)$a)
+                    'message' => get_string('couldnotallocate', 'tool_tenant', (object)$a)
                 ];
             }
         }
@@ -172,5 +170,241 @@ class tool_tenant_external extends external_api {
             'result' => new external_value(PARAM_BOOL),
             'warnings' => new external_warnings()
         ]);
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function suspend_users_parameters() {
+        return new external_function_parameters(
+            ['userids' => new external_multiple_structure(new external_value(core_user::get_property_type('id'), 'user ID'))]
+        );
+    }
+
+    /**
+     * Suspend users
+     *
+     * @throws moodle_exception
+     * @param array $userids
+     * @return null
+     */
+    public static function suspend_users($userids) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot."/user/lib.php");
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        \tool_tenant\permission::require_can_update_users(); // Loose check first for security reasons.
+
+        $params = self::validate_parameters(self::suspend_users_parameters(), ['userids' => $userids]);
+
+        foreach ($params['userids'] as $userid) {
+            try {
+                $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', MUST_EXIST);
+                \tool_tenant\permission::require_can_suspend_user($user);
+                $user->suspended = 1;
+                user_update_user($user, false, true);
+            } catch (moodle_exception $exception) {
+                // TODO WP-720 add to warnings.
+                continue;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return null
+     */
+    public static function suspend_users_returns() {
+        return null;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function unsuspend_users_parameters() {
+        return new external_function_parameters(
+            ['userids' => new external_multiple_structure(new external_value(core_user::get_property_type('id'), 'user ID'))]
+        );
+    }
+
+    /**
+     * Unsuspend users
+     *
+     * @throws moodle_exception
+     * @param array $userids
+     * @return null
+     */
+    public static function unsuspend_users($userids) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot."/user/lib.php");
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        \tool_tenant\permission::require_can_update_users(); // Loose check first for security reasons.
+
+        $params = self::validate_parameters(self::unsuspend_users_parameters(), ['userids' => $userids]);
+
+        foreach ($params['userids'] as $userid) {
+            try {
+                $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', MUST_EXIST);
+                \tool_tenant\permission::require_can_unsuspend_user($user);
+                $user->suspended = 0;
+                user_update_user($user, false, true);
+            } catch (moodle_exception $exception) {
+                // TODO WP-720 add to warnings.
+                continue;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return null
+     */
+    public static function unsuspend_users_returns() {
+        return null;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function delete_users_parameters() {
+        return new external_function_parameters(
+            ['userids' => new external_multiple_structure(new external_value(core_user::get_property_type('id'), 'user ID'))]
+        );
+    }
+
+    /**
+     * Delete users
+     *
+     * @throws moodle_exception
+     * @param array $userids
+     */
+    public static function delete_users($userids) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot."/user/lib.php");
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        \tool_tenant\permission::require_can_delete_users(); // Loose check first for security reasons.
+
+        $params = self::validate_parameters(self::delete_users_parameters(), ['userids' => $userids]);
+
+        foreach ($params['userids'] as $userid) {
+            try {
+                $user = $DB->get_record('user', ['id' => $userid, 'deleted' => 0], '*', MUST_EXIST);
+                \tool_tenant\permission::require_can_delete_user($user);
+                user_delete_user($user);
+            } catch (moodle_exception $exception) {
+                // TODO WP-720 add to warnings.
+                continue;
+            }
+        }
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return null
+     */
+    public static function delete_users_returns() {
+        return null;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function assign_tenant_admin_roles_parameters() {
+        return new external_function_parameters(
+            [
+                'userids' => new external_multiple_structure(new external_value(core_user::get_property_type('id'), 'user ID')),
+                'tenantid' => new external_value(PARAM_INT, 'Tenant ID')
+            ]
+        );
+    }
+
+    /**
+     * Assigns the 'Tenant administrator' role in given tenantid to given array of userids
+     *
+     * @param array $userids
+     * @param int $tenantid
+     */
+    public static function assign_tenant_admin_roles(array $userids, int $tenantid) {
+        $params = self::validate_parameters(self::assign_tenant_admin_roles_parameters(),
+            ['userids' => $userids, 'tenantid' => $tenantid]);
+
+        // Ensure the current user is allowed to run this function.
+        $context = context_system::instance();
+        self::validate_context($context);
+        \tool_tenant\permission::require_can_assign_tenant_admin($params['tenantid']);
+
+        $tmanager = new \tool_tenant\manager();
+        $tmanager->assign_tenant_admin_roles($params['userids'], $params['tenantid']);
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return null
+     */
+    public static function assign_tenant_admin_roles_returns() {
+        return null;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function unassign_tenant_admin_roles_parameters() {
+        return new external_function_parameters(
+            [
+                'userids' => new external_multiple_structure(new external_value(core_user::get_property_type('id'), 'user ID')),
+                'tenantid' => new external_value(PARAM_INT, 'Tenant ID')
+            ]
+        );
+    }
+
+    /**
+     * Assigns the 'Tenant administrator' role in given tenantid to given array of userids
+     *
+     * @param array $userids
+     * @param int $tenantid
+     */
+    public static function unassign_tenant_admin_roles(array $userids, int $tenantid) {
+        $params = self::validate_parameters(self::unassign_tenant_admin_roles_parameters(),
+            ['userids' => $userids, 'tenantid' => $tenantid]);
+
+        // Ensure the current user is allowed to run this function.
+        $context = context_system::instance();
+        self::validate_context($context);
+        \tool_tenant\permission::require_can_assign_tenant_admin($params['tenantid']);
+
+        $tmanager = new \tool_tenant\manager();
+        $tmanager->unassign_tenant_admin_roles($params['userids'], $params['tenantid']);
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return null
+     */
+    public static function unassign_tenant_admin_roles_returns() {
+        return null;
     }
 }

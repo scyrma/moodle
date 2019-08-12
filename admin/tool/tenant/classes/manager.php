@@ -247,10 +247,13 @@ class manager {
      */
     public function manage_action(string $action, $id = null) {
         if ($action === 'archive' && $id) {
+            permission::require_can_archive_tenant($id);
             $this->archive_tenant($id);
         } else if ($action === 'delete' && $id) {
+            permission::require_can_delete_tenant($id);
             $this->delete_tenant($id);
         } else if ($action === 'restore' && $id) {
+            permission::require_can_restore_tenant($id);
             $this->restore_tenant($id);
         }
     }
@@ -354,6 +357,64 @@ class manager {
     }
 
     /**
+     * Assigns the 'Tenant administrator' role in given tenantid to given array of userids
+     *
+     * @param array $userids
+     * @param int $tenantid
+     */
+    public function assign_tenant_admin_roles(array $userids, int $tenantid) {
+        $adminrole = self::get_tenant_admin_role();
+        $managerrole = self::get_tenant_manager_role();
+        $systemcontext = \context_system::instance();
+        $catcontext = self::get_tenant_category_context($tenantid);
+        foreach ($userids as $userid) {
+            role_assign($adminrole, $userid, $systemcontext->id, 'tool_tenant', $tenantid);
+        }
+        if ($catcontext) {
+            foreach ($userids as $userid) {
+                role_assign($managerrole, $userid, $catcontext->id, 'tool_tenant', $tenantid);
+            }
+        }
+    }
+
+    /**
+     * Unassigns the 'Tenant administrator' role in given tenantid to given array of userids
+     *
+     * @param array $userids
+     * @param int $tenantid
+     */
+    public function unassign_tenant_admin_roles(array $userids, int $tenantid) {
+        $adminrole = self::get_tenant_admin_role();
+        $managerrole = self::get_tenant_manager_role();
+        $systemcontext = \context_system::instance();
+        foreach ($userids as $userid) {
+            role_unassign($adminrole, $userid, $systemcontext->id, 'tool_tenant', $tenantid);
+        }
+        $catcontext = self::get_tenant_category_context($tenantid);
+        if ($catcontext) {
+            foreach ($userids as $userid) {
+                role_unassign($managerrole, $userid, $catcontext->id, 'tool_tenant', $tenantid);
+            }
+        }
+    }
+
+    /**
+     * Return the context of category of given tenant. Return null if tenant has no category associated.
+     *
+     * @param int $tenantid
+     * @return null|\context_coursecat
+     */
+    protected function get_tenant_category_context(int $tenantid) {
+        $tenant = $this->get_tenant($tenantid);
+        $categoryid = $tenant->get('categoryid');
+        if ($categoryid) {
+            return \context_coursecat::instance($tenant->get('categoryid'));
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Change tenant category
      *
      * @param int $tenantid
@@ -391,34 +452,19 @@ class manager {
     /**
      * Assign the roles 'tool_tenant_admin' and 'tool_tenant_manager' to admin users.
      * TODO SP-361 Create a task to sync the roles.
+     * TODO Rename to make obvious it removes other admins.
      *
      * @param  int    $tenantid The tenant ID.
      * @param  array  $userids  IDs of the tenant admins
-     * @param  int    $categoryid The category ID.
      */
-    public function assign_tenant_admin_role(int $tenantid, array $userids, int $categoryid = 0) {
-        $context = \context_system::instance();
-        $adminrole = self::get_tenant_admin_role();
-        $managerrole = self::get_tenant_manager_role();
-
+    public function assign_tenant_admin_role(int $tenantid, array $userids) {
         // Remove old admins.
         $currentadmins = \tool_tenant\tenancy::get_tenant_admins($tenantid);
         $adminstoremove = array_diff($currentadmins, $userids);
-        foreach ($adminstoremove as $adminid) {
-            foreach ([$adminrole, $managerrole] as $roleid) {
-                role_unassign_all(['itemid' => $tenantid, 'component' => 'tool_tenant',
-                    'roleid' => $roleid, 'userid' => $adminid]);
-            }
-        }
+        self::unassign_tenant_admin_roles($adminstoremove, $tenantid);
 
         // Make sure all admins have roles assigned.
-        $catcontext = $categoryid ? \context_coursecat::instance($categoryid) : null;
-        foreach ($userids as $tenantadminid) {
-            role_assign($adminrole, $tenantadminid, $context->id, 'tool_tenant', $tenantid);
-            if ($categoryid) {
-                role_assign($managerrole, $tenantadminid, $catcontext->id, 'tool_tenant', $tenantid);
-            }
-        }
+        self::assign_tenant_admin_roles($userids, $tenantid);
         \cache_helper::purge_by_event('changesincoursecat');
     }
 
@@ -574,37 +620,25 @@ class manager {
     /**
      * Can this user create users in the supplied tenant.
      *
+     * @deprecated use permission::can_create_users()
+     *
      * @param  int $tenantid The current tenant ID.
      * @return bool True is this user can create users in the tenant.
      */
     public static function can_create_users($tenantid) : bool {
-        $systemcontext = \context_system::instance();
-        if (has_capability('moodle/user:create', $systemcontext)) {
-            // User has capability to create users anywhere.
-            return true;
-        }
-
-        // User belongs to the same tenant and has capability to manage users.
-        return (\tool_tenant\tenancy::get_tenant_id() == $tenantid
-                && has_capability('tool/tenant:manageusers', \context_system::instance()));
+        return permission::can_create_users($tenantid);
     }
 
     /**
      * Can this user update users in the supplied tenant.
      *
+     * @deprecated use permission::can_update_users()
+     *
      * @param  int $tenantid The current tenant ID.
      * @return bool True is this user can edit users in the tenant.
      */
     public static function can_update_users($tenantid) : bool {
-        $systemcontext = \context_system::instance();
-        if (has_capability('moodle/user:update', $systemcontext)) {
-            // User has capability to update users anywhere.
-            return true;
-        }
-
-        // User belongs to the same tenant and has capability to manage users.
-        return (\tool_tenant\tenancy::get_tenant_id() == $tenantid
-            && has_capability('tool/tenant:manageusers', \context_system::instance()));
+        return permission::can_update_users($tenantid);
     }
 
     /**
@@ -612,75 +646,72 @@ class manager {
      * and if not then check if they have the capability to browser users in the specified tenant (will use the default
      * tenant by default).
      *
+     * @deprecated use permission::can_browse_users
+     *
      * @param  int $currenttenantid The current tenant ID.
      * @return bool True is this user can browse users.
      */
     public static function can_browse_users(int $currenttenantid = 0) : bool {
-        // Check for general permission.
-        if (has_capability('tool/tenant:manage', \context_system::instance())
-                || self::can_move_users_between_tenants()) {
-            return true;
-        }
+        return permission::can_browse_users($currenttenantid);
+    }
 
-        // Check for permission specific to this tenant.
-        if (self::can_create_users($currenttenantid) || self::can_update_users($currenttenantid)) {
-            return true;
-        }
-        $currenttenantid = $currenttenantid ?: \tool_tenant\tenancy::get_tenant_id();
-        if (\tool_tenant\tenancy::get_tenant_id() == $currenttenantid
-                && has_capability('tool/tenant:browseusers', \context_system::instance())) {
-            return true;
-        }
-        return false;
+    /**
+     * Can this user delete users in the supplied tenant.
+     *
+     * @deprecated use permission::can_delete_users
+     *
+     * @param  int $tenantid The current tenant ID.
+     * @return bool True is this user can edit users in the tenant.
+     */
+    public static function can_delete_users($tenantid) : bool {
+        return permission::can_delete_users($tenantid);
+    }
+
+    /**
+     * Can this user suspend users in the supplied tenant.
+     *
+     * @deprecated use permission::can_suspend_users()
+     *
+     * @param  int $tenantid The current tenant ID.
+     * @return bool True is this user can edit users in the tenant.
+     */
+    public static function can_suspend_users($tenantid) : bool {
+        return permission::can_suspend_users($tenantid);
     }
 
     /**
      * Can user view "Roles" tab for the given tenant id
      *
+     * @deprecated use permission::can_see_roles_tab
+     *
      * @param int $currenttenantid
      * @return bool
      */
     public static function can_see_roles_tab(int $currenttenantid = 0) : bool {
-        $currenttenantid = $currenttenantid ?: \tool_tenant\tenancy::get_tenant_id();
-        $tenants = tenancy::get_tenants();
-        if (!array_key_exists($currenttenantid, $tenants)) {
-            return false;
-        }
-
-        if (!has_capability('moodle/role:assign', \context_system::instance())) {
-            $tenant = $tenants[$currenttenantid];
-            $categorycontext = $tenant->categoryid ? \context_coursecat::instance($tenant->categoryid, IGNORE_MISSING) : null;
-            if (!$categorycontext || !has_capability('moodle/role:assign', $categorycontext)) {
-                return false;
-            }
-        }
-
-        return self::can_browse_users($currenttenantid);
+        return permission::can_see_roles_tab($currenttenantid);
     }
 
     /**
      * Can the user move other users between different tenants.
      *
+     * @deprecated use permission::can_move_users_between_tenants
+     *
      * @return bool True if the user has permission to move users between tenants.
      */
     public static function can_move_users_between_tenants() : bool {
-        return has_capability('tool/tenant:allocate', \context_system::instance());
+        return permission::can_move_users_between_tenants();
     }
 
     /**
      * Can the user edit the theme for tenants.
      *
+     * @deprecated use permission::can_edit_tenant_themes
+     *
      * @param int $tenantid
      * @return bool True if the user has permission to edit the themes of tenants, else false.
      */
     public static function can_edit_tenant_themes(int $tenantid = 0) : bool {
-        // Check for general permission.
-        if (has_capability('tool/tenant:manage', \context_system::instance())) {
-            return true;
-        }
-
-        return (!$tenantid || $tenantid == tenancy::get_tenant_id()) &&
-            has_capability('tool/tenant:managetheme', \context_system::instance());
+        return permission::can_edit_tenant_theme($tenantid);
     }
 
     /**
@@ -1175,5 +1206,21 @@ class manager {
             }
         }
         return null;
+    }
+
+    /**
+     * Check if user is tenant admin.
+     *
+     * @param int $tenantid
+     * @param int $userid
+     * @return bool
+     */
+    public static function is_tenant_admin($tenantid, $userid) : bool {
+        global $CFG, $DB;
+        return $DB->record_exists('role_assignments',
+            ['component' => 'tool_tenant',
+             'itemid' => $tenantid,
+             'roleid' => (int)$CFG->tool_tenant_adminrole,
+             'userid' => $userid]);
     }
 }

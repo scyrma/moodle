@@ -38,8 +38,8 @@ function tool_tenant_inplace_editable($itemtype, $itemid, $newvalue) {
 
     if ($itemtype === 'tenant_name') {
         \external_api::validate_context(context_system::instance());
+        \tool_tenant\permission::require_can_edit_tenant($itemid);
         $manager = new \tool_tenant\manager();
-        require_capability('tool/tenant:manage', \context_system::instance());
         $tenant = $manager->update_tenant($itemid, (object)['name' => $newvalue]);
         return $tenant->get_editable_name();
     }
@@ -56,7 +56,7 @@ function tool_tenant_potential_users_selector($area, $itemid) {
     if ($area !== 'tenantadmin') {
         return null;
     }
-    require_capability('tool/tenant:manage', context_system::instance());
+    \tool_tenant\permission::require_can_edit_tenant($itemid);
 
     list($join, $where, $params) = \tool_tenant\tenancy::get_users_sql('u', $itemid);
     return [$join, $where, $params];
@@ -105,15 +105,16 @@ function tool_tenant_pluginfile($course, $cm, $context, $filearea, $args, $force
  */
 function tool_tenant_control_view_profile($user, $course, $usercontext) {
     global $USER;
-    if (has_any_capability(['tool/tenant:manage', 'tool/tenant:allocate'], \context_system::instance())) {
+    if (\tool_tenant\permission::can_view_tenants_list()) {
         // Always allow to view user profiles.
         return core_user::VIEWPROFILE_FORCE_ALLOW;
     }
+    $tenantid = \tool_tenant\tenancy::get_tenant_id($user->id);
     if ($user->id != $USER->id &&
-            \tool_tenant\tenancy::get_tenant_id() != \tool_tenant\tenancy::get_tenant_id($user->id)) {
+            \tool_tenant\tenancy::get_tenant_id() != $tenantid) {
         return core_user::VIEWPROFILE_PREVENT;
     }
-    if (has_capability('tool/tenant:manageusers', context_system::instance())) {
+    if (\tool_tenant\permission::can_browse_users($tenantid)) {
         // This is a tenant admin. Always allow to view user profiles.
         return core_user::VIEWPROFILE_FORCE_ALLOW;
     }

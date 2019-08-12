@@ -24,6 +24,7 @@
 
 namespace tool_tenant\output;
 
+use tool_tenant\permission;
 use tool_tenant\tenancy;
 use tool_wp\output\content_with_heading;
 use tool_wp\output\tab;
@@ -47,11 +48,8 @@ class tab_roles extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-        $context = \context_system::instance();
-        $manager = new \tool_tenant\manager();
-        // This will thow an exception if the tenant isn't valid.
-        $manager->get_tenant($this->data['tenantid']);
-        return \tool_tenant\manager::can_see_roles_tab($this->data['tenantid']);
+        $tenantid = !empty($this->data['tenantid']) ? (int)$this->data['tenantid'] : 0;
+        return permission::can_see_roles_tab($tenantid);
     }
 
     /**

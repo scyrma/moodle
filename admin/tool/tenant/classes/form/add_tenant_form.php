@@ -25,6 +25,7 @@
 namespace tool_tenant\form;
 
 use tool_tenant\manager;
+use tool_tenant\permission;
 use tool_wp\modal_form;
 
 defined('MOODLE_INTERNAL') || die();
@@ -132,7 +133,11 @@ class add_tenant_form extends modal_form {
      * Check access
      */
     public function require_access() {
-        return require_capability('tool/tenant:manage', \context_system::instance());
+        if ($tenantid = $this->optional_param('tenantid', 0, PARAM_INT)) {
+            permission::require_can_edit_tenant($tenantid);
+        } else {
+            permission::require_can_create_tenant();
+        }
     }
 
     /**
@@ -159,7 +164,7 @@ class add_tenant_form extends modal_form {
             }
         }
         if (count($err) == 0) {
-            return true;
+            return [];
         } else {
             return $err;
         }
@@ -238,12 +243,12 @@ class add_tenant_form extends modal_form {
             if ($oldtenant->get('categoryid') != $data->categoryid) {
                 $manager->change_tenant_category($id, $data->categoryid);
             }
-            // Change admin.
-            $data->tenantadmin = !empty($data->tenantadmin) ? $data->tenantadmin : [];
-            $manager->assign_tenant_admin_role($id, $data->tenantadmin, $data->categoryid);
+            // Save tenant admin to change after update tenant.
+            $tenantadmin = !empty($data->tenantadmin) ? $data->tenantadmin : [];
             unset($data->tenantadmin);
             // Update other tenant information.
             $manager->update_tenant($id, $data);
+            $manager->assign_tenant_admin_role($id, $tenantadmin);
         }
         return manager::get_edit_tenant_url($id)->out(false);
     }

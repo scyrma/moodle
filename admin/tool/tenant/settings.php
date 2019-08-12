@@ -38,7 +38,7 @@ $ADMIN->add('tool_organisation', new admin_externalpage('tool_tenant', new lang_
 // Browse list of users in the current tenant.
 $ADMIN->add('tool_organisation', new \tool_wp\admin_externalpage('tool_tenant_users', new lang_string('userlist', 'admin'),
     new moodle_url('/admin/tool/tenant/edit.php'), function() {
-        return \tool_tenant\manager::can_browse_users();
+        return \tool_tenant\permission::can_browse_users();
     }));
 
 
@@ -46,7 +46,7 @@ $ADMIN->add('tool_organisation', new \tool_wp\admin_externalpage('tool_tenant_us
 $ADMIN->add('appearance', new \tool_wp\admin_externalpage('tool_tenant_theme', new lang_string('managetheme', 'tool_tenant'),
     new moodle_url('/admin/tool/tenant/edit.php#!appearance'),
     function() {
-        return \tool_tenant\manager::can_edit_tenant_themes();
+        return \tool_tenant\permission::can_edit_tenant_theme();
     }));
 
 // Substitute frontpage settings with custom settings classes. We override the value for the $SITE->fullname and $SITE->shortname

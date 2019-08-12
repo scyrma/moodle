@@ -24,6 +24,8 @@
 
 namespace tool_tenant\form;
 
+use tool_tenant\permission;
+use tool_tenant\tenancy;
 use tool_wp\modal_form;
 
 defined('MOODLE_INTERNAL') || die();
@@ -50,13 +52,27 @@ class add_user_form extends modal_form {
      */
     public function get_user() {
         if ($this->user === false) {
-            if (isset($this->_ajaxformdata['id']) && $this->_ajaxformdata['id'] > 0) {
-                $this->user = \core_user::get_user($this->_ajaxformdata['id']);
+            $id = $this->optional_param('id', 0, PARAM_INT);
+            if ($id) {
+                $this->user = \core_user::get_user($id);
             } else {
                 $this->user = null;
             }
         }
         return $this->user;
+    }
+
+    /**
+     * Tenant where the user is being edited/created
+     *
+     * @return int
+     */
+    protected function get_tenant_id() {
+        if ($user = $this->get_user()) {
+            return tenancy::get_tenant_id($this->get_user()->id);
+        } else {
+            return $this->optional_param('tenantid', 0, PARAM_INT) ?: tenancy::get_tenant_id();
+        }
     }
 
     /**
@@ -80,7 +96,9 @@ class add_user_form extends modal_form {
 
         $mform->addElement('header', 'moodle', get_string('general'));
 
-        $mform->addElement('text', 'username', get_string('username'), 'size="20"');
+        $purpose = user_edit_map_field_purpose($userid, 'username');
+        $mform->addElement('text', 'username', get_string('username'), 'size="20"' . $purpose);
+        $mform->addRule('username', get_string('required'), 'required', null, 'client');
         $mform->addHelpButton('username', 'username', 'auth');
         $mform->setType('username', PARAM_RAW);
 
@@ -119,6 +137,12 @@ class add_user_form extends modal_form {
         // Next the customisable profile fields.
         profile_definition($mform, $userid);
 
+        if (permission::can_assign_tenant_admin($this->get_tenant_id())) {
+            $mform->addElement('header', 'tenantoptions', get_string('tenantadministration', 'tool_tenant'));
+            $mform->addElement('checkbox', 'tenantadmin', get_string('admin', 'tool_tenant'),
+                get_string('tenantadministrator', 'tool_tenant'));
+        }
+
         // Add the buttons just in case we ever use this form not inside a modal.
         $this->add_action_buttons();
     }
@@ -138,15 +162,6 @@ class add_user_form extends modal_form {
 
         $user = $this->get_user();
         $err = array();
-
-        $manager = new \tool_tenant\manager();
-        // This will thow an exception if the tenant isn't valid.
-        $manager->get_tenant($usernew->tenantid);
-
-        if (!\tool_tenant\manager::can_create_users($usernew->tenantid)
-                && !\tool_tenant\manager::can_update_users($usernew->tenantid)) {
-            throw new \moodle_exception('nousercreationpermission', 'tool_tenant');
-        }
 
         if (!empty($usernew->newpassword)) {
             $errmsg = ''; // Prevent eclipse warning.
@@ -198,7 +213,12 @@ class add_user_form extends modal_form {
      * Check access
      */
     public function require_access() {
-        return require_capability('tool/tenant:manageusers', $this->get_form_context());
+        $user = $this->get_user();
+        if ($user) {
+            permission::require_can_update_user($user);
+        } else {
+            permission::require_can_create_users($this->optional_param('tenantid', 0, PARAM_INT));
+        }
     }
 
     /**
@@ -210,7 +230,8 @@ class add_user_form extends modal_form {
     public function process(\stdClass $data) {
         global $CFG, $DB;
 
-        $tenantid = $data->tenantid;
+        $tenantid = $this->get_tenant_id();
+        $tenantadmin = isset($data->tenantadmin) && ($data->tenantadmin == 1);
 
         $usercreated = false;
         $authtype = 'manual';
@@ -296,9 +317,18 @@ class add_user_form extends modal_form {
             \core\event\user_updated::create_from_userid($data->id)->trigger();
         }
 
+        $tmanager = new \tool_tenant\manager();
+
         if ($usercreated) {
-            $tmanager = new \tool_tenant\manager();
             $tmanager->allocate_user($data->id, $tenantid, 'tool_tenant', 'manual');
+        }
+
+        if (permission::can_assign_tenant_admin($tenantid)) {
+            if ($tenantadmin) {
+                $tmanager->assign_tenant_admin_roles([$data->id], $tenantid);
+            } else {
+                $tmanager->unassign_tenant_admin_roles([$data->id], $tenantid);
+            }
         }
     }
 
@@ -351,7 +381,7 @@ class add_user_form extends modal_form {
      * Set data in the modal form
      */
     public function set_data_for_modal() {
-        global $OUTPUT;
+        global $CFG, $DB, $OUTPUT;
 
         $data = (object)$this->_ajaxformdata;
         if (!empty($data->id)) {
@@ -374,6 +404,7 @@ class add_user_form extends modal_form {
             // Get user tags for interests.
             $data->interests = \core_tag_tag::get_item_tags_array('core', 'user', $data->id);
             $data->tenantid = $tenantid;
+            $data->tenantadmin = \tool_tenant\manager::is_tenant_admin($tenantid, $data->id);
         }
         $this->set_data($data);
     }

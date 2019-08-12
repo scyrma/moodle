@@ -25,6 +25,7 @@
 namespace tool_tenant\form;
 
 use tool_tenant\manager;
+use tool_tenant\permission;
 use tool_wp\modal_form;
 
 defined('MOODLE_INTERNAL') || die();
@@ -134,11 +135,8 @@ class edit_css_form extends modal_form {
      * Check access
      */
     public function require_access() {
-        $tenantid = !empty($this->_ajaxformdata['tenantid']) ? $this->_ajaxformdata['tenantid'] : 0;
-        if (!manager::can_edit_tenant_themes($tenantid)) {
-            throw new \required_capability_exception(\context_system::instance(),
-                'tool/tenant:managetheme', 'nopermission');
-        }
+        $tenantid = $this->optional_param('tenantid', 0, PARAM_INT);
+        permission::require_can_edit_tenant_theme($tenantid);
     }
 
     /**

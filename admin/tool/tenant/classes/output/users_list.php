@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use renderer_base;
 use tool_tenant\manager;
+use tool_tenant\permission;
 
 /**
  * Class users_list
@@ -68,7 +69,28 @@ class users_list implements \renderable , \templatable {
         $params = [];
         $context = \context_system::instance();
 
-        if (\tool_tenant\manager::can_move_users_between_tenants()) {
+        $bulkactions = [];
+        if (permission::can_suspend_users($this->tenantid)) {
+            $bulkactions['actions'] = [
+                get_string('actions') => [
+                    'suspendusers' => get_string('suspendusers', 'tool_tenant'),
+                    'unsuspendusers' => get_string('unsuspendusers', 'tool_tenant'),
+                ]
+            ];
+        }
+        if (permission::can_delete_users($this->tenantid)) {
+            $actions = get_string('actions');
+            $bulkactions['actions'][$actions]['deleteusers'] = get_string('deleteusers', 'tool_tenant');
+        }
+        if (permission::can_assign_tenant_admin($this->tenantid)) {
+            $bulkactions['admin'] = [
+                get_string('tenantadministration', 'tool_tenant') => [
+                    'assigntenantadmin' => get_string('assigntenantadmins', 'tool_tenant'),
+                    'unassigntenantadmin' => get_string('unassigntenantadmins', 'tool_tenant')
+                ]
+            ];
+        }
+        if (permission::can_move_users_between_tenants()) {
             // Add a tenant selector.
             $manager = new manager();
             $tenants = array_map(function (\tool_tenant\tenant $t) {
@@ -76,21 +98,20 @@ class users_list implements \renderable , \templatable {
             }, $manager->get_tenants());
             unset($tenants[$this->tenantid]);
             if ($tenants) {
-                $url = new \moodle_url(manager::get_edit_tenant_url($this->tenantid),
-                        ['action' => 'allocate', 'sesskey' => sesskey()]);
-                $select = new \single_select($url, 'tenantid', $tenants);
-                $select->set_label(get_string('allocateusersto', 'tool_tenant'));
-
-                $params['tenantselect'] = $select->export_for_template($output);
+                $bulkactions['tenants'] = [get_string('movebetweentenants', 'tool_tenant') => $tenants];
             }
         }
 
-        if (\tool_tenant\manager::can_create_users($this->tenantid)) {
+        $select = new \single_select(new \moodle_url('#'), 'bulkactions', $bulkactions);
+        $select->set_label(get_string('withselectedusers'));
+        $params['bulkactionsselect'] = $select->export_for_template($output);;
+
+        if (permission::can_create_users($this->tenantid)) {
             $params['adduser'] = true;
             $params['addbuttontitle'] = get_string('adduser', 'tool_tenant');
-            $params['systemcontextid'] = $context->id;
-            $params['tenantid'] = $this->tenantid;
+            $params['systemcontextid'] = $context->id; // TODO not needed?
         }
+        $params['tenantid'] = $this->tenantid;
         $params['userslist'] = $this->userreport->output();
 
         return $params;

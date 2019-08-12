@@ -25,12 +25,10 @@
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-$action = optional_param('action', null, PARAM_ALPHA);
 $return = optional_param('return', null, PARAM_ALPHA);
 $id = optional_param('id', 0, PARAM_INT);
-$tenantid = optional_param('tenantid', null, PARAM_INT);
 
-$canviewalltenants = has_any_capability(['tool/tenant:manage', 'tool/tenant:allocate'], context_system::instance());
+$canviewalltenants = \tool_tenant\permission::can_view_tenants_list();
 if (!$id || !$canviewalltenants) {
     // Use current user's tenant.
     $id = \tool_tenant\tenancy::get_tenant_id();
@@ -43,17 +41,6 @@ try {
 }
 $manager = new \tool_tenant\manager();
 $tenant = $manager->get_tenant($id);
-
-if ($action === 'allocate' && $tenantid && confirm_sesskey()) {
-    require_capability('tool/tenant:allocate', \context_system::instance());
-    $usersids = required_param_array('users', PARAM_INT);
-    $allocatedtenant = $manager->get_tenant($tenantid);
-    foreach ($usersids as $userid) {
-        $manager->allocate_user($userid, $tenantid, 'tool_tenant', 'manual');
-    }
-    redirect($PAGE->url, get_string('usermovetotenant', 'tool_tenant', $allocatedtenant->get('name')), null,
-            \core\output\notification::NOTIFY_SUCCESS);
-}
 
 if ($canviewalltenants) {
     // Display the name of the current tenant.

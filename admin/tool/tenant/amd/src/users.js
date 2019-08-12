@@ -22,8 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'core/str', 'tool_wp/modal_form', 'tool_wp/tabs'],
-function($, Str, ModalForm, Tabs) {
+define(['jquery',
+        'core/ajax',
+        'core/notification',
+        'core/str',
+        'tool_wp/modal_form',
+        'tool_wp/tabs'],
+function($, Ajax, Notification, Str, ModalForm, Tabs) {
 
     var editUser = function(event, tenantid, userid, username) {
 
@@ -58,37 +63,166 @@ function($, Str, ModalForm, Tabs) {
         }
     };
 
+    var initActionsHandlers = function() {
+        $('#tool_tenant-users').on('click', '[data-action=suspend]', function(e) {
+            e.preventDefault();
+            var menuNode = $(e.currentTarget);
+            Str.get_strings([
+                {key: 'confirm', component: 'moodle'},
+                {key: 'confirmsuspenduser', component: 'tool_tenant'},
+                {key: 'suspenduser', component: 'tool_tenant'},
+                {key: 'cancel', component: 'moodle'}
+            ]).done(function(s) {
+                Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                    var requests = Ajax.call([
+                        {methodname: 'tool_tenant_suspend_users', args: {userids: [menuNode.data('id')]}}
+                    ]);
+                    requests[0].then(function() {
+                        Tabs.loadTab();
+                        return null;
+                    }).fail(Notification.exception);
+                });
+                return null;
+            }).fail(Notification.exception);
+        });
+        $('#tool_tenant-users').on('click', '[data-action=unsuspend]', function(e) {
+            e.preventDefault();
+            var menuNode = $(e.currentTarget);
+            Str.get_strings([
+                {key: 'confirm', component: 'moodle'},
+                {key: 'confirmunsuspenduser', component: 'tool_tenant'},
+                {key: 'unsuspenduser', component: 'tool_tenant'},
+                {key: 'cancel', component: 'moodle'}
+            ]).done(function(s) {
+                Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                    var requests = Ajax.call([
+                        {methodname: 'tool_tenant_unsuspend_users', args: {userids: [menuNode.data('id')]}}
+                    ]);
+                    requests[0].then(function() {
+                        Tabs.loadTab();
+                        return null;
+                    }).fail(Notification.exception);
+                });
+                return null;
+            }).fail(Notification.exception);
+        });
+        $('#tool_tenant-users').on('click', '[data-action=delete]', function(e) {
+            e.preventDefault();
+            var menuNode = $(e.currentTarget);
+            Str.get_strings([
+                {key: 'confirm', component: 'moodle'},
+                {key: 'confirmdeleteuser', component: 'tool_tenant'},
+                {key: 'deleteuser', component: 'tool_tenant'},
+                {key: 'cancel', component: 'moodle'}
+            ]).done(function(s) {
+                Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                    var requests = Ajax.call([
+                        {methodname: 'tool_tenant_delete_users', args: {userids: [menuNode.data('id')]}}
+                    ]);
+                    requests[0].then(function() {
+                        Tabs.loadTab();
+                        return null;
+                    }).fail(Notification.exception);
+                });
+                return null;
+            }).fail(Notification.exception);
+        });
+    };
+
     return {
         init: function(tenantid) {
-            $('#tool_tenant-users').on('click', '[data-user-edit]', function(e) {
+            M.util.js_pending('tool_tenant_user_list_init');
+            initActionsHandlers();
+            $('#tool_tenant-users').on('click', '[data-action=edit]', function(e) {
                 e.preventDefault();
                 var userid = $(e.currentTarget).attr('data-id'),
                     // TODO SP-388 need a better way of finding user name for the modal title.
                     username = $($(e.currentTarget).closest('tr').find('td')[1]).html();
+                    username = username.replace(/(<([^>]+)>)/ig, "").replace('Tenant administrator', "");
                 editUser(e, tenantid, userid, username);
             });
             Tabs.addButtonOnClick(function(e) {
                 editUser(e, tenantid, 0);
             });
+            M.util.js_complete('tool_tenant_user_list_init');
         },
 
-        initBulkActions: function(formSelector) {
+        initBulkActions: function(formSelector, currentTenantId) {
             enableDisableBulkAction(formSelector);
-            $('[data-bulkuserid]').on('change', function() {
+            $('#tool_tenant-users').on('change', '[data-bulkuserid]', function() {
                 enableDisableBulkAction(formSelector);
             });
-
-            $(formSelector + ' select').change(function() {
-                // When bulk action select is changed copy the selected checkboxes into the bulk action form and submit it.
-                var form = $(formSelector);
-                var ignore = $(this).find(':selected').attr('data-ignore');
-                if (typeof ignore === typeof undefined) {
-                    $('[data-bulkuserid]:checked').each(function() {
-                        form.append($('<input type="hidden">')
-                            .attr('name', $(this).attr('name'))
-                            .attr('value', $(this).attr('value')));
+            $(document).on(M.core.event.FILTER_CONTENT_UPDATED, function() {
+                enableDisableBulkAction(formSelector);
+            });
+            $(formSelector + ' select').off();
+            $(formSelector + ' select').on('change', function() {
+                var func, args, confirmtext, buttontext;
+                if (isNaN(this.value)) {
+                    args = $.map($('[data-bulkuserid]:checked'), function(e) {
+                        return e.value;
                     });
-                    form.submit();
+                    switch (this.value) {
+                        case 'suspendusers':
+                            func = 'tool_tenant_suspend_users';
+                            args = {userids: args};
+                            confirmtext = 'confirmsuspendusers';
+                            buttontext = 'suspendusers';
+                            break;
+                        case 'unsuspendusers':
+                            func = 'tool_tenant_unsuspend_users';
+                            args = {userids: args};
+                            confirmtext = 'confirmunsuspendusers';
+                            buttontext = 'unsuspendusers';
+                            break;
+                        case 'deleteusers':
+                            func = 'tool_tenant_delete_users';
+                            args = {userids: args};
+                            confirmtext = 'confirmdeleteusers';
+                            buttontext = 'deleteusers';
+                            break;
+                        case 'assigntenantadmin':
+                            func = 'tool_tenant_assign_tenant_admin_roles';
+                            args = {userids: args, tenantid: currentTenantId};
+                            confirmtext = 'confirmassigntenantadmins';
+                            buttontext = 'assigntenantadmins';
+                            break;
+                        case 'unassigntenantadmin':
+                            func = 'tool_tenant_unassign_tenant_admin_roles';
+                            args = {userids: args, tenantid: currentTenantId};
+                            confirmtext = 'confirmunassigntenantadmins';
+                            buttontext = 'unassigntenantadmins';
+                            break;
+                    }
+                } else {
+                    // We are moving between tenants.
+                    var tenantid = this.value;
+                    func = 'tool_tenant_allocate_users';
+                    args = $.map($('.tab-content input[type=checkbox]:checked'), function(e) {
+                        return {userid: e.value, tenantid: tenantid};
+                    });
+                    args = {allocations: args};
+                    confirmtext = 'confirmallocateusers';
+                    buttontext = 'allocateusers';
+                }
+                if (typeof func !== 'undefined') {
+                    Str.get_strings([
+                        {key: 'confirm', component: 'moodle'},
+                        {key: confirmtext, component: 'tool_tenant'},
+                        {key: buttontext, component: 'tool_tenant'},
+                        {key: 'cancel', component: 'moodle'}
+                    ]).done(function(s) {
+                        Notification.confirm(s[0], s[1], s[2], s[3], function() {
+                            var requests = Ajax.call([
+                                {methodname: func, args: args}
+                            ]);
+                            requests[0].then(function() {
+                                Tabs.loadTab();
+                                return null;
+                            }).fail(Notification.exception);
+                        });
+                        return null;
+                    }).fail(Notification.exception);
                 }
             });
         },

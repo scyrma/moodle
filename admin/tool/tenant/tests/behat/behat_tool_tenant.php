@@ -198,7 +198,7 @@ class behat_tool_tenant extends behat_base {
             $categoryid = $this->get_category_id("Category{$i}");
             // Assign admins to tenants, set category.
             $manager->change_tenant_category($tenantid, $categoryid);
-            $manager->assign_tenant_admin_role($tenantid, [$userid], $categoryid);
+            $manager->assign_tenant_admin_role($tenantid, [$userid]);
             // Create courses.
             for ($j = 1; $j <= $courses; $j++) {
                 $this->create_course($categoryid, "Course{$i}{$j}", "C{$i}{$j}");

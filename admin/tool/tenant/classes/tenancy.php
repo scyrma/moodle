@@ -198,6 +198,7 @@ class tenancy {
         if (!self::is_site_multi_tenant()) {
             return $andpostfix ? '' : '1=1';
         }
+        // TODO permission class callback here.
         if (!self::$forcetenantid && $canseeall &&
             has_any_capability(['moodle/site:viewparticipants', 'tool/tenant:manage', 'tool/tenant:allocate'],
                 \context_system::instance())) {
@@ -228,6 +229,7 @@ class tenancy {
      * @return bool
      */
     public static function is_user_hidden_by_tenancy($user, $currentuserid = null): bool {
+        // TODO permission class callback here.
         if (has_any_capability(['moodle/site:viewparticipants', 'tool/tenant:manage', 'tool/tenant:allocate'],
                 \context_system::instance(), $currentuserid)) {
             return false;

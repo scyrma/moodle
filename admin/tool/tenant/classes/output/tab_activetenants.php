@@ -25,6 +25,7 @@
 namespace tool_tenant\output;
 
 use renderer_base;
+use tool_tenant\permission;
 use tool_wp\output\tab;
 
 defined('MOODLE_INTERNAL') || die();
@@ -44,7 +45,7 @@ class tab_activetenants extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-        return has_any_capability(['tool/tenant:manage', 'tool/tenant:allocate'], \context_system::instance());
+        return permission::can_view_tenants_list();
     }
 
     /**
@@ -73,19 +74,16 @@ class tab_activetenants extends tab {
      */
     public function export_for_template(renderer_base $output) {
         $manager = new \tool_tenant\manager();
-        $canmanage = has_capability('tool/tenant:manage', \context_system::instance());
 
         // TODO SP-389 this is not ideal to combine retrieving tab contents with an action. Should really be two requests.
         $this->data += ['action' => '', 'id' => 0];
-        if ($canmanage) {
-            $manager->manage_action($this->data['action'], $this->data['id']);
-        }
+        $manager->manage_action($this->data['action'], $this->data['id']);
 
         $rv = [
             'tabheading' => get_string('activetenants', 'tool_tenant'),
             'systemcontextid' => \context_system::instance()->id
         ];
-        if ($canmanage) {
+        if (permission::can_create_tenant()) {
             $rv['addbuttontitle'] = get_string('addtenant', 'tool_tenant');
         }
 

@@ -211,12 +211,12 @@ class tool_tenant_tenancy_testcase extends advanced_testcase {
         // Check that we have no admins at the moment.
         $this->assertEmpty(\tool_tenant\tenancy::get_tenant_admins($tenant->get('id')));
         // Assign admin roles to users 1 and 2.
-        $manager->assign_tenant_admin_role($tenant->get('id'), [$user1->id, $user2->id], $category->id);
+        $manager->assign_tenant_admin_role($tenant->get('id'), [$user1->id, $user2->id]);
         $tenantadminids = \tool_tenant\tenancy::get_tenant_admins($tenant->get('id'));
         $this->assertCount(2, $tenantadminids);
         $this->assertEquals([$user1->id => $user1->id, $user2->id => $user2->id], $tenantadminids);
         // Remove an admin and check again.
-        $manager->assign_tenant_admin_role($tenant->get('id'), [$user1->id], $category->id);
+        $manager->assign_tenant_admin_role($tenant->get('id'), [$user1->id]);
         $tenantadminids = \tool_tenant\tenancy::get_tenant_admins($tenant->get('id'));
         $this->assertCount(1, $tenantadminids);
         $this->assertEquals([$user1->id => $user1->id], $tenantadminids);

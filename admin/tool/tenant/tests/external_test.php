@@ -104,7 +104,7 @@ class tool_tenant_external_testcase extends advanced_testcase {
         $manager->update_tenant($tenant1->id, (object) ['categoryid' => $category->id]);
 
         $manager->allocate_user($user0->id, $tenant1->id, 'tool_tenant', 'testing');
-        $manager->assign_tenant_admin_role($tenant1->id, [$user0->id], $category->id);
+        $manager->assign_tenant_admin_role($tenant1->id, [$user0->id]);
 
         $this->setUser($user0);
 

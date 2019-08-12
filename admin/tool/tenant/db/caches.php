@@ -31,7 +31,7 @@ $definitions = array(
         'simplekeys' => true,
         'simpledata' => true,
         'staticacceleration' => true,
-        'staticaccelerationsize' => 2,
+        'staticaccelerationsize' => 3,
         'invalidationevents' => array(
             'tenantsmodified',
         )

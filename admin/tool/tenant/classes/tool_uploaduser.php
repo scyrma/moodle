@@ -54,7 +54,7 @@ class tool_uploaduser {
             // New user will be allocated to the same tenant current user belongs to.
             $tenantid = \tool_tenant\tenancy::get_tenant_id();
         } else {
-            if (!$tenant = \tool_tenant\tenant::get_record(['idnumber' => $user->tenant])) {
+            if (!$tenant = \tool_tenant\tenant::get_record(['idnumber' => $user->tenant, 'archived' => 0])) {
                 // This should not happen because we already checked it in the can_create_user() callback.
                 $upt->track('tool_wp', get_string('errorinvalidtenant', 'tool_tenant'), 'error');
                 return;
@@ -79,12 +79,12 @@ class tool_uploaduser {
             return;
         }
 
-        if (!$tenant = \tool_tenant\tenant::get_record(['idnumber' => $user->tenant])) {
+        if (!$tenant = \tool_tenant\tenant::get_record(['idnumber' => $user->tenant, 'archived' => 0])) {
             $upt->track('tool_wp', get_string('errorinvalidtenant', 'tool_tenant'), 'error');
             return;
         }
 
-        if (!\tool_tenant\manager::can_move_users_between_tenants()) {
+        if (!permission::can_move_users_between_tenants()) {
             $upt->track('tool_wp', get_string('errorcannotallocate', 'tool_tenant'), 'error');
             return;
         }
@@ -105,14 +105,14 @@ class tool_uploaduser {
         global $DB;
         if (isset($user->tenant)) {
             $tenant = $user->tenant;
-            if (!$tenantid = $DB->get_field('tool_tenant', 'id', ['idnumber' => $tenant])) {
+            if (!$tenantid = $DB->get_field('tool_tenant', 'id', ['idnumber' => $tenant, 'archived' => 0])) {
                 $upt->track('tool_tenant', get_string('unknowntenant', 'error', s($tenant)), 'error');
                 return false;
             }
         } else {
             $tenantid = tenancy::get_tenant_id();
         }
-        return \tool_tenant\manager::can_create_users($tenantid);
+        return permission::can_create_users($tenantid);
     }
 
     /**
@@ -122,7 +122,6 @@ class tool_uploaduser {
      * @return bool
      */
     public static function can_update_user($user) {
-        $usertenantid = \tool_tenant\tenancy::get_tenant_id($user->id);
-        return \tool_tenant\manager::can_update_users($usertenantid);
+        return permission::can_update_user($user);
     }
 }

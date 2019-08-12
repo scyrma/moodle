@@ -38,20 +38,23 @@ use tool_reportbuilder\report_column;
  */
 class users_report extends \tool_reportbuilder\system_report {
 
+    /** @var int */
+    protected $tenantid;
+
     /**
      * Initialise the report.
      */
     public function initialise() {
-        $tenantid = $this->get_parameter('id', 0, PARAM_INT);
+        $this->tenantid = $this->get_parameter('id', 0, PARAM_INT) ?: tenancy::get_tenant_id();
         $this->set_main_table('user', 'u');
         $this->set_downloadable(false);
-        list($join, $where, $params) = \tool_tenant\tenancy::get_users_sql('u', $tenantid);
+        list($join, $where, $params) = \tool_tenant\tenancy::get_users_sql('u', $this->tenantid);
         $this->add_base_join($join);
         $this->add_base_condition_sql($where, $params);
-        $this->add_base_fields('u.id,u.firstname as fullusername,' .
-            user_entity::get_all_user_name_fields(true, 'u')); // Necessary for actions.
+        $this->add_base_fields('u.id, u.suspended'); // Necessary for actions.
         $this->add_actions();
         $this->set_columns();
+        $this->set_filters();
     }
 
     /**
@@ -60,8 +63,7 @@ class users_report extends \tool_reportbuilder\system_report {
      * @return bool
      */
     protected function can_view(): bool {
-        $tenantid = $this->get_parameter('id', 0, PARAM_INT);
-        return \tool_tenant\manager::can_browse_users($tenantid);
+        return permission::can_browse_users($this->tenantid);
     }
 
     /**
@@ -79,10 +81,14 @@ class users_report extends \tool_reportbuilder\system_report {
      */
     protected function set_columns() {
         global $CFG;
-        $this->annotate_entity('user', new \lang_string('entityuser', 'tool_reportbuilder'));
+        $this->add_entity(new user_entity('', 'u'));
 
-        $context = \context_system::instance();
-        if (has_capability('tool/tenant:allocate', $context)) {
+        $showcheckboxes =
+            permission::can_suspend_users($this->tenantid) ||
+            permission::can_delete_users($this->tenantid) ||
+            permission::can_move_users_between_tenants();
+
+        if ($showcheckboxes) {
             $movecolumn = (new report_column(
                 'check',
                 new \lang_string('select'),
@@ -94,33 +100,45 @@ class users_report extends \tool_reportbuilder\system_report {
             $this->add_column($movecolumn);
         }
 
-        // Add user column.
-        $usercolumn = (new report_column(
-            'id',
-            new \lang_string('fullname'),
-            'user'
-        ))
-            ->add_fields(user_entity::get_all_user_name_fields(true, 'u'))
-            ->set_is_default(true, 2)
-            ->set_is_sortable(true, true, 0)
-            ->add_callback([\tool_reportbuilder\local\helpers\format::class, 'fullname']);
-        $this->add_column($usercolumn);
+        $adminsql = '(SELECT 1
+                       FROM {role_assignments} ra
+                      WHERE ra.userid = u.id
+                        AND ra.component = :comp
+                        AND ra.itemid = :itemid
+                        AND ra.roleid = :roleid)';
+        $adminparams = ['comp' => 'tool_tenant', 'itemid' => $this->tenantid, 'roleid' => (int)$CFG->tool_tenant_adminrole];
+
+        $this->get_column('user:fullnamewithpicturelink')
+            ->set_is_default(true, 1)
+            ->set_is_sortable(true, true, 1)
+            ->add_field($adminsql, 'tenantadmin', $adminparams)
+            ->set_visiblename(new \lang_string('fullname'))
+            ->add_callback([$this, 'append_admin_label']);
 
         // Get additional fields.
+        $context = \context_system::instance();
         $additionaluserfields = \get_extra_user_fields($context);
         $extra = preg_split('/,/', $CFG->showuseridentity, -1, PREG_SPLIT_NO_EMPTY);
         foreach ($extra as $key => $userfield) {
-            $newcolumn = (new report_column(
-                $userfield,
-                ($userfield && get_string_manager()->string_exists($userfield, 'moodle')) ? new \lang_string($userfield) : null,
-                'user'
-            ))
-                ->add_field('u.' . $userfield)
+            $this->get_column('user:'.$userfield)
+                ->set_is_default(true, $key + 2)
                 ->set_is_available(in_array($userfield, $additionaluserfields))
-                ->set_is_default(true, $key + 3);
-            $this->add_column($newcolumn);
-            $newcolumn->add_callback([$this, 'country_code_transform']);
+                ->add_callback([$this, 'country_code_transform']);
         }
+
+        $this->get_column('user:lastaccess')
+            ->set_is_default(true, $key + 3)
+            ->set_is_sortable(true, true, 1);
+    }
+
+    /**
+     * Set the filters for the report.
+     */
+    protected function set_filters() {
+        $filters = $this->get_filters();
+        $filters['user:fullname']->set_is_default(true);
+        $filters['user:username']->set_is_default(true);
+        $filters['user:email']->set_is_default(true);
     }
 
     /**
@@ -155,27 +173,73 @@ class users_report extends \tool_reportbuilder\system_report {
 
     /**
      * Set the actions icons of the report.
-     *
-     * @throws \coding_exception
-     * @throws \moodle_exception
      */
     private function add_actions() {
-        $tenantid = $this->get_parameter('id', 0, PARAM_INT);
-        if (!\tool_tenant\manager::can_update_users($tenantid)) {
-            return;
-        }
+        $tenantid = $this->tenantid;
+        $blankurl = new \moodle_url('#');
 
-        $editurl = new \moodle_url('#');
-        $editicon = new \pix_icon('i/settings', get_string('edituser'), 'core');
-        $action = new \tool_reportbuilder\report_action($editurl, $editicon, [
-            'data-user-edit' => true,
+        $icon = new \pix_icon('i/settings', get_string('edituser', 'tool_tenant'), 'core');
+        $action = (new \tool_reportbuilder\report_action($blankurl, $icon, [
+            'data-action' => 'edit',
             'data-id' => ':id',
-            'data-fullusername' => ':fullusername'
-        ]);
-        $action->add_callback(function($row) {
-            $row->fullusername = fullname($row);
-            return true;
-        });
+        ]))
+            ->add_callback(function(\stdClass $row) use ($tenantid) {
+                return permission::can_update_user($row, $tenantid);
+            });
         $this->add_action($action);
+
+        $icon = new \pix_icon('t/hide', get_string('suspenduser', 'tool_tenant'), 'core');
+        $action = (new \tool_reportbuilder\report_action($blankurl, $icon, [
+            'data-action' => 'suspend',
+            'data-id' => ':id',
+        ]))
+            ->add_callback(function(\stdClass $row) use ($tenantid) {
+                return permission::can_suspend_user($row, $tenantid);
+            });
+        $this->add_action($action);
+
+        $icon = new \pix_icon('t/show', get_string('unsuspenduser', 'tool_tenant'), 'core');
+        $action = (new \tool_reportbuilder\report_action($blankurl, $icon, [
+            'data-action' => 'unsuspend',
+            'data-id' => ':id',
+        ]))
+            ->add_callback(function(\stdClass $row) use ($tenantid) {
+                return permission::can_unsuspend_user($row, $tenantid);
+            });
+        $this->add_action($action);
+
+        $icon = new \pix_icon('t/delete', get_string('deleteuser', 'tool_tenant'), 'core');
+        $action = (new \tool_reportbuilder\report_action($blankurl, $icon, [
+            'data-action' => 'delete',
+            'data-id' => ':id',
+        ]))
+            ->add_callback(function(\stdClass $row) use ($tenantid) {
+                return permission::can_delete_user($row, $tenantid);
+            });
+        $this->add_action($action);
+    }
+
+    /**
+     * Row class
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function get_row_class(\stdClass $row): string {
+        return $row->suspended ? 'dimmed_text' : '';
+    }
+
+    /**
+     * Append the 'Tenant administrator' label/tag after user fullname when needed.
+     *
+     * @param string $value
+     * @param \stdClass $row
+     * @return string
+     */
+    public function append_admin_label($value, \stdClass $row): string {
+        if ($row->tenantadmin > 0) {
+            $value .= \html_writer::tag('span', get_string('tenantadmin', 'tool_tenant'), ['class' => 'label']);
+        }
+        return $value;
     }
 }

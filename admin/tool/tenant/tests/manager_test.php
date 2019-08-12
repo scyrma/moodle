@@ -308,187 +308,6 @@ class tool_tenant_manager_testcase extends advanced_testcase {
         $this->assertTrue(\tool_tenant\manager::can_change_category($fulltenant1->get('id'), $category3->id));
     }
 
-    /**
-     * Test users with certain capabilities have access.
-     */
-    public function test_can_create_users() {
-        $context = context_system::instance();
-        // In the tenant with permission.
-        $user1 = $this->getDataGenerator()->create_user();
-        // In the tenant without permission.
-        $user2 = $this->getDataGenerator()->create_user();
-        // With permission but outside of the tenant.
-        $user3 = $this->getDataGenerator()->create_user();
-        $manager = new \tool_tenant\manager();
-        $tenant1 = $manager->create_tenant_quick();
-        $tenant2 = $manager->create_tenant_quick();
-
-        $roleid = create_role('manage users role', 'manageusersrole', 'Role description');
-        assign_capability('tool/tenant:manageusers', CAP_ALLOW, $roleid, $context->id);
-
-        $this->getDataGenerator()->role_assign($roleid, $user1->id);
-        $this->getDataGenerator()->role_assign($roleid, $user3->id);
-
-        $manager->allocate_user($user1->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user2->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user3->id, $tenant2->get('id'), 'tool_tenant', 'testing');
-
-        $this->setUser($user1);
-        $this->assertTrue(manager::can_create_users($tenant1->get('id')));
-        $this->setUser($user2);
-        $this->assertFalse(manager::can_create_users($tenant1->get('id')));
-        $this->setUser($user3);
-        $this->assertFalse(manager::can_create_users($tenant1->get('id')));
-    }
-
-    /**
-     * Test users with certain capabilities have access.
-     */
-    public function test_can_edit_users() {
-        $context = context_system::instance();
-        // In the tenant with permission.
-        $user1 = $this->getDataGenerator()->create_user();
-        // In the tenant without permission.
-        $user2 = $this->getDataGenerator()->create_user();
-        // With permission but outside of the tenant.
-        $user3 = $this->getDataGenerator()->create_user();
-        $manager = new \tool_tenant\manager();
-        $tenant1 = $manager->create_tenant_quick();
-        $tenant2 = $manager->create_tenant_quick();
-
-        $roleid = create_role('manage users role', 'manageusersrole', 'Role description');
-        assign_capability('tool/tenant:manageusers', CAP_ALLOW, $roleid, $context->id);
-
-        $this->getDataGenerator()->role_assign($roleid, $user1->id);
-        $this->getDataGenerator()->role_assign($roleid, $user3->id);
-
-        $manager->allocate_user($user1->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user2->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user3->id, $tenant2->get('id'), 'tool_tenant', 'testing');
-
-        $this->setUser($user1);
-        $this->assertTrue(manager::can_update_users($tenant1->get('id')));
-        $this->setUser($user2);
-        $this->assertFalse(manager::can_update_users($tenant1->get('id')));
-        $this->setUser($user3);
-        $this->assertFalse(manager::can_update_users($tenant1->get('id')));
-    }
-
-    /**
-     * Test users with certain capabilities have access.
-     */
-    public function test_can_browse_users() {
-        $context = context_system::instance();
-        // User one can manage tenants (create and edit tenants).
-        $user1 = $this->getDataGenerator()->create_user();
-        // User two can move users from one tenant to another.
-        $user2 = $this->getDataGenerator()->create_user();
-        // User three can create and update users in tenant 1.
-        $user3 = $this->getDataGenerator()->create_user();
-        // User four can browse users in tenant 1.
-        $user4 = $this->getDataGenerator()->create_user();
-        // User five can create and update users in tenant 2.
-        $user5 = $this->getDataGenerator()->create_user();
-        // User six can browser users in tenant 2.
-        $user6 = $this->getDataGenerator()->create_user();
-
-        $manager = new \tool_tenant\manager();
-        $tenant1 = $manager->create_tenant_quick();
-        $tenant2 = $manager->create_tenant_quick();
-
-        $tmroleid = create_role('tenant manager role', 'tenantmanagerrole', 'Role description');
-        $toroleid = create_role('tenant organiser role', 'tenantorganiserrole', 'Role description');
-        $muroleid = create_role('manage users role', 'manageusersrole', 'Role description');
-        $tbroleid = create_role('browse tenants role', 'browsetenantsrole', 'Role description');
-        assign_capability('tool/tenant:manage', CAP_ALLOW, $tmroleid, $context->id);
-        assign_capability('tool/tenant:allocate', CAP_ALLOW, $toroleid, $context->id);
-        assign_capability('tool/tenant:manageusers', CAP_ALLOW, $muroleid, $context->id);
-        assign_capability('tool/tenant:browseusers', CAP_ALLOW, $tbroleid, $context->id);
-
-        $this->getDataGenerator()->role_assign($tmroleid, $user1->id);
-        $this->getDataGenerator()->role_assign($toroleid, $user2->id);
-        $this->getDataGenerator()->role_assign($muroleid, $user3->id);
-        $this->getDataGenerator()->role_assign($tbroleid, $user4->id);
-        $this->getDataGenerator()->role_assign($muroleid, $user5->id);
-        $this->getDataGenerator()->role_assign($tbroleid, $user6->id);
-
-        $manager->allocate_user($user1->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user2->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user3->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user4->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user5->id, $tenant2->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user6->id, $tenant2->get('id'), 'tool_tenant', 'testing');
-
-        $this->setUser($user1);
-        // Browsing tenant 1 as user 1.
-        $this->assertTrue(manager::can_browse_users($tenant1->get('id')));
-        // Browsing tenant 2 as user 1. Should also work.
-        $this->assertTrue(manager::can_browse_users($tenant2->get('id')));
-
-        $this->setUser($user2);
-        // Browsing tenant 1 as user 2.
-        $this->assertTrue(manager::can_browse_users($tenant1->get('id')));
-        // Browsing tenant 2 as user 2. Should also work.
-        $this->assertTrue(manager::can_browse_users($tenant2->get('id')));
-
-        $this->setUser($user3);
-        // Browsing tenant 1 as user 3.
-        $this->assertTrue(manager::can_browse_users($tenant1->get('id')));
-        // Browsing tenant 2 as user 3.
-        $this->assertFalse(manager::can_browse_users($tenant2->get('id')));
-
-        $this->setUser($user4);
-        // Browsing tenant 1 as user 4.
-        $this->assertTrue(manager::can_browse_users($tenant1->get('id')));
-        // Browsing tenant 2 as user 4.
-        $this->assertFalse(manager::can_browse_users($tenant2->get('id')));
-
-        $this->setUser($user5);
-        // Browsing tenant 1 as user 5.
-        $this->assertFalse(manager::can_browse_users($tenant1->get('id')));
-        // Browsing tenant 2 as user 5. Should work.
-        $this->assertTrue(manager::can_browse_users($tenant2->get('id')));
-
-        $this->setUser($user6);
-        // Browsing tenant 1 as user 6.
-        $this->assertFalse(manager::can_browse_users($tenant1->get('id')));
-        // Browsing tenant 2 as user 6. Should work.
-        $this->assertTrue(manager::can_browse_users($tenant2->get('id')));
-    }
-
-    /**
-     * Test users with certain capabilities have access.
-     */
-    public function test_can_move_users_between_tenants() {
-        $context = context_system::instance();
-        // In the tenant with permission.
-        $user1 = $this->getDataGenerator()->create_user();
-        // In the tenant without permission.
-        $user2 = $this->getDataGenerator()->create_user();
-        // With permission but outside of the tenant.
-        $user3 = $this->getDataGenerator()->create_user();
-        $manager = new \tool_tenant\manager();
-        $tenant1 = $manager->create_tenant_quick();
-        $tenant2 = $manager->create_tenant_quick();
-
-        $roleid = create_role('tenant organiser role', 'tenantorganiserrole', 'Role description');
-        assign_capability('tool/tenant:allocate', CAP_ALLOW, $roleid, $context->id);
-
-        $this->getDataGenerator()->role_assign($roleid, $user1->id);
-        $this->getDataGenerator()->role_assign($roleid, $user3->id);
-
-        $manager->allocate_user($user1->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user2->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->allocate_user($user3->id, $tenant2->get('id'), 'tool_tenant', 'testing');
-
-        $this->setUser($user1);
-        $this->assertTrue(manager::can_move_users_between_tenants());
-        $this->setUser($user2);
-        $this->assertFalse(manager::can_move_users_between_tenants());
-        $this->setUser($user3);
-        $this->assertTrue(manager::can_move_users_between_tenants());
-    }
-
     public function test_assign_tenant_user_role() {
         global $DB;
 
@@ -558,7 +377,7 @@ class tool_tenant_manager_testcase extends advanced_testcase {
         $tenant1 = $manager->update_tenant($tenant1->get('id'), (object) ['categoryid' => $category->id]);
 
         $manager->allocate_user($user1->id, $tenant1->get('id'), 'tool_tenant', 'testing');
-        $manager->assign_tenant_admin_role($tenant1->get('id'), [$user1->id, $user2->id], $category->id);
+        $manager->assign_tenant_admin_role($tenant1->get('id'), [$user1->id, $user2->id]);
 
         $records = $DB->get_records('role_assignments', ['userid' => $user1->id]);
         // This user should have three roles: tenantadmin, tenantmanager, and tenantuser.
@@ -576,12 +395,12 @@ class tool_tenant_manager_testcase extends advanced_testcase {
         $this->assertEquals([$user1->id => $user1->id, $user2->id => $user2->id], $tenantadmins);
 
         // Let's remove user 2 and add user 3 as tenant admins.
-        $manager->assign_tenant_admin_role($tenant1->get('id'), [$user1->id, $user3->id], $category->id);
+        $manager->assign_tenant_admin_role($tenant1->get('id'), [$user1->id, $user3->id]);
         $tenantadmins = \tool_tenant\tenancy::get_tenant_admins($tenant1->get('id'));
         $this->assertEquals([$user1->id => $user1->id, $user3->id => $user3->id], $tenantadmins);
 
         // Now Let's remove all of the users as admins.
-        $manager->assign_tenant_admin_role($tenant1->get('id'), [], $category->id);
+        $manager->assign_tenant_admin_role($tenant1->get('id'), []);
         $tenantadmins = \tool_tenant\tenancy::get_tenant_admins($tenant1->get('id'));
         $this->assertEquals([], $tenantadmins);
     }

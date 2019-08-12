@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use renderer_base;
 use tool_tenant\manager;
+use tool_tenant\permission;
 use tool_tenant\tenancy;
 
 /**
@@ -59,10 +60,8 @@ class tenant implements \renderable, \templatable {
      */
     public function export_for_template(renderer_base $output) {
         $tenantid = $this->tenant->get('id');
-        $isdefault = $this->tenant->get('isdefault');
         $isarchived = $this->tenant->get('archived');
-        $canmanage = has_capability('tool/tenant:manage', \context_system::instance());
-        $canallocate = has_capability('tool/tenant:allocate', \context_system::instance());
+        $tenantname = $this->tenant->get_formatted_name();
 
         $params = [
             'id' => $tenantid,
@@ -72,21 +71,23 @@ class tenant implements \renderable, \templatable {
             'actions' => [],
         ];
 
-        if (!$isarchived) {
+        if (permission::can_browse_users($tenantid)) {
             $params['userscount'] = $this->tenant->get_users_count();
+        }
+
+        if (!$isarchived) {
             $category = $this->tenant->get_category();
             $params['category'] = !empty($category) ? $category->get_formatted_name() :
                 get_string('nocategory', 'tool_tenant');
         }
 
-        if (!$isarchived && $canmanage && !$isdefault) {
+        if (permission::can_move_tenant($tenantid)) {
             $params['movetitle'] = get_string('movetenant', 'tool_tenant', $this->tenant->get_formatted_name());
         }
 
-        if (!$isarchived && (manager::can_browse_users($tenantid) || manager::can_edit_tenant_themes($tenantid))) {
-            // Manage tenant icon.
+        if (permission::can_browse_users($tenantid)) {
+            // View users icon.
             $editurl = manager::get_edit_tenant_url($tenantid);
-            $tenantname = $this->tenant->get_formatted_name();
             $params['actions'][] = (new \action_link($editurl, '', null,
                 ['data-action' => 'manage_tenant', 'data-id' => $tenantid,
                     'data-form-title' => get_string('viewusers', 'tool_tenant', $tenantname),
@@ -95,36 +96,38 @@ class tenant implements \renderable, \templatable {
             )->export_for_template($output);
         }
 
-        if ($canmanage) {
-            $url = new \moodle_url('#');
-            $tenantname = $this->tenant->get_formatted_name();
-            if (!$isarchived) {
-                $params['actions'][] = (new \action_link($url, '', null,
-                    ['data-action' => 'edit', 'data-id' => $tenantid,
-                        'data-form-title' => get_string('edittenant', 'tool_tenant', $tenantname),
-                        'title' => get_string('edittenant', 'tool_tenant', $tenantname)],
-                    new \pix_icon('i/settings', '', 'core'))
-                )->export_for_template($output);
+        $emptyurl = new \moodle_url('#');
+        if (permission::can_edit_tenant_details($tenantid)) {
+            $params['actions'][] = (new \action_link($emptyurl, '', null,
+                ['data-action' => 'edit', 'data-id' => $tenantid,
+                    'data-form-title' => get_string('edittenant', 'tool_tenant', $tenantname),
+                    'title' => get_string('edittenant', 'tool_tenant', $tenantname)],
+                new \pix_icon('i/settings', '', 'core'))
+            )->export_for_template($output);
+        }
 
-                if (!$isdefault) {
-                    $params['actions'][] = (new \action_link($url, '', null,
-                        ['data-action' => 'archive', 'data-id' => $tenantid,
-                            'data-confirm' => get_string('confirmarchivetenant', 'tool_tenant', $tenantname)],
-                        new \pix_icon('archive', get_string('archivetenant', 'tool_tenant'), 'tool_wp'))
-                    )->export_for_template($output);
-                }
-            } else {
-                $params['actions'][] = (new \action_link($url, '', null,
-                    ['data-action' => 'restore', 'data-id' => $tenantid,
-                        'data-confirm' => get_string('confirmrestoretenant', 'tool_tenant', $tenantname)],
-                    new \pix_icon('arrow-circle-left', get_string('restoretenant', 'tool_tenant'), 'tool_wp'))
-                )->export_for_template($output);
-                $params['actions'][] = (new \action_link($url, '', null,
-                    ['data-action' => 'delete', 'data-id' => $tenantid,
-                        'data-confirm' => get_string('confirmdeletetenant', 'tool_tenant', $tenantname)],
-                    new \pix_icon('i/trash', get_string('deletetenant', 'tool_tenant'), 'core'))
-                )->export_for_template($output);
-            }
+        if (permission::can_archive_tenant($tenantid)) {
+            $params['actions'][] = (new \action_link($emptyurl, '', null,
+                ['data-action' => 'archive', 'data-id' => $tenantid,
+                    'data-confirm' => get_string('confirmarchivetenant', 'tool_tenant', $tenantname)],
+                new \pix_icon('archive', get_string('archivetenant', 'tool_tenant'), 'tool_wp'))
+            )->export_for_template($output);
+        }
+
+        if (permission::can_restore_tenant($tenantid)) {
+            $params['actions'][] = (new \action_link($emptyurl, '', null,
+                ['data-action' => 'restore', 'data-id' => $tenantid,
+                    'data-confirm' => get_string('confirmrestoretenant', 'tool_tenant', $tenantname)],
+                new \pix_icon('arrow-circle-left', get_string('restoretenant', 'tool_tenant'), 'tool_wp'))
+            )->export_for_template($output);
+        }
+
+        if (permission::can_delete_tenant($tenantid)) {
+            $params['actions'][] = (new \action_link($emptyurl, '', null,
+                ['data-action' => 'delete', 'data-id' => $tenantid,
+                    'data-confirm' => get_string('confirmdeletetenant', 'tool_tenant', $tenantname)],
+                new \pix_icon('i/trash', get_string('deletetenant', 'tool_tenant'), 'core'))
+            )->export_for_template($output);
         }
 
         return $params;

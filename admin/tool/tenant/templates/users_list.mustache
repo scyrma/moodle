@@ -24,7 +24,7 @@
         "adduser": true,
         "systemcontextid": 1,
         "tenantid": 10,
-        "tenantselect": {
+        "bulkactionsselect": {
             "name": "lang",
             "method": "get",
             "action": "http://localhost/stable_master/mod/scorm/player.php",
@@ -78,7 +78,7 @@
     {{{userslist}}}
 </div>
 
-{{#tenantselect}}
+{{#bulkactionsselect}}
 <div class="clearfix">
     <form method="POST" action="{{action}}" id="{{formid}}">
         <div class="{{classes}} d-inline-block">
@@ -113,17 +113,17 @@
         </div>
     </form>
 </div>
-{{/tenantselect}}
+{{/bulkactionsselect}}
 </div>
 
 {{#js}}
     require(['jquery', 'tool_tenant/users'], function($, Users) {
         // We conditionally display the JavaScript if the variables are available.
-        {{#tenantselect}}
-        Users.initBulkActions('#{{formid}}');
-        {{/tenantselect}}
+        {{#bulkactionsselect}}
+            Users.initBulkActions('#{{formid}}', {{tenantid}});
+        {{/bulkactionsselect}}
         {{#adduser}}
-        Users.init({{tenantid}});
+            Users.init({{tenantid}});
         {{/adduser}}
         Users.initEditDetails();
     });

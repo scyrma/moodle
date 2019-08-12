@@ -113,16 +113,15 @@ class tenant extends \core\persistent implements \cacheable_object {
      * @return inplace_editable
      */
     public function get_editable_name() : inplace_editable {
-        $canmanage = !$this->get('archived') &&
-            (manager::can_browse_users($this->get('id')) || manager::can_edit_tenant_themes($this->get('id')));
         $displayname = $this->get_formatted_name();
-        if ($canmanage) {
+        if (permission::can_view_tenant_details($this->get('id'))) {
             $displayname = \html_writer::link(manager::get_edit_tenant_url($this->get('id')), $displayname);
         }
         return new inplace_editable(
             'tool_tenant',
             'tenant_name',
             $this->get('id'),
+            // TODO permissions callback.
             !$this->get('archived') && has_capability('tool/tenant:manage', \context_system::instance()),
             $displayname,
             $this->get('name'),

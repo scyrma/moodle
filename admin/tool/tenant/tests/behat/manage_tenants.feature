@@ -133,7 +133,8 @@ Feature: Manage tenants
     And "4" "text" should exist in the "Default tenant" table tree node
     And I follow "Default tenant"
     And I set the field "Select user 'User 1'" to "1"
-    And I set the field "Allocate selected users to tenant" to "Tenant3"
+    And I set the field "With selected users..." to "Tenant3"
+    And I press "Allocate users"
     And I navigate to "Users > Organisation > Manage tenants" in site administration
     And I click on "Edit tenant 'Tenant3'" "link" in the "Tenant3" table tree node
     And I open the autocomplete suggestions list in the dialog
@@ -278,7 +279,8 @@ Feature: Manage tenants
     And I follow "Default tenant"
     And I set the field "Select user 'User 3'" to "1"
     And I set the field "Select user 'User 2'" to "1"
-    And I set the field "Allocate selected users to tenant" to "Small company"
+    And I set the field "With selected users..." to "Small company"
+    And I press "Allocate users"
     And I should see "Default tenant"
     And I should see "Admin User" in the "region-main" "region"
     And I should see "User 1" in the "region-main" "region"
@@ -292,7 +294,8 @@ Feature: Manage tenants
     And I should see "User 2" in the "region-main" "region"
     And I should see "User 3" in the "region-main" "region"
     And I set the field "Select user 'User 3'" to "1"
-    And I set the field "Allocate selected users to tenant" to "Big company"
+    And I set the field "With selected users..." to "Big company"
+    And I press "Allocate users"
     And I log out
     And I log in as "admin"
     And I navigate to "Reports > Logs" in site administration

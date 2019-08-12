@@ -24,6 +24,7 @@
 
 namespace tool_tenant\output;
 
+use tool_tenant\permission;
 use tool_wp\output\tab;
 use tool_tenant\users_report;
 use tool_reportbuilder\system_report_factory;
@@ -45,11 +46,8 @@ class tab_users extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-        $context = \context_system::instance();
-        $manager = new \tool_tenant\manager();
-        // This will thow an exception if the tenant isn't valid.
-        $manager->get_tenant($this->data['tenantid']);
-        return \tool_tenant\manager::can_browse_users($this->data['tenantid']);
+        $tenantid = !empty($this->data['tenantid']) ? (int)$this->data['tenantid'] : 0;
+        return permission::can_browse_users($tenantid);
     }
 
     /**
@@ -79,6 +77,7 @@ class tab_users extends tab {
     public function export_for_template(\renderer_base $output) {
         // TODO SP-390 to just note that removing the report builder will result in errors. Need some sort of check
         // or fallback.
+        /** @var users_report $report */
         $report = system_report_factory::create(users_report::class, ['id' => $this->data['tenantid']]);
 
         $userdata = new \tool_tenant\output\users_list($report, $this->data['tenantid']);

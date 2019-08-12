@@ -24,6 +24,7 @@
 
 namespace tool_tenant\output;
 
+use tool_tenant\permission;
 use tool_wp\output\tab;
 
 defined('MOODLE_INTERNAL') || die();
@@ -43,7 +44,7 @@ class tab_archivedtenants extends tab {
      * @return mixed
      */
     public function is_available(): bool {
-        return has_capability('tool/tenant:manage', \context_system::instance());
+        return permission::can_view_archived_tenants_list();
     }
 
     /**

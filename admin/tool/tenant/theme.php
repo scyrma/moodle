@@ -27,7 +27,7 @@ require_once($CFG->libdir . '/adminlib.php');
 
 $id = optional_param('id', 0, PARAM_INT);
 
-$canviewalltenants = has_any_capability(['tool/tenant:manage', 'tool/tenant:allocate'], context_system::instance());
+$canviewalltenants = \tool_tenant\permission::can_view_tenants_list();
 if (!$id || !$canviewalltenants) {
     // Use current user's tenant.
     $id = \tool_tenant\tenancy::get_tenant_id();

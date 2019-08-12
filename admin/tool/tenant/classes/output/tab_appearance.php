@@ -25,6 +25,7 @@
 namespace tool_tenant\output;
 
 use tool_tenant\form\edit_css_form;
+use tool_tenant\permission;
 use tool_wp\output\tab_form;
 
 defined('MOODLE_INTERNAL') || die();
@@ -53,10 +54,7 @@ class tab_appearance extends tab_form {
      * @return mixed
      */
     public function is_available(): bool {
-        $manager = new \tool_tenant\manager();
-        // This will thow an exception if the tenant isn't valid.
-        $manager->get_tenant($this->data['tenantid']);
-        return \tool_tenant\manager::can_edit_tenant_themes($this->data['tenantid']);
+        return permission::can_edit_tenant_theme($this->data['tenantid']);
     }
 
     /**
