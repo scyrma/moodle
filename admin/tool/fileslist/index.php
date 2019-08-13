@@ -29,6 +29,7 @@ use moodle_url;
 
 require_once('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->dirroot . '/local/filestorage/lib.php');
 
 admin_externalpage_setup('tool_fileslist/files');
 
@@ -47,19 +48,21 @@ $bytestohumanreadable = function(int $bytes) : string {
     return round($bytes/1024**$index, 2) . ' ' . ['B', 'KB', 'MB', 'GB'][$index];
 };
 
-echo get_string('usedquotaconsiderupgrade',
-                'tool_fileslist',
-                (object)[
-                    'used' => $bytestohumanreadable($used),
-                    'percentage' => round(
-                        ($used / $quota) * 100,
-                        0,
-                        PHP_ROUND_HALF_UP
-                    ),
-                    'total' => $bytestohumanreadable($quota),
-                    'url' => (new moodle_url('/auth/moodlecloud/portal.php'))->out()
-                ]
-);
+if (!local_filestorage_site_has_unlimited_quota()) {
+    echo get_string('usedquotaconsiderupgrade',
+                    'tool_fileslist',
+                    (object)[
+                        'used' => $bytestohumanreadable($used),
+                        'percentage' => round(
+                            ($used / $quota) * 100,
+                            0,
+                            PHP_ROUND_HALF_UP
+                        ),
+                        'total' => $bytestohumanreadable($quota),
+                        'url' => (new moodle_url('/auth/moodlecloud/portal.php'))->out()
+                    ]
+    );
+}
 
 echo html_writer::start_tag('br');
 echo html_writer::end_tag('br');
