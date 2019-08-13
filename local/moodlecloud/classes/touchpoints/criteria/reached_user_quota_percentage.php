@@ -55,7 +55,9 @@ class reached_user_quota_percentage implements criterion {
      * @return bool
      */
     public function is_met() : bool {
-        return !empty(userquota::number_of_user_slots_remaining()) &&
-               1 - userquota::number_of_user_slots_remaining() / MOODLECLOUD_USER_QUOTA >= $this->threshold;;
+        return
+            !userquota::site_has_unlimited_quota() &&
+            !empty(userquota::number_of_user_slots_remaining()) &&
+            1 - userquota::number_of_user_slots_remaining() / MOODLECLOUD_USER_QUOTA >= $this->threshold;;
     }
 }

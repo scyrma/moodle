@@ -40,7 +40,7 @@ return [
                 "arguments" => [
                     "reached_user_quota_percentage",
                     [
-                        "quotaUsed" => MOODLECLOUD_USER_QUOTA - \local_moodlecloud\restrictions\userquota::number_of_user_slots_remaining()
+                        "quotaUsed" => \local_moodlecloud\restrictions\userquota::get_user_count()
                     ]
                 ]
             ],
