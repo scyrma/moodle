@@ -60,3 +60,4 @@ $string['spaceused'] = 'Space used';
 $string['filetype'] = 'File type';
 $string['users'] = 'Users';
 $string['storage'] = 'Storage';
+$string['unlimited'] = '∞';

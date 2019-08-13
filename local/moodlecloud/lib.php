@@ -34,8 +34,10 @@ function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
         return '';
     }
 
-    $userpercentage = min(1, 1 - userquota::number_of_user_slots_remaining() / MOODLECLOUD_USER_QUOTA);
-    $storagepercentage = min(1, file_system_s3::unique_storage_size_used() / FILESTORAGE_QUOTA);
+    require_once($CFG->dirroot . '/local/filestorage/lib.php');
+
+    $userpercentage = userquota::site_has_unlimited_quota() ? 1 : min(1, 1 - userquota::number_of_user_slots_remaining() / MOODLECLOUD_USER_QUOTA);
+    $storagepercentage = local_filestorage_site_has_unlimited_quota() ? 1 : min(1, file_system_s3::unique_storage_size_used() / FILESTORAGE_QUOTA);
 
     return
         (($DB->count_records('moodlecloud_notifications') === 0)
@@ -58,15 +60,15 @@ function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
             'local_moodlecloud/quota_popover',
             [
                 'userpercentage' => $userpercentage,
-                'userpercentagestatus' => ['ok', 'warn', 'danger'][min(2, floor($userpercentage * 3))],
+                'userpercentagestatus' => userquota::site_has_unlimited_quota() ? 'ok' : ['ok', 'warn', 'danger'][min(2, floor($userpercentage * 3))],
                 'userpercentagedashoffset' => 440 * (1 - $userpercentage),
                 'storagepercentage' => $storagepercentage,
-                'storagepercentagestatus' => ['ok', 'warn', 'danger'][min(2, floor($storagepercentage * 3))],
+                'storagepercentagestatus' => local_filestorage_site_has_unlimited_quota() ? 'ok' : ['ok', 'warn', 'danger'][min(2, floor($storagepercentage * 3))],
                 'storagepercentagedashoffset' => 440 * (1 - $storagepercentage),
-                'users' => MOODLECLOUD_USER_QUOTA - userquota::number_of_user_slots_remaining(),
-                'totalusers' => MOODLECLOUD_USER_QUOTA,
+                'users' => userquota::get_user_count(),
+                'totalusers' => userquota::site_has_unlimited_quota() ? get_string('unlimited', 'local_moodlecloud') : MOODLECLOUD_USER_QUOTA ,
                 'mb' => round(file_system_s3::unique_storage_size_used()/(1024**2)),
-                'totalmb' => FILESTORAGE_QUOTA/(1024**2),
+                'totalmb' => local_filestorage_site_has_unlimited_quota() ? get_string('unlimited', 'local_moodlecloud') : FILESTORAGE_QUOTA/(1024**2),
                 'urls' => [
                     'seeall' => (new moodle_url('/admin/tool/fileslist'))->out()
                 ],
