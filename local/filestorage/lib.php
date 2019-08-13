@@ -25,6 +25,10 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
         return;
     }
 
+    if (local_filestorage_site_has_unlimited_quota()) {
+        return;
+    }
+
     $filesize = $fileinfo['content'] ? strlen($fileinfo['content']) : filesize($fileinfo['pathname']);
 
     // If somehow we get here and the filesize is still zero just quit. It won't affect the quota.
@@ -37,4 +41,12 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
     if (($current + $filesize) > FILESTORAGE_QUOTA) {
         throw new quota_exception($current, $filesize);
     }
+}
+
+function local_filestorage_site_has_unlimited_quota() {
+    // TBD - how do we specify a site has unlimited quota? We could:
+    //     - Not set the constant
+    //     - Set the constant to a magic value, say, -1
+    //     - Check a CFG variable
+    return !defined('FILESTORAGE_QUOTA');
 }
