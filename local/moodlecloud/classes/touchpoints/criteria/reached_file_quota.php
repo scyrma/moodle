@@ -42,6 +42,11 @@ class reached_file_quota implements criterion {
      * @return bool
      */
     public function is_met() : bool {
-        return file_system_s3::unique_storage_size_used() >= FILESTORAGE_QUOTA;
+        global $CFG;
+        require_once($CFG->dirroot . '/local/filestorage/lib.php');
+
+        return
+            !local_filestorage_site_has_unlimited_quota() &&
+            file_system_s3::unique_storage_size_used() >= FILESTORAGE_QUOTA;
     }
 }

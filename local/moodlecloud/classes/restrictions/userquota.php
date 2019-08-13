@@ -54,6 +54,14 @@ class userquota {
         return $enforced;
     }
 
+    public static function site_has_unlimited_quota() {
+        // TBD - how do we specify a site has unlimited quota? We could:
+        //     - Not set the constant
+        //     - Set the constant to a magic value, say, -1
+        //     - Check a CFG variable
+        return !defined('MOODLECLOUD_USER_QUOTA');
+    }
+
     /**
      * Is the site over its user quota?
      *
@@ -93,14 +101,17 @@ class userquota {
     public static function number_of_user_slots_remaining() {
         global $DB;
 
-        if (!self::is_user_quota_enforced()) {
+        if (!self::is_user_quota_enforced() || self::site_has_unlimited_quota()) {
             // Site user quota is not enforced.
             return null;
         }
 
-        $usercount = $DB->count_records_select('user', 'deleted = ? AND username <> ?', array(0, 'guest'));
-
         // Don't return negative number if over quota.
-        return max(MOODLECLOUD_USER_QUOTA - $usercount, 0);
+        return max(MOODLECLOUD_USER_QUOTA - self::get_user_count(), 0);
+    }
+
+    public static function get_user_count() {
+        global $DB;
+        return $DB->count_records_select('user', 'deleted = ? AND username <> ?', array(0, 'guest'));
     }
 }
