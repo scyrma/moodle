@@ -180,9 +180,9 @@ class registration {
         // Version and url.
         $siteinfo['moodlerelease'] = $CFG->release;
         // BEGIN MOODLECLOUD HACK.
-        if ($product = $CFG->moodlecloudproduct) {
+        if (isset($CFG->moodlecloudproduct)) {
             $partner = get_config('local_moodlecloud', 'partner');
-            $siteinfo['moodleproduct'] = $product . ($partner ? ":$partner" : "");
+            $siteinfo['moodleproduct'] = $CFG->moodlecloudproduct . ($partner ? ":$partner" : "");
         } else {
             $siteinfo['moodleproduct'] = 'moodlecloud:unknown:oops';
         }
