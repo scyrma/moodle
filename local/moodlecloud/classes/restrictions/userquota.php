@@ -54,12 +54,13 @@ class userquota {
         return $enforced;
     }
 
+    /**
+     * Does this site have unlimited quota?
+     *
+     * @return bool true if site has unlimited quota.
+     */
     public static function site_has_unlimited_quota() {
-        // TBD - how do we specify a site has unlimited quota? We could:
-        //     - Not set the constant
-        //     - Set the constant to a magic value, say, -1
-        //     - Check a CFG variable
-        return !defined('MOODLECLOUD_USER_QUOTA');
+        return defined('MOODLECLOUD_USER_QUOTA') && MOODLECLOUD_USER_QUOTA == 0;
     }
 
     /**
