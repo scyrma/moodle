@@ -226,19 +226,19 @@
 
 {{#js}}
     {{#error}}
-        require(['jquery'], function($) {
+            require(['jquery'], function($) {
             $('#loginerrormessage').focus();
-        });
+            });
     {{/error}}
     {{^error}}
         {{#autofocusform}}
-            require(['jquery'], function($) {
+                require(['jquery'], function($) {
                 if ($('#username').val()) {
-                    $('#password').focus();
+                $('#password').focus();
                 } else {
-                    $('#username').focus();
+                $('#username').focus();
                 }
-            });
+                });
         {{/autofocusform}}
     {{/error}}
 {{/js}}

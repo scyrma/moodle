@@ -1,0 +1,38 @@
+#page-login-index {
+    .loginbox {
+        max-width: 554px;
+        min-width: 280px;
+        margin: 0 auto;
+    }
+    .forgetpass a,
+    .text-info {
+        color: $white;
+        opacity: .5;
+        &:hover {
+            opacity: .8;
+        }
+    }
+    .rememberpass {
+        margin: 10px 0;
+        input {
+          display: none;
+        }
+        input + label {
+            &::before {
+                content: "";
+                display: inline-block;
+                width: 21px;
+                height: 21px;
+                vertical-align: middle;
+                margin-right: 18px;
+                background-color: darken($theme-orange, 10%);
+                line-height: 21px;
+                border-radius: 3px;
+                margin: 0 10px;
+            }
+        }
+        input:checked + label::before {
+            content: '\2714';
+        }
+    }
+}

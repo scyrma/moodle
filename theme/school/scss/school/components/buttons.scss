@@ -1,0 +1,75 @@
+.icon-nomargin .icon {
+    margin: 0;
+}
+
+.btn-theme-secondary {
+    $bg: map-get($theme-colors, 'theme-secondary');
+    @include button-variant($bg, $bg, lighten($bg, 7.5%), lighten($bg, 7.5%), lighten($bg, 7.5%), lighten($bg, 7.5%));
+    color: $white;
+    @include hover {
+        color: $white;
+    }
+}
+
+.btn {
+    font-family: $headings-font-family;
+    font-size: 14px;
+}
+
+.btn {
+    &-primary {
+        background-color: $primary;
+        border-color: darken($primary, 5%);
+        box-shadow: 0 2px 0 0 darken($primary, 10%);
+        @include hover {
+            background-color: lighten($primary, 10%);
+            border-color: lighten($primary, 5%);
+            color: $secondaryfont;
+        }
+    }
+
+    &-secondary {
+        border-color: lighten($secondary, 9%);
+        background-color: lighten($secondary, 9%);
+        box-shadow: 0 2px 0 0 darken($secondary, 10%);
+        @include hover {
+            background-color: lighten($secondary, 15%);
+            border-color: lighten($secondary, 10%);
+        }
+    }
+
+    &-success {
+        border-color: darken($success, 5%);
+    }
+
+    &-info {
+        border-color: darken($info, 5%);
+        color: $white;
+    }
+
+    &-danger {
+        border-color: darken($danger, 5%);
+    }
+
+    &-warning {
+        border-color: darken($warning, 5%);
+        color: $white;
+    }
+
+    &-light {
+        border-color: darken($light, 5%);
+    }
+
+    &-dark {
+        border-color: darken($dark, 5%);
+    }
+    &-outline-secondary {
+        color: $body-color;
+        background-color: $theme-gray;
+        border-color: darken($theme-gray, 5%);
+    }
+}
+
+.breadcrumb-button .btn {
+    padding: 10px 25px;
+}
