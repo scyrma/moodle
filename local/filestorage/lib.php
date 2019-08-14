@@ -43,10 +43,11 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
     }
 }
 
+/**
+ * Does this site have unlimited quota?
+ *
+ * @return bool true if site has unlimited quota.
+ */
 function local_filestorage_site_has_unlimited_quota() {
-    // TBD - how do we specify a site has unlimited quota? We could:
-    //     - Not set the constant
-    //     - Set the constant to a magic value, say, -1
-    //     - Check a CFG variable
-    return !defined('FILESTORAGE_QUOTA');
+    return defined('FILESTORAGE_QUOTA') && FILESTORAGE_QUOTA == 0;
 }
