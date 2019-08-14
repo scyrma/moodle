@@ -35,4 +35,5 @@ $string['privacy:metadata'] = 'This plugin simply displays the contents of the M
 $string['size'] = 'Size';
 $string['type'] = 'Type';
 $string['usedquotaconsiderupgrade'] = 'You have used {$a->used} ({$a->percentage}%) of your {$a->total} file storage quota. To get more file storage <a href="{$a->url}">upgrade to a larger plan</a>.';
+$string['usedquotaunlimited'] = 'You have used {$a->used} of your unlimited file storage quota.';
 $string['user'] = 'User';

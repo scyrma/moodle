@@ -48,21 +48,21 @@ $bytestohumanreadable = function(int $bytes) : string {
     return round($bytes/1024**$index, 2) . ' ' . ['B', 'KB', 'MB', 'GB'][$index];
 };
 
-if (!local_filestorage_site_has_unlimited_quota()) {
-    echo get_string('usedquotaconsiderupgrade',
-                    'tool_fileslist',
-                    (object)[
-                        'used' => $bytestohumanreadable($used),
-                        'percentage' => round(
-                            ($used / $quota) * 100,
-                            0,
-                            PHP_ROUND_HALF_UP
-                        ),
-                        'total' => $bytestohumanreadable($quota),
-                        'url' => (new moodle_url('/auth/moodlecloud/portal.php'))->out()
-                    ]
-    );
-}
+echo local_filestorage_site_has_unlimited_quota()
+    ? get_string('usedquotaunlimited', 'tool_fileslist', (object)['used' => $bytestohumanreadable($used)])
+    : get_string('usedquotaconsiderupgrade',
+                'tool_fileslist',
+                (object)[
+                    'used' => $bytestohumanreadable($used),
+                    'percentage' => round(
+                        ($used / $quota) * 100,
+                        0,
+                        PHP_ROUND_HALF_UP
+                    ),
+                    'total' => $bytestohumanreadable($quota),
+                    'url' => (new moodle_url('/auth/moodlecloud/portal.php'))->out()
+                ]
+);
 
 echo html_writer::start_tag('br');
 echo html_writer::end_tag('br');
