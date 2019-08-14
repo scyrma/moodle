@@ -35,6 +35,9 @@ defined('MOODLE_INTERNAL') || die();
 
 class fluenthandler extends \Monolog\Handler\AbstractProcessingHandler {
 
+    const DEFAULT_HOST = 'unix:///var/run/td-agent/moodle.sock';
+    const DEFAULT_PORT = null;
+
     /**
      * @var string $hostip The host IP address to log to.
      */
@@ -65,14 +68,11 @@ class fluenthandler extends \Monolog\Handler\AbstractProcessingHandler {
                 return null;
             }
 
-            if (!$host = get_config('local_logging', 'host')) {
-                $host = FluentLogger::DEFAULT_ADDRESS;
-            }
-            if (!$port = get_config('local_logging', 'port')) {
-                $port = FluentLogger::DEFAULT_LISTEN_PORT;
-            }
-
-            $this->logger = new FluentLogger($host, $port);
+            global $CFG;
+            $this->logger = new FluentLogger(
+                $CFG->forced_pluggin_settings['local_logging']['host'] ?? self::DEFAULT_HOST,
+                $CFG->forced_pluggin_settings['local_logging']['port'] ?? self::DEFAULT_PORT
+            );
         }
 
         return $this->logger;
