@@ -1412,6 +1412,8 @@ class core_renderer extends renderer_base {
         }
         $footer = str_replace($this->unique_performance_info_token, $performanceinfo, $footer);
 
+        // START MOODLECLOUD HACK.
+        /*
         // Only show notifications when we have a $PAGE context id.
         if (!empty($PAGE->context->id)) {
             $this->page->requires->js_call_amd('core/notification', 'init', array(
@@ -1419,6 +1421,8 @@ class core_renderer extends renderer_base {
                 \core\notification::fetch_as_array($this)
             ));
         }
+        */
+        // END MOODLECLOUD HACK.
         $footer = str_replace($this->unique_end_html_token, $this->page->requires->get_end_code(), $footer);
 
         $this->page->set_state(moodle_page::STATE_DONE);
@@ -3233,15 +3237,21 @@ EOD;
             }
         }
 
+        // START MOODLECLOUD HACK
         if ($pluginsfunction = get_plugins_with_function('render_navbar_output')) {
             foreach ($pluginsfunction as $plugintype => $plugins) {
-                foreach ($plugins as $pluginfunction) {
-                    $output .= $pluginfunction($this);
+                foreach ($plugins as $pluginname => $pluginfunction) {
+                    if ($pluginname == 'moodlecloud') {
+                        $mcoutput = $pluginfunction($this);
+                    } else {
+                        $output .= $pluginfunction($this);
+                    }
                 }
             }
         }
 
-        return $output;
+        return $mcoutput . $output;
+        // END MOODLECLOUD HACK
     }
 
     /**

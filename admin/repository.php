@@ -27,6 +27,17 @@ $display = true; // fall through to normal display
 
 $pagename = 'managerepositories';
 
+// START MOODLECLOUD HACK.
+$moodlecloudbannedrepos = array();
+if (isset($CFG->moodlecloud_blocked_repositories)) {
+    $moodlecloudbannedrepos = $CFG->moodlecloud_blocked_repositories;
+}
+if (isset($moodlecloudbannedrepos[$repository])) {
+    $repository = '';
+    $action = '';
+}
+// END MOODLECLOUD HACK.
+
 if ($action == 'edit') {
     $pagename = 'repositorysettings' . $repository;
 } else if ($action == 'delete') {
@@ -303,6 +314,11 @@ if (($action == 'edit') || ($action == 'new')) {
         foreach ($repositorytypes as $i) {
             $settings = '';
             $typename = $i->get_typename();
+// START MOODLECLOUD HACK.
+if (isset($moodlecloudbannedrepos[$typename])) {
+    continue;
+}
+// END MOODLECLOUD HACK.
             // Display edit link only if you can config the type or if it has multiple instances (e.g. has instance config)
             $typeoptionnames = repository::static_function($typename, 'get_type_option_names');
             $instanceoptionnames = repository::static_function($typename, 'get_instance_option_names');
@@ -401,6 +417,11 @@ if (($action == 'edit') || ($action == 'new')) {
     $plugins = core_component::get_plugin_list('repository');
     if (!empty($plugins)) {
         foreach ($plugins as $plugin => $dir) {
+// START MOODLECLOUD HACK.
+if (isset($moodlecloudbannedrepos[$plugin])) {
+    continue;
+}
+// END MOODLECLOUD HACK.
             // Check that it has not already been listed
             if (!in_array($plugin, $alreadyplugins)) {
                 $select = new single_select(repository_action_url($plugin, 'repos'), 'action', $actionchoicesfornew, 'delete', null, 'applyto' . basename($plugin));
