@@ -46,6 +46,21 @@ function theme_school_get_main_scss_content($theme) {
 }
 
 /**
+ * Inject additional SCSS.
+ *
+ * @param theme_config $theme The theme config object.
+ * @return string
+ */
+function theme_school_get_extra_scss($theme) {
+    $content = '';
+
+    if (!empty($theme->settings->customcss)) {
+        $content .= $theme->settings->customcss;
+    }
+    return $content;
+}
+
+/**
  * Get compiled CSS.
  *
  * @return string compiled CSS
