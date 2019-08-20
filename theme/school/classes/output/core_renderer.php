@@ -371,7 +371,7 @@ class core_renderer extends \core_renderer {
         // Get some navigation opts.
         $opts = user_get_user_navigation_info($user, $this->page);
 
-        $avatarclasses = "avatars col-md-6";
+        $avatarclasses = "avatars col-md-4";
         $avatarcontents = html_writer::span($opts->metadata['useravatar'], 'avatar current ml-2');
         $usertextcontents = $user->firstname . ' ' . $user->lastname;
 
@@ -423,7 +423,7 @@ class core_renderer extends \core_renderer {
         }
 
         $returnstr .= html_writer::span(
-                html_writer::span($usertextcontents, 'usertext col-md-6') .
+                html_writer::span($usertextcontents, 'usertext col-md-8') .
                 html_writer::span($avatarcontents, $avatarclasses),
                 'userbutton'
         );
