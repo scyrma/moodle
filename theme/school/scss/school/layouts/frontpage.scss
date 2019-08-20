@@ -646,3 +646,53 @@ body .btn-see-all {
     margin: 0 auto 26px;
     width: 92%;
 }
+
+.popular-courses {
+    text-align: center;
+    padding: 80px 0 25px;
+
+    .popular-course-nheading, .popular-course-links {
+        box-sizing: border-box;
+        padding: 10px;
+    }
+    .popular-course-links {
+        width: 100%;
+        ul {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        li {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 5px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+    }
+    .container {
+        display: table;
+    }
+}
+
+.popular-course-links  {
+    text-align: left;
+    li {
+        width: 33%;
+        float: left;
+        list-style: none;
+        font-weight: bold;
+        line-height: 30px;
+        font-size: 12px;
+        text-transform: uppercase;
+        a {
+            &.viewmore::after {
+                content: ">";
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+    }
+}

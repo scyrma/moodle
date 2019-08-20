@@ -144,43 +144,42 @@ class core_renderer extends \core_renderer {
             $hastext = false;
         }
 
-        $coursecategory = \core_course_category::get(1);
+        $categoriesurl = new \moodle_url('/course/index.php');
+        $category = \core_course_category::get(0);
+        $categories = array_values($category->get_children());
+        $filter = function($category) {
+            return $category->visible && $category->coursecount;
+        };
 
-        $courses = $coursecategory->get_courses(array('summary' => 1, 'coursecontacts' => 1));
+        // Need to slice in code rather than with limit on the get_children call because we need to ensure
+        // the limit search could return invalid results (invisible categories) and we could end up with
+        // too few categories to display.
+        $categories = array_slice(array_values(array_filter($categories, $filter)), 0, core\course_renderer::MAX_CATEGORY_COUNT);
+
+        if (count($categories) == 1) {
+            // Don't show the categories list if there is only one.
+            $categories = array();
+        }
+
+        $categorydetails = core\course_renderer::serialise_categories($categories);
+
+        $courses = $category->get_courses(array('summary' => 1, 'coursecontacts' => 1, 'recursive' => 1));
         $hascourses = !empty($courses);
         $coursedetails = array();
 
         if ($hascourses) {
-            $coursedetails = \theme_school\output\core\course_renderer::serialise_courses($courses);
-        }
-
-        $childcategories = array_values($coursecategory->get_children());
-        $haschildcategories = !empty($childcategories);
-
-        if ($haschildcategories) {
-            $categorylist = array('-1' => '');
-            foreach ($childcategories as $category) {
-                $categorylist[$category->id] = $category->name;
-            }
-
-            $html = html_writer::start_tag('div', array('class' => 'categorypicker'));
-            $select = new \single_select(new \moodle_url('/course/index.php'), 'categoryid',
-                    $categorylist, $coursecategory->id, null, 'subcategory-picker');
-            $select->set_label(get_string('subcategories').':');
-            $html .= $this->render($select);
-            $html .= html_writer::end_tag('div');
-
-            $categorypickers['sub'] = $html;
+            $coursedetails = core\course_renderer::serialise_courses($courses);
         }
 
         $context = array(
-            'heading' => $heading,
-            'subheading' => $subheading,
-            'overview' => $overview,
-            'hastext' => $hastext,
-            'hascourses' => $hascourses,
             'courses' => $coursedetails,
-            'haschildcategories' => $haschildcategories
+            'categories' => $categorydetails,
+            'categoriesurl' => $categoriesurl->out(),
+            'hastext' => $hastext,
+            'hascategories' => !empty($categories),
+            'heading' => format_string($heading),
+            'subheading' => format_string($subheading),
+            'overview' => $overview,
         );
 
         return $this->render_from_template('theme_school/frontpage_courses', $context);
