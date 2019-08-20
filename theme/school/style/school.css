@@ -17581,6 +17581,9 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
 .logo-img img {
   max-height: 78px; }
 
+.logo-img h1 {
+  overflow: hidden; }
+
 .logo-wr a,
 .logo-wr a h1 {
   color: #fff;
@@ -17623,7 +17626,7 @@ body::not(.pagelayout-frontpage) .logo-wr {
   top: 0;
   left: 0;
   z-index: 2;
-  max-width: 400px;
+  max-width: 500px;
   margin: 0;
   padding: 0 20px; }
   .pagelayout-frontpage .logo-wr::before {
@@ -19783,6 +19786,7 @@ h6 {
   color: #fff;
   line-height: 24px;
   padding-bottom: 10px;
+  padding-top: 100px;
   overflow: hidden;
   z-index: 0; }
   .welcome-block a,
