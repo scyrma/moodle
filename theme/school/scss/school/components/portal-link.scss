@@ -10,7 +10,7 @@
     display: inline-block;
     overflow: hidden;
     @include box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
-    opacity: 0.8;
+    z-index: 999;
 
     &:hover {
         opacity: 1;
