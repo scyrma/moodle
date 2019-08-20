@@ -18074,6 +18074,43 @@ body .btn-see-all {
   margin: 0 auto 26px;
   width: 92%; }
 
+.popular-courses {
+  text-align: center;
+  padding: 80px 0 25px; }
+  .popular-courses .popular-course-nheading, .popular-courses .popular-course-links {
+    box-sizing: border-box;
+    padding: 10px; }
+  .popular-courses .popular-course-links {
+    width: 100%; }
+    .popular-courses .popular-course-links ul {
+      margin-left: 0;
+      margin-right: 0; }
+    .popular-courses .popular-course-links li {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 5px;
+      box-sizing: border-box;
+      text-align: left; }
+  .popular-courses .container {
+    display: table; }
+
+.popular-course-links {
+  text-align: left; }
+  .popular-course-links li {
+    width: 33%;
+    float: left;
+    list-style: none;
+    font-weight: bold;
+    line-height: 30px;
+    font-size: 12px;
+    text-transform: uppercase; }
+    .popular-course-links li a.viewmore::after {
+      content: ">";
+      margin-left: 10px;
+      margin-right: 10px; }
+    .popular-course-links li a:hover {
+      opacity: 0.8; }
+
 /* Header stuff */
 .navbar-bootswatch.navbar {
   background: #007bff;
