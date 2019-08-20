@@ -100,7 +100,7 @@ class course_renderer extends \core_course_renderer {
         return $coursedetailsarray;
     }
 
-    private function serialise_categories($categories) {
+    public static function serialise_categories($categories) {
         if (empty($categories)) {
             return array();
         }
@@ -179,7 +179,7 @@ class course_renderer extends \core_course_renderer {
         $moodlecontext = get_category_or_system_context($category->id);
         $coursesearchurl = new \moodle_url('/course/search.php');
         $context = array(
-            'categories' => $this->serialise_categories($childcategories),
+            'categories' => self::serialise_categories($childcategories),
             'showaddcourse' => has_capability('moodle/course:create', $moodlecontext),
             'urls' => array(
                 'coursesearch' => $coursesearchurl->out(),
@@ -259,7 +259,7 @@ class course_renderer extends \core_course_renderer {
             }
 
             $html = html_writer::start_tag('div', array('class' => 'categorypicker'));
-            $select = new single_select(new \moodle_url('/course/index.php'), 'categoryid',
+            $select = new \single_select(new \moodle_url('/course/index.php'), 'categoryid',
                     $categorylist, $coursecategory->id, null, 'subcategory-picker');
             $select->set_label(get_string('subcategories').':');
             $html .= $this->render($select);
