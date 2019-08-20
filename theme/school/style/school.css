@@ -20745,3 +20745,43 @@ h6 {
 
 .message.bg-secondary {
   color: #fff !important; }
+
+#portal-link-container {
+  position: fixed;
+  top: 45%;
+  right: 0;
+  left: auto;
+  width: 30px;
+  line-height: 30px;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  display: inline-block;
+  overflow: hidden;
+  z-index: 999; }
+  #portal-link-container:hover {
+    opacity: 1; }
+  #portal-link-container #portal-link {
+    color: #fff;
+    font-size: 15px;
+    text-decoration: none;
+    display: inline-block;
+    white-space: nowrap;
+    transform: translate(0, 100%) rotate(-90deg);
+    transform-origin: 0 0; }
+    #portal-link-container #portal-link img {
+      height: 20px;
+      width: 33px;
+      display: inline-block;
+      vertical-align: sub; }
+    #portal-link-container #portal-link::after {
+      content: '';
+      float: left;
+      margin-top: 100%; }
+
+.dir-rtl #portal-link-container {
+  left: 0;
+  right: auto;
+  border-radius: 0 5px 5px 0; }
+  .dir-rtl #portal-link-container #portal-link {
+    transform: translate(0, 100%) rotate(90deg);
+    transform-origin: 100% 0; }
