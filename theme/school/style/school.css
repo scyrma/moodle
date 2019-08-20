@@ -17528,6 +17528,9 @@ path-grade-report-grader {
   max-width: 554px;
   min-width: 280px;
   margin: 0 auto; }
+  #page-login-index .loginbox .logo-wr {
+    margin-left: auto;
+    margin-right: auto; }
 
 #page-login-index .forgetpass a,
 #page-login-index .text-info,
