@@ -94,17 +94,22 @@
 }}
 
 <div class="card loginbox rounded-0">
+    {{#logo}}
+        <div class="card-header p-4 bg-theme-black rounded-0 logo-img d-flex align-items-center ">
+            {{{logo}}}
+        </div>
+    {{/logo}}
     {{#logourl}}
     <div class="card-header p-4 bg-theme-black rounded-0 logo-img d-flex align-items-center ">
         <img src="{{logourl}}" class="img-fluid mr-2" title="{{sitename}}" alt="{{sitename}}"/>
         <h1 class="font-semibold text-white my-2 text-truncate">{{sitename}} {{sitename}} {{sitename}}</h1>
     </div>
     {{/logourl}}
-    {{^logourl}}
+    {{#textonly}}
         <div class="card-header p-4 bg-theme-black rounded-0">
             <h1 class="font-semibold text-white my-2 text-truncate">{{sitename}}</h1>
         </div>
-    {{/logourl}}
+    {{/textonly}}
     <div class="card-body bg-primary text-white pb-4 site-login">
         {{#cansignup}}
             <div class="sr-only">

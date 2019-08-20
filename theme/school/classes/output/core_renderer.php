@@ -24,6 +24,7 @@
 
 namespace theme_school\output;
 
+use context_course;
 use stdClass;
 use html_writer;
 use coursecat_helper;
@@ -97,6 +98,51 @@ class core_renderer extends \core_renderer {
             );
             return $this->render_from_template('theme_school/logo_sitename', $context);
         }
+    }
+
+    /**
+     * Renders the login form.
+     *
+     * @param \core_auth\output\login $form The renderable.
+     * @return string
+     */
+    public function render_login(\core_auth\output\login $form) {
+        global $CFG, $SITE, $PAGE;
+
+        // Cloud hacks.
+        $logo = $PAGE->theme->setting_file_url('logo', 'logo');
+        $iconlogo = $PAGE->theme->setting_file_url('icon', 'icon');
+        $configsetting = get_config('theme_school', 'logoorsitename');
+
+        $context = $form->export_for_template($this);
+
+        // Override because rendering is not supported in template yet.
+        if ($CFG->rememberusername == 0) {
+            $context->cookieshelpiconformatted = $this->help_icon('cookiesenabledonlysession');
+        } else {
+            $context->cookieshelpiconformatted = $this->help_icon('cookiesenabled');
+        }
+        $context->errorformatted = $this->error_text($context->error);
+
+        if ($configsetting === "iconsitename" && !empty($iconlogo)) {
+            $url = $this->get_logo_url();
+            if ($url) {
+                $url = $url->out(false);
+            }
+            $context->logourl = $url;
+        } else if ($configsetting === "logo" && !empty($logo)) {
+            $prepcontext = array(
+                    'href' => $CFG->wwwroot,
+                    'src' => $logo
+            );
+            $context->logo = $this->render_from_template('theme_school/logo_logo', $prepcontext);
+        } else {
+            $context->textonly = true;
+        }
+        $context->sitename = format_string($SITE->fullname, true,
+                ['context' => context_course::instance(SITEID), "escape" => false]);
+
+        return $this->render_from_template('core/loginform', $context);
     }
 
     /**
