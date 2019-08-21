@@ -17473,7 +17473,8 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
 #page.container-fluid {
   overflow: hidden; }
 
-path-grade-report-grader {
+.path-grade-report-grader,
+.path-grade-report-grader #page {
   overflow: unset !important; }
 
 .flex-fill {
