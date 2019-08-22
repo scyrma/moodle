@@ -254,6 +254,9 @@ span.userbutton {
             transform: translateY(0px) !important;
             z-index: 999;
         }
+        #nav-moodlecloud-quota-popover-container {
+            display: none;
+        }
     }
 }
 @media screen and (max-width: 696px) {
