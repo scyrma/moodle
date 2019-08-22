@@ -18399,7 +18399,10 @@ span.userbutton {
     .navbar-nav .nav-item {
       display: flex; }
       .navbar-nav .nav-item .popover-region {
-        align-items: center; } }
+        align-items: center; }
+  #page-site-index .usermenu {
+    transform: translateY(0px) !important;
+    z-index: 999; } }
 
 @media screen and (max-width: 696px) {
   .navbar-nav .nav-item {

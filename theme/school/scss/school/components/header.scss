@@ -249,6 +249,12 @@ span.userbutton {
             }
         }
     }
+    #page-site-index {
+        .usermenu {
+            transform: translateY(0px) !important;
+            z-index: 999;
+        }
+    }
 }
 @media screen and (max-width: 696px) {
     .navbar-nav .nav-item {
