@@ -31,7 +31,7 @@
         }
     }
     img {
-      max-height: 78px;
+      max-height: 50px;
     }
     h1 {
         overflow: hidden;
@@ -72,6 +72,7 @@ body::not(.pagelayout-frontpage) .logo-wr {
         display: block;
         background-color: $secondary;
         color: $secondaryfont;
+        padding-right: 15px;
         &.nameonly {
             padding: 20px 20px 20px 0;
         }
@@ -695,6 +696,109 @@ body .btn-see-all {
             }
             &:hover {
                 opacity: 0.8;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #page-site-index {
+        .news-updates .news-icon {
+            width: 82px;
+
+            .news-icon-container {
+                .left {
+                    left: 0px;
+                }
+
+                .middle {
+                    width: 39px;
+                    left: 15px;
+                }
+
+                .right {
+                    left: 50px;
+                    &::before {
+                        height: 15px;
+                        width: 15px;
+                        right: -4px;
+                    }
+                }
+            }
+        }
+        .logo-img {
+            margin-top: 0px;
+        }
+        .navbar-nav {
+            margin-top: 50px;
+            margin-left: auto;
+        }
+        li.nav-item.icon-no-margin {
+            display: flex;
+            align-items: center;
+        }
+        .navbar {
+            padding-right: 0;
+            padding-left: 0;
+        }
+        .logo-wr {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            max-width: initial;
+            height: initial;
+            padding-left: 0;
+            padding-right: 0;
+            &::before {
+                content: initial;
+            }
+        }
+        #region-main {
+            padding: 0;
+            border-top: none;
+        }
+        .hero-unit {
+            padding-top: 10px;
+            #frontpage-edit-button .btn-secondary.ml-2.mr-5 {
+                margin-right: 1rem !important;
+            }
+        }
+        .navbar-bootswatch.navbar {
+            max-height: 68px;
+            height: 68px;
+        }
+        .nav-item .usermenu {
+            background: $white;
+            color: $theme-black;
+            margin-right: 0;
+            .usertext {
+                display: initial;
+                color: $theme-black;
+            }
+            .usertext {
+                display: initial;
+                color: $theme-black;
+            }
+            .dropdown-item {
+                color: #555;
+                &:hover {
+                    color: $primary;
+                    background: $white;
+                }
+            }
+            .login a {
+                color: $white;
+                &:hover {
+                    color: $white;
+                }
+            }
+            .avatars::before {
+                color: $primary;
+            }
+            .dropdown-toggle {
+                display: block;
+                padding-top: 5px;
+                padding-bottom: 5px;
             }
         }
     }
