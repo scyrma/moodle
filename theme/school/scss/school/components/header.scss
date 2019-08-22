@@ -66,7 +66,7 @@ span.site-name {
 }
 .usermenu {
     margin: 0 0 0 10px;
-    min-width: 235px;
+    min-width: 237px;
     height: 50px;
     box-sizing: border-box;
     position: relative;
@@ -80,7 +80,6 @@ span.site-name {
     }
     .dropdown-toggle {
         display: block;
-        padding-top: 10px;
         .caret {
             display: none;
         }
@@ -88,7 +87,6 @@ span.site-name {
     .usertext {
         color: $theme-black;
         line-height: 25px;
-        margin-top: 5px;
         margin-right: 0;
         white-space: nowrap;
         overflow: hidden;
@@ -208,6 +206,7 @@ body:not(#page-site-index) .usermenu {
 
 span.avatars {
     order: 3;
+    padding-top: .25rem;
 }
 
 span.userbutton {
@@ -284,4 +283,12 @@ span.userbutton {
             }
         }
     }
+}
+
+.userloggedinas .usermenu .usertext,
+.userswitchedrole .usermenu .usertext,
+.loginfailures .usermenu .usertext {
+    text-align: left;
+    margin-right: 0;
+    height: initial;
 }
