@@ -236,6 +236,26 @@ span.userbutton {
     }
 }
 
+@media screen and (max-width: 768px) {
+    .usertext {
+        display: initial;
+    }
+    .navbar-nav {
+        margin-left: auto;
+        .nav-item {
+            display: flex;
+            .popover-region {
+                align-items: center;
+            }
+        }
+    }
+}
+@media screen and (max-width: 696px) {
+    .navbar-nav .nav-item {
+        display: none;
+    }
+}
+
 .navbar.fixed-top {
     .logo-wr {
         height: 100%;
@@ -247,6 +267,7 @@ span.userbutton {
         max-width: 500px;
         display: flex;
         align-items: center;
+        overflow: hidden;
         .logoicon {
             img {
                 float: left;
