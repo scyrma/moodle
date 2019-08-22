@@ -18402,7 +18402,9 @@ span.userbutton {
         align-items: center; }
   #page-site-index .usermenu {
     transform: translateY(0px) !important;
-    z-index: 999; } }
+    z-index: 999; }
+  #page-site-index #nav-moodlecloud-quota-popover-container {
+    display: none; } }
 
 @media screen and (max-width: 696px) {
   .navbar-nav .nav-item {
