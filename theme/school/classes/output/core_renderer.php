@@ -419,7 +419,7 @@ class core_renderer extends \core_renderer {
 
         $avatarclasses = "avatars col-md-4";
         $avatarcontents = html_writer::span($opts->metadata['useravatar'], 'avatar current ml-2');
-        $usertextcontents = $user->firstname . ' ' . $user->lastname;
+        $usertextcontents = '';
 
         // Other user.
         if (!empty($opts->metadata['asotheruser'])) {
@@ -466,6 +466,14 @@ class core_renderer extends \core_renderer {
                     $opts->metadata['mnetidprovidername'],
                     'meta mnet mnet-' . $mnet
             );
+        }
+
+        // Cloud hacks
+        if ($usertextcontents !== '') {
+            $usertextcontents = $user->firstname . ' ' . $user->lastname . $usertextcontents;
+        } else {
+            $usertextcontents = $user->firstname . ' <br/> ' . $user->lastname . $usertextcontents;
+
         }
 
         $returnstr .= html_writer::span(
