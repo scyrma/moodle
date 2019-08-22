@@ -18250,7 +18250,7 @@ span.site-name {
 
 .usermenu {
   margin: 0 0 0 10px;
-  min-width: 235px;
+  min-width: 237px;
   height: 50px;
   box-sizing: border-box;
   position: relative;
@@ -18262,14 +18262,12 @@ span.site-name {
     line-height: 50px;
     margin-left: 15px; }
   .usermenu .dropdown-toggle {
-    display: block;
-    padding-top: 10px; }
+    display: block; }
     .usermenu .dropdown-toggle .caret {
       display: none; }
   .usermenu .usertext {
     color: #3a3a3a;
     line-height: 25px;
-    margin-top: 5px;
     margin-right: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -18369,7 +18367,8 @@ body:not(#page-site-index) .usermenu {
     font-size: 18px; }
 
 span.avatars {
-  order: 3; }
+  order: 3;
+  padding-top: .25rem; }
 
 span.userbutton {
   display: flex;
@@ -18424,6 +18423,13 @@ span.userbutton {
   .navbar.fixed-top .logo-wr .logoicon img {
     float: left;
     margin-right: 10px; }
+
+.userloggedinas .usermenu .usertext,
+.userswitchedrole .usermenu .usertext,
+.loginfailures .usermenu .usertext {
+  text-align: left;
+  margin-right: 0;
+  height: initial; }
 
 /* Block stuff */
 #block-region-side-pre .block,
