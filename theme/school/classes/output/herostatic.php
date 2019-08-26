@@ -61,6 +61,11 @@ class herostatic implements renderable, templatable {
             $image = $PAGE->theme->setting_file_url('frontpagemediaimage', 'frontpagemediaimage');
         } else {
             $videourl = get_config('theme_school', 'video');
+            // If we've been given a URL instead of the embedded HTML then let's roll with it.
+            // The media formatter should handle embedding it for us.
+            if (clean_param($videourl, PARAM_URL)) {
+                $videourl = format_text(html_writer::link($videourl, get_string('video', 'theme_school')), FORMAT_HTML);
+            }
             $video = $PAGE->theme->setting_file_url('uploadvideo', 'uploadvideo');
         }
 
@@ -87,7 +92,7 @@ class herostatic implements renderable, templatable {
                 'video' => $video,
                 'right' => $right,
                 'left' => $left,
-                'text' => format_string($text),
+                'text' => format_text($text, FORMAT_HTML),
                 'hasmedia' => $hasmedia
         ];
 
