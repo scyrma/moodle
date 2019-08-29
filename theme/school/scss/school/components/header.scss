@@ -1,0 +1,302 @@
+/* Header stuff */
+.navbar-bootswatch {
+    &.navbar {
+        background: $primary;
+        color: $white;
+        height: 50px;
+        max-height: 50px;
+        .popover-region-container {
+            color: $body-color;
+        }
+    }
+    .navbar-brand {
+        color: $secondarylink;
+        background: $secondary;
+        height: 50px;
+        min-width: 270px;
+        margin: 0 !important; // stylelint-disable-line declaration-no-important
+        text-align: center;
+        line-height: 50px;
+        float: left;
+        padding: 0 20px;
+        max-width: 500px;
+        &:hover {
+            color: lighten($secondarylink, 10%);
+            opacity: 1;
+        }
+    }
+    .navbar-nav .nav-link {
+        color: $linkstandard;
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+}
+.fixed-navbar {
+    .popover-region-toggle {
+        margin-top: 5px;
+    }
+}
+#page {
+    margin-top: 0;
+}
+.fixed-navbar #page {
+    margin-top: 50px;
+}
+.navbar-nav a.dropdown-toggle {
+    color: white;
+}
+a.nav-link {
+    color: $link-color;
+}
+.nav-tabs {
+    a.nav-link {
+        color: $link-color;
+    }
+}
+span.site-name {
+    margin: 0;
+    font-weight: 600;
+    line-height: 75px;
+    font-size: 32px;
+    overflow: hidden;
+}
+#page-site-index {
+    .usermenu {
+        transform: translateY(-10px);
+        z-index: 999;
+    }
+    .navbar-nav {
+        .dropdown.nav-item {
+            margin-bottom: 10px;
+        }
+    }
+}
+.usermenu {
+    margin: 0 0 0 10px;
+    min-width: 237px;
+    height: 50px;
+    box-sizing: border-box;
+    position: relative;
+    background: $white;
+    padding: 0;
+    color: $theme-black;
+    flex-direction: column;
+    .login {
+        line-height: 50px;
+        margin-left: 15px;
+    }
+    .dropdown-toggle {
+        display: block;
+        .caret {
+            display: none;
+        }
+    }
+    .usertext {
+        color: $theme-black;
+        line-height: 25px;
+        margin-right: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        order: 1;
+        justify-content: flex-start;
+    }
+    .userbutton .avatar img {
+        border-radius: 50%;
+        border: solid 3px rgba(0, 0, 0, .25);
+        height: 35px;
+        width: 35px;
+        vertical-align: middle;
+        margin: 0;
+        max-width: none;
+        max-height: none;
+    }
+    .action-menu-trigger {
+        width: 100%;
+        height: calc(100% - 20px);
+    }
+    .dropdown-item {
+        color: #555;
+        line-height: 30px;
+        &:hover {
+            color: $primary;
+            background: $white;
+            opacity: 1;
+        }
+    }
+    .login a {
+        color: $white;
+        &:hover {
+            color: $white;
+            opacity: .8;
+        }
+    }
+    .avatars::before {
+        color: $primary;
+    }
+}
+body:not(#page-site-index) .usermenu {
+    box-shadow: -5px -1px 17px -5px rgba(0,0,0,.5);
+}
+#page-site-index .usermenu {
+    background-color: $primary;
+    color: $white;
+    border-left: solid 1px rgba(0,0,0,.1);
+    .dropdown-toggle:hover,
+    .dropdown-toggle:focus,
+    .dropdown.show .dropdown-toggle  {
+        opacity: 1;
+        color: $body-color;
+        background-color: $white;
+        .usertext {
+            color: $body-color;
+        }
+        .avatars::before {
+            color: $body-color;
+        }
+    }
+    .usertext {
+        color: $font;
+    }
+    .avatars::before {
+        color: $font;
+    }
+}
+
+.avatars::before {
+    font-family: "FontAwesome";
+    content: $fa-var-chevron-circle-down;
+    font-size: 21px;
+}
+
+.dropdown-toggle::after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: .255em;
+    vertical-align: .255em;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-bottom: 0;
+    border-left: .3em solid transparent;
+}
+
+.usermenu .dropdown-toggle::after {
+    display: none;
+}
+
+.navbar .popover-region {
+    z-index: 3;
+}
+
+.navbar .popover-region-container {
+    top: 50px;
+    z-index: 3;
+}
+
+.navbar .popover-region-toggle {
+    width: 30px;
+
+    &:before,
+    &:after {
+        display: none;
+        content: '';
+        border: 0;
+        right: 0;
+    }
+    .fa {
+        color: $font;
+        font-size: 18px;
+    }
+}
+
+span.avatars {
+    order: 3;
+    padding-top: .25rem;
+}
+
+span.userbutton {
+    display: flex;
+    flex-direction: row;
+}
+
+.nav .dropdown-menu {
+    margin: 0;
+    min-width: 234px;
+    border-radius: 0;
+    border: none;
+    box-shadow: 4px 4px 9px -3px rgba(0,0,0,.2);
+}
+
+@media screen and (max-width: 979px) {
+    .navbar-bootswatch .navbar-brand {
+        text-align: left;
+        width: 100%;
+        max-width: none;
+    }
+
+    .navbar {
+        height: 160px;
+        max-height: 160px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .usertext {
+        display: initial;
+    }
+    .navbar-nav {
+        margin-left: auto;
+        .nav-item {
+            display: flex;
+            .popover-region {
+                align-items: center;
+            }
+        }
+    }
+    #page-site-index {
+        .usermenu {
+            transform: translateY(0px) !important;
+            z-index: 999;
+        }
+        #nav-moodlecloud-quota-popover-container {
+            display: none;
+        }
+    }
+}
+@media screen and (max-width: 696px) {
+    .navbar-nav .nav-item {
+        display: none;
+    }
+}
+
+.navbar.fixed-top {
+    .logo-wr {
+        height: 100%;
+        box-shadow: 6px -1px 17px -5px rgba(0, 0, 0, .5);
+        min-width: 270px;
+        background-color: $secondary;
+        text-align: center;
+        padding: 0 20px;
+        max-width: 500px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        .logoicon {
+            img {
+                float: left;
+                margin-right: 10px;
+            }
+        }
+    }
+}
+
+.userloggedinas .usermenu .usertext,
+.userswitchedrole .usermenu .usertext,
+.loginfailures .usermenu .usertext {
+    text-align: left;
+    margin-right: 0;
+    height: initial;
+}
