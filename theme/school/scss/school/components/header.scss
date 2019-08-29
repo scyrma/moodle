@@ -183,7 +183,7 @@ body:not(#page-site-index) .usermenu {
     border-left: .3em solid transparent;
 }
 
-#dropdown-0::after {
+.usermenu .dropdown-toggle::after {
     display: none;
 }
 
