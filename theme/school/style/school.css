@@ -17483,6 +17483,9 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
 #page-header .breadcrumb-container {
   min-height: 73px; }
 
+.breadcrumb-item a {
+  color: #f15a23; }
+
 .breadcrumb-item + .breadcrumb-item::before {
   font-family: 'FontAwesome';
   content: "\f105" !important; }
@@ -17533,6 +17536,15 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
     margin-left: auto;
     margin-right: auto; }
 
+#page-login-index .site-name-header {
+  background-color: #6c757d; }
+
+#page-login-index .site-name {
+  color: #fff; }
+
+#page-login-index .login-string {
+  color: #fff; }
+
 #page-login-index .forgetpass a,
 #page-login-index .text-info,
 #page-login-index .highlight {
@@ -17543,7 +17555,11 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
   #page-login-index .highlight:hover {
     opacity: .8; }
 
+#page-login-index .cookies {
+  color: #fff; }
+
 #page-login-index .rememberpass {
+  color: #fff;
   margin: 10px 0; }
   #page-login-index .rememberpass input {
     display: none; }
@@ -17565,6 +17581,8 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
   background-color: #007bff;
   color: #fff;
   min-height: 75px; }
+  .hero-unit a {
+    color: #fff; }
   @media screen and (min-width: 768px) {
     .hero-unit .content-wrap {
       width: 80%;
@@ -17577,6 +17595,11 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
       margin-top: 0;
       display: inline-block;
       width: 100%; } }
+
+.hero-unit-admin {
+  background-color: #007bff;
+  color: #fff;
+  min-height: 75px; }
 
 .slide .image {
   height: 350px; }
@@ -17739,7 +17762,7 @@ body::not(.pagelayout-frontpage) .logo-wr {
       .course-item .btn-plus .plus-container .plus {
         height: 100%;
         width: 100%;
-        background-color: #3a3a3a;
+        background-color: #6c757d;
         border-top-left-radius: 3px;
         color: green;
         font-size: 32px;
@@ -17932,6 +17955,8 @@ body::not(.pagelayout-frontpage) .logo-wr {
   .news-updates .row.content {
     padding: 45px 0 35px;
     margin-right: 142px; }
+  .news-updates a {
+    color: #007bff; }
   .news-updates h3 {
     color: #444;
     font-size: 24px;
@@ -18234,6 +18259,12 @@ body .btn-see-all {
 .navbar-nav a.dropdown-toggle {
   color: white; }
 
+a.nav-link {
+  color: #007bff; }
+
+.nav-tabs a.nav-link {
+  color: #007bff; }
+
 span.site-name {
   margin: 0;
   font-weight: 600;
@@ -18440,6 +18471,10 @@ span.userbutton {
   border-radius: 0;
   margin: 0;
   clear: both; }
+  #block-region-side-pre .block a,
+  #block-region-side-post .block a {
+    color: #fff;
+    color: #f15a23; }
   #block-region-side-pre .block .content,
   #block-region-side-post .block .content {
     padding: 18px 12px; }
@@ -18814,6 +18849,14 @@ h5 {
 
 h6 {
   font-size: 12px; }
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff; }
+
+.btn-secondary, .btn-default {
+  background-color: #6c757d;
+  color: #fff; }
 
 .da-slider {
   min-width: 320px;
@@ -19896,7 +19939,7 @@ h6 {
   z-index: 0; }
   .welcome-block a,
   .welcome-block-slider a {
-    color: #007bff; }
+    color: #fff; }
 
 .welcome-block h2 {
   padding: 0 0 22px;

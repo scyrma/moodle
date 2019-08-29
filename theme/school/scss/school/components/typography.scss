@@ -129,3 +129,13 @@ h5 {
 h6 {
     font-size: 12px;
 }
+
+.btn-primary {
+    background-color: $primary;
+    color: $linkstandard;
+}
+
+.btn-secondary {
+    background-color: $secondary;
+    color: $secondarylink;
+}

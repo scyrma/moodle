@@ -16,6 +16,11 @@
     min-height: 73px;
 }
 
+.breadcrumb-item {
+    a {
+        color: $blockfont;
+    }
+}
 .breadcrumb-item + .breadcrumb-item::before {
     font-family: 'FontAwesome';
     content: "\f105" !important;

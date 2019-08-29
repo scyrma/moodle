@@ -2,6 +2,9 @@
     background-color: $primary;
     color: $font;
     min-height: 75px;
+    a {
+        color: $linkstandard;
+    }
     .content-wrap {
         @media screen and (min-width: 768px) {
             width: 80%;
@@ -16,6 +19,11 @@
             width: 100%;
         }
     }
+}
+.hero-unit-admin {
+    background-color: $primary;
+    color: $font;
+    min-height: 75px;
 }
 
 .slide .image {
@@ -213,7 +221,7 @@ body::not(.pagelayout-frontpage) .logo-wr {
             .plus {
                 height: 100%;
                 width: 100%;
-                background-color: $theme-black;
+                background-color: $secondary;
                 border-top-left-radius: 3px;
                 color: green;
                 font-size: 32px;
@@ -451,6 +459,9 @@ body::not(.pagelayout-frontpage) .logo-wr {
     }
     overflow: hidden;
     width: 100%;
+    a {
+        color: $link-color
+    }
     h3 {
         color: #444;
         font-size: 24px;
