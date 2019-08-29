@@ -9,15 +9,28 @@
             margin-right: auto;
         }
     }
+    .site-name-header {
+        background-color: $secondary;
+    }
+    .site-name {
+        color: $secondarylink;
+    }
+    .login-string {
+        color: $font;
+    }
     .forgetpass a,
     .text-info {
-        color: $white;
+        color: $linkstandard;
         opacity: .5;
         &:hover {
             opacity: .8;
         }
     }
+    .cookies {
+        color: $font;
+    }
     .rememberpass {
+        color: $font;
         margin: 10px 0;
         input {
           display: none;
