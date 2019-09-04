@@ -18888,6 +18888,7 @@ h6 {
 .da-slide p,
 .da-slide .da-link,
 .da-slide .da-img {
+  z-index: 1;
   position: absolute;
   opacity: 0;
   left: 110%; }
