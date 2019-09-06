@@ -52,14 +52,14 @@
     <div id="page" class="container-fluid">
 
         <div id="page-content" class="row {{#haspreblocks}} blocks-pre {{/haspreblocks}} {{#haspostblocks}} blocks-post {{/haspostblocks}}">
-                {{#isadmin}}
-                    <div class="hero-unit-admin w-100">
-                        <div id="frontpage-edit-button" class="d-flex my-3">
+            <div class="hero-unit-admin w-100">
+                <div id="frontpage-edit-button" class="d-flex my-3">
+                    {{#isadmin}}
                             <a class="btn btn-secondary ml-auto" href="{{{frontpagesiteadminurl}}}">{{#str}} siteadministration, theme_school {{/str}}</a>
                             <a class="btn btn-secondary ml-2 mr-5" href="{{{frontpagesettingsurl}}}">{{#str}} updatemymoodleon {{/str}}</a>
-                        </div>
-                    </div>
-                {{/isadmin}}
+                    {{/isadmin}}
+                </div>
+            </div>
             {{{ widgets.object }}}
             <div id="region-main-box" class="region-main p-0">
                 {{#hasregionmainsettingsmenu}}
@@ -95,4 +95,3 @@ require(['theme_school/frontpage'], function(Frontpage) {
     Frontpage.init();
 });
 {{/js}}
-
