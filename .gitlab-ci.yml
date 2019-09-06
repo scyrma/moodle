@@ -20,6 +20,9 @@ merge_free:
   stage: build
   tags:
     - git-octopus
+  except:
+    variables:
+      - $REBASE == "workplace"
   script:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
@@ -35,6 +38,9 @@ merge_school:
   stage: build
   tags:
     - git-octopus
+  except:
+    variables:
+      - $REBASE == "workplace"
   script:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
@@ -50,6 +56,9 @@ merge_starter:
   stage: build
   tags:
     - git-octopus
+  except:
+    variables:
+      - $REBASE == "workplace"
   script:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
@@ -65,6 +74,9 @@ merge_testing_school:
   stage: build
   tags:
     - git-octopus
+  except:
+    variables:
+      - $REBASE == "workplace"
   script:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
@@ -84,6 +96,16 @@ merge_workplace:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/FEATURE-Workplace
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/FEATURE-Workplace
+    - >
+      if [ "$REBASE" == "workplace" ]; then
+        echo "======= Rebasing to latest workplace version ======="
+        MAJOR_VERSION=${MOODLE_VERSION::-2}
+        grep workplacebuild .git/config || git remote add workplacebuild git@git.in.moodle.com:workplace/workplacebuild.git
+        git fetch workplacebuild WP-${MAJOR_VERSION}-build-workplace_moodlecloud || ( echo "======= FAILED TO FETCH WORKPLACE BUILD"; exit 1 )
+        git rebase workplacebuild/WP-${MAJOR_VERSION}-build-workplace_moodlecloud || ( echo "======= FAILED TO REBASE ======="; exit 1 )
+        git push origin || ( echo "======= FAILED TO PUSH ======="; exit 1 )
+        echo "======= Rebase successfull ======="
+      fi
     - export WORKPLACE_BRANCHES=`eval "echo \\$$(echo WORKPLACE_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
     - git octopus $WORKPLACE_BRANCHES origin/CLOUD-$MOODLE_VERSION/FEATURE-Workplace
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
