@@ -386,7 +386,7 @@ class core_renderer extends \core_renderer {
         if (!isloggedin()) {
             $returnstr = get_string('loggedinnot', 'moodle');
             if (!$loginpage) {
-                $returnstr .= " (<a href=\"$loginurl\">" . get_string('login') . '</a>)';
+                $returnstr = "<a class=\"btn btn-primary border border-dark\" href=\"$loginurl\">" . get_string('login') . '</a>';
             }
             return html_writer::div(
                     html_writer::span(
