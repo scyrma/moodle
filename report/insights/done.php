@@ -26,5 +26,12 @@ require_once(__DIR__ . '/../../config.php');
 
 require_login();
 
+if (!\core_analytics\manager::is_analytics_enabled()) {
+    $PAGE->set_context(\context_system::instance());
+    $renderer = $PAGE->get_renderer('report_insights');
+    echo $renderer->render_analytics_disabled();
+    exit(0);
+}
+
 $url = new \moodle_url('/');
 redirect($url, get_string('actionsaved', 'report_insights'), null, \core\output\notification::NOTIFY_SUCCESS);
