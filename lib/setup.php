@@ -922,6 +922,9 @@ if (!empty($CFG->debugvalidators) and !empty($CFG->guestloginbutton)) {
     }
 }
 
+/** @uses \tool_tenant\tenancy::setup_callback */
+component_class_callback('tool_tenant\\tenancy', 'setup_callback', []);
+
 // Apache log integration. In apache conf file one can use ${MOODULEUSER}n in
 // LogFormat to get the current logged in username in moodle.
 // Alternatvely for other web servers a header X-MOODLEUSER can be set which
