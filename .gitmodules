@@ -1,0 +1,39 @@
+[submodule "tool_dynamicrule"]
+	path = admin/tool/dynamicrule
+	url = git@git.in.moodle.com:workplace/moodle-tool_dynamicrule.git
+[submodule "tool_certificate"]
+	path = admin/tool/certificate
+	url = git@git.in.moodle.com:workplace/moodle-tool_certificate.git
+[submodule "tool_certification"]
+	path = admin/tool/certification
+	url = git@git.in.moodle.com:workplace/moodle-tool_certification.git
+[submodule "tool_datastore"]
+	path = admin/tool/datastore
+	url = git@git.in.moodle.com:workplace/moodle-tool_datastore.git
+[submodule "tool_organisation"]
+	path = admin/tool/organisation
+	url = git@git.in.moodle.com:workplace/moodle-tool_organisation.git
+[submodule "tool_program"]
+	path = admin/tool/program
+	url = git@git.in.moodle.com:workplace/moodle-tool_program.git
+[submodule "tool_reportbuilder"]
+	path = admin/tool/reportbuilder
+	url = git@git.in.moodle.com:workplace/moodle-tool_reportbuilder.git
+[submodule "tool_tenant"]
+	path = admin/tool/tenant
+	url = git@git.in.moodle.com:workplace/moodle-tool_tenant.git
+[submodule "tool_wp"]
+	path = admin/tool/wp
+	url = git@git.in.moodle.com:workplace/moodle-tool_wp.git
+[submodule "format_wplist"]
+	path = course/format/wplist
+	url = git@git.in.moodle.com:workplace/moodle-format_wplist.git
+[submodule "enrol_dynamicrule"]
+	path = enrol/dynamicrule
+	url = git@git.in.moodle.com:workplace/moodle-enrol_dynamicrule.git
+[submodule "enrol_program"]
+	path = enrol/program
+	url = git@git.in.moodle.com:workplace/moodle-enrol_program.git
+[submodule "theme_workplace"]
+	path = theme/workplace
+	url = git@git.in.moodle.com:workplace/moodle-theme_workplace.git
