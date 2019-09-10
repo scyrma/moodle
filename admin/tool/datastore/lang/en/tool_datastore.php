@@ -1,0 +1,67 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Strings for component 'tool_datastore'; language 'en'
+ *
+ * @package   tool_datastore
+ * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['datastoreenabled'] = 'Enable data store';
+$string['datastoreenabled_desc'] = 'Allow start tracking the user actions in the data store tables';
+$string['datastorefieldscourse'] = 'Fields of course entity to store';
+$string['datastorefieldscourser_desc'] = 'Enter field names separated with a comma (,).';
+$string['datastorefieldsuser'] = 'Fields of user entity to store';
+$string['datastorefieldsuser_desc'] = 'Enter field names separated with a comma (,).';
+$string['datastoresettings'] = 'Data store settings';
+$string['datastore:uploadcoursecompletion'] = 'Upload course completion to datastore';
+$string['pluginname'] = 'Data store';
+$string['privacy:metadata:tool_datastore:action'] = 'The action to be stored';
+$string['privacy:metadata:tool_datastore:actionid'] = 'The related action';
+$string['privacy:metadata:tool_datastore:data'] = 'The entity data as json encoded';
+$string['privacy:metadata:tool_datastore:entityid'] = 'The related entity';
+$string['privacy:metadata:tool_datastore:hash'] = 'The hash of the stored data';
+$string['privacy:metadata:tool_datastore:name'] = 'The field name related to the entity';
+$string['privacy:metadata:tool_datastore:originalcourseid'] = 'The related course with the user and the action';
+$string['privacy:metadata:tool_datastore:originalid'] = 'The original id of the entity';
+$string['privacy:metadata:tool_datastore:originalprogramid'] = 'The related program with the course, user and the action';
+$string['privacy:metadata:tool_datastore:relateduserid'] = 'The main user id related to the action';
+$string['privacy:metadata:tool_datastore:snapshotid'] = 'The related snapshot with all the data related to the entity';
+$string['privacy:metadata:tool_datastore:type'] = 'The entity type as course, program, user ...';
+$string['privacy:metadata:tool_datastore:usermodified'] = 'The ID of the user who last modified the entry in some way.';
+$string['privacy:metadata:tool_datastore:value'] = 'The value of the field';
+$string['privacy:metadata:tool_datastore_action'] = 'Information about the user action, course, program and related user';
+$string['privacy:metadata:tool_datastore_entity'] = 'Information about the entities related to the action and the snapshot with data related of each';
+$string['privacy:metadata:tool_datastore_entity:actionid'] = 'The action has been stored';
+$string['privacy:metadata:tool_datastore_entity:originalid'] = 'The main entity id: course, program, ...';
+$string['privacy:metadata:tool_datastore_entity:snapshotid'] = 'The related snapshot with all data of the entity encoded as json';
+$string['privacy:metadata:tool_datastore_entity:type'] = 'The type of the entity';
+$string['privacy:metadata:tool_datastore_entity:usermodified'] = 'The ID of the user who last modified the entry in some way.';
+$string['privacy:metadata:tool_datastore_idx_fields'] = 'The value of each entity field';
+$string['privacy:metadata:tool_datastore_idx_fields:actionid'] = 'The related action id';
+$string['privacy:metadata:tool_datastore_idx_fields:entityid'] = 'The related entity id';
+$string['privacy:metadata:tool_datastore_idx_fields:name'] = 'The field name of the entity';
+$string['privacy:metadata:tool_datastore_idx_fields:usermodified'] = 'The ID of the user who last modified the value in some way.';
+$string['privacy:metadata:tool_datastore_idx_fields:value'] = 'The value of the field';
+$string['privacy:metadata:tool_datastore_snapshot'] = 'Snapshot with the data of each entity';
+$string['privacy:metadata:tool_datastore_snapshot:data'] = 'The all data related to the entity encoded as json';
+$string['privacy:metadata:tool_datastore_snapshot:hash'] = 'Hash of the stored data';
+$string['privacy:metadata:tool_datastore_snapshot:usermodified'] = 'The ID of the user who last modified the data in some way.';
+$string['reg_wpdatastorerecords'] = 'Number of records in datastore ({$a})';
