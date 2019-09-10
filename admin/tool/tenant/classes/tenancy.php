@@ -1,0 +1,433 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Class tenancy.
+ *
+ * @package     tool_tenant
+ * @copyright   2018 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace tool_tenant;
+
+use tool_tenant\form\edit_css_form;
+use tool_wp\db;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * To be used to get information about current tenant and its users
+ *
+ * @package     tool_tenant
+ * @copyright   2018 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class tenancy {
+
+    /** @var int */
+    protected static $forcetenantid = 0;
+
+    /**
+     * Gets the list of tenants
+     *
+     * @return \stdClass[]
+     */
+    public static function get_tenants() : array {
+        global $DB;
+        $cache = \cache::make('tool_tenant', 'tenants');
+        if (!($tenants = $cache->get('list'))) {
+            $tenants = $DB->get_records('tool_tenant', ['archived' => 0],
+                'isdefault DESC, sortorder, id', 'id, name, isdefault, sitename, categoryid');
+            $first = reset($tenants);
+            if (!$tenants || !$first->isdefault) {
+                // Create default tenant.
+                $tenant = (new manager())->create_tenant((object)[
+                    'name' => get_string('defaultname', 'tool_tenant'),
+                    'isdefault' => 1]);
+                $tenants = [$tenant->get('id') => $tenant->to_record()] + $tenants;
+            }
+            $cache->set('list', $tenants);
+        }
+        return $tenants;
+    }
+
+    /**
+     * Check if site is configured to have multiple tenants
+     *
+     * @return bool
+     */
+    public static function is_site_multi_tenant() : bool {
+        $tenants = self::get_tenants();
+        return count($tenants) > 1;
+    }
+
+    /**
+     * Does an SQL query to retrieve tenant id for the given user
+     *
+     * @param int $userid
+     * @return int
+     */
+    protected static function get_tenant_id_int(int $userid) : int {
+        global $DB;
+        $tenantid = $DB->get_field_sql("SELECT t.id
+            FROM {tool_tenant_user} tu
+            JOIN {tool_tenant} t ON tu.tenantid = t.id AND t.archived = 0
+            WHERE tu.userid = ?", [$userid]);
+        if ($tenantid) {
+            return $tenantid;
+        }
+        return self::get_default_tenant_id();
+    }
+
+    /**
+     * Id of the tenant user belongs to
+     *
+     * @param int $userid userid, if omitted current user
+     * @return int
+     */
+    public static function get_tenant_id(?int $userid = null) : int {
+        global $USER;
+
+        if (!self::is_site_multi_tenant()) {
+            return self::get_default_tenant_id();
+        }
+
+        if ($userid === null && (!isloggedin() || isguestuser())) {
+            if ($tenantid = optional_param('tenantid', 0, PARAM_INT)) {
+                $tenants = self::get_tenants();
+                if (array_key_exists($tenantid, $tenants)) {
+                    return $tenantid;
+                }
+            }
+            if ($tenantid = manager::get_tenant_cookie()) {
+                return $tenantid;
+            }
+            return self::get_default_tenant_id();
+        }
+
+        $userid = $userid ?: ($USER ? $USER->id : 0);
+        if ($userid == $USER->id) {
+            $cache = \cache::make('tool_tenant', 'mytenant');
+            $cacheidx = 'tenantid-' . $userid;
+            if (!($tenantid = $cache->get($cacheidx))) {
+                $tenantid = self::get_switched_tenant_id() ?: self::get_tenant_id_int($userid);
+                $cache->set($cacheidx, $tenantid);
+            }
+            return $tenantid;
+        }
+
+        return self::get_tenant_id_int($userid);
+    }
+
+    /**
+     * Helps to build SQL to retrieve users that belong to the current tenant
+     *
+     * Example of usage:
+     *
+     * $ualias = \tool_wp\db::generate_alias();
+     * list($join, $where, $params) = \tool_tenant\tenancy::get_users_sql($ualias);
+     * $sql = "SELECT {$ualias}.* FROM {user} {$ualias} " . $join . ' WHERE ' . $where;
+     * $DB->get_records_sql($sql, $params);
+     *
+     * This query never returns deleted users or guest user.
+     *
+     * @param string $usertablealias
+     * @param int $tenantid tenant id, by default tenant of the current user
+     * @return array array of three elements [$join, $where, $params]
+     */
+    public static function get_users_sql(string $usertablealias = 'u', int $tenantid = 0) : array {
+        global $CFG;
+        static $cnt = 0;
+        $cnt++;
+        $pg = db::generate_param_name();
+        $params = [$pg => (int)$CFG->siteguest];
+        $where = " {$usertablealias}.deleted = 0 AND {$usertablealias}.id <> :{$pg} ";
+        $join = '';
+
+        $tenants = self::get_tenants();
+        if (count($tenants) > 1) {
+            $param = db::generate_param_name();
+            $tu = db::generate_alias();
+            $t = db::generate_alias();
+            $params[$param] = $tenantid ?: self::get_tenant_id();
+            if ($params[$param] == self::get_default_tenant_id()) {
+                $join = " LEFT JOIN {tool_tenant_user} {$tu} ON {$tu}.userid = {$usertablealias}.id " .
+                    "LEFT JOIN {tool_tenant} {$t} ON {$t}.id = {$tu}.tenantid AND {$t}.archived = 0";
+                $where .= " AND ({$t}.id IS NULL OR {$t}.id = :{$param}) ";
+            } else {
+                $join = " JOIN {tool_tenant_user} {$tu} ON {$tu}.userid = {$usertablealias}.id AND {$tu}.tenantid = :{$param} ";
+            }
+        }
+        return [$join, $where, $params];
+    }
+
+    /**
+     * Allows to temporarily "fix" the tenant id in get_users_subquery() calls
+     *
+     * @param int $tenantid
+     */
+    public static function force_tenantid_for_users_subquery(int $tenantid = 0) {
+        self::$forcetenantid = $tenantid;
+    }
+
+    /**
+     * Builds SQL to use in WHERE clause to filter users that belong to the specific tenant
+     *
+     * @param bool $canseeall do not add tenant check if user has capability 'tool/tenant:manage'
+     * @param bool $andpostfix append " AND " to the end of the query
+     * @param string $useridfield field to join with
+     * @param int $tenantid id of the tenant to filter or 0 for the current tenant
+     * @return string
+     */
+    public static function get_users_subquery(bool $canseeall = true, bool $andpostfix = true,
+                                              string $useridfield = 'u.id', int $tenantid = 0) : string {
+        if (!self::is_site_multi_tenant()) {
+            return $andpostfix ? '' : '1=1';
+        }
+        // TODO permission class callback here.
+        if (!self::$forcetenantid && $canseeall &&
+            has_any_capability(['moodle/site:viewparticipants', 'tool/tenant:manage', 'tool/tenant:allocate'],
+                \context_system::instance())) {
+            return $andpostfix ? '' : '1=1';
+        }
+        $tenantid = $tenantid ?: (self::$forcetenantid ?: self::get_tenant_id());
+        $defaulttenantid = self::get_default_tenant_id();
+        $tu = db::generate_alias();
+        if ($tenantid != $defaulttenantid) {
+            $query = " {$useridfield} IN (SELECT {$tu}.userid FROM {tool_tenant_user} {$tu}
+                WHERE {$tu}.tenantid = {$tenantid})";
+        } else {
+            $query = " {$useridfield} NOT IN (SELECT {$tu}.userid FROM {tool_tenant_user} {$tu}
+                WHERE {$tu}.tenantid <> $defaulttenantid)";
+        }
+
+        return $query . ($andpostfix ? ' AND' : '') . ' ';
+    }
+
+    /**
+     * Returns if user should not be visible to the current user at all because of multitenancy
+     *
+     * To use in core hacks:
+     * component_class_callback('tool_tenant\\tenancy', 'is_user_hidden_by_tenancy', [$user]);
+     *
+     * @param int|\stdClass $user
+     * @param int|null $currentuserid by default current user
+     * @return bool
+     */
+    public static function is_user_hidden_by_tenancy($user, $currentuserid = null): bool {
+        // TODO permission class callback here.
+        if (has_any_capability(['moodle/site:viewparticipants', 'tool/tenant:manage', 'tool/tenant:allocate'],
+                \context_system::instance(), $currentuserid)) {
+            return false;
+        }
+        return self::get_tenant_id($currentuserid) != self::get_tenant_id(is_object($user) ? $user->id : $user);
+    }
+
+    /**
+     * Returns the users with the tenantadmin role for this tenant.
+     *
+     * @param  int    $tenantid The tenant ID.
+     * @return array a list of user IDs of people with the tenantadmin role.
+     */
+    public static function get_tenant_admins(int $tenantid) : array {
+        global $DB, $CFG;
+
+        if (empty($CFG->tool_tenant_adminrole)) {
+            return [];
+        }
+        $users = $DB->get_records('role_assignments',
+                ['component' => 'tool_tenant', 'itemid' => $tenantid, 'roleid' => (int)$CFG->tool_tenant_adminrole], '', 'userid');
+        if (empty($users)) {
+            return [];
+        }
+        $users = array_map(function($user) {
+            return $user->userid;
+        }, $users);
+
+        return $users;
+    }
+
+    /**
+     * Returns the default tenant in the system, all unallocated users belong to this tenant
+     *
+     * @return int
+     */
+    public static function get_default_tenant_id() : int {
+        $tenants = self::get_tenants();
+        $tenantid = key($tenants);
+        return $tenantid;
+    }
+
+    /**
+     * Return site name for the current tenant (without applying format_string)
+     *
+     * @return string
+     */
+    public static function get_site_name() : ?string {
+        $tenant = self::get_tenants()[self::get_tenant_id()];
+        return $tenant->sitename;
+    }
+
+    /**
+     * Hook into setup (replace $SITE->fullname and $SITE->shortname; switch current tenant)
+     *
+     * To use:
+     *   component_class_callback('tool_tenant\\tenancy', 'setup_callback', []);
+     */
+    public static function setup_callback() {
+        global $SITE, $COURSE;
+        if (during_initial_install() || isset($CFG->upgraderunning) || !get_config('tool_tenant', 'version')) {
+            return;
+        }
+        try {
+            $tenantid = self::get_tenant_id();
+        } catch (\Exception $e) {
+            // We are probably inside the plugin installation.
+            return;
+        }
+        if ($tenantid != manager::get_tenant_cookie()) {
+            manager::set_tenant_cookie($tenantid);
+        }
+        if (isset($SITE)) {
+            $tenants = self::get_tenants();
+            $tenant = $tenants[$tenantid];
+            $SITE->fullname = $tenant->sitename ?: $SITE->fullname;
+            $SITE->shortname = $tenant->sitename ?: $SITE->shortname;
+
+            if (isset($COURSE->id) && $COURSE->id == $SITE->id) {
+                $COURSE->fullname = $tenant->sitename ?: $SITE->fullname;
+                $COURSE->shortname = $tenant->sitename ?: $SITE->shortname;
+            }
+        }
+    }
+
+    /**
+     * Generates and returns scss for the specific tenant
+     *
+     * @param int $tenantid
+     * @return string
+     */
+    public static function get_theme_scss(int $tenantid) : string {
+        if (!$tenantid || !array_key_exists($tenantid, self::get_tenants())) {
+            $tenantid = self::get_default_tenant_id();
+        }
+
+        $manager = new \tool_tenant\manager();
+        $tenant = $manager->get_tenant($tenantid);
+        $storedcssconfig = @json_decode($tenant->get('cssconfig'), true);
+        if (empty($storedcssconfig)) {
+            return '';
+        }
+        $scss = '';
+
+        // Get primary colors.
+        foreach (edit_css_form::get_colour_values() as $key) {
+            if (array_key_exists($key, $storedcssconfig) && strlen($storedcssconfig[$key])) {
+                // TODO SP-363 just in case validate format again?
+                // This shouldn't have !default added as this goes before all the theme scss.
+                $scss .= '$' . $key . ': ' . $storedcssconfig[$key] . ';';
+            }
+        }
+
+        // Include the footertext if set.
+        if (isset($storedcssconfig['footertext'])) {
+            $footertext = htmlspecialchars($storedcssconfig['footertext'], ENT_QUOTES, 'utf-8');
+
+            // We need to replace all new lines with '\A' to preserve them in the output.
+            $scss .= '$footertext: "' . str_replace(["\r\n", "\r", "\n"], ' \A ', $footertext) . '";';
+        }
+
+        // Get images.
+        $scss .= $manager->get_logo_css($tenantid);
+
+        if (isset($storedcssconfig['customcss'])) {
+            // Strip out the tabs and carriage returns.
+            $scss .= str_replace(["\r\n", "\r", "\n"], '', $storedcssconfig['customcss']);
+        }
+
+        return $scss;
+    }
+
+    /**
+     * Returns the tenant id for the curren user if it was switched
+     *
+     * @return int
+     */
+    protected static function get_switched_tenant_id(): int {
+        if (\tool_tenant\permission::can_switch_tenant()) {
+            $preference = (int)get_user_preferences('currenttenantid');
+            $preferencesession = get_user_preferences('currenttenantidsessionid');
+            if ($preference && ($preferencesession !== session_id() || !array_key_exists($preference, self::get_tenants()))) {
+                $preference = 0;
+                self::set_switched_tenant_id($preference);
+            }
+            return $preference;
+        }
+        return 0;
+    }
+
+    /**
+     * Set the selected tenant id for current user.
+     *
+     * @param int $tenantid (set to zero to return to actual tenantid)
+     */
+    public static function set_switched_tenant_id(int $tenantid) {
+        set_user_preference('currenttenantid', $tenantid ?: null);
+        set_user_preference('currenttenantidsessionid', $tenantid ? session_id() : null);
+    }
+
+    /**
+     * Create the menu with tenants to switch.
+     *
+     * @param \core_renderer $renderer
+     * @return string HTML containing the tenant menu.
+     */
+    public static function tenant_menu($renderer): string {
+        global $PAGE, $CFG;
+        $menu = '';
+        if (!\tool_tenant\permission::can_switch_tenant()) {
+            return $menu;
+        }
+        if (self::is_site_multi_tenant()) {
+            $tenants = self::get_tenants();
+            $url = new \moodle_url('/admin/tool/tenant/switchtenant.php', ['switchtenantid' => 0, 'sesskey' => sesskey()]);
+
+            $currenturl = explode('/', $PAGE->url->out_as_local_url());
+            $wptools = array('certificate', 'certification', 'dynamicrule', 'organisation', 'program', 'reportbuilder', 'tenant');
+            if (count($currenturl) >= 4 &&
+                    ($currenturl[1] == $CFG->admin) && ($currenturl[2] == 'tool') && in_array($currenturl[3], $wptools)) {
+                $url->param('redirecturl', '/admin/tool/' . $currenturl[3] . '/index.php');
+            }
+
+            $currenttenantid = self::get_tenant_id();
+            $menu = ['haschildren' => [
+                'url' => $url->out(),
+                'text' => $tenants[$currenttenantid]->name,
+                'children' => []
+            ]];
+            foreach ($tenants as $t) {
+                $url->param('switchtenantid', $t->id);
+                $menu['haschildren']['children'][] = [
+                    'url' => $url->out(),
+                    'text' => $t->name
+                ];
+            }
+            $menu = $renderer->render_from_template('core/custom_menu_item', $menu);
+        }
+        return $menu;
+    }
+}
