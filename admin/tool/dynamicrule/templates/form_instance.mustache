@@ -1,0 +1,51 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+     Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_dynamicrule/form_instance
+
+    Template for showing rule condition/outcome instance form card.
+
+    Example context (json):
+    {}
+}}
+
+<div class="card mb-3 instance-card" data-instanceclass="{{instanceclass}}" data-instanceid="{{instanceid}}" data-title="{{title}}">
+    <div class="card-header p-0" id="form-instance-{{elementid}}-heading">
+        <div class="mb-0 d-flex">
+            <span class="text-left ml-1 nomargin btn">
+                {{title}}
+            </span>
+            <span class="ml-auto">
+                {{#isbroken}}<span class="badge badge-warning broken" title="{{brokenlabel}}">{{#str}} error {{/str}}</span>{{/isbroken}}
+                <a class="btn btn-link px-0 {{#form}}disabled{{/form}}" data-action="edit-instance" href="#">
+                    {{#pix}} i/settings, core, {{editlabel}} {{/pix}}
+                </a>
+                <a class="btn btn-link pl-0 pr-2" data-action="delete-instance" href="#">
+                    {{#pix}} i/trash, core, {{deletelabel}} {{/pix}}
+                </a>
+            </span>
+        </div>
+    </div>
+    <div id="form-instance-{{elementid}}" aria-labelledby="form-instance-{{elementid}}-heading">
+        <div class="card-body p-3">
+            <div class="description-container" {{^description}}style="display: none;"{{/description}}>
+                {{description}}
+            </div>
+            <div class="form-container" {{^form}}style="display: none;"{{/form}}>
+                <div id="form-instance-notsaved-label" class="alert alert-warning p-2">{{notsavedlabel}}</div>
+                {{{form}}}
+            </div>
+        </div>
+    </div>
+</div>
