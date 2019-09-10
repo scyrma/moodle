@@ -1,0 +1,211 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Plugin strings are defined here.
+ *
+ * @package     tool_organisation
+ * @category    string
+ * @copyright   2018 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['actions'] = 'Actions';
+$string['addchilddepartment'] = 'New subdepartment for department \'{$a}\'';
+$string['addchildposition'] = 'New subposition for position \'{$a}\'';
+$string['adddepartment'] = 'New department for framework \'{$a}\'';
+$string['adddepartmentframework'] = 'New department framework';
+$string['addjob'] = 'New job';
+$string['addjobforuser'] = 'New job for \'{$a}\'';
+$string['addposition'] = 'New position for framework \'{$a}\'';
+$string['addpositionframework'] = 'New position framework';
+$string['anydepartment'] = 'Any';
+$string['anyposition'] = 'Any';
+$string['assfirstchildof'] = 'As the first child of \'{$a}\'';
+$string['conditioncanallocateprograms'] = 'Can allocate to programs';
+$string['conditioncanreceivenotifications'] = 'Can receive notifications';
+$string['conditioncanviewreports'] = 'Can view reports';
+$string['conditionuserdepartment'] = 'User is in department';
+$string['conditionuserdepartmentdescription'] = 'User is allocated to department \'{$a}\'';
+$string['conditionuserdepartmentdescriptionnegated'] = 'User is not allocated to department \'{$a}\'';
+$string['conditionusernotindepartment'] = 'User is not in department';
+$string['conditionuserposition'] = 'User has position';
+$string['conditionuserpositiondescription'] = 'User has position \'{$a}\'';
+$string['conditionuserpositiondescriptionnegated'] = 'User doesn\'t have position \'{$a}\'';
+$string['conditionuserwithoutposition'] = 'User doesn\'t have position';
+$string['delete'] = 'Delete';
+$string['deletedepartment'] = 'Delete department \'{$a}\'';
+$string['deletedepartmentconfirm'] = 'Are you sure you want to delete the department \'{$a}\'?';
+$string['deletedepartmentframework'] = 'Delete department framework \'{$a}\'';
+$string['deletedepartmentframeworkconfirm'] = 'Are you sure you want to delete the department framework \'{$a}\'?';
+$string['deletejob'] = 'Delete job';
+$string['deleteposition'] = 'Delete position \'{$a}\'';
+$string['deletepositionconfirm'] = 'Are you sure you want to delete the position \'{$a}\'?';
+$string['deletepositionframework'] = 'Delete position framework \'{$a}\'';
+$string['deletepositionframeworkconfirm'] = 'Are you sure you want to delete the position framework \'{$a}\'?';
+$string['department'] = 'Department';
+$string['department_help'] = 'Select department';
+$string['departmentdescription'] = 'Description';
+$string['departmentdoesnotexists'] = 'Department does not exist';
+$string['departmentframework'] = 'Department framework';
+$string['departmentframeworknotfound'] = 'Department framework not found';
+$string['departmentframeworks'] = 'Department frameworks';
+$string['departmenthasjobs'] = 'Department cannot be deleted because there are jobs associated with it.';
+$string['departmentidnumber'] = 'ID number';
+$string['departmentmanagementicons'] = 'Department management icons';
+$string['departmentmanager'] = 'Department manager';
+$string['departmentmanager_help'] = 'A person with the department manager job will be considered a manager of anyone in the same department or a subdepartment, regardless of their position.';
+$string['departmentname'] = 'Name';
+$string['departmentnotfound'] = 'Department not found';
+$string['departmentrequiredforjobcreate'] = 'Departments need to be created to proceed with job assignments';
+$string['departments'] = 'Departments';
+$string['details'] = 'Details';
+$string['editdepartment'] = 'Edit department \'{$a}\'';
+$string['editdepartmentframework'] = 'Edit department framework \'{$a}\'';
+$string['editdepartmentname'] = 'Edit name';
+$string['editjob'] = 'Edit job';
+$string['editjobforuser'] = 'Edit job for \'{$a}\'';
+$string['editposition'] = 'Edit position \'{$a}\'';
+$string['editpositionframework'] = 'Edit position framework \'{$a}\'';
+$string['editpositionname'] = 'Edit name';
+$string['enddate'] = 'End date';
+$string['enddate_help'] = 'End date of job';
+$string['entitydepartment'] = 'Department';
+$string['entityjob'] = 'Job';
+$string['entityposition'] = 'Position';
+$string['errorcreatingdepartment'] = 'An error occurred while creating the department. Please try again.';
+$string['errorcreatingjob'] = 'An error occurred while creating the job. Please try again.';
+$string['errorcreatingposition'] = 'An error occurred while creating the position. Please try again.';
+$string['errorinvaliddepartment'] = 'Invalid department';
+$string['errorinvalidposition'] = 'Invalid position';
+$string['errormovehierarchy'] = 'An error occurred while moving the position or department to another hierarchy location.';
+$string['errorparentnotfound'] = 'Parent not found';
+$string['eventdepartmentcreated'] = 'Department created';
+$string['eventdepartmentdeleted'] = 'Department deleted';
+$string['eventdepartmentframeworkcreated'] = 'Department framework created';
+$string['eventdepartmentframeworkdeleted'] = 'Department framework deleted';
+$string['eventdepartmentframeworkupdated'] = 'Department framework updated';
+$string['eventdepartmentupdated'] = 'Department updated';
+$string['eventjobcreated'] = 'Job created';
+$string['eventjobdeleted'] = 'Job deleted';
+$string['eventjobupdated'] = 'Job updated';
+$string['eventpositioncreated'] = 'Position created';
+$string['eventpositiondeleted'] = 'Position deleted';
+$string['eventpositionframeworkcreated'] = 'Position framework created';
+$string['eventpositionframeworkdeleted'] = 'Position framework deleted';
+$string['eventpositionframeworkupdated'] = 'Position framework updated';
+$string['eventpositionupdated'] = 'Position updated';
+$string['expanddepartmentframework'] = 'Expand department framework \'{$a}\'';
+$string['expandpositionframework'] = 'Expand position framework \'{$a}\'';
+$string['fullcompletionreport'] = 'Full completion report';
+$string['fullname'] = 'User';
+$string['globalmanagementicons'] = 'Global management icons';
+$string['globalmanager'] = 'Global manager';
+$string['globalmanager_help'] = 'A person with the global manager job will be considered a manager of anyone in a lower position, regardless of their departments.';
+$string['hasjobdepartment'] = 'Has job in department';
+$string['hasjobposition'] = 'Has job in position';
+$string['jobdeleteconfirm'] = 'Are you sure you want to delete this job and all associated data? This action cannot be undone.';
+$string['jobdeleted'] = 'Job has been deleted successfully';
+$string['jobdoesnotexists'] = 'Job does not exist';
+$string['jobfrom'] = 'From {$a}';
+$string['jobfromto'] = 'From {$a->from} to {$a->to}';
+$string['jobnotfound'] = 'Job not found';
+$string['jobpositiondepartment'] = 'Position and department';
+$string['jobs'] = 'Job assignments';
+$string['jobsnumber'] = 'Jobs';
+$string['jobsnumber_help'] = 'Shows active and past jobs.<br /> For example \'10 (2)\' means that there are 10 active jobs and 2 jobs in the past.';
+$string['jobstartdateafter'] = 'Job start date is on or after';
+$string['missingdepartment'] = 'Department is missing';
+$string['missingposition'] = 'Position is missing';
+$string['missingusers'] = 'Missing user(s)';
+$string['movedepartmentframework'] = 'Move department framework \'{$a}\'';
+$string['movepositionframework'] = 'Move position framework \'{$a}\'';
+$string['myteams'] = 'Teams';
+$string['newdepartmentframeworkname'] = 'New department framework \'{$a}\'';
+$string['newdepartmentname'] = 'New department \'{$a}\'';
+$string['newnamefor'] = 'New name for \'{$a}\'';
+$string['newpositionframeworkname'] = 'New position framework \'{$a}\'';
+$string['newpositionname'] = 'New position \'{$a}\'';
+$string['none'] = 'None';
+$string['onlycurrent'] = 'Only current';
+$string['onlyfuture'] = 'Only future';
+$string['onlypast'] = 'Only past';
+$string['onlyuserswithoutjobs'] = 'Only users without jobs';
+$string['organisation:allocateuserstoprogramcertificationsdept'] = 'Allocate users to programs/certifications';
+$string['organisation:allocateuserstoprogramcertificationsdept_help'] = 'Department manager: Allocate users to programs/certifications';
+$string['organisation:allocateuserstoprogramcertificationsglob'] = 'Allocate users to programs/certifications';
+$string['organisation:allocateuserstoprogramcertificationsglob_help'] = 'Global manager: Allocate users to programs/certifications';
+$string['organisation:assignjobs'] = 'Assign jobs';
+$string['organisation:managedepartments'] = 'Manage departments';
+$string['organisation:managepositions'] = 'Manage positions';
+$string['organisation:receivenotificationsdept'] = 'Receive notifications';
+$string['organisation:receivenotificationsdept_help'] = 'Department manager: Receive notifications';
+$string['organisation:receivenotificationsglob'] = 'Receive notifications';
+$string['organisation:receivenotificationsglob_help'] = 'Global manager: Receive notifications';
+$string['organisation:viewusersreportdept'] = 'View user reports';
+$string['organisation:viewusersreportdept_help'] = 'Department manager: View user reports';
+$string['organisation:viewusersreportglob'] = 'View user reports';
+$string['organisation:viewusersreportglob_help'] = 'Global manager: View user reports';
+$string['organisationadmintab'] = 'Organisation';
+$string['orgstructure'] = 'Organisation structure';
+$string['pluginname'] = 'Organisation structure';
+$string['position'] = 'Position';
+$string['position_help'] = 'Select position';
+$string['positionanddepartmentdisplay'] = '{$a->position} ({$a->department})';
+$string['positioncouldnotdeleted'] = 'Position could not be deleted.';
+$string['positiondeleted'] = 'Position has been deleted successfully.';
+$string['positiondescription'] = 'Description';
+$string['positiondoesnotexist'] = 'Position does not exist.';
+$string['positionframework'] = 'Position framework';
+$string['positionframeworks'] = 'Position frameworks';
+$string['positionhasjobs'] = 'Position cannot be deleted because there are jobs associated with it.';
+$string['positionidnumber'] = 'ID number';
+$string['positionname'] = 'Name';
+$string['positionnotfound'] = 'Position not found';
+$string['positionpermissions'] = 'Permissions';
+$string['positionrequiredforjobcreate'] = 'Positions need to be created to proceed with job assignments.';
+$string['positions'] = 'Positions';
+$string['privacy:metadata:department'] = 'Job department';
+$string['privacy:metadata:enddate'] = 'When this job ends';
+$string['privacy:metadata:jobssummary'] = 'Jobs summary';
+$string['privacy:metadata:position'] = 'Job position';
+$string['privacy:metadata:startdate'] = 'When this job starts';
+$string['privacy:metadata:timecreated'] = 'When this job was created';
+$string['privacy:metadata:timemodified'] = 'When this job was last modified';
+$string['privacy:metadata:userid'] = 'User id';
+$string['reg_wpdepartmentframeworks'] = 'Number of department frameworks ({$a})';
+$string['reg_wpdepartments'] = 'Number of departments ({$a})';
+$string['reg_wpjobs'] = 'Number of jobs ({$a})';
+$string['reg_wppositionframeworks'] = 'Number of position frameworks ({$a})';
+$string['reg_wppositions'] = 'Number of positions ({$a})';
+$string['rolemanager'] = 'Organisation structure manager';
+$string['rolemanagerdescription'] = 'Allows to create and manage jobs, positions and departments within the current tenant';
+$string['roleslist'] = 'Roles';
+$string['selectposition'] = 'Select a position';
+$string['showjobs'] = 'Show jobs';
+$string['showpastjobs'] = 'Show past jobs';
+$string['startdate'] = 'Start date';
+$string['startdate_help'] = 'Start date of job';
+$string['usernotfound'] = 'User not found';
+$string['users'] = 'Select users';
+$string['users_help'] = 'Search and select users for job assignment';
+$string['validationmsgedateonsdate'] = 'The end date must be after the start date.';
+$string['withoutpermission'] = 'Without permission \'{$a}\'';
+$string['withpermission'] = 'With permission \'{$a}\'';
+$string['withsubdepartments'] = 'Include subdepartments';
+$string['withsubpositions'] = 'Include subpositions';

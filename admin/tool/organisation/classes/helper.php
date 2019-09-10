@@ -1,0 +1,568 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Class helper
+ *
+ * @package     tool_organisation
+ * @copyright   2019 Suraj Kumar
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace tool_organisation;
+
+use tool_organisation\output\user_with_jobs;
+use tool_tenant\tenancy;
+use tool_wp\db;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Class format
+ *
+ * @package     tool_organisation
+ * @copyright   2018 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class helper {
+
+    /** @var string The constant for double space */
+    const  DOUBLE_SPACE = '&nbsp;&nbsp;';
+
+    /**
+     * Returns string with help icon and help string.
+     *
+     * @param string $identifier
+     * @param string $component
+     * @param mixed $a
+     * @param bool $lazyload
+     * @return string
+     * @throws \coding_exception
+     */
+    public static function get_string_with_help_icon(string $identifier, string $component = 'moodle',
+                                                     $a = null, bool $lazyload = false) : string {
+        global $OUTPUT;
+        $output = get_string($identifier, $component, $a, $lazyload);
+        $output .= $OUTPUT->help_icon($identifier, $component);
+        return $output;
+    }
+
+    /**
+     * Builds a menu for the hierarchical tree
+     *
+     * @param \stdClass[] $records records with fields: id, parentid, path, pathlevel, name, sortorder
+     * @return array Returns array of options that can be used in moodleform 'selectgroups' element
+     */
+    public static function get_hierarchical_menu(array $records) : array {
+        // Sort records so that the children are always after their parents and each parent's children are sorted by sortorder.
+        self::sort_records_hierarchically($records);
+
+        // Create output menu array (names indexed by id), prepend names with spaces to show hierarchy.
+        // Group with frameworks as options groups, do not show framework if there is only one.
+        return self::build_menu($records, function($r) {
+            return true;
+        }, function($r) {
+            return $r->pathlevel - 2;
+        });
+    }
+
+    /**
+     * Prepends the menu for 'selectgroups' element with an empty option
+     *
+     * @param array $menu list of options for the 'selectgroups' element
+     * @param array $firstoption for example ['' => 'None'] or ['' => 'All'] or ['' => '']
+     * @return array new list of options fot the 'selectgroups' element
+     */
+    public static function prepend_hierarchical_menu(array $menu, array $firstoption) : array {
+        if (isset($menu[''])) {
+            $r = $menu;
+            $r[''] = $firstoption + $menu[''];
+        } else {
+            $r = ['' => $firstoption] + $menu;
+        }
+        return $r;
+    }
+
+    /**
+     * Sort records so that the children are always after their parents and each parent's children are sorted by sortorder
+     *
+     * @param array $records list of records with properties: path, pathlevel, sortorder
+     */
+    protected static function sort_records_hierarchically(array &$records) {
+        $sortorders = [];
+        foreach ($records as &$r) {
+            $r->paths = preg_split('|/|', $r->path);
+            $sortorders[$r->path] = $r->sortorder;
+        }
+        $sortorder = function($paths, $level) use ($sortorders) {
+            $s = join('/', array_slice($paths, 0, $level + 1));
+            return array_key_exists($s, $sortorders) ? (int)$sortorders[$s] : 0;
+        };
+        usort($records, function($a, $b) use ($sortorder) {
+            for ($i = 1; $i < min(count($a->paths), count($b->paths)); $i++) {
+                if ($a->paths[$i] !== $b->paths[$i]) {
+                    return $sortorder($a->paths, $i) - $sortorder($b->paths, $i);
+                }
+            }
+            return $a->pathlevel - $b->pathlevel;
+        });
+    }
+
+    /**
+     * Create output menu array (names indexed by id), prepend names with spaces to show hierarchy.
+     *
+     * Group with frameworks as options groups, do not show framework if there is only one.
+     *
+     * @param array $records list of records with properties name and id
+     * @param callable $displayfilter filters which records to display
+     * @param callable $indentfunc how much each record name should be indented
+     * @return array Returns array of options that can be used in moodleform 'selectgroups' element
+     */
+    protected static function build_menu(array $records, callable $displayfilter = null, callable $indentfunc = null) {
+        $r = [];
+        $options = ['context' => \context_system::instance(), 'escape' => false];
+        $frameworks = [];
+        foreach ($records as $record) {
+            if ($displayfilter !== null && !$displayfilter($record)) {
+                continue;
+            }
+            $fid = (int)preg_split('|/|', $record->path)[1];
+            if ($record->pathlevel > 1) {
+                $fname = array_key_exists($fid, $frameworks) ? $frameworks[$fid] : $fid;
+                $indent = ($indentfunc === null) ? ($record->pathlevel - 2) : $indentfunc($record);
+                $r[$fname][$record->id] = str_repeat(self::DOUBLE_SPACE, $indent) .
+                    format_string($record->name, true, $options);
+            } else {
+                $frameworks[$fid] = format_string($record->name, true, $options);
+            }
+        }
+        if (count($r) == 1) {
+            // No need to display the framework name if it is the only framework.
+            $r = reset($r);
+            return ['' => $r];
+        }
+        return $r;
+    }
+
+    /**
+     * Builds a menu for the list of departments but only shows the relevant (managed) ones
+     *
+     * @param \stdClass[] $records records with fields: id, parentid, path, pathlevel, name, sortorder AND ismanaged
+     * @return array Returns array of options that can be used in moodleform 'selectgroups' element
+     */
+    public static function get_hierarchical_managed_menu(array &$records) {
+        // Calculate which records need to be displayed. This will be:
+        // - either records that are managed
+        // - or records that have one of the [grand]parents AND one of the [grand]children managed
+        // - or records that are frameworks that have managed [grand]children
+        // - or records that have two or more direct children that are either managed themselves or have managed [grand]children.
+        // For each record that needs to be displayed calculate the indent.
+        foreach ($records as &$r) {
+            $r->manageddirectchildren = [];
+            $r->managedparents = false;
+            $r->managedchildren = false;
+        }
+        foreach ($records as &$record) {
+            $paths = preg_split('|/|', $record->path, -1, PREG_SPLIT_NO_EMPTY);
+            if (!empty($record->ismanaged)) {
+                // Indicate for all parents that they have managed children.
+                for ($i = 0; $i < count($paths) - 1; $i++) {
+                    $records[(int)$paths[$i]]->managedchildren = true;
+                }
+                if (count($paths) > 1) {
+                    $parentid = (int)$paths[count($paths) - 2];
+                    $records[$parentid]->manageddirectchildren[$record->id] = $record->id;
+                }
+            }
+            // Check if this record has managed parents.
+            for ($i = 0; $i < count($paths) - 1; $i++) {
+                if (!empty($records[(int)$paths[$i]]->ismanaged)) {
+                    $record->managedparents = true;
+                }
+            }
+        }
+        foreach ($records as &$r) {
+            $r->display = !empty($r->ismanaged) ||
+                ($r->managedchildren && $r->managedparents) ||
+                ($r->managedchildren && $r->pathlevel == 1) ||
+                (count($r->manageddirectchildren) > 1);
+        }
+        foreach ($records as &$r) {
+            $r->indent = 0;
+            if ($r->display) {
+                $paths = preg_split('|/|', $r->path, -1, PREG_SPLIT_NO_EMPTY);
+                for ($i = 1; $i < count($paths) - 1; $i++) {
+                    $r->indent += ($records[(int)$paths[$i]]->display) ? 1 : 0;
+                }
+            }
+        }
+
+        // Build and return the menu.
+        self::sort_records_hierarchically($records);
+        return self::build_menu($records, function($r) {
+            return $r->display;
+        }, function($r) {
+            return $r->indent;
+        });
+    }
+
+    /**
+     * Rounds timestamp to the date format
+     *
+     * This method uses exactly the same expression as 'dateselector' element.
+     * Both always use the server timezone to avoid showing job start/end date a day early or late
+     * because of user timezone not matching the server timezone.
+     *
+     * @param int $time
+     * @return int
+     */
+    public static function round_time($time) {
+        global $CFG;
+        if (!$time) {
+            return 0;
+        }
+        $date = getdate($time);
+        return make_timestamp($date['year'], $date['mon'], $date['mday'], 0, 0, 0, $CFG->timezone, true);
+    }
+
+    /**
+     * List of fields to use in job SQL
+     *
+     * @param string $jobalias
+     * @param string $positionalias
+     * @param string $departmentalias
+     * @return string
+     */
+    protected static function get_job_sql_fields($jobalias = 'j', $positionalias = 'p', $departmentalias = 'd') {
+        $jobfields = array_diff(array_keys(\tool_organisation\job::properties_definition()), ['usermodified']);
+        $positionfields = ['id', 'departmentmanager', 'departmentpermissions', 'globalmanager',
+            'globalpermissions', 'name', 'path', 'sortorder'];
+        $departmentfields = ['id', 'name', 'path', 'sortorder'];
+        $fields = [];
+        foreach ($jobfields as $field) {
+            $fields[] = $jobalias . '.' . $field . ' AS job_' . $field;
+        }
+        foreach ($positionfields as $field) {
+            $fields[] = $positionalias . '.' . $field . ' AS pos_' . $field;
+        }
+        foreach ($departmentfields as $field) {
+            $fields[] = $departmentalias . '.' . $field . ' AS dep_' . $field;
+        }
+        return join(', ', $fields);
+    }
+
+    /**
+     * Builds part of SQL to use to filter jobs by tenantid and time
+     *
+     * Result can be used either in WHERE ... clause or in JOIN job ON ... clause
+     *
+     * @param int|null $time if null then don't filter based on start/end date
+     * @param string $jobalias
+     * @param int $tenantid tenant id, by default tenant of the current user
+     * @return array array of [$where, $params]
+     */
+    public static function job_time_and_tenant_select(?int $time, string $jobalias = 'j', int $tenantid = 0) {
+        $ptenant = db::generate_param_name();
+        $tenantid = $tenantid ?: tenancy::get_tenant_id();
+
+        $where = "{$jobalias}.tenantid = :{$ptenant}";
+        $params = [$ptenant => $tenantid];
+
+        if ($time !== null) {
+            $time = $time ?: time();
+            $time = self::round_time($time);
+
+            $ptime1 = db::generate_param_name();
+            $ptime2 = db::generate_param_name();
+
+            $params = array_merge($params, [$ptime1 => $time, $ptime2 => $time]);
+            $where .= " AND {$jobalias}.startdate <= :{$ptime1}
+                        AND ({$jobalias}.enddate = 0 OR {$jobalias}.enddate >= :{$ptime2})";
+        }
+
+        return [$where, $params];
+    }
+
+    /**
+     * SQL to retrieve user information and their jobs
+     *
+     * @param string $where
+     * @param array $params
+     * @param int|null $time
+     * @return array
+     */
+    public static function get_users_with_jobs_sql(string $where, array $params = [], ?int $time = 0) {
+        list($tjoin, $twhere, $tparams) = tenancy::get_users_sql('u');
+
+        $userfields = \user_picture::fields('u', null, 'user_id', 'user_');
+        $jobfields = self::get_job_sql_fields('j', 'p', 'd');
+
+        list($timewhere, $timeparams) = self::job_time_and_tenant_select($time, 'j');
+        $sql = "SELECT $userfields, $jobfields
+          FROM {user} u
+          $tjoin
+          LEFT JOIN {tool_organisation_job} j ON j.userid = u.id
+            AND $timewhere
+          LEFT JOIN {tool_organisation_position} p ON p.id = j.positionid
+          LEFT JOIN {tool_organisation_department} d ON d.id = j.departmentid
+          WHERE $where AND $twhere";
+
+        return [$sql, $params + $tparams + $timeparams];
+    }
+
+    /**
+     * SQL to retrieve users managed by the given manager
+     *
+     * @param user_with_jobs $manager
+     * @param int $withpermissions
+     * @param int $time
+     * @param string $fields
+     * @return array
+     */
+    public static function get_managed_users_with_jobs_sql(user_with_jobs $manager, int $withpermissions = 0,
+                                                           int $time = 0, string $fields = '') {
+        // TODO SP-141 remove this function, move code to functions that use it. The name is confusing!
+        list($where, $params) = self::get_managed_users_select($manager, 'u', $withpermissions, $time);
+        list($sql, $params) = self::get_users_with_jobs_sql($where, $params);
+
+        if ($fields) {
+            $sql = "SELECT $fields FROM ($sql) " . \tool_wp\db::generate_alias();
+        }
+
+        return [$sql, $params];
+    }
+
+    /**
+     * Helps to create SQL to retrieve users managed by the current manager
+     *
+     * Example:
+     * list($where, $params) = helper::get_managed_users_select($manager);
+     * $DB->get_records_sql("SELECT * FROM {user} u WHERE $where", $params);
+     *
+     * @param user_with_jobs $manager
+     * @param string $usertablealias
+     * @param int $withpermissions
+     * @param int $time
+     * @return array [$where, $params]
+     */
+    public static function get_managed_users_select(user_with_jobs $manager, $usertablealias = 'u',
+                                                    int $withpermissions = 0, int $time = 0) : array {
+        global $DB;
+        $jobs = $manager->get_jobs(true, $withpermissions);
+        $queries = [];
+        $params = [];
+        $j = db::generate_alias();
+        $p = db::generate_alias();
+        $d = db::generate_alias();
+        foreach ($jobs as $job) {
+            if ($job->get_position()->is_global_manager($withpermissions)) {
+                $ppath = db::generate_param_name();
+                $queries[] = $DB->sql_like("${p}.path", ":$ppath");
+                $params[$ppath] = $job->get_position()->get('path') . '/%';
+            }
+            if ($job->get_position()->is_department_manager($withpermissions)) {
+                $dpath = db::generate_param_name();
+                $did = db::generate_param_name();
+                $queries[] = "{$d}.id = :$did OR " . $DB->sql_like("{$d}.path", ":$dpath");
+                $params[$dpath] = $job->get_department()->get('path') . '/%';
+                $params[$did] = $job->get_department()->get('id');
+            }
+        }
+        if (!$queries) {
+            return ['1=0', []];
+        }
+
+        $selfuserid = db::generate_param_name();
+        $params[$selfuserid] = $manager->get('id');
+        list($timewhere, $timeparams) = self::job_time_and_tenant_select($time, $j);
+        $where = " EXISTS (SELECT 1
+            FROM {tool_organisation_job} {$j}
+            JOIN {tool_organisation_position} {$p} ON {$p}.id = {$j}.positionid
+            JOIN {tool_organisation_department} {$d} ON {$d}.id = {$j}.departmentid
+            WHERE {$j}.userid = {$usertablealias}.id
+              AND {$j}.userid <> :{$selfuserid}
+              AND {$timewhere}
+              AND ((" . join(') OR (', $queries) . '))) ';
+        return [$where, $params + $timeparams];
+    }
+
+    /**
+     * Parses each record returned by get_users_with_jobs_sql() into user, job, position and department records
+     *
+     * @param \stdClass $record
+     * @return array [$userrecord, $jobrecord, $positionrecord, $deprecord]
+     */
+    public static function unalias_user_job(\stdClass $record) {
+        $userrecord = \user_picture::unalias($record, null, 'user_id', 'user_');
+
+        $jobrecord = new \stdClass();
+        $positionrecord = new \stdClass();
+        $deprecord = new \stdClass();
+        foreach ($record as $key => $value) {
+            if (preg_match('/^job_(.*)/', $key, $matches)) {
+                $jobrecord->{$matches[1]} = $value;
+            } else if (preg_match('/^pos_(.*)/', $key, $matches)) {
+                $positionrecord->{$matches[1]} = $value;
+            } else if (preg_match('/^dep_(.*)/', $key, $matches)) {
+                $deprecord->{$matches[1]} = $value;
+            }
+        }
+
+        return [$userrecord, $jobrecord, $positionrecord, $deprecord];
+    }
+
+    /**
+     * SQL to retrieve users with jobs relevant to the manager
+     */
+    public static function get_managed_users_with_relevant_jobs_sql() {
+        // TODO SP-141.
+    }
+
+    /**
+     * Returns a WHERE clause to use in SQL selecting users who have a job in a position
+     *
+     * This clause can be negated with "NOT"
+     *
+     * @param int $positionid
+     * @param bool $withsubpositions
+     * @param string $usertablealias
+     * @param int $minstartdate
+     * @param int $tenantid tenant id, by default tenant of the current user
+     * @return array array [$where, $params]
+     */
+    public static function user_has_position_select(int $positionid, bool $withsubpositions = false,
+            string $usertablealias = 'u', ?int $minstartdate = null, int $tenantid = 0) : array {
+        global $DB;
+
+        $j = db::generate_alias();
+        list($timewhere, $timeparams) = self::job_time_and_tenant_select(0, $j, $tenantid);
+        if ($minstartdate) {
+            $ptime = db::generate_param_name();
+            $timewhere .= " AND {$j}.startdate >= :{$ptime}";
+            $params[$ptime] = self::round_time($minstartdate);
+        }
+
+        $params = $timeparams;
+
+        if ($withsubpositions) {
+
+            $p = db::generate_alias();
+            $pathparam = db::generate_param_name();
+            $likepath = $DB->sql_like("{$p}.path", ':' . $pathparam);
+            $where = " EXISTS (SELECT 1
+                                 FROM {tool_organisation_job} {$j}
+                                 JOIN {tool_organisation_position} {$p}
+                                   ON ({$p}.id = {$j}.positionid)
+                                WHERE {$j}.userid = {$usertablealias}.id
+                                  AND {$timewhere}
+                                  AND {$likepath}) ";
+
+            $pospath = $DB->get_field('tool_organisation_position', 'path', ['id' => $positionid]);
+
+            $params[$pathparam] = $pospath . '%';
+
+        } else {
+            $pos = db::generate_param_name();
+            $where = " EXISTS (SELECT 1
+                                 FROM {tool_organisation_job} $j
+                                WHERE $j.userid = {$usertablealias}.id
+                                  AND {$timewhere}
+                                  AND $j.positionid = :{$pos})";
+            $params[$pos] = $positionid;
+        }
+        return [$where, $params];
+    }
+
+    /**
+     * Returns a WHERE clause to use in SQL selecting users who have a job in a department
+     *
+     * This clause can be negated with "NOT"
+     *
+     * @param int $departmentid
+     * @param bool $includesubdept include jobs in subdepartments
+     * @param string $usertablealias
+     * @param int $minstartdate
+     * @param int $tenantid tenant id, by default tenant of the current user
+     * @return array array [$where, $params]
+     */
+    public static function user_is_in_department_select(int $departmentid, bool $includesubdept = false,
+            string $usertablealias = 'u', ?int $minstartdate = null, int $tenantid = 0) : array {
+        global $DB;
+        if ($includesubdept) {
+            $deppath = $DB->get_field('tool_organisation_department', 'path', ['id' => $departmentid]);
+            if (!$deppath) {
+                $includesubdept = false;
+            }
+        }
+
+        $j = db::generate_alias();
+        $dep = db::generate_param_name();
+        $params = [$dep => $departmentid];
+        list($timewhere, $timeparams) = self::job_time_and_tenant_select(0, $j, $tenantid);
+        if ($minstartdate) {
+            $ptime = db::generate_param_name();
+            $timewhere .= " AND {$j}.startdate >= :{$ptime}";
+            $params[$ptime] = self::round_time($minstartdate);
+        }
+        if ($includesubdept) {
+            $d = db::generate_alias();
+            $pdeppath = db::generate_param_name();
+            $likepath = $DB->sql_like("{$d}.path", ':' . $pdeppath);
+            $where = "FROM {tool_organisation_job} {$j}
+                JOIN {tool_organisation_department} {$d} ON {$d}.id = {$j}.departmentid
+                WHERE {$j}.userid = {$usertablealias}.id AND {$timewhere} AND ({$j}.departmentid = :{$dep} OR {$likepath})";
+            $params[$pdeppath] = $deppath . '/%';
+        } else {
+            $where = "FROM {tool_organisation_job} {$j}
+                WHERE {$j}.userid = {$usertablealias}.id AND {$timewhere} AND {$j}.departmentid = :{$dep}";
+        }
+        $where = " EXISTS (SELECT 1 $where )";
+        return [$where, $params + $timeparams];
+    }
+
+    /**
+     * Returns a WHERE clause to use in SQL selecting users who do not have any position in any department
+     *
+     * This clause can be negated with "NOT"
+     *
+     * @param string $usertablealias
+     * @return array array [$where, $params]
+     */
+    public static function users_without_jobs_sql(string $usertablealias = 'u') : array {
+        $j = db::generate_alias();
+        $where = " NOT EXISTS (SELECT 1
+                                 FROM {tool_organisation_job} {$j}
+                                WHERE {$j}.userid = {$usertablealias}.id)";
+        return [$where, []];
+    }
+
+    /**
+     * Return a SQL subselect to be used by report builder "has current jobs" column and filter.
+     *
+     * @param string $usertablealias
+     * @return string
+     */
+    public static function get_has_current_jobs_sql(string $usertablealias = 'u') {
+        $j = db::generate_alias();
+        $now = strtotime('today');
+        return "CASE WHEN EXISTS (SELECT 1
+                   FROM {tool_organisation_job} {$j}
+                  WHERE {$j}.userid = {$usertablealias}.id
+                    AND {$j}.startdate <= {$now}
+                    AND ({$j}.enddate = 0 OR {$j}.enddate >= {$now}))
+                THEN 1 ELSE 0 END";
+    }
+}
