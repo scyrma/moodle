@@ -3048,9 +3048,11 @@ function get_assignable_roles(context $context, $rolenamedisplay = ROLENAME_ALIA
     $extrafields = '';
 
     if ($withusercounts) {
+        /** @uses \tool_tenant\tenancy::get_users_subquery */
+        $tenantwhere = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [], '');
         $extrafields = ', (SELECT COUNT(DISTINCT u.id)
                              FROM {role_assignments} cra JOIN {user} u ON cra.userid = u.id
-                            WHERE cra.roleid = r.id AND cra.contextid = :conid AND u.deleted = 0
+                            WHERE ' . $tenantwhere . ' cra.roleid = r.id AND cra.contextid = :conid AND u.deleted = 0
                           ) AS usercount';
         $params['conid'] = $context->id;
     }
@@ -3931,6 +3933,9 @@ function get_role_users($roleid, context $context, $parent = false, $fields = ''
         $ejoin = "";
     }
 
+    /** @uses \tool_tenant\tenancy::get_users_subquery */
+    $tenantwhere = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [], '');
+
     $sql = "SELECT DISTINCT $fields, ra.roleid
               FROM {role_assignments} ra
               JOIN {user} u ON u.id = ra.userid
@@ -3938,7 +3943,8 @@ function get_role_users($roleid, context $context, $parent = false, $fields = ''
             $ejoin
          LEFT JOIN {role_names} rn ON (rn.contextid = :coursecontext AND rn.roleid = r.id)
         $groupjoin
-             WHERE (ra.contextid = :contextid $parentcontexts)
+             WHERE $tenantwhere
+                   (ra.contextid = :contextid $parentcontexts)
                    $roleselect
                    $groupselect
                    $extrawheretest
