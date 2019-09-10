@@ -1,0 +1,138 @@
+
+body.pagelayout-course.format-wplist {
+    #region-main {
+        padding: 0;
+    }
+
+    // Background colour needs to be changed into a variable.
+    .sectionprogress.progress {
+        height: 0.3rem;
+        border-radius: 0;
+        width: 100px;
+    }
+
+    .list-group .list-group-item {
+        border-left: 0;
+        border-right: 0;
+        &:first-child {
+            border-top: 0;
+        }
+    }
+
+    // positioned to the right of each section and activity.
+    .editoptions {
+        min-width: 105px;
+        background-color: $gray010;
+        i {
+            color: $primary;
+            font-size: 1.2rem;
+        }
+    }
+
+    // remove the border bottom from the last paragraph.
+    .no-overflow {
+        padding: 0;
+        display: inline-block;
+        min-height: auto;
+        p:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    // When moving sections hide the container with activities.
+    .section.sortable-list-is-dragged {
+        .collapse {
+            display: none;
+        }
+    }
+
+    // Hide the added arrow after dropdowns.
+    .section .actions .dropdown-toggle::after {
+        display: none;
+    }
+
+    .activity .availabilityinfo {
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .movesection,
+    .movemodule,
+    .quickeditlink {
+        color: $gray060;
+    }
+
+    .quickeditlink .icon {
+        font-size: 16px;
+    }
+
+    h3.sectionname,
+    h3.sectionname a {
+        color: $headings-color;
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    .course-section-toggle:hover {
+        text-decoration: none;
+    }
+
+    .addsectionwrapper {
+        background-color: $gray010;
+        padding: 41px 5px;
+        text-align: center;
+        .addsectionicon {
+            font-size: 3.5rem;
+            color: $gray040;
+        }
+    }
+
+    .dropactivity {
+        display: none;
+    }
+
+    .section.movemodule .dropactivity {
+        display: none;
+    }
+
+    .nomodules .dropactivity {
+        display: block;
+    }
+
+    div.wplist-group-item:hover {
+        background-color: $gray010;
+    }
+
+    // Erases the first section border top
+    #section-0 {
+        .section-header {
+            border-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+body.path-mod-forum.format-wplist {
+    .forumsearch {
+        text-align: right;
+        width: 100%;
+        .form-inline {
+            display: inline-block;
+        }
+    }
+}
+
+// Quiz popper menu height is related to the region-main height.
+body.path-mod-quiz.format-wplist {
+    @include media-breakpoint-up(sm) {
+        #region-main {
+            min-height: 650px;
+        }
+    }
+    // We need this style or the quiz navigation menu won't not readable.
+    .qn_buttons {
+        .qnbutton {
+            color: $text;
+        }
+    }
+}
