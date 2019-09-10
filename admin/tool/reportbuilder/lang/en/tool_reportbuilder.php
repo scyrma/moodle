@@ -1,0 +1,258 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Strings for tool_reportbuilder.
+ *
+ * @package   tool_reportbuilder
+ * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['accesspeoplecapabilities'] = 'People with system capabilities (view/manage) reports can view this report on ALL users';
+$string['accesspeopleonlycapabilities'] = 'Only people with system capabilities (view/manage reports) can view this report';
+$string['accesspeopleorgmanagers'] = 'People in the following positions can view this report on users in their teams';
+$string['accesstab'] = 'Access';
+$string['actions'] = 'Actions';
+$string['addacondition'] = 'Add a condition...';
+$string['addafilter'] = 'Add a filter...';
+$string['addcolumn'] = 'Add column';
+$string['adddefault'] = 'Add default configuration';
+$string['adddefault_help'] = 'Each report source also defines default columns, conditions and filters. If you want to create the report using these defaults, select this field';
+$string['addemails'] = 'Add emails manually';
+$string['addfieldbyname'] = 'Add field \'{$a}\' to the report';
+$string['addreport'] = 'New report';
+$string['addschedule'] = 'New schedule';
+$string['addusers'] = 'Add users manually';
+$string['aggregation_avg'] = 'Average';
+$string['aggregation_count'] = 'Count';
+$string['aggregation_countdistinct'] = 'Count unique';
+$string['aggregation_groupconcat'] = 'Comma separate values';
+$string['aggregation_groupconcatdistinct'] = 'Comma separate distinct values';
+$string['aggregation_max'] = 'Maximum';
+$string['aggregation_min'] = 'Minimum';
+$string['aggregation_percent'] = 'Percentage';
+$string['aggregation_sum'] = 'Sum';
+$string['aggregation_unique'] = 'Unique values';
+$string['and'] = 'And';
+$string['asc'] = 'The column \'{$a}\' has ascending sort direction';
+$string['audience'] = 'Audience';
+$string['basicinformation'] = 'Basic information';
+$string['checkboxanyvalue'] = 'Any value';
+$string['checkboxischecked'] = 'Yes';
+$string['checkboxisnotchecked'] = 'No';
+$string['choose'] = 'Choose...';
+$string['conditiondatastorecoursefullname'] = 'Course from datastore fullname';
+$string['conditiondatastoreuserfirstname'] = 'User from datastore first name';
+$string['conditiondatastoreuserlastname'] = 'User from datastore surname';
+$string['conditionshelp'] = 'Conditions';
+$string['conditionshelp_help'] = 'List of predefined conditions that always apply when viewing this report.';
+$string['conditionstab'] = 'Conditions';
+$string['confirm'] = 'Confirm';
+$string['confirmdeletecondition'] = 'Are you sure you want to delete condition \'{$a}\'?';
+$string['confirmdeleteschedule'] = 'Are you sure you want to delete the schedule \'{$a}\' and all associated data? This action cannot be undone.';
+$string['confirmresetallconditions'] = 'Are you sure you want to reset all conditions?';
+$string['confirmresetconditions'] = 'Are you sure you want to reset \'{$a}\' condition?';
+$string['confirmsendschedule'] = 'Are you sure you want to queue \'{$a}\' for sending?';
+$string['coursecustomfieldname'] = '{$a->category}: {$a->field}';
+$string['course_completion_reaggregate'] = 'Time reaggregated';
+$string['course_completion_timecompleted'] = 'Time completed';
+$string['course_completion_timeenrolled'] = 'Time enrolled';
+$string['course_completion_timestarted'] = 'Time started';
+$string['customessage'] = 'Custom message';
+$string['customfieldcolumn'] = '{$a}';
+$string['customizecondition'] = 'Edit condition name';
+$string['customizefilter'] = 'Edit filter name';
+$string['customizeheader'] = 'Edit header for the column \'{$a}\'';
+$string['customreports'] = 'Custom reports';
+$string['datadisplay'] = 'Data display';
+$string['datadisplay_opt1'] = 'According to viewer';
+$string['datadisplay_opt2'] = 'As current user ({$a})';
+$string['dateanyvalue'] = 'Any value';
+$string['datecreated'] = 'Created';
+$string['datecurrent'] = 'Current';
+$string['dateinthefuture'] = 'In the future';
+$string['dateinthepast'] = 'In the past';
+$string['dateisempty'] = 'Is empty';
+$string['dateisnotempty'] = 'Is not empty';
+$string['datelast'] = 'Last ... days';
+$string['datenext'] = 'Next ... days';
+$string['dateprevious'] = 'Previous';
+$string['datetostart'] = 'Date';
+$string['dateupcoming'] = 'Upcoming';
+$string['deletecolumn'] = 'Delete column \'{$a}\'';
+$string['deletecondition'] = 'Delete condition \'{$a}\'';
+$string['deletefilter'] = 'Delete filter';
+$string['deletereport'] = 'Delete report';
+$string['deletereportmsg'] = 'Are you sure you want to delete the report \'{$a}\' and all associated data? This action cannot be undone.';
+$string['deletereportsuccess'] = 'Report was deleted';
+$string['deleteschedule'] = 'Delete schedule';
+$string['desc'] = 'The column \'{$a}\' has descending sort direction';
+$string['description'] = 'Description';
+$string['description_help'] = 'Provide a description about the objective of the report.';
+$string['displaydata'] = 'Display report data';
+$string['duplicate'] = 'Duplicate';
+$string['duplicatereport'] = 'Duplicate report';
+$string['editmode'] = 'Switch to edit view';
+$string['editreport'] = 'Edit content';
+$string['editreportdetails'] = 'Edit details';
+$string['editreportname'] = 'Edit report name';
+$string['editschedule'] = 'Edit schedule';
+$string['edittitle'] = 'Edit report \'{$a}\'';
+$string['enablesortingon'] = 'Enable sorting on column \'{$a}\'';
+$string['enddate'] = 'End date';
+$string['enteremail'] = 'Please enter a valid email and hit \u0027enter\u0027';
+$string['entitycourse'] = 'Course';
+$string['entitycoursecompletion'] = 'Course completion';
+$string['entitydatastorecoursecompletion'] = 'Course completion from datastore';
+$string['entitydatastoreaction'] = 'Datastore action';
+$string['entitydatastorecourse'] = 'Course from datastore';
+$string['entitydatastoreuser'] = 'User from datastore';
+$string['entityreportbuilder'] = 'Custom reports';
+$string['entityschedule'] = 'Schedule';
+$string['entityuser'] = 'User';
+$string['error:mustselectformat'] = 'You must select a format.';
+$string['error:mustselectrecurrence'] = 'You must select a recurrence.';
+$string['error:mustselectreport'] = 'You must select a report.';
+$string['error:mustselectsource'] = 'You must select a report source.';
+$string['errormanageschedules'] = 'You don\'t have permission to manage schedules';
+$string['eventreportcreated'] = 'Report created';
+$string['eventreportdeleted'] = 'Report deleted';
+$string['eventreportschedulecreated'] = 'Report schedule created';
+$string['eventreportscheduledeleted'] = 'Report schedule deleted';
+$string['eventreportscheduleupdated'] = 'Report schedule updated';
+$string['eventreportupdated'] = 'Report updated';
+$string['eventreportviewed'] = 'Report viewed';
+$string['filternotvalid'] = 'The filter must be a subclass of filter_base.';
+$string['filtersbutton'] = 'Show/hide filters sidebar';
+$string['filtershelp'] = 'Filters';
+$string['filtershelp_help'] = 'List of filters that do not apply automatically but are available for users.';
+$string['filterstab'] = 'Filters';
+$string['format'] = 'Format';
+$string['formatcsv'] = 'CSV';
+$string['formatexcel'] = 'Excel';
+$string['formathtml'] = 'HTML';
+$string['formatjson'] = 'JSON';
+$string['formatods'] = 'ODS';
+$string['formatpdf'] = 'PDF';
+$string['fullnamewithlink'] = 'Full name with profile link';
+$string['fullnamewithpicture'] = 'Full name with picture';
+$string['fullnamewithpicturelink'] = 'Full name with picture and link';
+$string['hascurrentjobs'] = 'Has current jobs';
+$string['invalidemail'] = 'This email address \'{$a}\' is invalid';
+$string['isnotempty'] = 'Is not empty';
+$string['jobdepartment'] = 'Department';
+$string['lastmodified'] = 'Last modified';
+$string['lastsenton'] = 'Last sent on';
+$string['managereports'] = 'Manage custom reports';
+$string['message'] = 'Message';
+$string['modifiedby'] = 'Modified by';
+$string['movecolumn'] = 'Move column {$a}';
+$string['movefilter'] = 'Move filter \'{$a}\'';
+$string['movesorting'] = 'Move sorting order of column \'{$a}\'';
+$string['myreports'] = 'My reports';
+$string['never'] = 'Never';
+$string['newaggregationfor'] = 'New aggregation for the column \'{$a}\'';
+$string['newschedule'] = 'New schedule';
+$string['newvaluefor'] = 'New value for \'{$a}\'';
+$string['noaggregation'] = 'No aggregation';
+$string['nocolumnsselected'] = 'Add a column to the report';
+$string['noconditions'] = 'There are no conditions selected.';
+$string['nofilters'] = 'There are no filters selected.';
+$string['nosortablecolumns'] = 'Sortable columns not yet added.';
+$string['numberanyvalue'] = 'Any value';
+$string['numberbetween'] = 'In a range between';
+$string['numberequalorgreaterthan'] = 'Greater than or equal';
+$string['numberequalorlessthan'] = 'Less than or equal';
+$string['numberequalto'] = 'Equal';
+$string['numbergreaterthan'] = 'Greater than';
+$string['numberisempty'] = 'Is empty';
+$string['numberisnotempty'] = 'Is not empty';
+$string['numberlessthan'] = 'Less than';
+$string['pluginname'] = 'Report builder';
+$string['position'] = 'Position';
+$string['previewmode'] = 'Switch to preview view';
+$string['privacy:metadata'] = 'The report builder only shows data stored in other locations.';
+$string['privacywarning'] = 'WARNING: before adding any email make sure you have the legal basis to do so and this is compliant with the relevant Privacy Law applicable to your organization.';
+$string['profiledepartment'] = 'Profile department';
+$string['quarter'] = 'Quarter';
+$string['recurrence'] = 'Recurrence';
+$string['recurrenceannualy'] = 'Annually';
+$string['recurrencedaily'] = 'Daily';
+$string['recurrencedailyweekday'] = 'Daily - Weekdays';
+$string['recurrencedonorepeat'] = 'Does not repeat';
+$string['recurrencemonthly'] = 'Monthly';
+$string['recurrenceweekly'] = 'Weekly';
+$string['reg_wpreports'] = 'Number of custom reports ({$a})';
+$string['removechedulesuccess'] = 'The schedule has been deleted.';
+$string['removeconditionsuccess'] = 'The condition \'{$a}\' has been deleted.';
+$string['report'] = 'Report';
+$string['reportbuilder:edit'] = 'Edit a report configuration';
+$string['reportbuilder:read'] = 'View reports';
+$string['reportcoursecompletion'] = 'Course completion from datastore';
+$string['reportlists'] = 'System report for report lists';
+$string['reportname'] = 'Report name';
+$string['reportname_help'] = 'Enter a name for the report';
+$string['reportschedules'] = 'System report for schedules list';
+$string['reportsource'] = 'Report source';
+$string['reportsource_help'] = 'The report source defines where the data for the report will come from';
+$string['reportstab'] = 'Reports';
+$string['reportuserslist'] = 'Users list';
+$string['resetall'] = 'Reset all';
+$string['resetallconditions'] = 'Reset all conditions';
+$string['resetalltitle'] = 'Reset all conditions';
+$string['resetcondition'] = 'Reset condition';
+$string['resetfield'] = 'Reset \'{$a}\' field';
+$string['resettitle'] = 'Reset condition';
+$string['rolemanager'] = 'Report builder manager';
+$string['rolemanagerdescription'] = 'Allows to create and manage custom reports within the current tenant';
+$string['save'] = 'Save';
+$string['saveandcontinue'] = 'Save and continue';
+$string['schedule'] = 'Schedule';
+$string['scheduleaddedastask'] = 'The schedule will be sent as soon as posible';
+$string['scheduled'] = 'Scheduled';
+$string['schedulename'] = 'Schedule name';
+$string['schedulesstab'] = 'Schedules';
+$string['scheduletab'] = 'Schedule';
+$string['schedulewarning'] = 'The scheduled reports will always display the same information as seen by the report creator.';
+$string['selectacondition'] = 'Select a condition';
+$string['selectafilter'] = 'Select a filter';
+$string['selectaggregation'] = 'Select an aggregation for the column \'{$a}\'';
+$string['selectcourses'] = 'Select courses';
+$string['selectsource'] = 'Select a report source';
+$string['send'] = 'Send';
+$string['send_schedulestask'] = 'Send schedules';
+$string['shedulewarning'] = 'The scheduled reports will always display the same information as seen by the report creator.';
+$string['sortingshelp'] = 'Sorting';
+$string['sortingshelp_help'] = 'Default sorting for the report';
+$string['sortingtab'] = 'Sorting';
+$string['startdate'] = 'Start date';
+$string['subject'] = 'Subject';
+$string['tabletab'] = 'Table';
+$string['teststring1'] = 'Test string 1';
+$string['teststring2'] = 'Test string 2';
+$string['timecompleted'] = 'Time completed';
+$string['togglestatus'] = 'Toggle status';
+$string['userconfirmed'] = 'Registration confirmed';
+$string['userpicture'] = 'User picture';
+$string['usersuspended'] = 'Registration suspended';
+$string['userviewreportas'] = 'View report data as';
+$string['userviewreportas_help'] = 'The report data will be included as if viewed by the selected user. If left empty, the current user will be used as default';
+$string['viewreports'] = 'Report builder';
+$string['visibility'] = 'Visibility';
+$string['visibleto'] = 'Visible to users in';
