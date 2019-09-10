@@ -1,0 +1,40 @@
+{{!
+     This file is part of Moodle - http://moodle.org/
+      Moodle is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+      Moodle is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+      You should have received a copy of the GNU General Public License
+     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_program/program_progress_overview
+
+    Template for showing progress percentage and links to progress reports
+
+    Example context (json):
+    {
+        "allocationid": "1",
+        "contextid": "1",
+        "title": "hello world",
+        "progresspercent": "100%",
+        "viewasmode": "1",
+        "userprogramurl": "url"
+    }
+}}
+<div data-region="program-progress-overview" data-allocationid="{{allocationid}}" data-title="{{title}}" data-contextid="{{contextid}}">
+    {{progresspercent}}
+    {{#viewasmode}}
+        <a href="javascript:" class="m-0 ml-1 p-0 program-progress-overview-trigger">{{#pix}} i/dashboard, core, {{#str}} progressoverview, tool_program {{/str}}{{/pix}}</a>
+        <a href="{{userprogramurl}}" class="m-0 p-0">{{#pix}} bar-chart, tool_wp, {{#str}} progressreport , tool_program {{/str}}{{/pix}}</a>
+    {{/viewasmode}}
+</div>
+{{#viewasmode}}{{#js}}
+    require(['tool_program/program_progress_modal'], function(ProgramProgressModal) {
+        ProgramProgressModal.init();
+    });
+{{/js}}{{/viewasmode}}
