@@ -54,7 +54,7 @@ $string['viewnotification'] = 'View notification';
 
 $string['privacy:metadata'] = 'The MoodleCloud plugin stores events and triggers for the site administrator but does not store any user IDs or otherwise personally identifiable information.';
 
-$string['moodlecloudquotas'] = 'MoodleCloud Quotas';
+$string['quotas'] = 'Quotas';
 $string['mbused'] = 'MB used';
 $string['spaceused'] = 'Space used';
 $string['filetype'] = 'File type';
