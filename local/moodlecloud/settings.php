@@ -39,7 +39,7 @@ if ($hassiteconfig && $DB->get_manager()->table_exists('moodlecloud_touchpoints'
         $container->get('touchpoints.callables.getTouchpoints')
     );
 
-    $temp = new admin_settingpage('moodlecloudnotifications', new lang_string('moodlecloudnotifications','local_moodlecloud'));
+    $temp = new admin_settingpage('moodlecloudnotifications', new lang_string('notifications','local_moodlecloud'));
     $temp->add(new admin_setting_heading('emailnotifications', new lang_string('emailnotifications', 'local_moodlecloud'), new lang_string('emailnotificationsinfo', 'local_moodlecloud')));
 
     foreach ($touchpoints as $touchpoint) {
