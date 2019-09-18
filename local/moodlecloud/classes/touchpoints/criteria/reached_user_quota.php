@@ -39,6 +39,6 @@ class reached_user_quota implements criterion {
      * @return bool
      */
     public function is_met() : bool {
-        return empty(userquota::number_of_user_slots_remaining());
+        return !is_null(userquota::number_of_user_slots_remaining()) && empty(userquota::number_of_user_slots_remaining());
     }
 }
