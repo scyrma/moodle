@@ -60,7 +60,7 @@ class userquota {
      * @return bool true if site has unlimited quota.
      */
     public static function site_has_unlimited_quota() {
-        return defined('MOODLECLOUD_USER_QUOTA') && MOODLECLOUD_USER_QUOTA == 0;
+        return defined('MOODLECLOUD_USER_QUOTA') && MOODLECLOUD_USER_QUOTA == -1;
     }
 
     /**
