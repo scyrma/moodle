@@ -49,5 +49,5 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
  * @return bool true if site has unlimited quota.
  */
 function local_filestorage_site_has_unlimited_quota() {
-    return defined('FILESTORAGE_QUOTA') && FILESTORAGE_QUOTA == 0;
+    return defined('FILESTORAGE_QUOTA') && FILESTORAGE_QUOTA == -1;
 }
