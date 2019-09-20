@@ -26,9 +26,11 @@ defined('MOODLE_INTERNAL') || die();
 
 use local_moodlecloud\common\functions;
 
-global $DB;
+global $DB, $CFG;
 
-if ($hassiteconfig && $DB->get_manager()->table_exists('moodlecloud_touchpoints')) {
+$touchpointsdisabled = isset($CFG->moodlecloud_touchpoints_enabled) && $CFG->moodlecloud_touchpoints_enabled == false;
+
+if ($hassiteconfig && $DB->get_manager()->table_exists('moodlecloud_touchpoints') && !$touchpointsdisabled) {
     global $CFG;
     require_once($CFG->dirroot . '/local/moodlecloud/classes/siteowner_configmulticheckbox.php');
 
