@@ -163,6 +163,12 @@ class certification extends persistent {
                 'optional' => true,
                 'default' => 0,
             ],
+            'autocreategroups' => [
+                'type' => PARAM_INT,
+                'optional' => true,
+                'default' => \tool_program\api::GROUPS_AS_IN_PROGRAMS,
+                'null' => NULL_NOT_ALLOWED,
+            ],
             'archived' => [
                 'type' => PARAM_BOOL,
                 'optional' => true,

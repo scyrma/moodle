@@ -25,11 +25,13 @@
 namespace tool_certification\local\helpers;
 
 use coding_exception;
-use DateTime;
 use html_writer;
+use moodle_exception;
+use moodle_url;
 use stdClass;
-use tool_certification\api;
+use tool_certification\certification;
 use tool_certification\constants;
+use tool_certification\permission;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -172,5 +174,34 @@ class certificationuser_format {
     public static function dayround($value, stdClass $row) : string {
         $daysint = floor($value);
         return ($daysint > 0) ? (string)$daysint : get_string('lessthanaday', 'tool_certification');
+    }
+
+    /**
+     * Column actions
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     * @throws \coding_exception
+     * @throws moodle_exception
+     */
+    public static function actions(?string $value, stdClass $row): string {
+        global $OUTPUT;
+        // View user profile, send message, edit user allocation (if has permission).
+        $profileicon = $OUTPUT->pix_icon('i/user', get_string('profile'));
+        $messageicon = $OUTPUT->pix_icon('t/messages', get_string('sendmessage', 'core_message'));
+        $profileurl = new moodle_url('/user/profile.php', ['id' => $row->userid]);
+        $messageurl = new moodle_url('/message/index.php', ['id' => $row->userid]);
+        $output = html_writer::link($profileurl, $profileicon) . ' ' . html_writer::link($messageurl, $messageicon);
+
+        $certification = new certification($row->certificationid);
+        if (permission::can_allocate_anybody($certification)) {
+            $str = get_string('allocateusers', 'tool_certification');
+            $usericon = $OUTPUT->pix_icon('i/enrolusers', $str);
+            $params = ['id' => $row->certificationid];
+            $editurl = new moodle_url('/admin/tool/certification/edit.php#!certification_users_tab', $params);
+            $output .= html_writer::link($editurl, $usericon);
+        }
+        return $output;
     }
 }

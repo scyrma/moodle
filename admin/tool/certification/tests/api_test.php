@@ -1376,4 +1376,19 @@ class tool_certification_api_testcase extends advanced_testcase {
         $exists = $DB->record_exists('tool_certification_users', ['certificationid' => $certificationid2, 'userid' => $user1->id]);
         $this->assertFalse($exists);
     }
+
+    public function test_is_idnumber_unique() {
+        self::setAdminUser();
+        $certification1 = $this->generator->generate_certification(['idnumber' => 'num1']);
+        $certification2 = $this->generator->generate_certification(['idnumber' => 'num2']);
+
+        $this->assertTrue(api::is_idnumber_unique($certification1->get('id'), 'num1'));
+        $this->assertTrue(api::is_idnumber_unique($certification1->get('id'), 'num3'));
+        $this->assertFalse(api::is_idnumber_unique($certification1->get('id'), 'num2'));
+        $this->assertFalse(api::is_idnumber_unique($certification1->get('id'), 'NUM2'));
+
+        $certification1->set('idnumber', '');
+        $certification1->update();
+        $this->assertTrue(api::is_idnumber_unique($certification2->get('id'), ''));
+    }
 }

@@ -46,6 +46,7 @@ use tool_program\persistent\program;
 use tool_program\persistent\program_set_completion;
 use tool_program\persistent\program_user;
 use tool_tenant\tenancy;
+use tool_tenant\tenant_group;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -91,6 +92,7 @@ class api {
             'visible' => 1,
             'archived' => 1,
             'timearchived' => 1,
+            'autocreategroups' => \tool_program\api::GROUPS_AS_IN_PROGRAMS,
         ]);
 
         // Get current user tenant ID.
@@ -238,6 +240,7 @@ class api {
         $certification->set('expirydatetype', $data->expirydatetype);
         $certification->set('expirydateabsolute', $data->expirydateabsolute);
         $certification->set('expirydaterelative', $data->expirydaterelative);
+        $certification->set('autocreategroups', $data->autocreategroups);
 
         // Update dates for all users.
         self::recalculate_all_certification_users_dates($certification);
@@ -285,9 +288,9 @@ class api {
         $insertdata['enddate'] = 0;
         $insertdata['enddatelocked'] = 1;
 
-        $issuspended = isset($insertdata->status) && constants::STATUS_OVERRIDE_SUSPENDED === (int) $insertdata->status;
+        $issuspended = isset($insertdata['status']) && constants::STATUS_OVERRIDE_SUSPENDED === (int) $insertdata['status'];
         if ($issuspended) {
-            $insertdata->timesuspended = time();
+            $insertdata['timesuspended'] = time();
         }
 
         // We allocate user to this certification.
@@ -426,6 +429,10 @@ class api {
 
         $certification->set('archived', 0);
         $certification->set('timearchived', 0);
+        // Check that idnumber is unique and is not present in another active certification in this tenant.
+        if (!self::is_idnumber_unique((int)$certificationid, (string)$certification->get('idnumber'))) {
+            $certification->set('idnumber', '');
+        }
         $certification->update();
 
         // Trigger event.
@@ -456,6 +463,9 @@ class api {
         foreach ($certusers as $certuser) {
             self::deallocate_user($certification->get('id'), $certuser->get('userid'));
         }
+
+        // Delete groups associations.
+        tenant_group::delete_for_component('tool_certification', 'tool_certification', $certification->get('id'));
 
         // Create event.
         $event = certification_deleted::create_from_certification_deleted($certification);
@@ -1693,5 +1703,58 @@ class api {
                 self::deallocate_user($certification->get('id'), $userid);
             }
         }
+    }
+
+    /**
+     * Checks if certification idnumber is unique within a tenant. We can have more than one idnumber empty.
+     *
+     * @param int $certificationid
+     * @param string $idnumber
+     * @return bool
+     * @throws dml_exception
+     */
+    public static function is_idnumber_unique(int $certificationid, string $idnumber): bool {
+        global $DB;
+
+        if (!strlen($idnumber)) {
+            return true;
+        }
+
+        // We need a case insensitive comparison on the value.
+        $equal = $DB->sql_equal('idnumber', ':idnumber', false);
+        $query = "SELECT COUNT(1)
+                FROM {tool_certification}
+                WHERE $equal AND tenantid = :tenantid and archived = 0 AND id <> :certificationid AND idnumber <> :emptystring";
+        $params = [
+            'idnumber' => $idnumber,
+            'tenantid' => tenancy::get_tenant_id(),
+            'certificationid' => $certificationid,
+            'emptystring' => ''
+        ];
+
+        return !($DB->count_records_sql($query, $params) > 0);
+    }
+
+    /**
+     * Returns certification record by idnumber
+     *
+     * @param string $idnumber
+     * @param int $tenantid
+     * @return certification
+     * @throws \dml_exception
+     */
+    public static function get_certification_by_idnumber(string $idnumber, int $tenantid): ?certification {
+        global $DB;
+
+        // We need a case insensitive comparison on the value.
+        $equal = $DB->sql_equal('idnumber', ':idnumber', false);
+        $query = "SELECT *
+                FROM {tool_certification}
+                WHERE $equal AND tenantid = :tenantid and archived = 0";
+        $params = ['idnumber' => $idnumber, 'tenantid' => $tenantid];
+        if ($record = $DB->get_record_sql($query, $params)) {
+            return new certification(0, $record);
+        }
+        return null;
     }
 }

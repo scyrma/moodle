@@ -233,11 +233,14 @@ class behat_tool_certification extends behat_base {
     /**
      * Process certification user
      *
-     * @param stdClass|array $record
+     * @param array $record
      * @return certification_user
      */
-    public function process_certification_user($record = null): certification_user {
-        $certification = new certification($record['programid']);
+    public function process_certification_user($record): certification_user {
+        $certification = new certification($record['certificationid']);
+        if (!isset($record['status']) || !strlen($record['status'])) {
+            $record['status'] = 1;
+        }
         return api::allocate_user($certification, (object) $record);
     }
 

@@ -150,9 +150,12 @@ Feature: Create certification
     And I should see "Certification example 1"
     And I set the field "Certification full name" to "Certification example 2B"
     And I should see "Tag example 1"
+    And I should see "Program1" in the ".select_program_field" "css_element"
     And I click on ".form-autocomplete-downarrow" "css_element" in the ".select_program_field" "css_element"
-    And I should see "Program1" in the ".select_program_field .form-autocomplete-suggestions" "css_element"
-    Then I click on "Program1" "text" in the ".select_program_field .form-autocomplete-suggestions" "css_element"
+    And I should not see "Program1" in the ".select_program_field .form-autocomplete-suggestions" "css_element"
+    Then I press "Save" in the modal form dialogue
+    And I should see "This ID number is already used in another certification"
+    And I set the field "Certification ID number" to "new1"
     Then I press "Save" in the modal form dialogue
     And I should see "Allocation window"
     And I navigate to "Courses > Certifications" in site administration

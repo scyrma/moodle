@@ -28,11 +28,13 @@ use tool_certification\local\helpers\certification_entity;
 use tool_certification\local\helpers\certificationcompletion_entity;
 use tool_certification\local\helpers\certificationrevoke_entity;
 use tool_certification\local\helpers\certificationuser_entity;
+use tool_certification\local\helpers\certificationuser_format;
 use tool_organisation\local\entities\jobs as jobs_entity;
 use tool_program\local\helpers\program_entity;
 use tool_program\local\helpers\programuser_format;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\local\entities\user;
+use tool_reportbuilder\local\helpers\columns;
 use tool_reportbuilder\report_column;
 use tool_tenant\tenancy;
 use lang_string;
@@ -77,12 +79,40 @@ class report_certification_user_allocation extends \tool_reportbuilder\datasourc
         $this->set_columns();
 
         $this->get_column('tool_certification:fullname')
-            ->set_is_default(true)
-            ->set_is_sortable(true, true, 1);
+            ->set_is_default(true, 1)
+            ->set_is_sortable(true, true);
 
         $this->get_column('user:fullnamewithlink')
-            ->set_is_default(true)
-            ->set_is_sortable(true, true, 2);
+            ->set_is_default(true, 2)
+            ->set_is_sortable(true, true);
+
+        $this->get_column('user:lastaccess')
+            ->set_is_default(true, 3)
+            ->set_is_sortable(true, true);
+
+        $this->get_column('tool_certification_users:timecreated')
+            ->set_is_default(true, 4)
+            ->set_is_sortable(true, true);
+
+        $this->get_column('tool_certification_users:duedate')
+            ->set_is_default(true, 5)
+            ->set_is_sortable(true, true);
+
+        $this->get_column('tool_certification_users:expirydate')
+            ->set_is_default(true, 6)
+            ->set_is_sortable(true, true);
+
+        $this->get_column('tool_certification_users:certificationstatus')
+            ->set_is_default(true, 7)
+            ->set_is_sortable(true, true);
+
+        $this->get_column('tool_certification_compltion:certifieddate')
+            ->set_is_default(true, 8)
+            ->set_is_sortable(true, true);
+
+        $this->get_column('tool_certification_users:actions')
+            ->set_is_default(true, 9)
+            ->set_is_sortable(true, true);
 
         // Add default conditions.
         $conditions = $this->get_conditions();
@@ -92,13 +122,13 @@ class report_certification_user_allocation extends \tool_reportbuilder\datasourc
         $filters = $this->get_filters();
         $filters['tool_certification:fullname']->set_is_default(true);
         $filters['tool_program:programselector']->set_is_default(true);
-        $filters['tool_certification_users:timecreated']->set_is_default(true);
         $filters['tool_certification_users:filterablestatus']->set_is_default(true);
-        $filters['tool_certification_compltion:expirydate']->set_is_default(true);
+        $filters['tool_certification_users:timecreated']->set_is_default(true);
         $filters['tool_certification_compltion:certifieddate']->set_is_default(true);
+        $filters['tool_certification_compltion:expirydate']->set_is_default(true);
         $filters['user:fullname']->set_is_default(true);
-        $filters['tool_organisation_jobs:position']->set_is_default(true);
         $filters['tool_organisation_jobs:department']->set_is_default(true);
+        $filters['tool_organisation_jobs:position']->set_is_default(true);
     }
 
     /**
@@ -115,9 +145,9 @@ class report_certification_user_allocation extends \tool_reportbuilder\datasourc
      *
      */
     protected function set_columns(): void {
+        $this->add_entity(new certification_entity('', 'tc'));
         $this->add_entity(new certificationuser_entity('', 'tcu', [], 'tcc'));
         $this->add_entity(new certificationcompletion_entity('', 'tcc'));
-        $this->add_entity(new certification_entity('', 'tc'));
         $this->add_entity(new user('', 'u'));
         if (class_exists('tool_organisation\local\entities\jobs')) {
             $this->add_entity(new jobs_entity('LEFT JOIN {tool_organisation_job} toj ON u.id = toj.userid', 'toj'));
@@ -149,6 +179,19 @@ class report_certification_user_allocation extends \tool_reportbuilder\datasourc
             ->disable_aggregation('countdistinct')
             ->disable_aggregation('groupconcat')
             ->disable_aggregation('groupconcatdistinct');
+        $this->add_column($column);
+
+        // Actions column.
+        $column = (new report_column(
+            'actions',
+            new lang_string('actions', 'tool_certification'),
+            'tool_certification_users'
+        ))
+            ->add_field('u.id', 'userid')
+            ->add_field('tc.id', 'certificationid')
+            ->add_field('tcc.id', 'completionid')
+            ->add_callback([certificationuser_format::class, 'actions']);
+        columns::disable_column_aggregation($column);
         $this->add_column($column);
     }
 

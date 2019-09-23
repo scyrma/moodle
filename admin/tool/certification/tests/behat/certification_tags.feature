@@ -7,11 +7,11 @@ Feature: Use tags in a certification
   Background:
     Given "2" tenants exist with "4" users and "1" courses in each
     Given the following tool certification data "certifications" exist:
-      | fullname       | archived | tenant  | certification_tags |
-      | Certification1 | 0        | Tenant1 | blue, white        |
-      | Certification2 | 0        | Tenant1 | blue, yellow       |
-      | Certification3 | 0        | Tenant2 | white, yellow      |
-      | Certification4 | 0        | Tenant2 | green, blue        |
+      | fullname       | archived | tenant  | certification_tags | idnumber |
+      | Certification1 | 0        | Tenant1 | blue, white        |  num1    |
+      | Certification2 | 0        | Tenant1 | blue, yellow       |  num2    |
+      | Certification3 | 0        | Tenant2 | white, yellow      |  num3    |
+      | Certification4 | 0        | Tenant2 | green, blue        |  num4    |
 
   Scenario: Add tags to existing certifications
     Given the following "users" exist:
@@ -39,7 +39,6 @@ Feature: Use tags in a certification
     And I should see "Certification full name"
     And I should see "Certification tags"
     And I set the field "Certification tags" to "Tag example 1"
-    And I click on "Certification ID number" "field"
     Then I press "Save" in the modal form dialogue
     Then I click on "Active" "link"
     And I should see "Certification1"
@@ -50,7 +49,6 @@ Feature: Use tags in a certification
     And I should see "Certification full name"
     And I should see "Certification tags"
     And I set the field "Certification tags" to "Tag example 2"
-    And I click on "Certification ID number" "field"
     Then I press "Save" in the modal form dialogue
     Then I click on "Active" "link"
     And I should see "Certification1"

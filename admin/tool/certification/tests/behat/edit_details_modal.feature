@@ -14,10 +14,10 @@ Feature: Edit certification details using edit details modal
       | Program1 | 0        | Tenant1  |
       | Program2 | 0        | Tenant1  |
     Given the following tool certification data "certifications" exist:
-      | fullname       | archived | tenant  |
-      | Certification1 | 0        | Tenant1 |
-      | Certification2 | 0        | Tenant1 |
-      | Certification3 | 0        | Tenant2 |
+      | fullname       | archived | tenant  | idnumber |
+      | Certification1 | 0        | Tenant1 |  num1    |
+      | Certification2 | 0        | Tenant1 |  num2    |
+      | Certification3 | 0        | Tenant2 |  num3    |
     Given the following "users" exist:
       | username | firstname | lastname | email                |
       | manager1 | Manager   | 1        | manager1@example.com |

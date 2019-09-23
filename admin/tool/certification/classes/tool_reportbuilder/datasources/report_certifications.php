@@ -25,12 +25,16 @@
 namespace tool_certification\tool_reportbuilder\datasources;
 
 use tool_certification\local\helpers\certification_entity;
+use tool_certification\local\helpers\certification_format;
 use tool_certification\local\helpers\certificationuser_entity;
 use tool_program\local\helpers\program_entity;
+use tool_program\local\helpers\programcontent_entity;
 use tool_reportbuilder\datasource;
 use tool_reportbuilder\local\entities\course;
 use tool_reportbuilder\local\entities\user;
 use lang_string;
+use tool_reportbuilder\local\helpers\columns;
+use tool_reportbuilder\report_column;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -53,18 +57,23 @@ class report_certifications extends datasource {
         $this->set_downloadable(true);
         $this->set_columns();
 
-        $this->get_column('tool_certification:fullname')
-            ->set_is_default(true, 1)
-            ->set_is_sortable(true, true, 1, SORT_ASC);
-
-        $this->get_column('tool_program:fullnamewithimage')
-            ->set_is_default(true, 2);
-
-        $this->get_column('tool_certification:duedate')
-            ->set_is_default(true, 3);
-
-        $this->get_column('tool_certification:expirydate')
-            ->set_is_default(true, 4);
+        // Default columns.
+        if ($column = $this->get_column('tool_certification:fullname')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true);
+        }
+        if ($column = $this->get_column('tool_program:fullnamewithimage')) {
+            $column->set_is_default(true, 2);
+            $column->set_is_sortable(true, true);
+        }
+        if ($column = $this->get_column('tool_program:numbercoursesunique')) {
+            $column->set_is_default(true, 3);
+            $column->set_is_sortable(true, true);
+        }
+        if ($column = $this->get_column('tool_program_content:coursesinsetcommaseparatedlinks')) {
+            $column->set_is_default(true, 4);
+            $column->set_is_sortable(true, true);
+        }
 
         // Add default conditions.
         $conditions = $this->get_conditions();
@@ -76,6 +85,7 @@ class report_certifications extends datasource {
         $filters = $this->get_filters();
         $filters['tool_certification:fullname']->set_is_default(true);
         $filters['tool_program:programselector']->set_is_default(true);
+        $filters['tool_certification:archived']->set_is_default(true);
         $filters['tool_program:course']->set_is_default(true);
         $filters['tool_certification:timecreated']->set_is_default(true);
         $filters['tool_certification:timemodified']->set_is_default(true);
@@ -120,11 +130,24 @@ class report_certifications extends datasource {
      */
     protected function set_columns(): void {
         $this->add_entity(new certification_entity('', 'tc'));
-        $this->add_entity(new program_entity('', 'tp'));
         $this->add_entity(new certificationuser_entity(self::get_users_join(), 'tcu'));
+        $this->add_entity(new program_entity('', 'tp'));
+        // TODO remove second and third extra joins on programcontent entity after WP-1088.
+        $this->add_entity(new programcontent_entity(self::get_courses_join(), 'tps'));
         $this->add_entity(new user(self::get_users_join(), 'u'));
         $this->add_entity(new course(self::get_courses_join(), 'c'));
         // Modify name on course entity from 'Course' to 'Program course'.
         $this->annotate_entity('course', new lang_string('programcourse', 'tool_certification'));
+
+        // Actions column.
+        $column = (new report_column(
+            'actions',
+            new \lang_string('actions', 'tool_certification'),
+            'tool_certification'
+        ))
+            ->add_fields('tc.id')
+            ->add_callback([certification_format::class, 'actions']);
+        columns::disable_column_aggregation($column);
+        $this->add_column($column);
     }
 }

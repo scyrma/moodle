@@ -26,17 +26,13 @@ namespace tool_certification\local\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
-use lang_string;
 use tool_certification\api;
-use tool_certification\certification;
-use tool_certification\certification_user;
-use tool_certification\local\helpers\certificationuser_format;
-use tool_certification\local\helpers\format;
+use tool_certification\local\helpers\certification_entity;
+use tool_certification\local\helpers\certificationcompletion_entity;
+use tool_certification\local\helpers\certificationuser_entity;
 use tool_certification\permission;
-use tool_program\persistent\program;
-use tool_reportbuilder\local\filter\select;
-use tool_reportbuilder\report_column;
-use tool_reportbuilder\report_filter;
+use tool_program\local\helpers\program_entity;
+use tool_program\local\helpers\programuser_entity;
 use tool_reportbuilder\system_report;
 use tool_tenant\tenancy;
 
@@ -59,31 +55,54 @@ class user_certifications extends system_report {
      */
     protected function initialise(): void {
         $this->userid = $this->get_parameter('userid', 0, PARAM_INT);
-
-        $u = 'u'; // User table alias.
-        $c = 'c'; // Certifications table alias.
-        $cu = 'cu'; // Certification users table alias.
-        $cc = 'cc'; // Certification user completions table alias.
-        $pr = 'pr'; // Programs table alias.
-        $this->set_columns($c, $cu, $pr, $cc);
         $type = $this->get_parameter('type', -1, PARAM_INT);
-        $this->set_filters($type, $cu, $cc);
 
-        $this->set_main_table('user', $u);
-        $this->add_base_condition_simple("{$u}.id", $this->userid);
-        $this->add_base_condition_simple("{$u}.deleted", 0);
-        $this->add_base_join(api::get_status_sql_join($u, $c, $cu, $cc, $pr));
+        $this->set_columns();
+        $this->set_main_table('user', 'u');
+        $this->add_base_condition_simple('u.id', $this->userid);
+        $this->add_base_condition_simple('u.deleted', 0);
+        $this->add_base_join(api::get_status_sql_join('u', 'tc', 'tcu', 'tcc', 'tp'));
+        $this->add_base_join('LEFT JOIN {tool_program_users} tpu
+            ON tpu.userid = tcu.userid AND tpu.certificationid = tc.id AND tpu.certificationid = tc.id');
 
         // Base condition is a visibility check (non archived, within correct tenant).
         $usertenantid = tenancy::get_tenant_id($this->userid);
         $tenant = \tool_wp\db::generate_param_name();
         $this->add_base_condition_sql("
-                {$c}.archived = 0
-                AND {$c}.tenantid = :{$tenant} ", [$tenant => $usertenantid]);
+                tc.archived = 0
+                AND tc.tenantid = :{$tenant} ", [$tenant => $usertenantid]);
 
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
+
+        // Add default columns.
+        if ($column = $this->get_column('tool_certification:fullname')) {
+            $column->set_is_default(true, 1);
+        }
+        if ($column = $this->get_column('tool_program:fullname')) {
+            $column->set_is_default(true, 2);
+        }
+        if ($column = $this->get_column('tool_certification:duedate')) {
+            $column->set_is_default(true, 3);
+        }
+        if ($column = $this->get_column('tool_certification:expirydate')) {
+            $column->set_is_default(true, 4);
+        }
+        if ($column = $this->get_column('tool_certification_users:certificationstatus')) {
+            $column->set_is_default(true, 5);
+        }
+        if ($column = $this->get_column('tool_program_users:programprogresswithoverview')) {
+            $column->set_is_default(true, 6);
+        }
+        if ($column = $this->get_column('tool_certification_compltion:certifieddate')) {
+            $column->set_is_default(true, 7);
+        }
+
+        // Add default filter.
+        $filters = $this->get_filters();
+        $statusparams = ['filterablestatus_op' => 2, 'filterablestatus' => $type];
+        $filters['tool_certification_users:filterablestatus']->set_is_default(true, $statusparams);
     }
 
     /**
@@ -106,83 +125,13 @@ class user_certifications extends system_report {
 
     /**
      * Set the columns for the report.
-     *
-     * @param string $c Certifications table alias.
-     * @param string $cu Certification users table alias.
-     * @param string $pr Programs table alias.
-     * @param string $cc Certification completion table alias.
      */
-    protected function set_columns($c = 'c', $cu = 'cu', $pr = 'pr', $cc = 'cc'): void {
-        $this->annotate_entity(certification_user::TABLE, new lang_string('entitycertificationusers', 'tool_certification'));
-        $this->annotate_entity(certification::TABLE, new lang_string('entitycertification', 'tool_certification'));
-        $this->annotate_entity(program::TABLE, new lang_string('entityprogram', 'tool_program'));
-
-        // Column "certificationname".
-        $newcolumn = (new report_column(
-            'fullname',
-            new lang_string('certificationname', 'tool_certification'),
-            'tool_certification'
-        ))
-            ->add_fields("{$c}.fullname, {$c}.id, {$c}.tenantid, {$c}.archived")
-            ->set_is_default(true, 2)
-            ->set_is_sortable(true, true)
-            ->add_callback([format::class, 'usercertificationname'], ['userid' => $this->userid]);
-        $this->add_column($newcolumn);
-
-        // Column "programname".
-        $newcolumn = (new report_column(
-            'programname',
-            new lang_string('programname', 'tool_certification'),
-            'tool_program'
-        ))
-            ->add_fields("{$pr}.fullname, {$pr}.id, {$pr}.tenantid, {$pr}.archived, {$pr}.visible")
-            ->set_is_default(true, 3)
-            ->add_callback([format::class, 'userprogramname'], ['userid' => $this->userid]);
-        $this->add_column($newcolumn);
-
-        // Column "duedate".
-        $newcolumn = (new report_column(
-            'duedate',
-            new lang_string('duedate', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_field("{$cu}.duedate")
-            ->add_field("{$cu}.duedatelocked")
-            ->set_is_default(true, 4)
-            ->add_callback([certificationuser_format::class, 'duedate']);
-        $this->add_column($newcolumn);
-
-        // Column "status".
-        $newcolumn = (new report_column(
-            'userid',
-            new lang_string('status', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_field(api::get_status_sql_cases(0, $cu, $cc), 'status')
-            ->set_is_default(true, 5)
-            ->add_callback([certificationuser_format::class, 'status']);
-        $this->add_column($newcolumn);
-    }
-
-    /**
-     * Set filters.
-     *
-     * @param int $statusid
-     * @param string $cu certification users table alias
-     * @param string $cc certification completions table alias
-     */
-    protected function set_filters(int $statusid, $cu = 'cu', $cc = 'cc'): void {
-        // Filter by status.
-        $filter = (new report_filter(
-            select::class,
-            'filterablestatus',
-            new lang_string('status', 'tool_certification'),
-            'tool_certification_users',
-            api::get_status_sql_cases($statusid, $cu, $cc, true)
-        ))
-            ->set_is_default(true)
-            ->set_options(api::get_certification_statuses_fieldset());
-        $this->add_filter($filter);
+    protected function set_columns(): void {
+        $this->add_entity(new certificationuser_entity('', 'tcu', [], 'tcc'));
+        $this->add_entity(new certification_entity('', 'tc'));
+        $this->add_entity(new certificationcompletion_entity('', 'tcc'));
+        $this->add_entity(new program_entity('', 'tp'));
+        $this->add_entity(new programuser_entity('', 'tpu'));
     }
 
     /**

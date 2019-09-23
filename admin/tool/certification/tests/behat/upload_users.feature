@@ -34,6 +34,7 @@ Feature: Allocate users on certifications in upload users
     Then I click on "Users" "link" in the ".wptabs" "css_element"
     And I should see "Tom Jones"
     And I should see "Maria Whatever"
+    And I should see "Luana Whataday"
     And I navigate to "Courses > Certifications" in site administration
     And I click on "Allocate users" "link" in the "Certification2" "table_row"
     And I wait until the page is ready
@@ -69,6 +70,7 @@ Feature: Allocate users on certifications in upload users
     And I wait until the page is ready
     And I should see "Tom Jones"
     And I should see "Maria Whatever"
+    And I should see "Luana Whataday"
     And I navigate to "Courses > Certifications" in site administration
     And I click on "Allocate users" "link" in the "Certification2" "table_row"
     And I wait until the page is ready

@@ -65,6 +65,7 @@ class tool_certification_generator extends component_generator_base {
             'allocationstartdateabsolute' => 0,
             'allocationenddatetype' => constants::ALLOCATION_NOT_SET,
             'allocationenddateabsolute' => 0,
+            'autocreategroups' => \tool_program\api::GROUPS_AS_IN_PROGRAMS,
             'archived' => false,
         ];
     }

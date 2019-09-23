@@ -15,10 +15,10 @@ Feature: Certify and revoke user certifications
       | Program2 | 0        | Tenant2 |
       | Program3 | 0        | Tenant1 |
     Given the following tool certification data "certifications" exist:
-      | fullname | archived | tenant  | program   |
-      | Certification1 | 0  | Tenant1 | Program1  |
-      | Certification2 | 0  | Tenant2 | Program1  |
-      | Certification3 | 0  | Tenant1 | Program3  |
+      | fullname       | archived | tenant  | program   | idnumber |
+      | Certification1 | 0        | Tenant1 | Program1  |  num1    |
+      | Certification2 | 0        | Tenant2 | Program1  |  num2    |
+      | Certification3 | 0        | Tenant1 | Program3  |  num3    |
     Given the following "users" exist:
       | username | firstname | lastname | email                |
       | user1    | User      | a        | user1@example.com    |
@@ -42,24 +42,24 @@ Feature: Certify and revoke user certifications
     And the following departments exist in organisation structure:
       | tenant     | name            | parent         |
       | Tenant1    | Framework_t1    |                |
-      | Tenant1    | Deparment_t1_d1  | Framework_t1   |
+      | Tenant1    | Deparment_t1_d1 | Framework_t1   |
     And the following positions exist in organisation structure:
     # globalmanager and departmentmanager are boolean flag
     # globalpermissions and departmentpermission are accumulated numeric value assigned to globalmanager & departmentmanager
     # 1-Allocate users to programs/certifications, 2-View users reports, 4-Receive notifications(1+2+4,1+4,etc)
       | tenant     | name            | parent         | globalmanager | globalpermissions | departmentmanager | departmentpermissions |
-      | Tenant1    | Framework_t1    |                |      0        |       0           |       0          |        0              |
-      | Tenant1    | Position_t1_f1    | Framework_t1   |      0        |       0           |       1           |        3              |
-      | Tenant1    | Position_t1_f2    | Position_t1_f1   |      0        |       0           |       0           |        0              |
+      | Tenant1    | Framework_t1    |                |      0        |       0           |       0           |        0              |
+      | Tenant1    | Position_t1_f1  | Framework_t1   |      0        |       0           |       1           |        3              |
+      | Tenant1    | Position_t1_f2  | Position_t1_f1 |      0        |       0           |       0           |        0              |
     And the following job assignments exist in organisation structure:
-      | user  | department     | position     |
+      | user     | department      | position       |
       | manager1 | Deparment_t1_d1 | Position_t1_f1 |
-      | user1 | Deparment_t1_d1 | Position_t1_f2 |
+      | user1    | Deparment_t1_d1 | Position_t1_f2 |
     And the following "roles" exist:
-      | shortname  | name                 | archetype |
+      | shortname           | name                 | archetype |
       | certificationeditor | Certification editor |           |
     And the following "role assigns" exist:
-      | user  | role       | contextlevel | reference |
+      | user     | role                | contextlevel | reference |
       | manager1 | certificationeditor | System       |           |
       | manager2 | certificationeditor | System       |           |
     And I log in as "admin"

@@ -195,5 +195,79 @@ function xmldb_tool_certification_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019073102, 'tool', 'certification');
     }
 
+    if ($oldversion < 2019091200) {
+
+        // Define index useridcertificationidtimerevoked (not unique) to be added to tool_certification_compltion.
+        $table = new xmldb_table('tool_certification_compltion');
+        $params = ['userid', 'certificationid', 'timerevoked'];
+        $index = new xmldb_index('useridcertificationidtimerevoked', XMLDB_INDEX_NOTUNIQUE, $params);
+
+        // Conditionally launch add index useridcertificationidtimerevoked.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index certificationiduserid (not unique) to be added to tool_certification_users.
+        $table = new xmldb_table('tool_certification_users');
+        $index = new xmldb_index('certificationiduserid', XMLDB_INDEX_NOTUNIQUE, ['certificationid', 'userid']);
+
+        // Conditionally launch add index certificationiduserid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index certificationidstatusexpirydate (not unique) to be added to tool_certification_users.
+        $table = new xmldb_table('tool_certification_users');
+        $params = ['certificationid', 'status', 'expirydate'];
+        $index = new xmldb_index('certificationidstatusexpirydate', XMLDB_INDEX_NOTUNIQUE, $params);
+
+        // Conditionally launch add index certificationidstatusexpirydate.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index idnumbertenantid (not unique) to be added to tool_certification.
+        $table = new xmldb_table('tool_certification');
+        $index = new xmldb_index('idnumbertenantid', XMLDB_INDEX_NOTUNIQUE, ['idnumber', 'tenantid']);
+
+        // Conditionally launch add index idnumbertenantid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define key fk_tenantid (foreign) to be added to tool_certification.
+        $table = new xmldb_table('tool_certification');
+        $key = new xmldb_key('fk_tenantid', XMLDB_KEY_FOREIGN, ['tenantid'], 'tool_tenant', ['id']);
+
+        // Launch add key fk_tenantid.
+        $dbman->add_key($table, $key);
+
+        // Define key fk_program (foreign) to be added to tool_certification.
+        $table = new xmldb_table('tool_certification');
+        $key = new xmldb_key('fk_program', XMLDB_KEY_FOREIGN, ['program'], 'tool_program', ['id']);
+
+        // Launch add key fk_program.
+        $dbman->add_key($table, $key);
+
+        // Certification savepoint reached.
+        upgrade_plugin_savepoint(true, 2019091200, 'tool', 'certification');
+    }
+
+    if ($oldversion < 2019091700) {
+
+        // Define field autocreategroups to be added to tool_certification.
+        $table = new xmldb_table('tool_certification');
+        $field = new xmldb_field('autocreategroups', XMLDB_TYPE_INTEGER, '10', null,
+            XMLDB_NOTNULL, null, '-1', 'allocationenddateabsolute');
+
+        // Conditionally launch add field autocreategroups.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Certification savepoint reached.
+        upgrade_plugin_savepoint(true, 2019091700, 'tool', 'certification');
+    }
+
     return true;
 }

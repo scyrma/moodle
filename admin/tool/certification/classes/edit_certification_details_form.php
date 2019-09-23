@@ -31,6 +31,7 @@ use context_system;
 use core_tag_tag;
 use html_writer;
 use tool_program\persistent\program;
+use tool_tenant\tenancy;
 use tool_wp\modal_form;
 
 /**
@@ -79,20 +80,26 @@ class edit_certification_details_form extends modal_form {
         $mform->setExpanded('programhdr', true);
 
         if (empty($this->_ajaxformdata['id']) || 0 === (int)$this->_ajaxformdata['id']) {
+            // New or duplicate certification.
+            $params = null;
+            if (!empty($this->_ajaxformdata['duplicatecertification'])) {
+                [$programid, $programname] = $this->get_program($this->_ajaxformdata['duplicatecertification']);
+                $params = [$programid => $programname];
+            }
+            $selectprogramstr = get_string('selectprogram', 'tool_certification');
             $options = array(
                 'ajax' => 'tool_certification/form_potential_program_selector',
                 'multiple' => false,
                 'class' => 'select_program_field',
             );
-            $mform->addElement('autocomplete', 'program', get_string('selectprogram', 'tool_certification'), null, $options);
+
+            $mform->addElement('autocomplete', 'program', $selectprogramstr, $params, $options);
             $mform->addRule('program', get_string('missingprogram', 'tool_certification'), 'required', null, 'client');
             $mform->addHelpButton('program', 'selectprogram', 'tool_certification');
             $mform->setType('programname', PARAM_RAW);
         } else {
-            $certification = new certification($this->_ajaxformdata['id']);
-            $programid = $certification->get('program');
-            $program = new program($programid);
-            $programname = format_string($program->get('fullname'));
+            // Existing certification.
+            [$programid, $programname] = $this->get_program($this->_ajaxformdata['id']);
             $programurl = new \moodle_url('/admin/tool/program/edit.php', ['id' => $programid]);
             $mform->addElement('hidden', 'program');
             $mform->setType('program', PARAM_INT);
@@ -114,6 +121,20 @@ class edit_certification_details_form extends modal_form {
             $warningstr = get_string('warningcertificationprogram', 'tool_certification');
             $mform->addElement('static', 'warning', '', html_writer::tag('div', $warningstr, ['class' => 'alert alert-warning']));
         }
+
+        $choices = [
+            -1 => get_string('autocreategroupsasinprogram', 'tool_certification'),
+            \tool_program\api::GROUPS_CERTIFICATION + \tool_program\api::GROUPS_TENANT =>
+                get_string('autocreategroupscertification', 'tool_certification'),
+        ];
+        $mform->addElement('select', 'autocreategroups', get_string('autocreategroups', 'tool_certification'), $choices);
+        $mform->addHelpButton('autocreategroups', 'autocreategroups', 'tool_certification');
+
+        // This setting is currently hardcoded. In the future we may implement a site-wide setting (available to admin only)
+        // that would allow program managers to uncheck this setting for individual program.
+        $mform->addElement('checkbox', 'separatetenants', '',
+            get_string('separatetenantsingroups', 'tool_tenant'), ['disabled' => 'disabled']);
+        $mform->setDefault('separatetenants', 1);
 
         // Start date.
         $selectdatestr = get_string('selectdate', 'tool_certification');
@@ -228,11 +249,46 @@ class edit_certification_details_form extends modal_form {
             $certificationdata->duplicatecertification = $certificationdata->id;
             $certificationdata->id = null;
             $certificationdata->program = null;
+            $certificationdata->fullname .= ' (' . get_string('copy') . ')';
         } else {
             $certification = new certification();
             $certificationdata = $certification->to_record();
             $certificationdata->program = null;
         }
         $this->set_data($certificationdata);
+    }
+
+    /**
+     * Returns associated program ID and fullname
+     *
+     * @param int $certificationid
+     * @return array
+     * @throws \coding_exception
+     */
+    private function get_program(int $certificationid): array {
+        $certification = new certification($certificationid);
+        $programid = $certification->get('program');
+        $program = new program($programid);
+        $programname = format_string($program->get('fullname'));
+        return [$programid, $programname];
+    }
+
+    /**
+     * Perform some extra moodle validation
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function validation($data, $files): array {
+        $errors = [];
+
+        if (!api::is_idnumber_unique($data['id'], $data['idnumber'])) {
+            $errors['idnumber'] = get_string('erroridnumberuniquetenant', 'tool_certification');
+        }
+
+        return $errors;
     }
 }

@@ -63,14 +63,7 @@ class tool_uploaduser {
                     continue;
                 }
 
-                $conditions = [
-                    'idnumber' => $user->{'certification'.$i},
-                    'tenantid' => $tenantid,
-                    'archived' => 0
-                ];
-
-                /** @var certification $certificationobj */
-                $certificationobj = certification::get_record($conditions);
+                $certificationobj = api::get_certification_by_idnumber($user->{'certification'.$i}, $tenantid);
                 if (!$certificationobj) {
                     $errorstr = get_string('errorinvalidcertification', 'tool_certification');
                     $upt->track('tool_wp', $errorstr, 'error');

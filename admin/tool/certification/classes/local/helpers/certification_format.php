@@ -25,10 +25,11 @@
 namespace tool_certification\local\helpers;
 
 use coding_exception;
-use core_tag_tag;
 use core_text;
 use html_writer;
+use moodle_url;
 use stdClass;
+use tool_certification\certification;
 use tool_certification\constants;
 
 defined('MOODLE_INTERNAL') || die();
@@ -125,5 +126,38 @@ class certification_format {
                 return get_string('notset', 'tool_certification');
                 break;
         }
+    }
+
+    /**
+     * Column actions
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     * @throws \coding_exception
+     * @throws moodle_exception
+     */
+    public static function actions(?string $value, stdClass $row): string {
+        global $OUTPUT;
+
+        $output = '';
+        $certification = new certification($row->id);
+        if (\tool_certification\permission::can_edit_details($certification)) {
+            $editurl = new moodle_url('/admin/tool/certification/edit.php', ['id' => $row->id]);
+            $editicon = $OUTPUT->pix_icon('i/settings', get_string('edit'));
+            $output .= html_writer::link($editurl, $editicon);
+        }
+        if (\tool_certification\permission::can_view_allocated_users($certification)) {
+            $str = get_string('allocateusers', 'tool_program');
+            $usericon = $OUTPUT->pix_icon('i/enrolusers', $str);
+            $allocationurl = new moodle_url('/admin/tool/certification/edit.php#!certification_users_tab', ['id' => $row->id]);
+            $output .= html_writer::link($allocationurl, $usericon);
+        }
+        if (\tool_certification\permission::can_view_users_progress($certification)) {
+            $reporturl = new moodle_url('/admin/tool/certification/progress.php', ['id' => $row->id]);
+            $reporticon = $OUTPUT->pix_icon('bar-chart', get_string('progressreport', 'tool_program'), 'tool_wp');
+            $output .= html_writer::link($reporturl, $reporticon);
+        }
+        return $output;
     }
 }
