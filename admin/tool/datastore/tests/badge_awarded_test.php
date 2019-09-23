@@ -213,11 +213,15 @@ class tool_datastore_badge_awarded_testcase extends advanced_testcase {
             'originalid' => $action->get('relateduserid'),
         ]);
 
-        $relateduser = api::get_user($entityrelateduser->get('originalid'));
-        $relateduserjson = json_encode($relateduser);
-
         $relatedusersnapshot = new snapshot($entityrelateduser->get('snapshotid'));
-        $this->assertEquals($relateduserjson, $relatedusersnapshot->get('data'));
+        $relatedusersnapshotdata = $relatedusersnapshot->get('data');
+
+        // When getting the related user, we need to reset the lastloaded preference to the snapshot value.
+        $relateduser = api::get_user($entityrelateduser->get('originalid'));
+        $relateduser['preference'] = json_decode($relatedusersnapshotdata)->preference;
+
+        $relateduserjson = json_encode($relateduser);
+        $this->assertEquals($relateduserjson, $relatedusersnapshotdata);
         $this->assertEquals(md5($relateduserjson), $relatedusersnapshot->get('hash'));
 
         // User modified entity.
@@ -227,11 +231,15 @@ class tool_datastore_badge_awarded_testcase extends advanced_testcase {
             'originalid' => $action->get('usermodified'),
         ]);
 
-        $usermodified = api::get_user($entityusermodified->get('originalid'));
-        $usermodifiedjson = json_encode($usermodified);
-
         $usermodifiedsnapshot = new snapshot($entityusermodified->get('snapshotid'));
-        $this->assertEquals($usermodifiedjson, $usermodifiedsnapshot->get('data'));
+        $usermodifiedsnapshotdata = $usermodifiedsnapshot->get('data');
+
+        // When getting the modified user, we need to reset the lastloaded preference to the snapshot value.
+        $usermodified = api::get_user($entityusermodified->get('originalid'));
+        $usermodified['preference'] = json_decode($usermodifiedsnapshotdata)->preference;
+
+        $usermodifiedjson = json_encode($usermodified);
+        $this->assertEquals($usermodifiedjson, $usermodifiedsnapshotdata);
         $this->assertEquals(md5($usermodifiedjson), $usermodifiedsnapshot->get('hash'));
 
         // Badge entity.
