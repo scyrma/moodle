@@ -22,4 +22,4 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['quotahit'] = 'To be decided';
+$string['quotahit'] = 'This site has reached its file quota. To get more more space, upgrade your plan using the following link https://moodlecloud.com/app/en/portal/view/{$a->sitename}/plan';
