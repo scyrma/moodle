@@ -25,7 +25,6 @@
 namespace tool_reportbuilder\external;
 
 use tool_reportbuilder\event\report_viewed;
-use tool_reportbuilder\helper;
 use tool_reportbuilder\manager;
 use tool_reportbuilder\output\report_view;
 use tool_reportbuilder\permission;
@@ -149,10 +148,17 @@ class report extends \external_api {
         $context = \context_system::instance();
         self::validate_context($context);
 
-        $report = manager::get_report($params['reportid']);
-        permission::require_can_delete($report);
+        $persistent = new reportbuilder($params['reportid']);
 
-        return ['result' => helper::delete_report($report)];
+        try {
+            $report = manager::get_report_from_persistent($persistent);
+            permission::require_can_delete($report);
+        } catch (\moodle_exception $exception) {
+            // Report source no longer exists, allow someone who can manage reports to delete this one.
+            permission::require_can_manage_reports($persistent->get('tenantid'));
+        }
+
+        return ['result' => $persistent->delete()];
     }
 
     /**

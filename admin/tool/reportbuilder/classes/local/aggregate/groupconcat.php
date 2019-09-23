@@ -47,8 +47,7 @@ class groupconcat extends aggregation_base {
      * @throws \coding_exception
      */
     public static function get_field(string $field, ?int $dbtype = null) : string {
-        $separator = self::get_list_separator();
-        return db::sql_group_concat($field, $separator);
+        return db::sql_group_concat($field);
     }
 
     /**

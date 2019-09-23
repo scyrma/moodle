@@ -136,8 +136,7 @@ Feature: Pagination
     And I click on "2" "link" in the ".tool_reportbuilder_report ul.pagination" "css_element"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Conditions"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "First name" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "First name"
     And I set the field "First name field limiter" to "is equal to"
     And I set the field "First name value" to "User100"
     And I should see "User100 Lastname100" in the "table.report-table" "css_element"
@@ -186,8 +185,7 @@ Feature: Pagination
     #Reset all filters
     And I wait "3" seconds
     And I follow "Filters"
-    And I click on "#addfilterselect" "css_element"
-    And I click on "First name" "text" in the "#addfilterselect" "css_element"
+    And I set the field "Select a filter" to "First name"
     And I click on "Switch to preview view" "button"
     And I click on "Show/hide filters sidebar" "button"
     And I set the field "First name field limiter" to "is equal to"

@@ -28,10 +28,9 @@ Feature: Manage a filter
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Filters"
-    And I click on "#addfilterselect" "css_element"
-    And I click on "Surname" "text" in the "#addfilterselect" "css_element"
-    And I click on "First name" "text" in the "#addfilterselect" "css_element"
-    And I click on "ID number" "text" in the "#addfilterselect" "css_element"
+    And I set the field "Select a filter" to "Surname"
+    And I set the field "Select a filter" to "First name"
+    And I set the field "Select a filter" to "ID number"
     And I should see "Surname" in the "ul.js-filters-list" "css_element"
     And I should see "First name" in the "ul.js-filters-list" "css_element"
     And I should see "ID number" in the "ul.js-filters-list" "css_element"
@@ -62,10 +61,9 @@ Feature: Manage a filter
     And I click on "Delete column" "link" in the "//table[contains(@class,'report-table')]//th[1]" "xpath_element"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Filters"
-    And I click on "#addfilterselect" "css_element"
-    And I click on "Surname" "text" in the "#addfilterselect" "css_element"
-    And I click on "First name" "text" in the "#addfilterselect" "css_element"
-    And I click on "ID number" "text" in the "#addfilterselect" "css_element"
+    And I set the field "Select a filter" to "Surname"
+    And I set the field "Select a filter" to "First name"
+    And I set the field "Select a filter" to "ID number"
     And I click on "Move filter 'ID number'" "button"
     And I follow "To the top of the list"
     And I click on "Switch to preview view" "button"
@@ -94,9 +92,8 @@ Feature: Manage a filter
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Filters"
-    And I click on "#addfilterselect" "css_element"
-    And I click on "Surname" "text" in the "#addfilterselect" "css_element"
-    And I click on "First name" "text" in the "#addfilterselect" "css_element"
+    And I set the field "Select a filter" to "Surname"
+    And I set the field "Select a filter" to "First name"
     And I click on "Edit filter name" "link" in the "//div[contains(@id,'filterstab')]//li[contains(.,'Surname')]" "xpath_element"
     And I set the field "New value for 'Surname'" to "<span lang=\"en\" class=\"multilang\">Test&\"2</span><span lang=\"es\" class=\"multilang\">Prueba&\"2</span>"
     And I press key "13" in the field "New value for 'Surname'"
@@ -150,10 +147,9 @@ Feature: Manage a filter
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Filters"
-    And I click on "#addfilterselect" "css_element"
-    And I click on "Country" "text" in the "#addfilterselect" "css_element"
-    And I click on "Profile department" "text" in the "#addfilterselect" "css_element"
-    And I click on "Institution" "text" in the "#addfilterselect" "css_element"
+    And I set the field "Select a filter" to "Country"
+    And I set the field "Select a filter" to "Profile department"
+    And I set the field "Select a filter" to "Institution"
     #Check in preview
     And I click on "Switch to preview view" "button"
     And I should see "User100 Lastname100" in the "report-table" "table"
@@ -312,10 +308,9 @@ Feature: Manage a filter
     And I follow "Report1"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Filters"
-    And I click on "#addfilterselect" "css_element"
-    And I click on "Country" "text" in the "#addfilterselect" "css_element"
-    And I click on "Profile department" "text" in the "#addfilterselect" "css_element"
-    And I click on "Institution" "text" in the "#addfilterselect" "css_element"
+    And I set the field "Select a filter" to "Country"
+    And I set the field "Select a filter" to "Profile department"
+    And I set the field "Select a filter" to "Institution"
     And I log out
     And I log in as "user100"
     And I navigate to "Custom reports" in workplace launcher
@@ -404,20 +399,14 @@ Feature: Manage a filter
     And I click on "Save changes" "button"
     And I log out
     When I log in as "manager1"
-    Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
-    And I follow "Report1"
-    And I click on "Add field 'Other fields: custom_textinput_field' to the report" "link"
-    And I click on "Add field 'Other fields: custom_checkbox_field' to the report" "link"
-    And I click on "Add field 'Other fields: custom_datetime_field' to the report" "link"
-    And I click on "Add field 'Other fields: custom_dropdown_field' to the report" "link"
-    And I click on "Add field 'Other fields: custom_textarea_field' to the report" "link"
-    And "Add field 'Other fields: custom_textinputhidden_field' to the report" "link" should not exist
+    And I navigate to "Report builder" in workplace launcher
+    And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Filters"
-    Then "//select[@id='addfilterselect']//option[starts-with(@value,'user:profilefield_custom_textinput')]" "xpath_element" should exist
-    Then "//select[@id='addfilterselect']//option[starts-with(@value,'user:profilefield_custom_checkbox')]" "xpath_element" should exist
-    Then "//select[@id='addfilterselect']//option[starts-with(@value,'user:profilefield_custom_datetime')]" "xpath_element" should exist
-    Then "//select[@id='addfilterselect']//option[starts-with(@value,'user:profilefield_custom_dropdown')]" "xpath_element" should exist
-    Then "//select[@id='addfilterselect']//option[starts-with(@value,'user:profilefield_custom_textarea')]" "xpath_element" should exist
-    Then "//select[@id='addfilterselect']//option[starts-with(@value,'user:profilefield_custom_textinputhidden')]" "xpath_element" should not exist
+    Then the "Select a filter" select box should contain "custom_textinput_field"
+    And the "Select a filter" select box should contain "custom_checkbox_field"
+    And the "Select a filter" select box should contain "custom_datetime_field"
+    And the "Select a filter" select box should contain "custom_dropdown_field"
+    And the "Select a filter" select box should contain "custom_textarea_field"
+    And the "Select a filter" select box should not contain "custom_textinputhidden_field"
     And I log out

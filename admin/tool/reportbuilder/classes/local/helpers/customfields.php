@@ -24,12 +24,11 @@
 
 namespace tool_reportbuilder\local\helpers;
 
-use coding_exception;
 use core_customfield\data_controller;
 use core_customfield\field_controller;
 use core_customfield\handler;
-use tool_reportbuilder\aggregation_base;
 use tool_reportbuilder\constants;
+use tool_reportbuilder\helper;
 use tool_reportbuilder\local\filter\checkbox;
 use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
@@ -371,7 +370,7 @@ class customfields {
      */
     public function customfield_aggregation_group($value, stdClass $row, field_controller $field) {
         if (!empty($row)) {
-            $separator = aggregation_base::get_list_separator();
+            $separator = helper::get_list_separator();
             $data = [];
             $values = array_filter(explode($separator, current($row)));
             foreach ($values as $val) {

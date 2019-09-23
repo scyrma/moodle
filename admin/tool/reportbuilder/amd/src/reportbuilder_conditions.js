@@ -287,10 +287,13 @@ define(
          * @private
          */
         Conditions.prototype._addCondition = function(e) {
-            M.util.js_pending('tool_reportbuilder_add_condition'); // Tell Behat to wait.
             var selected = $(e.currentTarget).find(":selected").val();
+            if (!selected || selected === '0') {
+                return;
+            }
             $(e.currentTarget).find(":selected").remove();
 
+            M.util.js_pending('tool_reportbuilder_add_condition'); // Tell Behat to wait.
             Templates.render(TEMPLATES.LOADING, {visible: true}).then(function(html, js) {
                 if (!this._isLoading) {
                     Templates.appendNodeContents(this.reportBuilder.find(SELECTORS.ACTIVECONDITIONS),

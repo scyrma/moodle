@@ -65,10 +65,24 @@ class permission {
     /**
      * User can manage reports in the current tenant (loose check for displaying additional data on the "Manage reports" page)
      *
+     * @param int $tenantid
      * @return bool
      */
-    public static function can_manage_reports(): bool {
-        return self::has_edit_capability();
+    public static function can_manage_reports(int $tenantid) : bool {
+        return (self::has_edit_capability() && $tenantid == tenancy::get_tenant_id());
+    }
+
+    /**
+     * Require current user has the ability to manage reports in the current tenant
+     *
+     * @param int $tenantid
+     * @throws \required_capability_exception
+     */
+    public static function require_can_manage_reports(int $tenantid) : void {
+        if (!self::can_manage_reports($tenantid)) {
+            throw new \required_capability_exception(\context_system::instance(),
+                'tool/reportbuilder:edit', 'nopermissions', 'error');
+        }
     }
 
     /**
@@ -117,8 +131,15 @@ class permission {
      */
     public static function can_view_edit_icon(\stdClass $row): bool {
         $persistent = new reportbuilder(0, $row);
-        $report = manager::get_report_from_persistent($persistent);
-        return self::can_edit($report);
+
+        try {
+            $report = manager::get_report_from_persistent($persistent);
+            $result = self::can_edit($report);
+        } catch (moodle_exception $exception) {
+            $result = false;
+        }
+
+        return $result;
     }
 
     /**
@@ -126,14 +147,19 @@ class permission {
      *
      * @param \stdClass $row Complete row
      * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws moodle_exception
      */
     public static function can_view_delete_icon(\stdClass $row): bool {
         $persistent = new reportbuilder(0, $row);
-        $report = manager::get_report_from_persistent($persistent);
-        return self::can_delete($report);
+
+        try {
+            $report = manager::get_report_from_persistent($persistent);
+            $result = self::can_delete($report);
+        } catch (moodle_exception $exception) {
+            // Report source no longer exists, allow someone who can manage reports to delete this one.
+            $result = self::can_manage_reports($persistent->get('tenantid'));
+        }
+
+        return $result;
     }
 
     /**
@@ -144,8 +170,15 @@ class permission {
      */
     public static function can_view_duplicate_icon(\stdClass $row) : bool {
         $persistent = new reportbuilder(0, $row);
-        $report = manager::get_report_from_persistent($persistent);
-        return self::can_duplicate($report);
+
+        try {
+            $report = manager::get_report_from_persistent($persistent);
+            $result = self::can_duplicate($report);
+        } catch (moodle_exception $exception) {
+            $result = false;
+        }
+
+        return $result;
     }
 
     /**

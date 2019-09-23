@@ -26,8 +26,6 @@
 
 namespace tool_reportbuilder;
 
-use tool_reportbuilder\event\report_deleted;
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -87,6 +85,15 @@ class helper {
     }
 
     /**
+     * Get list separator as defined by current language config, with trailing space
+     *
+     * @return string
+     */
+    public static function get_list_separator() : string {
+        return rtrim(get_string('listsep', 'langconfig')) . ' ';
+    }
+
+    /**
      * Return the visible reports for the current user
      */
     public static function get_reports_select() {
@@ -102,27 +109,5 @@ class helper {
         }
         asort($reportsselect);
         return $reportsselect;
-    }
-
-    /**
-     * Function for delete reports.
-     *
-     * @param report_base $report
-     *
-     * @return bool
-     * @throws \coding_exception
-     * @throws \dml_exception
-     */
-    public static function delete_report(report_base $report) {
-        global $PAGE;
-        $PAGE->set_context(\context_system::instance());
-
-        $persistent = $report->get_persistent();
-        $event = report_deleted::create_from_object($persistent);
-        if ($persistent->delete()) {
-            $event->trigger();
-            return true;
-        }
-        return false;
     }
 }

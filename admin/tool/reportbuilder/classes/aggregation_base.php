@@ -38,10 +38,12 @@ abstract class aggregation_base {
     /**
      * Separator for group concatenation
      *
+     * @deprecated please use \tool_reportbuilder\helper::get_list_separator instead
+     *
      * @return string
      */
     public static function get_list_separator() : string {
-        return get_string('listsep', 'langconfig') . ' ';
+        return helper::get_list_separator();
     }
 
     /**

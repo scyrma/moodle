@@ -93,8 +93,7 @@ Feature: Manage report builder aggregations
     And I click on "Add field 'Profile department' to the report" "button"
     And I click on "Show/hide filters sidebar" "button"
     #And I click on "Select a condition" "text"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Country" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "Country"
     And I set the field "Country field limiter" to "is equal to"
     And I set the field "Country value" to "Spain"
     And I click on "Add field 'Full name' to the report" "button"
@@ -194,10 +193,8 @@ Feature: Manage report builder aggregations
     And I set the field "New aggregation for the column 'Full name'" to "Unique values"
     # Check with condition
     And I follow "Conditions"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Country" "text" in the "#addconditonselect" "css_element"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Last access" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "Country"
+    And I set the field "Select a condition" to "Last access"
     And I set the field "Country field limiter" to "is equal to"
     And I set the field "Country value" to "Spain"
     And I click on "Select an aggregation for the column 'Last access'" "link"
@@ -238,8 +235,7 @@ Feature: Manage report builder aggregations
     And I should see "10" in the "Yes" "table_row"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Conditions"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Country" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "Country"
     And I set the field "Country field limiter" to "is equal to"
     And I set the field "Country value" to "Brazil"
     And I change window size to "large"
@@ -263,8 +259,7 @@ Feature: Manage report builder aggregations
     And I should see "33.33" in the "Brazil" "table_row"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Conditions"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Registration confirmed" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "Registration confirmed"
     # TODO: test with sort
     And I log out
 

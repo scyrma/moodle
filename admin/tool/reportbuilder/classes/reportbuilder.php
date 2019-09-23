@@ -25,6 +25,7 @@
 namespace tool_reportbuilder;
 
 use core\persistent;
+use tool_reportbuilder\event\report_deleted;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -112,5 +113,17 @@ class reportbuilder extends persistent {
         $DB->delete_records('tool_reportbuilder_cond', ['reportid' => $this->get('id')]);
         $DB->delete_records('tool_reportbuilder_filter', ['reportid' => $this->get('id')]);
         $DB->delete_records('tool_reportbuilder_scheduled', ['reportid' => $this->get('id')]);
+    }
+
+    /**
+     * Trigger report deleted event after successful deletion
+     *
+     * @param bool $result
+     * @return void
+     */
+    protected function after_delete($result) {
+        if ($result) {
+            report_deleted::create_from_object($this)->trigger();
+        }
     }
 }

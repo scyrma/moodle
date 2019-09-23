@@ -26,7 +26,6 @@ namespace tool_reportbuilder;
 
 use core\output\inplace_editable;
 use tool_reportbuilder\event\report_created;
-use tool_reportbuilder\event\report_deleted;
 use tool_reportbuilder\event\report_updated;
 use tool_reportbuilder\form\detail;
 use tool_reportbuilder\local\helpers\conditions as conditions_helper;
@@ -175,22 +174,33 @@ class manager {
     }
 
     /**
+     * Verify that a given report source exists and extends appropriate base class
+     *
+     * @param string $classname
+     * @return bool
+     */
+    public static function report_source_exists(string $classname) : bool {
+        return ($classname && class_exists($classname) && is_subclass_of($classname, report_base::class));
+    }
+
+    /**
      * Get report from persistent object
      *
      * @param reportbuilder $persistent
      * @param array $parameters
      * @param int $page
      * @return report_base
-     * @throws \coding_exception
+     *
+     * @throws \moodle_exception
      */
     public static function get_report_from_persistent(reportbuilder $persistent,
                                                       array $parameters = [], int $page = 0): report_base {
         /** @var report_base $classname */
         $classname = $persistent->get('source');
-        if (!$classname || !class_exists($classname) || !is_subclass_of($classname, report_base::class)) {
-            throw new \coding_exception('Error retrieving report');
-            // TODO change to moodle_exception with a string error.
+        if (!self::report_source_exists($classname)) {
+            throw new \moodle_exception('errormissingreportsource', 'tool_reportbuilder', '', null, $classname);
         }
+
         return new $classname($persistent, $parameters, $page);
     }
 

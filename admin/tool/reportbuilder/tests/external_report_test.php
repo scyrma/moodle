@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_reportbuilder\event\report_deleted;
 use tool_reportbuilder\external\report as external;
 use tool_reportbuilder\test\mock_report;
 
@@ -37,11 +38,20 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @package     tool_reportbuilder
  * @group       tool_reportbuilder
  * @category    test
+ * @covers      \tool_reportbuilder\event\report_deleted
  * @covers      \tool_reportbuilder\external\report
  * @copyright   2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_external_report_testcase extends externallib_advanced_testcase {
+
+    /**
+     * Test setup
+     */
+    public function setUp() {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+    }
 
     /**
      * Test report_delete method
@@ -51,18 +61,56 @@ class tool_reportbuilder_external_report_testcase extends externallib_advanced_t
     public function test_report_delete() : void {
         global $DB;
 
-        $this->resetAfterTest();
-        $this->setAdminUser();
+        $report = $this->get_generator()->create_report([
+            'source' => mock_report::class,
+        ]);
+
+        $persistent = $report->get_persistent();
+
+        // Catch the events.
+        $sink = $this->redirectEvents();
+
+        $result = external::delete_report($report->get_id());
+        $result = external::clean_returnvalue(external::delete_report_returns(), $result);
+
+        $events = $sink->get_events();
+        $this->assertCount(1, $events);
+
+        $this->assertInstanceOf(report_deleted::class, $events[0]);
+        $this->assertEquals($report->get_id(), $events[0]->objectid);
+        $this->assertEquals($persistent::TABLE, $events[0]->objecttable);
+        $this->assertEquals($persistent->get('name'), $events[0]->other['name']);
+        $this->assertEquals($persistent->get('source'), $events[0]->other['source']);
+
+        $sink->close();
+
+        $this->assertArrayHasKey('result', $result);
+        $this->assertTrue($result['result']);
+
+        // Make sure report is actually deleted.
+        $this->assertFalse($DB->record_exists('tool_reportbuilder', ['id' => $report->get_id()]));
+    }
+
+    /**
+     * Test report_delete method with an invalid source
+     *
+     * @return void
+     */
+    public function test_report_delete_invalid_source() : void {
+        global $DB;
 
         $report = $this->get_generator()->create_report([
             'source' => mock_report::class,
         ]);
 
+        // Fudge the report source field.
+        $DB->set_field('tool_reportbuilder', 'source', '\not\real', ['id' => $report->get_id()]);
+
         $result = external::delete_report($report->get_id());
         $result = external::clean_returnvalue(external::delete_report_returns(), $result);
 
         $this->assertArrayHasKey('result', $result);
-        $this->assertEquals(1, $result['result']);
+        $this->assertTrue($result['result']);
 
         // Make sure report is actually deleted.
         $this->assertFalse($DB->record_exists('tool_reportbuilder', ['id' => $report->get_id()]));

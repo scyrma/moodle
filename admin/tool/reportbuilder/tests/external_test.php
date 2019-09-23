@@ -18,7 +18,7 @@
  * External tests.
  *
  * @package    tool_reportbuilder
- * @category  test
+ * @category   test
  * @copyright  2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,6 +34,8 @@ require_once($CFG->libdir . '/tablelib.php');
  * External testcase.
  *
  * @package    tool_reportbuilder
+ * @group      tool_reportbuilder
+ * @category   test
  * @covers     \tool_reportbuilder\external
  * @copyright  2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -197,31 +199,6 @@ class tool_reportbuilder_external_testcase extends externallib_advanced_testcase
         }
 
         $this->table->define_sort($sort);
-    }
-
-    /**
-     * Delete report
-     */
-    public function test_delete_report() {
-        global $DB;
-        $this->resetAfterTest();
-        // There are no reports in the beginning.
-        $previusrecords = $DB->count_records('tool_reportbuilder');
-
-        // Generate a report for a default tenant.
-        $report0 = $this->get_generator()->create_report(
-            [
-                'source' => tool_reportbuilder\tool_reportbuilder\datasources\report_course_completion::class,
-            ]
-        );
-
-        $this->assertEquals($previusrecords + 1, $DB->count_records('tool_reportbuilder'));
-
-        // TODO: Add content to tables column, cond, filter, scheduled.
-
-        \tool_reportbuilder\helper::delete_report($report0);
-
-        $this->assertEquals($previusrecords, $DB->count_records('tool_reportbuilder'));
     }
 
     /**

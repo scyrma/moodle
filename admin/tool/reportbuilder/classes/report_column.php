@@ -24,10 +24,9 @@
 
 namespace tool_reportbuilder;
 
-use core\session\exception;
+use tool_reportbuilder\helper;
 use tool_reportbuilder\local\helpers\aggregation;
 use tool_reportbuilder\local\helpers\format;
-use tool_wp\db;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -435,7 +434,7 @@ class report_column {
         if (!strlen($value)) {
             return $value;
         }
-        $separator = aggregation_base::get_list_separator();
+        $separator = helper::get_list_separator();
         $values = preg_split('/' . preg_quote($separator, '/') . '/', $value);
         foreach ($values as $idx => $v) {
             foreach ($callbacks as $callback) {

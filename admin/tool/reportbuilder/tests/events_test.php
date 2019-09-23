@@ -18,17 +18,15 @@
  * Events test.
  *
  * @package     tool_reportbuilder
- * @category  test
+ * @category    test
  * @copyright   2018 Toni Barberá <toni@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_reportbuilder\constants;
 use tool_reportbuilder\test\mock_report;
 use tool_reportbuilder\event\report_created;
-use tool_reportbuilder\event\report_deleted;
 use tool_reportbuilder\event\report_updated;
 use tool_reportbuilder\manager;
 use tool_reportbuilder\local\helpers\schedules;
@@ -39,6 +37,12 @@ use tool_reportbuilder\event\schedule_deleted;
  * Class tool_reportbuilder_events_testcase
  *
  * @package   tool_reportbuilder
+ * @group     tool_reportbuilder
+ * @category  test
+ * @covers    \tool_reportbuilder\event\report_created
+ * @covers    \tool_reportbuilder\event\report_updated
+ * @covers    \tool_reportbuilder\event\schedule_created
+ * @covers    \tool_reportbuilder\event\schedule_deleted
  * @copyright 2018 Toni Barberá <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -52,39 +56,6 @@ class tool_reportbuilder_events_testcase extends advanced_testcase {
      */
     protected function get_generator(): tool_reportbuilder_generator {
         return $this->getDataGenerator()->get_plugin_generator('tool_reportbuilder');
-    }
-
-    /**
-     * Tests for delete report event triggering.
-     *
-     * @covers \tool_reportbuilder\event\report_deleted
-     */
-    public function test_report_deleted_event(): void {
-        $this->resetAfterTest();
-
-        /** @var tool_reportbuilder_generator $generator */
-        $generator = $this->get_generator();
-
-        $mockreport = $generator->create_report(
-                ['source' => mock_report::class]
-        );
-        $mockreportobj = $mockreport->get_persistent()->to_record();
-
-        // Catch the events.
-        $sink = $this->redirectEvents();
-        \tool_reportbuilder\helper::delete_report($mockreport);
-        $events = $sink->get_events();
-
-        // Validate the event.
-        $this->assertCount(1, $events);
-        $event = $events[0];
-        $this->assertInstanceOf(report_deleted::class, $event);
-        $this->assertEquals('tool_reportbuilder', $event->objecttable);
-        $this->assertEquals(0, $event->courseid);
-        $this->assertEquals($mockreportobj->name, $event->other['name']);
-        $this->assertEquals($mockreportobj->source, $event->other['source']);
-        $this->assertDebuggingNotCalled();
-        $sink->close();
     }
 
     /**

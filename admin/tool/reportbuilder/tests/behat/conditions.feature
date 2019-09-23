@@ -22,10 +22,8 @@ Feature: Manage conditions in report builder
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "First name" "text" in the "#addconditonselect" "css_element"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Surname" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "First name"
+    And I set the field "Select a condition" to "Surname"
     And I click on "Edit condition name" "link" in the "//div[contains(@id,'conditionstab')]//div[contains(@class,'card-header') and contains(.,'Surname')]" "xpath_element"
     And I set the field "New value for 'Surname'" to "<span lang=\"en\" class=\"multilang\">Test&\"3</span><span lang=\"es\" class=\"multilang\">Prueba&\"3</span>"
     And I press key "13" in the field "New value for 'Surname'"
@@ -55,16 +53,14 @@ Feature: Manage conditions in report builder
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "First name" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "First name"
     And I set the field "First name value" to "This test should be deleted"
     And I set the field "First name field limiter" to "is equal to"
     And I click on "Delete condition 'First name'" "link"
     And I should see "Are you sure you want to delete condition 'First name'?" in the "Confirm" "dialogue"
     And I click on "Delete" "button" in the "Confirm" "dialogue"
     # Check can be added again and the condition is new
-    And I click on "#addconditonselect" "css_element"
-    And I click on "First name" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "First name"
     And the field "First name value" matches value ""
     And the field "First name field limiter" matches value "contains"
     And I log out
@@ -96,8 +92,7 @@ Feature: Manage conditions in report builder
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Country" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "Country"
     And I set the field "Country field limiter" to "is equal to"
     And I wait "1" seconds
     And I set the field "Country value" to "Spain"
@@ -148,8 +143,7 @@ Feature: Manage conditions in report builder
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Country" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "Country"
     And I set the field "Country field limiter" to "is equal to"
     And I wait "1" seconds
     And I set the field "Country value" to "Spain"
@@ -197,8 +191,7 @@ Feature: Manage conditions in report builder
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Country" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "Country"
     And I set the field "Country field limiter" to "is equal to"
     And I wait "1" seconds
     And I set the field "Country value" to "Spain"
@@ -207,7 +200,7 @@ Feature: Manage conditions in report builder
     And I should see "User200 Lastname200" in the "report-table" "table"
     And I should not see "User300 Lastname300" in the "report-table" "table"
     And I should not see "Australia" in the "report-table" "table"
-    And I click on "First name" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "First name"
     And I set the field "First name field limiter" to "is equal to"
     And I wait "1" seconds
     And I set the field "First name value" to "User100"
@@ -303,21 +296,16 @@ Feature: Manage conditions in report builder
     And I click on "Save changes" "button"
     And I log out
     When I log in as "user11"
-    Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
-    And I follow "Report1"
-    And I click on "Add field 'Other fields: custom_textinput_field' to the report" "link"
-    And I click on "Add field 'Other fields: custom_checkbox_field' to the report" "link"
-    And I click on "Add field 'Other fields: custom_datetime_field' to the report" "link"
-    And I click on "Add field 'Other fields: custom_dropdown_field' to the report" "link"
-    And I click on "Add field 'Other fields: custom_textarea_field' to the report" "link"
-    And "Add field 'Other fields: custom_textinputhidden_field' to the report" "link" should not exist
+    And I navigate to "Report builder" in workplace launcher
+    And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
-    Then "//select[@id='addconditonselect']//option[starts-with(@value,'user:profilefield_custom_textinput')]" "xpath_element" should exist
-    Then "//select[@id='addconditonselect']//option[starts-with(@value,'user:profilefield_custom_checkbox')]" "xpath_element" should exist
-    Then "//select[@id='addconditonselect']//option[starts-with(@value,'user:profilefield_custom_datetime')]" "xpath_element" should exist
-    Then "//select[@id='addconditonselect']//option[starts-with(@value,'user:profilefield_custom_dropdown')]" "xpath_element" should exist
-    Then "//select[@id='addconditonselect']//option[starts-with(@value,'user:profilefield_custom_textarea')]" "xpath_element" should exist
-    Then "//select[@id='addconditonselect']//option[starts-with(@value,'user:profilefield_custom_textinputhidden')]" "xpath_element" should not exist
+    And I follow "Conditions"
+    Then the "Select a condition" select box should contain "custom_textinput_field"
+    And the "Select a condition" select box should contain "custom_checkbox_field"
+    And the "Select a condition" select box should contain "custom_datetime_field"
+    And the "Select a condition" select box should contain "custom_dropdown_field"
+    And the "Select a condition" select box should contain "custom_textarea_field"
+    And the "Select a condition" select box should not contain "custom_textinputhidden_field"
     And I log out
 
   @javascript
@@ -329,8 +317,7 @@ Feature: Manage conditions in report builder
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report1" "table_row"
     And I click on "Show/hide filters sidebar" "button"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Last access" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "Last access"
     Then I should see "Any value"
     And "[name=\"user:lastaccess_op2\"]" "css_element" should not be visible
     And "[name=\"user:lastaccess\"]" "css_element" should not be visible
@@ -357,8 +344,7 @@ Feature: Manage conditions in report builder
       | Report source | Course completion from datastore |
     And I press "Save" in the modal form dialogue
     And I click on "Show/hide filters sidebar" "button"
-    And I click on "#addconditonselect" "css_element"
-    And I click on "Select courses" "text" in the "#addconditonselect" "css_element"
+    And I set the field "Select a condition" to "Select courses"
     Then I should see "No selection"
     And I open the autocomplete suggestions list
     And I should see "Course 1" in the ".form-autocomplete-suggestions" "css_element"

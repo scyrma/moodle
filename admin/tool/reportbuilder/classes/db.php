@@ -239,9 +239,13 @@ class db {
      * @return string
      * @throws \coding_exception
      */
-    public static function sql_group_concat(string $field, string $separator = ',') : string {
+    public static function sql_group_concat(string $field, string $separator = null) : string {
         // TODO: add order by and order direction.
         global $DB;
+
+        // If $separator is not specified, default to the helper method to specify.
+        $separator = $separator ?? helper::get_list_separator();
+
         $dbfamily = $DB->get_dbfamily();
         switch ($dbfamily) {
             case 'mssql':
@@ -270,9 +274,13 @@ class db {
      * @return string
      * @throws \coding_exception
      */
-    public static function sql_group_concat_distinct(string $field, string $separator = ',') : string {
+    public static function sql_group_concat_distinct(string $field, string $separator = null) : string {
         // TODO: add order by and order direction.
         global $DB;
+
+        // If $separator is not specified, default to the helper method to specify.
+        $separator = $separator ?? helper::get_list_separator();
+
         $dbfamily = $DB->get_dbfamily();
         switch ($dbfamily) {
             case 'mssql':

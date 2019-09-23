@@ -25,9 +25,10 @@
 namespace tool_reportbuilder\local\helpers;
 
 use core_tag_tag;
+use core_user\output\status_field;
 use html_writer;
 use stdClass;
-use tool_reportbuilder\aggregation_base;
+use tool_reportbuilder\helper;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -101,6 +102,19 @@ class format {
     }
 
     /**
+     * Round day value down to nearest whole number, if zero then return appropriate lang string
+     *
+     * @param mixed $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function days($value, stdClass $row) : string {
+        $days = floor($value);
+
+        return ($days > 0) ? (string)$days : get_string('lessthanaday', 'tool_reportbuilder');
+    }
+
+    /**
      * Returns formatted country field
      *
      * @param string $value
@@ -122,7 +136,7 @@ class format {
      */
     public static function countries_list($value, \stdClass $row) {
         $namedcountries = [];
-        $separator = aggregation_base::get_list_separator();
+        $separator = helper::get_list_separator();
         $countries = explode ($separator, $value);
         foreach ($countries as $country) {
             $namedcountries[] = self::country($country, $row);
@@ -204,6 +218,39 @@ class format {
     public static function source_plugin(string $value, \stdClass $row): string {
         $component = substr($value, 0, strpos($value, '\\'));
         return get_string('pluginname', $component);
+    }
+
+    /**
+     * Return enrolment plugin instance name
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function enrolment_name(string $value, stdClass $row) : string {
+        global $DB;
+
+        $instance = $DB->get_record('enrol', ['id' => $row->enrolid, 'enrol' => $row->enrol], '*', MUST_EXIST);
+        $pluginclass = "enrol_{$row->enrol}_plugin";
+
+        return (new $pluginclass())->get_instance_name($instance);
+    }
+
+    /**
+     * Return enrolment status for user
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function enrolment_status(string $value, stdClass $row) : string {
+        $statusvalues = [
+            status_field::STATUS_ACTIVE => get_string('participationactive', 'enrol'),
+            status_field::STATUS_SUSPENDED => get_string('participationsuspended', 'enrol'),
+            status_field::STATUS_NOT_CURRENT => get_string('participationnotcurrent', 'enrol'),
+        ];
+
+        return $statusvalues[(int) $value] ?? '';
     }
 
     /**

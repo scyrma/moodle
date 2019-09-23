@@ -25,10 +25,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_reportbuilder\permission;
+
 /**
  * Permission tests.
  *
  * @package   tool_reportbuilder
+ * @group     tool_reportbuilder
+ * @category  test
  * @covers    \tool_reportbuilder\permission
  * @copyright 2019 Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -172,9 +176,9 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
     }
 
     /**
-     * Test can_manage_reports method.
+     * Test can_view_reports_list method.
      */
-    public function test_can_manage_reports() {
+    public function test_can_view_reports_list() {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
@@ -193,6 +197,25 @@ class tool_reportbuilder_permission_testcase extends advanced_testcase{
         $this->assign_job_with_report_permissions($user2->id);
         $result = \tool_reportbuilder\permission::can_view_reports_list();
         $this->assertTrue($result);
+    }
+
+    /**
+     * Test class can_manage_reports method
+     */
+    public function test_can_manage_reports() : void {
+        // Assign edit capability to first test user, confirm they can manage reports in their own tenant.
+        $this->setUser($this->user1);
+        $this->assign_edit_capability($this->user1);
+
+        $this->assertTrue(permission::can_manage_reports($this->defaulttenantid));
+        $this->assertFalse(permission::can_manage_reports($this->othertenantid));
+
+        // Assign edit capability to second test user, confirm they can manage reports in their own tenant.
+        $this->setUser($this->user2);
+        $this->assign_edit_capability($this->user2);
+
+        $this->assertFalse(permission::can_manage_reports($this->defaulttenantid));
+        $this->assertTrue(permission::can_manage_reports($this->othertenantid));
     }
 
     /**

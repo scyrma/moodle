@@ -18,17 +18,21 @@
  * File containing tests for aggregation helper class.
  *
  * @package   tool_reportbuilder
- * @category test
+ * @category  test
  * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_reportbuilder\helper;
+
 /**
  * Class tool_reportbuilder_helper_aggregation_testcase
  *
  * @package   tool_reportbuilder
+ * @group     tool_reportbuilder
+ * @category  test
  * @covers    \tool_reportbuilder\local\helpers\aggregation
  * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -110,9 +114,10 @@ class tool_reportbuilder_helper_aggregation_testcase extends advanced_testcase {
         if ($aggfunction === 'groupconcat' || $aggfunction === 'groupconcatdistinct') {
             // Ignore the order of values.
             $expectedresultar = preg_split('/,/', $expectedresult);
-            $resar = preg_split('/' .
-                preg_quote(\tool_reportbuilder\aggregation_base::get_list_separator(), '/') .
-                '/', $res);
+
+            $separator = helper::get_list_separator();
+            $resar = preg_split('/' . preg_quote($separator, '/') . '/', $res);
+
             if ($dbfamily === 'mysql' && preg_match('/decfield/', $fieldname)) {
                 // Mysql adds 0s in the end of floats when converted to string.
                 array_walk($expectedresultar, function(&$v) {

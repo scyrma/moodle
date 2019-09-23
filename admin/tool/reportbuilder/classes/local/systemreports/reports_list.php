@@ -27,15 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 
 use tool_reportbuilder\constants;
 use tool_reportbuilder\helper;
-use tool_reportbuilder\local\filter\text;
 use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\local\entities\user as user_entity;
 use tool_reportbuilder\manager;
 use tool_reportbuilder\permission;
 use tool_reportbuilder\report_action;
 use tool_reportbuilder\report_column;
-use tool_reportbuilder\report_filter;
-use tool_reportbuilder\reportbuilder;
 use tool_reportbuilder\system_report;
 use tool_wp\db;
 
@@ -89,6 +86,16 @@ class reports_list extends system_report {
     }
 
     /**
+     * CSS classes to add to the row
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function get_row_class(\stdClass $row) : string {
+        return (!manager::report_source_exists($row->source) ? 'dimmed_text' : '');
+    }
+
+    /**
      * Set the columns for the report.
      *
      * @return mixed
@@ -98,7 +105,8 @@ class reports_list extends system_report {
     protected function set_columns() : void {
         $this->annotate_entity('tool_reportbuilder', new \lang_string('entityreportbuilder', 'tool_reportbuilder'));
 
-        $canmanage = permission::can_manage_reports();
+        $canmanage = permission::can_manage_reports($this->get_tenant_id());
+
         $fields = ['name', 'source', 'timecreated', 'timemodified'];
         $headers = array(
             new \lang_string('reportname', 'tool_reportbuilder'),
@@ -116,13 +124,22 @@ class reports_list extends system_report {
                 ->add_field('rb.' . $field)
                 ->add_field('rb.id', 'rbid')
                 ->add_field('rb.tenantid')
+                ->add_field('rb.source')
                 ->set_is_default(true);
 
             if ($field === 'name') {
                 $newcolumn->add_callback(function($value, $row) use ($canmanage) {
                     global $OUTPUT;
                     $ie = manager::get_name_inplace_editable($value, $row->rbid, $canmanage);
-                    return $ie->render($OUTPUT);
+                    $result = $ie->render($OUTPUT);
+
+                    // Add a warning for missing report source.
+                    if (!manager::report_source_exists($row->source)) {
+                        $result .= \html_writer::span(get_string('error'), 'badge badge-warning broken m-l-1',
+                            ['title' => get_string('errormissingreportsource', 'tool_reportbuilder')]);
+                    }
+
+                    return $result;
                 })
                     ->set_is_sortable(true, true);
             } else {

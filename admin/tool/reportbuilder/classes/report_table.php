@@ -115,12 +115,12 @@ class report_table extends \table_sql {
             $query = $this->query;
             $params = '';
             foreach ($this->sql->params as $keyparam => $param) {
-                $params .= "<p>Parameter: <code>$keyparam</code> Value: <code>$param</code></p>";
+                $params .= '<p>Parameter: <code>' . $keyparam . '</code> Value: <code>' . s($param) . '</code></p>';
             }
             echo "<details>
               <summary>Current query</summary>
               <p><code>$query</code></p>
-              <p>Parameteres</p>
+              <p>Parameters</p>
               <p>$params</p>
             </details>";
         }
