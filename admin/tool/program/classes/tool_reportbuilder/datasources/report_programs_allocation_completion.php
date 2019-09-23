@@ -30,9 +30,11 @@ use tool_program\local\helpers\program_entity;
 use tool_program\local\helpers\programcompletion_entity;
 use tool_program\local\helpers\programcompletion_format;
 use tool_program\local\helpers\programuser_entity;
+use tool_program\local\helpers\programuser_format;
 use tool_reportbuilder\datasource;
 use tool_reportbuilder\local\entities\user as user_entity;
 use \tool_organisation\local\entities\jobs as jobs_entity;
+use tool_reportbuilder\local\helpers\columns;
 use tool_reportbuilder\report_column;
 use tool_tenant\tenancy;
 
@@ -75,37 +77,47 @@ class report_programs_allocation_completion extends datasource {
         // Add default columns.
         if ($column = $this->get_column('tool_program:fullnamewithimage')) {
             $column->set_is_default(true, 1);
-            $column->set_is_sortable(true, true, 1, SORT_ASC);
+            $column->set_is_sortable(true, true);
         }
 
         if ($column = $this->get_column('user:fullnamewithlink')) {
             $column->set_is_default(true, 2);
-            $column->set_is_sortable(true, true, 2, SORT_ASC);
+            $column->set_is_sortable(true, true);
+        }
+
+        if ($column = $this->get_column('user:lastaccess')) {
+            $column->set_is_default(true, 3);
+            $column->set_is_sortable(true, true);
         }
 
         if ($column = $this->get_column('tool_program_users:timecreated')) {
-            $column->set_is_default(true, 3);
-            $column->set_is_sortable(true, true, 3);
+            $column->set_is_default(true, 4);
+            $column->set_is_sortable(true, true);
         }
 
         if ($column = $this->get_column('tool_program_users:duedate')) {
-            $column->set_is_default(true, 4);
-            $column->set_is_sortable(true, true, 4);
+            $column->set_is_default(true, 5);
+            $column->set_is_sortable(true, true);
         }
 
         if ($column = $this->get_column('tool_program_users:enddate')) {
-            $column->set_is_default(true, 5);
-            $column->set_is_sortable(true, true, 5);
+            $column->set_is_default(true, 6);
+            $column->set_is_sortable(true, true);
         }
 
         if ($column = $this->get_column('tool_program_users:programstatus')) {
-            $column->set_is_default(true, 6);
-            $column->set_is_sortable(true, true, 6);
+            $column->set_is_default(true, 7);
+            $column->set_is_sortable(true, true);
         }
 
         if ($column = $this->get_column('tool_program_set_completion:completeddate')) {
-            $column->set_is_default(true, 7);
-            $column->set_is_sortable(true, true, 7);
+            $column->set_is_default(true, 8);
+            $column->set_is_sortable(true, true);
+        }
+
+        if ($column = $this->get_column('tool_program_users:actions')) {
+            $column->set_is_default(true, 9);
+            $column->set_is_sortable(true, true);
         }
 
         // Add default conditions.
@@ -120,8 +132,8 @@ class report_programs_allocation_completion extends datasource {
         $filters['tool_program_users:timecreated']->set_is_default(true);
         $filters['tool_program_set_completion:completeddate']->set_is_default(true);
         $filters['user:fullname']->set_is_default(true);
-        $filters['tool_organisation_jobs:position']->set_is_default(true);
         $filters['tool_organisation_jobs:department']->set_is_default(true);
+        $filters['tool_organisation_jobs:position']->set_is_default(true);
     }
 
     /**
@@ -138,12 +150,25 @@ class report_programs_allocation_completion extends datasource {
      */
     protected function set_columns(): void {
         $this->add_entity(new program_entity('', 'tp'));
-        $this->add_entity(new programuser_entity('', 'tpu'));
+        $this->add_entity(new programuser_entity('', 'tpu', [], 'tpsc'));
         $this->add_entity(new programcompletion_entity('', 'tpsc', [], 'tpu'));
         $this->add_entity(new user_entity('', 'u'));
         if (class_exists(jobs_entity::class)) {
             $this->add_entity(new jobs_entity('LEFT JOIN {tool_organisation_job} toj ON u.id = toj.userid', 'toj'));
         }
+
+        // Actions column.
+        $column = (new report_column(
+            'actions',
+            new lang_string('actions', 'tool_program'),
+            'tool_program_users'
+        ))
+            ->add_field('u.id', 'userid')
+            ->add_field('tpu.certificationid', 'certificationid')
+            ->add_field('tp.id', 'programid')
+            ->add_callback([programuser_format::class, 'actions']);
+        columns::disable_column_aggregation($column);
+        $this->add_column($column);
 
         // Mixed entities columns.
         $column = (new report_column(

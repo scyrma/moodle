@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'core/ajax'], function($, ajax) {
+define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, Notification) {
 
     /**
      * Enrol a user into a course
@@ -38,7 +38,7 @@ define(['jquery', 'core/ajax'], function($, ajax) {
             if (response.status && response.redirecturl) {
                 window.location.href = response.redirecturl;
             }
-        });
+        }).fail(Notification.exception);
     };
 
     return {

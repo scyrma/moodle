@@ -30,6 +30,7 @@ use core_tag_tag;
 use core_text;
 use html_writer;
 use moodle_url;
+use pix_icon;
 use stdClass;
 use tool_certification\certification;
 use tool_program\api;
@@ -355,5 +356,38 @@ class program_format {
             }
         }
         return implode(', ', $output);
+    }
+
+    /**
+     * Column actions
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     * @throws \coding_exception
+     * @throws moodle_exception
+     */
+    public static function actions(?string $value, stdClass $row): string {
+        global $OUTPUT;
+
+        $output = '';
+        $program = new program($row->id);
+        if (permission::can_edit_details($program)) {
+            $editurl = new moodle_url('/admin/tool/program/edit.php', ['id' => $row->id]);
+            $editicon = $OUTPUT->pix_icon('i/settings', get_string('edit'));
+            $output .= html_writer::link($editurl, $editicon);
+        }
+        if (permission::can_view_allocated_users($program)) {
+            $str = get_string('allocateusers', 'tool_program');
+            $usericon = $OUTPUT->pix_icon('i/enrolusers', $str);
+            $allocationurl = new moodle_url('/admin/tool/program/edit.php#!program_users_tab', ['id' => $row->id]);
+            $output .= html_writer::link($allocationurl, $usericon);
+        }
+        if (permission::can_view_users_progress($program)) {
+            $reporturl = new moodle_url('/admin/tool/program/usersprogress.php', ['id' => $row->id]);
+            $reporticon = $OUTPUT->pix_icon('bar-chart', get_string('progressreport', 'tool_program'), 'tool_wp');
+            $output .= html_writer::link($reporturl, $reporticon);
+        }
+        return $output;
     }
 }

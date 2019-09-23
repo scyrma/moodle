@@ -34,6 +34,7 @@ use tool_program\permission;
 use tool_program\persistent\program;
 use tool_program\program_tree;
 use stdClass;
+use tool_tenant\tenancy;
 use tool_wp\output\table_tree;
 
 defined('MOODLE_INTERNAL') || die();
@@ -199,7 +200,7 @@ class program_content_table extends table_tree {
      */
     protected function export_set_name(renderer_base $output, stdClass $node): string {
         $edithint = get_string('editsetname', 'tool_program');
-        $displayvalue = format_string($node->name);
+        $displayvalue = $node->name;
         $editlabel = get_string('newnameforset', 'tool_program', $displayvalue);
         $inlineeditable = new inplace_editable('tool_program', 'setname', $node->id, $this->editable,
             $displayvalue, $node->editablename, $edithint, $editlabel);
@@ -222,13 +223,15 @@ class program_content_table extends table_tree {
      * @return string
      */
     protected function export_course_name(renderer_base $output, stdClass $node): string {
-        $displayvalue = format_string($node->name);
+        $displayvalue = $node->name;
         $columnname = '';
         if ($this->editable) {
             $columnname .= $output->render_from_template('core/drag_handle',
                 ['movetitle' => get_string('movecontent', 'moodle', $displayvalue)]);
         }
-        $columnname .= $displayvalue;
+        $courseurl = new \moodle_url('/course/view.php', ['id' => $node->courseid]);
+        $displayvalue = \html_writer::link($courseurl, $displayvalue);
+        $columnname .= $displayvalue . $node->warning;
 
         return $columnname;
     }
@@ -268,11 +271,11 @@ class program_content_table extends table_tree {
         if ($node !== null) {
             $rv['data-isset'] = empty($node->courseid) ? 1 : 0;
             $rv['data-id'] = $node->id;
-            $rv['data-name'] = format_string($node->name);
+            $rv['data-name'] = $node->name;
         } else {
             $rv['data-isset'] = 1;
             $rv['data-id'] = $this->exportedparentset->id;
-            $rv['data-name'] = format_string($this->exportedparentset->name);
+            $rv['data-name'] = $this->exportedparentset->name;
         }
         return $rv;
     }

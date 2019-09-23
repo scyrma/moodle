@@ -25,7 +25,6 @@ namespace tool_program\local\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
-use context_system;
 use tool_certification\certification_user;
 use tool_certification\local\helpers\certificationuser_entity;
 use tool_organisation\organisation;
@@ -57,7 +56,7 @@ class programs_overdue_report extends system_report {
         $tps = 'tps'; // Program set table alias.
         $tpsc = 'tpsc'; // Program set completion table alias.
         $tcu = 'tcu'; // Certification user table alias.
-        $this->set_columns($tp, $tpu, $u, $tcu);
+        $this->set_columns($tp, $tpu, $u, $tcu, $tpsc);
         $this->set_main_table('user', $u);
         $this->add_base_join(api::get_status_sql_join($u, $tpu, $tp, $tps, $tpsc));
 
@@ -152,11 +151,12 @@ class programs_overdue_report extends system_report {
      * @param string $tpu Program users table alias.
      * @param string $u User table alias.
      * @param string $tcu Certification user table alias.
+     * @param string $tpsc Programs set completion table alias.
      */
-    protected function set_columns($tp = 'tp', $tpu = 'tpu', $u = 'u', $tcu = 'tcu'): void {
+    protected function set_columns($tp = 'tp', $tpu = 'tpu', $u = 'u', $tcu = 'tcu', $tpsc = 'tpsc'): void {
         $this->add_entity(new user('', $u));
         $this->add_entity(new program_entity('', $tp));
-        $this->add_entity(new programuser_entity('', $tpu));
+        $this->add_entity(new programuser_entity('', $tpu, [], $tpsc));
         $this->add_entity(new certificationuser_entity('', $tcu));
     }
 }

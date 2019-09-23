@@ -19,14 +19,13 @@ Feature: Create program
       | user1    | Tenant1 |
       | user2    | Tenant2 |
     And the following "role assigns" exist:
-      | user     | role                 | contextlevel | reference |
-      | manager1 | tool_program_manager | System       |           |
+      | user     | role                     | contextlevel | reference |
+      | manager1 | tool_program_manager     | System       |           |
       | manager1 | tool_dynamicrule_manager | System       |           |
-      | manager2 | tool_program_manager | System       |           |
+      | manager2 | tool_program_manager     | System       |           |
     Given the following tool program data "programs" exist:
-      | fullname | tenant  |
-      | Program1 | Tenant1 |
-      | Program2 | Tenant1 |
+      | fullname | tenant  | idnumber |
+      | Program1 | Tenant1 | num1     |
     And the following "courses" exist:
       | fullname | shortname | format | category |
       | Course 1 | C1        | topics | CAT1     |
@@ -36,17 +35,17 @@ Feature: Create program
     And the following departments exist in organisation structure:
       | tenant     | name            | parent         |
       | Tenant1    | Framework_t1    |                |
-      | Tenant1    | Deparment_t1_d1  | Framework_t1   |
+      | Tenant1    | Deparment_t1_d1 | Framework_t1   |
     And the following positions exist in organisation structure:
     # globalmanager and departmentmanager are boolean flag
     # globalpermissions and departmentpermission are accumulated numeric value assigned to globalmanager & departmentmanager
     # 1-Allocate users to programs/certifications, 2-View users reports, 4-Receive notifications(1+2+4,1+4,etc)
       | tenant     | name            | parent         | globalmanager | globalpermissions | departmentmanager | departmentpermissions |
-      | Tenant1    | Framework_t1    |                |      0        |       0           |       0          |        0              |
-      | Tenant1    | Position_t1_f1    | Framework_t1   |      0        |       0           |       1           |        3              |
-      | Tenant1    | Position_t1_f2    | Position_t1_f1   |      0        |       0           |       0           |        0              |
+      | Tenant1    | Framework_t1    |                |      0        |       0           |       0           |        0              |
+      | Tenant1    | Position_t1_f1  | Framework_t1   |      0        |       0           |       1           |        3              |
+      | Tenant1    | Position_t1_f2  | Position_t1_f1 |      0        |       0           |       0           |        0              |
     And the following job assignments exist in organisation structure:
-      | user     | department     | position     |
+      | user     | department      | position       |
       | manager1 | Deparment_t1_d1 | Position_t1_f1 |
       | user1    | Deparment_t1_d1 | Position_t1_f2 |
 
@@ -58,11 +57,14 @@ Feature: Create program
     Then I click on "Add new program" "link"
     Then I should see "New program"
     And I set the field "Program name" to "Program example 1"
-    And I set the field "Program ID number" to "1"
+    And I set the field "Program ID number" to "num1"
     And I set the field "Program description" to "This is the description of Program 1"
     And I set the field "Program tags" to "Tag example 1"
     And I should see "Program visibility"
     And I should see "Allow direct allocation"
+    Then I press "Save" in the modal form dialogue
+    And I should see "This ID number is already used in another program"
+    And I set the field "Program ID number" to "new2"
     Then I press "Save" in the modal form dialogue
     Then I click on "Content" "link"
     And I should see "Content" in the "#program_content_tab" "css_element"

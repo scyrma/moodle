@@ -37,6 +37,7 @@ use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
 use tool_reportbuilder\local\filter\select;
 use tool_reportbuilder\local\filter\text;
+use tool_reportbuilder\local\helpers\columns;
 use tool_reportbuilder\local\helpers\customfields;
 use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_filter;
@@ -345,6 +346,80 @@ class program_entity extends entity_base {
             ->set_type(constants::DB_TYPE_TIMESTAMP)
             ->add_field("$this->tablealias.timecreated")
             ->add_callback([program_format::class, 'timecreated']);
+        $columns[] = $newcolumn;
+
+        // Column numbercoursesunique.
+        $tpc = \tool_wp\db::generate_alias();
+        $tps = \tool_wp\db::generate_alias();
+        $tp = \tool_wp\db::generate_alias();
+        $sql = "(SELECT COUNT(DISTINCT($tpc.courseid))
+                FROM {tool_program_courses} $tpc
+                LEFT JOIN {tool_program_sets} $tps ON $tps.id = $tpc.setid
+                LEFT JOIN {tool_program} $tp ON $tp.id = $tps.programid
+                WHERE programid = $this->tablealias.id)";
+        $newcolumn = (new report_column(
+            'numbercoursesunique',
+            new lang_string('numbercoursesinprogramunique', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_groupby_sql("$this->tablealias.id")
+            ->set_type(constants::DB_TYPE_NUMBER)
+            ->add_field($sql, 'numbercoursesunique');
+        if ($ismssql) {
+            columns::disable_column_aggregation($newcolumn);
+        }
+        $columns[] = $newcolumn;
+
+        // Column associatedcertifications.
+        $c = \tool_wp\db::generate_alias();
+        $p = \tool_wp\db::generate_alias();
+        $groupconcatsql = db::sql_group_concat("$c.fullname");
+        $sql = "(SELECT $groupconcatsql
+                FROM {tool_certification} $c
+                LEFT JOIN {tool_program} $p
+                ON $c.program = $p.id
+                WHERE $p.id = $this->tablealias.id
+                GROUP BY $p.id)";
+
+        $newcolumn = (new report_column(
+            'associatedcertifications',
+            new lang_string('associatedcertifications', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_field($sql, "associatedcertifications")
+            ->add_callback([format::class, 'format_string'])
+            ->set_groupby_sql($this->tablealias . '.id');
+        if ($ismssql) {
+            columns::disable_column_aggregation($newcolumn);
+        }
+        $columns[] = $newcolumn;
+
+        // Column numbercurrentallocatedusers.
+        $p = \tool_wp\db::generate_alias();
+        $pu = \tool_wp\db::generate_alias();
+        $sql = "(SELECT COUNT(DISTINCT($pu.userid))
+                FROM {tool_program_users} $pu
+                LEFT JOIN {tool_program} $p
+                ON $pu.programid = $p.id
+                WHERE $p.id = $this->tablealias.id
+                GROUP BY $p.id)";
+
+        $newcolumn = (new report_column(
+            'numbercurrentallocatedusers',
+            new lang_string('numbercurrentallocatedusers', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_field($sql, "numbercurrentallocatedusers")
+            ->add_callback([format::class, 'format_string'])
+            ->set_groupby_sql($this->tablealias . '.id');
+        if ($ismssql) {
+            columns::disable_column_aggregation($newcolumn);
+        }
         $columns[] = $newcolumn;
 
         // Columns from program custom fields.

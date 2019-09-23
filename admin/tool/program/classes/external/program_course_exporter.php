@@ -30,6 +30,7 @@ use core\external\persistent_exporter;
 use moodle_url;
 use renderer_base;
 use tool_program\persistent\program_course;
+use tool_tenant\tenancy;
 
 /**
  * Class for exporting field data.
@@ -85,7 +86,19 @@ class program_course_exporter extends persistent_exporter {
                 'multiple' => true,
                 'optional' => true,
             ],
+            'warning' => [
+                'type' => PARAM_RAW
+            ],
         ];
+    }
+
+    /**
+     * Magic function to return parameters for format_string()
+     *
+     * @return array
+     */
+    protected function get_format_parameters_for_name() {
+        return ['options' => ['escape' => false]];
     }
 
     /**
@@ -95,11 +108,23 @@ class program_course_exporter extends persistent_exporter {
      * @return array Keys are the property names, values are their values.
      */
     protected function get_other_values(renderer_base $output): array {
+        global $CFG;
+        require_once($CFG->libdir.'/grouplib.php');
+
         $course = $this->related['course'];
         $programid = $this->related['programid'];
 
         $parent = $this->persistent->get('setid');
         $url = (string) new moodle_url('/course/view.php', ['id' => $course->id]);
+
+        $warning = '';
+        if (tenancy::is_shared_course($course)) {
+            if ($course->groupmode == SEPARATEGROUPS) {
+                $warning = ' ' . $output->pix_icon('i/caution', get_string('enrolinseparategroups', 'tool_tenant'));
+            } else {
+                $warning = ' ' . $output->pix_icon('req', get_string('enrolwithoutgroups', 'tool_tenant'));
+            }
+        }
 
         return [
             'name' => $course->fullname,
@@ -107,6 +132,7 @@ class program_course_exporter extends persistent_exporter {
             'parentsetid' => $parent,
             'url' => $url,
             'items' => [],
+            'warning' => $warning,
         ];
     }
 }

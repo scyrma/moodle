@@ -90,12 +90,10 @@ class associated_certification extends text {
                 $params[$name] = "%$value";
                 break;
             case 5: // Empty.
-                $res = "$field = :$name";
-                $params[$name] = '';
+                $res = $DB->sql_isempty('', $field, false, false);
                 break;
-            case 6: // Empty.
-                $res = "$field != :$name";
-                $params[$name] = '';
+            case 6: // Not empty.
+                $res = $DB->sql_isnotempty('', $field, false, false);
                 break;
             default:
                 // Filter configuration is invalid. Ignore the filter.

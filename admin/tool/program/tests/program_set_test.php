@@ -151,7 +151,7 @@ class tool_program_set_testcase extends advanced_testcase {
             'programid' => $program->get('id'),
             'parent' => 0,
             'name' => 'A new set',
-            'sortorder' => 1,
+            'sortorder' => 2,
         ]);
 
         $copyprogram2 = $newset->get_program();

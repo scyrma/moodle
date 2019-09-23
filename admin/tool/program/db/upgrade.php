@@ -182,5 +182,54 @@ function xmldb_tool_program_upgrade(int $oldversion) {
         upgrade_plugin_savepoint(true, 2019073102, 'tool', 'program');
     }
 
+    if ($oldversion < 2019091200) {
+
+        // Define index idnumbertenantid (not unique) to be added to tool_program.
+        $table = new xmldb_table('tool_program');
+        $index = new xmldb_index('idnumbertenantid', XMLDB_INDEX_NOTUNIQUE, ['idnumber', 'tenantid']);
+
+        // Conditionally launch add index idnumbertenantid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index programidparentsortorder (not unique) to be added to tool_program_sets.
+        $table = new xmldb_table('tool_program_sets');
+        $index = new xmldb_index('programidparentsortorder', XMLDB_INDEX_NOTUNIQUE, ['programid', 'parent', 'sortorder']);
+
+        // Conditionally launch add index programidparentsortorder.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Define index useridsetid (not unique) to be added to tool_program_set_completion.
+        $table = new xmldb_table('tool_program_set_completion');
+        $index = new xmldb_index('useridsetid', XMLDB_INDEX_NOTUNIQUE, ['userid', 'setid']);
+
+        // Conditionally launch add index useridsetid.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Program savepoint reached.
+        upgrade_plugin_savepoint(true, 2019091200, 'tool', 'program');
+    }
+
+    if ($oldversion < 2019091700) {
+
+        // Define field autocreategroups to be added to tool_program.
+        $table = new xmldb_table('tool_program');
+        $field = new xmldb_field('autocreategroups', XMLDB_TYPE_INTEGER, '10', null,
+            XMLDB_NOTNULL, null, '1', 'allowdirectallocation');
+
+        // Conditionally launch add field autocreategroups.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Program savepoint reached.
+        upgrade_plugin_savepoint(true, 2019091700, 'tool', 'program');
+    }
+
     return true;
 }

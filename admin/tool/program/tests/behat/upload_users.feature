@@ -28,6 +28,7 @@ Feature: Allocate users on programs in upload users
     Then I click on "Users" "link" in the ".wptabs" "css_element"
     And I should see "Tom Jones"
     And I should see "Maria Whatever"
+    And I should see "Laia Whataday"
     Then I navigate to "Courses > Programs" in site administration
     Then I click on "Allocate users" "link" in the "Program2" "table_row"
     And I wait until the page is ready
@@ -59,6 +60,7 @@ Feature: Allocate users on programs in upload users
     Then I click on "Users" "link" in the ".wptabs" "css_element"
     And I should see "Tom Jones"
     And I should see "Maria Whatever"
+    And I should see "Laia Whataday"
     Then I navigate to "Courses > Programs" in site administration
     Then I click on "Allocate users" "link" in the "Program2" "table_row"
     Then I click on "Users" "link" in the ".wptabs" "css_element"

@@ -69,7 +69,7 @@ Feature: Complete a program and check if user and manager can view the correct s
     Then I press "Save changes" in the modal form dialogue
     And I log out
     When I log in as "user11"
-    Then I click on ".enrol_to_course" "css_element"
+    Then I press "Enrol" for the "Course11" program course
     And I should see "Course11"
     And I click on "Expand all" "button"
     And I should see "Announcements"
@@ -139,7 +139,7 @@ Feature: Complete a program and check if user and manager can view the correct s
     Then I press "Save changes" in the modal form dialogue
     And I log out
     When I log in as "user11"
-    Then I click on ".enrol_to_course" "css_element"
+    Then I press "Enrol" for the "Course11" program course
     And I should see "Course11"
     And I click on "Expand all" "button"
     And I should see "Announcements"

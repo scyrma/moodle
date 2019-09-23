@@ -18,10 +18,10 @@ Feature: Archive and restore programs
       | user     | role                 | contextlevel | reference |
       | manager1 | tool_program_manager | System       |           |
     Given the following tool program data "programs" exist:
-      | fullname | tenant  |
-      | Program1 | Tenant1 |
-      | Program2 | Tenant1 |
-      | Program3 | Tenant1 |
+      | fullname | tenant  | idnumber |
+      | Program1 | Tenant1 | num1     |
+      | Program2 | Tenant1 | num2     |
+      | Program3 | Tenant1 | num3     |
     And the following tool certification data "certifications" exist:
       | fullname       | archived | tenant  | program   |
       | Certification1 | 0        | Tenant1 | Program1  |
@@ -49,6 +49,10 @@ Feature: Archive and restore programs
     Then I should not see "Program2"
     And I should see "Program1"
     And I should see "Program3"
+    # Change idnumber in Program 1 to match the one in Program 2
+    Then I click on ".edit_details" "css_element" in the "Program1" "table_row"
+    And I set the field "Program ID number" to "num2"
+    Then I press "Save" in the modal form dialogue
     # Program1 contains non archived certifications therefore cannot be archived
     And ".archive_program" "css_element" should not exist in the "Program1" "table_row"
     # Program3 contains one archived certifications therefore can be archived
@@ -63,6 +67,10 @@ Feature: Archive and restore programs
     Then I click on "Active" "link"
     And I should see "Program1"
     And I should see "Program2"
+    # Check that restore has clean up idnumber because was the same as Program1
+    Then I click on ".edit_details" "css_element" in the "Program2" "table_row"
+    And the field "Program ID number" matches value ""
+    Then I press "Save" in the modal form dialogue
     And I log out
     And I log in as "admin"
     And I navigate to "Reports > Logs" in site administration

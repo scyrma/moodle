@@ -69,6 +69,7 @@ class tool_program_generator extends testing_module_generator {
             'allocationenddateabsolute' => strtotime('+7 day'),
             'allocationenddaterelative' => null,
             'allowdirectallocation' => 1,
+            'autocreategroups' => \tool_program\api::GROUPS_TENANT,
         ];
     }
 
@@ -200,14 +201,9 @@ class tool_program_generator extends testing_module_generator {
      * @return program_course
      */
     public function add_course_to_set(int $courseid, int $setid, int $sortorder = 1): program_course {
-        // Now we can create the course within the set.
-        $programcourse = new program_course(0, (object) [
-            'setid' => $setid,
-            'courseid' => $courseid,
-            'sortorder' => $sortorder,
-        ]);
-        $programcourse->create();
-
+        $programcourse = \tool_program\api::add_course_to_parent_set($setid, $courseid);
+        $programcourse->set('sortorder', $sortorder);
+        $programcourse->update();
         return $programcourse;
     }
 
@@ -271,22 +267,15 @@ class tool_program_generator extends testing_module_generator {
     }
 
     /**
-     * Enables a program enrol instance for the course and program related to the given program course and program user.
+     * Enrols user in a program course.
      *
      * @param program_course $programcourse
      * @param program_user $programuser
      */
     public function enrol_user_to_program_course(program_course $programcourse, program_user $programuser): void {
-        global $DB;
-
         $userid = $programuser->get('userid');
-        $courseid = $programcourse->get_course()->id;
         $programid = $programcourse->get_program()->get('id');
-        $params = ['courseid' => $courseid, 'enrol' => 'program', 'customint1' => $programid];
-        $enrolinstance = $DB->get_record('enrol', $params, '*', MUST_EXIST);
-        /** @var enrol_program_plugin $enrolplugin */
-        $enrolplugin = enrol_get_plugin('program');
-        $enrolplugin->enrol_user_by_id($enrolinstance, ['programid' => $programid, 'userid' => $userid]);
+        \tool_program\api::enrol_in_program_course($programid, $programcourse->get_course(), $userid);
     }
 
     /**

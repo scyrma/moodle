@@ -56,6 +56,7 @@ use tool_program\persistent\program_set_completion;
 use tool_program\persistent\program_user;
 use tool_tenant\tenancy;
 use core_text;
+use tool_tenant\tenant_group;
 use tool_wp\course_reset;
 use tool_wp\course_reset_api;
 
@@ -71,6 +72,18 @@ require_once($CFG->dirroot . '/calendar/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class api {
+
+    /** @var int For certifications, use the same setting for groups as in programs */
+    const GROUPS_AS_IN_PROGRAMS = -1;
+    /** @var int Do not create groups in courses */
+    const GROUPS_NONE = 0;
+    /** @var int Create groups in shared courses for each tenant */
+    const GROUPS_TENANT = 1;
+    /** @var int Create groups in courses for each program */
+    const GROUPS_PROGRAM = 2;
+    /** @var int Create groups in courses for each certification */
+    const GROUPS_CERTIFICATION = 4;
+
     /**
      * Create a program.
      *
@@ -94,7 +107,8 @@ class api {
             'visible' => 1,
             'allowdirectallocation' => 1,
             'descriptionformat' => 1,
-            'description' => 1
+            'description' => 1,
+            'autocreategroups' => self::GROUPS_TENANT
         ]);
 
         // If no tenantid provided, default to current user tenant id.
@@ -201,6 +215,7 @@ class api {
         $program->set('descriptionformat', $data->descriptionformat);
         $program->set('visible', $data->visible);
         $program->set('allowdirectallocation', $data->allowdirectallocation);
+        $program->set('autocreategroups', $data->autocreategroups);
         $program->update();
 
         // Trigger event.
@@ -263,6 +278,9 @@ class api {
             // This should also disable the program courses enrol instances.
             self::delete_set($baseset);
         }
+
+        // Delete groups associations.
+        tenant_group::delete_for_component('tool_program', 'tool_program', $program->get('id'));
 
         // Create event.
         $event = program_deleted::create_from_program_deleted($program);
@@ -384,10 +402,13 @@ class api {
         $newprogramcourse = new program_course(0, $insertdata);
         $newprogramcourse->create();
 
-        self::enable_program_course_enrol_instance($newprogramcourse);
+        $course = get_course($newprogramcourse->get('courseid'));
+        self::enable_program_course_enrol_instance($data->programid, $course);
 
         // Trigger event.
         program_course_created::create_from_program_course_created($newprogramcourse, $data->programid)->trigger();
+
+        // TODO enrol allocated users if they are already enrolled.
 
         return $newprogramcourse;
     }
@@ -839,44 +860,118 @@ class api {
     }
 
     /**
-     * Enables instance of course in a program.
+     * Creates or enables program enrol instance in a course.
      *
-     * @param program_course $programcourse
-     * @return bool
+     * @param int $programid
+     * @param stdClass $course
+     * @return ?stdClass
      */
-    private static function enable_program_course_enrol_instance(program_course $programcourse): bool {
+    private static function enable_program_course_enrol_instance(int $programid, stdClass $course): ?stdClass {
         global $DB;
 
-        if (!$program = $programcourse->get_program()) {
-            return false;
-        }
-
-        if (!$course = $programcourse->get_course()) {
-            return false;
-        }
-
         if (!$enrolplugin = enrol_get_plugin('program')) {
-            return false;
+            return null;
         }
 
         $previousenrolinstance = $DB->get_record('enrol', [
-            'courseid' => $programcourse->get('courseid'),
+            'courseid' => $course->id,
             'enrol' => 'program',
-            'customint1' => $program->get('id')
+            'customint1' => $programid
         ]);
 
         if ($previousenrolinstance) {
             if (ENROL_INSTANCE_ENABLED === (int) $previousenrolinstance->status) {
-                return true;
+                return $previousenrolinstance;
             }
             $previousenrolinstance->status = ENROL_INSTANCE_ENABLED;
-            return $DB->update_record('enrol', $previousenrolinstance);
+            $DB->update_record('enrol', $previousenrolinstance);
+            return $previousenrolinstance;
         }
 
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
-        $enrolplugin->add_instance($course, ['customint1' => $program->get('id'), 'roleid' => $studentrole->id]);
+        $studentrole = $DB->get_record('role', ['shortname' => 'student']); // TODO make sure it is customizable.
+        $id = $enrolplugin->add_instance($course, ['customint1' => $programid, 'roleid' => $studentrole->id]);
+        return $DB->get_record('enrol', ['id' => $id]);
+    }
+
+    /**
+     * Enrol user to a course via the program, refreshes the enrolment and groups if needed
+     *
+     * For performance reasons this function does not check that course is inside the program
+     * and user is allocated to the program. This has to be checked before calling this method.
+     *
+     * @param int $programid
+     * @param stdClass $course
+     * @param int $userid
+     * @return bool
+     */
+    public static function enrol_in_program_course(int $programid, stdClass $course, int $userid) {
+        /** @var enrol_program_plugin $enrolplugin */
+        $enrolplugin = enrol_get_plugin('program');
+        if (!$enrolplugin) {
+            return false;
+        }
+        if (!$enrolinstance = self::enable_program_course_enrol_instance($programid, $course)) {
+            return false;
+        }
+        $enrolplugin->enrol_user($enrolinstance, $userid, $enrolinstance->roleid, 0, 0, ENROL_USER_ACTIVE);
+
+        // Add to groups.
+        $groups = self::get_user_groups_in_course($programid, $course, $userid);
+        foreach ($groups as $groupid) {
+            if (!groups_is_member($groupid, $userid)) {
+                groups_add_member($groupid, $userid, 'enrol_program', $enrolinstance->id);
+            }
+        }
 
         return true;
+    }
+
+    /**
+     * List of groups where user should be added to when enrolling in the course
+     *
+     * If user has multiple allocation to the program (direct and via certifications) this can return more
+     * than one group but usually it will be either empty array or array with one group
+     *
+     * @param int $programid
+     * @param stdClass $course
+     * @param int $userid
+     * @return array list of group ids
+     */
+    protected static function get_user_groups_in_course(int $programid, stdClass $course, int $userid): array {
+
+        /** @var program_user[] $allocations */
+        $allocations = program_user::get_records(['programid' => $programid, 'userid' => $userid]);
+        $program = new program($programid);
+
+        $groups = [];
+        foreach ($allocations as $allocation) {
+            if (($certification = $allocation->get_certification())
+                    && $certification->get('autocreategroups') != self::GROUPS_AS_IN_PROGRAMS) {
+                $autocreategroups = $certification->get('autocreategroups');
+            } else {
+                $autocreategroups = $program->get('autocreategroups');
+            }
+            $usertenantid = tenancy::get_tenant_id($userid);
+            $defaultname = [];
+            $component = $area = $itemid = null;
+            if (($autocreategroups & self::GROUPS_TENANT) && (tenancy::is_shared_course($course, $usertenantid))) {
+                $tenantid = $usertenantid;
+                $defaultname[] = tenancy::get_tenants()[$usertenantid]->name;
+            } else {
+                $tenantid = null;
+            }
+            if ($autocreategroups & self::GROUPS_CERTIFICATION) {
+                $component = $area = 'tool_certification';
+                $itemid = $certification->get('id');
+                $defaultname[] = $certification->get('fullname');
+            } else if ($autocreategroups & self::GROUPS_PROGRAM) {
+                $component = $area = 'tool_program';
+                $itemid = $programid;
+                $defaultname[] = $program->get('fullname');
+            }
+            $groups[] = tenancy::get_course_group($course, join(' - ', $defaultname), $tenantid, $component, $area, $itemid);
+        }
+        return array_values(array_filter(array_unique($groups)));
     }
 
     /**
@@ -887,27 +982,13 @@ class api {
      * @return bool
      */
     private static function create_enrol_instances_if_user_already_enroled(program $program, program_user $programuser): bool {
-        global $DB;
-
-        if (!$enrolplugin = enrol_get_plugin('program')) {
-            return false;
-        }
-        if (!method_exists($enrolplugin, 'enrol_user_by_id')) {
-            return false;
-        }
         $courses = $program->get_courses();
         $programid = $program->get('id');
         $userid = $programuser->get('userid');
 
         foreach ($courses as $course) {
             if (is_enrolled(context_course::instance($course->id), $userid, '', true)) {
-                $params = [
-                    'courseid' => $course->id,
-                    'enrol' => 'program',
-                    'customint1' => $programid,
-                ];
-                $enrolinstance = $DB->get_record('enrol', $params, '*', MUST_EXIST);
-                $enrolplugin->enrol_user_by_id($enrolinstance, ['programid' => $programid, 'userid' => $userid]);
+                self::enrol_in_program_course($programid, $course, $userid);
             }
         }
 
@@ -922,26 +1003,10 @@ class api {
      * @return bool
      */
     public static function self_enrol_to_course(int $courseid, int $programid): bool {
-        global $DB, $USER;
-
-        /** @var enrol_program_plugin|null $enrolplugin */
-        $enrolplugin = enrol_get_plugin('program');
-        if (!$enrolplugin) {
+        global $USER;
+        if (!self::enrol_in_program_course($programid, get_course($courseid), $USER->id)) {
             throw new moodle_exception('errormissingenrolprogramplugin', 'tool_program');
         }
-
-        // If user enrol already exists but was suspended (for example, on a previous de-allocation), re-active it.
-        $userid = (int) $USER->id;
-        $enrolinstance = self::get_program_enrol_instance_by_enrolled_user($programid, $courseid, $userid);
-        if ($enrolinstance) {
-            $enrolplugin->update_user_enrol($enrolinstance, $userid, ENROL_USER_ACTIVE);
-            return true;
-        }
-
-        $params = ['courseid' => $courseid, 'enrol' => 'program', 'customint1' => $programid];
-        $instance = $DB->get_record('enrol', $params, '*', MUST_EXIST);
-        $enrolplugin->enrol_self($instance);
-
         return true;
     }
 
@@ -988,6 +1053,10 @@ class api {
     public static function restore_program(program $program): bool {
         $program->set('archived', 0);
         $program->set('timearchived', 0);
+        // Check that idnumber is unique and is not present in another active program in this tenant.
+        if (!self::is_idnumber_unique((int)$program->get('id'), (string)$program->get('idnumber'))) {
+            $program->set('idnumber', '');
+        }
         $program->update();
 
         // Trigger event.
@@ -1111,6 +1180,8 @@ class api {
         $record = $program->to_record();
         unset($record->id);
         $record->fullname .= ' ' . get_string('copy', 'tool_program');
+        // ID number must be unique within same tenant.
+        $record->idnumber = '';
         $newprogram = new program(0, $record);
         $newprogram->create();
 
@@ -2597,5 +2668,58 @@ class api {
                 self::deallocate_user($program->get('id'), $userid);
             }
         }
+    }
+
+    /**
+     * Checks if program idnumber is unique within a tenant. We can have more than one idnumber empty.
+     *
+     * @param int $programid
+     * @param string $idnumber
+     * @return bool
+     */
+    public static function is_idnumber_unique(int $programid, string $idnumber): bool {
+        global $DB;
+
+        if (!strlen($idnumber)) {
+            return true;
+        }
+
+        // We need a case insensitive comparison on the value.
+        $equal = $DB->sql_equal('idnumber', ':idnumber', false);
+        $query = "SELECT COUNT(1)
+                FROM {tool_program}
+                WHERE $equal AND tenantid = :tenantid and archived = 0 AND id <> :programid AND idnumber <> :emptystring";
+        $params = [
+            'idnumber' => $idnumber,
+            'tenantid' => tenancy::get_tenant_id(),
+            'programid' => $programid,
+            'emptystring' => ''
+        ];
+
+        return !($DB->count_records_sql($query, $params) > 0);
+    }
+
+    /**
+     * Returns program record by idnumber
+     *
+     * @param string $idnumber
+     * @param int $tenantid
+     * @return program
+     * @throws \dml_exception
+     */
+    public static function get_program_by_idnumber(string $idnumber, int $tenantid): ?program {
+        global $DB;
+
+        // We need a case insensitive comparison on the value.
+        $equal = $DB->sql_equal('idnumber', ':idnumber', false);
+        $query = "SELECT *
+                FROM {tool_program}
+                WHERE $equal AND tenantid = :tenantid and archived = 0";
+        $params = ['idnumber' => $idnumber, 'tenantid' => $tenantid];
+
+        if ($record = $DB->get_record_sql($query, $params)) {
+            return new program(0, $record);
+        }
+        return null;
     }
 }

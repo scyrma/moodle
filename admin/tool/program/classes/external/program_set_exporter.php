@@ -70,6 +70,15 @@ class program_set_exporter extends persistent_exporter {
     }
 
     /**
+     * Magic function to return parameters for format_string()
+     *
+     * @return array
+     */
+    protected function get_format_parameters_for_name() {
+        return ['options' => ['escape' => false]];
+    }
+
+    /**
      * Other values.
      *
      * @param \renderer_base $output

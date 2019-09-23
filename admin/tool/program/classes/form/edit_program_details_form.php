@@ -92,6 +92,20 @@ class edit_program_details_form extends modal_form {
         $mform->addHelpButton('allowdirectallocation', 'allowdirectallocation', 'tool_program');
         $mform->setDefault('allowdirectallocation', 1);
 
+        $choices = [
+            api::GROUPS_NONE + api::GROUPS_TENANT => get_string('autocreategroupsnone', 'tool_program'),
+            api::GROUPS_PROGRAM + api::GROUPS_TENANT => get_string('autocreategroupsprogram', 'tool_program'),
+        ];
+        $mform->addElement('select', 'autocreategroups', get_string('autocreategroups', 'tool_program'), $choices);
+        $mform->addHelpButton('autocreategroups', 'autocreategroups', 'tool_program');
+        $mform->setDefault('autocreategroups', api::GROUPS_NONE + api::GROUPS_TENANT);
+
+        // This setting is currently hardcoded. In the future we may implement a site-wide setting (available to admin only)
+        // that would allow program managers to uncheck this setting for individual program.
+        $mform->addElement('checkbox', 'separatetenants', '',
+            get_string('separatetenantsingroups', 'tool_tenant'), ['disabled' => 'disabled']);
+        $mform->setDefault('separatetenants', 1);
+
         // Add custom fields to the form.
         $handler = program_handler::create();
         $programid = empty($this->_ajaxformdata['id']) ? 0 : $this->_ajaxformdata['id'];
@@ -210,5 +224,23 @@ class edit_program_details_form extends modal_form {
         $handler->instance_form_before_set_data($programdata);
 
         $this->set_data($programdata);
+    }
+
+    /**
+     * Perform some extra moodle validation
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     * @throws \coding_exception
+     */
+    public function validation($data, $files): array {
+        $errors = [];
+
+        if (!api::is_idnumber_unique($data['id'], $data['idnumber'])) {
+            $errors['idnumber'] = get_string('erroridnumberuniquetenant', 'tool_program');
+        }
+
+        return $errors;
     }
 }

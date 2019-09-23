@@ -25,12 +25,14 @@
 namespace tool_program\local\helpers;
 
 use lang_string;
+use tool_program\api;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\entity_base;
 use tool_reportbuilder\local\filter\checkbox;
 use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
 use tool_reportbuilder\local\filter\select;
+use tool_reportbuilder\local\helpers\columns;
 use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_filter;
 use tool_reportbuilder\report_column;
@@ -51,6 +53,8 @@ class programuser_entity extends entity_base {
     protected $tablealias = 'tpu';
     /** @var array */
     protected $excludecolumns = [];
+    /** @var string */
+    protected $tablecompalias = 'tpsc';
 
     /**
      * program_fields constructor.
@@ -58,11 +62,14 @@ class programuser_entity extends entity_base {
      * @param string $join
      * @param string $tablealias
      * @param array $excludecolumns
+     * @param string $tablecompalias
      */
-    public function __construct(string $join = '', string $tablealias = 'tpu', array $excludecolumns = []) {
+    public function __construct(string $join = '', string $tablealias = 'tpu', array $excludecolumns = [],
+                                string $tablecompalias = 'tpsc') {
         $this->join = $join;
         $this->tablealias = $tablealias;
         $this->excludecolumns = array_combine($excludecolumns, $excludecolumns);
+        $this->tablecompalias = $tablecompalias;
     }
 
     /**
@@ -163,6 +170,22 @@ class programuser_entity extends entity_base {
             ->add_field("$this->tablealias.programid")
             ->add_field("$this->tablealias.userid")
             ->add_callback([programuser_format::class, 'programprogress']);
+        $columns[] = $newcolumn;
+
+        // Column programprogresswithoverview.
+        $newcolumn = (new report_column(
+            'programprogresswithoverview',
+            new lang_string('programprogress', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_field("$this->tablealias.id")
+            ->add_field("$this->tablealias.programid")
+            ->add_field("$this->tablealias.userid")
+            ->add_field("$this->tablealias.certificationid")
+            ->add_callback([programuser_format::class, 'programprogressoverviewlink']);
+        columns::disable_column_aggregation($newcolumn);
         $columns[] = $newcolumn;
 
         // Column suspended.
@@ -349,7 +372,17 @@ class programuser_entity extends entity_base {
             ->add_join($this->join)
             ->set_field_sql("$this->tablealias.timemodified");
 
-        // TODO programstatus custom filter field sql needed.
+        // Filter by status.
+        $filters[] = (new report_filter(
+            select::class,
+            'filterablestatus',
+            new lang_string('programstatus', 'tool_program'),
+            $this->get_entity_name(),
+            api::get_status_sql_cases(0, $this->tablealias, $this->tablecompalias)
+        ))
+            ->add_join($this->join)
+            ->set_options(api::get_program_statuses_fieldset());
+
         // TODO programprogress custom filter field sql needed.
 
         return $filters;

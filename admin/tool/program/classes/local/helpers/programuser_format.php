@@ -35,6 +35,7 @@ use tool_program\api;
 use tool_program\constants;
 use tool_program\permission;
 use tool_program\persistent\program;
+use tool_program\persistent\program_user;
 use tool_program\program_tree_progress;
 
 defined('MOODLE_INTERNAL') || die();
@@ -247,13 +248,13 @@ class programuser_format {
     }
 
     /**
-     * Displays column program progress.
+     * Displays column program progress with overview modal and report link.
      *
      * @param string $value
      * @param stdClass $row
      * @return string
      */
-    public static function progressoverviewlink(string $value, stdClass $row): string {
+    public static function programprogressoverviewlink(string $value, stdClass $row): string {
         global $PAGE, $USER, $CFG;
         $userid = (int) $row->userid;
         $viewasmode = $userid !== (int) $USER->id;
@@ -268,6 +269,7 @@ class programuser_format {
         $programname = format_string($program->get('fullname'), true, $options);
         $overviewstr = get_string('progressoverview', 'tool_program');
         $urlparams = ['programid' => $programid, 'userid' => $userid];
+        // Url needs program path because it's called from programs and certifications plugins.
         $userprogramurl = new moodle_url("/$CFG->admin/tool/program/programprogress.php", $urlparams);
         $context = (object) [
             'allocationid' => $allocationid,
@@ -350,5 +352,32 @@ class programuser_format {
 
         // If this report is viewed by a manager who can view reports but not allocate, do not show link.
         return $programname;
+    }
+
+    /**
+     * Column actions
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     * @throws \coding_exception
+     * @throws moodle_exception
+     */
+    public static function actions(?string $value, stdClass $row): string {
+        global $OUTPUT;
+        // View user profile, send message, edit user allocation (if has permission).
+        $profileicon = $OUTPUT->pix_icon('i/user', get_string('profile'));
+        $messageicon = $OUTPUT->pix_icon('t/messages', get_string('sendmessage', 'core_message'));
+        $profileurl = new moodle_url('/user/profile.php', ['id' => $row->userid]);
+        $messageurl = new moodle_url('/message/index.php', ['id' => $row->userid]);
+        $output = html_writer::link($profileurl, $profileicon) . ' ' . html_writer::link($messageurl, $messageicon);
+        $params = ['programid' => $row->programid, 'certificationid' => $row->certificationid, 'userid' => $row->userid];
+        $programuser = new program_user(0, (object)$params);
+        if (permission::can_edit_user_allocation($programuser)) {
+            $editicon = $OUTPUT->pix_icon('i/settings', get_string('edit'), 'core');
+            $editurl = new moodle_url('/admin/tool/program/edit.php#!program_users_tab', ['id' => $row->programid]);
+            $output .= html_writer::link($editurl, $editicon);
+        }
+        return $output;
     }
 }

@@ -71,6 +71,17 @@ class behat_tool_program extends behat_base {
                 'user' => 'userid',
                 'program' => 'programid',
             ],
+        ],
+        "program_courses" => [
+            'datagenerator' => 'program_course',
+            'required' => [
+                'course',
+                'program',
+            ],
+            'switchids' => [
+                'course' => 'courseid',
+                'program' => 'programid',
+            ],
         ]
     ];
 
@@ -173,7 +184,14 @@ class behat_tool_program extends behat_base {
             $record['fullname'] = 'New program ' . (++$this->instancecount);
         }
         $record['descriptionformat'] = FORMAT_HTML;
-        return api::create_program((object) $record);
+        $program = api::create_program((object) $record);
+
+        // Some properties like 'completioncriteria' and 'completionatleast' apply to the base set and not the program.
+        if (isset($record['completioncriteria'])) {
+            $record['setid'] = $program->get_base_set()->get('id');
+            api::update_set_completion_criteria((object)$record);
+        }
+        return $program;
     }
 
     /**
@@ -210,6 +228,17 @@ class behat_tool_program extends behat_base {
     }
 
     /**
+     * Gets the course id.
+     *
+     * @param string $coursename
+     * @return int
+     */
+    protected function get_course_id(string $coursename): int {
+        global $DB;
+        return (int) $DB->get_record('course', ['shortname' => $coursename], '*', MUST_EXIST)->id;
+    }
+
+    /**
      * Preprocess program user
      *
      * @param array $data
@@ -233,6 +262,15 @@ class behat_tool_program extends behat_base {
         $program = new program($record['programid']);
 
         return api::allocate_user($program, (object) $record);
+    }
+
+    /**
+     * Process program course
+     *
+     * @param null $record
+     */
+    public function process_program_course($record = null) {
+        api::add_course_to_base_set($record['programid'], $record['courseid']);
     }
 
     /**
@@ -278,5 +316,21 @@ class behat_tool_program extends behat_base {
             $userid = $this->get_user_id($elementdata['user']);
             $generator->complete_program($program, $userid);
         }
+    }
+
+    /**
+     * Allocates users to programs
+     *
+     * @Given /^I press "(?P<button_string>(?:[^"]|\\")*)" for the "(?P<course_string>(?:[^"]|\\")*)" program course$/
+     *
+     * @param string $buttonname
+     * @param string $coursename
+     */
+    public function i_press_for_the_program_course($buttonname, $coursename): void {
+        $xpath = "//div[@data-region='programs-overview-course-view' and contains(.,'" .
+            $this->escape($coursename) . "')]//div[@data-region='course-call-to-action']";
+
+        $this->execute('behat_general::i_click_on_in_the',
+            [$buttonname, 'button', $xpath, 'xpath_element']);
     }
 }

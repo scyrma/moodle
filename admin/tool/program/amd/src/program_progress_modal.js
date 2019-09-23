@@ -54,7 +54,7 @@ define([
                     return modal;
                 }).fail(Notification.exception);
             };
-            var region = '[data-region="programs-user-report"]';
+            var region = '[data-region="report-table"]';
             var clickevent = 'click.tool_program_show_progress';
             var trigger = '.program-progress-overview-trigger';
             $(region).off(clickevent).on(clickevent, trigger, showProgressModal);

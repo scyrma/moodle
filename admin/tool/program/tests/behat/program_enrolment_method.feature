@@ -43,8 +43,7 @@ Feature: Program enrolment method works as exepcted
     And I should see "Course11"
     And I should see "You can not enrol yourself in this course"
     Then I follow "Dashboard"
-    Then I should see "Course11"
-    Then I click on ".enrol_to_course" "css_element"
+    Then I press "Enrol" for the "Course11" program course
     And I should see "Course11"
     And I click on "Expand all" "button"
     And I should see "Announcements"

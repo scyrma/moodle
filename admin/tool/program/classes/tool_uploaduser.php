@@ -27,6 +27,7 @@ namespace tool_program;
 defined('MOODLE_INTERNAL') || die();
 
 use stdClass;
+use tool_program\persistent\program;
 use uu_progress_tracker;
 
 /**
@@ -57,14 +58,7 @@ class tool_uploaduser {
                 }
 
                 $tenantid = \tool_tenant\tenancy::get_tenant_id($user->id);
-                $conditions = [
-                    'idnumber' => $user->{'program'.$i},
-                    'tenantid' => $tenantid,
-                    'archived' => 0
-                ];
-
-                /** @var persistent\program $programobj */
-                $programobj = persistent\program::get_record($conditions);
+                $programobj = api::get_program_by_idnumber($user->{'program'.$i}, $tenantid);
                 if (!$programobj) {
                     $upt->track('tool_wp', get_string('errorinvalidprogram', 'tool_program'), 'error');
                     continue;

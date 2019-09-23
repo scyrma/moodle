@@ -202,6 +202,7 @@ class tool_program_api_testcase extends advanced_testcase {
         $programdata->descriptionformat = FORMAT_PLAIN;
         $programdata->visible = 0;
         $programdata->allowdirectallocation = 0;
+        $programdata->autocreategroups = api::GROUPS_TENANT;
         $this->generator->add_dummy_program_tags($programdata);
 
         api::update_program_details($programdata);
@@ -244,6 +245,7 @@ class tool_program_api_testcase extends advanced_testcase {
         $programdata->allowdirectallocation = '1';
         $programdata->visible = '1';
         $programdata->allowdirectallocation = '1';
+        $programdata->autocreategroups = api::GROUPS_TENANT;
         $this->generator->add_program_description_editor($programdata);
         $this->generator->add_dummy_program_tags($programdata);
 
@@ -1991,7 +1993,7 @@ class tool_program_api_testcase extends advanced_testcase {
         $this->assertSame($program->get('startdateabsolute'), $duplicatedprogram->get('startdateabsolute'));
         $this->assertSame($program->get('visible'), $duplicatedprogram->get('visible'));
         $this->assertSame($program->get('enddatetype'), $duplicatedprogram->get('enddatetype'));
-        $this->assertSame($program->get('idnumber'), $duplicatedprogram->get('idnumber'));
+        $this->assertSame($duplicatedprogram->get('idnumber'), '');
 
         // Check duplicated program has its own base set.
         $newbaseset = $duplicatedprogram->get_base_set();
@@ -3852,5 +3854,20 @@ class tool_program_api_testcase extends advanced_testcase {
         $this->assertTrue($exists);
         $exists = $DB->record_exists('tool_program_users', ['programid' => $programid2, 'userid' => $user1->id]);
         $this->assertFalse($exists);
+    }
+
+    public function test_is_idnumber_unique() {
+        self::setAdminUser();
+        $program1 = $this->generator->generate_program((object)['idnumber' => 'num1']);
+        $program2 = $this->generator->generate_program((object)['idnumber' => 'num2']);
+
+        $this->assertTrue(api::is_idnumber_unique($program1->get('id'), 'num1'));
+        $this->assertTrue(api::is_idnumber_unique($program1->get('id'), 'num3'));
+        $this->assertFalse(api::is_idnumber_unique($program1->get('id'), 'num2'));
+        $this->assertFalse(api::is_idnumber_unique($program1->get('id'), 'NUM2'));
+
+        $program1->set('idnumber', '');
+        $program1->update();
+        $this->assertTrue(api::is_idnumber_unique($program2->get('id'), ''));
     }
 }

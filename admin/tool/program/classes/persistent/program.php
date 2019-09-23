@@ -29,6 +29,7 @@ use core\persistent;
 use moodle_url;
 use stdClass;
 use stored_file;
+use tool_program\api;
 use tool_program\constants;
 use tool_program\form\edit_program_details_form;
 use tool_tenant\tenancy;
@@ -159,6 +160,12 @@ class program extends persistent {
                 'optional' => true,
                 'default' => null,
                 'null' => NULL_ALLOWED,
+            ],
+            'autocreategroups' => [
+                'type' => PARAM_INT,
+                'optional' => true,
+                'default' => api::GROUPS_TENANT,
+                'null' => NULL_NOT_ALLOWED,
             ],
             'visible' => [
                 'type' => PARAM_BOOL,

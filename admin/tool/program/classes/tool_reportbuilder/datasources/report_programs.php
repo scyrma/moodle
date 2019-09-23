@@ -25,11 +25,14 @@
 namespace tool_program\tool_reportbuilder\datasources;
 
 use moodle_exception;
-use tool_certification\local\helpers\certification_entity;
+use tool_program\local\helpers\program_format;
+use tool_program\local\helpers\programcontent_entity;
 use tool_program\local\helpers\program_entity;
 use tool_reportbuilder\datasource;
 use tool_reportbuilder\local\entities\course;
 use tool_reportbuilder\local\entities\user;
+use tool_reportbuilder\local\helpers\columns;
+use tool_reportbuilder\report_column;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -58,14 +61,45 @@ class report_programs extends datasource {
         $this->set_conditions();
         $this->set_filters();
 
-        if ($column = $this->get_column('tool_program:fullname')) {
-            $column->set_is_default(true);
-            $column->set_is_sortable(true, true, 1);
+        // Default columns.
+        if ($column = $this->get_column('tool_program:programimage')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true);
         }
 
+        if ($column = $this->get_column('tool_program:fullname')) {
+            $column->set_is_default(true, 2);
+            $column->set_is_sortable(true, true);
+        }
+
+        if ($column = $this->get_column('tool_program:associatedcertifications')) {
+            $column->set_is_default(true, 3);
+            $column->set_is_sortable(true, true);
+        }
+
+        if ($column = $this->get_column('tool_program:numbercoursesunique')) {
+            $column->set_is_default(true, 4);
+            $column->set_is_sortable(true, true);
+        }
+
+        if ($column = $this->get_column('tool_program_content:coursesinsetcommaseparatedlinks')) {
+            $column->set_is_default(true, 5);
+            $column->set_is_sortable(true, true);
+        }
+
+        // Add default conditions.
         $conditions = $this->get_conditions();
         $conditions['tool_program:archived']->set_is_default(true, ['archived_op' => 2, 'archived' => 0]);
         $conditions['tool_program:visible']->set_is_default(true, ['visible_op' => 1, 'visible' => 1]);
+
+        // Add default filters.
+        $filters = $this->get_filters();
+        $filters['tool_program:programselector']->set_is_default(true, [1]);
+        $filters['tool_program:archived']->set_is_default(true, ['archived_op' => 2, 'archived' => 0]);
+        $filters['tool_program:certification']->set_is_default(true);
+        $filters['tool_program:course']->set_is_default(true);
+        $filters['tool_program:timecreated']->set_is_default(true);
+        $filters['tool_program:timemodified']->set_is_default(true);
     }
 
     /**
@@ -84,20 +118,29 @@ class report_programs extends datasource {
     protected function set_columns(): void {
         $this->add_entity(new program_entity('', 'tp'));
 
-        $coursejoin = '
-            LEFT JOIN {tool_program_sets} tps ON tps.programid = tp.id
+        $coursejoin = 'LEFT JOIN {tool_program_sets} tps ON tps.programid = tp.id
             LEFT JOIN {tool_program_courses} tpc ON tpc.setid = tps.id
-            LEFT JOIN {course} c ON c.id = tpc.courseid
-        ';
+            LEFT JOIN {course} c ON c.id = tpc.courseid';
         $userjoin = '
             LEFT JOIN {tool_program_users} tpu ON tpu.programid = tp.id
             LEFT JOIN {user} u ON u.id = tpu.userid
         ';
 
+        // TODO remove second and third extra joins on programcontent entity after WP-1088.
+        $this->add_entity(new programcontent_entity($coursejoin, 'tps'));
         $this->add_entity(new course($coursejoin, 'c'));
         $this->add_entity(new user($userjoin, 'u'));
 
-        // TODO add certification entity.
+        // Actions column.
+        $column = (new report_column(
+            'actions',
+            new \lang_string('actions', 'tool_program'),
+            'tool_program'
+        ))
+            ->add_fields('tp.id')
+            ->add_callback([program_format::class, 'actions']);
+        columns::disable_column_aggregation($column);
+        $this->add_column($column);
     }
 
     /**
