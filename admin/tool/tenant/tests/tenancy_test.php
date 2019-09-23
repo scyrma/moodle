@@ -221,4 +221,151 @@ class tool_tenant_tenancy_testcase extends advanced_testcase {
         $this->assertCount(1, $tenantadminids);
         $this->assertEquals([$user1->id => $user1->id], $tenantadminids);
     }
+
+    /**
+     * Tests for checking that course is shared between tenants
+     */
+    public function test_is_shared_course() {
+        $cat = $this->getDataGenerator()->create_category();
+        $course1 = $this->getDataGenerator()->create_course(['category' => $cat->id]);
+
+        // The site is not multitenant and the course is not shared.
+        $this->assertFalse(\tool_tenant\tenancy::is_shared_course($course1));
+        $this->assertFalse(\tool_tenant\tenancy::is_shared_course($course1, \tool_tenant\tenancy::get_default_tenant_id()));
+
+        $tenantcat = $this->getDataGenerator()->create_category();
+        $tenantid = $this->get_generator()->create_tenant(['categoryid' => $tenantcat->id])->id;
+
+        // Now course is considered shared for any tenant.
+        $this->assertTrue(\tool_tenant\tenancy::is_shared_course($course1));
+        $this->assertTrue(\tool_tenant\tenancy::is_shared_course($course1, \tool_tenant\tenancy::get_default_tenant_id()));
+        $this->assertTrue(\tool_tenant\tenancy::is_shared_course($course1, $tenantid));
+
+        // Create a course inside tenant category.
+        // It will not be shared for this tenant but will be considered shared for any other.
+        $course2 = $this->getDataGenerator()->create_course(['category' => $tenantcat->id]);
+        $this->assertTrue(\tool_tenant\tenancy::is_shared_course($course2, \tool_tenant\tenancy::get_default_tenant_id()));
+        $this->assertFalse(\tool_tenant\tenancy::is_shared_course($course2, $tenantid));
+    }
+
+    /**
+     * Tests for creating/retriving groups in the courses
+     */
+    public function test_get_course_group() {
+        $course1 = $this->getDataGenerator()->create_course();
+        $tenantid = $this->get_generator()->create_tenant()->id;
+
+        // No tenant and no component -> no group.
+        $gid0 = \tool_tenant\tenancy::get_course_group($course1, 'group0', null, null, null, null);
+        $this->assertEquals(0, $gid0);
+        $this->assertEmpty(groups_get_all_groups($course1->id));
+
+        // Course group for a tenant.
+        $gid1 = \tool_tenant\tenancy::get_course_group($course1, 'group1', $tenantid, null, null, null);
+        $this->assertTrue(groups_group_exists($gid1));
+        $groups = groups_get_all_groups($course1->id);
+        $this->assertArrayHasKey($gid1, $groups);
+        $this->assertEquals('group1', $groups[$gid1]->name);
+
+        $gid2 = \tool_tenant\tenancy::get_course_group($course1, 'group1 new name', $tenantid, null, null, null);
+        $this->assertEquals($gid1, $gid2);
+        $groups = groups_get_all_groups($course1->id);
+        $this->assertEquals('group1', $groups[$gid1]->name);
+
+        // Course group for a component item.
+        $gid3 = \tool_tenant\tenancy::get_course_group($course1, 'group3', null, 'tool_program', 'area', 101);
+        $groups = groups_get_all_groups($course1->id);
+        $this->assertArrayHasKey($gid3, $groups);
+        $this->assertEquals('group3', $groups[$gid3]->name);
+        $this->assertNotEquals($gid1, $gid3);
+
+        $gid4 = \tool_tenant\tenancy::get_course_group($course1, 'group3 new name', null, 'tool_program', 'area', 101);
+        $this->assertEquals($gid3, $gid4);
+        $groups = groups_get_all_groups($course1->id);
+        $this->assertEquals('group3', $groups[$gid3]->name);
+
+        // Course group for tenant and component item.
+        $gid5 = \tool_tenant\tenancy::get_course_group($course1, 'group5', $tenantid, 'tool_program', 'area', 101);
+        $groups = groups_get_all_groups($course1->id);
+        $this->assertArrayHasKey($gid5, $groups);
+        $this->assertEquals('group5', $groups[$gid5]->name);
+        $this->assertNotEquals($gid1, $gid5);
+        $this->assertNotEquals($gid3, $gid5);
+
+        $gid6 = \tool_tenant\tenancy::get_course_group($course1, 'group5 new name', $tenantid, 'tool_program', 'area', 101);
+        $this->assertEquals($gid5, $gid6);
+        $groups = groups_get_all_groups($course1->id);
+        $this->assertEquals('group5', $groups[$gid5]->name);
+    }
+
+    /**
+     * Make sure group associations are removed when tenant is deleted but the group stays.
+     */
+    public function test_delete_groups_for_tenant() {
+        global $DB;
+        $course1 = $this->getDataGenerator()->create_course();
+        $tenantid = $this->get_generator()->create_tenant()->id;
+
+        $this->assertEmpty($DB->get_records(\tool_tenant\tenant_group::TABLE, []));
+
+        // Course group for a tenant.
+        $gid1 = \tool_tenant\tenancy::get_course_group($course1, 'group1', $tenantid, null, null, null);
+        $groups = groups_get_all_groups($course1->id);
+        $this->assertArrayHasKey($gid1, $groups);
+        $this->assertTrue(groups_group_exists($gid1));
+        $this->assertNotEmpty($DB->get_records(\tool_tenant\tenant_group::TABLE, []));
+
+        $manager = new \tool_tenant\manager();
+        $manager->archive_tenant($tenantid);
+        $manager->delete_tenant($tenantid);
+
+        // There are no associations for the groups but the group is still present.
+        $this->assertTrue(groups_group_exists($gid1));
+        $this->assertEmpty($DB->get_records(\tool_tenant\tenant_group::TABLE, []));
+    }
+
+    /**
+     * Test that group association is deleted when course is deleted.
+     */
+    public function test_delete_groups_for_course() {
+        global $DB;
+        $course1 = $this->getDataGenerator()->create_course();
+        $tenantid = $this->get_generator()->create_tenant()->id;
+
+        $this->assertEmpty($DB->get_records(\tool_tenant\tenant_group::TABLE, []));
+
+        // Course group for a tenant.
+        $gid1 = \tool_tenant\tenancy::get_course_group($course1, 'group1', $tenantid, null, null, null);
+        $groups = groups_get_all_groups($course1->id);
+        $this->assertArrayHasKey($gid1, $groups);
+        $this->assertTrue(groups_group_exists($gid1));
+        $this->assertNotEmpty($DB->get_records(\tool_tenant\tenant_group::TABLE, []));
+
+        delete_course($course1->id, false);
+
+        $this->assertEmpty($DB->get_records(\tool_tenant\tenant_group::TABLE, []));
+    }
+
+    /**
+     * Test that group associations can be deleted for component
+     */
+    public function test_delete_groups_for_component() {
+        global $DB;
+        $course1 = $this->getDataGenerator()->create_course();
+        $tenantid = $this->get_generator()->create_tenant()->id;
+
+        // Course group for a component item.
+        $gid3 = \tool_tenant\tenancy::get_course_group($course1, 'group3', null, 'tool_program', 'area', 101);
+        $groups = groups_get_all_groups($course1->id);
+        $this->assertArrayHasKey($gid3, $groups);
+        $gid4 = \tool_tenant\tenancy::get_course_group($course1, 'group3', null, 'tool_program', 'area', 102);
+
+        $groupids = $DB->get_fieldset_select(\tool_tenant\tenant_group::TABLE, 'groupid', '1=1', []);
+        $this->assertEqualsCanonicalizing([$gid3, $gid4], $groupids);
+
+        \tool_tenant\tenant_group::delete_for_component('tool_program', 'area', 101);
+
+        $groupids = $DB->get_fieldset_select(\tool_tenant\tenant_group::TABLE, 'groupid', '1=1', []);
+        $this->assertEquals([$gid4], $groupids);
+    }
 }

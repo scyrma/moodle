@@ -30,4 +30,8 @@ $observers = [
         'eventname' => '\core\event\user_created',
         'callback' => 'tool_tenant_observer::on_user_created'
     ],
+    [
+        'eventname' => '\core\event\course_deleted',
+        'callback' => tool_tenant_observer::class . '::on_course_deleted'
+    ],
 ];

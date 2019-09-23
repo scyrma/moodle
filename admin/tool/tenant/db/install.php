@@ -34,8 +34,8 @@ function xmldb_tool_tenant_install() {
     update_capabilities('tool_tenant'); // TODO MDL-65668 remove.
     \tool_tenant\manager::create_tenant_roles();
 
-    if (during_initial_install() &&
-            !defined('BEHAT_SITE_RUNNING') && !(defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
+    if ((during_initial_install() || (isset($CFG->forcewpsetup) && $CFG->forcewpsetup == true)) &&
+        !defined('BEHAT_SITE_RUNNING') && !(defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
         // When Moodle Workplace is installed remove capability to view list of courses from regular users.
         // Do not do it in the behat/unittests because it will break all core tests.
         $userroleid = $DB->get_field('role', 'id', ['shortname' => 'user']);

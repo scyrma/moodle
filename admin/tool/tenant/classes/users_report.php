@@ -238,7 +238,7 @@ class users_report extends \tool_reportbuilder\system_report {
      */
     public function append_admin_label($value, \stdClass $row): string {
         if ($row->tenantadmin > 0) {
-            $value .= \html_writer::tag('span', get_string('tenantadmin', 'tool_tenant'), ['class' => 'label']);
+            $value .= \html_writer::tag('span', get_string('tenantadmin', 'tool_tenant'), ['class' => 'label ml-2']);
         }
         return $value;
     }

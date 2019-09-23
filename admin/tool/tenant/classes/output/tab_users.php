@@ -78,7 +78,7 @@ class tab_users extends tab {
         // TODO SP-390 to just note that removing the report builder will result in errors. Need some sort of check
         // or fallback.
         /** @var users_report $report */
-        $report = system_report_factory::create(users_report::class, ['id' => $this->data['tenantid']]);
+        $report = system_report_factory::create(users_report::class, ['id' => $this->data['tenantid'], 'pagesize' => 30]);
 
         $userdata = new \tool_tenant\output\users_list($report, $this->data['tenantid']);
         $data = $userdata->export_for_template($output);

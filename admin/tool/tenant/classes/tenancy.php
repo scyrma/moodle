@@ -51,7 +51,7 @@ class tenancy {
         $cache = \cache::make('tool_tenant', 'tenants');
         if (!($tenants = $cache->get('list'))) {
             $tenants = $DB->get_records('tool_tenant', ['archived' => 0],
-                'isdefault DESC, sortorder, id', 'id, name, isdefault, sitename, categoryid');
+                'isdefault DESC, sortorder, id', 'id, name, idnumber, isdefault, sitename, categoryid');
             $first = reset($tenants);
             if (!$tenants || !$first->isdefault) {
                 // Create default tenant.
@@ -429,5 +429,93 @@ class tenancy {
             $menu = $renderer->render_from_template('core/custom_menu_item', $menu);
         }
         return $menu;
+    }
+
+    /**
+     * Is this course inside the category of this tenant?
+     *
+     * @param \stdClass $course
+     * @param int $tenantid
+     * @return bool
+     */
+    protected static function is_course_inside_tenant_category(\stdClass $course, ?int $tenantid = null) {
+        $currenttenant = self::get_tenants()[$tenantid ?: self::get_tenant_id()];
+        $categoryid = $currenttenant->categoryid;
+        if (!$categoryid) {
+            return false;
+        }
+        // Quick check.
+        if ($course->category == $categoryid) {
+            return true;
+        }
+        // Longer check (for subcategories).
+        $parentcontexts = \context_course::instance($course->id)->get_parent_context_ids();
+        $categorycontextid = \context_coursecat::instance($categoryid)->id;
+        return in_array($categorycontextid, $parentcontexts);
+    }
+
+    /**
+     * Detects if a course belongs to a different tenant or to no tenant at all
+     *
+     * This means that we need to try to use separate groups when enrolling users from this tenant
+     *
+     * @param \stdClass $course
+     * @param int $tenantid
+     * @return bool false - this is not multitenant site OR the given course belongs to this tenant's category
+     *      true - otherwise
+     */
+    public static function is_shared_course(\stdClass $course, ?int $tenantid = null): bool {
+        return self::is_site_multi_tenant() && !self::is_course_inside_tenant_category($course, $tenantid);
+    }
+
+    /**
+     * Returns a groupid to use for enrolment of a user in a course
+     *
+     * @param \stdClass $course
+     * @param string $defaultgroupname
+     * @param int|null $tenantid
+     * @param null|string $component
+     * @param null|string $area
+     * @param int|null $itemid
+     * @return int|mixed
+     */
+    public static function get_course_group(\stdClass $course, string $defaultgroupname, ?int $tenantid, ?string $component,
+            ?string $area, ?int $itemid) {
+        global $DB, $CFG;
+        require_once($CFG->dirroot.'/group/lib.php');
+
+        if (!$tenantid && !$component) {
+            return 0;
+        }
+
+        $params = [
+            'courseid' => $course->id,
+            'tenantid' => $tenantid ?: null,
+            'component' => $component,
+            'area' => $area,
+            'itemid' => $itemid,
+        ];
+
+        if ($tenantgroup = tenant_group::get_record($params)) {
+            // Make sure the group actually exists.
+            if (!$DB->record_exists('groups', ['id' => $tenantgroup->get('groupid'), 'courseid' => $course->id])) {
+                $tenantgroup->delete();
+                $tenantgroup = false;
+            }
+        }
+
+        if (!$tenantgroup) {
+            // Create a new group for this tenant.
+            $groupid = groups_create_group((object)['courseid' => $course->id,
+                'name' => $defaultgroupname]);
+            $tenantgroup = new tenant_group(0, (object)($params + ['groupid' => $groupid]));
+            $tenantgroup->save();
+
+            if ($course->defaultgroupingid && $DB->record_exists('groupings', ['id' => $course->defaultgroupingid])) {
+                groups_assign_grouping($course->defaultgroupingid, $groupid);
+            }
+        }
+
+        return $tenantgroup->get('groupid');
     }
 }

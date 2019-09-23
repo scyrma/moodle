@@ -43,4 +43,13 @@ class tool_tenant_observer {
         $manager = new \tool_tenant\manager();
         $manager->assign_tenant_user_role($userid, $tenantid);
     }
+
+    /**
+     * Course deleted observer
+     *
+     * @param \core\event\course_deleted $event
+     */
+    public static function on_course_deleted(\core\event\course_deleted $event) {
+        \tool_tenant\tenant_group::delete_for_course($event->courseid);
+    }
 }

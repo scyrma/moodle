@@ -227,13 +227,23 @@ class manager {
      * @throws \moodle_exception
      */
     public function delete_tenant(int $id) : tenant {
-        global $DB;
+        global $DB, $CFG;
+        require_once($CFG->dirroot.'/group/lib.php');
+
         $tenant = new tenant($id);
         if (!$tenant->get('id') || !$tenant->get('archived')) {
             throw new \moodle_exception('tenantnotfound', 'tool_tenant', self::get_base_url(true));
         }
+
+        // Delete tenant users associations.
         $DB->delete_records('tool_tenant_user', ['tenantid' => $id]);
+
+        // Delete tenant groups in courses.
+        tenant_group::delete_for_tenant($id);
+
+        // Delete tenant record.
         $tenant->delete();
+
         tenant_deleted::create_from_object($tenant)->trigger();
         $this->reset_tenants_cache();
         return $tenant;

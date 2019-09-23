@@ -95,5 +95,40 @@ function xmldb_tool_tenant_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019071100, 'tool', 'tenant');
     }
 
+    if ($oldversion < 2019091703) {
+
+        // Define table tool_tenant_group to be created.
+        $table = new xmldb_table('tool_tenant_group');
+
+        // Adding fields to table tool_tenant_group.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('tenantid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('groupid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('component', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('area', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_tenant_group.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+        $table->add_key('tenantid', XMLDB_KEY_FOREIGN, ['tenantid'], 'tool_tenant', ['id']);
+        $table->add_key('groupid', XMLDB_KEY_FOREIGN, ['groupid'], 'groups', ['id']);
+
+        // Adding indexes to table tool_tenant_group.
+        $table->add_index('courseidtenantid', XMLDB_INDEX_NOTUNIQUE, ['courseid', 'tenantid']);
+        $table->add_index('componentitem', XMLDB_INDEX_NOTUNIQUE, ['component', 'area', 'itemid', 'courseid']);
+
+        // Conditionally launch create table for tool_tenant_group.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Tenant savepoint reached.
+        upgrade_plugin_savepoint(true, 2019091703, 'tool', 'tenant');
+    }
+
     return true;
 }
