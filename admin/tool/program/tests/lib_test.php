@@ -18,7 +18,8 @@
  * Tests for the tool_program lib class.
  *
  * @package   tool_program
- * @copyright 2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,8 @@ require_once($CFG->libdir . '/externallib.php');
  * Tests for the tool_program lib class.
  *
  * @package    tool_program
- * @copyright  2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_program_lib_testcase extends advanced_testcase {

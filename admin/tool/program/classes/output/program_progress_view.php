@@ -18,7 +18,8 @@
  * File for class program_user_report
  *
  * @package   tool_program
- * @copyright 2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,8 @@ use tool_reportbuilder\system_report_factory;
  * Class program_user_report
  *
  * @package    tool_program
- * @copyright  2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_progress_view implements templatable, renderable {

@@ -18,7 +18,8 @@
  * Tests for the tool_program certification class.
  *
  * @package   tool_program
- * @copyright 2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @covers     \tool_program\external\program_certification_exporter
  * @package    tool_program
- * @copyright  2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_program_certification_exporter_testcase extends advanced_testcase {

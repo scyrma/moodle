@@ -18,7 +18,8 @@
  * Program tree item class for tool_program.
  *
  * @package   tool_program
- * @copyright 2018 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Mitxel Moriana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class program_item_course. Wrapper class to handle program courses as items within a program tree.
  *
  * @package   tool_program
- * @copyright 2018 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Mitxel Moriana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_item_course extends program_item {

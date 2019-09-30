@@ -18,7 +18,8 @@
  * File for class format
  *
  * @package   tool_program
- * @copyright 2019, Toni Barberá <toni@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Toni Barberá <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class format
  *
  * @package   tool_program
- * @copyright 2019, Toni Barberá <toni@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Toni Barberá <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format {

@@ -18,7 +18,8 @@
  * File for class program_overview_program_exporter.
  *
  * @package    tool_program
- * @copyright  2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -44,7 +45,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class for exporting program data to the programs overview view.
  *
  * @package    tool_program
- * @copyright  2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_overview_program_exporter extends exporter {

@@ -18,7 +18,8 @@
  * File that contains program progress testcase class.
  *
  * @package    tool_program
- * @copyright  2019 Mitxel Moriana
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019  Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @covers     \tool_program\program_tree_progress
  * @package    tool_program
- * @copyright  2019 Mitxel Moriana
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019  Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_program_progress_testcase extends advanced_testcase {

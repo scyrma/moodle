@@ -18,7 +18,8 @@
  * File for class program_users_tab.
  *
  * @package   tool_program
- * @copyright 2018 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Mitxel Moriana <mitxel@tresipunt.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -40,7 +41,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class program_users_tab.
  *
  * @package   tool_program
- * @copyright 2018 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Mitxel Moriana <mitxel@tresipunt.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_users_tab extends tab {

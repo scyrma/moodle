@@ -18,7 +18,8 @@
  * Api class for tool_program
  *
  * @package    tool_program
- * @copyright  2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -67,8 +68,9 @@ require_once($CFG->dirroot . '/calendar/lib.php');
 /**
  * Class api
  *
- * @package tool_program
- * @copyright  2018 Mitxel Moriana
+ * @package    tool_program
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class api {

@@ -18,7 +18,8 @@
  * Form to add courses to program.
  *
  * @package   tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class edit_program_add_courses_form
  *
  * @package tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_program_add_courses_form extends \tool_wp\modal_form {

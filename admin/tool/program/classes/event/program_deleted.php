@@ -18,7 +18,8 @@
  * Class tool_program\event\program_deleted
  *
  * @package    tool_program
- * @copyright  2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +37,8 @@ use tool_program\persistent\program;
  * Class tool_program\event\program_deleted
  *
  * @package    tool_program
- * @copyright  2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_deleted extends base {

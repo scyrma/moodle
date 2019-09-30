@@ -19,7 +19,8 @@
  *
  * @package     tool_program
  * @category    test
- * @copyright   2019 Adrian Greeve <adrian@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Adrian Greeve <adrian@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,10 +35,11 @@ use core_privacy\local\request\approved_userlist;
 /**
  * Tests for the privacy provider class methods.
  *
- * @covers     \tool_program\privacy\provider
- * @package    tool_program
- * @copyright  2019 Adrian Greeve <adrian@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers      \tool_program\privacy\provider
+ * @package     tool_program
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Adrian Greeve <adrian@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_program_privacy_provider_testcase extends advanced_testcase {
     /** @var tool_program_generator generator */

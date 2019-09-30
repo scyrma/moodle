@@ -18,7 +18,8 @@
  * Program tree class for tool_program
  *
  * @package   tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,8 +39,9 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class program_tree_with_progress. Builds a program tree with progress data.
  *
- * @package tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @package   tool_program
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_tree_progress extends program_tree {

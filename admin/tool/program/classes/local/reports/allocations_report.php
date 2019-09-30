@@ -17,7 +17,8 @@
 /**
  * Class for define the system report of the users allocated to program.
  *
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -48,7 +49,8 @@ use tool_program\task\reset_program;
 /**
  * This class defines a system report that shows the users allocated to a given program and their allocation origin.
  *
- * @copyright  2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 David Matamoros <davidmc@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @package    tool_program
  */

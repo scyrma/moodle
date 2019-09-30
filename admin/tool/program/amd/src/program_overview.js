@@ -18,7 +18,8 @@
  *
  * @module     tool_program/program_overview
  * @package    tool_program
- * @copyright  2018 David Matamoros
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 David Matamoros <davidmc@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

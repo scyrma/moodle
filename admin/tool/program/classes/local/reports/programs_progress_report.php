@@ -17,7 +17,8 @@
 /**
  * Class for define the system report for active/overdue programs.
  *
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,9 +40,10 @@ use tool_wp\db;
 /**
  * Class user_programs
  *
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package tool_program
+ * @package   tool_program
  */
 class programs_progress_report extends system_report {
     /** @var int $userid */

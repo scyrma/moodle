@@ -18,7 +18,8 @@
  * Renderer for tool_program
  *
  * @package    tool_program
- * @copyright  2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +42,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class renderer
  *
  * @package    tool_program
- * @copyright  2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {

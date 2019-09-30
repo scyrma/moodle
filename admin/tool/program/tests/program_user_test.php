@@ -18,7 +18,8 @@
  * Tests for program_user
  *
  * @package   tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @covers    \tool_program\persistent\program_user
  * @package   tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_program_user_testcase extends advanced_testcase {

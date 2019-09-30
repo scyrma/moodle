@@ -18,7 +18,8 @@
  * This file contains the class for program completed dynamic rules' condition.
  *
  * @package    tool_program
- * @copyright  2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +40,8 @@ defined('MOODLE_INTERNAL') || die;
  * Class for program completed dynamic rules' condition.
  *
  * @package    tool_program
- * @copyright  2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_completed extends condition_sql {

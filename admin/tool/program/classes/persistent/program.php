@@ -18,7 +18,8 @@
  * Program class
  *
  * @package   tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,8 +40,9 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class program
  *
- * @package tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @package   tool_program
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program extends persistent {

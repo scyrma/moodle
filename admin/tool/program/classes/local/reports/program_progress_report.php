@@ -17,7 +17,8 @@
 /**
  * File for the class user_program.
  *
- * @copyright 2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +40,8 @@ use tool_wp\db;
 /**
  * Class user_program
  *
- * @copyright 2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @package   tool_program
  */

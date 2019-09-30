@@ -18,7 +18,8 @@
  * Modal form to edit program users.
  *
  * @package   tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,8 +35,9 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class edit_program_users_form_modal
  *
- * @package tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @package   tool_program
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_program_users_form_modal extends \tool_wp\modal_form {

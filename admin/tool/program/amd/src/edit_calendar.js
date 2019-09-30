@@ -18,7 +18,8 @@
  *
  * @module     tool_program/edit_calendar
  * @package    tool_program
- * @copyright  2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

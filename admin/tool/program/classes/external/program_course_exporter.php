@@ -18,7 +18,8 @@
  * Class for exporting program course data.
  *
  * @package    tool_program
- * @copyright  2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +37,8 @@ use tool_tenant\tenancy;
  * Class for exporting field data.
  *
  * @property   program_course persistent
- * @copyright  2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Mitxel Moriana
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_course_exporter extends persistent_exporter {

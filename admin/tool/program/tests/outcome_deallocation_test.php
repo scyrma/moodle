@@ -17,10 +17,11 @@
 /**
  * File contains the unit tests for outcome deallocation class.
  *
- * @package    tool_program
- * @category   test
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     tool_program
+ * @category    test
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_program\api;
@@ -32,11 +33,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Unit tests for outcome deallocation class.
  *
- * @covers     \tool_program\tool_dynamicrule\outcome\deallocation
- * @package    tool_program
- * @group      tool_program
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers      \tool_program\tool_dynamicrule\outcome\deallocation
+ * @package     tool_program
+ * @group       tool_program
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_program_outcome_deallocation_testcase extends advanced_testcase {
 

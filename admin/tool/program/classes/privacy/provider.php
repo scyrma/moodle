@@ -18,7 +18,8 @@
  * Privacy provider for tool_program.
  *
  * @package   tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -42,8 +43,9 @@ use tool_program\persistent\program_user;
 /**
  * Class provider
  *
- * @package tool_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @package   tool_program
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements

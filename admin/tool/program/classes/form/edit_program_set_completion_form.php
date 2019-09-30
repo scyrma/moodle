@@ -18,7 +18,8 @@
  * Form to edit program set completion.
  *
  * @package   tool_program
- * @copyright 2018 Mitxel Moriana
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Mitxel Moriana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,8 +35,9 @@ use tool_program\persistent\program_set;
 /**
  * Class edit_program_set_completion_form
  *
- * @package tool_program
- * @copyright 2018 Mitxel Moriana
+ * @package   tool_program
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Mitxel Moriana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_program_set_completion_form extends moodleform {

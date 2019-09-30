@@ -18,7 +18,8 @@
  * Tests for the tool_program external class.
  *
  * @package   tool_program
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +42,8 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  *
  * @covers     \tool_program\external
  * @package    tool_program
- * @copyright  2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 David Matamoros <davidmc@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_program_external_testcase extends externallib_advanced_testcase {

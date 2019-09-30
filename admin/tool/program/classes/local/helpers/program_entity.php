@@ -18,7 +18,8 @@
  * File for the class program_entity
  *
  * @package     tool_program
- * @copyright   2019 Toni Barbera <toni@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Toni Barbera <toni@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -49,7 +50,8 @@ defined('MOODLE_INTERNAL') || die();
  * Columns, filters and conditions that defines the program_entity and can be reused in any report datasource
  *
  * @package     tool_program
- * @copyright   2019 Toni Barbera <toni@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Toni Barbera <toni@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class program_entity extends entity_base {

@@ -17,9 +17,10 @@
 /**
  * Class report_programs
  *
- * @package   tool_program
- * @copyright 2019, Toni Barbera <toni@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_program
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019, Toni Barbera <toni@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_program\tool_reportbuilder\datasources;
@@ -47,9 +48,10 @@ require_once($CFG->libdir . '/tablelib.php');
 /**
  * Class report_programs
  *
- * @package   tool_program
- * @copyright 2019, Toni Barbera <toni@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_program
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019, Toni Barbera <toni@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_programs_allocation_completion extends datasource {
 

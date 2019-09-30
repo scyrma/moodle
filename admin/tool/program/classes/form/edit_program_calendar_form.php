@@ -18,7 +18,8 @@
  * Form to edit program calendar.
  *
  * @package   tool_program
- * @copyright 2018 Mitxel Moriana
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Mitxel Moriana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,8 +42,9 @@ use tool_wp\modal_form;
 /**
  * Class edit_program_calendar_form
  *
- * @package tool_program
- * @copyright 2018 Mitxel Moriana
+ * @package   tool_program
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Mitxel Moriana
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_program_calendar_form extends modal_form {

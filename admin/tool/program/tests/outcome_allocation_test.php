@@ -19,7 +19,8 @@
  *
  * @package    tool_program
  * @category   test
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,11 +31,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Unit tests for outcome program allocation class.
  *
- * @covers     \tool_program\tool_dynamicrule\outcome\allocation
- * @package    tool_program
- * @group      tool_program
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers      \tool_program\tool_dynamicrule\outcome\allocation
+ * @package     tool_program
+ * @group       tool_program
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_program_outcome_allocation_testcase extends advanced_testcase {
 
