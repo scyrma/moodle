@@ -18,7 +18,8 @@
  * Class generator_test
  *
  * @package     tool_dynamicrule
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy <marina@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +31,8 @@ defined('MOODLE_INTERNAL') || die();
  * @package     tool_dynamicrule
  * @group       tool_dynamicrule
  * @covers      \tool_dynamicrule_generator
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_dynamicrule_generator_testcase extends advanced_testcase {

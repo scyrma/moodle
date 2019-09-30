@@ -19,7 +19,8 @@
  *
  * @package    tool_dynamicrule
  * @category   test
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +32,8 @@ defined('MOODLE_INTERNAL') || die();
  * @package    tool_dynamicrule
  * @group      tool_dynamicrule
  * @covers     \tool_dynamicrule\api::get_rule
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_dynamicrule_rule_testcase extends advanced_testcase {

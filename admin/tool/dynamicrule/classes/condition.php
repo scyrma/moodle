@@ -18,7 +18,8 @@
  * Rule condition instance persistent.
  *
  * @package     tool_dynamicrule
- * @copyright   2018 Ruslan Kabalin
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +32,8 @@ defined('MOODLE_INTERNAL') || die();
  * Rule condition instance persistent class.
  *
  * @package     tool_dynamicrule
- * @copyright   2018 Ruslan Kabalin
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class condition extends \core\persistent {

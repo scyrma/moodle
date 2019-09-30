@@ -341,7 +341,6 @@ Feature: Creating and editing rules
     And I click on "Duplicate" "button" in the "Confirm" "dialogue"
     Then I should see "Rule1 Copy 1"
 
-@j1
   Scenario: Rule reflects broken conditions and actions
     When I log in as "tenantadmin1"
     And I change window size to "large"

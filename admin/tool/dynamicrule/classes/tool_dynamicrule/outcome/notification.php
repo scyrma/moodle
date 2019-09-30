@@ -18,7 +18,8 @@
  * This file contains the backend class for notification outcome.
  *
  * @package    tool_dynamicrule
- * @copyright  2018 Daniel Neis <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ defined('MOODLE_INTERNAL') || die;
  * The backend class for notification outcome
  *
  * @package    tool_dynamicrule
- * @copyright  2018 Daniel Neis <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class notification extends \tool_dynamicrule\outcome_base {

@@ -19,7 +19,8 @@
  *
  * @package    tool_dynamicrule
  * @category   test
- * @copyright  2018 Marina Glancy
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
  *
  * @package    tool_dynamicrule
  * @category   test
- * @copyright  2018 Marina Glancy
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_tool_dynamicrule extends behat_base {

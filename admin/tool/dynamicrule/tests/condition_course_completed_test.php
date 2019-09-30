@@ -19,7 +19,8 @@
  *
  * @package    tool_dynamicrule
  * @category   test
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ defined('MOODLE_INTERNAL') || die();
  * @covers     \tool_dynamicrule\tool_dynamicrule\condition\course_completed
  * @covers     \tool_dynamicrule\condition_base
  * @covers     \tool_dynamicrule\condition_sql
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_dynamicrule_condition_course_completed_testcase extends advanced_testcase {

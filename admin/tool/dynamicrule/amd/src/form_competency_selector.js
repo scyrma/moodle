@@ -19,7 +19,8 @@
  * @module     tool_dynamicrule/form_potential_competency_selector
  * @class      form_potential_competency_selector
  * @package    tool_dynamicrule
- * @copyright  2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 David Matamoros <davidmc@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

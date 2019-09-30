@@ -17,9 +17,10 @@
 /**
  * tool_dynamicrule data generator.
  *
- * @package    tool_dynamicrule
- * @copyright  2018 Marina Glancy
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     tool_dynamicrule
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy <marina@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -28,7 +29,8 @@ defined('MOODLE_INTERNAL') || die();
  * tool_dynamicrule data generator class.
  *
  * @package    tool_dynamicrule
- * @copyright  2018 Marina Glancy
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_dynamicrule_generator extends component_generator_base {

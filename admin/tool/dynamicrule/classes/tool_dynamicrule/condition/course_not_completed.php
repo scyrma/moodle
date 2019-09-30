@@ -18,7 +18,8 @@
  * This file contains the backend class for course_not_completed condition.
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ defined('MOODLE_INTERNAL') || die;
  * The backend class for course_not_completed condition
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_not_completed extends \tool_dynamicrule\condition_sql {

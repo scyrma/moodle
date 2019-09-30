@@ -18,7 +18,8 @@
  * This file defines an adhoc task to process a single rule.
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Ruslan Kabalin
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Ruslan Kabalin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +31,8 @@ defined('MOODLE_INTERNAL') || die();
  * Define adhoc task to process a single rule.
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Ruslan Kabalin
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Ruslan Kabalin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class process_rule extends \core\task\adhoc_task {

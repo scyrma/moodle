@@ -18,7 +18,8 @@
  * outcome_instance renderable.
  *
  * @package     tool_dynamicrule
- * @copyright   2019 Ruslan Kabalin
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ use renderer_base;
  * outcome_instance renderable class.
  *
  * @package     tool_dynamicrule
- * @copyright   2019 Ruslan Kabalin
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class outcome_instance implements \renderable, \templatable {

@@ -18,7 +18,8 @@
  * Class condition_instance
  *
  * @package     tool_dynamicrule
- * @copyright   2019 Ruslan Kabalin
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +40,8 @@ require_once($CFG->libdir . '/formslib.php');
  * Class condition_instance
  *
  * @package     tool_dynamicrule
- * @copyright   2019 Ruslan Kabalin
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class condition_instance extends modal_form {

@@ -18,7 +18,8 @@
  * This file contains the definition of message providers for tool_dynamicrule
  *
  * @package    tool_dynamicrule
- * @copyright  2018 Daniel Neis <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

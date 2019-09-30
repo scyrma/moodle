@@ -19,7 +19,8 @@
  *
  * @package    tool_dynamicrule
  * @category   test
- * @copyright  2018 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
  * @group      tool_dynamicrule
  * @covers     \tool_dynamicrule\tool_dynamicrule\outcome\notification
  * @covers     \tool_dynamicrule\outcome_base
- * @copyright  2018 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_dynamicrule_outcome_notification_testcase extends advanced_testcase {

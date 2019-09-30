@@ -17,10 +17,11 @@
 /**
  * Privacy Subsystem implementation for tool_dynamicrule.
  *
- * @package   tool_dynamicrule
- * @category  privacy
- * @copyright 2018 SP
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     tool_dynamicrule
+ * @category    privacy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Workplace team
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_dynamicrule\privacy;
@@ -39,8 +40,8 @@ use \core_privacy\local\request\writer;
 /**
  * Privacy Subsystem for tool_dynamicrule.
  *
- * @package   tool_dynamicrule
- * @copyright 2018 SP
+ * @package    tool_dynamicrule
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\provider,

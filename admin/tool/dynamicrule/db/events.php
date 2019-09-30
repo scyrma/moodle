@@ -19,7 +19,8 @@
  *
  * @package     tool_dynamicrule
  * @category    event
- * @copyright   2019 Ruslan Kabalin
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -19,7 +19,8 @@
  *
  * @package    tool_dynamicrule
  * @category   test
- * @copyright  2019 Ruslan Kabalin
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Ruslan Kabalin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +30,8 @@ defined('MOODLE_INTERNAL') || die();
  * Coverage information for the tool_dynamicrule plugin.
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Ruslan Kabalin
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Ruslan Kabalin
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_dynamicrule_phpunit_coverage_info extends phpunit_coverage_info {

@@ -18,7 +18,8 @@
  * Event observer for tool_dynamicrule.
  *
  * @package     tool_dynamicrule
- * @copyright   2019 Ruslan Kabalin
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +31,8 @@ defined('MOODLE_INTERNAL') || die();
  * Event observer for tool_dynamicrule.
  *
  * @package     tool_dynamicrule
- * @copyright   2019 Ruslan Kabalin
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class observer {

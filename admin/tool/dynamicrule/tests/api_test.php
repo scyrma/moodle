@@ -19,7 +19,8 @@
  *
  * @package    tool_dynamicrule
  * @category   test
- * @copyright  2018 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +37,8 @@ defined('MOODLE_INTERNAL') || die();
  * @covers     \tool_dynamicrule\condition_base
  * @covers     \tool_dynamicrule\outcome
  * @covers     \tool_dynamicrule\outcome_base
- * @copyright  2018 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_dynamicrule_api_testcase extends advanced_testcase {
@@ -85,10 +87,15 @@ class tool_dynamicrule_api_testcase extends advanced_testcase {
         // Testing non-existing rule.
         $this->expectException(\moodle_exception::class);
         $rule = \tool_dynamicrule\api::get_rule(1024);
+    }
 
+    /**
+     * Test get_rule with different tenant
+     */
+    public function test_get_rule_wrong_tenant() {
         // Testing rule with different tenant.
         $othertenant = $this->getDataGenerator()->get_plugin_generator('tool_tenant')->create_tenant();
-        $rule1 = $this->get_generator()->create_rule(['tenantid' => $othertenant]);
+        $rule1 = $this->get_generator()->create_rule(['tenantid' => $othertenant->id]);
 
         // Testing rule getter using different tenant.
         $this->expectException(\moodle_exception::class);
@@ -862,6 +869,8 @@ class tool_dynamicrule_api_testcase extends advanced_testcase {
      * Test delete_rule
      */
     public function test_delete_rule() {
+        global $DB;
+
         $rule0 = $this->get_generator()->create_rule(['archived' => 1]);
         $rule1 = $this->get_generator()->create_rule(['archived' => 1]);
 
@@ -886,8 +895,6 @@ class tool_dynamicrule_api_testcase extends advanced_testcase {
         \tool_dynamicrule\api::delete_rule($rule0->id);
 
         // Check records no longer there.
-        $this->expectException(\moodle_exception::class);
-        \tool_dynamicrule\api::get_rule($rule0->id);
         foreach ($rule0conditions as $condition) {
             $this->assertFalse(\tool_dynamicrule\condition::record_exists($condition->get_id()));
         }
@@ -898,10 +905,13 @@ class tool_dynamicrule_api_testcase extends advanced_testcase {
         $this->assertFalse($DB->record_exists('tool_dynamicrule_match', ['ruleid' => $rule0->id]));
 
         // Check that rule1 records are not affected.
-        $rule1 = \tool_dynamicrule\api::get_rule($rule1->id);
+        \tool_dynamicrule\api::get_rule($rule1->id);
         $this->assertCount(1, \tool_dynamicrule\api::get_rule_conditions($rule1->id));
         $this->assertCount(1, \tool_dynamicrule\api::get_rule_outcomes($rule1->id));
 
+        // Finally, try to get deleted rule.
+        $this->expectException(\moodle_exception::class);
+        \tool_dynamicrule\api::get_rule($rule0->id);
     }
 
     /**

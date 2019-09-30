@@ -18,7 +18,8 @@
  * This file contains the backend class for badge outcome.
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Marina Glancy
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ require_once($CFG->libdir . '/badgeslib.php');
  * The backend class for notification outcome
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Marina Glancy
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class badge extends \tool_dynamicrule\outcome_base {

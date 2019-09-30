@@ -18,7 +18,8 @@
  * Dynamic rules cron task.
  *
  * @package    tool_dynamicrule
- * @copyright  2018 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +31,8 @@ defined('MOODLE_INTERNAL') || die;
  * This tasks process the rules
  *
  * @package    tool_dynamicrule
- * @copyright  2018 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class process_rules extends \core\task\scheduled_task {

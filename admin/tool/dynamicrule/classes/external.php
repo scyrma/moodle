@@ -18,7 +18,8 @@
  * This file contains the webservices for Dynamic rules tool.
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +31,8 @@ defined('MOODLE_INTERNAL') || die;
  * The external API for the Dynamic rules tool.
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class external extends \external_api {

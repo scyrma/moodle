@@ -18,7 +18,8 @@
  * rules_list_item_conditions_description renderable.
  *
  * @package     tool_dynamicrule
- * @copyright   2019 Ruslan Kabalin
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ use renderer_base;
  * rules_list_item_conditions_description renderable class.
  *
  * @package     tool_dynamicrule
- * @copyright   2019 Ruslan Kabalin
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rules_list_item_conditions_description implements \renderable, \templatable {

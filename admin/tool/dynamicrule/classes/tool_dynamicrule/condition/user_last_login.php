@@ -18,7 +18,8 @@
  * This file contains the backend class for user_last_login condition.
  *
  * @package    tool_dynamicrule
- * @copyright  2018 Daniel Neis <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ require_once($CFG->dirroot. '/admin/tool/wp/periodduration.php');
  * The backend class for user_last_login condition
  *
  * @package    tool_dynamicrule
- * @copyright  2018 Daniel Neis <daniel@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user_last_login extends \tool_dynamicrule\condition_sql {

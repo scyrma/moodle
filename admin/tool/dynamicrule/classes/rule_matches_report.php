@@ -18,7 +18,8 @@
  * This file contains the definition o rules matches report.
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ use tool_reportbuilder\local\helpers\format;
  * System report with users that matched and unmatched a given rule.
  *
  * @package    tool_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rule_matches_report extends system_report {

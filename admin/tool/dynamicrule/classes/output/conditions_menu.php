@@ -18,7 +18,8 @@
  * conditions_menu renderable.
  *
  * @package     tool_dynamicrule
- * @copyright   2018 Ruslan Kabalin
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ use renderer_base;
  * conditions_menu renderable class.
  *
  * @package     tool_dynamicrule
- * @copyright   2018 Ruslan Kabalin
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Ruslan Kabalin
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class conditions_menu implements \renderable, \templatable {

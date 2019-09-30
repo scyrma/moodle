@@ -18,7 +18,8 @@
  * View report for rule.
  *
  * @package     tool_dynamicrule
- * @copyright   2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
