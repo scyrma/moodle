@@ -19,7 +19,8 @@
  *
  * @package     tool_tenant
  * @category    test
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +30,8 @@ defined('MOODLE_INTERNAL') || die();
  * Tests for the tool_tenant\tenancy class methods.
  *
  * @package    tool_tenant
- * @copyright  2018 Marina Glancy
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_tenant_tenancy_testcase extends advanced_testcase {

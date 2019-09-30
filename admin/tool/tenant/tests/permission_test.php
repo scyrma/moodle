@@ -19,7 +19,8 @@
  *
  * @package     tool_tenant
  * @category    test
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +32,8 @@ use tool_tenant\permission;
  * Tests for the tool_tenant\permission class methods.
  *
  * @package    tool_tenant
- * @copyright  2019 Marina Glancy
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_tenant_permission_testcase extends advanced_testcase {

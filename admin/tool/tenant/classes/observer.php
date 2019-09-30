@@ -18,7 +18,8 @@
  * Class observer for tool_tenant
  *
  * @package   tool_tenant
- * @copyright 2019 Adrian Greeve <adrian@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Adrian Greeve <adrian@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +28,8 @@ defined('MOODLE_INTERNAL') || die;
 /**
  * Class tool_tenant_observer
  *
- * @copyright 2019 Adrian Greeve <adrian@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Adrian Greeve <adrian@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_tenant_observer {

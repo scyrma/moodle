@@ -18,7 +18,8 @@
  *
  * @module     tool_tenant/manage
  * @package    tool_tenant
- * @copyright  2019 Marina Glancy
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define(['jquery', 'core/sortable_list', 'core/ajax', 'core/notification', 'core/str', 'tool_wp/tabs', 'tool_wp/modal_form'],

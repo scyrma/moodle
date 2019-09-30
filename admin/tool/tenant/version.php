@@ -18,7 +18,8 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     tool_tenant
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 // This plugin is part of Moodle Workplace product.
 $plugin->component    = 'tool_tenant';
 $plugin->release      = '3.7.2';
-$plugin->version      = 2019091703;
+$plugin->version      = 2019092500;
 $plugin->requires     = 2019052002.00;
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = [

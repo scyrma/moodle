@@ -18,7 +18,8 @@
  * Class edit_css_form
  *
  * @package     tool_tenant
- * @copyright   2019 Adrian Greeve
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Adrian Greeve
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -44,7 +45,8 @@ require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/tenant/classes/form/colo
  * Class edit_css_form
  *
  * @package     tool_tenant
- * @copyright   2019 Adrian Greeve
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Adrian Greeve
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_css_form extends modal_form {

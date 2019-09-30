@@ -18,7 +18,8 @@
  * This file contains the form element for handling the colour picker.
  *
  * @package    tool_tenant
- * @copyright  2019 Adrian Greeve <adrian@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Adrian Greeve <adrian@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ require_once($CFG->dirroot . '/lib/form/editor.php');
  * Form element for handling the colour picker.
  *
  * @package    tool_tenant
- * @copyright  2019 Adrian Greeve <adrian@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Adrian Greeve <adrian@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class moodlequickform_tool_tenant_colourpicker extends \moodlequickform_editor {

@@ -18,7 +18,8 @@
  * Class admin_setting_sitesettext
  *
  * @package     tool_tenant
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
  * Override frontpage settings 'shortname' and 'fullname'. Used in settings.php
  *
  * @package     tool_tenant
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class admin_setting_sitesettext extends \admin_setting_sitesettext {

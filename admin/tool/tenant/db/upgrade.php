@@ -19,7 +19,8 @@
  *
  * @package     tool_tenant
  * @category    upgrade
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -128,6 +129,21 @@ function xmldb_tool_tenant_upgrade($oldversion) {
 
         // Tenant savepoint reached.
         upgrade_plugin_savepoint(true, 2019091703, 'tool', 'tenant');
+    }
+
+    if ($oldversion < 2019092500) {
+
+        // Define field idnumber to be added to tool_tenant.
+        $table = new xmldb_table('tool_tenant');
+        $field = new xmldb_field('idnumber', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'sitename');
+
+        // Conditionally launch add field idnumber.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Tenant savepoint reached.
+        upgrade_plugin_savepoint(true, 2019092500, 'tool', 'tenant');
     }
 
     return true;

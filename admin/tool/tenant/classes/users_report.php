@@ -18,7 +18,8 @@
  * Class for the users report
  *
  * @package     tool_tenant
- * @copyright   2019 Adrian Greeve
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Adrian Greeve
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ use tool_reportbuilder\report_column;
  * Class for the users report
  *
  * @package     tool_tenant
- * @copyright   2019 Adrian Greeve
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Adrian Greeve
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class users_report extends \tool_reportbuilder\system_report {

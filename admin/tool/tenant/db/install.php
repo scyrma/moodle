@@ -18,7 +18,8 @@
  * Code to be executed after the plugin's database scheme has been installed is defined here.
  *
  * @package     tool_tenant
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
