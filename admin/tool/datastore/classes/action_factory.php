@@ -17,8 +17,9 @@
 /**
  * Class for create actions classes.
  *
- * @package    tool_datastore
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @package   tool_datastore
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_datastore;
@@ -29,8 +30,9 @@ use core\event\base;
 
 /**
  * Class action_factory
- * @package tool_datastore
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @package   tool_datastore
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class action_factory {

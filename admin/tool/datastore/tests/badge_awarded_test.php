@@ -19,7 +19,8 @@
  *
  * @package     tool_datastore
  * @category    test
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -46,7 +47,8 @@ require_once($CFG->libdir . '/badgeslib.php');
  * @covers      \tool_datastore\entity
  * @covers      \tool_datastore\fields
  * @covers      \tool_datastore\snapshot
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_datastore_badge_awarded_testcase extends advanced_testcase {
@@ -268,12 +270,14 @@ class tool_datastore_badge_awarded_testcase extends advanced_testcase {
      * @param string $fieldname
      * @param int $actionid
      * @param string|null $actionfield
+     * @param int|null $fieldtype
+     * @return void
      */
     private function assert_datasource_field_sql($expected, string $entitytype, string $fieldname, int $actionid,
-            string $actionfield = null) {
+            string $actionfield = null, ?int $fieldtype = null) {
         global $DB;
 
-        list($fieldsql, $params) = api::get_datasource_field_sql($entitytype, $fieldname, 'dsa', $actionfield);
+        list($fieldsql, $params) = api::get_datasource_field_sql($entitytype, $fieldname, 'dsa', $actionfield, $fieldtype);
         $sql = "SELECT {$fieldsql} AS value FROM {tool_datastore_action} dsa WHERE dsa.id = {$actionid}";
 
         $this->assertEquals($expected, $DB->get_field_sql($sql, $params));

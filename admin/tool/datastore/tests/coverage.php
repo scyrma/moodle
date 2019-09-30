@@ -19,7 +19,8 @@
  *
  * @package     tool_datastore
  * @category    test
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +31,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package     tool_datastore
  * @category    test
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_datastore_phpunit_coverage_info extends phpunit_coverage_info {

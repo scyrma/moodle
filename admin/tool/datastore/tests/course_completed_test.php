@@ -19,11 +19,14 @@
  *
  * @package   tool_datastore
  * @category  test
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_datastore\api;
+
+use tool_reportbuilder\constants;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -38,7 +41,8 @@ defined('MOODLE_INTERNAL') || die();
  * @covers    \tool_datastore\entity
  * @covers    \tool_datastore\fields
  * @covers    \tool_datastore\snapshot
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_datastore_course_completed_testcase extends advanced_testcase {
@@ -330,9 +334,11 @@ class tool_datastore_course_completed_testcase extends advanced_testcase {
             $this->assertInstanceOf(\tool_datastore\fields::class, $field);
             $this->assertEquals($coursecompletion[$coursecompletionfield], $field->get('value'));
 
-            list($fieldsql, $params) = api::get_datasource_field_sql('course_completion', $coursecompletionfield, 'dsa');
+            list($fieldsql, $params) = api::get_datasource_field_sql('course_completion', $coursecompletionfield, 'dsa', null,
+                constants::DB_TYPE_TIMESTAMP);
+
             $sql = "SELECT {$fieldsql} AS {$coursecompletionfield}
-                FROM {tool_datastore_action} dsa WHERE dsa.id = {$action->get('id')}";
+                      FROM {tool_datastore_action} dsa WHERE dsa.id = {$actionid}";
             $this->assertEquals($field->get('value'), $DB->get_field_sql($sql, $params));
 
             $allfieldssql[] = "{$fieldsql} AS $coursecompletionfield";

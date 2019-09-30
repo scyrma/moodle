@@ -18,7 +18,8 @@
  * Datastore capabilities
  *
  * @package     tool_datastore
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

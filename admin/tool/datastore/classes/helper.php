@@ -18,7 +18,8 @@
  * Class containing helper methods
  *
  * @package     tool_datastore
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
  * Helper class
  *
  * @package     tool_datastore
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {

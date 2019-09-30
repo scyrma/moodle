@@ -18,7 +18,8 @@
  * Class containing helper methods
  *
  * @package    tool_datastore
- * @copyright  2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_datastore;
@@ -26,6 +27,7 @@ namespace tool_datastore;
 use core_tag_tag;
 use badge;
 use completion_completion;
+use tool_reportbuilder\constants;
 use tool_wp\db;
 
 defined('MOODLE_INTERNAL') || die();
@@ -33,7 +35,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class containing helper methods
  *
- * @copyright  2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class api {
@@ -60,10 +63,13 @@ class api {
      * @param string $maintablealias alias for the table {tool_datastore_action} that is defined in the main SQL query
      * @param string|null $maintablefield if necessary the name of the field in the {tool_datastore_action} table,
      *      for example, 'relateduserid' or 'usermodified'
+     * @param int|null $fieldtype type of the field, by default constants::DB_TYPE_LONGTEXT
      * @return array array with two elements - SQL snippet and parameters ([$sql, $params])
      */
     public static function get_datasource_field_sql(string $entitytype, string $fieldname, string $maintablealias,
-            ?string $maintablefield = null) : array {
+            ?string $maintablefield = null, ?int $fieldtype = null) : array {
+
+        global $DB;
 
         $paramentitytype = db::generate_param_name();
         $paramfieldname = db::generate_param_name();
@@ -73,14 +79,28 @@ class api {
 
         $sql = "SELECT {$fieldstable}.value
                   FROM {tool_datastore_idx_fields} {$fieldstable}
-                  JOIN {tool_datastore_entity} $entitytable ON
-                      $entitytable.id = {$fieldstable}.entityid AND $entitytable.type = :{$paramentitytype}
+                  JOIN {tool_datastore_entity} {$entitytable}
+                    ON {$entitytable}.id = {$fieldstable}.entityid
+                   AND {$entitytable}.type = :{$paramentitytype}
                  WHERE {$fieldstable}.actionid = {$maintablealias}.id
                    AND {$fieldstable}.name = :{$paramfieldname}";
 
         // It is sometimes necessary to distinguish which field we want, in the instance there are two of the same type (i.e users).
         if ($maintablefield !== null) {
             $sql .= " AND $entitytable.originalid = {$maintablealias}.{$maintablefield}";
+        }
+
+        // Cast the returned field value for cross-DB compatibility.
+        $fieldtype = $fieldtype ?? constants::DB_TYPE_LONGTEXT;
+        switch ($fieldtype) {
+            case constants::DB_TYPE_NUMBER :
+            case constants::DB_TYPE_DATETIME :
+            case constants::DB_TYPE_TIMESTAMP :
+                $sql = $DB->sql_cast_char2int("({$sql})", true);
+                break;
+            case constants::DB_TYPE_TEXT :
+                $sql = $DB->sql_compare_text("({$sql})", 255);
+                break;
         }
 
         return ["({$sql})", [$paramentitytype => $entitytype, $paramfieldname => $fieldname]];

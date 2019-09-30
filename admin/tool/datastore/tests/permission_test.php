@@ -19,7 +19,8 @@
  *
  * @package     tool_datastore
  * @category    test
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ use tool_datastore\permission;
  * @group       tool_datastore
  * @category    test
  * @covers      \tool_datastore\permission
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_datastore_permission_testcase extends advanced_testcase {

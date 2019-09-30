@@ -18,7 +18,8 @@
  * Class containing the course completed event action.
  *
  * @package   tool_datastore
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_datastore\action;
@@ -31,7 +32,8 @@ defined('MOODLE_INTERNAL') || die;
  * Class containing the course completed event action.
  *
  * @package   tool_datastore
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_completed extends base {

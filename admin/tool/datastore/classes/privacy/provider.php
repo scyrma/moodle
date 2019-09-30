@@ -17,8 +17,9 @@
  * Privacy Subsystem implementation for tool_datastore.
  *
  * @package   tool_datastore
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_datastore\privacy;
 defined('MOODLE_INTERNAL') || die();
@@ -33,8 +34,9 @@ use core_privacy\local\request\userlist;
  * Privacy Subsystem for tool_datastore implementing null_provider.
  *
  * @package   tool_datastore
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\provider,
                           \core_privacy\local\request\plugin\provider,
