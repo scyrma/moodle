@@ -18,8 +18,8 @@
  * Global theme elements.
  *
  * @package   theme_workplace
- * @copyright 2019 Moodle
- * @author    Bas Brands <bas@moodle.com)
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    Bas Brands <bas@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,8 @@ use flat_navigation_node;
  * The theme workplace main class.
  *
  * @package    theme_workplace
- * @copyright  Bas Brands <bas@moodle.com)
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     Bas Brands <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class workplace {

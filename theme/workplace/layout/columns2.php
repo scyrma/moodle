@@ -18,7 +18,8 @@
  * A two column layout for the workplace theme.
  *
  * @package   theme_workplace
- * @copyright 2018 SP
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Workplace team
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

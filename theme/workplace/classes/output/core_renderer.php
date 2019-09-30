@@ -18,7 +18,8 @@
  * Renderers to align Moodle's HTML with that expected by Bootstrap
  *
  * @package    theme_workplace
- * @copyright  2018 SP
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Workplace team
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ defined('MOODLE_INTERNAL') || die;
  * Theme renderer
  *
  * @package    theme_workplace
- * @copyright  2018 SP
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Workplace team
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class core_renderer extends \theme_boost\output\core_renderer {

@@ -18,7 +18,8 @@
  *  Tests for theme_workplace api.
  *
  * @package   theme_workplace
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +31,8 @@ use \theme_workplace\api;
  * Unit tests for theme_workplace api
  *
  * @package    theme_workplace
- * @copyright  2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 David Matamoros <davidmc@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class api_test extends \core_privacy\tests\provider_testcase {

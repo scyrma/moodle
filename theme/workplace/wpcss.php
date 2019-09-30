@@ -25,7 +25,8 @@
  * will server the CSS for tenant with id = 3.
  *
  * @package   theme_workplace
- * @copyright 2019 Bas Brands <bas@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Bas Brands <bas@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

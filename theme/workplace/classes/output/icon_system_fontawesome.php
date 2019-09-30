@@ -18,7 +18,7 @@
  * Overridden fontawesome icons.
  *
  * @package     theme_workplace
- * @copyright   2019 Moodle
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
  * @author      Bas Brands <bas@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  *
  *
  * @package    theme_workplace
- * @copyright  2019 Moodle
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @author     Bas Brands <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -19,7 +19,8 @@
  *
  * @package    theme_workplace
  * @category   test
- * @copyright  2019 Marina Glancy
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,8 @@ use Behat\Mink\Exception\ElementNotFoundException as ElementNotFoundException;
  *
  * @package    theme_workplace
  * @category   test
- * @copyright  2019 Marina Glancy
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_theme_workplace_behat_navigation extends behat_navigation {

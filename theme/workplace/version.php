@@ -18,7 +18,8 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     theme_workplace
- * @copyright   2019 SP
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Workplace team
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
