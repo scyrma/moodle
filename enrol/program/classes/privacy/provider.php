@@ -18,7 +18,8 @@
  * Privacy Subsystem implementation for enrol_program.
  *
  * @package    enrol_program
- * @copyright  2018 Moodle
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Workplace team
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +30,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Privacy Subsystem for enrol_program implementing null_provider.
  *
- * @copyright  2018 Carlos Escobedo <carlos@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Carlos Escobedo <carlos@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {

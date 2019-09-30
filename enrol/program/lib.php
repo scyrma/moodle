@@ -18,7 +18,8 @@
  * The enrol program plugin is defined here.
  *
  * @package     enrol_program
- * @copyright   2018 Moodle
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Workplace team
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class enrol_program_plugin.
  *
- * @copyright   2018 Moodle
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Workplace team
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_program_plugin extends enrol_plugin {
@@ -149,6 +151,8 @@ class enrol_program_plugin extends enrol_plugin {
     /**
      * Self enrol user to course
      *
+     * @deprecated since 3.8 No longer used
+     *
      * @param stdClass $instance enrolment instance
      * @return void
      */
@@ -159,6 +163,8 @@ class enrol_program_plugin extends enrol_plugin {
 
     /**
      * Enrol any user by user id
+     *
+     * @deprecated since 3.8 No longer used
      *
      * @param stdClass $instance
      * @param null $data

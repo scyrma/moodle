@@ -18,7 +18,8 @@
  * Tests for enrol_program.
  *
  * @package   enrol_program
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class enrol_program_enrol_testcase
  *
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_program_enrol_testcase extends \core_privacy\tests\provider_testcase {

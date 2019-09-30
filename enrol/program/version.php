@@ -18,7 +18,8 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     enrol_program
- * @copyright   2018 Moodle
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Workplace team
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

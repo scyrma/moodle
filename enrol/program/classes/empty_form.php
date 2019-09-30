@@ -17,9 +17,10 @@
 /**
  * Empty enrol_self form. Useful to mimic valid enrol instances UI when the enrolment instance is not available.
  *
- * @package enrol_program
- * @copyright 2018 Moodle
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   enrol_program
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Workplace team
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -29,8 +30,9 @@ require_once($CFG->libdir.'/formslib.php');
 /**
  * Class enrol_program_empty_form
  *
- * @copyright 2018 Moodle
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Workplace team
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_program_empty_form extends moodleform {
 
