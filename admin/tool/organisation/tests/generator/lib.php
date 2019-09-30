@@ -18,7 +18,8 @@
  * tool_organisation data generator.
  *
  * @package    tool_organisation
- * @copyright  2018 Marina Glancy
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +29,8 @@ defined('MOODLE_INTERNAL') || die();
  * tool_organisation data generator class.
  *
  * @package    tool_organisation
- * @copyright  2018 Marina Glancy
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_organisation_generator extends component_generator_base {

@@ -14,12 +14,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Contain the logic for the save/cancel modal.
+ * Contain the logic for the save/cancel/delete modal.
  *
- * @module     core/modal_save_cancel
- * @class      modal_save_cancel
- * @package    core
- * @copyright  2016 Ryan Wyllie <ryan@moodle.com>
+ * @module     tool_organisation/modal_save_cancel_delete
+ * @package    tool_organisation
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define([

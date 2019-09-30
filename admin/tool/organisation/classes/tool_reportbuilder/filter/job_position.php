@@ -18,7 +18,8 @@
  * Class containing the logic for the position filter select.
  *
  * @package   tool_organisation
- * @copyright 2019 Daniel Neis Araujo
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Daniel Neis <daniel@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,8 @@ defined('MOODLE_INTERNAL') || die;
  * Can only be used for the reports that list JOBS (not for reports that list users)
  *
  * @package   tool_organisation
- * @copyright 2019 Daniel Neis Araujo
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Daniel Neis <daniel@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class job_position extends select {

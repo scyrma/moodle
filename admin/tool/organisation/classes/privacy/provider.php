@@ -17,7 +17,8 @@
  * Privacy class for requesting user data.
  *
  * @package    tool_organisation
- * @copyright  2018 Marina Glancy
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_organisation\privacy;
@@ -37,7 +38,8 @@ use \core_privacy\local\request\writer;
  * Privacy provider for tool_organisation
  *
  * @package    tool_organisation
- * @copyright  2018 Marina Glancy
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements

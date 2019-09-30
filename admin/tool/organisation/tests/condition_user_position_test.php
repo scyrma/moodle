@@ -19,7 +19,8 @@
  *
  * @package    tool_organisation
  * @category   test
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
  * @group      tool_organisation
  * @covers     \tool_organisation\tool_dynamicrule\condition\user_position
  * @covers     \tool_organisation\tool_dynamicrule\condition\user_without_position
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_organisation_condition_user_position_testcase extends advanced_testcase {

@@ -18,7 +18,8 @@
  * Class positions_tree
  *
  * @package     tool_organisation
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,8 @@ require_once($CFG->dirroot.'/admin/tool/organisation/lib.php');
  * Class positions_tree
  *
  * @package     tool_organisation
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class positions_tree extends table_tree {

@@ -18,7 +18,8 @@
  * Plugin event classes are defined here.
  *
  * @package     tool_organisation
- * @copyright   2019 Suraj Kumar
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Suraj Kumar
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ defined('MOODLE_INTERNAL') || die();
  * The position_created event class.
  *
  * @package    tool_organisation
- * @copyright  2019 Suraj Kumar
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Suraj Kumar
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class job_deleted extends \core\event\base {

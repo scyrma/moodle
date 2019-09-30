@@ -18,7 +18,8 @@
  * Privacy provider tests.
  *
  * @package    tool_organisation
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package    tool_organisation
  * @group      tool_organisation
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_organisation_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {

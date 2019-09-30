@@ -18,7 +18,8 @@
  * Class containing helper methods for format columns data as callbacks.
  *
  * @package     tool_organisation
- * @copyright   2019 Suraj Kumar
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Suraj Kumar
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class format
  *
  * @package     tool_organisation
- * @copyright   2019 Suraj Kumar
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Suraj Kumar
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format {

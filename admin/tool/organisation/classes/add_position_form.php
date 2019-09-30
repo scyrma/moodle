@@ -18,7 +18,8 @@
  * Class add_position_form
  *
  * @package     tool_organisation
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,8 @@ require_once($CFG->dirroot.'/admin/tool/organisation/lib.php');
  * Class add_position_form
  *
  * @package     tool_organisation
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class add_position_form extends modal_form {

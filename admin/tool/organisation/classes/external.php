@@ -18,7 +18,8 @@
  * Web services
  *
  * @package     tool_organisation
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,9 +30,10 @@ require_once($CFG->libdir . '/externallib.php');
 /**
  * tool_organisation external function
  *
- * @package    tool_organisation
- * @copyright  2018 Moodle
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     tool_organisation
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_organisation_external extends external_api {
 

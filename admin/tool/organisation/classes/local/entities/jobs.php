@@ -18,7 +18,8 @@
  * File for class jobs.
  *
  * @package   tool_organisation
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -46,7 +47,8 @@ defined('MOODLE_INTERNAL') || die();
  * Columns, filters and conditions that defines the jobs entity and can be reused in any report datasource.
  *
  * @package   tool_organisation
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class jobs extends entity_base {
