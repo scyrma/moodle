@@ -19,7 +19,8 @@
  *
  * @package    enrol_dynamicrule
  * @category   test
- * @copyright  2018 SP
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 Workplace team
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +30,8 @@ defined('MOODLE_INTERNAL') || die();
  * Contains tests for the cohort library.
  *
  * @package   enrol_dynamicrule
- * @copyright 2018 SP
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Workplace team
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_dynamicrule_lib_testcase extends advanced_testcase {

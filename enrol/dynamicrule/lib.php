@@ -18,7 +18,8 @@
  * The enrol plugin dynamicrule is defined here.
  *
  * @package     enrol_dynamicrule
- * @copyright   2018 SP
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Workplace team
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +29,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class enrol_dynamicrule_plugin.
  *
  * @package     enrol_dynamicrule
- * @copyright   2018 SP
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Workplace team
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrol_dynamicrule_plugin extends enrol_plugin {

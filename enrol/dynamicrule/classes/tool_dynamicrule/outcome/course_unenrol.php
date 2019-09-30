@@ -18,7 +18,8 @@
  * This file contains the backend class for course unenrol outcome.
  *
  * @package    enrol_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +31,8 @@ defined('MOODLE_INTERNAL') || die;
  * The backend class for course_enrol outcome
  *
  * @package    enrol_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_unenrol extends \tool_dynamicrule\outcome_base {

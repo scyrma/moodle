@@ -18,7 +18,8 @@
  * Plugin version and other meta-data are defined here.
  *
  * @package     enrol_dynamicrule
- * @copyright   2019 Daniel Neis Araujo
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Daniel Neis Araujo
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

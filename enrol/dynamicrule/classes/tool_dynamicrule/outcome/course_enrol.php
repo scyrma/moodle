@@ -18,7 +18,8 @@
  * This file contains the backend class for course enrol outcome.
  *
  * @package    enrol_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ require_once($CFG->dirroot. '/group/lib.php');
  * The backend class for course_enrol outcome
  *
  * @package    enrol_dynamicrule
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Daniel Neis <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_enrol extends \tool_dynamicrule\outcome_base {
