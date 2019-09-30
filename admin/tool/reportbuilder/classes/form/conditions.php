@@ -18,7 +18,8 @@
  * Class containing main class for conditions form and logic.
  *
  * @package   tool_reportbuilder
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,8 +39,9 @@ require_once($CFG->dirroot.'/user/filters/lib.php');
 /**
  * Class conditions
  *
- * @package tool_reportbuilder
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @package   tool_reportbuilder
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class conditions extends modal_form {

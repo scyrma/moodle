@@ -19,7 +19,8 @@
  *
  * @package   tool_reportbuilder
  * @category  test
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,8 @@ use tool_tenant\tenancy;
  * @package   tool_reportbuilder
  * @group     tool_reportbuilder
  * @covers    \tool_reportbuilder\local\helpers\send
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_helper_send_testcase extends advanced_testcase {

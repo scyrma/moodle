@@ -18,7 +18,8 @@
  * Class report_course_completion
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,6 +30,7 @@ use tool_datastore\action\course_completed;
 use tool_reportbuilder\constants;
 use tool_reportbuilder\local\entities\course as course_entity;
 use tool_reportbuilder\local\entities\user as user_entity;
+use tool_reportbuilder\local\filter\null_select;
 use tool_reportbuilder\local\filter\text;
 use tool_reportbuilder\local\helpers\columns;
 use tool_reportbuilder\local\helpers\format;
@@ -42,7 +44,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class report_course_completion
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_course_completion extends \tool_reportbuilder\datasource {
@@ -122,14 +125,14 @@ class report_course_completion extends \tool_reportbuilder\datasource {
         // Datastore course columns.
         $coursefields = ['fullname', 'shortname', 'idnumber', 'format'];
         foreach ($coursefields as $field) {
-            list($sql, $params) = api::get_datasource_field_sql('course', $field, $maintablealias);
+            list($sql, $params) = api::get_datasource_field_sql('course', $field, $maintablealias, null, constants::DB_TYPE_TEXT);
 
             $newcolumn = (new report_column(
                 $field,
                 new \lang_string($field),
                 'tool_datastore_course'
             ))
-                ->add_field($DB->sql_compare_text($sql, 255), $field, $params)
+                ->add_field($sql, $field, $params)
                 ->set_groupby_sql("{$maintablealias}.id")
                 ->set_type(constants::DB_TYPE_TEXT)
                 ->add_callback([format::class, 'format_string']);
@@ -144,14 +147,15 @@ class report_course_completion extends \tool_reportbuilder\datasource {
         // Datastore user columns.
         $userfields = ['firstname', 'lastname', 'email', 'idnumber', 'username'];
         foreach ($userfields as $field) {
-            list($sql, $params) = api::get_datasource_field_sql('user', $field, $maintablealias, 'relateduserid');
+            list($sql, $params) = api::get_datasource_field_sql('user', $field, $maintablealias, 'relateduserid',
+                constants::DB_TYPE_TEXT);
 
             $newcolumn = (new report_column(
                 $field,
                 new \lang_string($field),
                 'tool_datastore_user'
             ))
-                ->add_field($DB->sql_compare_text($sql, 255), $field, $params)
+                ->add_field($sql, $field, $params)
                 ->set_groupby_sql("{$maintablealias}.id, {$maintablealias}.relateduserid")
                 ->set_type(constants::DB_TYPE_TEXT)
                 ->add_callback([format::class, 'format_string']);
@@ -167,15 +171,15 @@ class report_course_completion extends \tool_reportbuilder\datasource {
         $completionfields = course_completed::get_fields_to_index()['course_completion'];
         $completionfields = explode(',', $completionfields);
         foreach ($completionfields as $field) {
-            list($sql, $params) = api::get_datasource_field_sql('course_completion', $field, $maintablealias);
+            list($sql, $params) = api::get_datasource_field_sql('course_completion', $field, $maintablealias, null,
+                constants::DB_TYPE_TIMESTAMP);
 
             $newcolumn = (new report_column(
                 $field,
                 new \lang_string("course_completion_{$field}", 'tool_reportbuilder'),
                 'tool_datastore_course_completion'
             ))
-                // To ensure all the numeric fields work with aggregation, cast the field to int.
-                ->add_field($DB->sql_cast_char2int($sql, true), $field, $params)
+                ->add_field($sql, $field, $params)
                 ->set_groupby_sql("{$maintablealias}.id")
                 ->set_type(constants::DB_TYPE_TIMESTAMP)
                 ->add_callback([format::class, 'userdate']);
@@ -189,35 +193,73 @@ class report_course_completion extends \tool_reportbuilder\datasource {
     }
 
     /**
-     * Generate field SQL appropriate for filters. Work around current limitation of them not accepting $params by moving them
-     * into the returned SQL snippet
+     * Return common filters/conditions of the datasource
      *
-     * @param string $entitytype
-     * @param string $fieldname
-     * @param string $maintablealias
-     * @param string|null $maintablefield
-     * @param int|null $type type of the field/filter, by default constants::DB_TYPE_LONGTEXT
-     * @return string
+     * @param bool $iscondition
+     * @return report_filter[]
      */
-    private static function get_filter_field_sql(string $entitytype, string $fieldname, string $maintablealias,
-            ?string $maintablefield = null, ?int $type = null) : string {
-        global $DB;
+    protected function get_filters_or_conditions(bool $iscondition) : array {
+        $maintablealias = $this->get_main_table_alias();
 
-        $type = $type !== null ? $type : constants::DB_TYPE_LONGTEXT;
-        list($sql, $params) = api::get_datasource_field_sql($entitytype, $fieldname, $maintablealias, $maintablefield);
+        // Datasource course/user entity 'deleted' status (i.e. whether they still exist).
+        $statusoptions = [
+            0 => get_string('active'),
+            1 => get_string('deleted'),
+        ];
 
-        // Match everything that looks like a parameter (:foo) and replace with actual param value.
-        $sql = preg_replace_callback('/\s:(?<param>[a-z0-9_]+)\s?/i', function ($matches) use ($params) {
-            return "'" .  preg_replace("/'/", '', $params[$matches['param']]) . "'";
-        }, $sql);
+        // Datastore course filters.
+        list($sql, $params) = api::get_datasource_field_sql('course', 'fullname', $maintablealias, null, constants::DB_TYPE_TEXT);
+        $filters[] = (new report_filter(
+            text::class,
+            'tool_datastore_course_fullname',
+            new \lang_string('conditiondatastorecoursefullname', 'tool_reportbuilder'),
+            'tool_datastore_course',
+            $sql,
+            $params
+        ));
 
-        if ($type == constants::DB_TYPE_NUMBER || $type == constants::DB_TYPE_DATETIME
-                || $type == constants::DB_TYPE_TIMESTAMP) {
-            return $DB->sql_cast_char2int($sql, true);
-        } else if ($type == constants::DB_TYPE_TEXT) {
-            return $DB->sql_compare_text($sql, 255);
-        }
-        return $sql;
+        $filters[] = (new report_filter(
+            null_select::class,
+            'tool_datastore_course_status',
+            new \lang_string('status'),
+            'tool_datastore_course',
+            'c.id'
+        ))->set_options($statusoptions);
+
+        // Datastore user filters.
+        list($sql, $params) = api::get_datasource_field_sql('user', 'firstname', $maintablealias, 'relateduserid',
+            constants::DB_TYPE_TEXT);
+
+        $filters[] = (new report_filter(
+            text::class,
+            'tool_datastore_user_firstname_filter',
+            new \lang_string('conditiondatastoreuserfirstname', 'tool_reportbuilder'),
+            'tool_datastore_user',
+            $sql,
+            $params
+        ));
+
+        list($sql, $params) = api::get_datasource_field_sql('user', 'lastname', $maintablealias, 'relateduserid',
+            constants::DB_TYPE_TEXT);
+
+        $filters[] = (new report_filter(
+            text::class,
+            'tool_datastore_user_lastname',
+            new \lang_string('conditiondatastoreuserlastname', 'tool_reportbuilder'),
+            'tool_datastore_user',
+            $sql,
+            $params
+        ));
+
+        $filters[] = (new report_filter(
+            null_select::class,
+            'tool_datastore_user_status',
+            new \lang_string('status'),
+            'tool_datastore_user',
+            'u.id'
+        ))->set_options($statusoptions);
+
+        return $filters;
     }
 
     /**
@@ -225,15 +267,10 @@ class report_course_completion extends \tool_reportbuilder\datasource {
      *
      * @return void
      */
-    protected function set_conditions() : void {
-        $this->add_condition(new report_filter(
-            text::class,
-            'tool_datastore_course_fullname_condition',
-            new \lang_string('conditiondatastorecoursefullname', 'tool_reportbuilder'),
-            'tool_datastore_course',
-            self::get_filter_field_sql('course', 'fullname', $this->get_main_table_alias(),
-                null, constants::DB_TYPE_TEXT)
-        ));
+    public function set_conditions() : void {
+        foreach ($this->get_filters_or_conditions(true) as $condition) {
+            $this->add_condition($condition);
+        }
     }
 
     /**
@@ -241,37 +278,10 @@ class report_course_completion extends \tool_reportbuilder\datasource {
      *
      * @return void
      */
-    protected function set_filters() : void {
-        $maintablealias = $this->get_main_table_alias();
-
-        // Datastore course filters.
-        $this->add_filter(new report_filter(
-            text::class,
-            'tool_datastore_course_fullname_filter',
-            new \lang_string('conditiondatastorecoursefullname', 'tool_reportbuilder'),
-            'tool_datastore_course',
-            self::get_filter_field_sql('course', 'fullname', $maintablealias,
-                null, constants::DB_TYPE_TEXT)
-        ));
-
-        // Datastore user filters.
-        $this->add_filter(new report_filter(
-            text::class,
-            'tool_datastore_user_firstname_filter',
-            new \lang_string('conditiondatastoreuserfirstname', 'tool_reportbuilder'),
-            'tool_datastore_user',
-            self::get_filter_field_sql('user', 'firstname', $maintablealias, 'relateduserid',
-                constants::DB_TYPE_TEXT)
-        ));
-
-        $this->add_filter(new report_filter(
-            text::class,
-            'tool_datastore_user_lastname_filter',
-            new \lang_string('conditiondatastoreuserlastname', 'tool_reportbuilder'),
-            'tool_datastore_user',
-            self::get_filter_field_sql('user', 'lastname', $maintablealias, 'relateduserid',
-                constants::DB_TYPE_TEXT)
-        ));
+    public function set_filters() : void {
+        foreach ($this->get_filters_or_conditions(false) as $filter) {
+            $this->add_filter($filter);
+        }
     }
 
     /**

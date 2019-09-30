@@ -19,7 +19,8 @@
  *
  * @package    tool_reportbuilder
  * @category   test
- * @copyright  2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
  *
  * @package    tool_reportbuilder
  * @category   test
- * @copyright  2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_tool_reportbuilder_schedule extends behat_base {

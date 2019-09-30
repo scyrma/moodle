@@ -18,7 +18,8 @@
  * Class datasource
  *
  * @package     tool_reportbuilder
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ defined('MOODLE_INTERNAL') || die();
  * Datasources should be located in plugindir/classes/tool_reportbuilder/datasources/classname.php
  *
  * @package     tool_reportbuilder
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class datasource extends report_base {

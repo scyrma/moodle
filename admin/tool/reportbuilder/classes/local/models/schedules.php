@@ -18,7 +18,8 @@
  * Class for the schedules persistent
  *
  * @package   tool_reportbuilder
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,8 @@ use \tool_reportbuilder\local\helpers\schedules as scheduleshelper;
  * Class for the schedules persistent
  *
  * @package   tool_reportbuilder
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class schedules extends persistent {

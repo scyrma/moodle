@@ -17,8 +17,9 @@
  * Privacy Subsystem implementation for tool_reportbuilder.
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_reportbuilder\privacy;
 defined('MOODLE_INTERNAL') || die();
@@ -26,8 +27,9 @@ defined('MOODLE_INTERNAL') || die();
  * Privacy Subsystem for tool_reportbuilder implementing null_provider.
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {
     /**

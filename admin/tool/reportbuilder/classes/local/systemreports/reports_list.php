@@ -17,7 +17,9 @@
 /**
  * Class for define the system report of the reports lists.
  *
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @package   tool_reportbuilder
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,9 +41,10 @@ use tool_wp\db;
 /**
  * Class reports_list
  *
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package tool_reportbuilder
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_reportbuilder
  */
 class reports_list extends system_report {
 

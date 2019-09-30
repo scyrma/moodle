@@ -19,34 +19,59 @@
  *
  * @package   tool_reportbuilder
  * @category  test
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_reportbuilder\report_column;
+
 /**
  * Class tool_reportbuilder_report_column_testcase
  *
  * @package   tool_reportbuilder
+ * @group     tool_reportbuilder
+ * @category  test
  * @covers    \tool_reportbuilder\report_column
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_report_column_testcase extends advanced_testcase{
 
     /**
-     * Creates tenant and assigns user.
+     * Test column visible name
      *
      * @return void
-     * @throws coding_exception
-     * @throws moodle_exception
      */
     public function test_set_visiblename() {
-        $reportcolumn = new \tool_reportbuilder\report_column('test', new lang_string('teststring1', 'tool_reportbuilder'), 'test');
-        $reportcolumn->set_visiblename(new lang_string('teststring2', 'tool_reportbuilder'));
-        $string = $reportcolumn->get_visiblename();
-        $this->assertEquals(new lang_string('teststring2', 'tool_reportbuilder'), $string);
+        $reportcolumn = new report_column('test', null, 'test');
+
+        $visiblename = new lang_string('teststring2', 'tool_reportbuilder');
+        $reportcolumn->set_visiblename($visiblename);
+
+        $this->assertEquals($visiblename, $reportcolumn->get_visiblename());
     }
 
+    /**
+     * Test setting a single column callback
+     */
+    public function test_set_callback() {
+        $column = (new report_column('test', null, 'test'))
+            ->add_callback('printf')
+            ->add_callback('sprintf');
+
+        // Make sure we get back our two callbacks.
+        $this->assertCount(2, $column->get_callbacks());
+
+        // Ensure we overwrite previous callbacks.
+        $column->set_callback('vprintf');
+
+        $callbacks = $column->get_callbacks();
+
+        $this->assertCount(1, $callbacks);
+        $this->assertEquals('vprintf', reset($callbacks)[0]);
+    }
 }

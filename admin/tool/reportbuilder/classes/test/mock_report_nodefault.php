@@ -17,9 +17,10 @@
 /**
  * Class mock_report_nodefault
  *
- * @package tool_reportbuilder
- * @copyright 2019, Ruslan Kabalin
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_reportbuilder
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019, Ruslan Kabalin
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_reportbuilder\test;
@@ -34,8 +35,9 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class mock_report_nodefault
  *
- * @package tool_reportbuilder
- * @copyright 2019, Ruslan Kabalin
+ * @package   tool_reportbuilder
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Ruslan Kabalin
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mock_report_nodefault extends mock_report {

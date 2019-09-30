@@ -18,7 +18,8 @@
  * Class groupconcat.
  *
  * @package   tool_reportbuilder
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class containing the group concat aggregation
  *
  * @package   tool_reportbuilder
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class groupconcat extends aggregation_base {

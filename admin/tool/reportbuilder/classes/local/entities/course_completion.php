@@ -18,7 +18,8 @@
  * Class containing course completion entity
  *
  * @package     tool_reportbuilder
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,11 +30,11 @@ use tool_reportbuilder\constants;
 use tool_reportbuilder\entity_base;
 use tool_reportbuilder\report_column;
 use tool_reportbuilder\report_filter;
+use tool_reportbuilder\local\helpers\columns;
 use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\local\filter\checkbox;
 use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
-use tool_wp\db;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -41,7 +42,8 @@ defined('MOODLE_INTERNAL') || die();
  * Datasource class
  *
  * @package     tool_reportbuilder
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_completion extends entity_base {
@@ -114,6 +116,38 @@ class course_completion extends entity_base {
             ->set_type(constants::DB_TYPE_BOOLEAN)
             ->set_is_sortable(true)
             ->add_callback([format::class, 'checkbox_as_text']);
+
+        // Progress.
+        $column = (new report_column(
+            'progress',
+            new lang_string('course_completion_progress', 'tool_reportbuilder'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->add_field("{$this->tablealiascourse}.id", 'courseid')
+            ->add_field("{$this->tablealiascourse}.enablecompletion")
+            ->add_field("{$this->tablealias}.userid")
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_callback([format::class, 'completion_progress']);
+
+        columns::disable_column_aggregation($column);
+        $columns[] = $column;
+
+        // Progress (percentage).
+        $column = (new report_column(
+            'progresspercent',
+            new lang_string('course_completion_progress_percent', 'tool_reportbuilder'),
+            $this->get_entity_name()
+        ))
+            ->add_join($this->join)
+            ->add_field("{$this->tablealiascourse}.id", 'courseid')
+            ->add_field("{$this->tablealiascourse}.enablecompletion")
+            ->add_field("{$this->tablealias}.userid")
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_callback([format::class, 'completion_progress'], true);
+
+        columns::disable_column_aggregation($column);
+        $columns[] = $column;
 
         // Time enrolled/started/completed/reaggregated.
         $allcolumns = ['timeenrolled', 'timestarted', 'timecompleted', 'reaggregate'];

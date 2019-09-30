@@ -18,7 +18,8 @@
  * Strings for tool_reportbuilder.
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -72,6 +73,8 @@ $string['confirmsendschedule'] = 'Are you sure you want to queue \'{$a}\' for se
 $string['coursecustomfieldname'] = '{$a->category}: {$a->field}';
 $string['course_completion_days_course'] = 'Days taking course';
 $string['course_completion_days_enrolled'] = 'Days enrolled';
+$string['course_completion_progress'] = 'Progress';
+$string['course_completion_progress_percent'] = 'Progress (%)';
 $string['course_completion_reaggregate'] = 'Time reaggregated';
 $string['course_completion_timecompleted'] = 'Time completed';
 $string['course_completion_timeenrolled'] = 'Time enrolled';

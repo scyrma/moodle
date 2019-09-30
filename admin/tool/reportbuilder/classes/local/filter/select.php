@@ -18,7 +18,8 @@
  * Class containing the logic for the filter select.
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,8 +33,9 @@ defined('MOODLE_INTERNAL') || die;
 /**
  * Class select
  *
- * @package tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @package   tool_reportbuilder
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class select extends filter_base {
@@ -85,11 +87,10 @@ class select extends filter_base {
         $name = db::generate_param_name();
 
         $field = $this->reportfilter->get_field_sql();
+        $params = $this->reportfilter->get_field_params();
 
         $operator = array_key_exists("{$this->name}_op", $values) ? $values["{$this->name}_op"] : null;
         $value = array_key_exists($this->name, $values) ? $values[$this->name] : 0;
-
-        $params = array();
 
         switch($operator) {
             case 1: // Equal to.

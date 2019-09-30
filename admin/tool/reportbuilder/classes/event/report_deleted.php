@@ -18,7 +18,8 @@
  * Delete report event.
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Toni Barberà <toni@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Toni Barberà <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or late
  */
 
@@ -32,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
  * Report builder report deleted event class.
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Toni Barberà <toni@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Toni Barberà <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_deleted extends \core\event\base {

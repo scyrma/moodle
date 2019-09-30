@@ -19,7 +19,8 @@
  *
  * @package     tool_reportbuilder
  * @category    test
- * @copyright   2018 Toni Barberá <toni@moodle.com>
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Toni Barberá <toni@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,7 +44,8 @@ use tool_reportbuilder\event\schedule_deleted;
  * @covers    \tool_reportbuilder\event\report_updated
  * @covers    \tool_reportbuilder\event\schedule_created
  * @covers    \tool_reportbuilder\event\schedule_deleted
- * @copyright 2018 Toni Barberá <toni@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Toni Barberá <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_events_testcase extends advanced_testcase {

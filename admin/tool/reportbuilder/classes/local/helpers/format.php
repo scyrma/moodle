@@ -18,12 +18,14 @@
  * Class containing helper methods for format columns data as callbacks.
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_reportbuilder\local\helpers;
 
+use completion_info;
 use core_tag_tag;
 use core_user\output\status_field;
 use html_writer;
@@ -35,8 +37,9 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class format
  *
- * @package tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @package   tool_reportbuilder
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format {
@@ -254,13 +257,46 @@ class format {
     }
 
     /**
+     * Return completion progress in the form 'X / Y' or as a percentage
+     *
+     * @param string|null $value
+     * @param stdClass $row
+     * @param bool $percent
+     * @return string
+     */
+    public static function completion_progress(?string $value, stdClass $row, ?bool $percent = false) : string {
+        $completion = new completion_info((object)['id' => $row->courseid, 'enablecompletion' => $row->enablecompletion]);
+
+        // Bail out early if completion not enabled, or not tracking user.
+        if (!$completion->is_enabled() || !$completion->is_tracked_user($row->userid)) {
+            return '';
+        }
+
+        // Check we have some course modules that support completion.
+        $modules = $completion->get_activities();
+        if (0 == ($totalcount = count($modules))) {
+            return '';
+        }
+
+        // Filter modules to those completed by user.
+        $userid = $row->userid;
+        $completed = array_filter($modules, function(\cm_info $module) use ($completion, $userid) {
+            return ($completion->get_data($module, true, $userid)->completionstate != COMPLETION_INCOMPLETE);
+        });
+
+        $completedcount = count($completed);
+
+        return $percent ? self::percent(100 * $completedcount / $totalcount) : sprintf('%d / %d', $completedcount, $totalcount);
+    }
+
+    /**
      * Formats as number and adds a '%' in the end
      *
      * @param mixed $value
      * @param \stdClass $row
      * @return null|string
      */
-    public static function percent($value, \stdClass $row): string {
+    public static function percent($value, stdClass $row = null): string {
         if (is_numeric($value)) {
             return sprintf("%.2f", $value) . '%';
         }

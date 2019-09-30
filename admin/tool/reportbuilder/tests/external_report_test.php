@@ -19,7 +19,8 @@
  *
  * @package     tool_reportbuilder
  * @category    test
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -40,7 +41,8 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @category    test
  * @covers      \tool_reportbuilder\event\report_deleted
  * @covers      \tool_reportbuilder\external\report
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_external_report_testcase extends externallib_advanced_testcase {

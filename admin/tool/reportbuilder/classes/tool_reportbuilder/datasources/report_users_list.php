@@ -18,7 +18,8 @@
  * Class report_users_list
  *
  * @package   tool_reportbuilder
- * @copyright 2019, Toni Barbera <toni@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Toni Barbera <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +39,8 @@ require_once($CFG->libdir . '/tablelib.php');
  * Class report_users_list
  *
  * @package   tool_reportbuilder
- * @copyright 2019, Toni Barbera <toni@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Toni Barbera <toni@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_users_list extends \tool_reportbuilder\datasource {

@@ -18,7 +18,8 @@
  * File for class relative_dates
  *
  * @package   tool_reportbuilder
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ require_once($CFG->dirroot . '/calendar/lib.php');
  * Class relative_dates
  *
  * @package   tool_reportbuilder
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class relative_dates {

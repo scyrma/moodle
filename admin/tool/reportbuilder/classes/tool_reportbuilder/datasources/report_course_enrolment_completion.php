@@ -18,7 +18,8 @@
  * Class containing datasource for course enrolment and completion
  *
  * @package     tool_reportbuilder
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,8 @@ defined('MOODLE_INTERNAL') || die();
  * Datasource class
  *
  * @package     tool_reportbuilder
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_course_enrolment_completion extends datasource {

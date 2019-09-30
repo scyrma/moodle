@@ -19,7 +19,8 @@
  *
  * @package    tool_reportbuilder
  * @category   test
- * @copyright  2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,8 @@ require_once($CFG->dirroot . '/admin/tool/reportbuilder/tests/fixtures/testable_
  * Class tool_reportbuilder_download_testcase
  *
  * @package    tool_reportbuilder
- * @copyright  2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_download_testcase extends advanced_testcase {

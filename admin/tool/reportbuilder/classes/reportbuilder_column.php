@@ -17,9 +17,10 @@
 /**
  * Plugin reportbuilder column class.
  *
- * @package     tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_reportbuilder
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_reportbuilder;
@@ -31,9 +32,10 @@ use core\persistent;
 /**
  * Class reportbuilder_column
  *
- * @package tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_reportbuilder
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class reportbuilder_column extends persistent {
 

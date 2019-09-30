@@ -17,9 +17,10 @@
 /**
  * Class aggregation
  *
- * @package     tool_reportbuilder
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_reportbuilder
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_reportbuilder\local\helpers;
@@ -33,9 +34,10 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Helper class for reportbuilder aggregation
  *
- * @package     tool_reportbuilder
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_reportbuilder
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class aggregation {
 

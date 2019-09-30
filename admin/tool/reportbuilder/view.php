@@ -18,20 +18,37 @@
  * The view of report
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_reportbuilder\reportbuilder;
-use \tool_reportbuilder\event\report_viewed;
+use tool_reportbuilder\event\report_viewed;
 
 require_once(__DIR__ . '/../../../config.php');
-
-require_login();
-$PAGE->set_context(context_system::instance());
+require_once($CFG->libdir . '/adminlib.php');
 
 $reportid = required_param('id', PARAM_INT);
-$download = optional_param('download', 0, PARAM_ALPHA);
+$download = optional_param('download', false, PARAM_BOOL);
+
+admin_externalpage_setup('tool_reportbuilder', '', ['id' => $reportid]);
+
+$report = \tool_reportbuilder\manager::get_report($reportid);
+\tool_reportbuilder\permission::require_can_view($report);
+
+$PAGE->set_url(new \moodle_url('/admin/tool/reportbuilder/view.php', ['id' => $report->get_id()]));
+
+if (!\tool_reportbuilder\permission::can_create()) {
+    $PAGE->navbar->add(get_string('myreports', 'tool_reportbuilder'),
+        new \moodle_url('/admin/tool/reportbuilder/index.php'));
+}
+
+$title = format_string($report->get_reportname());
+$PAGE->navbar->add($title);
+
+$PAGE->set_title($title);
+$PAGE->set_heading($title);
 
 $outputpage = new \tool_reportbuilder\output\report_view($reportid, false);
 $output = $PAGE->get_renderer('tool_reportbuilder');

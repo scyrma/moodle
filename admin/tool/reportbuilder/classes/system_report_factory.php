@@ -17,7 +17,8 @@
 /**
  * Factory for system reports.
  *
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,9 +34,10 @@ defined('MOODLE_INTERNAL') || die;
 /**
  * Class system_report_factory
  *
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package tool_reportbuilder
+ * @package   tool_reportbuilder
  */
 class system_report_factory {
     /**

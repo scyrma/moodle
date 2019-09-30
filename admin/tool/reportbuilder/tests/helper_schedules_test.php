@@ -19,7 +19,8 @@
  *
  * @package   tool_reportbuilder
  * @category  test
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ use tool_reportbuilder\local\helpers\schedules;
  *
  * @package   tool_reportbuilder
  * @covers    \tool_reportbuilder\local\helpers\schedules
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_helper_schedules_testcase extends advanced_testcase {

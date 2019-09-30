@@ -18,12 +18,16 @@
  * External conditions tests.
  *
  * @package    tool_reportbuilder
- * @category  test
- * @copyright  2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @category   test
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
+
+use \tool_reportbuilder\external\conditions;
+use \tool_reportbuilder\test\mock_report;
 
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
@@ -33,11 +37,38 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * Class tool_reportbuilder_external_conditions_testcase
  *
  * @package   tool_reportbuilder
+ * @group     tool_reportbuilder
+ * @category  test
  * @covers    \tool_reportbuilder\external\conditions
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_external_conditions_testcase extends externallib_advanced_testcase {
+
+    /** @var \tool_reportbuilder\report_base $report */
+    protected $report;
+
+    /**
+     * Test setup
+     */
+    public function setUp() {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $this->report = $this->get_plugin_generator()->create_report(['source' => mock_report::class]);
+
+        // Set some default report conditions.
+        $conditions = [
+            'condition1' => 'conditionvalue',
+            'condition1_op' => 'conditionop',
+            'user:firstname' => 'conditionvalue',
+            'user:firstname_op' => 'conditionop',
+        ];
+        $DB->set_field('tool_reportbuilder', 'conditions', json_encode($conditions), ['id' => $this->report->get_id()]);
+    }
 
     /**
      * Test reset all method.
@@ -47,25 +78,14 @@ class tool_reportbuilder_external_conditions_testcase extends externallib_advanc
      */
     public function test_reset_all() {
         global $DB;
-        $this->resetAfterTest();
-        $this->setAdminUser();
 
-        $generator = $this->get_generator();
+        $reportid = $this->report->get_id();
 
-        $report = $generator->create_report([
-            'source' => \tool_reportbuilder\test\mock_report::class
-        ]);
+        $this->assertNotNull($DB->get_field('tool_reportbuilder', 'conditions', ['id' => $reportid]));
 
-        $record = new stdClass();
-        $record->id = $report->get_id();
-        $record->conditions = 'dummycontent';
-
-        $DB->update_record('tool_reportbuilder', $record);
-        \tool_reportbuilder\external\conditions::reset_all($report->get_id());
-
-        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->get_id()]);
-
-        $this->assertEquals(null, $conditions);
+        // Resetting the report conditions should set 'conditions' to null.
+        conditions::reset_all($reportid);
+        $this->assertNull($DB->get_field('tool_reportbuilder', 'conditions', ['id' => $reportid]));
     }
 
     /**
@@ -82,42 +102,53 @@ class tool_reportbuilder_external_conditions_testcase extends externallib_advanc
      */
     public function test_reset_condition() {
         global $DB;
-        $this->resetAfterTest();
-        $this->setAdminUser();
 
-        $generator = $this->get_generator();
+        $conditionid = $this->add_condition('user:firstname');
+        conditions::reset_condition(0, $conditionid);
 
-        $report = $generator->create_report([
-            'source' => \tool_reportbuilder\test\mock_report::class
+        // Resetting a report condition should remove the values from the condition.
+        $expected = json_encode([
+            'condition1' => 'conditionvalue',
+            'condition1_op' => 'conditionop',
         ]);
+        $this->assertEquals($expected, $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $this->report->get_id()]));
+    }
 
-        $conditionsdata = [];
-        $conditionsdata['condition1'] = 'conditionvalue';
-        $conditionsdata['user:firstname'] = 'conditionvalue';
-        $conditionsdata['user:firstname_op'] = 'conditionop';
-        $conditionsdata['condition1_op'] = 'conditionop';
+    /**
+     * Test deletion of a condition
+     *
+     * @return void
+     */
+    public function test_delete_condition() {
+        global $DB;
 
-        $conditionid = $generator->add_condition($report->get_id(), 'user:firstname');
-        $record = new stdClass();
-        $record->id = $report->get_id();
-        $record->conditions = json_encode($conditionsdata);
-        $DB->update_record('tool_reportbuilder', $record);
+        $conditionid = $this->add_condition('user:firstname');
+        conditions::delete_condition($conditionid);
 
-        \tool_reportbuilder\external\conditions::reset_condition($report->get_id(), $conditionid);
+        // Deleting a report condition should remove the values from the condition.
+        $expected = json_encode([
+            'condition1' => 'conditionvalue',
+            'condition1_op' => 'conditionop',
+        ]);
+        $this->assertEquals($expected, $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $this->report->get_id()]));
+    }
 
-        $conditions = $DB->get_field('tool_reportbuilder', 'conditions', ['id' => $report->get_id()]);
-        $this->assertEquals('{"condition1":"conditionvalue","condition1_op":"conditionop"}', $conditions);
+    /**
+     * Add a condition to the test report
+     *
+     * @param string $conditionkey
+     * @return int
+     */
+    protected function add_condition(string $conditionkey) : int {
+        return $this->get_plugin_generator()->add_condition($this->report->get_id(), $conditionkey);
     }
 
     /**
      * Get report builder generator
      *
      * @return tool_reportbuilder_generator
-     * @throws coding_exception
      */
-    protected function get_generator(): tool_reportbuilder_generator {
-        /** @var tool_reportbuilder_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_reportbuilder');
-        return $generator;
+    protected function get_plugin_generator() : tool_reportbuilder_generator {
+        return $this->getDataGenerator()->get_plugin_generator('tool_reportbuilder');
     }
 }

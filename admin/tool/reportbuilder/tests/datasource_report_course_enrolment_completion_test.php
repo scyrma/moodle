@@ -19,7 +19,8 @@
  *
  * @package     tool_reportbuilder
  * @category    test
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +39,8 @@ require_once($CFG->dirroot . '/admin/tool/reportbuilder/tests/fixtures/testable_
  * @group       tool_reportbuilder
  * @category    test
  * @covers      \tool_reportbuilder\tool_reportbuilder\datasources\report_course_enrolment_completion
- * @copyright   2019 Paul Holden <paulh@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_datasource_report_course_enrolment_completion_testcase extends advanced_testcase {

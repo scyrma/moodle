@@ -18,7 +18,8 @@
  * Class containing all services for the report.
  *
  * @package   tool_reportbuilder
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,9 +42,10 @@ require_once("$CFG->libdir/externallib.php");
 /**
  * Class columns
  *
- * @copyright 2019, Alberto Lara Hernández <albertolara@moodle.com>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package tool_reportbuilder
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019, Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_reportbuilder
  */
 class columns extends \external_api {
 

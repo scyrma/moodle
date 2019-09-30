@@ -18,7 +18,8 @@
  * Class for column definition.
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,8 +34,9 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class report_column
  *
- * @package tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @package   tool_reportbuilder
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_column {
@@ -369,6 +371,20 @@ class report_column {
     public function add_callback(callable $callable, $additionalarguments = null) : report_column {
         $this->callbacks[] = [$callable, $additionalarguments];
         return $this;
+    }
+
+    /**
+     * Sets a column callback. This will overwrite any previously added callbacks.
+     *
+     * @see report_column::add_callback()
+     *
+     * @param callable $callable function that takes arguments ($value, \stdClass $row, $additionalarguments)
+     * @param mixed $additionalarguments will be passed as a third parameter to the callback
+     * @return report_column
+     */
+    public function set_callback(callable $callable, $additionalarguments = null) : report_column {
+        $this->callbacks = [];
+        return $this->add_callback($callable, $additionalarguments);
     }
 
     /**

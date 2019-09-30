@@ -18,7 +18,8 @@
  * Class containing the logic for the condition date
  *
  * @package   tool_reportbuilder
- * @copyright 2019 Marina Glancy
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Marina Glancy
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ defined('MOODLE_INTERNAL') || die;
  * Class date_condition
  *
  * @package   tool_reportbuilder
- * @copyright 2019 Marina Glancy
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Marina Glancy
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class date_condition extends filter_base {
@@ -128,8 +130,7 @@ class date_condition extends filter_base {
         $param = db::generate_param_name();
 
         $field = $this->reportfilter->get_field_sql();
-
-        $params = array();
+        $params = $this->reportfilter->get_field_params();
 
         $operator = array_key_exists("{$this->name}_op", $currentvalues) ? $currentvalues["{$this->name}_op"] : null;
         $operator2 = array_key_exists("{$this->name}_op2", $currentvalues) ? $currentvalues["{$this->name}_op2"] : null;

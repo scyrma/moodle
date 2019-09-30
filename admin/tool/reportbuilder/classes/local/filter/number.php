@@ -18,7 +18,8 @@
  * File for the class containing the logic for the number filter/condition
  *
  * @package   tool_reportbuilder
- * @copyright 2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ defined('MOODLE_INTERNAL') || die;
  * Class containing the logic for the number filter/condition
  *
  * @package   tool_reportbuilder
- * @copyright 2019 Mitxel Moriana <mitxel@tresipunt.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Mitxel Moriana <mitxel@tresipunt.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class number extends filter_base {
@@ -125,7 +127,7 @@ class number extends filter_base {
         $param = db::generate_param_name();
         $param2 = db::generate_param_name();
         $field = $this->reportfilter->get_field_sql();
-        $params = [];
+        $params = $this->reportfilter->get_field_params();
         switch ($operator) {
             case 0: // Any value.
                 return ['', []];

@@ -18,7 +18,8 @@
  * Class containing the logic for the filter text.
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ defined('MOODLE_INTERNAL') || die;
  * Class text
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class text extends filter_base {
@@ -92,8 +94,7 @@ class text extends filter_base {
         $value = array_key_exists($this->name, $values) ? $values[$this->name] : 0;
 
         $field = $this->reportfilter->get_field_sql();
-
-        $params = array();
+        $params = $this->reportfilter->get_field_params();
 
         if (is_null($operator) || ('' . $value === '' and ($operator != 5 && $operator != 6))) {
             // Filter configuration is invalid. Ignore the filter.

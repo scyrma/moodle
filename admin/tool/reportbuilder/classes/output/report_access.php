@@ -18,7 +18,8 @@
  * Class report_access
  *
  * @package   tool_reportbuilder
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,7 +44,8 @@ use user_picture;
  * Class report_access
  *
  * @package   tool_reportbuilder
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_access implements templatable, renderable {

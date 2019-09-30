@@ -18,26 +18,24 @@
  * Main file
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-
-global $USER, $OUTPUT;
-
 $reportid = required_param('id', PARAM_INT);
-$editon = optional_param('editon', 1, PARAM_BOOL);
 
-$url = new moodle_url('/admin/tool/reportbuilder/manage.php', ['id' => $reportid]);
 admin_externalpage_setup('tool_reportbuilder', '', ['id' => $reportid]);
 
 $report = \tool_reportbuilder\manager::get_report($reportid);
-$title = format_string($report->get_reportname());
 \tool_reportbuilder\permission::require_can_edit($report);
+
+$PAGE->set_url(new moodle_url('/admin/tool/reportbuilder/manage.php', ['id' => $report->get_id()]));
+
+$title = format_string($report->get_reportname());
 $PAGE->navbar->add($title);
 
 $PAGE->set_title($title);

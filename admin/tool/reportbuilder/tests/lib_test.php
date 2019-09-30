@@ -19,7 +19,8 @@
  *
  * @package     tool_reportbuilder
  * @category    test
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +30,8 @@ defined('MOODLE_INTERNAL') || die();
  * Tests for functions in lib.php
  *
  * @package    tool_reportbuilder
- * @copyright  2019 Marina Glancy
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_lib_testcase extends advanced_testcase {

@@ -18,7 +18,8 @@
  * Class report
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class report_view
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_view implements \templatable, \renderable {
@@ -59,7 +61,6 @@ class report_view implements \templatable, \renderable {
         $this->report = manager::get_report($reportid);
         $this->editon = $editon;
         $this->reportid = $reportid;
-        $this->prepare_page();
     }
 
     /**
@@ -74,42 +75,5 @@ class report_view implements \templatable, \renderable {
     public function export_for_template(\renderer_base $output) {
         $content = $this->report->export($output, (int)$this->editon);
         return $content;
-    }
-
-    /**
-     * Sets up the global $PAGE and performs the access checks.
-     *
-     * @throws \coding_exception
-     * @throws \dml_exception
-     * @throws \moodle_exception
-     */
-    protected function prepare_page() {
-        global $CFG, $PAGE;
-        require_once($CFG->libdir.'/adminlib.php');
-
-        $url = new \moodle_url('/admin/tool/reportbuilder/view.php', ['id' => $this->reportid]);
-
-        $context = \context_system::instance();
-        $PAGE->set_context($context);
-
-        permission::require_can_view($this->report);
-
-        admin_externalpage_setup('tool_reportbuilder');
-
-        $PAGE->set_url($url);
-
-        $cancreate = permission::can_create();
-
-        $identifier = $cancreate ? 'myreports' : 'customreports';
-        $strtitle = get_string($identifier, 'tool_reportbuilder');
-
-        if (!$cancreate) {
-            $PAGE->navbar->add($strtitle, new \moodle_url('/admin/tool/reportbuilder/index.php'));
-        }
-
-        $PAGE->navbar->add(format_string($this->report->get_reportname()));
-
-        $PAGE->set_title($strtitle);
-        $PAGE->set_heading($strtitle);
     }
 }

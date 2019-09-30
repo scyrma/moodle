@@ -19,7 +19,8 @@
  *
  * @package    tool_reportbuilder
  * @category   test
- * @copyright  2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,8 @@ require_once($CFG->libdir . '/tablelib.php');
  * @group      tool_reportbuilder
  * @category   test
  * @covers     \tool_reportbuilder\external
- * @copyright  2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_external_testcase extends externallib_advanced_testcase {
@@ -64,15 +66,6 @@ class tool_reportbuilder_external_testcase extends externallib_advanced_testcase
         $table = new \tool_reportbuilder\report_table($this->tableuniqid);
         $table->setup = true;
         $this->table = $table;
-    }
-
-    /**
-     * Test get the report table with the requested data.
-     */
-    public function test_get_report_table() {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
     }
 
     /**
@@ -172,16 +165,6 @@ class tool_reportbuilder_external_testcase extends externallib_advanced_testcase
         $columns = tool_reportbuilder\external::get_report_sortable_columns($this->reportid);
         $this->define_sort($columns);
         $this->assertEquals('idnumber ASC, firstname ASC', $this->table->get_sql_sort());
-    }
-
-    /**
-     * Test the delete a condition.
-     */
-    public function test_delete_condition() {
-        // TODO: complete the test.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
     }
 
     /**

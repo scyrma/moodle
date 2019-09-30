@@ -18,7 +18,8 @@
  * Class containing the logic for the filter checkbox.
  *
  * @package   tool_reportbuilder
- * @copyright 2019 Marina Glancy
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Marina Glancy
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,8 +32,9 @@ use tool_reportbuilder\filter_base;
 /**
  * Class checkbox
  *
- * @package tool_reportbuilder
- * @copyright 2019 Marina Glancy
+ * @package   tool_reportbuilder
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Marina Glancy
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class checkbox extends filter_base {
@@ -79,6 +81,7 @@ class checkbox extends filter_base {
      */
     public function get_sql_filter(?array $values) : array {
         $field = $this->reportfilter->get_field_sql();
+        $params = $this->reportfilter->get_field_params();
 
         $operator = array_key_exists("{$this->name}_op", $values) ? $values["{$this->name}_op"] : null;
 
@@ -92,7 +95,7 @@ class checkbox extends filter_base {
             default:
                 return ['', []];
         }
-        return [$field . $res, []];
+        return [$field . $res, $params];
     }
 
     /**

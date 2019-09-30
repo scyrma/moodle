@@ -17,7 +17,8 @@
  * File containing tests for report_course_completion class.
  *
  * @package     tool_reportbuilder
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +29,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package     tool_reportbuilder
  * @covers \tool_reportbuilder\tool_reportbuilder\datasources\report_course_completion
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_reportbuilder_datasource_report_course_completion_testcase extends advanced_testcase {

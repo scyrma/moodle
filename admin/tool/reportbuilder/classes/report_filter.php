@@ -18,7 +18,8 @@
  * Class report_filter
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +31,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class report_filter
  *
  * @package   tool_reportbuilder
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_filter {
@@ -40,6 +42,8 @@ class report_filter {
     protected $entity;
     /** @var string $fieldsql */
     protected $fieldsql;
+    /** @var array $fieldparams */
+    protected $fieldparams = [];
     /** @var array $joins */
     protected $joins = array();
     /** @var string $header */
@@ -62,8 +66,11 @@ class report_filter {
      * @param string $entity - name of the entity that is used for groupping the filters/conditions.
      *          See also report_base::add_entity()
      * @param string $fieldsql - SQL expression for the field being searched
+     * @param array $fieldparams - SQL params for the field being searched
      */
-    public function __construct(string $classname, string $name, \lang_string $header, string $entity, ?string $fieldsql = null) {
+    public function __construct(string $classname, string $name, \lang_string $header, string $entity, ?string $fieldsql = null,
+            array $fieldparams = []) {
+
         if (!class_exists($classname) || !is_subclass_of($classname, filter_base::class)) {
             throw new \moodle_exception('filternotvalid', 'tool_reportbuilder');
         }
@@ -73,6 +80,9 @@ class report_filter {
         $this->name = $name;
         if ($fieldsql !== null) {
             $this->set_field_sql($fieldsql);
+        }
+        if (!empty($fieldparams)) {
+            $this->set_field_params($fieldparams);
         }
     }
 
@@ -158,6 +168,26 @@ class report_filter {
      */
     public function set_field_sql(string $sql) : report_filter {
         $this->fieldsql = $sql;
+        return $this;
+    }
+
+    /**
+     * Get the SQL params for the field being filtered
+     *
+     * @return array
+     */
+    public function get_field_params() : array {
+        return $this->fieldparams;
+    }
+
+    /**
+     * Set the SQL params for the field being filtered. They will be passed to the filter class
+     *
+     * @param array $params
+     * @return report_filter
+     */
+    public function set_field_params(array $params) : report_filter {
+        $this->fieldparams = $params;
         return $this;
     }
 
