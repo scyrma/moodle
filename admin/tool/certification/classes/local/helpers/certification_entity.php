@@ -17,9 +17,10 @@
 /**
  * Class certification_entity
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\local\helpers;
@@ -33,6 +34,7 @@ use tool_reportbuilder\local\filter\date_condition;
 use tool_reportbuilder\local\filter\date_filter;
 use tool_reportbuilder\local\filter\select;
 use tool_reportbuilder\local\filter\text;
+use tool_reportbuilder\local\helpers\columns;
 use tool_reportbuilder\report_filter;
 use tool_reportbuilder\report_column;
 use \tool_reportbuilder\local\helpers\format;
@@ -44,7 +46,8 @@ defined('MOODLE_INTERNAL') || die();
  * Typical fields from the certification table that can be added
  *
  * @package     tool_certification
- * @copyright   2019 David Matamoros <davidmc@moodle.com>
+ * @author      2019 David Matamoros <davidmc@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certification_entity extends entity_base {
@@ -95,188 +98,241 @@ class certification_entity extends entity_base {
         $columns = [];
         $ismssql = $DB->get_dbfamily() === 'mssql';
 
-        // Column fullname.
-        $newcolumn = (new report_column(
-            'fullname',
-            new lang_string('certificationname', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.fullname")
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'format_string']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludefields['fullname'])) {
+            // Column fullname.
+            $newcolumn = (new report_column(
+                'fullname',
+                new lang_string('certificationname', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.fullname")
+                ->set_is_sortable(true)
+                ->add_callback([format::class, 'format_string']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column idnumber.
-        $newcolumn = (new report_column(
-            'idnumber',
-            new lang_string('idnumber'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.idnumber")
-            ->set_is_sortable(true)
-            ->add_callback('s');
-        $columns[] = $newcolumn;
+        if (!isset($this->excludefields['fullnamewithlink'])) {
+            $c = \tool_wp\db::generate_alias();
+            $string = \html_writer::span('{{fullname}}', '', ['data-id' => '{{id}}']);
+            $stringparams = ['{{id}}' => $c . '.id', '{{fullname}}' => $c . '.fullname'];
+            [$placeholdersql, $placeholderparams] = db::sql_string_with_placeholders($string, $stringparams);
 
-        // Column tags.
-        list($tagsql, $tagparams) = db::sql_tag_field($this->tablealias, 'tool_certification');
+            $sql = "(SELECT $placeholdersql
+            FROM {tool_certification} $c
+            WHERE $c.id = $this->tablealias.id)";
+            // Column fullnamewithlink.
+            $newcolumn = (new report_column(
+                'fullnamewithlink',
+                new lang_string('certificationnamewithlink', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($sql, 'fullname', $placeholderparams)
+                ->set_is_sortable(true)
+                ->set_groupby_sql("$this->tablealias.id")
+                ->add_callback([certification_format::class, 'textwithlink'])
+                ->add_aggregation_callback('groupconcat', [certification_format::class, 'textwithlink'])
+                ->add_aggregation_callback('groupconcatdistinct', [certification_format::class, 'textwithlink'], true);
+            if ($DB->get_dbfamily() === 'mssql') {
+                columns::disable_column_aggregation($newcolumn);
+            }
+            $columns[] = $newcolumn;
+        }
 
-        $newcolumn = (new report_column(
-            'tags',
-            new lang_string('tags', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field($tagsql, 'tags', $tagparams)
-            ->set_groupby_sql($this->tablealias . '.id')
-            ->add_callback([format::class, 'tags_replace_all'])
-            ->add_aggregation_callback('groupconcat', [format::class, 'tags_replace_all'])
-            ->add_aggregation_callback('groupconcatdistinct', [format::class, 'tags_replace_all'], true)
-            ->disable_aggregation('count')
-            ->disable_aggregation('countdistinct');
-        if ($ismssql) {
-            // MsSQL can not aggregate the columns with subquery.
-            $newcolumn
+        if (!isset($this->excludefields['idnumber'])) {
+            // Column idnumber.
+            $newcolumn = (new report_column(
+                'idnumber',
+                new lang_string('idnumber'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.idnumber")
+                ->set_is_sortable(true)
+                ->add_callback('s');
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludefields['tags'])) {
+            // Column tags.
+            list($tagsql, $tagparams) = db::sql_tag_field($this->tablealias, 'tool_certification');
+
+            $newcolumn = (new report_column(
+                'tags',
+                new lang_string('tags', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($tagsql, 'tags', $tagparams)
+                ->set_groupby_sql($this->tablealias . '.id')
+                ->add_callback([format::class, 'tags_replace_all'])
+                ->add_aggregation_callback('groupconcat', [format::class, 'tags_replace_all'])
+                ->add_aggregation_callback('groupconcatdistinct', [format::class, 'tags_replace_all'], true)
+                ->disable_aggregation('count')
+                ->disable_aggregation('countdistinct');
+            if ($ismssql) {
+                // MsSQL can not aggregate the columns with subquery.
+                $newcolumn
+                    ->disable_aggregation('groupconcat')
+                    ->disable_aggregation('groupconcatdistinct');
+            }
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludefields['archived'])) {
+            // Column archived.
+            $newcolumn = (new report_column(
+                'archived',
+                new lang_string('archived', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_BOOLEAN)
+                ->add_field("$this->tablealias.archived")
+                ->set_is_sortable(true)
+                ->add_callback([format::class, 'checkbox_as_text']);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludefields['timearchived'])) {
+            // Column timearchived.
+            $newcolumn = (new report_column(
+                'timearchived',
+                new lang_string('archivedon', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timearchived")
+                ->set_is_sortable(true)
+                ->add_callback([format::class, 'userdate']);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludefields['startdate'])) {
+            // Column startdate.
+            $newcolumn = (new report_column(
+                'startdate',
+                new lang_string('startdate', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.startdatetype")
+                ->add_field("$this->tablealias.startdateabsolute")
+                ->add_field("$this->tablealias.startdaterelative")
+                ->add_callback([certification_format::class, 'startdate'])
                 ->disable_aggregation('groupconcat')
                 ->disable_aggregation('groupconcatdistinct');
+            $columns[] = $newcolumn;
         }
-        $columns[] = $newcolumn;
 
-        // Column archived.
-        $newcolumn = (new report_column(
-            'archived',
-            new lang_string('archived', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_BOOLEAN)
-            ->add_field("$this->tablealias.archived")
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'checkbox_as_text']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludefields['duedate'])) {
+            // Column duedate.
+            $newcolumn = (new report_column(
+                'duedate',
+                new lang_string('duedate', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.duedatetype")
+                ->add_field("$this->tablealias.duedateabsolute")
+                ->add_field("$this->tablealias.duedaterelative")
+                ->add_field("$this->tablealias.startdatetype")
+                ->add_field("$this->tablealias.startdateabsolute")
+                ->add_callback([certification_format::class, 'duedate'])
+                ->disable_aggregation('groupconcat')
+                ->disable_aggregation('groupconcatdistinct');
+            $columns[] = $newcolumn;
+        }
 
-        // Column timearchived.
-        $newcolumn = (new report_column(
-            'timearchived',
-            new lang_string('archivedon', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timearchived")
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludefields['expirydate'])) {
+            // Column expirydate.
+            $newcolumn = (new report_column(
+                'expirydate',
+                new lang_string('expirydate', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.expirydatetype")
+                ->add_field("$this->tablealias.expirydateabsolute")
+                ->add_field("$this->tablealias.expirydaterelative")
+                ->add_callback([certification_format::class, 'expirydate'])
+                ->disable_aggregation('groupconcat')
+                ->disable_aggregation('groupconcatdistinct');
+            $columns[] = $newcolumn;
+        }
 
-        // Column startdate.
-        $newcolumn = (new report_column(
-            'startdate',
-            new lang_string('startdate', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.startdatetype")
-            ->add_field("$this->tablealias.startdateabsolute")
-            ->add_field("$this->tablealias.startdaterelative")
-            ->add_callback([certification_format::class, 'startdate'])
-            ->disable_aggregation('groupconcat')
-            ->disable_aggregation('groupconcatdistinct');
-        $columns[] = $newcolumn;
+        if (!isset($this->excludefields['allocationstartdate'])) {
+            // Column allocationstartdate.
+            $newcolumn = (new report_column(
+                'allocationstartdate',
+                new lang_string('allocationstartdate', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("CASE WHEN $this->tablealias.allocationstartdatetype = 1 " .
+                    "THEN $this->tablealias.allocationstartdateabsolute ELSE NULL END",
+                    'allocationstartdate')
+                ->set_is_sortable(true)
+                ->add_callback([format::class, 'userdate']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column duedate.
-        $newcolumn = (new report_column(
-            'duedate',
-            new lang_string('duedate', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.duedatetype")
-            ->add_field("$this->tablealias.duedateabsolute")
-            ->add_field("$this->tablealias.duedaterelative")
-            ->add_field("$this->tablealias.startdatetype")
-            ->add_field("$this->tablealias.startdateabsolute")
-            ->add_callback([certification_format::class, 'duedate'])
-            ->disable_aggregation('groupconcat')
-            ->disable_aggregation('groupconcatdistinct');
-        $columns[] = $newcolumn;
+        if (!isset($this->excludefields['allocationenddate'])) {
+            // Column allocationenddate.
+            $newcolumn = (new report_column(
+                'allocationenddate',
+                new lang_string('allocationenddate', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("CASE WHEN $this->tablealias.allocationenddatetype = 1 " .
+                    "THEN $this->tablealias.allocationenddateabsolute ELSE NULL END",
+                    'allocationenddate')
+                ->set_is_sortable(true)
+                ->add_callback([format::class, 'userdate']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column expirydate.
-        $newcolumn = (new report_column(
-            'expirydate',
-            new lang_string('expirydate', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.expirydatetype")
-            ->add_field("$this->tablealias.expirydateabsolute")
-            ->add_field("$this->tablealias.expirydaterelative")
-            ->add_callback([certification_format::class, 'expirydate'])
-            ->disable_aggregation('groupconcat')
-            ->disable_aggregation('groupconcatdistinct');
-        $columns[] = $newcolumn;
+        if (!isset($this->excludefields['timemodified'])) {
+            // Column timemodified.
+            $newcolumn = (new report_column(
+                'timemodified',
+                new lang_string('timemodified', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timemodified")
+                ->set_is_sortable(true)
+                ->add_callback([format::class, 'userdate']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column allocationstartdate.
-        $newcolumn = (new report_column(
-            'allocationstartdate',
-            new lang_string('allocationstartdate', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("CASE WHEN $this->tablealias.allocationstartdatetype = 1 " .
-                "THEN $this->tablealias.allocationstartdateabsolute ELSE NULL END",
-                'allocationstartdate')
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate']);
-        $columns[] = $newcolumn;
-
-        // Column allocationenddate.
-        $newcolumn = (new report_column(
-            'allocationenddate',
-            new lang_string('allocationenddate', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("CASE WHEN $this->tablealias.allocationenddatetype = 1 " .
-                "THEN $this->tablealias.allocationenddateabsolute ELSE NULL END",
-                'allocationenddate')
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate']);
-        $columns[] = $newcolumn;
-
-        // Column timemodified.
-        $newcolumn = (new report_column(
-            'timemodified',
-            new lang_string('timemodified', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timemodified")
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate']);
-        $columns[] = $newcolumn;
-
-        // Column timecreated.
-        $newcolumn = (new report_column(
-            'timecreated',
-            new lang_string('timecreated', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timecreated")
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludefields['timecreated'])) {
+            // Column timecreated.
+            $newcolumn = (new report_column(
+                'timecreated',
+                new lang_string('timecreated', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timecreated")
+                ->set_is_sortable(true)
+                ->add_callback([format::class, 'userdate']);
+            $columns[] = $newcolumn;
+        }
 
         return $columns;
     }
@@ -308,82 +364,96 @@ class certification_entity extends entity_base {
     protected function get_filters_or_conditions(bool $iscondition): array {
         $filters = [];
 
-        // Filter fullname.
-        $filters[] = (new report_filter(
-            text::class,
-            'fullname',
-            new lang_string('certificationname', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.fullname");
+        if (!isset($this->excludefields['fullname'])) {
+            // Filter fullname.
+            $filters[] = (new report_filter(
+                text::class,
+                'fullname',
+                new lang_string('certificationname', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("$this->tablealias.fullname");
+        }
 
-        // Filter idnumber.
-        $filters[] = (new report_filter(
-            text::class,
-            'idnumber',
-            new lang_string('idnumber', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.idnumber");
+        if (!isset($this->excludefields['idnumber'])) {
+            // Filter idnumber.
+            $filters[] = (new report_filter(
+                text::class,
+                'idnumber',
+                new lang_string('idnumber', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("$this->tablealias.idnumber");
+        }
 
-        // Filter tags.
-        $groupconcatsql = db::sql_group_concat('tg.name');
-        $filters[] = (new report_filter(
-            tags::class,
-            'tags',
-            new lang_string('tags', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("
+        if (!isset($this->excludefields['tags'])) {
+            // Filter tags.
+            $groupconcatsql = db::sql_group_concat('tg.name');
+            $filters[] = (new report_filter(
+                tags::class,
+                'tags',
+                new lang_string('tags', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("
                 (SELECT {$groupconcatsql}
                    FROM {tag_instance} ti
                    JOIN {tag} tg ON tg.id = ti.tagid
                   WHERE ti.itemtype = 'tool_certification'
                     AND ti.itemid = {$this->tablealias}.id
                     AND ti.component = 'tool_certification') ");
+        }
 
-        // Filter archived.
-        $filters[] = (new report_filter(
-            checkbox::class,
-            'archived',
-            new lang_string('archived', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.archived");
+        if (!isset($this->excludefields['archived'])) {
+            // Filter archived.
+            $filters[] = (new report_filter(
+                checkbox::class,
+                'archived',
+                new lang_string('archived', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("$this->tablealias.archived");
+        }
 
-        // Filter timearchived.
-        $filters[] = (new report_filter(
-            $iscondition ? date_condition::class : date_filter::class,
-            'timearchived',
-            new lang_string('archivedon', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.timearchived");
+        if (!isset($this->excludefields['timearchived'])) {
+            // Filter timearchived.
+            $filters[] = (new report_filter(
+                $iscondition ? date_condition::class : date_filter::class,
+                'timearchived',
+                new lang_string('archivedon', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("$this->tablealias.timearchived");
+        }
 
-        // Filter timemodified.
-        $filters[] = (new report_filter(
-            $iscondition ? date_condition::class : date_filter::class,
-            'timemodified',
-            new lang_string('timemodified', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.timemodified");
+        if (!isset($this->excludefields['timemodified'])) {
+            // Filter timemodified.
+            $filters[] = (new report_filter(
+                $iscondition ? date_condition::class : date_filter::class,
+                'timemodified',
+                new lang_string('timemodified', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("$this->tablealias.timemodified");
+        }
 
-        // Filter timecreated.
-        $filters[] = (new report_filter(
-            $iscondition ? date_condition::class : date_filter::class,
-            'timecreated',
-            new lang_string('timecreated', 'tool_certification'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.timecreated");
+        if (!isset($this->excludefields['timecreated'])) {
+            // Filter timecreated.
+            $filters[] = (new report_filter(
+                $iscondition ? date_condition::class : date_filter::class,
+                'timecreated',
+                new lang_string('timecreated', 'tool_certification'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("$this->tablealias.timecreated");
+        }
 
         // Filter certification selector.
         $filters[] = (new report_filter(

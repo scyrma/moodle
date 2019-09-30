@@ -17,9 +17,10 @@
 /**
  * Class report_certification_user_allocation
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\tool_reportbuilder\datasources;
@@ -48,9 +49,10 @@ require_once($CFG->libdir . '/tablelib.php');
 /**
  * Class report_certification_user_allocation
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_certification_user_allocation extends \tool_reportbuilder\datasource {
 

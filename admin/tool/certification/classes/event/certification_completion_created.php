@@ -17,9 +17,10 @@
 /**
  *  * File for class tool_certification\event\certification_completion_created
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\event;
@@ -42,7 +43,8 @@ use tool_certification\certification_completion;
  * }
  *
  * @package    tool_certification
- * @copyright  2019 David Matamoros <davidmc@moodle.com>
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certification_completion_created extends base {

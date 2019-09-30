@@ -17,10 +17,11 @@
 /**
  * File containing privacy tests for tool_certification\privacy\provider class.
  *
- * @package     tool_certification
- * @category    test
- * @copyright   2019 Adrian Greeve <adrian@moodle.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @category   test
+ * @author     2019 Adrian Greeve <adrian@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -35,7 +36,8 @@ use core_privacy\local\request\approved_userlist;
  * Tests for the tool_certification\privacy\provider class methods.
  *
  * @package    tool_certification
- * @copyright  2019 Adrian Greeve <adrian@moodle.com>
+ * @author     2019 Adrian Greeve <adrian@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_certification_privacy_provider_testcase extends advanced_testcase {

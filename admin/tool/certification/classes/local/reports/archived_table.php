@@ -17,8 +17,10 @@
 /**
  * Class for define the system report of the archived certifications.
  *
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\local\reports;
@@ -26,22 +28,20 @@ namespace tool_certification\local\reports;
 defined('MOODLE_INTERNAL') || die();
 
 use tool_certification\certification;
+use tool_certification\local\helpers\certification_entity;
 use tool_certification\permission;
-use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_action;
-use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
-use context_system;
 use moodle_url;
 use pix_icon;
-use tool_tenant\tenancy;
 
 /**
  * Class archived_table
  *
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package tool_certification
+ * @package    tool_certification
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class archived_table extends system_report {
 
@@ -53,14 +53,24 @@ class archived_table extends system_report {
      */
     protected function initialise() {
         $this->set_columns();
-        $this->set_main_table('tool_certification', 'ct');
-        $this->add_base_condition_simple('ct.archived', 1);
-        $certfields = 'ct.'.join(', ct.', array_diff(array_keys(certification::properties_definition()),
+        $this->set_main_table('tool_certification', 'tc');
+        $this->add_base_condition_simple('tc.archived', 1);
+        $certfields = 'tc.'.join(', tc.', array_diff(array_keys(certification::properties_definition()),
                 ['usermodified', 'description']));
         $this->add_base_fields($certfields); // Necessary for actions.
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
+
+        // Default columns.
+        if ($column = $this->get_column('tool_certification:fullname')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true);
+        }
+        if ($column = $this->get_column('tool_certification:timearchived')) {
+            $column->set_is_default(true, 2);
+            $column->set_is_sortable(true, true);
+        }
     }
 
     /**
@@ -84,36 +94,9 @@ class archived_table extends system_report {
 
     /**
      * Set the columns for the report.
-     *
-     * @throws \coding_exception
-     * @throws \moodle_exception
      */
     protected function set_columns(): void {
-        $this->annotate_entity('tool_certification', new \lang_string('entitycertification', 'tool_certification'));
-
-        // Column "name".
-        $newcolumn = (new report_column(
-            'fullname',
-            new \lang_string('name', 'tool_certification'),
-            'tool_certification'
-        ))
-            ->add_field('ct.fullname')
-            ->set_is_default(true, 1)
-            ->set_is_sortable(true, true)
-            ->add_callback([\tool_reportbuilder\local\helpers\format::class, 'format_string']);
-        $this->add_column($newcolumn);
-
-        // Column "timearchived".
-        $newcolumn = (new report_column(
-            'timearchived',
-            new \lang_string('archivedon', 'tool_certification'),
-            'tool_certification'
-        ))
-            ->add_field('ct.timearchived')
-            ->set_is_default(true, 1)
-            ->set_is_sortable(true)
-            ->add_callback([format::class, 'userdate']);
-        $this->add_column($newcolumn);
+        $this->add_entity(new certification_entity('', 'tc', $this->get_certification_excluded_columns()));
     }
 
     /**
@@ -173,5 +156,15 @@ class archived_table extends system_report {
      */
     public function row_callback(\stdClass $row): void {
         $this->lastcertification = new certification(0, $row);
+    }
+
+    /**
+     * Returns an array with the excluded columns for certification_entity.
+     *
+     * @return array
+     */
+    private function get_certification_excluded_columns(): array {
+        return ['fullnamewithlink', 'idnumber', 'tags', 'archived', 'startdate', 'duedate', 'expirydate',
+            'allocationstartdate', 'allocationenddate', 'timemodified', 'timecreated'];
     }
 }

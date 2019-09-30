@@ -17,9 +17,10 @@
 /**
  * File containing tests for report_certification_user_allocation datasource
  *
- * @package     tool_certification
- * @copyright   2019 David Matamoros <davidmc@moodle.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_certification\tool_reportbuilder\datasources\report_certification_user_allocation;
@@ -30,10 +31,11 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Tests for the datasource report_certification_user_allocation
  *
- * @package     tool_certification
- * @covers      \tool_certification\tool_reportbuilder\datasources\report_certification_user_allocation
- * @copyright   2019 David Matamoros <davidmc@moodle.com>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @covers     \tool_certification\tool_reportbuilder\datasources\report_certification_user_allocation
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_certification_datasource_report_certification_user_allocation_testcase extends advanced_testcase {
 

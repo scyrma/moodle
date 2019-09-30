@@ -17,36 +17,38 @@
 /**
  * File that contains the class certification_progress
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\local\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
-use lang_string;
 use moodle_url;
 use pix_icon;
-use tool_certification\api;
 use tool_certification\certification;
-use tool_certification\certification_user;
-use tool_certification\local\helpers\certificationuser_format;
+use tool_certification\local\helpers\certification_entity;
+use tool_certification\local\helpers\certificationcompletion_entity;
+use tool_certification\local\helpers\certificationuser_entity;
 use tool_certification\permission;
-use \tool_certification\local\helpers\format;
+use tool_certification\local\helpers\format;
+use tool_program\local\helpers\program_entity;
+use tool_program\local\helpers\programuser_entity;
+use tool_reportbuilder\local\entities\user;
 use tool_reportbuilder\report_action;
-use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
-use context_system;
 use tool_tenant\tenancy;
 
 /**
  * This class defines a system report that shows the progress/completion/status of users within one given certification.
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certification_progress extends system_report {
     /** @var certification */
@@ -72,18 +74,62 @@ class certification_progress extends system_report {
         $this->set_main_table('tool_certification_users', 'tcu');
         $this->add_base_join('INNER JOIN {user} u ON tcu.userid = u.id');
         $this->add_base_join('INNER JOIN {tool_certification} tc ON tc.id = tcu.certificationid');
+        $this->add_base_join('INNER JOIN {tool_program} tp ON tp.id = tc.program');
+        $this->add_base_join('LEFT JOIN {tool_program_users} tpu
+        ON tpu.userid = tcu.userid AND tpu.programid = tp.id AND tpu.certificationid = tc.id');
+        $this->add_base_join('LEFT JOIN {tool_certification_compltion} tcc ON tcc.userid = tcu.userid
+        AND tcc.certificationid = tc.id AND tcc.timerevoked = 0');
+
+        $this->add_base_fields('tcu.userid');
         $this->add_base_condition_simple('tc.id', $this->get_certification()->get('id'));
         $this->add_base_condition_simple('tc.tenantid', tenancy::get_tenant_id());
-        $this->add_base_join('INNER JOIN {tool_program} tp ON tp.id = tc.program');
-        $this->add_base_join('LEFT JOIN {tool_certification_compltion} tcc ON tcc.userid = tcu.userid
-            AND tcc.certificationid = tc.id AND tcc.timerevoked = 0');
-        $this->add_base_fields('tcu.userid');
         $this->add_base_condition_simple('u.deleted', 0);
 
         $this->set_columns();
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
+
+        // Default columns.
+        if ($column = $this->get_column('tool_certification:fullname')) {
+            $column->set_is_default(true, 1);
+            $column->add_fields('tcu.id as certificationuserid,' . implode(',', $this->get_user_columns('u')));
+            $column->set_callback([format::class, 'userinfo']);
+        }
+        if ($column = $this->get_column('tool_certification_users:startdate')) {
+            $column->set_is_default(true, 2);
+        }
+        if ($column = $this->get_column('tool_certification_users:duedate')) {
+            $column->set_is_default(true, 3);
+        }
+        if ($column = $this->get_column('tool_certification_users:expirydate')) {
+            $column->set_is_default(true, 4);
+        }
+        if ($column = $this->get_column('tool_certification_users:timecreated')) {
+            $column->set_is_default(true, 5);
+        }
+        if ($column = $this->get_column('tool_certification_users:allocationtype')) {
+            $column->set_is_default(true, 6);
+        }
+        if ($column = $this->get_column('tool_program:fullname')) {
+            $column->set_is_default(true, 7);
+            $column->add_fields('tc.program, tp.id AS programid, tp.fullname as programfullname, tp.archived as programarchived');
+            $column->set_callback([format::class, 'program']);
+        }
+        if ($column = $this->get_column('tool_certification_users:certificationstatus')) {
+            $column->set_is_default(true, 8);
+        }
+        if ($column = $this->get_column('tool_program_users:programstatus')) {
+            $column->set_is_default(true, 9);
+            $column->add_fields('tpu.programid, tpu.certificationid, tpu.userid');
+        }
+        if ($column = $this->get_column('tool_program_users:programprogress')) {
+            $column->set_is_default(true, 10);
+            $column->add_fields('tcu.userid, tcu.certificationid, tc.program as programid');
+        }
+        if ($column = $this->get_column('tool_certification_compltion:certifieddate')) {
+            $column->set_is_default(true, 11);
+        }
     }
 
     /**
@@ -109,130 +155,12 @@ class certification_progress extends system_report {
      *
      */
     protected function set_columns(): void {
-        $this->annotate_entity(certification_user::TABLE, new lang_string('entitycertificationusers', 'tool_certification'));
-        $this->annotate_entity(certification::TABLE, new lang_string('entitycertification', 'tool_certification'));
-        $this->annotate_entity('user', new lang_string('entityuser', 'tool_reportbuilder'));
-
-        // Column "userinfo".
-        $newcolumn = (new report_column(
-            'userinfo',
-            new lang_string('fullname', 'tool_certification'),
-            'user'
-        ))
-            ->add_fields('tcu.id as certificationuserid,' . implode(',', $this->get_user_columns('u')))
-            ->set_is_default(true, 1);
-        $newcolumn->add_callback([format::class, 'userinfo']);
-        $this->add_column($newcolumn);
-
-        // Column "startdate".
-        $newcolumn = (new report_column(
-            'startdate',
-            new lang_string('startdate', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_fields('tcu.startdate, tcu.startdatelocked')
-            ->set_is_default(true, 2)
-            ->add_callback([certificationuser_format::class, 'startdate']);
-        $this->add_column($newcolumn);
-
-        // Column "duedate".
-        $newcolumn = (new report_column(
-            'duedate',
-            new lang_string('duedate', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_fields('tcu.duedate, tcu.duedatelocked')
-            ->set_is_default(true, 3)
-            ->add_callback([certificationuser_format::class, 'duedate']);
-        $this->add_column($newcolumn);
-
-        // Column "expirydate".
-        $newcolumn = (new report_column(
-            'expirydate',
-            new lang_string('expirydate', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_fields('tcu.expirydate, tcu.expirydatelocked, tcu.userid, tcu.certificationid')
-            ->set_is_default(true, 4)
-            ->add_callback([certificationuser_format::class, 'expirydate']);
-        $this->add_column($newcolumn);
-
-        // Column "allocationdate".
-        $newcolumn = (new report_column(
-            'allocationdate',
-            new lang_string('allocationdate', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_field('tcu.timecreated')
-            ->set_is_default(true, 5)
-            ->add_callback([\tool_reportbuilder\local\helpers\format::class, 'userdate']);
-        $this->add_column($newcolumn);
-
-        // Column "allocationtype".
-        $newcolumn = (new report_column(
-            'allocationtype',
-            new lang_string('allocationsource', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_field('tcu.allocationtype')
-            ->set_is_default(true, 6)
-            ->add_callback([certificationuser_format::class, 'allocationtype']);
-        $this->add_column($newcolumn);
-
-        // Column "program".
-        $newcolumn = (new report_column(
-            'programuser',
-            new lang_string('program', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_fields('tc.program, tp.id AS programid, tp.fullname as programfullname, tp.archived as programarchived')
-            ->set_is_default(true, 7)
-            ->add_callback([format::class, 'program']);
-        $this->add_column($newcolumn);
-
-        // Column "certification status".
-        $newcolumn = (new report_column(
-            'certificationstatus',
-            new lang_string('certificationstatus', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_field(api::get_status_sql_cases(0, 'tcu', 'tcc'), 'status')
-            ->set_is_default(true, 8)
-            ->add_callback([certificationuser_format::class, 'status']);
-        $this->add_column($newcolumn);
-
-        // Column "program status".
-        $newcolumn = (new report_column(
-            'programstatus',
-            new lang_string('programstatus', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_fields('tcu.userid, tcu.certificationid, tc.program')
-            ->set_is_default(true, 9)
-            ->add_callback([format::class, 'programstatus']);
-        $this->add_column($newcolumn);
-
-        // Column "program progress".
-        $newcolumn = (new report_column(
-            'programprogress',
-            new lang_string('programprogress', 'tool_certification'),
-            'tool_certification_users'
-        ))
-            ->add_fields('tcu.userid, tcu.certificationid, tc.program as programid')
-            ->set_is_default(true, 10)
-            ->add_callback([\tool_program\local\helpers\programuser_format::class, 'programprogress']);
-        $this->add_column($newcolumn);
-
-        // Column "completion date".
-        $newcolumn = (new report_column(
-            'completiondate',
-            new lang_string('completiondate', 'tool_program'),
-            'tool_certification_users'
-        ))
-            ->add_fields('tcc.timecreated')
-            ->set_is_default(true, 11)
-            ->add_callback([\tool_reportbuilder\local\helpers\format::class, 'userdate']);
-        $this->add_column($newcolumn);
+        $this->add_entity(new certificationuser_entity('', 'tcu', $this->get_certificationuser_excluded_columns()));
+        $this->add_entity(new certification_entity('', 'tc', $this->get_certification_excluded_columns()));
+        $this->add_entity(new certificationcompletion_entity('', 'tcc', $this->get_certificationcompletion_excluded_columns()));
+        $this->add_entity(new user('', 'u', []));
+        $this->add_entity(new program_entity('', 'tp', $this->get_program_excluded_columns()));
+        $this->add_entity(new programuser_entity('', 'tpu', $this->get_programuser_excluded_columns()));
     }
 
     /**
@@ -268,5 +196,54 @@ class certification_progress extends system_report {
         return array_map(static function($column) use ($u) {
             return "$u.$column";
         }, array_keys($DB->get_columns('user')));
+    }
+
+    /**
+     * Returns an array with the excluded columns for certificationuser_entity.
+     *
+     * @return array
+     */
+    private function get_certificationuser_excluded_columns(): array {
+        return ['suspended', 'timesuspended', 'timemodified', 'daystakingcertification', 'dayssinceallocation'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certification_entity.
+     *
+     * @return array
+     */
+    private function get_certification_excluded_columns(): array {
+        return ['fullnamewithlink', 'idnumber', 'timearchived', 'archived', 'startdate', 'duedate', 'expirydate',
+            'allocationstartdate', 'allocationenddate', 'timemodified', 'timecreated'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certificationcompletion_entity.
+     *
+     * @return array
+     */
+    private function get_certificationcompletion_excluded_columns(): array {
+        return ['expirydate', 'expired', 'certified', 'certifiedtype'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for program_entity.
+     *
+     * @return array
+     */
+    private function get_program_excluded_columns(): array {
+        return ['fullnamewithimage', 'programimage', 'idnumber', 'tags', 'description', 'startdate', 'duedate', 'enddate',
+            'archived', 'timearchived', 'allowdirectallocation', 'allocationstartdate', 'allocationenddate', 'visible',
+            'timemodified', 'timecreated', 'numbercoursesunique', 'associatedcertifications', 'numbercurrentallocatedusers'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for programuser_entity.
+     *
+     * @return array
+     */
+    private function get_programuser_excluded_columns(): array {
+        return ['startdate', 'duedate', 'enddate', 'programprogresswithoverview', 'suspended', 'timesuspended',
+            'allocationtype', 'timecreated', 'timemodified', 'associatedcertification'];
     }
 }

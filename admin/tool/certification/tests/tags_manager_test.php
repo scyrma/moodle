@@ -17,9 +17,10 @@
 /**
  * File containing tests for tool_certification\classes\tags_manager class.
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -28,7 +29,8 @@ defined('MOODLE_INTERNAL') || die();
  * TFile containing tests for tool_certification\classes\tags_manager class.
  *
  * @package    tool_certification
- * @copyright  2019 David Matamoros <davidmc@moodle.com>
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_certification_tags_manager_testcase extends advanced_testcase {

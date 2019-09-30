@@ -18,7 +18,8 @@
  * Behat tests.
  *
  * @package   tool_certification
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,10 +37,11 @@ require_once(__DIR__ . '/../../../../../lib/behat/behat_base.php');
 /**
  * Steps definitions for tool_certification.
  *
- * @package    tool_certification
- * @category   test
- * @copyright  2018 David Matamoros <davidmc@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_certification
+ * @category  test
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 David Matamoros <davidmc@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_tool_certification extends behat_base {
 

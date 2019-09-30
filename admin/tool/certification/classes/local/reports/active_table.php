@@ -17,8 +17,10 @@
 /**
  * Class for define the system report of the active certifications.
  *
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\local\reports;
@@ -26,12 +28,11 @@ namespace tool_certification\local\reports;
 defined('MOODLE_INTERNAL') || die();
 
 use tool_certification\certification;
+use tool_certification\local\helpers\certification_entity;
 use tool_certification\permission;
-use tool_reportbuilder\db;
+use tool_program\local\helpers\program_entity;
 use tool_reportbuilder\report_action;
-use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
-use tool_reportbuilder\local\helpers\format;
 use context_system;
 use moodle_url;
 use pix_icon;
@@ -40,9 +41,10 @@ use tool_tenant\tenancy;
 /**
  * Class active_table
  *
- * @copyright 2018, Alberto Lara Hernández <albertolara@moodle.com>
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package tool_certification
+ * @package    tool_certification
+ * @author     2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class active_table extends system_report {
 
@@ -54,17 +56,33 @@ class active_table extends system_report {
      */
     protected function initialise() {
         $this->set_columns();
-        $this->set_main_table('tool_certification', 'ct');
-        $this->add_base_condition_simple('ct.archived', 0);
-        $this->add_base_condition_simple('ct.tenantid', tenancy::get_tenant_id());
-        $this->add_base_join('left join {tool_program} p ON p.id = ct.program');
-        $certfields = 'ct.'.join(', ct.', array_diff(array_keys(certification::properties_definition()),
+        $this->set_main_table('tool_certification', 'tc');
+        $this->add_base_condition_simple('tc.archived', 0);
+        $this->add_base_condition_simple('tc.tenantid', tenancy::get_tenant_id());
+        $this->add_base_join('left join {tool_program} tp ON tp.id = tc.program');
+        $certfields = 'tc.'.join(', tc.', array_diff(array_keys(certification::properties_definition()),
                 ['usermodified', 'description']));
-        $this->add_base_fields($certfields . ', p.archived as programarchived, '.
-            'p.visible as programvisible'); // Necessary for actions and row class.
+        $this->add_base_fields($certfields . ', tp.archived as programarchived, '.
+            'tp.visible as programvisible'); // Necessary for actions and row class.
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
+
+        // Default columns.
+        if ($column = $this->get_column('tool_certification:fullname')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true);
+            $column->add_field('tc.id');
+            $column->set_callback([\tool_certification\local\helpers\format::class, 'inplace_editable']);
+        }
+        if ($column = $this->get_column('tool_certification:tags')) {
+            $column->set_is_default(true, 2);
+        }
+        if ($column = $this->get_column('tool_program:fullname')) {
+            $column->set_is_default(true, 3);
+            $column->add_fields('tc.program, tp.id AS programid, tp.fullname as programfullname, tp.archived as programarchived');
+            $column->set_callback([\tool_certification\local\helpers\format::class, 'program']);
+        }
     }
 
     /**
@@ -88,51 +106,10 @@ class active_table extends system_report {
 
     /**
      * Set the columns for the report.
-     *
-     * @throws \coding_exception
-     * @throws \moodle_exception
      */
     protected function set_columns(): void {
-        $this->annotate_entity('tool_certification', new \lang_string('entitycertification', 'tool_certification'));
-        $this->annotate_entity('tool_program', new \lang_string('entityprogram', 'tool_program'));
-
-        // Column "name".
-        $newcolumn = (new report_column(
-            'fullname',
-            new \lang_string('name', 'tool_certification'),
-            'tool_certification'
-        ))
-            ->add_fields('ct.fullname, ct.id')
-            ->set_is_default(true, 1)
-            ->set_is_sortable(true, true);
-        $newcolumn->add_callback([\tool_certification\local\helpers\format::class, 'inplace_editable']);
-        $this->add_column($newcolumn);
-
-        // Column "tags".
-        list($tagsql, $tagparams) = db::sql_tag_field('ct', 'tool_certification');
-
-        $newcolumn = (new report_column(
-            'tags',
-            new \lang_string('tags', 'tool_certification'),
-            'tool_certification'
-        ))
-            ->add_field($tagsql, 'tags', $tagparams)
-            ->set_groupby_sql('ct.id')
-            ->set_is_default(true, 2)
-            ->add_callback([format::class, 'tags_replace_all']);
-        $this->add_column($newcolumn);
-
-        // Column "program".
-        $newcolumn = (new report_column(
-            'program',
-            new \lang_string('program', 'tool_certification'),
-            'tool_program'
-        ))
-            ->add_join('left join {tool_program} p ON p.id = ct.program')
-            ->add_fields('ct.program, p.id AS programid, p.fullname as programfullname, p.archived as programarchived')
-            ->set_is_default(true, 3)
-            ->add_callback([\tool_certification\local\helpers\format::class, 'program']);
-        $this->add_column($newcolumn);
+        $this->add_entity(new certification_entity('', 'tc', $this->get_certification_excluded_columns()));
+        $this->add_entity(new program_entity('', 'tp', $this->get_program_excluded_columns()));
     }
 
     /**
@@ -142,7 +119,6 @@ class active_table extends system_report {
      * @throws \moodle_exception
      */
     private function add_actions(): void {
-
         // Edit content.
         $editurl = new moodle_url('/admin/tool/certification/edit.php', ['id' => ':id']);
         $editicon = new pix_icon('t/right', get_string('editcontent', 'tool_certification'), 'core');
@@ -242,5 +218,26 @@ class active_table extends system_report {
      */
     public function row_callback(\stdClass $row): void {
         $this->lastcertification = new certification(0, $row);
+    }
+
+    /**
+     * Returns an array with the excluded columns for program_entity.
+     *
+     * @return array
+     */
+    private function get_program_excluded_columns(): array {
+        return ['fullnamewithimage', 'programimage', 'idnumber', 'tags', 'description', 'startdate', 'duedate', 'enddate',
+            'archived', 'timearchived', 'allowdirectallocation', 'allocationstartdate', 'allocationenddate', 'visible',
+            'timemodified', 'timecreated', 'numbercoursesunique', 'associatedcertifications', 'numbercurrentallocatedusers'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certification_entity.
+     *
+     * @return array
+     */
+    private function get_certification_excluded_columns(): array {
+        return ['fullnamewithlink', 'idnumber', 'timearchived', 'archived', 'startdate', 'duedate', 'expirydate',
+            'allocationstartdate', 'allocationenddate', 'timemodified', 'timecreated'];
     }
 }

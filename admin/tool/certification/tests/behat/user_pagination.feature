@@ -102,7 +102,7 @@ Feature: Manage users list pagination
     And I should see "Certification1"
     Then I click on ".edit_certification" "css_element" in the "Certification1" "table_row"
     Then I click on "Users" "link"
-    And I should see "Fullname" in the "table.report-table thead" "css_element"
+    And I should see "Full name" in the "table.report-table thead" "css_element"
     And I should see "Due date" in the "table.report-table thead" "css_element"
     And I should see "Allocation source" in the "table.report-table thead" "css_element"
     And I should see "Certification status" in the "table.report-table thead" "css_element"

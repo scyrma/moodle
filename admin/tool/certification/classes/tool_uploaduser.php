@@ -17,9 +17,10 @@
 /**
  * Methods for tool_uploaduser
  *
- * @package     tool_certification
- * @copyright   2019 Daniel Neis Araujo
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 Daniel Neis Araujo
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification;
@@ -34,9 +35,10 @@ use uu_progress_tracker;
  *
  * This implements methods to be use on uploading users CSV files.
  *
- * @package     tool_certification
- * @copyright   2019 Daniel Neis Araujo
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 Daniel Neis Araujo
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_uploaduser {
 

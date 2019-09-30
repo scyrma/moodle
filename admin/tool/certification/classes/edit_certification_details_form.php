@@ -16,9 +16,11 @@
 
 /**
  * File for class edit_certification_details_form.
- * @package   tool_certification
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @package    tool_certification
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification;
@@ -37,8 +39,10 @@ use tool_wp\modal_form;
 /**
  * Class edit_certification_details_form
  *
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_certification_details_form extends modal_form {
     /**
@@ -268,7 +272,11 @@ class edit_certification_details_form extends modal_form {
     private function get_program(int $certificationid): array {
         $certification = new certification($certificationid);
         $programid = $certification->get('program');
-        $program = new program($programid);
+        try {
+            $program = new program($programid);
+        } catch (\dml_missing_record_exception $ex) {
+            throw new \moodle_exception('errormissingassociatedprogram', 'tool_certification');
+        }
         $programname = format_string($program->get('fullname'));
         return [$programid, $programname];
     }

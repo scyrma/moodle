@@ -17,9 +17,10 @@
 /**
  * Class for certification expired status dynamic rules' condition.
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\tool_dynamicrule\condition;
@@ -39,7 +40,8 @@ defined('MOODLE_INTERNAL') || die;
  * Class for certification expired status dynamic rules' condition.
  *
  * @package    tool_certification
- * @copyright  2019 David Matamoros <davidmc@moodle.com>
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certification_expired extends condition_sql {

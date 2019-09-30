@@ -19,7 +19,8 @@
  *
  * @package    tool_certification
  * @category   test
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package    tool_certification
  * @group      tool_certification
- * @copyright  2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_certification_outcome_allocation_testcase extends advanced_testcase {

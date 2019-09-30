@@ -17,9 +17,10 @@
 /**
  * File for class certification_format
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\local\helpers;
@@ -37,9 +38,10 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class certification_format
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certification_format {
 
@@ -159,5 +161,21 @@ class certification_format {
             $output .= html_writer::link($reporturl, $reporticon);
         }
         return $output;
+    }
+
+    /**
+     * Returns formatted text with link
+     *
+     * @param string|null $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function textwithlink(?string $value, stdClass $row): string {
+        $regex = '#<span data-id="(?<id>[^"]*?)">(?<fullname>[^<]*?)</span>#';
+
+        return preg_replace_callback($regex, function($matches) {
+            $url = new \moodle_url('/admin/tool/certification/edit.php', ['id' => $matches['id']]);
+            return \html_writer::link($url, format_string($matches['fullname']));
+        }, $value);
     }
 }

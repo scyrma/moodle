@@ -17,9 +17,10 @@
 /**
  * Generator for tool_certification tests.
  *
- * @package   tool_certification
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -34,9 +35,10 @@ use tool_certification\constants;
 /**
  * Class tool_certification_generator
  *
- * @package   tool_certification
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_certification_generator extends component_generator_base {
     /**

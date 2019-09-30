@@ -16,9 +16,11 @@
 
 /**
  * Archived certifications list tab.
- * @package   tool_certification
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @package    tool_certification
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\output\tab;
@@ -31,11 +33,12 @@ use tool_reportbuilder\system_report_factory;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * -
+ * Class certification_manager_list_archived_tab
  *
- * @package   tool_certification
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certification_manager_list_archived_tab extends \tool_wp\output\tab {
     /**

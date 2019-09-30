@@ -17,9 +17,10 @@
 /**
  * File for the class certificationcompletion_entity
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\local\helpers;
@@ -40,9 +41,10 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Columns, filters and conditions that defines the certificationcompletion_entity and can be reused in any report datasource
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certificationcompletion_entity extends entity_base {
     /** @var string */
@@ -92,7 +94,7 @@ class certificationcompletion_entity extends entity_base {
         $columns = [];
 
         // User certified date.
-        if (!in_array('certifieddate', $this->excludecolumns, true)) {
+        if (!isset($this->excludecolumns['certifieddate'])) {
             $columns[] = (new report_column(
                 'certifieddate',
                 new lang_string('certifieddate', 'tool_certification'),
@@ -106,7 +108,7 @@ class certificationcompletion_entity extends entity_base {
         }
 
         // Column Expiry date.
-        if (!in_array('expirydate', $this->excludecolumns, true)) {
+        if (!isset($this->excludecolumns['expirydate'])) {
             $columns[] = (new report_column(
                 'expirydate',
                 new lang_string('expirydate', 'tool_certification'),
@@ -120,7 +122,7 @@ class certificationcompletion_entity extends entity_base {
         }
 
         // Column Expired.
-        if (!in_array('expired', $this->excludecolumns, true)) {
+        if (!isset($this->excludecolumns['expired'])) {
             $columns[] = (new report_column(
                 'expired',
                 new lang_string('expired', 'tool_certification'),
@@ -142,7 +144,7 @@ class certificationcompletion_entity extends entity_base {
         }
 
         // Column Certified/completed.
-        if (!in_array('certified', $this->excludecolumns, true)) {
+        if (!isset($this->excludecolumns['certified'])) {
             $columns[] = (new report_column(
                 'certified',
                 new lang_string('certified', 'tool_certification'),
@@ -156,7 +158,7 @@ class certificationcompletion_entity extends entity_base {
         }
 
         // Column Certified as: Manually/Upon completion.
-        if (!in_array('certifiedtype', $this->excludecolumns, true)) {
+        if (!isset($this->excludecolumns['certifiedtype'])) {
             $tpu = db::generate_alias();
             $tps = db::generate_alias();
             $tpsc = db::generate_alias();
@@ -197,9 +199,6 @@ class certificationcompletion_entity extends entity_base {
                 ->add_aggregation_callback('groupconcatdistinct', [certificationcompletion_format::class, 'certifiedtype']);
         }
 
-        // TODO Manually certified by.
-        // TODO Revoked by.
-
         return $columns;
     }
 
@@ -230,47 +229,55 @@ class certificationcompletion_entity extends entity_base {
     protected function get_filters_or_conditions(bool $iscondition): array {
         $filters = [];
 
-        // Filter for certifieddate.
-        $filters[] = (new report_filter(
-            $iscondition ? date_condition::class : date_filter::class,
-            'certifieddate',
-            new lang_string('certifieddate', 'tool_certification'),
-            $this->get_entity_name(),
-            "$this->tablealias.timecreated"
-        ))
-            ->add_join($this->join);
+        if (!isset($this->excludecolumns['certifieddate'])) {
+            // Filter for certifieddate.
+            $filters[] = (new report_filter(
+                $iscondition ? date_condition::class : date_filter::class,
+                'certifieddate',
+                new lang_string('certifieddate', 'tool_certification'),
+                $this->get_entity_name(),
+                "$this->tablealias.timecreated"
+            ))
+                ->add_join($this->join);
+        }
 
-        // Filter for certified.
-        $filters[] = (new report_filter(
-            checkbox::class,
-            'certified',
-            new lang_string('certified', 'tool_certification'),
-            $this->get_entity_name(),
-            "CASE WHEN {$this->tablealias}.id IS NOT NULL THEN 1 ELSE 0 END"
-        ))
-            ->add_join($this->join);
+        if (!isset($this->excludecolumns['certified'])) {
+            // Filter for certified.
+            $filters[] = (new report_filter(
+                checkbox::class,
+                'certified',
+                new lang_string('certified', 'tool_certification'),
+                $this->get_entity_name(),
+                "CASE WHEN {$this->tablealias}.id IS NOT NULL THEN 1 ELSE 0 END"
+            ))
+                ->add_join($this->join);
+        }
 
-        // Filter for expired.
-        $filters[] = (new report_filter(
-            checkbox::class,
-            'expired',
-            new lang_string('expired', 'tool_certification'),
-            $this->get_entity_name(),
-            "CASE WHEN ($this->tablealias.id IS NOT NULL AND $this->tablealias.expirydate < " . time() .
-                    " AND $this->tablealias.timerevoked = 0) THEN 1 ELSE 0 END"
-        ))
-            ->add_join($this->join);
+        if (!isset($this->excludecolumns['expired'])) {
+            // Filter for expired.
+            $filters[] = (new report_filter(
+                checkbox::class,
+                'expired',
+                new lang_string('expired', 'tool_certification'),
+                $this->get_entity_name(),
+                "CASE WHEN ($this->tablealias.id IS NOT NULL AND $this->tablealias.expirydate < " . time() .
+                " AND $this->tablealias.timerevoked = 0) THEN 1 ELSE 0 END"
+            ))
+                ->add_join($this->join);
+        }
 
-        // Filter for expirydate.
-        $filters[] = (new report_filter(
-            $iscondition ? date_condition::class : date_filter::class,
-            'expirydate',
-            new lang_string('expirydate', 'tool_certification'),
-            $this->get_entity_name(),
-            "CASE WHEN ($this->tablealias.id IS NOT NULL AND $this->tablealias.expirydate > 0 AND
+        if (!isset($this->excludecolumns['expirydate'])) {
+            // Filter for expirydate.
+            $filters[] = (new report_filter(
+                $iscondition ? date_condition::class : date_filter::class,
+                'expirydate',
+                new lang_string('expirydate', 'tool_certification'),
+                $this->get_entity_name(),
+                "CASE WHEN ($this->tablealias.id IS NOT NULL AND $this->tablealias.expirydate > 0 AND
                     $this->tablealias.timerevoked = 0) THEN $this->tablealias.expirydate ELSE NULL END"
-        ))
-            ->add_join($this->join);
+            ))
+                ->add_join($this->join);
+        }
 
         return $filters;
     }

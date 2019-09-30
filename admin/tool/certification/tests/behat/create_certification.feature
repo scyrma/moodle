@@ -71,7 +71,7 @@ Feature: Create certification
     And I select "days" from the "expirydaterelative[timeunit]" singleselect
     Then I press "Save" in the modal form dialogue
     And I navigate to "Courses > Certifications" in site administration
-    And I should see "Name"
+    And I should see "Certification name"
     And I should see "Tags"
     And I should see "Program"
     And I should see "Actions"
@@ -91,7 +91,7 @@ Feature: Create certification
     And I should see "Manager 3" in the ".modal-dialog .form-autocomplete-suggestions" "css_element"
     And I click on "User 1" "text" in the ".modal-dialog .form-autocomplete-suggestions" "css_element"
     Then I press "Save changes" in the modal form dialogue
-    And I should see "Fullname"
+    And I should see "Full name"
     And I should see "Due date"
     And I should see "Allocation source"
     And I should see "Certification status"

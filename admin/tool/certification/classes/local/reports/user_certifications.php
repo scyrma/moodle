@@ -17,9 +17,10 @@
 /**
  * Class user_certifications
  *
- * @package   tool_certification
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\local\reports;
@@ -39,9 +40,10 @@ use tool_tenant\tenancy;
 /**
  * Class user_certifications
  *
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @package tool_certification
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user_certifications extends system_report {
 
@@ -63,7 +65,7 @@ class user_certifications extends system_report {
         $this->add_base_condition_simple('u.deleted', 0);
         $this->add_base_join(api::get_status_sql_join('u', 'tc', 'tcu', 'tcc', 'tp'));
         $this->add_base_join('LEFT JOIN {tool_program_users} tpu
-            ON tpu.userid = tcu.userid AND tpu.certificationid = tc.id AND tpu.certificationid = tc.id');
+            ON tpu.userid = tcu.userid AND tpu.certificationid = tcu.certificationid AND tpu.programid = tp.id');
 
         // Base condition is a visibility check (non archived, within correct tenant).
         $usertenantid = tenancy::get_tenant_id($this->userid);
@@ -127,11 +129,11 @@ class user_certifications extends system_report {
      * Set the columns for the report.
      */
     protected function set_columns(): void {
-        $this->add_entity(new certificationuser_entity('', 'tcu', [], 'tcc'));
-        $this->add_entity(new certification_entity('', 'tc'));
-        $this->add_entity(new certificationcompletion_entity('', 'tcc'));
-        $this->add_entity(new program_entity('', 'tp'));
-        $this->add_entity(new programuser_entity('', 'tpu'));
+        $this->add_entity(new certificationuser_entity('', 'tcu', $this->get_certificationuser_excluded_columns(), 'tcc'));
+        $this->add_entity(new certification_entity('', 'tc', $this->get_certification_excluded_columns()));
+        $this->add_entity(new certificationcompletion_entity('', 'tcc', $this->get_certificationcompletion_excluded_columns()));
+        $this->add_entity(new program_entity('', 'tp', $this->get_program_excluded_columns()));
+        $this->add_entity(new programuser_entity('', 'tpu', $this->get_programuser_excluded_columns()));
     }
 
     /**
@@ -139,5 +141,56 @@ class user_certifications extends system_report {
      */
     private function add_actions(): void {
         // No actions defined.
+    }
+
+    /**
+     * Returns an array with the excluded columns for certificationuser_entity.
+     *
+     * @return array
+     */
+    private function get_certificationuser_excluded_columns(): array {
+        return ['allocationtype', 'startdate', 'duedate', 'expirydate', 'suspended', 'timesuspended', 'timecreated',
+            'timemodified', 'daystakingcertification', 'dayssinceallocation'];
+
+    }
+
+    /**
+     * Returns an array with the excluded columns for certification_entity.
+     *
+     * @return array
+     */
+    private function get_certification_excluded_columns(): array {
+        return ['fullnamewithlink', 'idnumber', 'timearchived', 'archived', 'startdate',
+            'allocationstartdate', 'allocationenddate', 'timemodified', 'timecreated'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certificationcompletion_entity.
+     *
+     * @return array
+     */
+    private function get_certificationcompletion_excluded_columns(): array {
+        return ['expirydate', 'expired', 'certified', 'certifiedtype'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for program_entity.
+     *
+     * @return array
+     */
+    private function get_program_excluded_columns(): array {
+        return  ['fullnamewithimage', 'programimage', 'idnumber', 'tags', 'description', 'startdate', 'duedate', 'enddate',
+            'archived', 'timearchived', 'allowdirectallocation', 'allocationstartdate', 'allocationenddate', 'visible',
+            'timemodified', 'timecreated', 'numbercoursesunique', 'associatedcertifications', 'numbercurrentallocatedusers'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for programuser_entity.
+     *
+     * @return array
+     */
+    private function get_programuser_excluded_columns(): array {
+        return  ['startdate', 'duedate', 'enddate', 'programstatus', 'programprogress', 'suspended', 'timesuspended',
+            'allocationtype', 'timecreated', 'timemodified', 'associatedcertification'];
     }
 }

@@ -25,7 +25,8 @@
  * }
  *
  * @package    tool_certification
- * @copyright  2018 David Matamoros <davidmc@moodle.com>
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -47,8 +48,9 @@ use tool_certification\certification_user;
  *      - int certificationid: id of certification.
  * }
  *
- * @package tool_certification
- * @copyright  2018 David Matamoros <davidmc@moodle.com>
+ * @package    tool_certification
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user_allocation_created extends base {

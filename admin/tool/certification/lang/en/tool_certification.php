@@ -19,7 +19,8 @@
  *
  * @package     tool_certification
  * @category    string
- * @copyright   2018 SP
+ * @author      2018 Workplace team
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -72,6 +73,7 @@ $string['certificationfullname_help'] = 'Certification full name';
 $string['certificationidnumber'] = 'Certification ID number';
 $string['certificationidnumber_help'] = 'The ID number of a certification is only used when matching the certification against external systems and is not displayed anywhere on the site. If the certification has an official code name it may be entered, otherwise the field can be left blank.';
 $string['certificationname'] = 'Certification name';
+$string['certificationnamewithlink'] = 'Certification name with link';
 $string['certificationprogress'] = 'Certification progress';
 $string['certificationrules'] = 'Certification rules';
 $string['certifications'] = 'Certifications';

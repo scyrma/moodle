@@ -23,9 +23,10 @@
  *      - int programid: id of program related to this certification.
  * }
  *
- * @package   tool_certification
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_certification\event;
@@ -46,9 +47,10 @@ use tool_certification\certification;
  *      - int programid: id of program.
  * }
  *
- * @package tool_certification
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_certification
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class certification_updated extends base {
 

@@ -18,7 +18,8 @@
  * This file contains the backend class for certification_allocation outcome.
  *
  * @package    tool_certification
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @author     2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +34,8 @@ defined('MOODLE_INTERNAL') || die;
  * The backend class for certification allocation outcome
  *
  * @package    tool_certification
- * @copyright  2019 Daniel Neis <daniel@moodle.com>
+ * @author     2019 Daniel Neis <daniel@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class outcome_base extends \tool_dynamicrule\outcome_base {

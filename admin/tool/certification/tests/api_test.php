@@ -18,7 +18,8 @@
  * API tests.
  *
  * @package    tool_certification
- * @copyright  2018 Mitxel Moriana
+ * @author     2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -46,8 +47,8 @@ global $CFG;
  * API tests.
  *
  * @package    tool_certification
- * @group      tool_certification
- * @copyright  2018 Mitxel Moriana
+ * @author     2018 Mitxel Moriana
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_certification_api_testcase extends advanced_testcase {

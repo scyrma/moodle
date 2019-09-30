@@ -69,7 +69,7 @@ Feature: Manage users allocations
     And I click on "User 1" "text" in the ".modal-dialog .form-autocomplete-suggestions" "css_element"
     Then I press "Save changes" in the modal form dialogue
     Then I should see "Users"
-    And I should see "Fullname" in the "table.report-table thead" "css_element"
+    And I should see "Full name" in the "table.report-table thead" "css_element"
     And I should see "Due date" in the "table.report-table thead" "css_element"
     And I should see "Allocation source" in the "table.report-table thead" "css_element"
     And I should see "Certification status" in the "table.report-table thead" "css_element"

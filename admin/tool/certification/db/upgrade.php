@@ -19,7 +19,8 @@
  *
  * @package     tool_certification
  * @category    upgrade
- * @copyright   2018 SP
+ * @author      2018 Workplace team
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
