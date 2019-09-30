@@ -18,7 +18,7 @@
  *
  * @module     tool_wp/notification
  * @package    tool_wp
- * @copyright  2015 Damyon Wiese <damyon@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define([

@@ -14,11 +14,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *  User selector form on modal based on form-potential-user-selector 2016 Damyon Wiese.
+ * User selector form on modal based on form-potential-user-selector 2016 Damyon Wiese.
  *
  * @module     tool_wp/form-potential-user-selector
  * @package    tool_wp
- * @copyright  2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 David Matamoros <davidmc@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -18,7 +18,8 @@
  * Class modal_form
  *
  * @package     tool_wp
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,8 @@ require_once($CFG->libdir . '/formslib.php');
  * Extend this class to create a form that can be used in a modal dialogue. See plugin README for usage example.
  *
  * @package     tool_wp
- * @copyright   2018 Marina Glancy
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class modal_form extends \moodleform {

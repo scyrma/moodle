@@ -18,7 +18,8 @@
  * Class for tool_uploaduser
  *
  * @package     tool_wp
- * @copyright   2019 Daniel Neis Araujo
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +38,8 @@ use stdClass;
  * This implements methods to be use on uploading users CSV files.
  *
  * @package     tool_wp
- * @copyright   2019 Daniel Neis Araujo
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_uploaduser {

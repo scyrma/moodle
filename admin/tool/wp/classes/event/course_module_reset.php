@@ -18,7 +18,8 @@
  * File for class tool_wp\event\course_module_reset
  *
  * @package   tool_wp
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class tool_wp\event\course_module_reset
  *
  * @package    tool_wp
- * @copyright  2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 David Matamoros <davidmc@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_module_reset extends base {

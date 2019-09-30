@@ -20,7 +20,8 @@
  * Contains class to create length of time for element.
  *
  * @package   tool_wp
- * @copyright 2015 Marina Glancy
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Marina Glancy
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,8 +42,10 @@ MoodleQuickForm::registerElementType('periodduration',
  * '1 day', '2 week', '3 month', etc..
  *
  * @package   tool_wp
- * @copyright 2015 Marina Glancy
+ * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
+ * @author    2018 Marina Glancy
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  * @property HTML_QuickForm_element[] $_elements
  */
 class tool_wp_periodduration extends MoodleQuickForm_group {

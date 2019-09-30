@@ -18,7 +18,8 @@
  * Class course_reset
  *
  * @package   tool_wp
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,8 +32,9 @@ use core\persistent;
 /**
  * Class course_reset
  *
- * @package tool_wp
- * @copyright 2018 David Matamoros <davidmc@moodle.com>
+ * @package   tool_wp
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_reset extends persistent {

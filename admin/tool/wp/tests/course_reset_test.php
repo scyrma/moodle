@@ -19,7 +19,8 @@
  *
  * @package     tool_wp
  * @category    test
- * @copyright   2019 David Matamoros <davidmc@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 David Matamoros <davidmc@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +37,8 @@ require_once("$CFG->dirroot/grade/querylib.php");
  * @package    tool_wp
  * @covers     \tool_wp\course_reset
  * @covers     \tool_wp\course_reset_api
- * @copyright  2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 David Matamoros <davidmc@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_wp_course_reset_testcase extends advanced_testcase {

@@ -18,7 +18,8 @@
  * Class course_reset_entity
  *
  * @package   tool_wp
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,7 +44,8 @@ defined('MOODLE_INTERNAL') || die();
  * Columns, filters and conditions that defines the course_reset_entity and can be reused in any report datasource
  *
  * @package     tool_wp
- * @copyright   2019 David Matamoros <davidmc@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 David Matamoros <davidmc@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_reset_entity extends entity_base {

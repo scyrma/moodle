@@ -18,7 +18,8 @@
  * File containing tests for report_course_reset datasource
  *
  * @package   tool_wp
- * @copyright 2019 David Matamoros <davidmc@moodle.com>
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 David Matamoros <davidmc@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +32,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package     tool_wp
  * @covers      \tool_wp\tool_reportbuilder\datasources\report_course_reset
- * @copyright   2019 David Matamoros <davidmc@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 David Matamoros <davidmc@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_wp_datasource_report_course_reset_testcase extends advanced_testcase {
