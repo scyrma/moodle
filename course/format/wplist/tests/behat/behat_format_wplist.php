@@ -18,7 +18,8 @@
  * Class behat_format_wplist
  *
  * @package     format_wplist
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +36,8 @@ use Behat\Gherkin\Node\TableNode as TableNode,
  * Class behat_format_wplist
  *
  * @package     format_wplist
- * @copyright   2019 Marina Glancy
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Marina Glancy
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_format_wplist extends behat_base {

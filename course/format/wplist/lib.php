@@ -18,7 +18,8 @@
  * Required lib functions
  *
  * @package    format_wplist
- * @copyright  2019 <bas@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +30,8 @@ require_once($CFG->dirroot. '/course/format/lib.php');
  * Main class for the WPlist course format
  *
  * @package    format_wplist
- * @copyright  2019 <bas@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format_wplist extends format_base {
@@ -190,11 +192,6 @@ class format_wplist extends format_base {
     /**
      * Definitions of the additional options that this course format uses for course
      *
-     * Topics format uses the following options:
-     * - coursedisplay
-     * - numsections
-     * - hiddensections
-     *
      * @param bool $foreditform
      * @return array of options
      */
@@ -203,10 +200,6 @@ class format_wplist extends format_base {
         if ($courseformatoptions === false) {
             $courseconfig = get_config('moodlecourse');
             $courseformatoptions = array(
-                'numsections' => array(
-                    'default' => $courseconfig->numsections,
-                    'type' => PARAM_INT,
-                ),
                 'hiddensections' => array(
                     'default' => $courseconfig->hiddensections,
                     'type' => PARAM_INT,
@@ -232,11 +225,6 @@ class format_wplist extends format_base {
                 $sectionmenu[$i] = "$i";
             }
             $courseformatoptionsedit = array(
-                'numsections' => array(
-                    'label' => new lang_string('numberweeks'),
-                    'element_type' => 'select',
-                    'element_attributes' => array($sectionmenu),
-                ),
                 'hiddensections' => array(
                     'label' => new lang_string('hiddensections'),
                     'help' => 'hiddensections',
@@ -289,24 +277,24 @@ class format_wplist extends format_base {
      * @return array array of references to the added form elements.
      */
     public function create_edit_form_elements(&$mform, $forsection = false) {
+        global $COURSE;
         $elements = parent::create_edit_form_elements($mform, $forsection);
 
-        // Increase the number of sections combo box values if the user has increased the number of sections
-        // using the icon on the course page beyond course 'maxsections' or course 'maxsections' has been
-        // reduced below the number of sections already set for the course on the site administration course
-        // defaults page.  This is so that the number of sections is not reduced leaving unintended orphaned
-        // activities / resources.
-        if (!$forsection) {
-            $maxsections = get_config('moodlecourse', 'maxsections');
-            $numsections = $mform->getElementValue('numsections');
-            $numsections = $numsections[0];
-            if ($numsections > $maxsections) {
-                $element = $mform->getElement('numsections');
-                for ($i = $maxsections + 1; $i <= $numsections; $i++) {
-                    $element->addOption("$i", $i);
-                }
+        if (!$forsection && (empty($COURSE->id) || $COURSE->id == SITEID)) {
+            // Add "numsections" element to the create course form - it will force new course to be prepopulated
+            // with empty sections.
+            // The "Number of sections" option is no longer available when editing course, instead teachers should
+            // delete and add sections when needed.
+            $courseconfig = get_config('moodlecourse');
+            $max = (int)$courseconfig->maxsections;
+            $element = $mform->addElement('select', 'numsections', get_string('numberweeks'), range(0, $max ?: 52));
+            $mform->setType('numsections', PARAM_INT);
+            if (is_null($mform->getElementValue('numsections'))) {
+                $mform->setDefault('numsections', $courseconfig->numsections);
             }
+            array_unshift($elements, $element);
         }
+
         return $elements;
     }
 
@@ -324,7 +312,6 @@ class format_wplist extends format_base {
      * @return bool whether there were any changes to the options values
      */
     public function update_course_format_options($data, $oldcourse = null) {
-        global $DB;
         $data = (array)$data;
         if ($oldcourse !== null) {
             $oldcourse = (array)$oldcourse;
@@ -333,29 +320,11 @@ class format_wplist extends format_base {
                 if (!array_key_exists($key, $data)) {
                     if (array_key_exists($key, $oldcourse)) {
                         $data[$key] = $oldcourse[$key];
-                    } else if ($key === 'numsections') {
-                        $maxsection = $DB->get_field_sql('SELECT max(section) from {course_sections}
-                            WHERE course = ?', array($this->courseid));
-                        if ($maxsection) {
-                            $data['numsections'] = $maxsection;
-                        }
                     }
                 }
             }
         }
-        $changed = $this->update_format_options($data);
-        if ($changed && array_key_exists('numsections', $data)) {
-            // If the numsections was decreased, try to completely delete the orphaned sections (unless they are not empty).
-            $numsections = (int)$data['numsections'];
-            $maxsection = $DB->get_field_sql('SELECT max(section) from {course_sections}
-                        WHERE course = ?', array($this->courseid));
-            for ($sectionnum = $maxsection; $sectionnum > $numsections; $sectionnum--) {
-                if (!$this->delete_section($sectionnum, false)) {
-                    break;
-                }
-            }
-        }
-        return $changed;
+        return $this->update_format_options($data);
     }
 
     /**
@@ -368,6 +337,18 @@ class format_wplist extends format_base {
      */
     public function can_delete_section($section) {
         return true;
+    }
+
+    /**
+     * Returns whether this course format allows the activity to
+     * have "triple visibility state" - visible always, hidden on course page but available, hidden.
+     *
+     * @param stdClass|cm_info $cm course module (may be null if we are displaying a form for adding a module)
+     * @param stdClass|section_info $section section where this module is located or will be added to
+     * @return bool
+     */
+    public function allow_stealth_module_visibility($cm, $section) {
+        return !$section->section || $section->visible;
     }
 }
 

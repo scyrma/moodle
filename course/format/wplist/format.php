@@ -18,7 +18,8 @@
  * Base workplace list format file
  *
  * @package    format_wplist
- * @copyright  2019 <bas@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -45,7 +46,7 @@ if (($marker >= 0) && has_capability('moodle/course:setcurrentsection', $context
 
 // Make sure all sections are created.
 $course = course_get_format($course)->get_course();
-course_create_sections_if_missing($course, range(0, $course->numsections));
+course_create_sections_if_missing($course, 0);
 
 $renderer = $PAGE->get_renderer('format_wplist');
 

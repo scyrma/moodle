@@ -18,7 +18,8 @@
  * External service definitions
  *
  * @package    format_wplist
- * @copyright  2019 <bas@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +33,8 @@ require_once($CFG->libdir . '/completionlib.php');
 /**
  * Starred courses block external functions.
  *
- * @copyright  2018 Simey Lameze <simey@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format_wplist_external extends core_course_external {

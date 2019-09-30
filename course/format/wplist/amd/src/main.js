@@ -17,7 +17,8 @@
  * Javascript for course format workplace list.
  *
  * @package    format_wplist
- * @copyright  2010 <bas@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

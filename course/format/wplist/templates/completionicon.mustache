@@ -42,14 +42,14 @@
         {{#self}}
             <div class="checkbox">
                 <div class="checkbox-icon iconlarge nomargin">
-                    {{#pix}}check-on-gray, format_wplist, {{{imgalt}}}{{/pix}}
+                    {{#pix}}check-on-gray, format_wplist, {{imgalt}}{{/pix}}
                 </div>
             </div>
         {{/self}}
         {{#auto}}
             <div class="checkbox">
                 <div class="checkbox-icon iconlarge nomargin">
-                    {{#pix}}check-on-dotted, format_wplist, {{{imgalt}}}{{/pix}}
+                    {{#pix}}check-on-dotted, format_wplist, {{imgalt}}{{/pix}}
                 </div>
             </div>
         {{/auto}}
@@ -58,19 +58,19 @@
         {{#self}}
             <div class="checkbox"
                 data-region="completioncheck"
-                data-targetstate="{{{newstate}}}"
-                data-modulename="{{{mod.name}}}"
-                data-module="{{{mod.id}}}"
+                data-targetstate="{{newstate}}"
+                data-modulename="{{mod.name}}"
+                data-module="{{mod.id}}"
                 data-courseid="{{courseid}}"
                 data-image="{{completionicon}}"
                 data-checked="{{#checked}}1{{/checked}}{{^checked}}0{{/checked}}"
                 data-sectionnumber="{{sectionnumber}}"
             >
                 <div data-region="checkon" class="checkbox-icon {{^checked}}hidden{{/checked}}">
-                    {{#pix}}check-on, format_wplist, {{{imgalt}}}{{/pix}}
+                    {{#pix}}check-on, format_wplist, {{imgalt}}{{/pix}}
                 </div>
                 <div data-region="checkoff" class="checkbox-icon {{#checked}}hidden{{/checked}}">
-                    {{#pix}}check-off, format_wplist, {{{imgalt}}}{{/pix}}
+                    {{#pix}}check-off, format_wplist, {{imgalt}}{{/pix}}
                 </div>
             </div>
 
@@ -79,12 +79,12 @@
             <div class="checkbox">
                 {{#checked}}
                 <div class="checkbox-icon">
-                    {{#pix}}check-green-dotted, format_wplist, {{{imgalt}}}{{/pix}}
+                    {{#pix}}check-green-dotted, format_wplist, {{imgalt}}{{/pix}}
                 </div>
                 {{/checked}}
                 {{^checked}}
                 <div data-region="checkoff" class="checkbox-icon {{#checked}}hidden{{/checked}}">
-                    {{#pix}}check-off-dotted, format_wplist, {{{imgalt}}}{{/pix}}
+                    {{#pix}}check-off-dotted, format_wplist, {{imgalt}}{{/pix}}
                 </div>
                 {{/checked}}
             </div>

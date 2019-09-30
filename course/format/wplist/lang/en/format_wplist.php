@@ -18,7 +18,8 @@
  * Strings for course format.
  *
  * @package    format_wplist
- * @copyright  2018 <bas@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 <bas@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

@@ -18,7 +18,8 @@
  * format_wplist related unit tests
  *
  * @package    format_wplist
- * @copyright  2015 Marina Glancy
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +32,8 @@ require_once($CFG->dirroot . '/course/lib.php');
  * format_wplist related unit tests
  *
  * @package    format_wplist
- * @copyright  2015 Marina Glancy
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @author     2019 Marina Glancy
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class format_wplist_testcase extends advanced_testcase {

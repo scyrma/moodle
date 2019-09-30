@@ -18,7 +18,8 @@
  * Code to be executed after the plugin's database scheme has been installed is defined here.
  *
  * @package     format_wplist
- * @copyright   2019 Daniel Neis Araujo <daniel@moodle.com>
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
