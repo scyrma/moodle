@@ -109,7 +109,7 @@ class register extends adhoc_task {
         set_config('site_imageurl_'         . $cleanhuburl, '',                                                 'hub');
         set_config('site_street_'           . $cleanhuburl, '',                                                 'hub');
         set_config('site_regioncode_'       . $cleanhuburl, '',                                                 'hub');
-        set_config('site_countrycode_'      . $cleanhuburl, '',                                                 'hub');
+        set_config('site_countrycode_'      . $cleanhuburl, $admin->country,                                    'hub');
         set_config('site_geolocation_'      . $cleanhuburl, '',                                                 'hub');
         set_config('site_privacy_'          . $cleanhuburl, \core\hub\registration::HUB_SITENOTPUBLISHED,       'hub');
 
