@@ -1,0 +1,30 @@
+<div data-region="files-table-container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{{#str}}filename, tool_fileslist{{/str}}</th>
+                <th>{{#str}}size, tool_fileslist{{/str}}</th>
+                <th>{{#str}}type, tool_fileslist{{/str}}</th>
+                <th>{{#str}}user, tool_fileslist{{/str}}</th>
+                <th>{{#str}}component, tool_fileslist{{/str}}</th>
+                <th>{{#str}}filearea, tool_fileslist{{/str}}</th>
+                <th>{{#str}}action, tool_fileslist{{/str}} {{{help.action}}}</th>
+            </tr>
+        </thead>
+        <tbody data-region="files-table-list">
+            {{#files}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{sizeHumanReadable}}</td>
+                    <td>{{mimetype}}</td>
+                    <td><a href="{{user.profile}}">{{user.fullname}}<a/></td>
+                        <td>{{component}}</td>
+                        <td>{{filearea}}</td>
+                        <td>
+                            {{#location}}<a href="{{location}}" class="btn btn-secondary">View in context</a>{{/location}}
+                        </td>
+                </tr>
+            {{/files}}
+        </tbody>
+    </table>
+</div>
