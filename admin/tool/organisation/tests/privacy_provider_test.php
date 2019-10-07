@@ -34,11 +34,27 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package    tool_organisation
  * @group      tool_organisation
+ * @covers     \tool_organisation\privacy\provider
  * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_organisation_privacy_provider_testcase extends \core_privacy\tests\provider_testcase {
+
+    /** @var stdClass $user1 */
+    private $user1;
+
+    /** @var stdClass $user2 */
+    private $user2;
+
+    /** @var \tool_organisation\job_manager $manager */
+    private $manager;
+
+    /** @var stdClass $department */
+    private $department;
+
+    /** @var stdClass $position */
+    private $position;
 
     /**
      * Test set up.
@@ -46,13 +62,11 @@ class tool_organisation_privacy_provider_testcase extends \core_privacy\tests\pr
     public function setUp() {
         $this->resetAfterTest();
 
+        /** @var tool_organisation_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
 
-        $pf = $generator->create_position();
-        $pa = $generator->create_position(['parentid' => $pf->id]);
-
-        $df = $generator->create_department();
-        $da = $generator->create_department(['parentid' => $df->id]);
+        $this->department = $generator->create_department();
+        $this->position = $generator->create_position();
 
         $this->user1 = $this->getDataGenerator()->create_user();
         $this->user2 = $this->getDataGenerator()->create_user();
@@ -60,10 +74,10 @@ class tool_organisation_privacy_provider_testcase extends \core_privacy\tests\pr
         $this->manager = new \tool_organisation\job_manager();
 
         $this->manager->create_job((object)['userid' => $this->user1->id,
-            'positionid' => $pa->id, 'departmentid' => $da->id, 'startdate' => 1262304000]);
+            'positionid' => $this->position->id, 'departmentid' => $this->department->id, 'startdate' => 1262304000]);
 
         $this->manager->create_job((object)['userid' => $this->user2->id,
-            'positionid' => $pa->id, 'departmentid' => $da->id, 'startdate' => 1262304000]);
+            'positionid' => $this->position->id, 'departmentid' => $this->department->id, 'startdate' => 1262304000]);
     }
 
     /**
@@ -115,8 +129,6 @@ class tool_organisation_privacy_provider_testcase extends \core_privacy\tests\pr
      * Test that only users within a context are fetched.
      */
     public function test_get_users_in_context() {
-        global $DB;
-
         $component = 'tool_organisation';
 
         // The user list for usercontext1 should have one user.
@@ -139,6 +151,18 @@ class tool_organisation_privacy_provider_testcase extends \core_privacy\tests\pr
      * Test for provider::export_user_data().
      */
     public function test_export_user_data() {
+        /** @var tool_organisation_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
+
+        // Add another job for our test user, ensure it is exported.
+        $newposition = $generator->create_position();
+        $this->manager->create_job((object) [
+            'userid' => $this->user1->id,
+            'positionid' => $newposition->id,
+            'departmentid' => $this->department->id,
+            'startdate' => 1546300800,
+            'enddate' => 1551398400,
+        ]);
 
         // Export all of the data for the context for user 1.
         $context = \context_user::instance($this->user1->id);
@@ -147,18 +171,25 @@ class tool_organisation_privacy_provider_testcase extends \core_privacy\tests\pr
 
         $this->assertTrue($writer->has_any_data());
 
-        $data = $writer->get_data();
-        // This has only 1 record because we are exporting user 1.
-        $this->assertCount(1, $data->jobs);
+        $contextpath = [get_string('pluginname', 'tool_organisation')];
+        $data = $writer->get_data($contextpath);
 
-        foreach ($data->jobs as $job) {
-            $this->assertArrayHasKey('department', $job);
-            $this->assertArrayHasKey('position', $job);
-            $this->assertArrayHasKey('startdate', $job);
-            $this->assertArrayHasKey('enddate', $job);
-            $this->assertArrayHasKey('timecreated', $job);
-            $this->assertArrayHasKey('timemodified', $job);
-        }
+        $this->assertCount(2, $data->jobs);
+        list($job1, $job2) = $data->jobs;
+
+        $this->assertEquals($this->department->name, $job1['department']);
+        $this->assertEquals($this->position->name, $job1['position']);
+        $this->assertNotNull($job1['startdate']);
+        $this->assertNull($job1['enddate']);
+        $this->assertArrayHasKey('timecreated', $job1);
+        $this->assertArrayHasKey('timemodified', $job1);
+
+        $this->assertEquals($this->department->name, $job1['department']);
+        $this->assertEquals($newposition->name, $job2['position']);
+        $this->assertNotNull($job2['startdate']);
+        $this->assertNotNull($job2['enddate']);
+        $this->assertArrayHasKey('timecreated', $job2);
+        $this->assertArrayHasKey('timemodified', $job2);
     }
 
     /**

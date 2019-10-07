@@ -139,28 +139,27 @@ class provider implements
                     ON (j.positionid = p.id)
                  WHERE j.userid = :userid";
 
-        $recordset = $DB->get_recordset_sql($sql, ['userid' => $contextlist->get_user()->id]);
+        $data = [];
 
-        self::recordset_loop_and_export($recordset, 'jobid', [], function($carry, $record) {
-
-            $carry[] = [
+        $recordset = $DB->get_recordset_sql($sql, ['userid' => $user->id]);
+        foreach ($recordset as $record) {
+            $data[] = [
                 'department' => format_string($record->departmentname),
                 'position' => format_string($record->positionname),
                 'startdate' => transform::datetime($record->startdate),
-                'enddate' => transform::datetime($record->enddate),
+                'enddate' => $record->enddate ? transform::datetime($record->enddate) : null,
                 'timecreated' => transform::datetime($record->timecreated),
                 'timemodified' => transform::datetime($record->timemodified)
             ];
+        }
+        $recordset->close();
 
-            return $carry;
-        }, function($templateid, $data) use ($user) {
-
+        if (count($data) > 0) {
             $context = \context_user::instance($user->id);
-            $contextdata = helper::get_context_data($context, $user);
-            $finaldata = (object) array_merge((array) $contextdata, ['jobs' => $data]);
-            helper::export_context_files($context, $user);
-            writer::with_context($context)->export_data([], $finaldata);
-        });
+            $contextpath = [get_string('pluginname', 'tool_organisation')];
+
+            writer::with_context($context)->export_data($contextpath, (object) ['jobs' => $data]);
+        }
     }
 
     /**
@@ -205,37 +204,6 @@ class provider implements
         // Only delete data for user context, which should be a single user.
         if ($context->contextlevel == CONTEXT_USER && count($userids) == 1 && $userid == $context->instanceid) {
             \tool_organisation\job_manager::delete_user_jobs($userid);
-        }
-    }
-
-    /**
-     * Loop and export from a recordset.
-     *
-     * @param \moodle_recordset $recordset The recordset.
-     * @param string $splitkey The record key to determine when to export.
-     * @param mixed $initial The initial data to reduce from.
-     * @param callable $reducer The function to return the dataset, receives current dataset, and the current record.
-     * @param callable $export The function to export the dataset, receives the last value from $splitkey and the dataset.
-     * @return void
-     */
-    protected static function recordset_loop_and_export(\moodle_recordset $recordset, $splitkey, $initial,
-            callable $reducer, callable $export) {
-
-        $data = $initial;
-        $lastid = null;
-
-        foreach ($recordset as $record) {
-            if ($lastid && $record->{$splitkey} != $lastid) {
-                $export($lastid, $data);
-                $data = $initial;
-            }
-            $data = $reducer($data, $record);
-            $lastid = $record->{$splitkey};
-        }
-        $recordset->close();
-
-        if (!empty($lastid)) {
-            $export($lastid, $data);
         }
     }
 }
