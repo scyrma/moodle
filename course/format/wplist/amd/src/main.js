@@ -29,7 +29,8 @@ define(
     'core/notification',
     'core/custom_interaction_events',
     'core/ajax',
-    'core/str'
+    'core/str',
+    'core/templates'
 ],
 function(
     $,
@@ -37,7 +38,8 @@ function(
     Notification,
     CustomEvents,
     Ajax,
-    Str
+    Str,
+    Templates
 ) {
 
     var SELECTORS = {
@@ -46,8 +48,6 @@ function(
         MODULES_CONTAINER: '[data-region="course-modules"]',
         MODULE: '[data-region="module"]',
         COMPLETIONCHECKS: '[data-region="completioncheck"]',
-        COMPLETION_ON: '[data-region="checkon"]',
-        COMPLETION_OFF: '[data-region="checkoff"]',
         EXPAND_TOGGLE: '[data-toggle="collapse"]',
         EXPAND_SECTIONS: '[data-action="expand"]',
         EXPAND_SECTIONS_OPEN: '[data-region="collapsed-open"]',
@@ -125,26 +125,6 @@ function(
     };
 
     /**
-     * Toggle the completion icon for self completion.
-     *
-     * @param  {Object} checkbox Container checkbox dom element.
-     * @param  {Boolean} checked
-     */
-    var checkCompletionIcon = function(checkbox, checked) {
-        if (!checked) {
-            checkbox.attr('data-checked', 1);
-            checkbox.attr('data-targetstate', 0);
-            checkbox.find(SELECTORS.COMPLETION_ON).removeClass('hidden');
-            checkbox.find(SELECTORS.COMPLETION_OFF).addClass('hidden');
-        } else {
-            checkbox.attr('data-checked', 0);
-            checkbox.attr('data-targetstate', 1);
-            checkbox.find(SELECTORS.COMPLETION_ON).addClass('hidden');
-            checkbox.find(SELECTORS.COMPLETION_OFF).removeClass('hidden');
-        }
-    };
-
-    /**
      * Update the section completion progress bar.
      *
      * @param {Object} root The course format root container element.
@@ -160,9 +140,12 @@ function(
         } else {
             completedmodules--;
         }
-        sectionprogress.attr('data-completed-modules', completedmodules);
         var newCompletionPercentage = 100 * (completedmodules / completionmodules);
-        sectionprogress.css('width', newCompletionPercentage + '%');
+        Str.get_string('section_completion', 'format_wplist', newCompletionPercentage).done(function(s) {
+            sectionprogress.attr('title', s);
+            sectionprogress.attr('data-completed-modules', completedmodules);
+            sectionprogress.css('width', newCompletionPercentage + '%');
+        });
     };
 
     /**
@@ -205,15 +188,25 @@ function(
         });
 
         $(SELECTORS.EXPAND_SECTIONS_CONTENT).on('hidden.bs.collapse', function() {
-            var sectionid = $(this).attr('data-sectionid');
-            var isaccordion = $(this).attr('data-isaccordion');
-            storeSectionPreference(sectionid, isaccordion, false, contextid);
+            var sectionid = $(this).data('sectionid');
+            var sectionnumber = $(this).data('sectionnumber');
+            var isaccordion = $(this).data('isaccordion');
+            var sectionname = $(this).data('sectionname');
+            Str.get_string('expandsection', 'format_wplist', sectionname).done(function(s) {
+                $('.course-section-toggle[data-target="#sectioncontent-' + sectionnumber + '"]').attr('title', s);
+                storeSectionPreference(sectionid, isaccordion, false, contextid);
+            });
         });
 
         $(SELECTORS.EXPAND_SECTIONS_CONTENT).on('shown.bs.collapse', function() {
-            var sectionid = $(this).attr('data-sectionid');
-            var isaccordion = $(this).attr('data-isaccordion');
-            storeSectionPreference(sectionid, isaccordion, true, contextid);
+            var sectionid = $(this).data('sectionid');
+            var sectionnumber = $(this).data('sectionnumber');
+            var isaccordion = $(this).data('isaccordion');
+            var sectionname = $(this).data('sectionname');
+            Str.get_string('collapsesection', 'format_wplist', sectionname).done(function(s) {
+                $('.course-section-toggle[data-target="#sectioncontent-' + sectionnumber + '"]').attr('title', s);
+                storeSectionPreference(sectionid, isaccordion, true, contextid);
+            });
         });
 
         // Listen for changes on completion.
@@ -222,7 +215,6 @@ function(
             var moduleid = parseInt(cc.attr('data-module'));
             var targetstate = parseInt(cc.attr('data-targetstate'));
             var courseid = parseInt(cc.attr('data-courseid'));
-            var checked = parseInt(cc.attr('data-checked'));
             var sectionnumber = parseInt(cc.attr('data-sectionnumber'));
 
             var args = {
@@ -231,9 +223,9 @@ function(
                 courseid: courseid
             };
 
-            checkCompletion(args).then(function() {
-                checkCompletionIcon(cc, checked);
+            checkCompletion(args).then(function(html) {
                 updateSectionCompletion(root, sectionnumber, targetstate);
+                Templates.replaceNode(cc, html.completionicon, '');
                 return null;
             })
             .fail(Notification.exception);

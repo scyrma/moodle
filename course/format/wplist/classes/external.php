@@ -75,6 +75,10 @@ class format_wplist_external extends core_course_external {
         $sectiontarget = $params['sectiontarget'];
         $courseid = $params['courseid'];
 
+        $coursecontext = context_course::instance($courseid);
+        self::validate_context($coursecontext);
+        require_capability('moodle/course:movesections', $coursecontext);
+
         if ($sectionnumber == 0) {
             throw new moodle_exception('Bad section number ' . $sectionnumber);
         }
@@ -84,11 +88,7 @@ class format_wplist_external extends core_course_external {
         }
         $maxsection = $DB->get_fieldset_sql('SELECT max(section) FROM {course_sections} WHERE course = ?', [$courseid]);
 
-        $course = $DB->get_record('course', ['id' => $courseid]);
-
-        $coursecontext = context_course::instance($courseid);
-
-        require_capability('moodle/course:movesections', $coursecontext);
+        $course = get_course($courseid);
 
         $warnings = [];
 
@@ -151,39 +151,35 @@ class format_wplist_external extends core_course_external {
      * @param int $moduleid module ID
      * @param int $moduletarget module Target ID
      * @param int $sectionnumber Section Number
-     * @param int $courseid Course ID
+     * @param int $unused
      *
      * @return  array of warnings
      */
-    public static function move_module($moduleid, $moduletarget, $sectionnumber, $courseid) {
+    public static function move_module($moduleid, $moduletarget, $sectionnumber, $unused) {
         global $DB;
 
+        // TODO $courseid is not needed here.
         $params = self::validate_parameters(self::move_module_parameters(), [
             'moduleid' => $moduleid,
             'moduletarget' => $moduletarget,
             'sectionnumber' => $sectionnumber,
-            'courseid' => $courseid
+            'courseid' => $unused
         ]);
 
         $moduleid = $params['moduleid'];
         $moduletarget = $params['moduletarget'];
         $sectionnumber = $params['sectionnumber'];
-        $courseid = $params['courseid'];
 
-        if (!$section = $DB->get_record('course_sections', array('course' => $courseid, 'section' => $sectionnumber))) {
-            throw new moodle_exception('Bad section number '.$sectionnumber);
-        }
-
-        $mod = get_coursemodule_from_id(null, $moduleid, $courseid, false, MUST_EXIST);
-
+        $mod = get_coursemodule_from_id(null, $moduleid, 0, false, MUST_EXIST);
+        $courseid = $mod->course;
+        self::validate_context(context_course::instance($courseid));
         $modcontext = context_module::instance($mod->id);
-
         require_capability('moodle/course:manageactivities', $modcontext);
 
-        $beforemod = get_coursemodule_from_id(null, $moduletarget, $courseid);
+        $section = $DB->get_record('course_sections', ['course' => $courseid, 'section' => $sectionnumber], '*', MUST_EXIST);
 
         $warnings = [];
-        if (!moveto_module($mod, $section, $beforemod)) {
+        if (!moveto_module($mod, $section, $moduletarget)) {
             $warnings[] = array(
                 'item' => 'module',
                 'itemid' => $moduleid,
@@ -231,24 +227,24 @@ class format_wplist_external extends core_course_external {
      *
      * @param int $moduleid module ID
      * @param int $targetstate 1 for set completed, 0 for removing completion.
-     * @param int $courseid Course ID
+     * @param int $unused
      *
      * @return  array of warnings
      */
-    public static function module_completion($moduleid, $targetstate, $courseid) {
-        global $DB, $USER;
+    public static function module_completion($moduleid, $targetstate, $unused) {
+        global $PAGE;
 
+        // TODO courseid is not needed in this web service.
         $params = self::validate_parameters(self::module_completion_parameters(), [
             'moduleid' => $moduleid,
             'targetstate' => $targetstate,
-            'courseid' => $courseid
+            'courseid' => $unused
         ]);
+        $targetstate = $params['targetstate'];
 
-        $cm = get_coursemodule_from_id(null, $moduleid, null, true, MUST_EXIST);
-        $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
-
-        // Check user is logged in.
-        require_login($course, false, $cm);
+        /** @var cm_info $cm */
+        list($course, $cm) = get_course_and_cm_from_cmid($params['moduleid']);
+        self::validate_context($cm->context);
 
         // Set up completion object and check it is enabled.
         $completion = new completion_info($course);
@@ -269,14 +265,18 @@ class format_wplist_external extends core_course_external {
                 'itemid' => $moduleid,
                 'warningcode' => 'completion change failed',
                 'message' => 'module: ' . $moduleid . ' TargetState: ' .
-                    $targetstate . ' CourseID: ' . $courseid
+                    $targetstate . ' CourseID: ' . $cm->course
             );
         }
 
         $completion->update_state($cm, $targetstate);
 
-        $result = [];
-        $result['warnings'] = $warnings;
+        /** @var format_wplist_renderer $renderer */
+        $renderer = $PAGE->get_renderer('format_wplist');
+        $result = [
+            'completionicon' => $renderer->course_section_cm_completion($course, $completion, $cm, []),
+            'warnings' => $warnings
+        ];
         return $result;
     }
 
@@ -289,6 +289,7 @@ class format_wplist_external extends core_course_external {
     public static function module_completion_returns() {
         return new external_single_structure(
             array(
+                'completionicon' => new external_value(PARAM_RAW, 'JSON-encoded data for template'),
                 'warnings' => new external_warnings()
             )
         );

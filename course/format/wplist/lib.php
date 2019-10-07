@@ -52,7 +52,7 @@ class format_wplist extends format_base {
      * If the section number is not 0, the base implementation of format_base::get_default_section_name which uses
      * the string with the key = 'sectionname' from the course format's lang file + the section number will be used.
      *
-     * @param stdClass $section Section object from database or just field course_sections section
+     * @param stdClass|section_info $section Section object from database or just field course_sections section
      * @return string The default value for the section name.
      */
     public function get_default_section_name($section) {
@@ -71,14 +71,14 @@ class format_wplist extends format_base {
      *
      * Use section name is specified by user. Otherwise use default ("Topic #")
      *
-     * @param int|stdClass $section Section object from database or just field section.section
+     * @param int|stdClass|section_info $section Section object from database or just field section.section
      * @return string Display name that the course format prefers, e.g. "Topic 2"
      */
     public function get_section_name($section) {
         $section = $this->get_section($section);
         if ((string)$section->name !== '') {
             return format_string($section->name, true,
-                    array('context' => context_course::instance($this->courseid)));
+                    array('context' => context_course::instance($this->courseid), 'escape' => false));
         } else {
             return self::get_default_section_name($section);
         }
@@ -167,6 +167,7 @@ class format_wplist extends format_base {
         $titles = array();
         $course = $this->get_course();
         $modinfo = get_fast_modinfo($course);
+        /** @var format_wplist_renderer $renderer */
         $renderer = $this->get_renderer($PAGE);
         if ($renderer && ($sections = $modinfo->get_section_info_all())) {
             foreach ($sections as $number => $section) {

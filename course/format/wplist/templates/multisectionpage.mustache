@@ -74,6 +74,8 @@
                         <button
                             class="btn btn-link py-4 pr-3 pl-4 align-items-center border-0 ws-toggle d-none d-sm-flex course-section-toggle {{^expanded}}collapsed{{/expanded}}"
                             type="button"
+                            title="{{toggletitle}}"
+                            data-sectionname="{{sectionname}}"
                             data-toggle="collapse"
                             data-target="#sectioncontent-{{sectionnumber}}"
                             aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
@@ -168,6 +170,8 @@
                     class="sectioncontent collapse {{#expanded}}show{{/expanded}} "
                     aria-labelledby="section-{{sectionnumber}}"
                     data-sectionid="{{id}}"
+                    data-sectionnumber="{{sectionnumber}}"
+                    data-sectionname ="{{sectionname}}"
                     data-region="sectioncollapse"
                     {{#accordion}}
                     data-isaccordion=true

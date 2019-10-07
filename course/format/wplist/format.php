@@ -48,6 +48,7 @@ if (($marker >= 0) && has_capability('moodle/course:setcurrentsection', $context
 $course = course_get_format($course)->get_course();
 course_create_sections_if_missing($course, 0);
 
+/** @var format_wplist_renderer $renderer */
 $renderer = $PAGE->get_renderer('format_wplist');
 
 if (!empty($displaysection)) {

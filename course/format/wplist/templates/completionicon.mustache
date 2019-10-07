@@ -66,11 +66,8 @@
                 data-checked="{{#checked}}1{{/checked}}{{^checked}}0{{/checked}}"
                 data-sectionnumber="{{sectionnumber}}"
             >
-                <div data-region="checkon" class="checkbox-icon {{^checked}}hidden{{/checked}}">
-                    {{#pix}}check-on, format_wplist, {{imgalt}}{{/pix}}
-                </div>
-                <div data-region="checkoff" class="checkbox-icon {{#checked}}hidden{{/checked}}">
-                    {{#pix}}check-off, format_wplist, {{imgalt}}{{/pix}}
+                <div data-region="check" class="checkbox-icon">
+                    {{#pix}}{{#checked}}check-on{{/checked}}{{^checked}}check-off{{/checked}}, format_wplist, {{imgalt}}{{/pix}}
                 </div>
             </div>
 

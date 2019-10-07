@@ -76,7 +76,7 @@ class format_wplist_renderer extends format_section_renderer_base {
      * Generate the content to displayed on the right part of a section
      * before course modules are included
      *
-     * @param stdClass $section The course_section entry from DB
+     * @param stdClass|section_info $section The course_section entry from DB
      * @param stdClass $course The course entry from DB
      * @param bool $onsectionpage true if being printed on a section page
      * @return string HTML to output.
@@ -104,7 +104,7 @@ class format_wplist_renderer extends format_section_renderer_base {
         $o = "";
         if (!empty($controls)) {
             $menu = new action_menu();
-            $menu->set_menu_trigger($this->pix_icon('i/settings', '', 'core'));
+            $menu->set_menu_trigger($this->output->pix_icon('i/settings', '', 'core'));
             $menu->attributes['class'] .= ' section-actions';
             foreach ($controls as $value) {
                 $url = empty($value['url']) ? '' : $value['url'];
@@ -197,6 +197,7 @@ class format_wplist_renderer extends format_section_renderer_base {
         } else {
             $template->editon = new moodle_url($PAGE->url, ['sesskey' => sesskey(), 'edit' => 'on']);
         }
+        /** @var format_wplist $courseformat */
         $courseformat = course_get_format($course);
         $course = $courseformat->get_course();
         $options = $courseformat->get_format_options();
@@ -224,11 +225,11 @@ class format_wplist_renderer extends format_section_renderer_base {
         $template->completioninfo = $completioninfo->display_help_icon();
         $template->courseactivityclipboard = $this->course_activity_clipboard($course, 0);
 
-        $numsections = course_get_format($course)->get_last_section_number();
+        $numsections = $courseformat->get_last_section_number();
 
         foreach ($modinfo->get_section_info_all() as $section => $thissection) {
 
-            $sectiontemp = $thissection;
+            $sectiontemp = (object)$thissection;
             $sectiontemp->sectionnumber = $section;
             if ($section == 0) {
                 $sectiontemp->expandbtn = true;
@@ -254,6 +255,7 @@ class format_wplist_renderer extends format_section_renderer_base {
             }
             $sectiontemp->availabilitymsg = $this->section_availability($thissection);
             $sectiontemp->completion = $this->course_section_completion($course, $completioninfo, $section);
+            $sectiontemp->sectionname = $courseformat->get_section_name($thissection);
             $sectiontemp->name = $this->section_title($thissection, $course);
             $sectiontemp->summary = $this->format_summary_text($thissection);
             $sectiontemp->expanded = false;
@@ -262,6 +264,11 @@ class format_wplist_renderer extends format_section_renderer_base {
             }
             if ($PAGE->user_is_editing()) {
                 $sectiontemp->expanded = true;
+            }
+            if ($sectiontemp->expanded == true) {
+                $sectiontemp->toggletitle = get_string('collapsesection', 'format_wplist', $sectiontemp->sectionname);
+            } else {
+                $sectiontemp->toggletitle = get_string('expandsection', 'format_wplist', $sectiontemp->sectionname);
             }
             $sectiontemp->coursemodules = $this->course_section_cm_wplist($course, $thissection, 0);
 
@@ -291,7 +298,7 @@ class format_wplist_renderer extends format_section_renderer_base {
     /**
      * Generate the section title, wraps it in a link to the section page if page is to be displayed on a separate page
      *
-     * @param stdClass $section The course_section entry from DB
+     * @param stdClass|section_info $section The course_section entry from DB
      * @param stdClass $course The course entry from DB
      * @return string HTML to output.
      */
@@ -308,7 +315,7 @@ class format_wplist_renderer extends format_section_renderer_base {
      * @param int|stdClass|section_info $section relative section number or section object
      * @param int $sectionreturn section number to return to
      * @param int $displayoptions
-     * @return void
+     * @return string
      */
     public function course_section_cm_wplist($course, $section, $sectionreturn = null, $displayoptions = array()) {
         global $PAGE;
@@ -367,7 +374,7 @@ class format_wplist_renderer extends format_section_renderer_base {
 
         $template->text = $mod->get_formatted_content(array('overflowdiv' => false, 'noclean' => true));
         $template->completion = $this->course_section_cm_completion($course, $completioninfo, $mod, $displayoptions);
-        $template->cmname = $this->courserenderer->course_section_cm_name($mod, $displayoptions, false);
+        $template->cmname = $this->courserenderer->course_section_cm_name($mod, $displayoptions);
         $template->editing = $PAGE->user_is_editing();
         $template->availability = $this->courserenderer->course_section_cm_availability($mod, $displayoptions);
 
@@ -400,31 +407,6 @@ class format_wplist_renderer extends format_section_renderer_base {
             return $this->render_from_template('format_wplist/movecoursemodule', $template);
         }
         return '';
-    }
-
-
-    /**
-     * Renders html to display the module content on the course page (i.e. text of the labels)
-     *
-     * @param cm_info $mod
-     * @param array $displayoptions
-     * @return string
-     */
-    public function course_section_cm_text(cm_info $mod, $displayoptions = array()) {
-        $output = '';
-        if (!$mod->uservisible && empty($mod->availableinfo)) {
-            // Nothing to be displayed to the user.
-            return $output;
-        }
-        $accesstext = '';
-        $textclasses = '';
-
-        $groupinglabel = $mod->get_grouping_label($textclasses);
-
-            // No link, so display only content.
-        return html_writer::tag('div', $accesstext . $content . $groupinglabel,
-                    array('class' => 'contentwithoutlink '));
-
     }
 
     /**
@@ -509,7 +491,7 @@ class format_wplist_renderer extends format_section_renderer_base {
      * @return string
      */
     public function course_section_cm_completion($course, &$completioninfo, cm_info $mod, $displayoptions = array()) {
-        global $CFG;
+        global $CFG, $USER;
 
         if (!empty($displayoptions['hidecompletion']) || !isloggedin() || isguestuser() || !$mod->uservisible) {
             return "";
@@ -518,15 +500,18 @@ class format_wplist_renderer extends format_section_renderer_base {
             $completioninfo = new completion_info($course);
         }
         $completion = $completioninfo->is_enabled($mod);
+
         if ($completion == COMPLETION_TRACKING_NONE) {
             return "";
         }
 
-        $completiondata = $completioninfo->get_data($mod, true);
+        $isediting = $this->page->user_is_editing();
+        $istrackeduser = $completioninfo->is_tracked_user($USER->id);
 
         $completionicon = '';
 
-        if ($this->page->user_is_editing()) {
+        $completiondata = $completioninfo->get_data($mod, true);
+        if ($isediting) {
             switch ($completion) {
                 case COMPLETION_TRACKING_MANUAL :
                     $completionicon = 'manual-enabled';
@@ -535,29 +520,31 @@ class format_wplist_renderer extends format_section_renderer_base {
                     $completionicon = 'auto-enabled';
                     break;
             }
-        } else if ($completion == COMPLETION_TRACKING_MANUAL) {
-            switch($completiondata->completionstate) {
-                case COMPLETION_INCOMPLETE:
-                    $completionicon = 'manual-n';
-                    break;
-                case COMPLETION_COMPLETE:
-                    $completionicon = 'manual-y';
-                    break;
-            }
         } else {
-            switch($completiondata->completionstate) {
-                case COMPLETION_INCOMPLETE:
-                    $completionicon = 'auto-n';
-                    break;
-                case COMPLETION_COMPLETE:
-                    $completionicon = 'auto-y';
-                    break;
-                case COMPLETION_COMPLETE_PASS:
-                    $completionicon = 'auto-pass';
-                    break;
-                case COMPLETION_COMPLETE_FAIL:
-                    $completionicon = 'auto-fail';
-                    break;
+            if ($completion == COMPLETION_TRACKING_MANUAL) {
+                switch($completiondata->completionstate) {
+                    case COMPLETION_INCOMPLETE:
+                        $completionicon = 'manual-n' . ($completiondata->overrideby ? '-override' : '');
+                        break;
+                    case COMPLETION_COMPLETE:
+                        $completionicon = 'manual-y' . ($completiondata->overrideby ? '-override' : '');
+                        break;
+                }
+            } else {
+                switch($completiondata->completionstate) {
+                    case COMPLETION_INCOMPLETE:
+                        $completionicon = 'auto-n' . ($completiondata->overrideby ? '-override' : '');
+                        break;
+                    case COMPLETION_COMPLETE:
+                        $completionicon = 'auto-y' . ($completiondata->overrideby ? '-override' : '');
+                        break;
+                    case COMPLETION_COMPLETE_PASS:
+                        $completionicon = 'auto-pass';
+                        break;
+                    case COMPLETION_COMPLETE_FAIL:
+                        $completionicon = 'auto-fail';
+                        break;
+                }
             }
         }
         $template = new stdClass();
@@ -567,13 +554,23 @@ class format_wplist_renderer extends format_section_renderer_base {
         $template->courseid = $course->id;
 
         if ($completionicon) {
-            $template->hascompletion = true;
             $formattedname = $mod->get_formatted_name(['escape' => false]);
-            $template->imgalt = get_string('completion-alt-' . $completionicon, 'completion', $formattedname);
+            $template->hascompletion = true;
 
-            if ($this->page->user_is_editing()) {
+            if ($isediting) {
                 $template->editing = true;
             }
+
+            if (!$isediting && $istrackeduser && $completiondata->overrideby) {
+                $args = new stdClass();
+                $args->modname = $formattedname;
+                $overridebyuser = \core_user::get_user($completiondata->overrideby, '*', MUST_EXIST);
+                $args->overrideuser = fullname($overridebyuser);
+                $imgalt = get_string('completion-alt-' . $completionicon, 'completion', $args);
+            } else {
+                $imgalt = get_string('completion-alt-' . $completionicon, 'completion', $formattedname);
+            }
+            $template->imgalt = $imgalt;
 
             if ($completion == COMPLETION_TRACKING_MANUAL) {
                 $template->self = true;
@@ -665,12 +662,11 @@ class format_wplist_renderer extends format_section_renderer_base {
         }
 
         $format = course_get_format($course);
-        $options = $format->get_format_options();
         $maxsections = $format->get_max_sections();
         $lastsection = $format->get_last_section_number();
 
         if ($lastsection >= $maxsections) {
-            return;
+            return '';
         }
 
         $template = new stdClass();
