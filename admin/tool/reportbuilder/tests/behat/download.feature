@@ -23,8 +23,7 @@ Feature: Download reports in different formats
   Scenario Outline: Download a report in the view page in different formats
     When I log in as "manager1"
     And I navigate to "Report builder" in workplace launcher
-    And I click on "Edit content" "link" in the "Report1" "table_row"
-    And I click on "Switch to preview view" "button"
+    And I click on "Preview" "link" in the "Report1" "table_row"
     Then I set the field "Download table data as" to "<format>"
     And I press "Download"
     And I log out

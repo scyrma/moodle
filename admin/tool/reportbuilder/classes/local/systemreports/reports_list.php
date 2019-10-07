@@ -19,7 +19,7 @@
  *
  * @package   tool_reportbuilder
  * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
- * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @author    2018 Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -42,7 +42,7 @@ use tool_wp\db;
  * Class reports_list
  *
  * @copyright 2018 Moodle Pty Ltd <support@moodle.com>
- * @author    2018, Alberto Lara Hernández <albertolara@moodle.com>
+ * @author    2018 Alberto Lara Hernández <albertolara@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @package   tool_reportbuilder
  */
@@ -199,6 +199,13 @@ class reports_list extends system_report {
                 $row->name = format_string($row->name, true, ['escape' => false]);
                 return true;
             });
+        $this->add_action($action);
+
+        // Preview report.
+        $action = (new report_action(
+            new \moodle_url('/admin/tool/reportbuilder/view.php', ['id' => ':id']),
+            new \pix_icon('i/search', get_string('preview'))
+        ));
         $this->add_action($action);
 
         // Duplicate action.
