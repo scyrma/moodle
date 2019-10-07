@@ -26,17 +26,13 @@ namespace tool_program\local\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
-use lang_string;
 use moodle_url;
 use pix_icon;
-use tool_program\local\helpers\program_format;
+use tool_program\local\helpers\program_entity;
 use tool_program\permission;
 use tool_program\persistent\program;
-use tool_reportbuilder\local\helpers\format as reportbuilder_format;
 use tool_reportbuilder\report_action;
-use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
-use context_system;
 use tool_tenant\tenancy;
 
 /**
@@ -64,6 +60,16 @@ class archived_programs_report extends system_report {
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
+
+        // Default columns.
+        if ($column = $this->get_column('tool_program:fullname')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true);
+        }
+        if ($column = $this->get_column('tool_program:timearchived')) {
+            $column->set_is_default(true, 2);
+            $column->set_is_sortable(true, true);
+        }
     }
 
     /**
@@ -90,31 +96,7 @@ class archived_programs_report extends system_report {
      * @return mixed
      */
     protected function set_columns(): void {
-        $this->annotate_entity('tool_program', new lang_string('entityprogram', 'tool_program'));
-
-        // Column "name".
-        $newcolumn = (new report_column(
-            'fullname',
-            new lang_string('name', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_field('tp.fullname')
-            ->set_is_default(true, 1)
-            ->set_is_sortable(true, true);
-        $newcolumn->add_callback([reportbuilder_format::class, 'format_string']);
-        $this->add_column($newcolumn);
-
-        // Column "timearchived".
-        $newcolumn = (new report_column(
-            'timearchived',
-            new lang_string('archivedon', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_field('tp.timearchived')
-            ->set_is_default(true, 2)
-            ->set_is_sortable(true);
-        $newcolumn->add_callback([program_format::class, 'timearchived']);
-        $this->add_column($newcolumn);
+        $this->add_entity(new program_entity('', 'tp', $this->get_program_excluded_columns()));
     }
 
     /**
@@ -171,5 +153,16 @@ class archived_programs_report extends system_report {
      */
     public function row_callback(\stdClass $row): void {
         $this->lastprogram = new program(0, $row);
+    }
+
+    /**
+     * Returns an array with the excluded columns for program_entity.
+     *
+     * @return array
+     */
+    private function get_program_excluded_columns(): array {
+        return ['fullnamewithimage', 'programimage', 'idnumber', 'tags', 'description', 'startdate', 'duedate', 'enddate',
+            'archived', 'allowdirectallocation', 'allocationstartdate', 'allocationenddate', 'visible',
+            'timemodified', 'timecreated', 'numbercoursesunique', 'associatedcertifications', 'numbercurrentallocatedusers'];
     }
 }

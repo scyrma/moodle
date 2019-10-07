@@ -26,24 +26,20 @@ namespace tool_program\local\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
-use lang_string;
 use moodle_url;
 use pix_icon;
-use tool_certification\api;
-use tool_certification\local\helpers\certificationuser_format;
+use tool_certification\local\helpers\certification_entity;
+use tool_certification\local\helpers\certificationuser_entity;
 use tool_organisation\organisation;
-use tool_program\local\helpers\format;
-use tool_program\local\helpers\programcompletion_format;
+use tool_program\local\helpers\programcompletion_entity;
+use tool_program\local\helpers\programuser_entity;
 use tool_program\local\helpers\programuser_format;
 use tool_program\permission;
 use tool_program\persistent\program;
-use tool_program\persistent\program_set;
-use tool_program\persistent\program_set_completion;
 use tool_program\persistent\program_user;
+use tool_reportbuilder\local\entities\user as user_entity;
 use tool_reportbuilder\report_action;
-use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
-use context_system;
 use tool_tenant\tenancy;
 
 /**
@@ -77,22 +73,23 @@ class users_progress_report extends system_report {
      */
     protected function initialise(): void {
         $programid = $this->get_program()->get('id');
-        $pu = 'pu'; // Program users table alias.
-        $pr = 'pr'; // Programs table alias
-        $ps = 'ps'; // Program sets table alias.
-        $psc = 'psc'; // Program set completions table alias.
-        $u = 'u'; // User table alias.
         $tenantid = tenancy::get_tenant_id();
 
-        $this->set_columns($pu, $u, $ps, $psc);
-        $this->set_main_table(program_user::TABLE, $pu);
-        $this->add_base_condition_simple("$pu.programid", $programid);
-        $this->add_base_fields("$pu.id, $pu.certificationid, $pu.programid, $pu.userid, $pu.status, $pu.enddate");
-        $this->add_base_join("INNER JOIN {" . program::TABLE . "} $pr ON $pr.id = $pu.programid");
-        $this->add_base_join("INNER JOIN {" . program_set::TABLE . "} $ps ON $ps.programid = $pu.programid AND $ps.parent = 0");
-        $this->add_base_join("INNER JOIN {user} $u ON $u.id = $pu.userid");
-        $this->add_base_condition_simple("{$pr}.tenantid", $tenantid);
-        $this->add_base_condition_simple("{$u}.deleted", 0);
+        $this->set_columns();
+        $this->set_main_table(program_user::TABLE, 'tpu');
+        $this->add_base_condition_simple('tpu.programid', $programid);
+        $this->add_base_fields('tpu.id, tpu.certificationid, tpu.programid, tpu.userid, tpu.status, tpu.enddate');
+        $this->add_base_join('INNER JOIN {tool_program} tp ON tp.id = tpu.programid');
+        $this->add_base_join('INNER JOIN {tool_program_sets} tps ON tps.programid = tpu.programid AND tps.parent = 0');
+        $this->add_base_join('LEFT JOIN {tool_program_set_completion} tpsc ON tpsc.setid = tps.id AND tpsc.userid = tpu.userid');
+        $this->add_base_join('INNER JOIN {user} u ON u.id = tpu.userid');
+        $this->add_base_join('LEFT JOIN {tool_certification} tc ON tc.id = tpu.certificationid');
+        $this->add_base_join('LEFT JOIN {tool_certification_users} tcu
+        ON tcu.userid = tpu.userid AND tcu.certificationid = tc.id');
+        $this->add_base_join('LEFT JOIN {tool_certification_compltion} tcc
+        ON tcc.certificationid = tpu.certificationid AND tcc.userid = tpu.userid AND tcc.timerevoked = 0');
+        $this->add_base_condition_simple('tp.tenantid', $tenantid);
+        $this->add_base_condition_simple('u.deleted', 0);
 
         // Check tenant id on users in case they have been moved to another tenant.
         [$join, $where, $params] = tenancy::get_users_sql('u', $tenantid);
@@ -102,7 +99,7 @@ class users_progress_report extends system_report {
         if (!permission::has_allocateuser_capability($this->get_program()->get_context())) {
             // Managers with no system capability are only allowed to see the users they manage.
             if ($manager = organisation::get_user_with_jobs()) {
-                [$where, $params] = $manager->get_managed_users_select($u, organisation::PERM_ALLOCATE_PROGRAMS);
+                [$where, $params] = $manager->get_managed_users_select('u', organisation::PERM_ALLOCATE_PROGRAMS);
                 $this->add_base_condition_sql($where, $params);
             }
         }
@@ -110,6 +107,45 @@ class users_progress_report extends system_report {
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
+
+        // Add default columns.
+        if ($column = $this->get_column('user:fullname')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true);
+            $column->add_fields('tpu.id as programuserid,' . implode(',', $this->get_user_columns()));
+            $column->set_callback([programuser_format::class, 'userinfo']);
+        }
+        if ($column = $this->get_column('tool_program_users:startdate')) {
+            $column->set_is_default(true, 2);
+        }
+        if ($column = $this->get_column('tool_program_users:duedate')) {
+            $column->set_is_default(true, 3);
+        }
+        if ($column = $this->get_column('tool_program_users:enddate')) {
+            $column->set_is_default(true, 4);
+        }
+        if ($column = $this->get_column('tool_program_users:timecreated')) {
+            $column->set_is_default(true, 5);
+        }
+        if ($column = $this->get_column('tool_program_users:allocationtype')) {
+            $column->set_is_default(true, 6);
+        }
+        if ($column = $this->get_column('tool_certification:fullnamewithlink')) {
+            $column->set_is_default(true, 7);
+            $column->set_visiblename(new \lang_string('certification', 'tool_program'));
+        }
+        if ($column = $this->get_column('tool_certification_users:certificationstatus')) {
+            $column->set_is_default(true, 8);
+        }
+        if ($column = $this->get_column('tool_program_users:programstatus')) {
+            $column->set_is_default(true, 9);
+        }
+        if ($column = $this->get_column('tool_program_users:programprogress')) {
+            $column->set_is_default(true, 10);
+        }
+        if ($column = $this->get_column('tool_program_set_completion:completeddate')) {
+            $column->set_is_default(true, 11);
+        }
     }
 
     /**
@@ -132,151 +168,13 @@ class users_progress_report extends system_report {
 
     /**
      * Set the columns for the report.
-     *
-     * @param string $pu Program users table alias.
-     * @param string $u Users table alias.
-     * @param string $ps Program sets table alias.
-     * @param string $psc Program set completions table alias.
-     * @return mixed
      */
-    protected function set_columns(string $pu, string $u, string $ps, string $psc): void {
-        $this->annotate_entity(program::TABLE, new lang_string('entityprogram', 'tool_program'));
-        $this->annotate_entity(program_user::TABLE, new lang_string('entityprogramusers', 'tool_program'));
-        $this->annotate_entity(program_set::TABLE, new lang_string('entityprogramset', 'tool_program'));
-        $this->annotate_entity(program_set_completion::TABLE, new lang_string('entityprogramcompletion', 'tool_program'));
-        $this->annotate_entity('user', new lang_string('entityuser', 'tool_reportbuilder'));
-        $this->annotate_entity('tool_organisation_position', new lang_string('entityposition', 'tool_organisation'));
-        $this->annotate_entity('tool_organisation_department', new lang_string('entitydepartment', 'tool_organisation'));
-
-        // Column "userinfo".
-        $newcolumn = (new report_column(
-            'userinfo',
-            new lang_string('fullname', 'tool_program'),
-            'user'
-        ))
-            ->add_fields("$pu.id as programuserid," . implode(',', $this->get_user_columns($u)))
-            ->set_is_default(true, 1);
-        $newcolumn->add_callback([programuser_format::class, 'userinfo']);
-        $this->add_column($newcolumn);
-
-        // Column "startdate".
-        $newcolumn = (new report_column(
-            'startdate',
-            new lang_string('startdate', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_fields("$pu.startdate, $pu.startdatelocked")
-            ->set_is_default(true, 2)
-            ->add_callback([programuser_format::class, 'startdate']);
-        $this->add_column($newcolumn);
-
-        // Column "duedate".
-        $newcolumn = (new report_column(
-            'duedate',
-            new lang_string('duedate', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_fields("$pu.duedate, $pu.duedatelocked")
-            ->set_is_default(true, 3)
-            ->add_callback([programuser_format::class, 'duedate']);
-        $this->add_column($newcolumn);
-
-        // Column "enddate".
-        $newcolumn = (new report_column(
-            'enddate',
-            new lang_string('enddate', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_fields("$pu.enddate, $pu.enddatelocked")
-            ->set_is_default(true, 4)
-            ->add_callback([programuser_format::class, 'enddate']);
-        $this->add_column($newcolumn);
-
-        // Column "allocationdate".
-        $newcolumn = (new report_column(
-            'allocationdate',
-            new lang_string('allocationdate', 'tool_program'),
-            'tool_program_set_completion'
-        ))
-            ->add_field("$pu.timecreated")
-            ->set_is_default(true, 5)
-            ->add_callback([programuser_format::class, 'timecreated']);
-        $this->add_column($newcolumn);
-
-        // Column "allocationtype".
-        $newcolumn = (new report_column(
-            'allocationtype',
-            new lang_string('allocationsource', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_field("$pu.allocationtype")
-            ->set_is_default(true, 6)
-            ->add_callback([programuser_format::class, 'allocationtype']);
-        $this->add_column($newcolumn);
-
-        // Column "certification".
-        $newcolumn = (new report_column(
-            'certificationuser',
-            new lang_string('certification', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_field("$pu.certificationid", 'certificationuser')
-            ->set_is_default(true, 7)
-            ->add_callback([programuser_format::class, 'certificationuser']);
-        $this->add_column($newcolumn);
-
-        // Column "certification status".
-        $tccjoin = "LEFT JOIN {tool_certification_users} tcu
-        ON tcu.certificationid = $pu.certificationid AND tcu.userid = $pu.userid
-        LEFT JOIN {tool_certification_compltion} tcc
-        ON tcc.certificationid = tcu.certificationid
-        AND tcc.userid = tcu.userid
-        AND tcc.timerevoked = 0";
-
-        $newcolumn = (new report_column(
-            'certificationstatus',
-            new lang_string('certificationstatus', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_join($tccjoin)
-            ->add_field(api::get_status_sql_cases(0, 'tcu', 'tcc'), 'status')
-            ->set_is_default(true, 8)
-            ->add_callback([certificationuser_format::class, 'status']);
-        $this->add_column($newcolumn);
-
-        // Column "program status".
-        $newcolumn = (new report_column(
-            'programstatus',
-            new lang_string('programstatus', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_fields("$pu.userid, $pu.certificationid, $pu.programid")
-            ->set_is_default(true, 9)
-            ->add_callback([programuser_format::class, 'programstatus']);
-        $this->add_column($newcolumn);
-
-        // Column "program progress".
-        $newcolumn = (new report_column(
-            'programprogress',
-            new lang_string('programprogress', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_fields("$pu.userid, $pu.certificationid, $pu.programid")
-            ->set_is_default(true, 10)
-            ->add_callback([programuser_format::class, 'programprogress']);
-        $this->add_column($newcolumn);
-
-        // Column "completion date".
-        $newcolumn = (new report_column(
-            'completiondate',
-            new lang_string('completiondate', 'tool_program'),
-            'tool_program_set_completion'
-        ))
-            ->add_join("LEFT JOIN {" . program_set_completion::TABLE . "} $psc ON $psc.setid = $ps.id AND $psc.userid = $pu.userid")
-            ->add_fields("$psc.completeddate")
-            ->set_is_default(true, 11)
-            ->add_callback([programcompletion_format::class, 'completeddate']);
-        $this->add_column($newcolumn);
+    protected function set_columns(): void {
+        $this->add_entity(new programuser_entity('', 'tpu', $this->get_programuser_excluded_columns(), 'tpsc'));
+        $this->add_entity(new programcompletion_entity('', 'tpsc', $this->get_programcompletion_excluded_columns()));
+        $this->add_entity(new user_entity('', 'u'));
+        $this->add_entity(new certification_entity('', 'tc', $this->get_certification_excluded_columns()));
+        $this->add_entity(new certificationuser_entity('', 'tcu', $this->get_certificationuser_excluded_columns(), 'tcc'));
     }
 
     /**
@@ -304,13 +202,50 @@ class users_progress_report extends system_report {
      * Returns an array of user column names prefixed with the given user table alias.
      * TODO we don't need all fields.
      *
-     * @param string $u
      * @return array
      */
-    private function get_user_columns(string $u): array {
+    private function get_user_columns(): array {
         global $DB;
-        return array_map(static function($column) use ($u) {
-            return "$u.$column";
+        return array_map(static function($column) {
+            return "u.$column";
         }, array_keys($DB->get_columns('user')));
+    }
+
+    /**
+     * Returns an array with the excluded columns for programuser_entity.
+     *
+     * @return array
+     */
+    private function get_programuser_excluded_columns(): array {
+        return ['programprogresswithoverview', 'suspended', 'timesuspended', 'timemodified', 'associatedcertification'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for programcompletion_entity.
+     *
+     * @return array
+     */
+    private function get_programcompletion_excluded_columns(): array {
+        return ['completed', 'timemodified', 'timecreated'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certification_entity.
+     *
+     * @return array
+     */
+    private function get_certification_excluded_columns(): array {
+        return ['fullname', 'idnumber', 'timearchived', 'archived', 'startdate', 'duedate', 'expirydate',
+            'allocationstartdate', 'allocationenddate', 'timemodified', 'timecreated'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certificationuser_entity.
+     *
+     * @return array
+     */
+    private function get_certificationuser_excluded_columns(): array {
+        return ['allocationtype', 'startdate', 'duedate', 'expirydate', 'suspended', 'timesuspended', 'timecreated',
+            'timemodified', 'daystakingcertification', 'dayssinceallocation'];
     }
 }

@@ -98,53 +98,61 @@ class programcompletion_entity extends entity_base {
     public function get_columns(): array {
         $columns = [];
 
-        // Column completed.
-        $newcolumn = (new report_column(
-            'completed',
-            new lang_string('completed', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.completeddate")
-            ->add_callback([programcompletion_format::class, 'completed']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['completed'])) {
+            // Column completed.
+            $newcolumn = (new report_column(
+                'completed',
+                new lang_string('completed', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.completeddate")
+                ->add_callback([programcompletion_format::class, 'completed']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column completeddate.
-        $newcolumn = (new report_column(
-            'completeddate',
-            new lang_string('completiondate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.completeddate")
-            ->add_callback([programcompletion_format::class, 'completeddate']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['completeddate'])) {
+            // Column completeddate.
+            $newcolumn = (new report_column(
+                'completeddate',
+                new lang_string('completiondate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.completeddate")
+                ->add_callback([programcompletion_format::class, 'completeddate']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column timemodified.
-        $newcolumn = (new report_column(
-            'timemodified',
-            new lang_string('timemodified', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timemodified")
-            ->add_callback([programcompletion_format::class, 'timemodified']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['timemodified'])) {
+            // Column timemodified.
+            $newcolumn = (new report_column(
+                'timemodified',
+                new lang_string('timemodified', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timemodified")
+                ->add_callback([programcompletion_format::class, 'timemodified']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column timecreated.
-        $newcolumn = (new report_column(
-            'timecreated',
-            new lang_string('timecreated', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timecreated")
-            ->add_callback([programcompletion_format::class, 'timecreated']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['timecreated'])) {
+            // Column timecreated.
+            $newcolumn = (new report_column(
+                'timecreated',
+                new lang_string('timecreated', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timecreated")
+                ->add_callback([programcompletion_format::class, 'timecreated']);
+            $columns[] = $newcolumn;
+        }
 
         return $columns;
     }
@@ -176,45 +184,53 @@ class programcompletion_entity extends entity_base {
     protected function get_filters_or_conditions(bool $iscondition): array {
         $filters = [];
 
-        // Filter completeddate.
-        $filters[] = (new report_filter(
-            $iscondition ? date_condition::class : date_filter::class,
-            'completeddate',
-            new lang_string('completiondate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.completeddate");
+        if (!isset($this->excludecolumns['completeddate'])) {
+            // Filter completeddate.
+            $filters[] = (new report_filter(
+                $iscondition ? date_condition::class : date_filter::class,
+                'completeddate',
+                new lang_string('completiondate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("$this->tablealias.completeddate");
+        }
 
-        // Filter timemodified.
-        $filters[] = (new report_filter(
-            $iscondition ? date_condition::class : date_filter::class,
-            'timemodified',
-            new lang_string('timemodified', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.timemodified");
+        if (!isset($this->excludecolumns['timemodified'])) {
+            // Filter timemodified.
+            $filters[] = (new report_filter(
+                $iscondition ? date_condition::class : date_filter::class,
+                'timemodified',
+                new lang_string('timemodified', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("$this->tablealias.timemodified");
+        }
 
-        // Filter timecreated.
-        $filters[] = (new report_filter(
-            $iscondition ? date_condition::class : date_filter::class,
-            'timecreated',
-            new lang_string('timecreated', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("$this->tablealias.timecreated");
+        if (!isset($this->excludecolumns['timecreated'])) {
+            // Filter timecreated.
+            $filters[] = (new report_filter(
+                $iscondition ? date_condition::class : date_filter::class,
+                'timecreated',
+                new lang_string('timecreated', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("$this->tablealias.timecreated");
+        }
 
-        // Filter Completed.
-        $filters[] = (new report_filter(
-            checkbox::class,
-            'completed',
-            new lang_string('completed', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_field_sql("(CASE WHEN ({$this->tablealias}.completeddate > 0) THEN 1 ELSE 0 END)");
+        if (!isset($this->excludecolumns['completed'])) {
+            // Filter Completed.
+            $filters[] = (new report_filter(
+                checkbox::class,
+                'completed',
+                new lang_string('completed', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_field_sql("(CASE WHEN ({$this->tablealias}.completeddate > 0) THEN 1 ELSE 0 END)");
+        }
 
         // Filter program status.
         $filters[] = (new report_filter(

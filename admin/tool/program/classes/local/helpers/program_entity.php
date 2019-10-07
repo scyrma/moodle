@@ -108,321 +108,391 @@ class program_entity extends entity_base {
         $columns = [];
         $ismssql = $DB->get_dbfamily() === 'mssql';
 
-        // Column fullname.
-        $newcolumn = (new report_column(
-            'fullname',
-            new lang_string('programname', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.fullname")
-            ->add_callback([program_format::class, 'fullname']);
-        $columns[] = $newcolumn;
-
-        // Column fullname with image.
-        $newcolumn = (new report_column(
-            'fullnamewithimage',
-            new lang_string('programnamewithimage', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.fullname")
-            ->add_field("$this->tablealias.id")
-            ->add_callback([program_format::class, 'fullnamewithimage']);
-        $columns[] = $newcolumn;
-
-        // Column program picture.
-        $newcolumn = (new report_column(
-            'programimage',
-            new lang_string('programimage', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.id")
-            ->add_callback([program_format::class, 'programimage']);
-        $columns[] = $newcolumn;
-
-        // Column idnumber.
-        $newcolumn = (new report_column(
-            'idnumber',
-            new lang_string('idnumber', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.idnumber")
-            ->add_callback([program_format::class, 'idnumber']);
-        $columns[] = $newcolumn;
-
-        // Column tags.
-        list($tagsql, $tagparams) = db::sql_tag_field($this->tablealias, 'tool_program');
-
-        $newcolumn = (new report_column(
-            'tags',
-            new lang_string('tags', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field($tagsql, 'tags', $tagparams)
-            ->set_groupby_sql($this->tablealias . '.id')
-            ->add_callback([format::class, 'tags_replace_all'])
-            ->add_aggregation_callback('groupconcat', [format::class, 'tags_replace_all'])
-            ->add_aggregation_callback('groupconcatdistinct', [format::class, 'tags_replace_all'], true)
-            ->disable_aggregation('count')
-            ->disable_aggregation('countdistinct');
-        if ($ismssql) {
-            // MsSQL can not aggregate the columns with subquery.
-            $newcolumn
-                ->disable_aggregation('groupconcat')
-                ->disable_aggregation('groupconcatdistinct');
+        if (!isset($this->excludecolumns['fullname'])) {
+            // Column fullname.
+            $newcolumn = (new report_column(
+                'fullname',
+                new lang_string('programname', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.fullname")
+                ->add_callback([program_format::class, 'fullname']);
+            $columns[] = $newcolumn;
         }
 
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['fullnamewithimage'])) {
+            // Column fullname with image.
+            $newcolumn = (new report_column(
+                'fullnamewithimage',
+                new lang_string('programnamewithimage', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.fullname")
+                ->add_field("$this->tablealias.id")
+                ->add_callback([program_format::class, 'fullnamewithimage']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column description.
-        $newcolumn = (new report_column(
-            'description',
-            new lang_string('description', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_LONGTEXT)
-            ->add_field("$this->tablealias.description")
-            ->add_field("$this->tablealias.descriptionformat")
-            ->add_field("$this->tablealias.id")
-            ->add_callback([program_format::class, 'description']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['programimage'])) {
+            // Column program picture.
+            $newcolumn = (new report_column(
+                'programimage',
+                new lang_string('programimage', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.id")
+                ->add_callback([program_format::class, 'programimage']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column startdate.
-        $newcolumn = (new report_column(
-            'startdate',
-            new lang_string('startdate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.startdatetype")
-            ->add_field("$this->tablealias.startdateabsolute")
-            ->add_field("$this->tablealias.startdaterelative")
-            ->add_callback([program_format::class, 'startdate'])
-            ->disable_aggregation('groupconcat')
-            ->disable_aggregation('groupconcatdistinct');;
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['idnumber'])) {
+            // Column idnumber.
+            $newcolumn = (new report_column(
+                'idnumber',
+                new lang_string('idnumber', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.idnumber")
+                ->add_callback([program_format::class, 'idnumber']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column duedate.
-        $newcolumn = (new report_column(
-            'duedate',
-            new lang_string('duedate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.duedatetype")
-            ->add_field("$this->tablealias.duedateabsolute")
-            ->add_field("$this->tablealias.duedaterelative")
-            ->add_callback([program_format::class, 'duedate'])
-            ->disable_aggregation('groupconcat')
-            ->disable_aggregation('groupconcatdistinct');;
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['tags'])) {
+            // Column tags.
+            list($tagsql, $tagparams) = db::sql_tag_field($this->tablealias, 'tool_program');
 
-        // Column enddate.
-        $newcolumn = (new report_column(
-            'enddate',
-            new lang_string('enddate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.enddatetype")
-            ->add_field("$this->tablealias.enddateabsolute")
-            ->add_field("$this->tablealias.enddaterelative")
-            ->add_callback([program_format::class, 'enddate'])
-            ->disable_aggregation('groupconcat')
-            ->disable_aggregation('groupconcatdistinct');;
-        $columns[] = $newcolumn;
+            $newcolumn = (new report_column(
+                'tags',
+                new lang_string('tags', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($tagsql, 'tags', $tagparams)
+                ->set_groupby_sql($this->tablealias . '.id')
+                ->add_callback([format::class, 'tags_replace_all'])
+                ->add_aggregation_callback('groupconcat', [format::class, 'tags_replace_all'])
+                ->add_aggregation_callback('groupconcatdistinct', [format::class, 'tags_replace_all'], true)
+                ->disable_aggregation('count')
+                ->disable_aggregation('countdistinct');
+            if ($ismssql) {
+                // MsSQL can not aggregate the columns with subquery.
+                $newcolumn
+                    ->disable_aggregation('groupconcat')
+                    ->disable_aggregation('groupconcatdistinct');
+            }
+            $columns[] = $newcolumn;
+        }
 
-        // Column archived.
-        $newcolumn = (new report_column(
-            'archived',
-            new lang_string('archived', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_BOOLEAN)
-            ->add_field("$this->tablealias.archived")
-            ->add_callback([program_format::class, 'archived']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['description'])) {
+            // Column description.
+            $newcolumn = (new report_column(
+                'description',
+                new lang_string('description', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_LONGTEXT)
+                ->add_field("$this->tablealias.description")
+                ->add_field("$this->tablealias.descriptionformat")
+                ->add_field("$this->tablealias.id")
+                ->add_callback([program_format::class, 'description']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column timearchived.
-        $newcolumn = (new report_column(
-            'timearchived',
-            new lang_string('archivedon', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timearchived")
-            ->add_callback([program_format::class, 'timearchived']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['startdate'])) {
+            // Column startdate.
+            $newcolumn = (new report_column(
+                'startdate',
+                new lang_string('startdate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.startdatetype")
+                ->add_field("$this->tablealias.startdateabsolute")
+                ->add_field("$this->tablealias.startdaterelative")
+                ->add_callback([program_format::class, 'startdate'])
+                ->disable_aggregation('groupconcat')
+                ->disable_aggregation('groupconcatdistinct');;
+            $columns[] = $newcolumn;
+        }
 
-        // Column allowdirectallocation.
-        $newcolumn = (new report_column(
-            'allowdirectallocation',
-            new lang_string('allowdirectallocation', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_BOOLEAN)
-            ->add_field("$this->tablealias.allowdirectallocation")
-            ->add_callback([program_format::class, 'allowdirectallocation']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['duedate'])) {
+            // Column duedate.
+            $newcolumn = (new report_column(
+                'duedate',
+                new lang_string('duedate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.duedatetype")
+                ->add_field("$this->tablealias.duedateabsolute")
+                ->add_field("$this->tablealias.duedaterelative")
+                ->add_callback([program_format::class, 'duedate'])
+                ->disable_aggregation('groupconcat')
+                ->disable_aggregation('groupconcatdistinct');;
+            $columns[] = $newcolumn;
+        }
 
-        // Column allocationstartdate.
-        $newcolumn = (new report_column(
-            'allocationstartdate',
-            new lang_string('allocationstartdate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.allocationstartdatetype")
-            ->add_field("$this->tablealias.allocationstartdateabsolute")
-            ->add_callback([program_format::class, 'allocationstartdate']);
-        $newcolumn->add_aggregation_callback('max', [program_format::class, 'allocationstartdate']);
-        $newcolumn->add_aggregation_callback('min', [program_format::class, 'allocationstartdate']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['enddate'])) {
+            // Column enddate.
+            $newcolumn = (new report_column(
+                'enddate',
+                new lang_string('enddate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.enddatetype")
+                ->add_field("$this->tablealias.enddateabsolute")
+                ->add_field("$this->tablealias.enddaterelative")
+                ->add_callback([program_format::class, 'enddate'])
+                ->disable_aggregation('groupconcat')
+                ->disable_aggregation('groupconcatdistinct');;
+            $columns[] = $newcolumn;
+        }
 
-        // Column allocationenddate.
-        $newcolumn = (new report_column(
-            'allocationenddate',
-            new lang_string('allocationenddate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.allocationenddateabsolute")
-            ->add_field("$this->tablealias.allocationstartdateabsolute")
-            ->add_field("$this->tablealias.allocationstartdatetype")
-            ->add_field("$this->tablealias.allocationenddaterelative")
-            ->add_field("$this->tablealias.allocationenddatetype")
-            ->add_callback([program_format::class, 'allocationenddate']);
-        $newcolumn->add_aggregation_callback('max', [program_format::class, 'allocationenddate']);
-        $newcolumn->add_aggregation_callback('min', [program_format::class, 'allocationenddate']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['archived'])) {
+            // Column archived.
+            $newcolumn = (new report_column(
+                'archived',
+                new lang_string('archived', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_BOOLEAN)
+                ->add_field("$this->tablealias.archived")
+                ->add_callback([program_format::class, 'archived']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column visible.
-        $newcolumn = (new report_column(
-            'visible',
-            new lang_string('visible', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_BOOLEAN)
-            ->add_field("$this->tablealias.visible")
-            ->add_callback([program_format::class, 'visible']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['timearchived'])) {
+            // Column timearchived.
+            $newcolumn = (new report_column(
+                'timearchived',
+                new lang_string('archivedon', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timearchived")
+                ->add_callback([program_format::class, 'timearchived']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column timemodified.
-        $newcolumn = (new report_column(
-            'timemodified',
-            new lang_string('timemodified', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timemodified")
-            ->add_callback([program_format::class, 'timemodified']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['allowdirectallocation'])) {
+            // Column allowdirectallocation.
+            $newcolumn = (new report_column(
+                'allowdirectallocation',
+                new lang_string('allowdirectallocation', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_BOOLEAN)
+                ->add_field("$this->tablealias.allowdirectallocation")
+                ->add_callback([program_format::class, 'allowdirectallocation']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column timecreated.
-        $newcolumn = (new report_column(
-            'timecreated',
-            new lang_string('timecreated', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timecreated")
-            ->add_callback([program_format::class, 'timecreated']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['allocationstartdate'])) {
+            // Column allocationstartdate.
+            $newcolumn = (new report_column(
+                'allocationstartdate',
+                new lang_string('allocationstartdate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.allocationstartdatetype")
+                ->add_field("$this->tablealias.allocationstartdateabsolute")
+                ->add_callback([program_format::class, 'allocationstartdate']);
+            $newcolumn->add_aggregation_callback('max', [program_format::class, 'allocationstartdate']);
+            $newcolumn->add_aggregation_callback('min', [program_format::class, 'allocationstartdate']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column numbercoursesunique.
-        $tpc = \tool_wp\db::generate_alias();
-        $tps = \tool_wp\db::generate_alias();
-        $tp = \tool_wp\db::generate_alias();
-        $sql = "(SELECT COUNT(DISTINCT($tpc.courseid))
+        if (!isset($this->excludecolumns['allocationenddate'])) {
+            // Column allocationenddate.
+            $newcolumn = (new report_column(
+                'allocationenddate',
+                new lang_string('allocationenddate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.allocationenddateabsolute")
+                ->add_field("$this->tablealias.allocationstartdateabsolute")
+                ->add_field("$this->tablealias.allocationstartdatetype")
+                ->add_field("$this->tablealias.allocationenddaterelative")
+                ->add_field("$this->tablealias.allocationenddatetype")
+                ->add_callback([program_format::class, 'allocationenddate']);
+            $newcolumn->add_aggregation_callback('max', [program_format::class, 'allocationenddate']);
+            $newcolumn->add_aggregation_callback('min', [program_format::class, 'allocationenddate']);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['visible'])) {
+            // Column visible.
+            $newcolumn = (new report_column(
+                'visible',
+                new lang_string('visible', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_BOOLEAN)
+                ->add_field("$this->tablealias.visible")
+                ->add_callback([program_format::class, 'visible']);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['timemodified'])) {
+            // Column timemodified.
+            $newcolumn = (new report_column(
+                'timemodified',
+                new lang_string('timemodified', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timemodified")
+                ->add_callback([program_format::class, 'timemodified']);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['timecreated'])) {
+            // Column timecreated.
+            $newcolumn = (new report_column(
+                'timecreated',
+                new lang_string('timecreated', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timecreated")
+                ->add_callback([program_format::class, 'timecreated']);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['numbercoursesunique'])) {
+            // Column numbercoursesunique.
+            $tpc = \tool_wp\db::generate_alias();
+            $tps = \tool_wp\db::generate_alias();
+            $tp = \tool_wp\db::generate_alias();
+            $sql = "(SELECT COUNT(DISTINCT($tpc.courseid))
                 FROM {tool_program_courses} $tpc
                 LEFT JOIN {tool_program_sets} $tps ON $tps.id = $tpc.setid
                 LEFT JOIN {tool_program} $tp ON $tp.id = $tps.programid
                 WHERE programid = $this->tablealias.id)";
-        $newcolumn = (new report_column(
-            'numbercoursesunique',
-            new lang_string('numbercoursesinprogramunique', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_groupby_sql("$this->tablealias.id")
-            ->set_type(constants::DB_TYPE_NUMBER)
-            ->add_field($sql, 'numbercoursesunique');
-        if ($ismssql) {
-            columns::disable_column_aggregation($newcolumn);
+            $newcolumn = (new report_column(
+                'numbercoursesunique',
+                new lang_string('numbercoursesinprogramunique', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_groupby_sql("$this->tablealias.id")
+                ->set_type(constants::DB_TYPE_NUMBER)
+                ->add_field($sql, 'numbercoursesunique');
+            if ($ismssql) {
+                columns::disable_column_aggregation($newcolumn);
+            }
+            $columns[] = $newcolumn;
         }
-        $columns[] = $newcolumn;
 
-        // Column associatedcertifications.
-        $c = \tool_wp\db::generate_alias();
-        $p = \tool_wp\db::generate_alias();
-        $groupconcatsql = db::sql_group_concat("$c.fullname");
-        $sql = "(SELECT $groupconcatsql
+        if (!isset($this->excludecolumns['associatedcertifications'])) {
+            // Column associatedcertifications.
+            $c = \tool_wp\db::generate_alias();
+            $p = \tool_wp\db::generate_alias();
+            $groupconcatsql = db::sql_group_concat("$c.fullname");
+            $sql = "(SELECT $groupconcatsql
                 FROM {tool_certification} $c
                 LEFT JOIN {tool_program} $p
                 ON $c.program = $p.id
                 WHERE $p.id = $this->tablealias.id
                 GROUP BY $p.id)";
 
-        $newcolumn = (new report_column(
-            'associatedcertifications',
-            new lang_string('associatedcertifications', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field($sql, "associatedcertifications")
-            ->add_callback([format::class, 'format_string'])
-            ->set_groupby_sql($this->tablealias . '.id');
-        if ($ismssql) {
-            columns::disable_column_aggregation($newcolumn);
+            $newcolumn = (new report_column(
+                'associatedcertifications',
+                new lang_string('associatedcertifications', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($sql, "associatedcertifications")
+                ->add_callback([format::class, 'format_string'])
+                ->set_groupby_sql($this->tablealias . '.id');
+            if ($ismssql) {
+                columns::disable_column_aggregation($newcolumn);
+            }
+            $columns[] = $newcolumn;
         }
-        $columns[] = $newcolumn;
 
-        // Column numbercurrentallocatedusers.
-        $p = \tool_wp\db::generate_alias();
-        $pu = \tool_wp\db::generate_alias();
-        $sql = "(SELECT COUNT(DISTINCT($pu.userid))
+        if (!isset($this->excludecolumns['associatedcertificationswithlink'])) {
+            // Column associatedcertificationswithlink.
+            $c = \tool_wp\db::generate_alias();
+            $p = \tool_wp\db::generate_alias();
+            $string = \html_writer::span('{{fullname}}', '', ['data-id' => '{{id}}']);
+            $stringparams = ['{{id}}' => $c . '.id', '{{fullname}}' => $c . '.fullname'];
+            [$placeholdersql, $placeholderparams] = db::sql_string_with_placeholders($string, $stringparams);
+            $groupconcatsql = db::sql_group_concat($placeholdersql);
+            $sql = "(SELECT $groupconcatsql
+                FROM {tool_certification} $c
+                LEFT JOIN {tool_program} $p
+                ON $c.program = $p.id
+                WHERE $p.id = $this->tablealias.id
+                GROUP BY $p.id)";
+
+            $newcolumn = (new report_column(
+                'associatedcertificationswithlink',
+                new lang_string('associatedcertificationswithlinks', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($sql, 'associatedcertifications', $placeholderparams)
+                ->add_callback([program_format::class, 'associatedcertificationswithlink'])
+                ->set_groupby_sql($this->tablealias . '.id');
+            if ($ismssql) {
+                columns::disable_column_aggregation($newcolumn);
+            }
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['numbercurrentallocatedusers'])) {
+            // Column numbercurrentallocatedusers.
+            $p = \tool_wp\db::generate_alias();
+            $pu = \tool_wp\db::generate_alias();
+            $sql = "(SELECT COUNT(DISTINCT($pu.userid))
                 FROM {tool_program_users} $pu
                 LEFT JOIN {tool_program} $p
                 ON $pu.programid = $p.id
                 WHERE $p.id = $this->tablealias.id
                 GROUP BY $p.id)";
 
-        $newcolumn = (new report_column(
-            'numbercurrentallocatedusers',
-            new lang_string('numbercurrentallocatedusers', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field($sql, "numbercurrentallocatedusers")
-            ->add_callback([format::class, 'format_string'])
-            ->set_groupby_sql($this->tablealias . '.id');
-        if ($ismssql) {
-            columns::disable_column_aggregation($newcolumn);
+            $newcolumn = (new report_column(
+                'numbercurrentallocatedusers',
+                new lang_string('numbercurrentallocatedusers', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($sql, "numbercurrentallocatedusers")
+                ->add_callback([format::class, 'format_string'])
+                ->set_groupby_sql($this->tablealias . '.id');
+            if ($ismssql) {
+                columns::disable_column_aggregation($newcolumn);
+            }
+            $columns[] = $newcolumn;
         }
-        $columns[] = $newcolumn;
 
         // Columns from program custom fields.
         $cfcolumns = $this->customfields->get_columns();

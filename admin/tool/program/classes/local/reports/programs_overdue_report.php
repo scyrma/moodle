@@ -157,8 +157,39 @@ class programs_overdue_report extends system_report {
      */
     protected function set_columns($tp = 'tp', $tpu = 'tpu', $u = 'u', $tcu = 'tcu', $tpsc = 'tpsc'): void {
         $this->add_entity(new user('', $u));
-        $this->add_entity(new program_entity('', $tp));
-        $this->add_entity(new programuser_entity('', $tpu, [], $tpsc));
-        $this->add_entity(new certificationuser_entity('', $tcu));
+        $this->add_entity(new program_entity('', $tp, $this->get_program_excluded_columns()));
+        $this->add_entity(new programuser_entity('', $tpu, $this->get_programuser_excluded_columns(), $tpsc));
+        $this->add_entity(new certificationuser_entity('', $tcu, $this->get_certificationuser_excluded_columns()));
+    }
+
+    /**
+     * Returns an array with the excluded columns for program_entity.
+     *
+     * @return array
+     */
+    private function get_program_excluded_columns(): array {
+        return ['fullnamewithimage', 'programimage', 'idnumber', 'description', 'startdate', 'duedate', 'enddate',
+            'archived', 'allowdirectallocation', 'allocationstartdate', 'allocationenddate', 'visible',
+            'timemodified', 'timecreated', 'numbercoursesunique', 'associatedcertifications', 'numbercurrentallocatedusers'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for programuser_entity.
+     *
+     * @return array
+     */
+    private function get_programuser_excluded_columns(): array {
+        return ['startdate', 'enddate', 'programprogresswithoverview', 'suspended', 'timesuspended', 'allocationtype',
+            'timecreated', 'timemodified'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certificationuser_entity.
+     *
+     * @return array
+     */
+    private function get_certificationuser_excluded_columns(): array {
+        return ['allocationtype', 'startdate', 'duedate', 'suspended', 'timesuspended', 'timecreated', 'timemodified',
+            'certificationstatus', 'daystakingcertification', 'dayssinceallocation'];
     }
 }

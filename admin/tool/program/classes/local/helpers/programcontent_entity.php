@@ -90,169 +90,188 @@ class programcontent_entity extends entity_base {
      */
     public function get_columns(): array {
         global $DB;
-        // Column setname.
-        $newcolumn = (new report_column(
-            'setname',
-            new lang_string('programsetname', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.name")
-            ->add_callback([format::class, 'format_string']);
-        $columns[] = $newcolumn;
+        $columns = [];
 
-        // Column parentsetname.
-        $newcolumn = (new report_column(
-            'parentsetname',
-            new lang_string('programparentsetname', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("(SELECT name FROM {tool_program_sets} WHERE id = $this->tablealias.parent)", "parentsetname")
-            ->set_groupby_sql("$this->tablealias.parent")
-            ->add_callback([format::class, 'format_string']);
-        if ($DB->get_dbfamily() === 'mssql') {
-            columns::disable_column_aggregation($newcolumn);
+        if (!isset($this->excludecolumns['setname'])) {
+            // Column setname.
+            $newcolumn = (new report_column(
+                'setname',
+                new lang_string('programsetname', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.name")
+                ->add_callback([format::class, 'format_string']);
+            $columns[] = $newcolumn;
         }
-        $columns[] = $newcolumn;
 
-        // Column completioncriteria.
-        $newcolumn = (new report_column(
-            'completioncriteria',
-            new lang_string('completioncriteria', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.completioncriteria")
-            ->add_field("$this->tablealias.completionatleast")
-            ->add_callback([programcontent_format::class, 'completioncriteria'])
-            ->add_aggregation_callback('groupconcat', [programcontent_format::class, 'completioncriteria'])
-            ->add_aggregation_callback('groupconcatdistinct', [programcontent_format::class, 'completioncriteria']);
-        $columns[] = $newcolumn;
-
-        // Column listcoursescommaseparated.
-        $c = \tool_wp\db::generate_alias();
-        $pc = \tool_wp\db::generate_alias();
-        $groupconcatsql = db::sql_group_concat("$c.fullname");
-        $sql = "(SELECT $groupconcatsql
-        FROM {course} $c
-        LEFT JOIN {tool_program_courses} $pc
-        ON $c.id = $pc.courseid
-        WHERE $pc.setid = $this->tablealias.id
-        GROUP BY $pc.setid)";
-
-        $newcolumn = (new report_column(
-            'coursesinset',
-            new lang_string('coursesinset', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field($sql, 'coursesinset')
-            ->set_groupby_sql("$this->tablealias.id")
-            ->add_callback([format::class, 'format_string']);
-        columns::disable_column_aggregation($newcolumn);
-        $columns[] = $newcolumn;
-
-        // Column List of courses (one per line).
-        $c2 = \tool_wp\db::generate_alias();
-        $pc2 = \tool_wp\db::generate_alias();
-        $groupconcatsql = db::sql_group_concat("$c2.fullname", '<br>');
-        $sql = "(SELECT $groupconcatsql
-        FROM {course} $c2
-        LEFT JOIN {tool_program_courses} $pc2
-        ON $c2.id = $pc2.courseid
-        WHERE $pc2.setid = $this->tablealias.id
-        GROUP BY $pc2.setid)";
-
-        $newcolumn = (new report_column(
-            'coursesinsetlineseparated',
-            new lang_string('coursesinsetlines', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field($sql, 'coursesinset')
-            ->set_groupby_sql("$this->tablealias.id")
-            ->add_callback([format::class, 'format_string']);
-        columns::disable_column_aggregation($newcolumn);
-        $columns[] = $newcolumn;
-
-        // List of courses with links (one per line).
-        $c3 = \tool_wp\db::generate_alias();
-        $pc3 = \tool_wp\db::generate_alias();
-
-        $string = \html_writer::span('{{fullname}}', '', ['data-id' => '{{id}}']);
-        $stringparams = ['{{id}}' => $c3 . '.id', '{{fullname}}' => $c3 . '.fullname'];
-        [$placeholdersql, $placeholderparams] = db::sql_string_with_placeholders($string, $stringparams);
-        $groupconcat = db::sql_group_concat($placeholdersql, '<br>');
-
-        $sql = "(SELECT $groupconcat
-        FROM {course} $c3
-        LEFT JOIN {tool_program_courses} $pc3
-        ON $c3.id = $pc3.courseid
-        WHERE $pc3.setid = $this->tablealias.id
-        GROUP BY $pc3.setid)";
-
-        $newcolumn = (new report_column(
-            'coursesinsetlineseparatedlinks',
-            new lang_string('coursesinsetlineslinks', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field($sql, 'coursesinsetlineseparatedlinks', $placeholderparams)
-            ->set_groupby_sql($this->tablealias . '.id')
-            ->add_callback([programcontent_format::class, 'textwithlink']);
-        columns::disable_column_aggregation($newcolumn);
-        $columns[] = $newcolumn;
-
-        // List of courses with links (comma separated).
-        $c4 = \tool_wp\db::generate_alias();
-        $pc4 = \tool_wp\db::generate_alias();
-
-        $string = \html_writer::span('{{fullname}}', '', ['data-id' => '{{id}}']);
-        $stringparams = ['{{id}}' => $c4 . '.id', '{{fullname}}' => $c4 . '.fullname'];
-        [$placeholdersql, $placeholderparams] = db::sql_string_with_placeholders($string, $stringparams);
-        $groupconcat = db::sql_group_concat($placeholdersql);
-
-        $sql = "(SELECT $groupconcat
-        FROM {course} $c4
-        LEFT JOIN {tool_program_courses} $pc4
-        ON $c4.id = $pc4.courseid
-        WHERE $pc4.setid = $this->tablealias.id
-        GROUP BY $pc4.setid)";
-
-        $newcolumn = (new report_column(
-            'coursesinsetcommaseparatedlinks',
-            new lang_string('coursesinsetlinks', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field($sql, 'coursesinsetcommaseparatedlinks', $placeholderparams)
-            ->set_groupby_sql($this->tablealias . '.id')
-            ->add_callback([programcontent_format::class, 'textwithlink']);
-        columns::disable_column_aggregation($newcolumn);
-        $columns[] = $newcolumn;
-
-        // Column numbercoursesinset.
-        $newcolumn = (new report_column(
-            'numbercoursesinset',
-            new lang_string('numbercoursesinset', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_NUMBER)
-            ->add_field("(SELECT COUNT(id) FROM {tool_program_courses} WHERE setid = $this->tablealias.id)", 'numbercoursesinset')
-            ->set_groupby_sql("$this->tablealias.id");
-        if ($DB->get_dbfamily() === 'mssql') {
-            columns::disable_column_aggregation($newcolumn);
+        if (!isset($this->excludecolumns['parentsetname'])) {
+            // Column parentsetname.
+            $newcolumn = (new report_column(
+                'parentsetname',
+                new lang_string('programparentsetname', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("(SELECT name FROM {tool_program_sets} WHERE id = $this->tablealias.parent)", 'parentsetname')
+                ->set_groupby_sql("$this->tablealias.parent")
+                ->add_callback([format::class, 'format_string']);
+            if ($DB->get_dbfamily() === 'mssql') {
+                columns::disable_column_aggregation($newcolumn);
+            }
+            $columns[] = $newcolumn;
         }
-        $columns[] = $newcolumn;
+
+        if (!isset($this->excludecolumns['completioncriteria'])) {
+            // Column completioncriteria.
+            $newcolumn = (new report_column(
+                'completioncriteria',
+                new lang_string('completioncriteria', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.completioncriteria")
+                ->add_field("$this->tablealias.completionatleast")
+                ->add_callback([programcontent_format::class, 'completioncriteria'])
+                ->add_aggregation_callback('groupconcat', [programcontent_format::class, 'completioncriteria'])
+                ->add_aggregation_callback('groupconcatdistinct', [programcontent_format::class, 'completioncriteria']);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['coursesinset'])) {
+            // Column listcoursescommaseparated.
+            $c = \tool_wp\db::generate_alias();
+            $pc = \tool_wp\db::generate_alias();
+            $groupconcatsql = db::sql_group_concat("$c.fullname");
+            $sql = "(SELECT $groupconcatsql
+            FROM {course} $c
+            LEFT JOIN {tool_program_courses} $pc
+            ON $c.id = $pc.courseid
+            WHERE $pc.setid = $this->tablealias.id
+            GROUP BY $pc.setid)";
+
+            $newcolumn = (new report_column(
+                'coursesinset',
+                new lang_string('coursesinset', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($sql, 'coursesinset')
+                ->set_groupby_sql("$this->tablealias.id")
+                ->add_callback([format::class, 'format_string']);
+            columns::disable_column_aggregation($newcolumn);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['coursesinsetlineseparated'])) {
+            // Column List of courses (one per line).
+            $c2 = \tool_wp\db::generate_alias();
+            $pc2 = \tool_wp\db::generate_alias();
+            $groupconcatsql = db::sql_group_concat("$c2.fullname", '<br>');
+            $sql = "(SELECT $groupconcatsql
+            FROM {course} $c2
+            LEFT JOIN {tool_program_courses} $pc2
+            ON $c2.id = $pc2.courseid
+            WHERE $pc2.setid = $this->tablealias.id
+            GROUP BY $pc2.setid)";
+
+            $newcolumn = (new report_column(
+                'coursesinsetlineseparated',
+                new lang_string('coursesinsetlines', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($sql, 'coursesinset')
+                ->set_groupby_sql("$this->tablealias.id")
+                ->add_callback([format::class, 'format_string']);
+            columns::disable_column_aggregation($newcolumn);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['coursesinsetlineseparatedlinks'])) {
+            // List of courses with links (one per line).
+            $c3 = \tool_wp\db::generate_alias();
+            $pc3 = \tool_wp\db::generate_alias();
+
+            $string = \html_writer::span('{{fullname}}', '', ['data-id' => '{{id}}']);
+            $stringparams = ['{{id}}' => $c3 . '.id', '{{fullname}}' => $c3 . '.fullname'];
+            [$placeholdersql, $placeholderparams] = db::sql_string_with_placeholders($string, $stringparams);
+            $groupconcat = db::sql_group_concat($placeholdersql, '<br>');
+
+            $sql = "(SELECT $groupconcat
+            FROM {course} $c3
+            LEFT JOIN {tool_program_courses} $pc3
+            ON $c3.id = $pc3.courseid
+            WHERE $pc3.setid = $this->tablealias.id
+            GROUP BY $pc3.setid)";
+
+            $newcolumn = (new report_column(
+                'coursesinsetlineseparatedlinks',
+                new lang_string('coursesinsetlineslinks', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($sql, 'coursesinsetlineseparatedlinks', $placeholderparams)
+                ->set_groupby_sql($this->tablealias . '.id')
+                ->add_callback([programcontent_format::class, 'textwithlink']);
+            columns::disable_column_aggregation($newcolumn);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['coursesinsetcommaseparatedlinks'])) {
+            // List of courses with links (comma separated).
+            $c4 = \tool_wp\db::generate_alias();
+            $pc4 = \tool_wp\db::generate_alias();
+
+            $string = \html_writer::span('{{fullname}}', '', ['data-id' => '{{id}}']);
+            $stringparams = ['{{id}}' => $c4 . '.id', '{{fullname}}' => $c4 . '.fullname'];
+            [$placeholdersql, $placeholderparams] = db::sql_string_with_placeholders($string, $stringparams);
+            $groupconcat = db::sql_group_concat($placeholdersql);
+
+            $sql = "(SELECT $groupconcat
+            FROM {course} $c4
+            LEFT JOIN {tool_program_courses} $pc4
+            ON $c4.id = $pc4.courseid
+            WHERE $pc4.setid = $this->tablealias.id
+            GROUP BY $pc4.setid)";
+
+            $newcolumn = (new report_column(
+                'coursesinsetcommaseparatedlinks',
+                new lang_string('coursesinsetlinks', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field($sql, 'coursesinsetcommaseparatedlinks', $placeholderparams)
+                ->set_groupby_sql($this->tablealias . '.id')
+                ->add_callback([programcontent_format::class, 'textwithlink']);
+            columns::disable_column_aggregation($newcolumn);
+            $columns[] = $newcolumn;
+        }
+
+        if (!isset($this->excludecolumns['numbercoursesinset'])) {
+            // Column numbercoursesinset.
+            $sql = "(SELECT COUNT(id) FROM {tool_program_courses} WHERE setid = $this->tablealias.id)";
+            $newcolumn = (new report_column(
+                'numbercoursesinset',
+                new lang_string('numbercoursesinset', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_NUMBER)
+                ->add_field($sql, 'numbercoursesinset')
+                ->set_groupby_sql("$this->tablealias.id");
+            if ($DB->get_dbfamily() === 'mssql') {
+                columns::disable_column_aggregation($newcolumn);
+            }
+            $columns[] = $newcolumn;
+        }
 
         return $columns;
     }

@@ -27,17 +27,13 @@ namespace tool_program\local\reports;
 defined('MOODLE_INTERNAL') || die();
 
 use core\output\inplace_editable;
-use lang_string;
 use moodle_url;
 use pix_icon;
 use stdClass;
-use tool_program\local\helpers\program_format;
+use tool_program\local\helpers\program_entity;
 use tool_program\permission;
 use tool_program\persistent\program;
-use tool_reportbuilder\db;
-use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_action;
-use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
 use tool_tenant\tenancy;
 
@@ -68,6 +64,22 @@ class active_programs_report extends system_report {
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
+
+        // Default columns.
+        if ($column = $this->get_column('tool_program:fullname')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true);
+            $column->set_callback([$this, 'fullnameeditable']);
+        }
+        if ($column = $this->get_column('tool_program:tags')) {
+            $column->set_is_default(true, 2);
+            $column->set_is_sortable(true, true);
+        }
+        if ($column = $this->get_column('tool_program:associatedcertificationswithlink')) {
+            $column->set_is_default(true, 3);
+            $column->set_is_sortable(true, true);
+            $column->set_visiblename(new \lang_string('associatedcertifications', 'tool_program'));
+        }
     }
 
     /**
@@ -92,44 +104,7 @@ class active_programs_report extends system_report {
      * Set the columns for the report.
      */
     protected function set_columns(): void {
-        $this->annotate_entity('tool_program', new lang_string('entityprogram', 'tool_program'));
-
-        // Column "Editable program name".
-        $newcolumn = (new report_column(
-            'fullname',
-            new lang_string('name', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_fields('tp.fullname,tp.id')
-            ->set_is_default(true, 1)
-            ->set_is_sortable(true, true)
-            ->add_callback([$this, 'fullnameeditable']);
-        $this->add_column($newcolumn);
-
-        // Column "Tags".
-        list($tagsql, $tagparams) = db::sql_tag_field('tp', 'tool_program');
-
-        $newcolumn = (new report_column(
-            'tags',
-            new lang_string('tags', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_field($tagsql, 'tags', $tagparams)
-            ->set_groupby_sql('tp.id')
-            ->set_is_default(true, 2)
-            ->add_callback([format::class, 'tags_replace_all']);
-        $this->add_column($newcolumn);
-
-        // Column "Related certifications".
-        $newcolumn = (new report_column(
-            'certification',
-            new lang_string('associatedcertifications', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_field('tp.id')
-            ->set_is_default(true, 3)
-            ->add_callback([program_format::class, 'relatedcertifications']);
-        $this->add_column($newcolumn);
+        $this->add_entity(new program_entity('', 'tp', $this->get_program_excluded_columns()));
     }
 
     /**
@@ -283,5 +258,16 @@ class active_programs_report extends system_report {
             $displayvalue, $value, $edithint, $editlabel);
 
         return $OUTPUT->render($inlineeditable);
+    }
+
+    /**
+     * Returns an array with the excluded columns for program_entity.
+     *
+     * @return array
+     */
+    private function get_program_excluded_columns(): array {
+        return ['fullnamewithimage', 'programimage', 'idnumber', 'description', 'startdate', 'duedate', 'enddate',
+            'archived', 'allowdirectallocation', 'allocationstartdate', 'allocationenddate', 'visible',
+            'timemodified', 'timecreated', 'numbercoursesunique', 'associatedcertifications', 'numbercurrentallocatedusers'];
     }
 }

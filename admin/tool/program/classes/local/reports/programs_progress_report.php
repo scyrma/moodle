@@ -81,7 +81,7 @@ class programs_progress_report extends system_report {
             $column->set_is_default(true, 1);
             // We want to use a custom callback.
             $column->add_field('tp.id', 'programid');
-            $column->add_callback([programuser_format::class, 'userprogramname'], ['userid' => $this->userid]);
+            $column->set_callback([programuser_format::class, 'userprogramname'], ['userid' => $this->userid]);
         }
         if ($column = $this->get_column('tool_program_users:associatedcertification')) {
             $column->set_is_default(true, 2);
@@ -130,10 +130,10 @@ class programs_progress_report extends system_report {
      * Set the columns for the report.
      */
     protected function set_columns(): void {
-        $this->add_entity(new program_entity('', 'tp'));
-        $this->add_entity(new programuser_entity('', 'tpu'));
-        $this->add_entity(new programcompletion_entity('', 'tpsc'));
-        $this->add_entity(new certificationuser_entity('', 'tcu'));
+        $this->add_entity(new program_entity('', 'tp', $this->get_program_excluded_columns()));
+        $this->add_entity(new programuser_entity('', 'tpu', $this->get_programuser_excluded_columns()));
+        $this->add_entity(new programcompletion_entity('', 'tpsc', $this->get_programcompletion_excluded_columns()));
+        $this->add_entity(new certificationuser_entity('', 'tcu', $this->get_certificationuser_excluded_columns()));
     }
 
     /**
@@ -141,5 +141,44 @@ class programs_progress_report extends system_report {
      */
     protected function add_actions(): void {
         // No actions defined.
+    }
+
+    /**
+     * Returns an array with the excluded columns for program_entity.
+     *
+     * @return array
+     */
+    private function get_program_excluded_columns(): array {
+        return ['fullnamewithimage', 'programimage', 'idnumber', 'tags', 'description', 'startdate', 'duedate', 'enddate',
+            'archived', 'allowdirectallocation', 'allocationstartdate', 'allocationenddate', 'visible',
+            'timemodified', 'timecreated', 'numbercoursesunique', 'associatedcertifications', 'numbercurrentallocatedusers'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for programuser_entity.
+     *
+     * @return array
+     */
+    private function get_programuser_excluded_columns(): array {
+        return ['startdate', 'enddate', 'programprogress', 'suspended', 'timesuspended', 'timecreated', 'timemodified'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for programcompletion_entity.
+     *
+     * @return array
+     */
+    private function get_programcompletion_excluded_columns(): array {
+        return ['completed', 'timemodified', 'timecreated'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certificationuser_entity.
+     *
+     * @return array
+     */
+    private function get_certificationuser_excluded_columns(): array {
+        return ['allocationtype', 'startdate', 'duedate', 'suspended', 'timesuspended', 'timecreated',
+            'timemodified', 'daystakingcertification', 'dayssinceallocation'];
     }
 }

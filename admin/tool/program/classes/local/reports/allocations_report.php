@@ -27,23 +27,21 @@ namespace tool_program\local\reports;
 defined('MOODLE_INTERNAL') || die();
 
 use stdClass;
-use tool_certification\local\helpers\certificationuser_format;
+use tool_certification\local\helpers\certification_entity;
+use tool_certification\local\helpers\certificationuser_entity;
 use tool_organisation\organisation;
-use tool_program\api;
 use tool_program\constants;
-use tool_program\local\helpers\programuser_format;
+use tool_program\local\helpers\program_entity;
+use tool_program\local\helpers\programuser_entity;
 use tool_program\permission;
 use tool_program\persistent\program;
 use tool_program\persistent\program_user;
-use tool_reportbuilder\local\entities\user as user_entity;
-use tool_reportbuilder\local\helpers\format as reportbuilder_format;
+use tool_reportbuilder\local\entities\user;
 use tool_reportbuilder\report_action;
-use tool_reportbuilder\report_column;
 use tool_reportbuilder\system_report;
 use tool_tenant\tenancy;
 use moodle_url;
 use pix_icon;
-use lang_string;
 use tool_program\task\reset_program;
 
 /**
@@ -84,6 +82,11 @@ class allocations_report extends system_report {
         $this->set_columns();
         $this->set_main_table('tool_program_users', 'tpu');
         $this->add_base_join('INNER JOIN {tool_program} tp ON tp.id = tpu.programid');
+        $this->add_base_join('LEFT JOIN {tool_certification} tc ON tc.id = tpu.certificationid');
+        $this->add_base_join('LEFT JOIN {tool_certification_users} tcu
+        ON tcu.userid = tpu.userid AND tcu.certificationid = tc.id');
+        $this->add_base_join('LEFT JOIN {tool_certification_compltion} tcc
+        ON tcc.certificationid = tpu.certificationid AND tcc.userid = tpu.userid AND tcc.timerevoked = 0');
         $this->add_base_join('INNER JOIN {user} u ON u.id = tpu.userid');
         $this->add_base_condition_simple('tpu.programid', $programid);
         $this->add_base_condition_simple('tp.tenantid', $tenantid);
@@ -114,6 +117,27 @@ class allocations_report extends system_report {
         $this->add_actions();
         $this->set_show_actions_header(true);
         $this->set_downloadable(false);
+
+        // Default columns.
+        if ($column = $this->get_column('user:fullname')) {
+            $column->set_is_default(true, 1);
+            $column->set_is_sortable(true, true);
+        }
+        if ($column = $this->get_column('tool_program_users:duedate')) {
+            $column->set_is_default(true, 2);
+        }
+        if ($column = $this->get_column('tool_program_users:allocationtype')) {
+            $column->set_is_default(true, 3);
+        }
+        if ($column = $this->get_column('tool_certification:fullname')) {
+            $column->set_is_default(true, 4);
+        }
+        if ($column = $this->get_column('tool_certification_users:certificationstatus')) {
+            $column->set_is_default(true, 5);
+        }
+        if ($column = $this->get_column('tool_program_users:programstatus')) {
+            $column->set_is_default(true, 6);
+        }
     }
 
     /**
@@ -140,86 +164,11 @@ class allocations_report extends system_report {
      * @return mixed
      */
     protected function set_columns(): void {
-        $this->annotate_entity('tool_program', new lang_string('entityprogram', 'tool_program'));
-        $this->annotate_entity('tool_program_users', new lang_string('entityprogramusers', 'tool_program'));
-        $this->annotate_entity('user', new lang_string('entityuser', 'tool_reportbuilder'));
-
-        // Column "fullname".
-        $newcolumn = (new report_column(
-            'fullname',
-            new lang_string('fullname', 'tool_program'),
-            'user'
-        ))
-            ->add_join('INNER JOIN {user} u ON u.id = tpu.userid')
-            ->add_fields('tpu.userid, ' . user_entity::get_all_user_name_fields(true, 'u'))
-            ->set_is_default(true, 1)
-            ->set_is_sortable(true, true, 0)
-            ->add_callback([reportbuilder_format::class, 'fullname']);
-        $this->add_column($newcolumn);
-
-        // Column "duedate".
-        $newcolumn = (new report_column(
-            'duedate',
-            new lang_string('duedate', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_fields('tpu.duedate, tpu.duedatelocked')
-            ->set_is_default(true, 2)
-            ->add_callback([programuser_format::class, 'duedate']);
-        $this->add_column($newcolumn);
-
-        // Column "allocationtype".
-        $newcolumn = (new report_column(
-            'allocationtype',
-            new lang_string('allocationsource', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_field('tpu.allocationtype')
-            ->set_is_default(true, 3)
-            ->set_is_sortable(true, true, 1, SORT_DESC)
-            ->add_callback([programuser_format::class, 'allocationtype']);
-        $this->add_column($newcolumn);
-
-        // Column "certification".
-        $newcolumn = (new report_column(
-            'certificationuser',
-            new lang_string('certification', 'tool_program'),
-            'tool_program'
-        ))
-            ->add_field('tpu.certificationid', 'certificationuser')
-            ->set_is_default(true, 4)
-            ->add_callback([programuser_format::class, 'certificationuser']);
-        $this->add_column($newcolumn);
-
-        // Column "certification status".
-        $tccjoin = 'LEFT JOIN {tool_certification_users} tcu
-        ON tcu.certificationid = tpu.certificationid AND tcu.userid = tpu.userid
-        LEFT JOIN {tool_certification_compltion} tcc
-        ON tcc.certificationid = tcu.certificationid
-        AND tcc.userid = tcu.userid
-        AND tcc.timerevoked = 0';
-
-        $newcolumn = (new report_column(
-            'certificationstatus',
-            new lang_string('certificationstatus', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_join($tccjoin)
-            ->add_field(api::get_status_sql_cases(0, 'tcu', 'tcc'), 'status')
-            ->set_is_default(true, 5)
-            ->add_callback([certificationuser_format::class, 'status']);
-        $this->add_column($newcolumn);
-
-        // Column "program status".
-        $newcolumn = (new report_column(
-            'programstatus',
-            new lang_string('programstatus', 'tool_program'),
-            'tool_program_users'
-        ))
-            ->add_fields('tpu.userid, tpu.certificationid, tpu.programid')
-            ->set_is_default(true, 6)
-            ->add_callback([programuser_format::class, 'programstatus']);
-        $this->add_column($newcolumn);
+        $this->add_entity(new program_entity('', 'tp', $this->get_program_excluded_columns()));
+        $this->add_entity(new programuser_entity('', 'tpu', $this->get_programuser_excluded_columns()));
+        $this->add_entity(new user('', 'u', []));
+        $this->add_entity(new certification_entity('', 'tc', $this->get_certification_excluded_columns()));
+        $this->add_entity(new certificationuser_entity('', 'tcu', $this->get_certificationuser_excluded_columns(), 'tcc'));
     }
 
     /**
@@ -294,5 +243,46 @@ class allocations_report extends system_report {
         $issuspendedorafterenddate = constants::STATUS_OVERRIDE_SUSPENDED === (int) $row->status
             || ($row->enddate && $row->enddate < time());
         return $issuspendedorafterenddate ? 'dimmed_text' : '';
+    }
+
+    /**
+     * Returns an array with the excluded columns for program_entity.
+     *
+     * @return array
+     */
+    private function get_program_excluded_columns(): array {
+        return ['fullnamewithimage', 'programimage', 'idnumber', 'tags', 'description', 'startdate', 'duedate', 'enddate',
+            'archived', 'allowdirectallocation', 'allocationstartdate', 'allocationenddate', 'visible',
+            'timemodified', 'timecreated', 'numbercoursesunique', 'associatedcertifications', 'numbercurrentallocatedusers'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for programuser_entity.
+     *
+     * @return array
+     */
+    private function get_programuser_excluded_columns(): array {
+        return ['startdate', 'enddate', 'programprogress', 'programprogresswithoverview', 'suspended', 'timesuspended',
+            'timecreated', 'timemodified', 'associatedcertification'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certification_entity.
+     *
+     * @return array
+     */
+    private function get_certification_excluded_columns(): array {
+        return ['idnumber', 'timearchived', 'archived', 'startdate', 'duedate', 'expirydate',
+            'allocationstartdate', 'allocationenddate', 'timemodified', 'timecreated'];
+    }
+
+    /**
+     * Returns an array with the excluded columns for certificationuser_entity.
+     *
+     * @return array
+     */
+    private function get_certificationuser_excluded_columns(): array {
+        return ['allocationtype', 'startdate', 'duedate', 'expirydate', 'suspended', 'timesuspended', 'timecreated',
+            'timemodified', 'daystakingcertification', 'dayssinceallocation'];
     }
 }

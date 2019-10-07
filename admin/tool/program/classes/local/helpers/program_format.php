@@ -26,19 +26,14 @@
 namespace tool_program\local\helpers;
 
 use context_system;
-use core\output\inplace_editable;
-use core_tag_tag;
 use core_text;
 use html_writer;
 use moodle_url;
-use pix_icon;
 use stdClass;
-use tool_certification\certification;
 use tool_program\api;
 use tool_program\constants;
 use tool_program\permission;
 use tool_program\persistent\program;
-use tool_tenant\tenancy;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -334,33 +329,6 @@ class program_format {
     }
 
     /**
-     * Formats related certifications.
-     *
-     * @param string $value
-     * @param stdClass $row
-     * @return string
-     */
-    public static function relatedcertifications(?string $value, stdClass $row): string {
-        // TODO WP-946 WP-966 performs DB queries.
-        $certlist = certification::get_records(['program' => $row->id, 'tenantid' => tenancy::get_tenant_id()]);
-        if (empty($certlist)) {
-            return '';
-        }
-        $output = [];
-        $params = ['context' => context_system::instance(), 'escape' => false];
-        foreach ($certlist as $cert) {
-            $certname = format_string($cert->get('fullname'), true, $params);
-            if (0 === (int) $cert->get('archived')) {
-                $certurl = new moodle_url('/admin/tool/certification/edit.php', ['id' => $cert->get('id')]);
-                $output[] = html_writer::link($certurl, $certname);
-            } else {
-                $output[] = html_writer::span($certname, 'dimmed_text');
-            }
-        }
-        return implode(', ', $output);
-    }
-
-    /**
      * Column actions
      *
      * @param string $value
@@ -391,5 +359,21 @@ class program_format {
             $output .= html_writer::link($reporturl, $reporticon);
         }
         return $output;
+    }
+
+    /**
+     * Returns formatted certification names text with link
+     *
+     * @param string|null $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function associatedcertificationswithlink(?string $value, stdClass $row): string {
+        $regex = '#<span data-id="(?<id>[^"]*?)">(?<fullname>[^<]*?)</span>#';
+
+        return preg_replace_callback($regex, function($matches) {
+            $url = new \moodle_url('/admin/tool/certification/edit.php', ['id' => $matches['id']]);
+            return \html_writer::link($url, format_string($matches['fullname']));
+        }, $value);
     }
 }

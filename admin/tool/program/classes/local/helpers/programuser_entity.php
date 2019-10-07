@@ -100,168 +100,192 @@ class programuser_entity extends entity_base {
     public function get_columns(): array {
         $columns = [];
 
-        // Column startdate.
-        $newcolumn = (new report_column(
-            'startdate',
-            new lang_string('startdate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.startdate")
-            ->add_field("$this->tablealias.startdatelocked")
-            ->add_callback([programuser_format::class, 'startdate'])
-            ->add_aggregation_callback('min', [format::class, 'userdate'])
-            ->add_aggregation_callback('max', [format::class, 'userdate']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['startdate'])) {
+            // Column startdate.
+            $newcolumn = (new report_column(
+                'startdate',
+                new lang_string('startdate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.startdate")
+                ->add_field("$this->tablealias.startdatelocked")
+                ->add_callback([programuser_format::class, 'startdate'])
+                ->add_aggregation_callback('min', [format::class, 'userdate'])
+                ->add_aggregation_callback('max', [format::class, 'userdate']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column duedate.
-        $newcolumn = (new report_column(
-            'duedate',
-            new lang_string('duedate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.duedate")
-            ->add_field("$this->tablealias.duedatelocked")
-            ->add_callback([programuser_format::class, 'duedate'])
-            ->add_aggregation_callback('min', [format::class, 'userdate'])
-            ->add_aggregation_callback('max', [format::class, 'userdate']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['duedate'])) {
+            // Column duedate.
+            $newcolumn = (new report_column(
+                'duedate',
+                new lang_string('duedate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.duedate")
+                ->add_field("$this->tablealias.duedatelocked")
+                ->add_callback([programuser_format::class, 'duedate'])
+                ->add_aggregation_callback('min', [format::class, 'userdate'])
+                ->add_aggregation_callback('max', [format::class, 'userdate']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column enddate.
-        $newcolumn = (new report_column(
-            'enddate',
-            new lang_string('enddate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.enddate")
-            ->add_field("$this->tablealias.enddatelocked")
-            ->add_callback([programuser_format::class, 'enddate'])
-            ->add_aggregation_callback('min', [format::class, 'userdate'])
-            ->add_aggregation_callback('max', [format::class, 'userdate']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['enddate'])) {
+            // Column enddate.
+            $newcolumn = (new report_column(
+                'enddate',
+                new lang_string('enddate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.enddate")
+                ->add_field("$this->tablealias.enddatelocked")
+                ->add_callback([programuser_format::class, 'enddate'])
+                ->add_aggregation_callback('min', [format::class, 'userdate'])
+                ->add_aggregation_callback('max', [format::class, 'userdate']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column programstatus.
-        $newcolumn = (new report_column(
-            'programstatus',
-            new lang_string('programstatus', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_NUMBER)
-            ->add_field("$this->tablealias.programid")
-            ->add_field("$this->tablealias.certificationid")
-            ->add_field("$this->tablealias.userid")
-            ->add_callback([programuser_format::class, 'programstatus'])
-            ->disable_aggregation('min')
-            ->disable_aggregation('max');
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['programstatus'])) {
+            // Column programstatus.
+            $newcolumn = (new report_column(
+                'programstatus',
+                new lang_string('programstatus', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_NUMBER)
+                ->add_field("$this->tablealias.programid")
+                ->add_field("$this->tablealias.certificationid")
+                ->add_field("$this->tablealias.userid")
+                ->add_callback([programuser_format::class, 'programstatus'])
+                ->disable_aggregation('min')
+                ->disable_aggregation('max');
+            $columns[] = $newcolumn;
+        }
 
-        // Column programprogress.
-        $newcolumn = (new report_column(
-            'programprogress',
-            new lang_string('programprogress', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.programid")
-            ->add_field("$this->tablealias.userid")
-            ->add_callback([programuser_format::class, 'programprogress']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['programprogress'])) {
+            // Column programprogress.
+            $newcolumn = (new report_column(
+                'programprogress',
+                new lang_string('programprogress', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.programid")
+                ->add_field("$this->tablealias.userid")
+                ->add_callback([programuser_format::class, 'programprogress']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column programprogresswithoverview.
-        $newcolumn = (new report_column(
-            'programprogresswithoverview',
-            new lang_string('programprogress', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.id")
-            ->add_field("$this->tablealias.programid")
-            ->add_field("$this->tablealias.userid")
-            ->add_field("$this->tablealias.certificationid")
-            ->add_callback([programuser_format::class, 'programprogressoverviewlink']);
-        columns::disable_column_aggregation($newcolumn);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['programprogresswithoverview'])) {
+            // Column programprogresswithoverview.
+            $newcolumn = (new report_column(
+                'programprogresswithoverview',
+                new lang_string('programprogress', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.id")
+                ->add_field("$this->tablealias.programid")
+                ->add_field("$this->tablealias.userid")
+                ->add_field("$this->tablealias.certificationid")
+                ->add_callback([programuser_format::class, 'programprogressoverviewlink']);
+            columns::disable_column_aggregation($newcolumn);
+            $columns[] = $newcolumn;
+        }
 
-        // Column suspended.
-        $newcolumn = (new report_column(
-            'suspended',
-            new lang_string('suspended', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_BOOLEAN)
-            ->add_field("$this->tablealias.status")
-            ->add_callback([programuser_format::class, 'suspended']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['suspended'])) {
+            // Column suspended.
+            $newcolumn = (new report_column(
+                'suspended',
+                new lang_string('suspended', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_BOOLEAN)
+                ->add_field("$this->tablealias.status")
+                ->add_callback([programuser_format::class, 'suspended']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column timesuspended.
-        $newcolumn = (new report_column(
-            'timesuspended',
-            new lang_string('timesuspended', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timesuspended")
-            ->add_callback([programuser_format::class, 'timesuspended']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['timesuspended'])) {
+            // Column timesuspended.
+            $newcolumn = (new report_column(
+                'timesuspended',
+                new lang_string('timesuspended', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timesuspended")
+                ->add_callback([programuser_format::class, 'timesuspended']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column allocationtype.
-        $newcolumn = (new report_column(
-            'allocationtype',
-            new lang_string('allocationsource', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_NUMBER)
-            ->add_field("$this->tablealias.allocationtype")
-            ->add_callback([programuser_format::class, 'allocationtype']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['allocationtype'])) {
+            // Column allocationtype.
+            $newcolumn = (new report_column(
+                'allocationtype',
+                new lang_string('allocationsource', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_NUMBER)
+                ->add_field("$this->tablealias.allocationtype")
+                ->add_callback([programuser_format::class, 'allocationtype']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column timecreated.
-        $newcolumn = (new report_column(
-            'timecreated',
-            new lang_string('allocationdate', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timecreated")
-            ->add_callback([programuser_format::class, 'timecreated']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['timecreated'])) {
+            // Column timecreated.
+            $newcolumn = (new report_column(
+                'timecreated',
+                new lang_string('allocationdate', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timecreated")
+                ->add_callback([programuser_format::class, 'timecreated']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column timemodified.
-        $newcolumn = (new report_column(
-            'timemodified',
-            new lang_string('timemodified', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_type(constants::DB_TYPE_TIMESTAMP)
-            ->add_field("$this->tablealias.timemodified")
-            ->add_callback([programuser_format::class, 'timemodified']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['timemodified'])) {
+            // Column timemodified.
+            $newcolumn = (new report_column(
+                'timemodified',
+                new lang_string('timemodified', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_type(constants::DB_TYPE_TIMESTAMP)
+                ->add_field("$this->tablealias.timemodified")
+                ->add_callback([programuser_format::class, 'timemodified']);
+            $columns[] = $newcolumn;
+        }
 
-        // Column associated certification (if any).
-        $newcolumn = (new report_column(
-            'associatedcertification',
-            new lang_string('associatedcertifications', 'tool_program'),
-            $this->get_entity_name()
-        ))
-            ->add_join($this->join)
-            ->set_is_sortable(true)
-            ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("$this->tablealias.certificationid")
-            ->add_callback([programuser_format::class, 'certificationname']);
-        $columns[] = $newcolumn;
+        if (!isset($this->excludecolumns['associatedcertification'])) {
+            // Column associated certification (if any).
+            $newcolumn = (new report_column(
+                'associatedcertification',
+                new lang_string('associatedcertifications', 'tool_program'),
+                $this->get_entity_name()
+            ))
+                ->add_join($this->join)
+                ->set_is_sortable(true)
+                ->set_type(constants::DB_TYPE_TEXT)
+                ->add_field("$this->tablealias.certificationid")
+                ->add_callback([programuser_format::class, 'certificationname']);
+            $columns[] = $newcolumn;
+        }
 
         return $columns;
     }
