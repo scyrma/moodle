@@ -116,25 +116,24 @@ class provider implements \core_privacy\local\metadata\provider,
                  WHERE m.userid = :userid
               ORDER BY m.matchedtime, m.unmatchedtime, r.id ASC';
 
+        $data = [];
+
         $recordset = $DB->get_recordset_sql($sql, ['userid' => $user->id]);
-
-        self::recordset_loop_and_export($recordset, 'ruleid', [], function($carry, $record) {
-
-            $carry[] = [
+        foreach ($recordset as $record) {
+            $data[] = [
                 'rulename' => format_string($record->rulename),
                 'matchedtime' => transform::datetime($record->matchedtime),
                 'unmatchedtime' => $record->unmatchedtime ? transform::datetime($record->unmatchedtime) : null,
             ];
-            return $carry;
+        }
+        $recordset->close();
 
-        }, function($templateid, $data) use ($user) {
-
+        if (count($data) > 0) {
             $context = \context_system::instance();
-            $contextdata = helper::get_context_data($context, $user);
-            $finaldata = (object) array_merge((array) $contextdata, ['matches' => $data]);
-            helper::export_context_files($context, $user);
-            writer::with_context($context)->export_data([], $finaldata);
-        });
+            $contextpath = [get_string('pluginname', 'tool_dynamicrule')];
+
+            writer::with_context($context)->export_data($contextpath, (object) ['matches' => $data]);
+        }
     }
 
     /**
@@ -186,36 +185,5 @@ class provider implements \core_privacy\local\metadata\provider,
         }
         list($userinsql, $userinparams) = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
         $DB->delete_records_select('tool_dynamicrule_match', ' userid ' . $userinsql, $userinparams);
-    }
-
-    /**
-     * Loop and export from a recordset.
-     *
-     * @param \moodle_recordset $recordset The recordset.
-     * @param string $splitkey The record key to determine when to export.
-     * @param mixed $initial The initial data to reduce from.
-     * @param callable $reducer The function to return the dataset, receives current dataset, and the current record.
-     * @param callable $export The function to export the dataset, receives the last value from $splitkey and the dataset.
-     * @return void
-     */
-    protected static function recordset_loop_and_export(\moodle_recordset $recordset, $splitkey, $initial,
-            callable $reducer, callable $export) {
-
-        $data = $initial;
-        $lastid = null;
-
-        foreach ($recordset as $record) {
-            if ($lastid && $record->{$splitkey} != $lastid) {
-                $export($lastid, $data);
-                $data = $initial;
-            }
-            $data = $reducer($data, $record);
-            $lastid = $record->{$splitkey};
-        }
-        $recordset->close();
-
-        if (!empty($lastid)) {
-            $export($lastid, $data);
-        }
     }
 }

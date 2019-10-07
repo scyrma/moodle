@@ -25,7 +25,7 @@
 
 use tool_dynamicrule\privacy\provider;
 use core_privacy\local\metadata\collection;
-use \core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\approved_userlist;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,6 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package    tool_dynamicrule
  * @group      tool_dynamicrule
+ * @covers     \tool_dynamicrule\privacy\provider
  * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -151,6 +152,10 @@ class tool_dynamicrule_privacy_provider_testcase extends \core_privacy\tests\pro
      */
     public function test_export_user_data() {
 
+        // Create users who will match the rules.
+        $user1 = $this->getDataGenerator()->create_user(['city' => 'Perth', 'firstname' => 'Bob']);
+        $user2 = $this->getDataGenerator()->create_user(['city' => 'Perth']);
+
         // Add a rule to the site.
         $rule1 = $this->get_generator()->create_rule();
         $configdata = ['userprofilefield' => 'city', 'userprofilefieldvalue' => 'Perth'];
@@ -158,31 +163,42 @@ class tool_dynamicrule_privacy_provider_testcase extends \core_privacy\tests\pro
         $configdata = ['subject' => 'Perth user', 'body' => 'Congratulations, you are from Perth.'];
         \tool_dynamicrule\tool_dynamicrule\outcome\notification::create($rule1->id, $configdata);
 
-        // Create users who will match the rule.
-        $user1 = $this->getDataGenerator()->create_user(['city' => 'Perth']);
-        $user2 = $this->getDataGenerator()->create_user(['city' => 'Perth']);
-
         // Process the rule.
         \tool_dynamicrule\api::enable_rule($rule1->id);
         \tool_dynamicrule\api::process_rule(\tool_dynamicrule\api::get_rule($rule1->id));
 
+        // Add another rule to the site.
+        $rule2 = $this->get_generator()->create_rule();
+        $configdata = ['userprofilefield' => 'firstname', 'userprofilefieldvalue' => 'Bob'];
+        $condition1 = \tool_dynamicrule\tool_dynamicrule\condition\user_profile_field::create($rule2->id, $configdata);
+        $configdata = ['subject' => 'Hi Bob', 'body' => 'Congratulations, you are Bob'];
+        \tool_dynamicrule\tool_dynamicrule\outcome\notification::create($rule2->id, $configdata);
+
+        // Process the rule.
+        \tool_dynamicrule\api::enable_rule($rule2->id);
+        \tool_dynamicrule\api::process_rule(\tool_dynamicrule\api::get_rule($rule2->id));
+
         // Export all of the data for the context for user 1.
         $context = \context_system::instance();
+        $contextpath = [get_string('pluginname', 'tool_dynamicrule')];
+
         $this->export_context_data_for_user($user1->id, $context, 'tool_dynamicrule');
         $writer = \core_privacy\local\request\writer::with_context($context);
 
         $this->assertTrue($writer->has_any_data());
 
-        $data = $writer->get_data();
-        // This has only 1 record because we are exporting user 1.
-        $this->assertCount(1, $data->matches);
+        $data = $writer->get_data($contextpath);
+        $this->assertCount(2, $data->matches);
 
-        $matches = $data->matches;
-        foreach ($matches as $match) {
-            $this->assertArrayHasKey('rulename', $match);
-            $this->assertArrayHasKey('matchedtime', $match);
-            $this->assertArrayHasKey('unmatchedtime', $match);
-        }
+        list($match1, $match2) = $data->matches;
+
+        $this->assertEquals($rule1->name, $match1['rulename']);
+        $this->assertArrayHasKey('matchedtime', $match1);
+        $this->assertArrayHasKey('unmatchedtime', $match1);
+
+        $this->assertEquals($rule2->name, $match2['rulename']);
+        $this->assertArrayHasKey('matchedtime', $match2);
+        $this->assertArrayHasKey('unmatchedtime', $match2);
     }
 
     /**
