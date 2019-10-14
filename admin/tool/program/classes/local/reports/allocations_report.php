@@ -121,16 +121,18 @@ class allocations_report extends system_report {
         // Default columns.
         if ($column = $this->get_column('user:fullname')) {
             $column->set_is_default(true, 1);
-            $column->set_is_sortable(true, true);
+            $column->set_is_sortable(true, true, 1);
         }
         if ($column = $this->get_column('tool_program_users:duedate')) {
             $column->set_is_default(true, 2);
         }
         if ($column = $this->get_column('tool_program_users:allocationtype')) {
             $column->set_is_default(true, 3);
+            $column->set_is_sortable(true, true, 2);
         }
         if ($column = $this->get_column('tool_certification:fullname')) {
             $column->set_is_default(true, 4);
+            $column->set_is_sortable(true, true, 3);
         }
         if ($column = $this->get_column('tool_certification_users:certificationstatus')) {
             $column->set_is_default(true, 5);

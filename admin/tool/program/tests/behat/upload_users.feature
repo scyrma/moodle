@@ -148,11 +148,13 @@ Feature: Allocate users on programs in upload users
       | enddate[year]  | 2032              |
       | duedatetype      | Not set (default) |
     And I press "Cancel" in the modal form dialogue
-    And "Certification" "text" should exist in the "User 13" "table_row"
+    # First row for the "User 13" user:
+    And "//table//tbody//tr[2]//td[contains(@class,'c0') and (text() = 'User 13')]" "xpath_element" should exist in the "body" "css_element"
+    And "//table//tbody//tr[2]//td[contains(@class,'c2') and (text() = 'Manual')]" "xpath_element" should exist in the "body" "css_element"
     # Second row for the "User 13" user:
     And "//table//tbody//tr[3]//td[contains(@class,'c0') and (text() = 'User 13')]" "xpath_element" should exist in the "body" "css_element"
-    And "//table//tbody//tr[3]//td[contains(@class,'c2') and (text() = 'Manual')]" "xpath_element" should exist in the "body" "css_element"
-    And I click on "Edit" "link" in the "//table//tbody//tr[3]//td[contains(@class,'c6')]" "xpath_element"
+    And "//table//tbody//tr[3]//td[contains(@class,'c2') and (text() = 'Certification')]" "xpath_element" should exist in the "body" "css_element"
+    And I click on "Edit" "link" in the "//table//tbody//tr[2]//td[contains(@class,'c6')]" "xpath_element"
     And the following fields match these values:
       | startdatetype        | Select date       |
       | startdate[day]         | 12                |

@@ -72,7 +72,7 @@ class users_progress_report extends system_report {
      * Initialise report
      */
     protected function initialise(): void {
-        $programid = $this->get_program()->get('id');
+        $programid = (int)$this->get_program()->get('id');
         $tenantid = tenancy::get_tenant_id();
 
         $this->set_columns();
@@ -111,7 +111,11 @@ class users_progress_report extends system_report {
         // Add default columns.
         if ($column = $this->get_column('user:fullname')) {
             $column->set_is_default(true, 1);
-            $column->set_is_sortable(true, true);
+            $column->set_is_sortable(true, true, null, SORT_ASC,
+                ['userfullname', 'id']);
+            $viewfullnames = has_capability('moodle/site:viewfullnames', \context_system::instance());
+            list($sql, $params) = \tool_reportbuilder\db::sql_fullname('u', $viewfullnames);
+            $column->add_field($sql, 'userfullname', $params);
             $column->add_fields('tpu.id as programuserid,' . implode(',', $this->get_user_columns()));
             $column->set_callback([programuser_format::class, 'userinfo']);
         }
@@ -200,15 +204,15 @@ class users_progress_report extends system_report {
 
     /**
      * Returns an array of user column names prefixed with the given user table alias.
-     * TODO we don't need all fields.
      *
      * @return array
      */
     private function get_user_columns(): array {
         global $DB;
+        $columns = $DB->get_columns('user');
         return array_map(static function($column) {
             return "u.$column";
-        }, array_keys($DB->get_columns('user')));
+        }, array_keys($columns));
     }
 
     /**
