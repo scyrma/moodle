@@ -1147,9 +1147,12 @@ if ($formdata = $mform2->is_cancelled()) {
                     continue;
                 }
             }
+        }
+
+        foreach ($filecolumns as $column) {
             /** @uses \tool_wp\tool_uploaduser::process_user_after_enrol() */
             if (!component_class_callback('tool_wp\tool_uploaduser', 'process_user_after_enrol',
-                    [$user, $filecolumns, $upt, $ccache], true)) {
+                    [$user, $filecolumns, $upt, &$ccache], true)) {
                 $upt->track('tool_wp', get_string('cannotupdateuser', 'error'), 'error');
                 continue;
             }
