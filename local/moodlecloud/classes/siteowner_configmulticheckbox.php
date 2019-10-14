@@ -36,7 +36,7 @@ final class siteowner_configmulticheckbox extends admin_setting_configmulticheck
         }
 
         // Only write setting for Superman.
-        if ($USER->auth === 'moodlecloud') {
+        if (local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, $USER->id)) {
             return parent::write_setting($data);
         }
 
