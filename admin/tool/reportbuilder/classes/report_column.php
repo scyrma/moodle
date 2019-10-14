@@ -68,6 +68,8 @@ class report_column {
     protected $callbacks = [];
     /** @var array $callbacks Functions or static class methods for each aggregation method. */
     protected $callbacksaggre = [];
+    /** @var array $sortfields */
+    protected $sortfields = [];
     /** @var int $defaultsortorder */
     protected $defaultsortorder = null;
     /** @var int $defaultsortdirection */
@@ -227,7 +229,8 @@ class report_column {
             global $DB;
             $field = $shortentext ? $DB->sql_compare_text($f[1]) : $f[1];
             return $field . ' ' . ($direction == SORT_ASC ? 'ASC' : 'DESC');
-        }, $this->get_fields($aggr, $columnkey));
+        }, $this->get_sort_fields($aggr, $columnkey));
+
         return join(', ', $sortsql);
     }
 
@@ -279,6 +282,41 @@ class report_column {
             }
         }
         return $fields;
+    }
+
+    /**
+     * Return column sort fields. Either those explicitely selected for column, or the first two fields defined for column
+     *
+     * @param string|null $aggregation
+     * @param int $columnkey
+     * @return array
+     */
+    private function get_sort_fields(?string $aggregation, int $columnkey) : array {
+        $fields = $this->get_fields($aggregation, $columnkey);
+
+        if (!empty($this->sortfields)) {
+            $sortfields = [];
+
+            foreach ($this->sortfields as $sortfield) {
+                // Find matching alias.
+                if (isset($fields[$sortfield])) {
+                    $sortfields[$sortfield] = $fields[$sortfield];
+                } else {
+                    // Find matching field.
+                    $matches = array_filter($fields, function(array $field) use ($sortfield) {
+                        return strcasecmp($field[0], $sortfield) === 0;
+                    });
+                    if (!empty($matches)) {
+                        $match = array_pop($matches);
+                        $sortfields[$match[1]] = $match;
+                    }
+                }
+            }
+
+            return $sortfields;
+        }
+
+        return array_slice($fields, 0, 2);
     }
 
     /**
@@ -520,10 +558,22 @@ class report_column {
 
     /**
      * If the column is sortable and sort is enabled on this column by default what is the order of sorting
+     *
      * @return int
      */
     public function get_default_sortorder() {
         return $this->defaultsortorder;
+    }
+
+    /**
+     * Set column default sort order
+     *
+     * @param int $defaultsortorder
+     * @return report_column
+     */
+    public function set_default_sortorder(int $defaultsortorder) : report_column {
+        $this->defaultsortorder = $defaultsortorder;
+        return $this;
     }
 
     /**
@@ -544,14 +594,20 @@ class report_column {
      * @param int|null $defaultsortorder If the column is sorted by default what should be the order or sorting
      *     (for example "ORDER BY firstname, lastname", sortorder of 'firstname' is 0 and of 'lastname' is 1)
      * @param int|null $defaultsortdirection The default sort direction - SORT_ASC or SORT_DESC
+     * @param array|null $sortfields Set the fields to use when sorting the column - if not specified then the first two
+     *     column fields will be used
      * @return report_column
      */
     public function set_is_sortable(bool $issortable, bool $defaultsortenabled = false, ?int $defaultsortorder = null,
-                                    ?int $defaultsortdirection = SORT_ASC) : report_column {
+                                    ?int $defaultsortdirection = SORT_ASC, ?array $sortfields = null) : report_column {
         $this->issortable = $issortable;
         $this->defaultsortenabled = $defaultsortenabled;
         $this->defaultsortorder = $defaultsortorder;
         $this->defaultsortdirection = ($defaultsortdirection == SORT_DESC) ? SORT_DESC : SORT_ASC;
+        if ($sortfields !== null) {
+            $this->sortfields = $sortfields;
+        }
+
         return $this;
     }
 

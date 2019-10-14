@@ -5,21 +5,21 @@ Feature: Manage report builder aggregations
 
   Background:
     Given the following tenants exist:
-      | name    |
-      | Tenant1 |
+      | name   |
+      | Tenant |
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | manager1 | Manager   | 1        | manager1@example.com |
     And the following users allocations to tenants exist:
-      | user     | tenant  |
-      | manager1 | Tenant1 |
+      | user     | tenant |
+      | manager1 | Tenant |
     And the following "role assigns" exist:
       | user     | role                       | contextlevel | reference |
       | manager1 | tool_reportbuilder_manager | System       |           |
     And the following custom reports exist:
-      | name             | tenant  | source                                                                     |
-      | Example report   | Tenant1 | tool_reportbuilder\test\mock_aggregation                                   |
-      | Example report 1 | Tenant1 | tool_reportbuilder\tool_reportbuilder\datasources\report_course_completion |
+      | name             | tenant | source                                                                     |
+      | Example report   | Tenant | tool_reportbuilder\test\mock_aggregation                                   |
+      | Example report 1 | Tenant | tool_reportbuilder\tool_reportbuilder\datasources\report_course_completion |
     And the following "users" exist:
       | username | firstname | lastname    | email               | picture | department   | institution   | city  | country | lastaccess |
       | user100  | User100   | Lastname100 | user100@example.com | 101    | Department 1 | Institution 1 | CITY1 | ES      | 1315958041 |
@@ -30,14 +30,14 @@ Feature: Manage report builder aggregations
       | user600  | User600   | Lastname600 | user600@example.com | 106    | Department 2 | Institution 2 | CITY5 | FR      | 1425158941 |
       | user700  | User700   | Lastname700 | user700@example.com | 107    | Department 2 | Institution 2 | CITY6 | FR      | 1425158941 |
     And the following users allocations to tenants exist:
-      | user    | tenant  |
-      | user100 | Tenant1 |
-      | user200 | Tenant1 |
-      | user300 | Tenant1 |
-      | user400 | Tenant1 |
-      | user500 | Tenant1 |
-      | user600 | Tenant1 |
-      | user700 | Tenant1 |
+      | user    | tenant |
+      | user100 | Tenant |
+      | user200 | Tenant |
+      | user300 | Tenant |
+      | user400 | Tenant |
+      | user500 | Tenant |
+      | user600 | Tenant |
+      | user700 | Tenant |
 
   # We are going to use the field 'picture' as a numeric and integer field.
 
@@ -212,10 +212,6 @@ Feature: Manage report builder aggregations
 
   @javascript
   Scenario: Aggregate a column with type "boolean"
-    Given I change window size to "large"
-    When I log in as "manager1"
-    Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
-    And I follow "Example report"
     Given the following "users" exist:
       | username | firstname | lastname | email             | auth   | confirmed | country |
       | user1    | User      | One      | one@example.com   | manual | 0         | BR      |
@@ -224,21 +220,24 @@ Feature: Manage report builder aggregations
       | user4    | User      | Four     | four@example.com  | ldap   | 0         | BR      |
     And the following users allocations to tenants exist:
       | user  | tenant  |
-      | user1 | Tenant1 |
-      | user2 | Tenant1 |
-      | user3 | Tenant1 |
-      | user4 | Tenant1 |
+      | user1 | Tenant |
+      | user2 | Tenant |
+      | user3 | Tenant |
+      | user4 | Tenant |
+    When I log in as "manager1"
+    And I change window size to "large"
+    And I navigate to "Report builder" in workplace launcher
+    And I follow "Example report"
     And I click on "Add field 'Registration confirmed' to the report" "button"
     And I click on "Add field 'Registration confirmed' to the report" "button"
     And I click on "Select an aggregation for the column 'Registration confirmed 1'" "link"
     And I set the field "New aggregation for the column 'Registration confirmed 1'" to "Count"
-    And I should see "10" in the "Yes" "table_row"
+    Then I should see "10" in the "Yes" "table_row"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Conditions"
     And I set the field "Select a condition" to "Country"
     And I set the field "Country field limiter" to "is equal to"
     And I set the field "Country value" to "Brazil"
-    And I change window size to "large"
     And I click on "Show/hide filters sidebar" "button"
     And I should see "1" in the "Yes" "table_row"
     And I click on "Select an aggregation for the column 'Registration confirmed'" "link"
@@ -328,9 +327,9 @@ Feature: Manage report builder aggregations
       | user800  | Samename  | Samelastname | user100@example.com | 1      | Department 1 | Institution 1 | CITY1 | AL      |
       | user900  | Samename  | Samelastname | user200@example.com | 2      | Department 1 | Institution 1 | CITY1 | AL      |
     And the following users allocations to tenants exist:
-      | user    | tenant  |
-      | user800 | Tenant1 |
-      | user900 | Tenant1 |
+      | user    | tenant |
+      | user800 | Tenant |
+      | user900 | Tenant |
     Then I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I follow "Example report"
     And I click on "Add field 'Country' to the report" "button"
@@ -459,12 +458,15 @@ Feature: Manage report builder aggregations
 
   @javascript
   Scenario: Confirm report paging is correct when using aggregated columns
-    When "1" tenants exist with "35" users and "0" courses in each
-    And I log in as "manager1"
-    And I navigate to "Reports > Report builder > Manage custom reports" in site administration
-    And I follow "Example report"
-    And I click on "Add field 'Registration confirmed' to the report" "button"
+    Given "1" tenants exist with "20" users and "0" courses in each
+    And the following custom reports exist:
+      | name           | tenant  | source                                   |
+      | Example report | Tenant1 | tool_reportbuilder\test\mock_aggregation |
+    When I log in as "tenantadmin1"
     And I change window size to "large"
+    And I navigate to "Report builder" in workplace launcher
+    And I click on "Edit content" "link" in the "Example report" "table_row"
+    And I click on "Add field 'Registration confirmed' to the report" "button"
     Then ".tool_reportbuilder_report ul.pagination" "css_element" should exist
     And I should see "2" in the ".tool_reportbuilder_report ul.pagination" "css_element"
     When I click on "Select an aggregation for the column 'Registration confirmed'" "link"

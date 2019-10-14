@@ -154,7 +154,7 @@ class columns {
         });
         $idx = 0;
         foreach ($sortablecolumns as $column) {
-            $column->set_is_sortable(true, $column->get_default_sortenabled(), $idx++, $column->get_default_sortdirection());
+            $column->set_default_sortorder($idx++);
         }
     }
 
