@@ -394,10 +394,12 @@ class api {
         ];
         self::update_calendar_event($data);
 
-        $data->certificationdatetype = constants::CALENDAR_EVENT_EXPIRY_DATE;
-        $data->timestart = $userexpirydate;
-        $data->name = format_string($certification->get('fullname'));
-        self::update_calendar_event($data);
+        if (self::is_user_certified($userid, $certificationid)) {
+            $data->certificationdatetype = constants::CALENDAR_EVENT_EXPIRY_DATE;
+            $data->timestart = $userexpirydate;
+            $data->name = format_string($certification->get('fullname'));
+            self::update_calendar_event($data);
+        }
 
         return true;
     }
@@ -922,11 +924,20 @@ class api {
             return;
         }
 
+        $certification = new certification($certificationid);
+
         // If no value passed we get the default one calculated for the user.
         $params = ['userid' => $userid, 'certificationid' => $certificationid];
         if ($expirydate === null) {
             $certuser = certification_user::get_record($params);
-            $expirydate = $certuser->get('expirydate');
+            $userallocdate = (int) $certuser->get('timecreated');
+            $userduedate = (int) $certuser->get('duedate');
+
+            $expirydate = self::recalculate_user_expiry_date($certification, $certuser, $userallocdate, $userduedate);
+
+            // We set calculated expiry date to allocation record.
+            $certuser->set('expirydate', $expirydate);
+            $certuser->update();
         }
 
         $userdata = (object) [
@@ -942,7 +953,6 @@ class api {
         certification_completion_created::create_from_certification_completion_created($certcompletion)->trigger();
 
         // Suspend program allocation checkbox coming from certify modal.
-        $certification = new certification($certificationid);
         $params = [
             'userid' => $userid,
             'programid' => $certification->get('program'),
@@ -966,6 +976,14 @@ class api {
             $certificationuser->set('duedatelocked', \tool_program\constants::DATE_LOCKED);
             $certificationuser->update();
         }
+
+        $data = new stdClass();
+        $data->certificationid = $certificationid;
+        $data->userid = $userid;
+        $data->certificationdatetype = constants::CALENDAR_EVENT_EXPIRY_DATE;
+        $data->timestart = $expirydate;
+        $data->name = format_string($certification->get('fullname'));
+        self::update_calendar_event($data);
     }
 
     /**

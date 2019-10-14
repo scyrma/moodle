@@ -58,5 +58,19 @@ Feature: Ensure calendar events are created when user is allocated into a certif
     And I should see "Due date for certification Certification example 1"
     And I am viewing site calendar
     And I view the calendar for "2" more weeks
+    And I should not see "Expiry date for certification Certification example 1"
+    And I log out
+    Then I log in as "manager1"
+    And I navigate to "Courses > Certifications" in site administration
+    Then I click on ".allocate_users" "css_element" in the "Certification example 1" "table_row"
+    Then I click on ".confirm_certify_user" "css_element" in the "User 1" "table_row"
+    Then I press "Certify"
+    And I log out
+    Then I log in as "user1"
+    And I am viewing site calendar
+    And I view the calendar for "1" more weeks
+    And I should see "Due date for certification Certification example 1"
+    And I am viewing site calendar
+    And I view the calendar for "2" more weeks
     And I should see "Expiry date for certification Certification example 1"
     And I log out

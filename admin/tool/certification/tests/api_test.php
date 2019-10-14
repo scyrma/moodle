@@ -24,6 +24,7 @@
  */
 
 use core\event\base;
+use core\event\calendar_event_created;
 use tool_certification\api;
 use tool_certification\certification;
 use tool_certification\event\certification_created;
@@ -703,6 +704,9 @@ class tool_certification_api_testcase extends advanced_testcase {
         $sink->close();
 
         $event = array_pop($events);
+        $this->assertInstanceOf(calendar_event_created::class, $event);
+
+        $event = array_pop($events);
         $this->assertInstanceOf(certification_completion_created::class, $event);
     }
 
@@ -1194,6 +1198,8 @@ class tool_certification_api_testcase extends advanced_testcase {
         global $DB;
 
         $certification = $this->generator->generate_certification();
+        $certification->set('expirydatetype', constants::DATE_NEVER);
+        $certification->update();
         $certificationid = $certification->get('id');
 
         $user = self::getDataGenerator()->create_user();
