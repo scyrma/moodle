@@ -36,6 +36,11 @@
         ]
     }
 }}
+{{! We must not use the JS helper otherwise this gets executed too late. Tell behat to wait. }}
+<script>
+    M.util.js_pending('tool_wp_tabs_init');
+</script>
+
 <div class="wptabs {{classes}}" {{#dataattributes}}data-{{name}}="{{value}}" {{/dataattributes}} >
     {{#showtabsnavigation}}
     <ul class="nav nav-tabs m-b-2" id="myTab" role="tablist">
@@ -60,7 +65,6 @@
 </div>
 
 {{#js}}
-    M.util.js_pending('tool_wp_tabs_init');
     require(['tool_wp/tabs'], function(Tabs) {
         Tabs.init();
         M.util.js_complete('tool_wp_tabs_init');

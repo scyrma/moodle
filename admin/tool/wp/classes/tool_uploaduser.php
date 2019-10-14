@@ -27,8 +27,6 @@ namespace tool_wp;
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_tenant\manager;
-use tool_tenant\tenancy;
 use uu_progress_tracker;
 use stdClass;
 
@@ -54,11 +52,13 @@ class tool_uploaduser {
         if ($columname == 'tenant') {
             return has_capability('tool/tenant:allocate', \context_system::instance());
         } else {
-            $jobfields = 'jobposition|jobdepartment|jobstartdate|jobenddate';
-            $programfields = 'program|programstartdate|programenddate|programduedate';
-            $certificationfields = 'certification|certificationstartdate|'.
-               'certificationenddate|certificationduedate|certificationexpirydate';
-            return preg_match("/^({$jobfields}|{$programfields}|{$certificationfields})\d+$/", $columname);
+            $f = 'coursecompleted|coursecompleteddate|' .
+                 'jobposition|jobdepartment|jobstartdate|jobenddate|' .
+                 'program|programstartdate|programenddate|programduedate|' .
+                 'certification|certificationstartdate|certificationenddate|certificationduedate|certificationexpirydate|' .
+                 'certificationcertify|certificationcertifytimecertified|certificationcertifyexpires|' .
+                 'certificationcertifyprogramallocation';
+            return preg_match("/^({$f})\d+$/", $columname);
         }
     }
 
@@ -98,6 +98,19 @@ class tool_uploaduser {
         component_class_callback('tool_organisation\tool_uploaduser', 'process_updated_user', [$user, $filecolumns, $upt]);
         component_class_callback('tool_program\tool_uploaduser', 'process_updated_user', [$user, $filecolumns, $upt]);
         component_class_callback('tool_certification\tool_uploaduser', 'process_updated_user', [$user, $filecolumns, $upt]);
+    }
+
+    /**
+     * Callback for tool_uploaduser that process users after enrolment.
+     *
+     * @param stdClass $user
+     * @param array $filecolumns
+     * @param uu_progress_tracker $upt
+     * @param array $ccache the course cache
+     */
+    public static function process_user_after_enrol($user, $filecolumns, $upt, &$ccache) {
+        $params = [$user, $filecolumns, $upt, &$ccache];
+        component_class_callback('tool_datastore\tool_uploaduser', 'process_user_after_enrol', $params);
     }
 
     /**

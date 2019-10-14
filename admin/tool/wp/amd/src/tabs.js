@@ -23,7 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'jqueryui', 'core/ajax', 'core/templates', 'core/notification', 'core/fragment', 'tool_wp/ajax_form'],
+define(['jquery', 'jqueryui', 'core/ajax', 'core/templates', 'core/notification', 'core/fragment',
+        'tool_wp/ajax_form'],
 function($, jqui, Ajax, Templates, Notification, Fragment, AjaxForm) {
 
     var
@@ -122,19 +123,24 @@ function($, jqui, Ajax, Templates, Notification, Fragment, AjaxForm) {
          * Initialises the tabs view on the page (only one tabs view per page is supported)
          */
         init: function() {
-            $('.wptabs .nav-link').click(function(e) {
+            $('.wptabs [data-toggle="tab"]').click(function(e) {
                 e.preventDefault();
                 if ($(this).hasClass('disabled')) {
+                    return;
+                }
+                var tab = $('#' + $(this).attr('aria-controls'));
+                if (tab.length !== 1) {
                     return;
                 }
                 // TODO call M.core_formchangechecker.report_form_dirty_state() .
                 M.util.js_pending('tool_wp_tabs_click'); // Behat can be too fast sometimes.
                 document.location.hash = '#!' + $(this).attr('aria-controls');
-                var tab = $('#' + $(this).attr('aria-controls'));
-                if (tab.length === 1) {
-                    loadTab(tab.attr('id'));
-                }
-                M.util.js_complete('tool_wp_tabs_click');
+                loadTab(tab.attr('id'));
+
+                require(['theme_boost/tab'], function() {
+                    $(this).tab('show');
+                    M.util.js_complete('tool_wp_tabs_click');
+                }.bind(this));
             });
 
             // Open the tab from the document hash or the first tab.
