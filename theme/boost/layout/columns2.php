@@ -89,6 +89,7 @@ if ((defined('MOODLECLOUD_GA_GLOBAL_PROPERTY') && MOODLECLOUD_GA_GLOBAL_PROPERTY
 }
 
 // MoodleCloud Portal SSO Tab
+require_once($CFG->dirroot . '/local_moodlecloud/lib.php');
 if (local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, $USER->id)) {
     $url = new moodle_url('/auth/moodlecloud/portal.php');
     $templatecontext['showportallink'] = true;
