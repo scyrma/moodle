@@ -126,7 +126,7 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
      * @inheritdoc
      */
     function user_update($olduser, $newuser) {
-        if ($olduser->auth !== $newuser->auth) {
+        if (isset($newuser->auth) && $olduser->auth !== $newuser->auth) {
             throw new \moodle_exception('Cannot change authentication for primary administrator');
         }
 
@@ -158,11 +158,11 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
         }
 
         // Language
-	/* Disable language sync for now - JT
-	 if ($olduser->lang !== $newuser->lang) {
+    /* Disable language sync for now - JT
+     if ($olduser->lang !== $newuser->lang) {
             $update['lang'] = $newuser->lang;
-	 }
-	 */
+     }
+     */
 
         if (count($update)) {
             return auth_moodlecloud\helper::call('userupdate', $update);
