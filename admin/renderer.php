@@ -317,6 +317,9 @@ class core_admin_renderer extends plugin_renderer_base {
         $output .= $this->forgotten_password_url_warning($invalidforgottenpasswordurl);
         $output .= $this->campaign_content($showcampaigncontent);
 
+        /** @uses \tool_wp\copyright::workplace() */
+        $output .= component_class_callback('tool_wp\workplace', 'copyright', [], '');
+
         //////////////////////////////////////////////////////////////////////////////////////////////////
         ////  IT IS ILLEGAL AND A VIOLATION OF THE GPL TO HIDE, REMOVE OR MODIFY THIS COPYRIGHT NOTICE ///
         $output .= $this->moodle_copyright();
