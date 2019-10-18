@@ -313,8 +313,8 @@ class core_admin_renderer extends plugin_renderer_base {
         $output .= $this->mobile_configuration_warning($mobileconfigured);
         $output .= $this->forgotten_password_url_warning($invalidforgottenpasswordurl);
 
-        /** @uses \tool_wp\copyright::copyright() */
-        $output .= component_class_callback('tool_wp\copyright', 'copyright', [], '');
+        /** @uses \tool_wp\copyright::workplace() */
+        $output .= component_class_callback('tool_wp\workplace', 'copyright', [], '');
 
         //////////////////////////////////////////////////////////////////////////////////////////////////
         ////  IT IS ILLEGAL AND A VIOLATION OF THE GPL TO HIDE, REMOVE OR MODIFY THIS COPYRIGHT NOTICE ///
