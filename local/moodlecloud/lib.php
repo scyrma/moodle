@@ -34,7 +34,7 @@ function local_moodlecloud_is_super_admin(array $superadmins, int $userid) : boo
 function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
     global $USER, $CFG, $DB, $PAGE;
 
-    if (!local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, (int)$USER->id)) {
+    if (!is_siteadmin()) {
         return '';
     }
 
