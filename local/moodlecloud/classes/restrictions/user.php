@@ -37,16 +37,9 @@ class user {
      * @return boolean true if the user is restricted.
      */
     public static function user_is_restricted($userid) {
-        global $DB;
+        global $CFG;
 
-        static $restrictedusers = null;
-        if ($restrictedusers === null) {
-            // For flexibility its probably best that we work out the list of
-            // users here, since they are going to be small and we can't guarantee the
-            // calling code will ->auth.
-            $restrictedusers = $DB->get_records('user', array('auth' => 'moodlecloud'), 'id', 'id, username');
-        }
-
-        return isset($restrictedusers[$userid]);
+        require_once($CFG->dirroot . '/local/moodlecloud/lib.php');
+        return local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, $userid);
     }
 }
