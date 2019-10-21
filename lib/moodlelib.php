@@ -4223,9 +4223,9 @@ function delete_user(stdClass $user) {
     }
 
     // BEGIN MOODLECLOUD HACK
-    require_once($CFG->dirroot . '/local_moodlecloud/lib.php');
+    require_once($CFG->dirroot . '/local/moodlecloud/lib.php');
     if (local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, $user->id)) {
-        throw new moodle_exception("Customer's account cannot be deleted");
+        throw new moodle_exception("That account cannot be deleted");
     }
     // END MOODLECLOUD HACK
 
