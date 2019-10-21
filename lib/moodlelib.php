@@ -4185,6 +4185,12 @@ function delete_user(stdClass $user) {
         return false;
     }
 
+    // BEGIN MOODLECLOUD HACK
+    if (local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, $user->id)) {
+        throw new moodle_exception("Customer's account cannot be deleted");
+    }
+    // END MOODLECLOUD HACK
+
     // Allow plugins to use this user object before we completely delete it.
     if ($pluginsfunction = get_plugins_with_function('pre_user_delete')) {
         foreach ($pluginsfunction as $plugintype => $plugins) {
