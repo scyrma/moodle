@@ -32,7 +32,6 @@ class user {
     /**
      * Is the user restricted by the moodlecloud setup.
      *
-     * Note this function does 1 db query on first use.
      * @param int $userid id of user record being checked
      * @return boolean true if the user is restricted.
      */
