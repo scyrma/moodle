@@ -1,0 +1,55 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<div class="custommain">
+    <div class="region-main-header clearfix">
+        <div class="search-wr">
+            <form class="coursesearchform" method="get" action="{{{urls.coursesearch}}}">
+                <div class="input-group mb-3">
+                    <label for="coursesearchquery" class="sr-only">{{#str}} coursesearch, theme_school {{/str}}</label>
+                    <input id="coursesearchquery" type="text" name="search" class="form-control" placeholder="{{#str}} coursesearch, theme_school {{/str}}" aria-label="{{#str}} coursesearch, theme_school {{/str}}" aria-describedby="button-search">
+                    <div class="input-group-append">
+                        <button class="btn btn-theme-secondary icon-nomargin" type="button" value="Go" id="button-search">
+                            {{#pix}}a/search, core{{/pix}}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div id="category-list-container">
+        <div class="card-deck">
+            {{#categories}}
+                <a href="{{{url}}}" class="card box-shadow-light rounded bg-theme-gray category" aria-label="{{#str}} coursecatname, theme_school, {{name}} {{/str}}">
+                    <div class="card-body">
+                        <h3 class="name">{{name}}</h3>
+                        <ul>
+                            <li title="{{#str}} numberofcourses {{/str}}">
+                                <i class="fa fa-graduation-cap"></i> {{#str}} courses {{/str}}: {{coursecount}}
+                            </li>
+                            <li title="{{#str}} numberofsubcategories, theme_school {{/str}}">
+                                <i class="fa fa-sitemap"></i> {{#str}} subcategories {{/str}}: {{subcategorycount}}
+                            </li>
+                        </ul>
+                        <div class="description">{{{description}}}</div>
+                    </div>
+                </a>
+            {{/categories}}
+        </div>
+    </div>
+</div>
+{{> theme_school/coursecategory_buttons }}

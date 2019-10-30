@@ -1,0 +1,64 @@
+/* General stuff */
+#page.container-fluid {
+    overflow: hidden;
+}
+
+.path-grade-report-grader,
+.path-grade-report-grader #page {
+    overflow: unset !important;
+}
+
+.flex-fill {
+    flex: 1 1 auto!important;
+}
+
+#page-header .breadcrumb-container {
+    min-height: 73px;
+}
+
+.breadcrumb-item {
+    a {
+        color: $blockfont;
+    }
+}
+.breadcrumb-item + .breadcrumb-item::before {
+    font-family: 'FontAwesome';
+    content: "\f105" !important;
+}
+
+.box-shadow-light {
+    //.box-shadow: 0 2px 2px 0 #d6d6d6;
+}
+
+#region-main {
+    border: 0;
+}
+
+#page-content.blocks-pre .columnleft {
+    box-shadow: -8px 0 12px -11px rgba(0,0,0,.5) inset;
+}
+#page-content.blocks-post .columnright {
+    box-shadow: 8px 0 10px -12px rgba(0,0,0,.5) inset;
+}
+.dashboard-card {
+    box-shadow: 0 2px 2px 0 #d9d9e0;
+    a:hover {
+        opacity: 0.8;
+    }
+}
+.mform fieldset.collapsible legend a.fheader,
+.mform fieldset.collapsed legend a.fheader {
+    background: none;
+    display: flex;
+    align-items: center;
+    &:before {
+        font-size: 16px;
+        color: $body-color;
+        @extend .fa;
+        width: 16px;
+        content: $fa-var-chevron-circle-down;
+    }
+}
+.mform fieldset.collapsed legend a.fheader {
+    content: $fa-var-chevron-circle-right;
+}

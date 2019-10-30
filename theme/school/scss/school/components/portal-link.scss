@@ -1,0 +1,52 @@
+#portal-link-container {
+    position: fixed;
+    top: 45%;
+    right: 0;
+    left: auto;
+    width: 30px;
+    line-height: 30px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    display: inline-block;
+    overflow: hidden;
+    @include box-shadow(-5px -1px 17px -5px rgba(0, 0, 0, 0.5));
+    z-index: 999;
+
+    &:hover {
+        opacity: 1;
+    }
+    #portal-link {
+        color: #fff;
+        font-size: 15px;
+        text-decoration: none;
+        display: inline-block;
+        white-space: nowrap;
+        transform: translate(0, 100%) rotate(-90deg);
+        transform-origin: 0 0;
+        img {
+            height: 20px;
+            width: 33px;
+            display: inline-block;
+            vertical-align: sub;
+        }
+        &::after {
+            content: '';
+            float: left;
+            margin-top: 100%;
+        }
+    }
+}
+
+.dir-rtl {
+    #portal-link-container {
+        left: 0;
+        right: auto;
+        @include box-shadow(5px 1px 17px -5px rgba(0, 0, 0, 0.5));
+        @include border-radius(0 5px 5px 0);
+
+        #portal-link {
+            transform: translate(0, 100%) rotate(90deg);
+            transform-origin: 100% 0;
+        }
+    }
+}
