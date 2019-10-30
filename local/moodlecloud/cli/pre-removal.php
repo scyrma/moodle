@@ -13,9 +13,7 @@ require_once($CFG->libdir. '/filelib.php');
 $CFG->debug = (E_ALL | E_STRICT);
 $CFG->debugdisplay = 1;
 
-if (core\hub\registration::is_registered()) {
-    global $DB;
-
+if (registration::is_registered()) {
     $hub = \Closure::bind(
         function() {
             return self::get_registration();
