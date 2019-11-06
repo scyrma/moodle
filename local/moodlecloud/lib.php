@@ -27,6 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 use local_moodlecloud\restrictions\userquota;
 use local_filestorage\file_storage\file_system_s3;
 
+function local_moodlecloud_is_super_admin(array $superadmins, int $userid) : bool {
+    return is_siteadmin($userid) && in_array($userid, $superadmins);
+}
+
 function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
     global $USER, $CFG, $DB, $PAGE;
 

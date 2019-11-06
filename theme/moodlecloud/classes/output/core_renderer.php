@@ -129,7 +129,7 @@ class core_renderer extends \core_renderer {
     public function portal_link() {
         global $USER, $CFG;
 
-        if (isset($USER->auth) && $USER->auth === 'moodlecloud') {
+        if ($USER->auth == "moodlecloud") {
             $url = new moodle_url('/auth/moodlecloud/portal.php');
             $title = get_string('cloudportallink', 'theme_moodlecloud');
             $alt = get_string('cloudlogo', 'theme_moodlecloud');
