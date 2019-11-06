@@ -37,7 +37,7 @@ final class siteowner_configmulticheckbox extends admin_setting_configmulticheck
 
         // Only write setting for Superman.
         require_once($CFG->dirroot . '/local/moodlecloud/lib.php');
-        if (local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, $USER->id)) {
+        if (local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, (int)$USER->id)) {
             return parent::write_setting($data);
         }
 
