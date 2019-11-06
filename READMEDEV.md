@@ -23,44 +23,75 @@ See <https://moodle.com/workplace/> for details of Moodle Workplace features.
 You can clone this repository using command below, which will also initialise
 submodule dependencies and clone them in respective directories.
 
-  `git clone --recurse-submodules git@git.in.moodle.com:workplace/workplacedev.git`
+```
+  git clone --single-branch --branch WORKPLACE_38 --recurse-submodules git@git.in.moodle.com:workplace/workplacedev.git
+  cd workplacedev
+  git submodule update --remote
+```
 
-Alternatively, if you already checked-out master branch of this repository
-(e.g. you added new remote repo to existing Moodle project), all you need is to
-initialise submodules using command:
+The last command will pull upstream changes for all registered submodules (plugins). Alternatively you can checkout
+the main branch in each submodule:
 
-  `git submodule update --init`
-
-This will add all required plugins to your setup (do not worry if you already
-have git clones of those plugins in respective directories, it will not affect
-command run).
+```
+git submodule foreach 'git checkout master && git pull'
+```
 
 ### Upstream changes in workplace repo
 
-If there are upstream changes in master branch (e.g. new release), you need to
-pull master branch first and then update working tree of submodules:
+If there are upstream changes in the branch, you need to pull the branch:
 
-  `git pull` `git submodule update`
+```
+git checkout WORKPLACE_38 && git pull
+```
 
-Notice that submodule update command above brings your submodules inline with
-commits recorded in submodule index in workplace master branch. You need to use
-it not only for upstream updates, but also if you checkout certain state in
-workplace repo history, e.g. version tag or different branch.
+After minor releases the changes are force pushed so you need to hard reset:
+
+```
+git reset --hard origin/HEAD
+```
 
 ### Upstream changes in submodules (plugins)
 
 You can pull upstream changes for all registered submodules (plugins) by
 running:
 
-  `git submodule update --remote`
+```
+git submodule update --remote
+```
+
+or:
+
+```
+git submodule foreach 'git checkout master && git pull'
+```
 
 When you are pulling remote changes with `--remote` argument, by default this
 does not overwrite your local changes in plugins, it just checks out the latest
 mater commits in each plugin leaving it in headless mode.
 
-You can commit changes after running above command to record the current state
-of submodules (represented as latest commit hashes for each submodule).
+### Development of plugins
 
 In order to work on the plugin development, just `cd` to plugin directory and
 treat it as independent git repo (you can switch branches, push upstream, this
 will not affect main workplace repo in any way).
+
+### Useful tips when working with submodules
+
+1.  Commands `git diff` and `git status` on the main repository can be used with `--ignore-submodules`
+
+2.  When you want to iterate over all submodules and run the same command on all of them you can use
+
+    ```
+    git sumodule foreach COMMAND
+    ```
+
+    Note that if the command `COMMAND` exits with non-zero code on one of the submodules the looping stops.
+    To make sure that we loop through all submodules no matter what one can use:
+
+    ```
+    git submodule foreach 'COMMAND ||:'
+    ```
+
+    inside the `COMMAND` you can use "special" variables such as `$name` and `$path`.
+
+    More documentation on `git submodule`: https://git-scm.com/docs/git-submodule
