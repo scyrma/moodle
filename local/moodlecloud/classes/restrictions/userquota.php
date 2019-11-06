@@ -55,6 +55,15 @@ class userquota {
     }
 
     /**
+     * Does this site have unlimited quota?
+     *
+     * @return bool true if site has unlimited quota.
+     */
+    public static function site_has_unlimited_quota() {
+        return defined('MOODLECLOUD_USER_QUOTA') && MOODLECLOUD_USER_QUOTA == -1;
+    }
+
+    /**
      * Is the site over its user quota?
      *
      * @param bool $exception Whether to throw an exception on over quota.
@@ -93,14 +102,17 @@ class userquota {
     public static function number_of_user_slots_remaining() {
         global $DB;
 
-        if (!self::is_user_quota_enforced()) {
+        if (!self::is_user_quota_enforced() || self::site_has_unlimited_quota()) {
             // Site user quota is not enforced.
             return null;
         }
 
-        $usercount = $DB->count_records_select('user', 'deleted = ? AND username <> ?', array(0, 'guest'));
-
         // Don't return negative number if over quota.
-        return max(MOODLECLOUD_USER_QUOTA - $usercount, 0);
+        return max(MOODLECLOUD_USER_QUOTA - self::get_user_count(), 0);
+    }
+
+    public static function get_user_count() {
+        global $DB;
+        return $DB->count_records_select('user', 'deleted = ? AND username <> ?', array(0, 'guest'));
     }
 }
