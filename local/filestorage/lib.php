@@ -25,6 +25,10 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
         return;
     }
 
+    if (local_filestorage_site_has_unlimited_quota()) {
+        return;
+    }
+
     $filesize = $fileinfo['content'] ? strlen($fileinfo['content']) : filesize($fileinfo['pathname']);
 
     // If somehow we get here and the filesize is still zero just quit. It won't affect the quota.
@@ -37,4 +41,13 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
     if (($current + $filesize) > FILESTORAGE_QUOTA) {
         throw new quota_exception($current, $filesize);
     }
+}
+
+/**
+ * Does this site have unlimited quota?
+ *
+ * @return bool true if site has unlimited quota.
+ */
+function local_filestorage_site_has_unlimited_quota() {
+    return defined('FILESTORAGE_QUOTA') && FILESTORAGE_QUOTA == -1;
 }
