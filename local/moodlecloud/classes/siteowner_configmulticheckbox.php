@@ -28,7 +28,7 @@ final class siteowner_configmulticheckbox extends admin_setting_configmulticheck
     private static $notified;
 
     public function write_setting($data) {
-        global $USER;
+        global $USER, $CFG;
 
         // Setting will be null during install, write the default.
         if ($this->get_setting() === null) {
@@ -36,6 +36,7 @@ final class siteowner_configmulticheckbox extends admin_setting_configmulticheck
         }
 
         // Only write setting for Superman.
+        require_once($CFG->dirroot . '/local/moodlecloud/lib.php');
         if (local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, $USER->id)) {
             return parent::write_setting($data);
         }
