@@ -37,3 +37,6 @@
 [submodule "theme_workplace"]
 	path = theme/workplace
 	url = git@git.in.moodle.com:workplace/moodle-theme_workplace.git
+[submodule "mod_appointment"]
+    path = mod/appointment
+    url = git@git.in.moodle.com:workplace/moodle-mod_appointment.git

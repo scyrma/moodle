@@ -24,7 +24,7 @@ You can clone this repository using command below, which will also initialise
 submodule dependencies and clone them in respective directories.
 
 ```
-  git clone --single-branch --branch WORKPLACE_38 --recurse-submodules git@git.in.moodle.com:workplace/workplacedev.git
+  git clone --recurse-submodules git@git.in.moodle.com:workplace/workplacedev.git
   cd workplacedev
   git submodule update --remote
 ```
@@ -41,14 +41,23 @@ git submodule foreach 'git checkout master && git pull'
 If there are upstream changes in the branch, you need to pull the branch:
 
 ```
-git checkout WORKPLACE_38 && git pull
+git pull
 ```
 
-After minor releases the changes are force pushed so you need to hard reset:
+**After minor releases** the changes are force pushed so you need to hard reset:
 
 ```
 git reset --hard origin/HEAD
 ```
+
+If **new submodules were added** in the upstream repo:
+
+* Make sure that the new plugins paths are not present in `.git/info/exclude`
+* Run `git submodule update --init`
+
+This will add all required plugins to your setup (do not worry if you already
+have git clones of those plugins in respective directories, it will not affect
+command run).
 
 ### Upstream changes in submodules (plugins)
 
@@ -82,7 +91,7 @@ will not affect main workplace repo in any way).
 2.  When you want to iterate over all submodules and run the same command on all of them you can use
 
     ```
-    git sumodule foreach COMMAND
+    git submodule foreach COMMAND
     ```
 
     Note that if the command `COMMAND` exits with non-zero code on one of the submodules the looping stops.
