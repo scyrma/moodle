@@ -693,6 +693,11 @@ if ($formdata = $mform2->is_cancelled()) {
             }
 
             if ($doupdate or $existinguser->password !== $oldpw) {
+                /** @uses \tool_wp\tool_uploaduser::can_update_user() */
+                if (!component_class_callback('tool_wp\tool_uploaduser', 'can_update_user', [$existinguser, $filecolumns, $upt], true)) {
+                    $upt->track('tool_wp', get_string('cannotupdateuser', 'error'), 'error');
+                    continue;
+                }
                 // We want only users that were really updated.
                 user_update_user($existinguser, false, false);
 
@@ -725,6 +730,12 @@ if ($formdata = $mform2->is_cancelled()) {
                         $SESSION->bulk_users[] = $user->id;
                     }
                 }
+            }
+
+            /** @uses \tool_wp\tool_uploaduser::process_updated_user() */
+            if (!component_class_callback('tool_wp\tool_uploaduser', 'process_updated_user', [$user, $filecolumns, $upt], true)) {
+                $upt->track('tool_wp', get_string('cannotupdateuser', 'error'), 'error');
+                continue;
             }
 
             if ($dologout) {
@@ -828,6 +839,12 @@ if ($formdata = $mform2->is_cancelled()) {
                 $upt->track('password', '-', 'normal', false);
             }
 
+            /** @uses \tool_wp\tool_uploaduser::can_create_user() */
+            if (!component_class_callback('tool_wp\tool_uploaduser', 'can_create_user', [$user, $filecolumns, $upt], true)) {
+                $upt->track('tool_wp', $strusernotaddederror, 'error');
+                $userserrors++;
+                continue;
+            }
             $user->id = user_create_user($user, false, false);
             $upt->track('username', html_writer::link(new moodle_url('/user/profile.php', array('id'=>$user->id)), s($user->username)), 'normal', false);
 
@@ -858,6 +875,9 @@ if ($formdata = $mform2->is_cancelled()) {
                     $SESSION->bulk_users[] = $user->id;
                 }
             }
+
+            /** @uses \tool_wp\tool_uploaduser::process_new_user() */
+            component_class_callback('tool_wp\tool_uploaduser', 'process_new_user', [$user, $filecolumns, $upt]);
         }
 
         // Update user interests.
@@ -1134,6 +1154,15 @@ if ($formdata = $mform2->is_cancelled()) {
                     $upt->track('enrolments', get_string('addedtogroupnot', '', s($gname)), 'error');
                     continue;
                 }
+            }
+        }
+
+        foreach ($filecolumns as $column) {
+            /** @uses \tool_wp\tool_uploaduser::process_user_after_enrol() */
+            if (!component_class_callback('tool_wp\tool_uploaduser', 'process_user_after_enrol',
+                    [$user, $filecolumns, $upt, &$ccache], true)) {
+                $upt->track('tool_wp', get_string('cannotupdateuser', 'error'), 'error');
+                continue;
             }
         }
         $validation[$user->username] = core_user::validate($user);
