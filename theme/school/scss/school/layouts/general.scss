@@ -8,6 +8,13 @@
     overflow: unset !important;
 }
 
+#page-mod-attendance-report .attendancereporttable {
+    margin-left: 0;
+    .headcol {
+        position: relative;
+    }
+}
+
 .flex-fill {
     flex: 1 1 auto!important;
 }
