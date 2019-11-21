@@ -1,0 +1,56 @@
+#page-login-index {
+    .loginbox {
+        max-width: 554px;
+        min-width: 280px;
+        margin: 0 auto;
+
+        .logo-wr {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+    .site-name-header {
+        background-color: $secondary;
+    }
+    .site-name {
+        color: $secondarylink;
+    }
+    .login-string {
+        color: $font;
+    }
+    .forgetpass a,
+    .text-info {
+        color: $linkstandard;
+        opacity: .5;
+        &:hover {
+            opacity: .8;
+        }
+    }
+    .cookies {
+        color: $font;
+    }
+    .rememberpass {
+        color: $font;
+        margin: 10px 0;
+        input {
+          display: none;
+        }
+        input + label {
+            &::before {
+                content: "";
+                display: inline-block;
+                width: 21px;
+                height: 21px;
+                vertical-align: middle;
+                margin-right: 18px;
+                background-color: darken($primary, 10%);
+                line-height: 21px;
+                border-radius: 3px;
+                margin: 0 10px;
+            }
+        }
+        input:checked + label::before {
+            content: '\2714';
+        }
+    }
+}
