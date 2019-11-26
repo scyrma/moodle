@@ -142,5 +142,53 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019072200, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2019112600) {
+        $attotoolbarconfig = get_config('editor_atto', 'toolbar');
+
+        // Convert the config string in to a 2D array.
+        // First index is the line number, second index is the string position in the CSVs (equals sign gets no special treatment).
+        // e.g., for a config of:
+        //     collapse = collapse
+        //     style1 = title, bold, italic
+        // $configasarray[1][0] == 'style1 = title'
+        // $configasarray[1][1]  == 'bold'
+        $configasarray = array_map(
+            function(string $line) : array {
+                return array_map('trim', explode(',', $line));
+            },
+            explode("\n", $attotoolbarconfig)
+        );
+
+        // Inserts the value "recordrtc" as the 3rd element of a CSV (which is the defualt position).
+        // If "recordrtc" is already present in the list, it's left untouched.
+        $addrecordrtc = function(array $buttons) : array {
+            return array_merge(
+                array_slice($buttons, 0, 2),
+                in_array("recordrtc", $buttons) ? [] : ["recordrtc"],
+                array_slice($buttons, 2)
+            );
+        };
+
+        $removerecordrtc = function(array $buttons) : array {
+            return array_filter(
+                $buttons,
+                function(string $button) : bool {
+                    return $button != 'recordrtc';
+                }
+            );
+        };
+
+        // Adds "recordrtc" to the line beginning with "files", removes "recordrtc" from any other line
+        // and converts the 2D array back in to a string.
+        $fixedconfigasstring = implode(
+            "\n",
+            array_map(function(array $line) use ($addrecordrtc, $removerecordrtc) : string {
+                return implode(", ", substr($line[0], 0, 5) == 'files' ? $addrecordrtc($line) : $removerecordrtc($line));
+            }, $configasarray)
+        );
+
+        set_config('toolbar', $fixedconfigasstring, 'editor_atto');
+    }
+
     return true;
 }
