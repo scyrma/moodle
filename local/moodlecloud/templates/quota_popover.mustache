@@ -99,6 +99,10 @@
                 </g>
             </svg>
         </div>
+        {{#tenantlimit}}
+            <h3>{{#str}} tenantusage, local_moodlecloud {{/str}}</h3>
+            <div>{{tenantsused}} / {{tenantlimit}}</div>
+        {{/tenantlimit}}
     </div>
     {{/content}}
 {{/ core/popover_region }}
