@@ -77,7 +77,12 @@ function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
                     'seeall' => (new moodle_url('/admin/tool/fileslist'))->out()
                 ],
                 'theme' => $PAGE->theme->name
-            ]
+                // Add the tenant count if we're on workplace and if the main admin is logged in
+                // (tenants don't need to be aware of the tenant usage)
+            ] + ((isset($CFG->tool_tenant_tenantlimit) && $USER->id == 2) ? [
+                'tenantlimit' => $CFG->tool_tenant_tenantlimit,
+                'tenantsused' => count(\tool_tenant\tenancy::get_tenants()) + count((new \tool_tenant\manager())->get_archived_tenants())
+            ] : [])
         );
 }
 
