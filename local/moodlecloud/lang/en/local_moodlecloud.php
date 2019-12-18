@@ -61,3 +61,4 @@ $string['filetype'] = 'File type';
 $string['users'] = 'Users';
 $string['storage'] = 'Storage';
 $string['unlimited'] = '∞';
+$string['tenantusage'] = 'Total tenants used';
