@@ -4446,7 +4446,9 @@ function role_get_name(stdClass $role, $context = null, $rolenamedisplay = ROLEN
             case 'user':            $original = get_string('authenticateduser'); break;
             case 'frontpage':       $original = get_string('frontpageuser', 'role'); break;
             // We should not get here, the role UI should require the name for custom roles!
-            default:                $original = $role->shortname; break;
+            /** @uses \tool_tenant\role::get_default_role_name() */
+            default:                $original = component_class_callback('tool_tenant\role',
+                'get_default_role_name', [$role], $role->shortname); break;
         }
     }
 
