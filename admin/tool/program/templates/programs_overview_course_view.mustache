@@ -1,0 +1,77 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+     Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_program/programs_overview_course_view
+
+    Template for showing overview.
+
+    Example context (json):
+    {
+        "unlocked": "1",
+        "iscompleted": "1",
+        "isenrolled": "1",
+        "name": "Name",
+        "statusmessage": "completed",
+        "statusmessagestr": "Completed",
+        "showprogress": "0",
+        "completedactivities": "2",
+        "courseid": "3",
+        "programid": "4",
+        "progress": "100"
+    }
+}}
+<div class="programitem programrow px-5 border-bottom border-gray030" data-region="programs-overview-course-view">
+    <div class="d-flex">
+        <div class="indent indent-{{level}}"></div>
+        <div class="flex-fill d-flex p-2 my-auto">
+            <div class="media">
+                <span class="mr-2 {{#iscompleted}}{{#unlocked}}completed{{/unlocked}}{{^unlocked}}text-warning{{/unlocked}}{{/iscompleted}}">
+                    {{#unlocked}}
+                        {{#iscompleted}}
+                            {{#pix}}e/tick, core, {{statusmessagestr}} {{/pix}}
+                        {{/iscompleted}}
+                        {{^iscompleted}}
+                            {{#isenrolled}}
+                                {{#pix}}t/right, core, {{statusmessagestr}} {{/pix}}
+                            {{/isenrolled}}
+                            {{^isenrolled}}
+                                {{#pix}}i/course, core, {{statusmessagestr}} {{/pix}}
+                            {{/isenrolled}}
+                        {{/iscompleted}}
+                    {{/unlocked}}
+                    {{^unlocked}}
+                        {{#iscompleted}}
+                            {{#pix}}a/wp-hourglass, theme, {{statusmessagestr}} {{/pix}}
+                        {{/iscompleted}}
+                        {{^iscompleted}}
+                            {{#pix}}t/locked, core, {{statusmessagestr}} {{/pix}}
+                        {{/iscompleted}}
+                    {{/unlocked}}
+                </span>
+                <div class="media-body">
+                    {{> tool_program/programs_overview_view_course_name }}
+                    <div class="text-gray080 small">
+                        {{statusmessagestr}}
+                        {{#showprogress}}
+                            ({{completedactivities}}/{{totalactivities}})
+                        {{/showprogress}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-2 my-auto">
+            {{> tool_program/programs_overview_view_progress_bar }}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,180 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+     Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_program/programs_overview_view
+
+    Template for showing overview.
+
+    Example context (json):
+    {
+        "programs": [],
+        "programiscompleted": "1",
+        "fullname": "Name",
+        "statuspercentage": "10",
+        "status": "Completed",
+        "formatedduedate": "01/01/2018",
+        "description": "Description text",
+        "image": "url"
+    }
+}}
+{{#showfilters}}
+<div class="dropdown mb-3 mr-auto programs-status-filter">
+    <button id="programs-status-filter-dropdown" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false" title="{{#str}} programstatus, tool_program {{/str}}">
+        {{#pix}} i/filter {{/pix}}
+        <span class="d-sm-inline-block" data-active-item-text>
+            {{#programstatusfilterstr}}{{programstatusfilterstr}}{{/programstatusfilterstr}}{{^programstatusfilterstr}}{{#str}} all, tool_program {{/str}}{{/programstatusfilterstr}}
+        </span>
+    </button>
+    <ul class="dropdown-menu" data-show-active-item data-active-item-text aria-labelledby="programs-status-filter-dropdown">
+        <li>
+            <a class="dropdown-item" href="#" data-value="all">
+                {{#str}} all, tool_program {{/str}}
+            </a>
+        </li>
+        <li class="dropdown-divider" role="presentation">
+            <span class="filler">&nbsp;</span>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#" data-value="withduedate">
+                {{#str}} withduedate, tool_program {{/str}}
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#" data-value="closetoduedate">
+                {{#str}} closetoduedate, tool_program {{/str}}
+            </a>
+        </li>
+        <li class="dropdown-divider" role="presentation">
+            <span class="filler">&nbsp;</span>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#" data-value="notcompleted">
+                {{#str}} notcompleted, tool_program {{/str}}
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#" data-value="completed">
+                {{#str}} completed, tool_program {{/str}}
+            </a>
+        </li>
+    </ul>
+</div>
+{{/showfilters}}
+<div class="programs-view" data-region="programs-overview-view" data-showfilters="{{showfilters}}">
+    <div class="nothingtodisplay p-5 text-center hide">
+        <h5 class="text-gray070">{{#str}} nothingtodisplay, moodle {{/str}}</h5>
+    </div>
+    {{#programs}}
+        <div class="mb-3 bg-white wp-boxshadow-1 program-item" data-programcompleted="{{programiscompleted}}" data-programwithduedate="{{showduedate}}" data-programclosetoduedate="{{closetoduedate}}">
+            <div class="programinfo p-5 border-bottom">
+                <div class="d-flex mb-3">
+                    <div data-component="tool_program">
+                        <div class="media mb-3">
+                        {{#image}}
+                            <div class="programimage rounded mr-3 ml-auto d-none d-sm-block"
+                                style='background-image: url("{{{image}}}");'>
+                                <span class="sr-only">{{#str}}programimage_help, tool_program{{/str}}</span>
+                            </div>
+                        {{/image}}
+                            <div class="media-body">
+                            <h3>{{{fullname}}}</h3>
+                            </div>
+                        </div>
+                        {{#tags}}
+                            <span class="border p-1 text-uppercase font-small my-2 mr-2">{{{.}}}</span>
+                        {{/tags}}
+                    </div>
+                    <div class="progress-circle ml-auto d-none d-sm-block">
+                        {{> tool_program/programs_overview_view_progress_doughnut }}
+                    </div>
+                </div>
+                <div class="program-description mb-4">
+                    {{{description}}}
+                </div>
+
+                {{#origin}}
+                    {{#certificationid}}
+                    <div class="{{alertstyle}} p-4 mb-4 d-flex align-items-center font-color-headings font-size-menus">
+                        <span class="{{iconstyle}} mr-2"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            title="{{#str}} certificationduedate, tool_program {{/str}}">
+                            {{#pix}} calendar-o, tool_wp {{/pix}}
+                        </span>
+                        {{#fullname}} "{{{fullname}}}" {{/fullname}} {{datemsg}}.
+                    </div>
+                    {{/certificationid}}
+                {{/origin}}
+
+                <div class="content pt-2 border-top" data-section="tool_program" role="contentinfo">
+                    <div class="d-flex py-3 align-items-center align-items-stretch">
+                        <div class="bg-gray020 flex-fill px-4 py-2 mr-3 font-size-menus d-flex align-items-center">
+                            <span class="mr-2"
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="{{#str}} completion, tool_program {{/str}}">
+                                {{#pix}} check-circle-o, tool_wp {{/pix}}
+                            </span>
+                            {{status}}
+                        </div>
+                        {{#showduedate}}
+                        <div class="bg-gray020 px-4 py-2 mr-2 mr-3 font-size-menus d-flex align-items-center">
+                            {{#origin}}
+                                {{^certificationid}}
+                                    <span class="mr-2"
+                                        data-toggle="tooltip"
+                                        data-placement="top"
+                                        title="{{#str}} programduedate, tool_program {{/str}}">
+                                        {{#pix}} hourglass-end, tool_wp {{/pix}}
+                                    </span>
+                                    {{formatedduedate}}
+                                {{/certificationid}}
+                            {{/origin}}
+                        </div>
+                        {{/showduedate}}
+                        {{#programiscompleted}}
+                            <div class="bg-gray020 px-4 py-2 mr-2 mr-3 font-size-menus d-flex align-items-center">
+                                <span class="mr-2 completed">
+                                    {{#pix}} e/tick, core {{/pix}}
+                                </span>
+                                {{calltoactionstr}}
+                            </div>
+                        {{/programiscompleted}}
+                        {{^programiscompleted}}
+                            {{#ongoingcourseid}}
+                                <a class="btn btn-primary btn-lg px-5 {{^ongoingisenrolled}}enrol_to_course{{/ongoingisenrolled}} {{#viewasmode}}disabled{{/viewasmode}}"
+                                   title="{{calltoactionstr}}"
+                                   data-programid="{{id}}"
+                                   data-courseid="{{ongoingcourseid}}"
+                                   role="button"
+                                   {{#viewasmode}}aria-disabled="true"{{/viewasmode}}
+                                   href="{{config.wwwroot}}/course/view.php?id={{ongoingcourseid}}">
+                                    {{calltoactionstr}}
+                                </a>
+                            {{/ongoingcourseid}}
+                        {{/programiscompleted}}
+                    </div>
+                </div>
+            </div>
+
+            {{> tool_program/programs_overview_recursive_view }}
+        </div>
+    {{/programs}}
+</div>
+
+{{#js}}
+    require(['tool_program/program_overview'], function(s) {
+        s.init();
+    });
+{{/js}}
