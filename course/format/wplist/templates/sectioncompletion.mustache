@@ -1,0 +1,46 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_wplist/sectioncompletion
+
+    This template renders action menu for each course.
+
+    Example context (json):
+    {
+        "hascompletion": true,
+        "sectionnumber": 2,
+        "completionmodcount": 4,
+        "completedmodscount": 2,
+        "percentagecompleted": 50
+    }
+}}
+{{#hascompletion}}
+<div class="sectionprogress progress ml-auto my-4 d-none d-sm-block"
+    title="{{#str}} section_completion, format_wplist, {{percentagecompleted}} {{/str}}">
+    <div class="progress-bar bg-info-light"
+        id="sectionprogress-{{sectionnumber}}"
+        data-completion-modules="{{completionmodcount}}"
+        data-completed-modules="{{completedmodscount}}"
+        role="progressbar"
+        aria-valuenow="{{completionmodcount}}"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        style="width: {{percentagecompleted}}%">
+        <span class="sr-only">{{percentagecompleted}}% Complete</span>
+    </div>
+</div>
+{{/hascompletion}}
