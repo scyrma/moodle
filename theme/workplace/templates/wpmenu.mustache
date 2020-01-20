@@ -1,0 +1,119 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_workplace/wpmenu
+
+    This template renders the main content area for the myoverview block.
+
+    Example context (json):
+    {
+        "uniqid": 123456,
+        "haslinks": true,
+        "wpmenuexamplecontext": true,
+        "courses": { "url": "#", "name": "Courses"},
+        "organisation": { "url": "#", "name": "Organisation structure"}
+    }
+}}
+{{#wpmenuexamplecontext}}<ul>{{/wpmenuexamplecontext}}
+{{#haslinks}}
+<li class="dropdown nav-item">
+    <a
+        class="nav-link dropdown-toggle nocaret"
+        href="#"
+        id="workplace-menulink"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+        aria-controls="workplace-menu-{{uniqid}}"
+    >
+    {{#pix}} a/view_icon_active, core, {{#str}} launcher_tooltip, theme_workplace {{/str}} {{/pix}}
+    </a>
+    <div id="workplace-menu-{{uniqid}}" data-region="workplace-menu-content" class="workplace-menu p-0 dropdown-menu wp-boxshadow-4" aria-labelledby="workplace-menulink">
+        <div class="p-4 d-flex flex-column">
+            <div class="content card-deck-wrapper">
+                <div class="card-deck columns-{{columns}}">
+                    {{#courses}}
+
+                    <a class="card bg-white border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                        {{#pix}} menu/courses, theme_workplace, {{name}} {{/pix}}
+                        <span class="small mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/courses}}
+                    {{#programs}}
+
+                    <a class="card bg-white border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                        {{#pix}} menu/programs, theme_workplace, {{name}} {{/pix}}
+                        <span class="small mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/programs}}
+                    {{#certifications}}
+
+                    <a class="card bg-white border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                        {{#pix}} menu/certifications, theme_workplace, {{name}} {{/pix}}
+                        <span class="small mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/certifications}}
+                    {{#certificates}}
+
+                    <a class="card bg-white border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                        {{#pix}} menu/certificates, theme_workplace, {{name}} {{/pix}}
+                        <span class="small mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/certificates}}
+                    {{#organisation}}
+
+                    <a class="card bg-white border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                        {{#pix}} menu/organization_structure, theme_workplace, {{name}} {{/pix}}
+                        <span class="small mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/organisation}}
+                    {{#users}}
+
+                    <a class="card bg-white border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                        {{#pix}} menu/users, theme_workplace, {{name}} {{/pix}}
+                        <span class="small mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/users}}
+                    {{#tenants}}
+
+                    <a class="card bg-white border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+
+                        {{#pix}} menu/tenants, theme_workplace, {{name}} {{/pix}}
+                        <span class="small mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/tenants}}
+                    {{#reportbuilder}}
+
+                    <a class="card bg-white border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                        {{#pix}} menu/report_builder, theme_workplace, {{name}} {{/pix}}
+                        <span class="small mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/reportbuilder}}
+                    {{#dynamicrules}}
+
+                    <a class="card bg-white border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                        {{#pix}} menu/dynamic_rules, theme_workplace, {{name}} {{/pix}}
+                        <span class="small mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/dynamicrules}}
+                </div>
+            </div>
+        </div>
+    </div>
+</li>
+{{/haslinks}}
+{{#wpmenuexamplecontext}}</ul>{{/wpmenuexamplecontext}}

@@ -1,0 +1,160 @@
+$brand100: #052934 !default;
+$brand090: #074355 !default;
+$brand080: #0a5a73 !default;
+$brand070: #2085a5 !default;
+$brand060: #40aacb !default;
+$brand050: #4fbddf !default;
+$brand040: #89d2e9 !default;
+$brand030: #c1e3ee !default;
+$brand020: #dff1f6 !default;
+$brand010: #ebf5f8 !default;
+
+$gray100: #21252a !default;
+$gray090: #343a40 !default;
+$gray080: #495057 !default;
+$gray070: #868e96 !default;
+$gray060: #adb5bd !default;
+$gray050: #ced4da !default;
+$gray040: #dee2e6 !default;
+$gray030: #e9ecef !default;
+$gray020: #f1f3f5 !default;
+$gray010: #f8f9fa !default;
+
+$text: #4a4a4a !default;
+$white: #fff !default;
+
+$info:          #118ab2 !default;
+$info-light:    #48b0d2 !default;
+$warning:       #ffd166 !default;
+$warning-light: #ffe3a1 !default;
+$danger:        #ef476f !default;
+$danger-light:  #f585a0 !default;
+$success:       #06d6a0 !default;
+$success-light: #a1e5d4 !default;
+
+$iconcolor: $info;
+
+$gray-dark: $gray080;
+$gray: $gray050;
+$gray-light: $gray030;
+$gray-lighter: $gray020;
+$gray-lightest: $gray010;
+
+// Body
+$body-bg: #cfd4d9 !default;
+$body-color: $gray100 !default;
+$text-muted: $gray070 !default;
+
+// Typography
+// stylelint-disable
+$font-family-sans-serif: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+// stylelint-enable
+
+$headings-color: $gray090 !default;
+$headings-font-weight: 700 !default;
+
+$font-size-mini: 0.625rem !default;
+$font-size-small: 0.75rem !default;
+$font-size-base: 1rem !default;
+$font-size-menus: 0.875rem !default;
+
+$icon-size-base: 1rem !default;
+$icon-size-large: 1.25rem !default;
+$icon-size-xlarge: 1.875rem !default;
+
+$enable-rounded: false !default;
+$enable-gradients: false !default;
+
+// Dropdowns
+$dropdown-border-color: #e2e2e2 !default;
+$dropdown-link-color: $body-color;
+
+// Navbar
+$navbar-dark-color: $white !default;
+$navbar-dark-hover-color: $white !default;
+$navbar-dark-active-color: $white !default;
+$navbar-nav-link-padding-x: 0.200rem !default;
+
+$navbar-height: 60px;
+
+// Breadcrumbs
+$breadcrumb-bg: transparent !default;
+$breadcrumb-padding-x: 0;
+$breadcrumb-divider: "/" !default;
+$breadcrumb-divider-rtl: "/" !default;
+
+$blocks-column-width : 360px !default;
+
+$h1-font-size: 30px !default;
+$h2-font-size: 28px !default;
+$h3-font-size: 26px !default;
+$h4-font-size: 24px !default;
+$h5-font-size: 18px !default;
+
+$card-group-margin: .25rem;
+$card-border-radius: 4px;
+$drawer-width: 250px;
+
+$primary:  #357992 !default;
+$secondary: $gray080 !default;
+$brand:    #005a75 !default;
+$accent:   #0694b5 !default;
+$button:   $primary !default;
+$drawer:   $gray080 !default;
+$drawertext: $gray050 !default;
+$footer:   $gray090 !default;
+
+$nav-tabs-border-width: 1px;
+$nav-tabs-link-active-bg: $white;
+$nav-tabs-border-color: $gray040;
+
+$alert-bg-level:      -10;
+$alert-border-level:  -10;
+$alert-color-level:   6 !default;
+$alert-padding-y:     1.43rem;
+$alert-padding-x:     1.56rem;
+
+$tooltip-font-size: 10px !default;
+
+// Modals
+$modal-xl: 1200px !default;
+$modal-lg: 800px !default;
+
+$theme-colors: ();
+
+// stylelint-disable
+$theme-colors: map-merge((
+    "brand": $brand,
+    "primary": $primary,
+    "button": $button,
+    "info": $info,
+    "info-light": $info-light,
+    "warning": $warning,
+    "warning-light": $warning-light,
+    "danger": $danger,
+    "danger-light": $danger-light,
+    "success": $success,
+    "success-light": $success-light,
+    "accent" : $accent,
+    "gray100": $gray100,
+    "gray090": $gray090,
+    "gray080": $gray080,
+    "gray070": $gray070,
+    "gray060": $gray060,
+    "gray050": $gray050,
+    "gray040": $gray040,
+    "gray030": $gray030,
+    "gray020": $gray020,
+    "gray010": $gray010,
+    "brand100": $brand100,
+    "brand090": $brand090,
+    "brand080": $brand080,
+    "brand070": $brand070,
+    "brand060": $brand060,
+    "brand050": $brand050,
+    "brand040": $brand040,
+    "brand030": $brand030,
+    "brand020": $brand020,
+    "brand010": $brand010
+), $theme-colors);
+// stylelint-enable
