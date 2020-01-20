@@ -1,0 +1,75 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+     Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_reportbuilder/report_columns
+
+    Template for the list of available report columns in one entitya
+
+    Classes required for JS:
+    -
+    Data attributes required for JS:
+    -
+    Context variables required for this template:
+    -
+
+    Example context (json):
+    {
+        "text": "Course completion",
+        "key": "coursecompletion",
+        "values": [
+            {
+                "value": "course:course:fullname",
+                "visiblename": "Full name"
+            }
+        ]
+    }
+}}
+<div class="tool_reportbuilder_report_columns">
+    <div class="mb-2 tool-wp-accordion">
+        <div class="card">
+            <div class="card-header" id="{{key}}-heading">
+                <h5 class="mb-0">
+                    <button class="btn btn-link btn-block text-left ws-toggle nomargin ml-1" data-toggle="collapse"
+                            data-target="#entity_{{key}}" aria-expanded="true" aria-controls="entity_{{key}}">
+                        <span class="togglesectionicon collapsed-icon-container">
+                            {{#pix}} t/collapsedcaret, core, {{#str}} expand, moodle {{/str}}{{/pix}}
+                        </span>
+                        <span class="togglesectionicon expanded-icon-container">
+                            {{#pix}} t/expanded, core, {{#str}} collapse, moodle {{/str}}{{/pix}}
+                        </span>
+                        {{{text}}}
+                    </button>
+                </h5>
+            </div>
+            <div id="entity_{{key}}" class="collapse show" aria-labelledby="{{key}}-heading">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {{#values}}
+                            <a href="#"
+                               title="{{#str}} addfieldbyname, tool_reportbuilder, {{visiblename}} {{/str}}"
+                               role="button"
+                               class="list-group-item list-group-item-action d-flex align-items-start pr-2 js-draggable-column"
+                               draggable="true" data-field="{{value}}">
+                                {{{visiblename}}}
+                                <span class="ml-auto">
+                                    {{#pix}}t/add, core,{{#str}}addcolumn, tool_reportbuilder{{/str}} {{/pix}}
+                                </span>
+                            </a>
+                        {{/values}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
