@@ -1,0 +1,123 @@
+.certificationitem:hover {
+    -moz-box-shadow: 0 0 5px #ccc;
+    -webkit-box-shadow: 0 0 5px #ccc;
+    box-shadow: 0 0 3px #ccc;
+    cursor: pointer;
+}
+
+.certificationitem:hover .middle {
+    opacity: 1;
+}
+
+.middle {
+    opacity: 0;
+}
+
+.setview {
+    border: 1px solid #fcfcfc;
+}
+
+.itemrow {
+    min-height: 60px;
+}
+
+.itemrow:hover {
+    cursor: pointer;
+}
+
+[data-region="edit-certification-calendar"] {
+    .calendar-fix-selector-width select {
+        min-width: 221px;
+    }
+}
+
+[data-region="edit-content"] {
+    .dropdown-toggle::after {
+        display: none;
+        visibility: hidden;
+        height: 0;
+        width: 0;
+    }
+
+    .certification-item.sortable-list-current-position .card-body {
+        background-color: #d7f0ee;
+    }
+
+    .certification-item.sortable-list-is-dragged {
+        opacity: 0.65;
+    }
+
+    [data-groupname="completioncriteriagroup"] {
+        margin-bottom: 0;
+        margin-left: 0;
+        margin-right: 0;
+
+        // Removes empty form group label spacing.
+        &.femptylabel {
+            margin-left: 0;
+            .col-md-3 {
+                display: none;
+                visibility: hidden;
+            }
+            .col-md-9 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                padding-right: 0;
+                padding-left: 0;
+            }
+        }
+    }
+}
+
+.cert_program_tag {
+    height: 100%;
+    width: 100%;
+    padding: 5px 5px;
+    text-align: center;
+    color: white;
+    border-radius: 5px;
+}
+
+.cert_program_archived,
+.cert_user_status_overdue {
+    @extend .cert_program_tag;
+    background-color: #f5a622;
+}
+
+.cert_user_status_expired,
+.cert_user_status_suspended,
+.cert_program_deleted {
+    @extend .cert_program_tag;
+    background-color: #db4d5f;
+}
+
+.cert_user_status_open,
+.cert_user_status_futureallocation,
+.cert_user_status_active {
+    @extend .cert_program_tag;
+    background-color: #4a90e2;
+}
+
+.cert_user_status_certified {
+    @extend .cert_program_tag;
+    background-color: #7ed321;
+}
+
+.modal-certification-user-log {
+    &.modal-xl .modal-body {
+        max-height: 80vh;
+        overflow: auto;
+    }
+}
+
+[data-region="certification-user-log"] {
+    .table thead th {
+        border-top: 0;
+    }
+
+    .wp-info-circle.systemusericon {
+        margin-right: 0;
+        padding: 9px;
+        margin-top: 1px;
+    }
+}

@@ -1,0 +1,42 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+     Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_certification/edit_certification_user_allocation
+
+    Template for user allocation into certification.
+
+    Example context (json):
+    {
+        "tabheading": "Users list",
+        "addbuttontitle": "Allocate user",
+        "certificationid": "1",
+        "userstable": "<div>Table goes here...</div>"
+    }
+}}
+{{> tool_wp/tab_heading }}
+<div data-region="edit-certification-user-allocation">
+    <div data-region="edit-certification-user-list">
+        {{{userstable}}}
+    </div>
+</div>
+{{#js}}
+    M.util.js_pending('tool_certification_user_alloc');
+    require(['tool_certification/user_allocations'], function(s) {
+        s.init();
+        M.util.js_complete('tool_certification_user_alloc');
+    });
+    require(['tool_certification/certification_user_log'], function(s) {
+        s.init();
+    });
+{{/js}}
