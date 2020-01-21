@@ -68,6 +68,13 @@ class cache_config_writer extends cache_config {
      */
     protected function config_save() {
         global $CFG;
+        // START MOODLECLOUD HACK.
+        // Return early without ever changing the configuration. This is always managed by centrally and shared amongst
+        // all sites.
+        if (empty($CFG->mc_force_cache_generation)) {
+            return;
+        }
+        // END MOODLECLOUD HACK.
         $cachefile = static::get_config_file_path();
         $directory = dirname($cachefile);
         if ($directory !== $CFG->dataroot && !file_exists($directory)) {

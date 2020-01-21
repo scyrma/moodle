@@ -2681,6 +2681,10 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
         $setwantsurltome = false;
     }
 
+    // START MOODLECLOUD HACK.
+    \auth_moodlecloud\sso::require_login();
+    // END MOODLECLOUD HACK.
+
     // Redirect to the login page if session has expired, only with dbsessions enabled (MDL-35029) to maintain current behaviour.
     if ((!isloggedin() or isguestuser()) && !empty($SESSION->has_timed_out) && !empty($CFG->dbsessions)) {
         if ($preventredirect) {
@@ -4217,6 +4221,13 @@ function delete_user(stdClass $user) {
         debugging('Local administrator accounts can not be deleted.');
         return false;
     }
+
+    // BEGIN MOODLECLOUD HACK
+    require_once($CFG->dirroot . '/local/moodlecloud/lib.php');
+    if (local_moodlecloud_is_super_admin($CFG->moodlecloud_super_admins, $user->id)) {
+        throw new moodle_exception("That account cannot be deleted");
+    }
+    // END MOODLECLOUD HACK
 
     // Allow plugins to use this user object before we completely delete it.
     if ($pluginsfunction = get_plugins_with_function('pre_user_delete')) {
@@ -6047,8 +6058,10 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
         $noreplyaddress = $noreplyaddressdefault;
     }
 
-    // Make up an email address for handling bounces.
-    if (!empty($CFG->handlebounces)) {
+    if ($CFG->mailsender) {
+        $mail->Sender = $CFG->mailsender;
+    } else if (!empty($CFG->handlebounces)) {
+        // Make up an email address for handling bounces.
         $modargs = 'B'.base64_encode(pack('V', $user->id)).substr(md5($user->email), 0, 16);
         $mail->Sender = generate_email_processing_address(0, $modargs);
     } else {
@@ -9545,6 +9558,13 @@ function get_performance_info() {
         $info['html'] .= '<div class="cachesused">Caches used (hits/misses/sets): 0/0/0</div>';
         $info['txt'] .= 'Caches used (hits/misses/sets): 0/0/0 ';
     }
+
+    // BEGIN MOODLECLOUD HACK.
+    $info['dbread']         = $DB->perf_get_reads();
+    $info['allwrites']      = $DB->perf_get_writes();
+    $info['perfwrites']     = $PERF->logwrites;
+    $info['finalwrites']    = $info['allwrites'] - $info['perfwrites'];
+    // END MOODLECLOUD HACK.
 
     $info['html'] = '<div class="performanceinfo siteinfo container-fluid">'.$info['html'].'</div>';
     return $info;
