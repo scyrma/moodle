@@ -10,10 +10,6 @@
     }
 }
 
-#nav-moodlecloud-quota-popover-container {
-    height: 1px;
-}
-
 #nav-moodlecloud-quota-popover-container > div > div {
     line-height: 1.3;
 }
