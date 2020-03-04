@@ -25,6 +25,10 @@ function local_filestorage_before_file_created($newfile, $fileinfo) {
         return;
     }
 
+    if ($newfile->component == 'core_h5p') {
+        return;
+    }
+
     if (local_filestorage_site_has_unlimited_quota()) {
         return;
     }
