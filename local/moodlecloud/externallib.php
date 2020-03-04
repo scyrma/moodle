@@ -104,6 +104,7 @@ final class local_moodlecloud_external extends external_api {
                              component <> 'tool_recyclebin' AND
                              (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND
                              component <> 'assignfeedback_editpdf' AND
+                             component <> 'core_h5p' AND
                              filearea <> 'draft'
                         GROUP BY filesize, mimetype, contenthash
                     ) df
