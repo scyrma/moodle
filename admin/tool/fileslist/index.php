@@ -74,7 +74,14 @@ echo $OUTPUT->render_from_template(
     'tool_fileslist/main',
     [
         'numitems' => $DB->count_records_sql(
-            "SELECT COUNT(*) FROM {files} WHERE filesize > 0 AND mimetype IS NOT NULL AND referencefileid IS NULL"
+            "SELECT COUNT(*) FROM {files} WHERE filesize > 0 AND " .
+            "mimetype IS NOT NULL AND " .
+            "referencefileid IS NULL AND " .
+            "filearea <> 'draft' AND " .
+            "component <> 'tool_recyclebin' AND " .
+            "(component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND " .
+            "component <> 'assignfeedback_editpdf' AND " .
+            "component <> 'core_h5p'"
         ),
         'help' => [
             'action' => $OUTPUT->help_icon('action', 'tool_fileslist')
