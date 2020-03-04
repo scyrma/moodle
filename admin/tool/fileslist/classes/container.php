@@ -65,7 +65,14 @@ final class container {
             // Quick and dirty way to make an Iterator.
             (function() use ($DB, $offset, $limit) : Generator {
                 yield from $DB->get_records_sql(
-                    "SELECT * FROM {files} WHERE filesize > 0 AND mimetype IS NOT NULL AND referencefileid IS NULL ORDER BY filesize DESC LIMIT :limit OFFSET :offset",
+                    "SELECT * FROM {files} WHERE filesize > 0 AND " .
+                    "mimetype IS NOT NULL AND " .
+                    "referencefileid IS NULL AND " .
+                    "filearea <> 'draft' AND " .
+                    "component <> 'tool_recyclebin' AND " .
+                    "(component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND " .
+                    "component <> 'assignfeedback_editpdf' AND " .
+                    "component <> 'core_h5p' ORDER BY filesize DESC LIMIT :limit OFFSET :offset",
                     [
                         'limit' => $limit,
                         'offset' => $offset,
