@@ -4,6 +4,7 @@ define('CLI_SCRIPT', true);
 
 use core\hub\api;
 use core\hub\registration;
+use curl;
 
 require_once(dirname(dirname(dirname(__DIR__))) . '/config.php');
 require_once($CFG->libdir. '/filelib.php');
@@ -13,6 +14,26 @@ require_once($CFG->libdir. '/filelib.php');
 $CFG->debug = (E_ALL | E_STRICT);
 $CFG->debugdisplay = 1;
 
+$errors = [];
+$messages = [];
+
+// Remove airnotifier key
+// d4985ad12ce3099b040a4773724cc6b3 is the default airnotifierkey given to us by Juan
+$airnotifierkey = $CFG->airnotifieraccesskey;
+if (empty($airnotifierkey) || $airnotifierkey == "d4985ad12ce3099b040a4773724cc6b3") {
+    $messages[] = "MoodleCloud Airnotifier: site has no airnotifier key";
+} else {
+    $c = new curl;
+    $c->setHeader(['X-AN-APP-NAME' => 'commoodlemoodlemobile']);
+    $c->setHeader(['X-AN-APP-KEY' => $airnotifierkey]);
+    $result = $c->delete("http://messages.moodle.net/api/v2/accesskeys/$airnotifierkey");
+
+    if ($c->get_errno()) {
+        $errors[] = 'MoodleCloud Airnotifier cURL error ' . $c->get_errno . ': ' . $result;
+    }
+}
+
+// Hub unregister
 if (registration::is_registered()) {
     $hub = \Closure::bind(
         function() {
@@ -30,11 +51,19 @@ if (registration::is_registered()) {
     try {
         api::unregister_site();
     } catch (Exception $e) {
-        echo "Unregistration of site failed: " . $e->getMessage() . "\n";
-        exit(1);
+        $errors[] = "Unregistration of site failed: " . $e->getMessage() . "\n";
     }
 
     $DB->delete_records('registration_hubs', array('id' => $hub->id));
 } else {
     echo "Site not registered\n";
 }
+
+echo implode("\n", $messages);
+
+if ($errors) {
+    echo implode("\n", $errors);
+    exit(1);
+}
+
+exit;
