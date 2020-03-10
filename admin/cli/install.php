@@ -153,7 +153,7 @@ moodle_require_minimum_php_version();
 // set up configuration
 global $CFG;
 $CFG = new stdClass();
-$CFG->lang                 = 'en';
+$CFG->lang                 = 'en_wp';
 $CFG->dirroot              = dirname(dirname(__DIR__));
 $CFG->libdir               = "$CFG->dirroot/lib";
 $CFG->wwwroot              = "http://localhost";
