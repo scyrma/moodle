@@ -1,0 +1,83 @@
+.path-admin-tool-dynamicrule,
+.path-admin-tool-reportbuilder {
+
+    .tool_reportbuilder_tab_table {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .contentwrapper {
+        display: flex;
+        flex-direction: column;
+    }
+    #region-main-box {
+        flex: 1 0 auto;
+        display: flex;
+    }
+    #region-main {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+    div[role="main"] {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .wptabs {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .tab-content {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .tab-pane.active {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+    #ruleconditions,
+    #ruleoutcomes,
+    #table {
+        &.tab-pane.active .container-fluid {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            .row.grow {
+                height: 100%;
+            }
+        }
+        .tool_reportbuilder_report {
+            flex: 1 0 auto;
+            display: flex;
+        }
+    }
+}
+
+.fit-container {
+    .fill-column {
+        height: 100%;
+        overflow-y: auto;
+    }
+    .flex-1 {
+        flex: 1;
+    }
+    .overflow-hidden {
+        overflow: hidden;
+    }
+    .scroll-y {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .min-height {
+        min-height: 500px;
+    }
+    #conditions-menu,
+    #conditions-container {
+        height: 100%;
+        overflow-y: auto;
+    }
+}

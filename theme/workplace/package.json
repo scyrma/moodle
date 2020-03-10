@@ -1,0 +1,32 @@
+{
+	"name": "theme-boost-tasks",
+	"version": "0.1.0",
+	"description": "Grunt tasks for Moodle boost theme.",
+	"main": "Gruntfile.js",
+	"author": {
+		"name": "Bas Brands",
+		"url": "http://www.moodle.org"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/moodle/moodle.git"
+	},
+	"scripts": {
+		"postcss": "postcss --config postcss.js --output style/workplace.css style/workplace.css"
+	},
+	"devDependencies": {
+		"autoprefixer": "^8.0.0",
+		"grunt": "^1.0.2",
+		"grunt-contrib-jshint": "^1.1.0",
+		"grunt-contrib-uglify": "^3.3.0",
+		"grunt-contrib-watch": "^1.0.0",
+		"grunt-exec": "^3.0.0",
+		"grunt-sass": "^2.1.0",
+		"grunt-stylelint": "^0.9.0",
+		"postcss-cli-simple": "^1.0.4",
+		"postcss-flexbugs-fixes": "^3.3.0",
+		"stylelint": "^8.4.0",
+		"stylelint-checkstyle-formatter": "^0.1.1"
+	},
+	"license": "GPL-3.0+"
+}
