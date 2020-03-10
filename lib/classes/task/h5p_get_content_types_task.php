@@ -49,6 +49,10 @@ class h5p_get_content_types_task extends scheduled_task {
      */
     public function execute() {
 
+        // BEGIN MOODLECLOUD HACK
+        return;
+        // END MOODLECLOUD HACK
+
         $factory = new factory();
         $core = $factory->get_core();
 
