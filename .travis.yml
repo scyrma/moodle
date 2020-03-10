@@ -60,9 +60,17 @@ cache:
       - $HOME/.composer/cache
       - $HOME/.npm
 
+git:
+    # We setup submodules in before_install routine.
+    submodules: false
+
 before_install:
     # Avoid IPv6 default binding as service (causes redis not to start).
-    sudo service redis-server start --bind 127.0.0.1
+    - sudo service redis-server start --bind 127.0.0.1
+    # Use https (so travis can access repos using API key).
+    - git config --global url."https://github.com/".insteadOf "git@github.com:"
+    # Pull the latest state of each plugin.
+    - git submodule update --init --remote
 
 install:
     - >
@@ -265,7 +273,7 @@ script:
         # We ignore npm-shrinkwrap.json to make the tasks immune to npm changes.
         git add . ;
         git reset -- npm-shrinkwrap.json ;
-        git diff --cached --exit-code ;
+        git diff --cached --exit-code --ignore-submodules;
       fi
 
     ########################################################################
