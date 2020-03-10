@@ -1,0 +1,51 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_certificate/verify_certificate_result
+
+    The certificate verification result
+
+    Classes required for JS:
+    * None
+
+    Data attibutes required for JS:
+    * All data attributes are required
+
+    Context variables required for this template:
+    * userprofileurl The URL to the user's profile
+    * userfullname The fullname of the user
+    * courseurl The URL of the course
+    * coursefullname The full name of the course
+    * certificatename The name of the certificate
+
+    Example context (json):
+    {
+        "userprofileurl": "http://www.example.com",
+        "userfullname": "Mark Smith",
+        "courseurl": "http://www.example.com",
+        "coursefullname": "Computing 101",
+        "certificatename": "Ability to write 'Hello world' in Java."
+    }
+}}
+<ul class="list-unstyled unstyled">
+    <li><strong>{{#str}}fullname{{/str}}:</strong> <a href="{{{userprofileurl}}}">{{userfullname}}</a></li>
+    <li><strong>{{#str}}certificate, tool_certificate{{/str}}:</strong> {{certificatename}}</li>
+    <li><strong>{{#str}}issuedon, tool_certificate{{/str}}:</strong> {{timecreated}}</li>
+    <li><strong>{{#str}}expires, tool_certificate{{/str}}:</strong> {{expires}}</li>
+    <li><strong>{{$str}}Status{{/str}}:</strong> {{#expired}}{{#str}}expired, tool_certificate{{/str}}{{/expired}}{{^expired}}{{#str}}valid, tool_certificate{{/str}}{{/expired}}</li>
+    <li><strong><a href="{{{viewurl}}}">{{#str}}viewcertificate, tool_certificate{{/str}}</a></strong></li>
+</ul>
