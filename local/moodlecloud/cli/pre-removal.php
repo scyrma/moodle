@@ -4,7 +4,6 @@ define('CLI_SCRIPT', true);
 
 use core\hub\api;
 use core\hub\registration;
-use curl;
 
 require_once(dirname(dirname(dirname(__DIR__))) . '/config.php');
 require_once($CFG->libdir. '/filelib.php');
