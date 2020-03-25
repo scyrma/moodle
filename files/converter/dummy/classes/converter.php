@@ -75,6 +75,10 @@ final class converter implements converter_interface {
         [
             'component' => 'assignfeedback_editpdf',
             'filearea' => 'importhtml'
+        ],
+        [
+            'component' => 'assignfeedback_editpdf',
+            'filearea' => 'tmp_rotated_jpg'
         ]
     ];
 
