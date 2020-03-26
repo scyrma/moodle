@@ -47,7 +47,7 @@ if ($form->is_cancelled()) {
 
     $modelconfig = new \core_analytics\model_config();
 
-    $zipfilepath = $form->save_temp_file('modelfile');
+    $zipfilepath = $form->save_temp_file('modelfile', true);
 
     list ($modeldata, $unused) = $modelconfig->extract_import_contents($zipfilepath);
 
