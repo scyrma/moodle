@@ -108,7 +108,7 @@ if ($formdata = $formimportzip->get_data()) {
     echo $OUTPUT->heading(get_string('importpreset', 'data'), 2, 'mb-4');
     $file = new stdClass;
     $file->name = $formimportzip->get_new_filename('importfile');
-    $file->path = $formimportzip->save_temp_file('importfile');
+    $file->path = $formimportzip->save_temp_file('importfile', true);
     $importer = new data_preset_upload_importer($course, $cm, $data, $file->path);
     echo $renderer->import_setting_mappings($data, $importer);
     echo $OUTPUT->footer();
