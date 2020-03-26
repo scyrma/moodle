@@ -143,6 +143,8 @@ information provided here is intended especially for developers.
   Can be mixed, apart from 'id' of course.
 * The file_system class now declares a new, optional, `get_psr_stream` function which allows a Stream implementing `\Psr\Http\Message\StreamInterface` to be returned.
   A default implementation which uses the existing file handle resource is used by default, but this should be extended by file_system implementations where relevant.
+* The formslib `save_temp_file()` function now takes a second argument if you wish to use a tempdir you must specify the
+  second argument as false, otherwise a request directory should be used.
 
 === 4.1 ===
 
