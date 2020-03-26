@@ -12,6 +12,8 @@ information provided here is intended especially for developers.
 
 * There is a new helper function mtrace_exception to help with reporting exceptions you have caught in scheduled tasks.
 * Convert a floating value to an integer in lib/graphlib.php to avoid PHP 8.1 deprecated function error.
+* The formslib `save_temp_file()` function now takes a second argument if you wish to use a tempdir you must specify the
+  second argument as false, otherwise a request directory should be used.
 
 === 4.1 ===
 
