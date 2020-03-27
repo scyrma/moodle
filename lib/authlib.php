@@ -702,7 +702,8 @@ class auth_plugin_base {
             }
 
             if ($needsupdate) {
-                user_update_user($newuser, false, $triggerevent);
+                $newuser = core_user::clean_data($newuser);
+                user_update_user($newuser, false, $triggerevent, false);
                 profile_save_custom_fields($newuser->id, $newprofilefields);
                 return $DB->get_record('user', array('id' => $userid, 'deleted' => 0));
             }
