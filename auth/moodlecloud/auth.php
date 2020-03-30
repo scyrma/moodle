@@ -177,9 +177,19 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
      *
      * @return moodle_url
      */
-    public function get_sso_url() {
-        if ($url = auth_moodlecloud\helper::call('ssoout', [])) {
-            return new moodle_url($url);
+    public function get_sso_url($gotoupgradetab = false) {
+        if ($url = auth_moodlecloud\helper::call('ssoout', $gotoupgradetab ? ['go_to_upgrade_tab' => 1] : [])) {
+            return new moodle_url(
+                $url,
+                $gotoupgradetab
+                ? [
+                    'utm_medium' => 'web',
+                    'utm_source' => 'moodlecloud',
+                    'utm_campaign' => 'freetrial',
+                    'utm_content' => 'top-banner'
+                ]
+                : []
+            );
         }
         return null;
     }
