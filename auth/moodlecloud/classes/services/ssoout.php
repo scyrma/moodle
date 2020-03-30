@@ -14,8 +14,12 @@ class ssoout extends service {
     }
 
     protected static function define_parameters() {
-        return array(
-            );
+        return [
+            'go_to_upgrade_tab' => [
+                'required'      => false,
+                'type'          => 'integer',
+            ]
+        ];
     }
 
     /**
