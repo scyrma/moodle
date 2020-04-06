@@ -190,5 +190,53 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         set_config('toolbar', $fixedconfigasstring, 'editor_atto');
     }
 
+    if ($oldversion < 2020040600) {
+        $attotoolbarconfig = get_config('editor_atto', 'toolbar');
+
+        // Convert the config string in to a 2D array.
+        // First index is the line number, second index is the string position in the CSVs (equals sign gets no special treatment).
+        // e.g., for a config of:
+        //     collapse = collapse
+        //     style1 = title, bold, italic
+        // $configasarray[1][0] == 'style1 = title'
+        // $configasarray[1][1]  == 'bold'
+        $configasarray = array_map(
+            function(string $line) : array {
+                return array_map('trim', explode(',', $line));
+            },
+            explode("\n", $attotoolbarconfig)
+        );
+
+        // Inserts the value "h5p" as the 5th element of a CSV (which is the defualt position).
+        // If "h5p" is already present in the list, it's left untouched.
+        $addh5p = function(array $buttons) : array {
+            return array_merge(
+                array_slice($buttons, 0, 4),
+                in_array("h5p", $buttons) ? [] : ["h5p"],
+                array_slice($buttons, 4)
+            );
+        };
+
+        $removeh5p = function(array $buttons) : array {
+            return array_filter(
+                $buttons,
+                function(string $button) : bool {
+                    return $button != 'h5p';
+                }
+            );
+        };
+
+        // Adds "h5p" to the line beginning with "files", removes "h5p" from any other line
+        // and converts the 2D array back in to a string.
+        $fixedconfigasstring = implode(
+            "\n",
+            array_map(function(array $line) use ($addh5p, $removeh5p) : string {
+                return implode(", ", substr($line[0], 0, 5) == 'files' ? $addh5p($line) : $removeh5p($line));
+            }, $configasarray)
+        );
+
+        set_config('toolbar', $fixedconfigasstring, 'editor_atto');
+    }
+
     return true;
 }
