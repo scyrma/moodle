@@ -439,7 +439,10 @@ $string['cronerrorclionly'] = 'Sorry, internet access to this page has been disa
 $string['cronerrorpassword'] = 'Sorry, you have not provided a valid password to access this page';
 $string['croninfrequent'] = 'There was {$a->actual} between the last two runs of the cron maintenance script and it should run every {$a->expected}. We recommend configuring it to run more frequently.';
 $string['cronremotepassword'] = 'Cron password for remote access';
-$string['cronwarning'] = 'The <a href="{$a->url}">admin/cron.php script</a> has not been run for {$a->actual} and should run every {$a->expected}.';
+// BEGIN MOODLECLOUD HACK
+$string['cronwarning'] = 'Your site will soon be updated to the latest Moodle version. No action is required by you, however certain functionality may be temporarily unavailable until the upgrade completes. Happy Moodling!';
+$string['cronwarningcli'] = 'Your site will soon be updated to the latest Moodle version. No action is required by you, however certain functionality may be temporarily unavailable until the upgrade completes. Happy Moodling!';
+// END MOODLECLOUD HACK
 $string['cronwarningcli'] = 'The <code>admin/cli/cron.php</code> script has not been run for {$a->actual} and should run every {$a->expected}.';
 $string['cronwarningnever'] = 'The <code>admin/cli/cron.php</code> script has never been run and should run every {$a->expected}.';
 $string['cronwarningneverweb'] = 'The <a href="{$a->url}">admin/cron.php script</a> has never been run and should run every {$a->expected}.';
