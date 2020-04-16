@@ -236,6 +236,8 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         );
 
         set_config('toolbar', $fixedconfigasstring, 'editor_atto');
+
+        upgrade_plugin_savepoint(true, 2020040600, 'local', 'moodlecloud');
     }
 
     return true;
