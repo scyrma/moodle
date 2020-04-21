@@ -31,7 +31,48 @@ function local_moodlecloud_is_super_admin(array $superadmins, int $userid) : boo
     return is_siteadmin($userid) && in_array($userid, $superadmins);
 }
 
-function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
+function local_moodlecloud_trial_countdown_as_date(int $start, int $duration) : DateTimeInterface {
+    return (new DateTimeImmutable)->setTimestamp($start)
+                                  ->add(new DateInterval('P' . (string)$duration . 'D'));
+};
+
+
+function local_moodlecloud_trial_countdown_as_date_interval(int $start, int $duration) : DateInterval {
+    return (local_moodlecloud_trial_countdown_as_date($start, $duration))->diff(new DateTimeImmutable('now'));
+}
+
+function local_moodlecloud_is_free_trial() : bool {
+    global $USER;
+
+    return defined('MOODLECLOUD_TRIAL_START') && defined('MOODLECLOUD_TRIAL_DURATION') && is_siteadmin($USER);
+}
+
+function local_moodlecloud_before_standard_top_of_body_html() {
+    if(local_moodlecloud_is_free_trial()) {
+        $upgradeurl = (new moodle_url('/auth/moodlecloud/portal.php', ['gotoupgradetab' => true]))->out();
+        return '<div id="freetrial"><div id="trialmsg"><div>'
+            . get_string(
+                'freetrialmessage',
+                'local_moodlecloud',
+                (object)[
+                    'url' => $upgradeurl,
+                    'date' => local_moodlecloud_trial_countdown_as_date(MOODLECLOUD_TRIAL_START, MOODLECLOUD_TRIAL_DURATION)->format('d-M-Y')
+                ])
+            . '</div></div>';
+    }
+
+    return '';
+}
+
+function local_moodlecloud_before_standard_after_main_region_html() : string {
+    if(local_moodlecloud_is_free_trial()) {
+        return '</div>';
+    }
+
+    return '';
+}
+
+function local_moodlecloud_render_navbar_output(renderer_base $renderer) : string  {
     global $USER, $CFG, $DB, $PAGE;
 
     if (!is_siteadmin()) {
@@ -43,23 +84,7 @@ function local_moodlecloud_render_navbar_output(renderer_base $renderer) {
     $userpercentage = userquota::site_has_unlimited_quota() ? 1 : min(1, 1 - userquota::number_of_user_slots_remaining() / MOODLECLOUD_USER_QUOTA);
     $storagepercentage = local_filestorage_site_has_unlimited_quota() ? 1 : min(1, file_system_s3::unique_storage_size_used() / FILESTORAGE_QUOTA);
 
-    $daysremainingcalculation = function(int $start, int $duration) : string {
-        $startdate = (new DateTimeImmutable)->setTimestamp($start);
-        $enddate = $startdate->add(new DateInterval('P' . (string)$duration . 'D'));
-        $daysleft = $enddate->diff(new DateTimeImmutable('now'))->format('%a');
-        return $daysleft . ($daysleft > 1 ? " days" : " day");
-    };
-
-    $upgradeurl = (new moodle_url('/auth/moodlecloud/portal.php', ['gotoupgradetab' => true]))->out();
-
     return
-        // TODO: This should be done using language strings and templates, but we need this to go out without cache purge
-        // also inline styles are being used because adding it to the CSS file requires cache purge.
-        ((defined('MOODLECLOUD_TRIAL_START') && defined('MOODLECLOUD_TRIAL_DURATION'))
-         ? "<div style=\"color: white; display: inline-block; padding-top: 8px; margin-left: 20px; margin-right: 12px; background: #f95b12; height: 100%; padding-left: 12px; padding-right: 12px;\" id=\"trial-text\">Your MoodleCloud Free Trial will expire in " . $daysremainingcalculation(MOODLECLOUD_TRIAL_START, MOODLECLOUD_TRIAL_DURATION) . ". <a href=\"$upgradeurl\" style=\"color: white; text-decoration: underline;\">Upgrade</a> to keep this site active.</div>"
-         : ""
-        )
-        .
         (($DB->count_records('moodlecloud_notifications') === 0)
             ? ""
             : $renderer->render_from_template(
