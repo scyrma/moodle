@@ -1974,9 +1974,6 @@ class backup_zip_contents extends backup_execution_step implements file_progress
              $files['moodle_backup.log'] = $logfilepath;
         }
 
-        // Calculate the zip fullpath (in OS temp area it's always backup.mbz)
-        $zipfile = $basepath . '/backup.mbz';
-
         // Get the zip packer
         $zippacker = get_file_packer('application/vnd.moodle.backup');
 
@@ -1984,6 +1981,10 @@ class backup_zip_contents extends backup_execution_step implements file_progress
         // pathname, get backup information).
         $reporter = $this->task->get_progress();
         $reporter->start_progress('backup_zip_contents', 2);
+
+        // The backup file is initially Initially created in a request directory, and then moved into the basepath.
+        // Request directories live in localcache, which is always local to the node creating the backup in a clustered environment.
+        $zipfile = make_request_directory() . "/backup.mbz";
 
         // Zip files
         $result = $zippacker->archive_to_pathname($files, $zipfile, true, $this);
@@ -2002,11 +2003,17 @@ class backup_zip_contents extends backup_execution_step implements file_progress
             @unlink($zipfile);
             throw new backup_step_exception('error_zip_packing', '', 'An error was encountered while trying to generate backup zip');
         }
+
+        // Move the backup file to its final destination.
+        // This is always in the tempdir folder for now.
+        $finalzipfile = "{$basepath}/backup.mbz";
+        rename($zipfile, $finalzipfile);
+
         // Read to make sure it is a valid backup. Refer MDL-37877 . Delete it, if found not to be valid.
         try {
-            backup_general_helper::get_backup_information_from_mbz($zipfile, $this);
+            backup_general_helper::get_backup_information_from_mbz($finalzipfile, $this);
         } catch (backup_helper_exception $e) {
-            @unlink($zipfile);
+            @unlink($finalzipfile);
             throw new backup_step_exception('error_zip_packing', '', $e->debuginfo);
         }
 
