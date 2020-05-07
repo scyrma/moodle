@@ -130,6 +130,11 @@ class register extends adhoc_task {
         $commnews = 0;
         set_config('site_commnews', $commnews, 'hub');
 
+        // This value is used by the hub to decide if registration needs updating
+        // Set it to something high so that the update code never triggers
+        // as it forces site admins to submit a form.
+        set_config('site_regupdateversion', 9999999999, 'hub');
+
         // Add the new hub details to the database.
         $hub->id = $DB->insert_record('registration_hubs', $hub);
     }
