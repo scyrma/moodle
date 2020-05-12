@@ -1,0 +1,66 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{#isadmin}}
+    <div class="clear"></div>
+    <div id="frontpage-edit-button">
+        <a class="btn btn-primary" href="{{{frontpagesiteadminurl}}}">{{#str}} siteadministration, theme_school {{/str}}</a>
+        <a class="btn btn-primary" href="{{{frontpagesettingsurl}}}">{{#str}} updatemymoodleon {{/str}}</a>
+    </div>
+{{/isadmin}}
+{{#hascontent}}
+    <div class="welcome-block">
+        <div class="container">
+            <div class="row">
+                {{^mediaalignleft}}
+                    <div class="{{#hasmedia}}col-md-6{{/hasmedia}}
+                                {{^hasmedia}}col-md-12{{/hasmedia}}
+                                static-content-align">{{{text}}}</div>
+                {{/mediaalignleft}}
+                {{#hasmedia}}
+                    {{#mediaimage}}
+                            {{#imageurl}}
+                                <div class="col-md-6 static-content-align">
+                                    <img src="{{{.}}}" alt="{{#str}} staticimagealt, theme_school {{/str}}" />
+                                </div>
+                            {{/imageurl}}
+                    {{/mediaimage}}
+                    {{^mediaimage}}
+                        {{#iframevideo}}
+                            {{#iframehtml}}
+                                <div class="col-md-6 static-content-align">{{{.}}}</div>
+                            {{/iframehtml}}
+                        {{/iframevideo}}
+                        {{^iframevideo}}
+                            {{#videosrc}}
+                                <div class="col-md-6 static-content-align">
+                                    <video width="560" height="315" controls>
+                                        <source src="{{{.}}}" type="video/mp4">
+                                    </video>
+                                </div>
+                            {{/videosrc}}
+                        {{/iframevideo}}
+                    {{/mediaimage}}
+                {{/hasmedia}}
+                {{#mediaalignleft}}
+                    <div class="{{#hasmedia}}col-md-6{{/hasmedia}}
+                                {{^hasmedia}}col-md-12{{/hasmedia}}
+                                static-content-align">{{{text}}}</div>
+                {{/mediaalignleft}}
+            </div>
+        </div>
+    </div>
+{{/hascontent}}
