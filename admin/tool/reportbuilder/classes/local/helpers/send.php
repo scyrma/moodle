@@ -1,0 +1,272 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Class Send
+ *
+ * @package     tool_reportbuilder
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Alberto Lara Hernández <albertolara@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+namespace tool_reportbuilder\local\helpers;
+
+use tool_reportbuilder\local\models\schedules as schedule;
+use tool_reportbuilder\output\report_dataformat_export_format;
+use tool_tenant\tenant;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Class send
+ *
+ * @package     tool_reportbuilder
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Alberto Lara Hernández <albertolara@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class send extends \tool_reportbuilder\output\report_exporter {
+
+    /** @var schedule $schedule */
+    protected $schedule;
+
+    /** @var tenant $tenant */
+    protected $tenant;
+
+    /**
+     * Constructor
+     *
+     * @param schedule $schedule
+     */
+    public function __construct(schedule $schedule) {
+        global $PAGE;
+
+        $this->schedule = $schedule;
+        $this->tenant = new tenant($this->schedule->get_tenantid());
+
+        $report = $this->schedule->get_report();
+        $persistent = new \tool_reportbuilder\reportbuilder($report->get_id());
+
+        parent::__construct($persistent,
+            [
+                'source'  => $report,
+                'page' => 0,
+                'editon' => false,
+                'tableonly' => true
+            ]
+        );
+
+        $PAGE->set_url('/');
+        $this->prepare_report($PAGE->get_renderer('core'));
+    }
+
+    /**
+     * Download the report in the given format
+     *
+     * @return false|string
+     */
+    private function get_content() {
+        ob_start();
+
+        $tabledataformat = new report_dataformat_export_format($this->table, $this->schedule->get('format'));
+
+        $this->table->setup();
+        $this->table->query_db(0, false);
+
+        $tabledataformat->start_document('test', 'test');
+        $tabledataformat->output_headers($this->table->headers);
+
+        foreach ($this->table->rawdata as $row) {
+            $tabledataformat->add_data($this->table->format_row($row));
+        }
+
+        $this->table->close_recordset();
+
+        $tabledataformat->finish_document();
+        $content = ob_get_contents();
+        ob_end_clean();
+
+        return $content;
+    }
+
+    /**
+     * Write report content as attachment in temp dir, and return it's path
+     *
+     * @return string
+     */
+    public function create_attachment(): string {
+        // In order for email_to_user to send the attachment, it must be inside the temp directory.
+        $temp = make_temp_directory('tool_reportbuilder');
+
+        if ($directory = make_unique_writable_directory($temp)) {
+            \core_shutdown_manager::register_function('remove_dir', [$directory]);
+        }
+
+        $filepath = $directory . '/' . $this->get_filename();
+        file_put_contents($filepath, $this->get_content());
+
+        return $filepath;
+    }
+
+    /**
+     * Get filename
+     *
+     * @return string
+     */
+    private function get_filename(): string {
+        $filename = clean_filename($this->schedule->get('name'));
+        $extension = $this->get_extension();
+
+        return "{$filename}.{$extension}";
+    }
+
+    /**
+     * Get extension
+     *
+     * @return string
+     */
+    private function get_extension(): string {
+        $extension = $this->schedule->get('format');
+
+        // Correct format extension if necessary.
+        switch ($extension) {
+            case 'excel':
+                $extension = 'xlsx';
+                break;
+        }
+
+        return $extension;
+    }
+
+    /**
+     * Send the email
+     *
+     * @return bool
+     */
+    public function sendemail(): bool {
+        // Don't proceed if the tenant is archived.
+        if ($this->tenant->get('archived')) {
+            return false;
+        }
+
+        $filepath = $this->create_attachment();
+        $filename = basename($filepath);
+
+        $tousers = $this->get_mails();
+        $fromuser = \core_user::get_user($this->schedule->get('usercreated'));
+
+        $subject = $this->schedule->get('subject');
+        $message = $this->schedule->get('message');
+        $messagetext = html_to_text($message);
+
+        foreach ($tousers as $touser) {
+            email_to_user(
+                $touser,
+                $fromuser,
+                $subject,
+                $messagetext,
+                $message,
+                $filepath,
+                $filename
+            );
+        }
+
+        return true;
+    }
+
+    /**
+     * Based on the audience, get all valid emails to send.
+     *
+     * @return \stdClass[]
+     */
+    private function get_mails() {
+        global $DB;
+
+        // Keep track of list of email addresses we are going to send to.
+        $userstosendemail = [];
+
+        $audiencejson = $this->schedule->get('audience');
+        $audiences = json_decode($audiencejson);
+
+        // Manually added users.
+        if (is_object($audiences) && !empty($audiences->users)) {
+            foreach ($audiences->users as $userid) {
+                // Make sure user still belongs to the report tenant (they may have been moved).
+                $usertenantid = \tool_tenant\tenancy::get_tenant_id($userid);
+                if ($usertenantid != $this->schedule->get_tenantid()) {
+                    debugging("The user with ID {$userid} no longer belongs to the schedule tenant, and will not be included",
+                        DEBUG_DEVELOPER);
+                    continue;
+                }
+                $user = \core_user::get_user($userid);
+                if (!array_key_exists($user->email, $userstosendemail)) {
+                    $userstosendemail[$user->email] = $user;
+                }
+            }
+        }
+
+        // Department users (TODO: sub-departments).
+        if (is_object($audiences) && !empty($audiences->departmentid)) {
+            list($where, $params) = \tool_organisation\helper::user_is_in_department_select($audiences->departmentid, true);
+            $userids = $DB->get_fieldset_sql('SELECT id from {user} u WHERE ' . $where, $params);
+            foreach ($userids as $userid) {
+                $user = \core_user::get_user($userid);
+                if (!array_key_exists($user->email, $userstosendemail)) {
+                    $userstosendemail[$user->email] = $user;
+                }
+            }
+        }
+
+        // Position users (TODO: sub-positions).
+        if (is_object($audiences) && !empty($audiences->positionid)) {
+            list($where, $params) = \tool_organisation\helper::user_has_position_select($audiences->positionid, true);
+            $userids = $DB->get_fieldset_sql('SELECT id from {user} u WHERE ' . $where, $params);
+            foreach ($userids as $userid) {
+                $user = \core_user::get_user($userid);
+                if (!array_key_exists($user->email, $userstosendemail)) {
+                    $userstosendemail[$user->email] = $user;
+                }
+            }
+        }
+
+        // Custom emails.
+        if (is_object($audiences) && !empty($audiences->emails)) {
+            foreach ($audiences->emails as $email) {
+                if (!array_key_exists($email, $userstosendemail)) {
+                    $userstosendemail[$email] = $this->make_fake_user($email);
+                }
+            }
+        }
+
+        return array_values($userstosendemail);
+    }
+
+    /**
+     * Make a fake user for custom emails
+     *
+     * @param string $usermail
+     * @return \stdClass
+     */
+    private function make_fake_user($usermail) {
+        $userinfo = guest_user();
+        $userinfo->email = $usermail;
+
+        return $userinfo;
+    }
+}
