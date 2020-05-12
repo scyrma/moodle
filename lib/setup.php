@@ -1032,6 +1032,13 @@ if (defined('BEHAT_SITE_RUNNING') && !defined('BEHAT_TEST')) {
 // might be converted to utf-8 in admin/index.php during installation
 
 
+// BEGIN MOODLECLOUD HACK.
+if (class_exists('\local_moodlecloud\restrictions\settings')) {
+    // This must be called inside a check because it may not be present yet
+    // on the initial run.
+    local_moodlecloud\restrictions\settings::fiddle_config_settings();
+}
+// END MOODLECLOUD HACK.
 
 // this is a funny trick to make Eclipse believe that $OUTPUT and other globals
 // contains an instance of core_renderer, etc. which in turn fixes autocompletion ;-)

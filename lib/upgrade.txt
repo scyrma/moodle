@@ -8,6 +8,38 @@ information provided here is intended especially for developers.
 * behat_data_generators::the_following_exist() has been removed, please use
   behat_data_generators::the_following_entities_exist() instead. See MDL-67691 for more info.
 * format_float() now accepts a special value (-1) as the $decimalpoints parameter which means auto-detecting number of decimal points.
+* admin/tool/task/cli/adhoc_task.php now observers the concurrency limits.
+  If you want to get the previous (unlimited) behavior, use the --ignorelimits switch).
+* Removed the following deprecated functions:
+  - question_add_tops
+  - question_is_only_toplevel_category_in_context
+* format_float() now accepts a special value (-1) as the $decimalpoints parameter
+  which means auto-detecting number of decimal points.
+* plagiarism_save_form_elements() has been deprecated. Please use {plugin name}_coursemodule_edit_post_actions() instead.
+* plagiarism_get_form_elements_module() has been deprecated. Please use {plugin name}_coursemodule_standard_elements() instead.
+* Changed default sessiontimeout to 8 hours to cover most normal working days
+* Plugins can now explicitly declare supported and incompatible Moodle versions in version.php
+  - $plugin->supported = [37,39];
+    supported takes an array of ascending numbers, that correspond to a range of branch numbers of supported versions, inclusive.
+    Moodle versions that are outside of this range will produce a message notifying at install time, but will allow for installation.
+  - $plugin->incompatible = 36;
+    incompatible takes a single int corresponding to the first incompatible branch. Any Moodle versions including and
+    above this will be prevented from installing the plugin, and a message will be given when attempting installation.
+* Added the <component>_bulk_user_actions() callback which returns a list of custom action_links objects
+* Add 'required' admin flag for mod forms allows elements to be toggled between being required or not in admin settings.
+  - In mod settings, along with lock, advanced flags, the required flag can now be set with $setting->set_required_flag_options().
+    The name of the admin setting must be exactly the same as the mod_form element.
+  - Currently supported by:
+    - mod_assign
+    - mod_quiz
+* Added a native MySQL / MariaDB lock implementation
+* The database drivers (moodle_database and subclasses) don't need to implement get_columns() anymore.
+  They have to implement fetch_columns instead.
+* Added function cleanup_after_drop to the database_manager class to take care of all the cleanups that need to be done after a table is dropped.
+* The 'xxxx_check_password_policy' callback now only fires if $CFG->passwordpolicy is true
+* grade_item::update_final_grade() can now take an optional parameter to set the grade->timemodified. If not present the current time will carry on being used.
+* lib/outputrequirementslib::get_jsrev now is public, it can be called from other classes.
+* H5P libraries have been moved from /lib/h5p to h5p/h5plib as an h5plib plugintype.
 
 === 3.8 ===
 * The rotate_image function has been added to the stored_file class (MDL-63349)

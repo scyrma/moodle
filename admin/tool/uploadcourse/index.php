@@ -82,7 +82,7 @@ if ($form2data = $mform2->is_cancelled()) {
     // when the name of a filepicker is an array...
     $options['restorefile'] = '';
     if (!empty($form2data->restorefile)) {
-        $options['restorefile'] = $mform2->save_temp_file('restorefile');
+        $options['restorefile'] = $mform2->save_temp_file('restorefile', true);
     }
     $processor = new tool_uploadcourse_processor($cir, $options, $defaults);
 
