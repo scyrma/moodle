@@ -1,0 +1,41 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template tool_organisation/jobs_list
+
+    Tab with jobs (for management)
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "jobs": [
+            { "positionname": "Main developer", "departmentname": "Product", "dates": "From 01/07/2018 to 01/07/2019" },
+            { "positionname": "Team lead", "departmentname": "Main office", "dates": "From 01/01/2016" }
+        ]
+    }
+}}
+<div class="wp-jobs">
+    {{#jobs}}
+    <div class="row {{#ended}}dimmed_text{{/ended}}">
+        <div class="col-md-4"><b>{{{positionname}}}</b></div>
+        <div class="col-md-4">{{{departmentname}}}</div>
+        <div class="col-md-4">{{{dates}}}</div>
+    </div>
+    <hr class="my-2">
+    {{/jobs}}
+</div>
