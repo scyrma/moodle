@@ -475,7 +475,8 @@ class profile_field_base {
             return true;
         }
 
-        return false;
+        /** @uses tool_tenant\permission::can_edit_custom_profile_field() */
+        return component_class_callback('tool_tenant\permission', 'can_edit_custom_profile_field', [$this->userid], false);
     }
 
     /**
