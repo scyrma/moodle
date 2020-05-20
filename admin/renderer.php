@@ -33,6 +33,11 @@ class core_admin_renderer extends plugin_renderer_base {
         global $CFG;
         $output = '';
 
+        /** @uses tool_wp\workplace::copyright_notice() */
+        if ($wp = component_class_callback('tool_wp\workplace', 'copyright_notice', [$this, $this->page->url])) {
+            return $wp;
+        }
+
         $copyrightnotice = text_to_html(get_string('gpl3'));
         $copyrightnotice = str_replace('target="_blank"', 'onclick="this.target=\'_blank\'"', $copyrightnotice); // extremely ugly validation hack
 
