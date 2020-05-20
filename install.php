@@ -645,7 +645,9 @@ if ($distro) {
                                   get_string('chooselanguagesub', 'install'));
 }
 
-$languages = get_string_manager()->get_list_of_translations();
+/** @uses tool_wp\language::get_list_of_workplace_translations() */
+$languages = component_class_callback('tool_wp\language', 'get_list_of_workplace_translations', [$CFG->lang],
+    get_string_manager()->get_list_of_translations());
 echo '<div class="row mb-4">';
 echo '<div class="col-md-3 text-md-right pt-1"><label for="langselect">'.get_string('language').'</label></div>';
 echo '<div class="col-md-9" data-fieldtype="select">';
