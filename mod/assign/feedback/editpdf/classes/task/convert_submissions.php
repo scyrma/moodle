@@ -98,6 +98,9 @@ class convert_submissions extends scheduled_task {
             }
 
             mtrace('Convert ' . count($users) . ' submission attempt(s) for assignment ' . $assignmentid);
+            // BEGIN MOODLECLOUD HACK
+            $conversionrequirespolling = false;
+            // END MOODLECLOUD HACK
 
             foreach ($users as $userid) {
                 try {
@@ -107,6 +110,9 @@ class convert_submissions extends scheduled_task {
                         case combined_document::STATUS_READY_PARTIAL:
                         case combined_document::STATUS_PENDING_INPUT:
                             // The document has not been converted yet or is somehow still ready.
+                            // BEGIN MOODLECLOUD HACK
+                            $conversionrequirespolling = true;
+                            // END MOODLECLOUD HACK
                             continue 2;
                     }
                     document_services::get_page_images_for_attempt(
@@ -127,8 +133,11 @@ class convert_submissions extends scheduled_task {
             }
 
             // Remove from queue.
-            $DB->delete_records('assignfeedback_editpdf_queue', array('id' => $record->id));
-
+            // BEGIN MOODLECLOUD HACK
+            if (!$conversionrequirespolling) {
+                $DB->delete_records('assignfeedback_editpdf_queue', array('id' => $record->id));
+            }
+            // END MOODLECLOUD HACK
         }
     }
 
