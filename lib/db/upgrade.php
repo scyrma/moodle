@@ -3830,7 +3830,7 @@ function xmldb_main_upgrade($oldversion) {
             $DB->delete_records('competency_userevidencecomp', ['userevidenceid' => $userevidence->id]);
             $DB->delete_records('competency_userevidence', ['id' => $userevidence->id]);
 
-            $context = context_user::instance($userevidence->userid);
+            $context = $DB->get_record('context', array('contextlevel' => CONTEXT_USER, 'instanceid' => $userevidence->userid));
             $fs->delete_area_files($context->id, 'core_competency', 'userevidence', $userevidence->id);
         }
 
