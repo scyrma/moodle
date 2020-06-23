@@ -111,7 +111,7 @@ if ($form->is_cancelled()) {
         unset($badge->message_editor);
 
         if ($badge->save()) {
-            badges_process_badge_image($badge, $form->save_temp_file('image'));
+            badges_process_badge_image($badge, $form->save_temp_file('image', true));
             $form->set_data($badge);
             $statusmsg = get_string('changessaved');
         } else {
