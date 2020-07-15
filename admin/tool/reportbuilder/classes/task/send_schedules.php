@@ -1,0 +1,74 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Task for sending schedules emails.
+ *
+ * @package   tool_reportbuilder
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+namespace tool_reportbuilder\task;
+
+use tool_reportbuilder\local\helpers\schedules;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Task for sending schedules emails.
+ *
+ * @package   tool_reportbuilder
+ * @copyright 2019 Moodle Pty Ltd <support@moodle.com>
+ * @author    2019 Alberto Lara Hernández <albertolara@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class send_schedules extends \core\task\scheduled_task {
+
+    /**
+     * Return the task's name as shown in admin screens.
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('send_schedulestask', 'tool_reportbuilder');
+    }
+
+    /**
+     * Execute the task.
+     *
+     * @return void
+     */
+    public function execute() {
+        global $USER;
+
+        $originaluser = $USER;
+
+        $schedules = schedules::get_schedules();
+        foreach ($schedules as $schedule) {
+            // We need to set the current user to that set in the "View report data as" field.
+            $user = \core_user::get_user($schedule->get('usercreated'));
+            cron_setup_user($user);
+
+            schedules::send($schedule->get('id'));
+        }
+
+        cron_setup_user($originaluser);
+    }
+}
