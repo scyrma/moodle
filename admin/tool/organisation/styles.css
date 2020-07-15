@@ -1,0 +1,15 @@
+/* Style for permission icons. */
+
+.tool-ogranisation-perm-icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    font-size: 18px;
+    color: #99a2b2;
+    padding: 0 3px 3px;
+}
+
+.tool-ogranisation-perm-icon.noset {
+    opacity: 0.3;
+}
