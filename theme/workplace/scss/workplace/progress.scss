@@ -1,0 +1,82 @@
+$doughnut-size: 100px;
+
+$stroke: 7.5px;
+$radius: ($doughnut-size / 2) - ($stroke * 2);
+
+@function pi() {
+    @return 3.14159265359;
+}
+
+$circumference: $radius * 2 * pi();
+$doughnut-empty-colour: $gray-lighter;
+$doughnut-fill-colour: $info-light;
+
+.progress-chart-container {
+    height: $doughnut-size;
+    width: $doughnut-size;
+
+    .progress-doughnut {
+        height: $doughnut-size;
+        width: $doughnut-size;
+
+        .progress-background {
+            width: $doughnut-size - ( 3 * $stroke);
+            height: $doughnut-size - ( 3 * $stroke);
+            top: (1.5 * $stroke);
+            left: (1.5 * $stroke);
+            border-radius: 50%;
+            border: $stroke solid $doughnut-empty-colour;
+        }
+        .progress-text {
+            top: 50%;
+            /*rtl:ignore*/
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: $doughnut-empty-colour;
+
+            &.has-percent {
+                color: $doughnut-fill-colour;
+            }
+        }
+
+        .progress-indicator {
+            height: $doughnut-size;
+            width: $doughnut-size;
+
+            svg {
+                position: relative;
+                height: $doughnut-size;
+                width: $doughnut-size;
+
+                .circle {
+                    stroke-width: $stroke;
+                    stroke: $doughnut-fill-colour;
+                    fill: none;
+                    stroke-dasharray: $circumference $circumference;
+                    stroke-dashoffset: $circumference;
+                    transform: rotate(-90deg);
+                    transform-origin: 50% 50%;
+
+                    @for $i from 1 through 100 {
+                        &.percent-#{$i} {
+                            stroke-dashoffset: $circumference - ($i / 100 * $circumference);
+                        }
+                    }
+                }
+            }
+        }
+
+        &.completed {
+            .progress-indicator {
+                svg {
+                    .circle {
+                        stroke: $success;
+                    }
+                }
+            }
+            .progress-text {
+                color: $success;
+            }
+        }
+    }
+}

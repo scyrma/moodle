@@ -1,0 +1,75 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_workplace/wpdashboard_content
+
+    Admin time setting template.
+
+    Boost 2 column layout template.
+
+    Context variables required for this template:
+    * sitename - The name of the site
+    * output - The core renderer for the page
+    * bodyattributes - attributes for the body tag as a string of html attributes
+    * sidepreblocks - HTML for the blocks
+    * hasblocks - true if there are blocks on this page
+    * navdraweropen - true if the nav drawer should be open on page load
+    * regionmainsettingsmenu - HTML for the region main settings menu
+    * hasregionmainsettingsmenu - There is a region main settings menu on this page.
+
+    Example context (json):
+    {
+        "output": {
+            "main_content": "<h1>Headings make html validators happier</h1>"
+         },
+        "tabs": [
+            {
+                "name": "programs",
+                "title": "My Learning",
+                "active": true,
+                "classes": "wp-teams",
+                "content": "<div>Tab content for my learning</div>"
+            },
+            {   "name": "teams",
+                "title": "Teams",
+                "active": false,
+                "content": "<div>Tab content for Teams</div>"
+            }
+        ]
+    }
+}}
+<ul class="nav wp-dashboard-tabs" id="wpdashboard" role="tablist">
+    {{#dashboard.tabs}}
+    <li class="nav-item">
+        <a class="nav-link {{^dashboard.editing}} {{#active}}active{{/active}} {{/dashboard.editing}} " id="{{name}}-tab" data-toggle="tab" href="#{{name}}" role="tab" aria-controls="{{name}}" aria-selected="true">{{title}}</a>
+    </li>
+    {{/dashboard.tabs}}
+
+    <li class="nav-item">
+        <a class="nav-link {{#dashboard.editing}}active{{/dashboard.editing}} " id="courses-tab" data-toggle="tab" href="#courses" role="tab" aria-controls="courses" aria-selected="false">{{#str}} tablabel, theme_workplace {{/str}}</a>
+    </li>
+</ul>
+<div class="tab-content bg-gray030" id="wpdashboardContent">
+    {{#dashboard.tabs}}
+        <div class="tab-pane fade {{classes}} {{^dashboard.editing}} {{#active}}show active{{/active}} {{/dashboard.editing}}" id="{{name}}" role="tabpanel" aria-labelledby="{{name}}-tab">
+            {{{content}}}
+        </div>
+    {{/dashboard.tabs}}
+    <div class="tab-pane p-3 fade {{#dashboard.editing}} show active {{/dashboard.editing}}" id="courses" role="tabpanel" aria-labelledby="courses-tab">
+        {{{ output.main_content }}}
+    </div>
+</div>
