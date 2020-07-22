@@ -63,7 +63,7 @@ class log_table extends table_sql {
         $this->define_columns(array(
             'time',
             'fullname',
-            'reward',
+            'xp',
             'eventname'
         ));
         $this->define_headers(array(
@@ -116,8 +116,23 @@ class log_table extends table_sql {
      * @param stdClass $row The row.
      * @return string
      */
-    protected function col_reward($row) {
+    protected function col_xp($row) {
         return $this->renderer->xp($row->xp);
     }
 
+    /**
+     * Override to rephrase.
+     *
+     * @return void
+     */
+    public function print_nothing_to_display() {
+        echo \html_writer::div(
+            \block_xp\di::get('renderer')->notification_without_close(
+                get_string('nologsrecordedyet', 'block_xp'),
+                'info'
+            ),
+            '',
+            ['style' => 'margin: 1em 0']
+        );
+    }
 }
