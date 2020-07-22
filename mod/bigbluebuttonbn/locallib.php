@@ -564,6 +564,8 @@ function bigbluebuttonbn_wrap_xml_load_file($url, $method = 'GET', $data = null,
  * @return object
  */
 function bigbluebuttonbn_wrap_xml_load_file_curl_request($url, $method = 'GET', $data = null, $contenttype = 'text/xml') {
+    global $CFG;
+    require_once($CFG->libdir . '/filelib.php');
     $c = new curl();
     $c->setopt(array('SSL_VERIFYPEER' => true));
     if ($method == 'POST') {
@@ -649,16 +651,36 @@ function bigbluebuttonbn_get_users(context $context = null) {
 /**
  * Returns an array containing all the users in a context wrapped for html select element.
  *
- * @param context $context
- *
+ * @param context_course $context
+ * @param null $bbactivity
  * @return array $users
+ * @throws coding_exception
+ * @throws moodle_exception
  */
-function bigbluebuttonbn_get_users_select(context $context = null) {
+function bigbluebuttonbn_get_users_select(context_course $context, $bbactivity = null) {
+    // CONTRIB-7972, check the group of current user and course group mode.
+    $groups = null;
     $users = (array) get_enrolled_users($context, '', 0, 'u.*', null, 0, 0, true);
-    foreach ($users as $key => $value) {
-        $users[$key] = array('id' => $value->id, 'name' => fullname($value));
+    $course = get_course($context->instanceid);
+    $groupmode = groups_get_course_groupmode($course);
+    if ($bbactivity) {
+        list($bbcourse, $cm) = get_course_and_cm_from_instance($bbactivity->id, 'bigbluebuttonbn');
+        $groupmode = groups_get_activity_groupmode($cm);
+
     }
-    return $users;
+    if ($groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $context)) {
+        global $USER;
+        $groups = groups_get_all_groups($course->id, $USER->id);
+        $users = [];
+        foreach ($groups as $g) {
+            $users += (array) get_enrolled_users($context, '', $g->id, 'u.*', null, 0, 0, true);
+        }
+    }
+    return array_map(
+            function($u) {
+                return array('id' => $u->id, 'name' => fullname($u));
+            },
+            $users);
 }
 
 /**
@@ -714,10 +736,10 @@ function bigbluebuttonbn_get_role($id) {
  * Returns an array to populate a list of participants used in mod_form.js.
  *
  * @param context $context
- *
+ * @param null|object $bbactivity
  * @return array $data
  */
-function bigbluebuttonbn_get_participant_data($context) {
+function bigbluebuttonbn_get_participant_data($context, $bbactivity = null) {
     $data = array(
         'all' => array(
             'name' => get_string('mod_form_field_participant_list_type_all', 'bigbluebuttonbn'),
@@ -730,8 +752,8 @@ function bigbluebuttonbn_get_participant_data($context) {
       );
     $data['user'] = array(
         'name' => get_string('mod_form_field_participant_list_type_user', 'bigbluebuttonbn'),
-        'children' => bigbluebuttonbn_get_users_select($context)
-      );
+        'children' => bigbluebuttonbn_get_users_select($context, $bbactivity),
+    );
     return $data;
 }
 
@@ -1588,11 +1610,11 @@ function bigbluebuttonbn_get_recording_data_row_type($recording, $bbbsession, $p
     if (!bigbluebuttonbn_include_recording_data_row_type($recording, $bbbsession, $playback)) {
         return '';
     }
-    $text = get_string('view_recording_format_'.$playback['type'], 'bigbluebuttonbn');
+    $text = bigbluebuttonbn_get_recording_type_text($playback['type']);
     $href = $CFG->wwwroot . '/mod/bigbluebuttonbn/bbb_view.php?action=play&bn=' . $bbbsession['bigbluebuttonbn']->id .
-      '&mid='.$recording['meetingID'] . '&rid=' . $recording['recordID'] . '&rtype=' . $playback['type'];
+        '&mid=' . $recording['meetingID'] . '&rid=' . $recording['recordID'] . '&rtype=' . $playback['type'];
     if (!isset($recording['imported']) || !isset($recording['protected']) || $recording['protected'] === 'false') {
-        $href .= '&href='.urlencode(trim($playback['url']));
+        $href .= '&href=' . urlencode(trim($playback['url']));
     }
     $linkattributes = array(
         'id' => 'recording-play-' . $playback['type'] . '-' . $recording['recordID'],
@@ -1608,6 +1630,23 @@ function bigbluebuttonbn_get_recording_data_row_type($recording, $bbbsession, $p
         unset($linkattributes['data-href']);
     }
     return $OUTPUT->action_link('#', $text, null, $linkattributes) . '&#32;';
+}
+
+/**
+ * Helper function to handle yet unknown recording types
+ *
+ * @param string $playbacktype : for now presentation, video, statistics, capture, notes, podcast
+ *
+ * @return string the matching language string or a capitalised version of the provided string
+ */
+function bigbluebuttonbn_get_recording_type_text($playbacktype) {
+    // Check first if string exists, and if it does'nt just default to the capitalised version of the string.
+    $text = ucwords($playbacktype);
+    $typestringid = 'view_recording_format_' . $playbacktype;
+    if (get_string_manager()->string_exists($typestringid, 'bigbluebuttonbn')) {
+        $text = get_string($typestringid, 'bigbluebuttonbn');
+    }
+    return $text;
 }
 
 /**
@@ -1887,21 +1926,11 @@ function bigbluebuttonbn_get_recording_table($bbbsession, $recordings, $tools = 
             $meetingid = $shortmeetingid[0];
         }
         // Check if the record belongs to a Visible Group type.
-        $sql = "SELECT bigbluebuttonbn.id, cm.id, cm.groupmode
-                 FROM {bigbluebuttonbn} bigbluebuttonbn
-                 JOIN {modules} m
-                   ON m.name = :bigbluebuttonbn
-                 JOIN {course_modules} cm
-                   ON cm.instance = bigbluebuttonbn.id
-                  AND cm.module = m.id
-                WHERE bigbluebuttonbn.meetingid = :meetingid";
-        $params = array('bigbluebuttonbn' => 'bigbluebuttonbn', 'meetingid' => $meetingid);
-
-        $groupmode = $DB->get_record_sql($sql, $params, IGNORE_MULTIPLE);
-
+        list($course, $cm) = get_course_and_cm_from_cmid($bbbsession['cm']->id);
+        $groupmode = groups_get_activity_groupmode($cm);
         $displayrow = true;
-        if ((isset($groupmode->groupmode) && (int)$groupmode->groupmode != VISIBLEGROUPS)
-            && !$bbbsession['administrator'] && !$bbbsession['moderator']) {
+        if (($groupmode != VISIBLEGROUPS)
+                && !$bbbsession['administrator'] && !$bbbsession['moderator']) {
             $groupid = explode('[', $recording['meetingID']);
             if (isset($groupid[1])) {
                 // It is a group recording and the user is not moderator/administrator. Recording should not be included by default.
@@ -2309,10 +2338,10 @@ function bigbluebuttonbn_get_instance_type_profiles() {
                   'features' => array('showroom', 'welcomemessage', 'voicebridge', 'waitformoderator', 'userlimit',
                       'recording', 'sendnotifications', 'preuploadpresentation', 'permissions', 'schedule', 'groups',
                       'modstandardelshdr', 'availabilityconditionsheader', 'tagshdr', 'competenciessection',
-                      'clienttype')),
+                      'clienttype', 'availabilityconditionsheader')),
         BIGBLUEBUTTONBN_TYPE_RECORDING_ONLY => array('id' => BIGBLUEBUTTONBN_TYPE_RECORDING_ONLY,
                   'name' => get_string('instance_type_recording_only', 'bigbluebuttonbn'),
-                  'features' => array('showrecordings', 'importrecordings'))
+                  'features' => array('showrecordings', 'importrecordings', 'availabilityconditionsheader'))
     );
     return $instanceprofiles;
 }
@@ -2396,6 +2425,8 @@ function bigbluebuttonbn_get_instance_profiles_array($profiles = []) {
  * @return string
  */
 function bigbluebuttonbn_format_activity_time($time) {
+    global $CFG;
+    require_once($CFG->dirroot.'/calendar/lib.php');
     $activitytime = '';
     if ($time) {
         $activitytime = calendar_day_representation($time).' '.
