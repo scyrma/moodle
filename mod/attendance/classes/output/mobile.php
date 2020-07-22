@@ -33,12 +33,12 @@ defined('MOODLE_INTERNAL') || die();
  */
 class mobile {
 
-    /*
+    /**
      * Subnet warning. - constants used to prevent warnings from showing multiple times.
      */
     const MESSAGE_SUBNET = 10;
 
-    /*
+    /**
      * Prevent shared warning. used to prevent warnings from showing multiple times.
      */
     const MESSAGE_PREVENTSHARED = 30;
@@ -70,6 +70,7 @@ class mobile {
 
         $attendance    = $DB->get_record('attendance', array('id' => $cm->instance), '*', MUST_EXIST);
         $course         = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+        $config = get_config('attendance');
 
         $data = array(); // Data to pass to renderer.
         $data['cmid'] = $cmid;
@@ -126,14 +127,15 @@ class mobile {
             }
         }
 
-        // Get list of sessions within the next 24hrs and in last 6hrs.
-        // TODO: provide way of adjusting which sessions to show in app.
-        $time = time() - (6 * 60 * 60);
+        // Get list of sessions based on site level settings. default = the next 24hrs and in last 6hrs.
+        $timefrom = time() - $config->mobilesessionfrom;
+        $timeto = time() + $config->mobilesessionto;
 
         $data['sessions'] = array();
 
         $sessions = $DB->get_records_select('attendance_sessions',
-            'attendanceid = ? AND sessdate > ? ORDER BY sessdate', array($attendance->id, $time));
+            'attendanceid = ? AND sessdate > ? AND sessdate < ? ORDER BY sessdate',
+            array($attendance->id, $timefrom, $timeto));
 
         if (!empty($sessions)) {
             $userdata = new \attendance_user_data($att, $USER->id, true);
@@ -153,7 +155,8 @@ class mobile {
                 list($canmark, $reason) = attendance_can_student_mark($sess);
                 if (!$isteacher && $reason == 'preventsharederror') {
                     $data['showmessage'] = true;
-                    $data['messages'][self::MESSAGE_PREVENTSHARED]['string'] = 'preventsharederror'; // Lang string to show as a message.
+                    // Lang string to show as a message.
+                    $data['messages'][self::MESSAGE_PREVENTSHARED]['string'] = 'preventsharederror';
                 }
 
                 if ($isteacher || $canmark) {
@@ -174,7 +177,8 @@ class mobile {
                         if (!$isteacher) {
                             if (!empty($sess->subnet) && !address_in_subnet(getremoteaddr(), $sess->subnet)) {
                                 $data['showmessage'] = true;
-                                $data['messages'][self::MESSAGE_SUBNET]['string'] = 'subnetwrong'; // Lang string to show as a message.
+                                // Lang string to show as a message.
+                                $data['messages'][self::MESSAGE_SUBNET]['string'] = 'subnetwrong';
                                 $html['sessid'] = null; // Unset sessid as we cannot record session on this ip.
                             } else if ($sess->autoassignstatus && empty($sess->studentpassword)) {
                                 $statusid = attendance_session_get_highest_status($att, $sess);
