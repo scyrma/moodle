@@ -98,11 +98,9 @@ function checklist_update_instance($checklist) {
     $oldmax = $oldrecord->maxgrade;
 
     $oldcompletion = $oldrecord->completionpercent;
-    if (isset($checklist->completionpercent)) {
-        $newcompletion = $checklist->completionpercent;
-    } else {
-        $newcompletion = $oldcompletion;
-    }
+    $newcompletion = $checklist->completionpercent ?? $oldcompletion;
+    $oldcompletiontype = $oldrecord->completionpercenttype;
+    $newcompletiontype = $checklist->completionpercenttype ?? $oldcompletiontype;
 
     $newautoupdate = $checklist->autoupdate;
     $oldautoupdate = $oldrecord->autoupdate;
@@ -121,7 +119,7 @@ function checklist_update_instance($checklist) {
     checklist_grade_item_update($checklist);
     if ($newmax != $oldmax) {
         checklist_update_grades($checklist);
-    } else if ($newcompletion && ($newcompletion != $oldcompletion)) {
+    } else if ($newcompletion && ($newcompletion != $oldcompletion || $newcompletiontype != $oldcompletiontype)) {
         // This will already be updated if checklist_update_grades() is called.
         $ci = new completion_info($course);
         $context = context_module::instance($cm->id);
@@ -232,7 +230,7 @@ function checklist_update_grades($checklist, $userid = 0) {
     $checkgroupings = false; // Don't check items against groupings unless we really have to.
     $groupings = checklist_class::get_course_groupings($course->id);
     foreach ($items as $item) {
-        if ($item->grouping && isset($groupings[$item->grouping])) {
+        if ($item->groupingid && isset($groupings[$item->groupingid])) {
             $checkgroupings = true;
             break;
         }
@@ -270,8 +268,8 @@ function checklist_update_grades($checklist, $userid = 0) {
             $total = 0;
             $itemlist = [];
             foreach ($items as $item) {
-                if ($item->grouping) {
-                    if (!in_array($item->grouping, $groupings)) {
+                if ($item->groupingid) {
+                    if (!in_array($item->groupingid, $groupings)) {
                         continue;
                     }
                 }
@@ -368,7 +366,23 @@ function checklist_update_grades($checklist, $userid = 0) {
                         $content = get_string('emailoncompletebody', 'checklist', $details);
                         $content .= new moodle_url('/mod/checklist/view.php', array('id' => $cm->id));
 
-                        if ($recipients = get_users_by_capability($context, 'mod/checklist:emailoncomplete', 'u.*')) {
+                        $groups = groups_get_all_groups($course->id, $grade->userid, $cm->groupingid);
+
+                        $groupmode = groups_get_activity_groupmode($cm, $course);
+
+                        if (is_array($groups) && count($groups) > 0 && $groupmode != NOGROUPS) {
+                            $groups = array_keys($groups);
+                        } else if ($groupmode != NOGROUPS) {
+                            // If the user is not in a group, and the checklist is set to group mode,
+                            // then set $groups to a non-existant id so that only users with
+                            // 'moodle/site:accessallgroups' get notified.
+                            $groups = -1;
+                        } else {
+                            $groups = '';
+                        }
+
+                        if ($recipients = get_users_by_capability($context, 'mod/checklist:emailoncomplete',
+                                                                  'u.*', '', '', '', $groups)) {
                             foreach ($recipients as $recipient) {
                                 email_to_user($recipient, $grade, $subj, $content, '', '', '', false);
                             }
@@ -729,7 +743,7 @@ function checklist_uninstall() {
  */
 function checklist_reset_course_form_definition(&$mform) {
     $mform->addElement('header', 'checklistheader', get_string('modulenameplural', 'checklist'));
-    $mform->addElement('checkbox', 'reset_checklist_progress', get_string('resetchecklistprogress', 'checklist'), array('class' => 'checkbox-inline'));
+    $mform->addElement('checkbox', 'reset_checklist_progress', get_string('resetchecklistprogress', 'checklist'));
 }
 
 /**
@@ -867,7 +881,13 @@ function checklist_get_completion_state($course, $cm, $userid, $type) {
 
     if ($checklist->completionpercent) {
         list($ticked, $total) = checklist_class::get_user_progress($cm->instance, $userid);
-        $value = $checklist->completionpercent <= ($ticked * 100 / $total);
+        if ($checklist->completionpercenttype === 'items') {
+            // Completionpercent is the actual number of items that need checking-off.
+            $value = $checklist->completionpercent <= $ticked;
+        } else {
+            // Completionpercent is the percentage of items that need checking-off.
+            $value = $checklist->completionpercent <= ($ticked * 100 / $total);
+        }
         if ($type == COMPLETION_AND) {
             $result = $result && $value;
         } else {
