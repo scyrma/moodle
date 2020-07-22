@@ -7,8 +7,7 @@ addons:
   postgresql: "9.4"
   apt:
     packages:
-      - oracle-java8-installer
-      - oracle-java8-set-default
+      - openjdk-8-jre-headless
 
 cache:
   directories:
@@ -16,6 +15,7 @@ cache:
     - $HOME/.npm
 
 php:
+  - 7.3
   - 7.2
   - 7.1
   - 7.0
@@ -40,7 +40,8 @@ env:
     - MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql
     - MOODLE_BRANCH=MOODLE_35_STABLE DB=pgsql
     - MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql
-    - MOODLE_BRANCH=MOODLE_36_STABLE DB=mysqli
+    - MOODLE_BRANCH=MOODLE_37_STABLE DB=pgsql
+    - MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
     - MOODLE_BRANCH=master DB=pgsql
 
 matrix:
@@ -57,7 +58,9 @@ matrix:
     - php: 5.4
       env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql
     - php: 5.4
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=mysqli
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=pgsql
+    - php: 5.4
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
     - php: 5.4
       env: MOODLE_BRANCH=master DB=pgsql
 
@@ -71,7 +74,9 @@ matrix:
     - php: 5.6
       env: MOODLE_BRANCH=MOODLE_36_STABLE DB=pgsql
     - php: 5.6
-      env: MOODLE_BRANCH=MOODLE_36_STABLE DB=mysqli
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=pgsql
+    - php: 5.6
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
     - php: 5.6
       env: MOODLE_BRANCH=master DB=pgsql
 
@@ -82,6 +87,12 @@ matrix:
       env: MOODLE_BRANCH=MOODLE_28_STABLE DB=pgsql
     - php: 7.0
       env: MOODLE_BRANCH=MOODLE_29_STABLE DB=pgsql
+    - php: 7.0
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=pgsql
+    - php: 7.0
+      env: MOODLE_BRANCH=MOODLE_37_STABLE DB=mysqli
+    - php: 7.0
+      env: MOODLE_BRANCH=master DB=pgsql
 
     # Exclude builds not compatible with 7.1.
     - php: 7.1
@@ -94,7 +105,6 @@ matrix:
       env: MOODLE_BRANCH=MOODLE_30_STABLE DB=pgsql
     - php: 7.1
       env: MOODLE_BRANCH=MOODLE_31_STABLE DB=pgsql
-
 
     # Exclude builds not compatible with 7.2.
     - php: 7.2
@@ -112,12 +122,32 @@ matrix:
     - php: 7.2
       env: MOODLE_BRANCH=MOODLE_33_STABLE DB=pgsql
 
+    # Exclude builds not compatible with 7.3.
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_27_STABLE DB=pgsql
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_28_STABLE DB=pgsql
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_29_STABLE DB=pgsql
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_30_STABLE DB=pgsql
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_31_STABLE DB=pgsql
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_32_STABLE DB=pgsql
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_33_STABLE DB=pgsql
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_34_STABLE DB=pgsql
+    - php: 7.3
+      env: MOODLE_BRANCH=MOODLE_35_STABLE DB=pgsql
+
 before_install:
   - phpenv config-rm xdebug.ini
   - nvm install 8.9
   - nvm use 8.9
   - cd ../..
-  - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
+  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 install:
@@ -135,6 +165,7 @@ script:
   # The following plugins are disabled:
   # - moodle-plugin-ci phpmd
   # - moodle-plugin-ci phpcpd
+  # - moodle-plugin-ci phpdoc
   #
   # This one complains too much about CSS and YUI linting...
   # - moodle-plugin-ci grunt

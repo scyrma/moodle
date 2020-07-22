@@ -1,6 +1,75 @@
 Changelog
 =========
 
+v3.9.0
+------
+
+New features
+
+- Support additional Privacy API requirement (core_userlist_provider)
+
+Bug fixes
+
+- Fixed vertical alignment of content in report table
+
+Quality of life
+
+- Report and logs display a nicer notice when page is empty
+
+Technical changes
+
+- Level change is identified from within the state store
+- Report controller to support additional actions from add-on
+
+v3.8.1
+------
+
+Bug fixes
+
+- The cheat guard miscounted the max of actions in time frame
+- Sorting the logs by points raised a database error
+- The manage permission is now required to search courses in the course rule
+- Missing bind when handling exception in module resource selector
+
+Quality of life
+
+- Display a warning when the plugin configuration and URLs mismatch
+
+Technical changes
+
+- Changes to filters and rules to support grade-based rewards in _Level up! Plus_
+
+v3.8.0
+------
+
+New features
+
+- Include support for the shortcode `xplevelname`
+- Compatibility with Moodle 3.8
+
+Bug fixes
+
+- Restored rules are now updating their internal configuration
+- Shortcode `xpladder` would display even when ladder is disabled
+- Minor fixes to notification behat test
+- Other minor bug fixes and improvements
+
+Quality of life
+
+- Increased the size of the description field in levels form
+- Prevent the notices from being announced to screen readers
+
+v3.7.0
+------
+
+- Levels can be given a custom name
+- Added ability to completely remove the points of a user
+- Added filter support (e.g. multi lang) to block description and title - David Bogner
+- The report displays a hyphen as level for users that do not have any points
+- Minor bug fixes and improvements
+
+Some of these changes were sponsored by Xi'an Jiaotong-Liverpool University.
+
 v3.6.1
 ------
 
