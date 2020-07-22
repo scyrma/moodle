@@ -255,6 +255,8 @@ class mod_customcert_element_helper_testcase extends advanced_testcase {
         $this->assertEquals(null, $grade->get_grade());
         $this->assertEquals('-', $grade->get_displaygrade());
         $this->assertEquals(null, $grade->get_dategraded());
+
+        grade_get_setting($course->id, null, null, true);
     }
 
     /**
@@ -313,6 +315,8 @@ class mod_customcert_element_helper_testcase extends advanced_testcase {
         $this->assertEquals(null, $grade->get_grade());
         $this->assertEquals('-', $grade->get_displaygrade());
         $this->assertEquals(null, $grade->get_dategraded());
+
+        grade_get_setting($course->id, null, null, true);
     }
 
     /**
@@ -373,5 +377,7 @@ class mod_customcert_element_helper_testcase extends advanced_testcase {
         $this->assertEquals(null, $grade->get_grade());
         $this->assertEquals('-', $grade->get_displaygrade());
         $this->assertEquals(null, $grade->get_dategraded());
+
+        grade_get_setting($course->id, null, null, true);
     }
 }
