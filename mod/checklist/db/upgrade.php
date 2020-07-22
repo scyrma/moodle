@@ -305,5 +305,43 @@ function xmldb_checklist_upgrade($oldversion = 0) {
         upgrade_mod_savepoint(true, 2018051500, 'checklist');
     }
 
+    if ($oldversion < 2019061900) {
+        $table = new xmldb_table('checklist_item');
+        $field = new xmldb_field('grouping', XMLDB_TYPE_INTEGER, '10', null, null, null, '0');
+
+        // Rename field grouping as "GROUPING" has become a reserved keyword in MySQL 8.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'groupingid');
+        }
+
+        // Checklist savepoint reached.
+        upgrade_mod_savepoint(true, 2019061900, 'checklist');
+    }
+
+    if ($oldversion < 2020012900) {
+        $table = new xmldb_table('checklist_item');
+        $field = new xmldb_field('openlinkinnewwindow', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0, 'linkurl');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Checklist savepoint reached.
+        upgrade_mod_savepoint(true, 2020012900, 'checklist');
+    }
+
+    if ($oldversion < 2020061500) {
+
+        // Define field completionpercenttype to be added to checklist.
+        $table = new xmldb_table('checklist');
+        $field = new xmldb_field('completionpercenttype', XMLDB_TYPE_CHAR, '8', null, XMLDB_NOTNULL, null, 'percent', 'completionpercent');
+
+        // Conditionally launch add field completionpercenttype.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Checklist savepoint reached.
+        upgrade_mod_savepoint(true, 2020061500, 'checklist');
+    }
+
     return $result;
 }
