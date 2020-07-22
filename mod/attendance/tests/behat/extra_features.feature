@@ -24,6 +24,8 @@ Feature: Test the various new features in the attendance module
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Attendance" to section "1" and I fill the form with:
       | Name | Test attendance |
+    And I add a "Attendance" to section "1" and I fill the form with:
+      | Name | Test2 attendance |
     And I log out
 
   Scenario: A teacher can create and update temporary users
@@ -182,16 +184,16 @@ Feature: Test the various new features in the attendance module
     And I click on "submitbutton" "button"
 
     When I click on "Take attendance" "link" in the "10AM" "table_row"
-    Then "Set status for all users to «Present»" "link" should exist
-    And "Set status for all users to «Late»" "link" should exist
-    And "Set status for all users to «Excused»" "link" should exist
-    And "Set status for all users to «Absent»" "link" should exist
+    Then "Set status to «Present»" "link" should exist
+    And "Set status to «Late»" "link" should exist
+    And "Set status to «Excused»" "link" should exist
+    And "Set status to «Absent»" "link" should exist
 
     When I follow "Sessions"
     And I click on "Take attendance" "link" in the "12PM" "table_row"
-    Then "Set status for all users to «Great»" "link" should exist
-    And "Set status for all users to «OK»" "link" should exist
-    And "Set status for all users to «Bad»" "link" should exist
+    Then "Set status to «Great»" "link" should exist
+    And "Set status to «OK»" "link" should exist
+    And "Set status to «Bad»" "link" should exist
 
   Scenario: A teacher can use the radio buttons to set attendance values for all users
     Given I log in as "teacher1"
@@ -202,10 +204,30 @@ Feature: Test the various new features in the attendance module
       | id_addmultiply | 0 |
     And I click on "submitbutton" "button"
     And I click on "Take attendance" "link"
-
-    When I click on "setallstatuses" "field" in the ".takelist tbody td.c4" "css_element"
+    And I set the field "Set status for" to "all"
+    When I click on "setallstatuses" "field" in the ".takelist tbody td.c3" "css_element"
     And I press "Save attendance"
     And I follow "Report"
     Then "L" "text" should exist in the "Student 1" "table_row"
+    And "L" "text" should exist in the "Student 2" "table_row"
+    And "L" "text" should exist in the "Student 3" "table_row"
+
+  Scenario: A teacher can use the radio buttons to set attendance values for unselected users
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I follow "Test2 attendance"
+    And I follow "Add"
+    And I set the following fields to these values:
+      | id_addmultiply | 0 |
+    And I click on "submitbutton" "button"
+    And I click on "Take attendance" "link"
+    And I set the field "Set status for" to "unselected"
+    # Set student 1 as present.
+    And I click on "td.cell.c3 input" "css_element" in the "Student 1" "table_row"
+    And I click on "setallstatuses" "field" in the ".takelist tbody td.c3" "css_element"
+    And I wait until the page is ready
+    And I press "Save attendance"
+    When I follow "Report"
+    Then "P" "text" should exist in the "Student 1" "table_row"
     And "L" "text" should exist in the "Student 2" "table_row"
     And "L" "text" should exist in the "Student 3" "table_row"
