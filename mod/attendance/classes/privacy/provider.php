@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 use context;
 use context_module;
 use core_privacy\local\metadata\collection;
-use core_privacy\local\request\{writer, transform, helper, contextlist, approved_contextlist};
+use core_privacy\local\request\{writer, transform, helper, contextlist, approved_contextlist, approved_userlist, userlist};
 use stdClass;
 
 /**
@@ -39,6 +39,7 @@ use stdClass;
  */
 final class provider implements
     \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\metadata\provider
 {
 
@@ -118,6 +119,46 @@ final class provider implements
     }
 
     /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!is_a($context, \context_module::class)) {
+            return;
+        }
+
+        $sql = "SELECT al.studentid
+                 FROM {course_modules} cm
+                 JOIN {modules} m ON cm.module = m.id AND m.name = 'attendance'
+                 JOIN {attendance} a ON cm.instance = a.id
+                 JOIN {attendance_sessions} asess ON asess.attendanceid = a.id
+                 JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel
+                 JOIN {attendance_log} al ON asess.id = al.sessionid
+                 WHERE ctx.id = :contextid";
+
+        $params = [
+            'contextlevel' => CONTEXT_MODULE,
+            'contextid'    => $context->id,
+        ];
+
+        $userlist->add_from_sql('studentid', $sql, $params);
+
+        $sql = "SELECT al.takenby
+                 FROM {course_modules} cm
+                 JOIN {modules} m ON cm.module = m.id AND m.name = 'attendance'
+                 JOIN {attendance} a ON cm.instance = a.id
+                 JOIN {attendance_sessions} asess ON asess.attendanceid = a.id
+                 JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextlevel
+                 JOIN {attendance_log} al ON asess.id = al.sessionid
+                 WHERE ctx.id = :contextid";
+
+        $userlist->add_from_sql('takenby', $sql, $params);
+
+    }
+    /**
      * Delete all data for all users in the specified context.
      *
      * @param context $context The specific context to delete data for.
@@ -177,6 +218,58 @@ final class provider implements
             self::delete_user_from_sessions($userid, $sessionids);
             self::delete_user_from_attendance_warnings_log($userid, $attendanceid);
         }
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+        $context = $userlist->get_context();
+
+        if (!is_a($context, \context_module::class)) {
+            return;
+        }
+
+        // Prepare SQL to gather all completed IDs.
+        $userids = $userlist->get_userids();
+        list($insql, $inparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+
+        // Delete records where user was marked as attending.
+        $DB->delete_records_select(
+            'attendance_log',
+            "studentid $insql",
+            $inparams
+        );
+
+        // Get list of warning_done records and check if this user is set in thirdpartyusers.
+        foreach ($userids as $userid) {
+            $sql = 'SELECT DISTINCT w.*
+                FROM {attendance_warning} w
+                JOIN {attendance_warning_done} d ON d.notifyid = w.id AND d.userid = ?';
+            $warnings = $DB->get_records_sql($sql, array($userid));
+            if (!empty($warnings)) {
+                attendance_remove_user_from_thirdpartyemails($warnings, $userid);
+            }
+
+        }
+
+        $DB->delete_records_select(
+            'attendance_warning_done',
+            "userid $insql",
+            $inparams
+        );
+
+        // Now for teachers remove relation for marking.
+        $DB->set_field_select(
+            'attendance_log',
+            'takenby',
+            2,
+            "takenby $insql",
+            $inparams);
+
     }
 
     /**
@@ -336,7 +429,8 @@ final class provider implements
      * @param int $attendanceid The id of the attendance instance to remove the relevant warnings from.
      */
     private static function delete_user_from_attendance_warnings_log(int $userid, int $attendanceid) {
-        global $DB;
+        global $DB, $CFG;
+        require_once($CFG->dirroot.'/mod/attendance/lib.php');
 
         // Get all warnings because the user could have their ID listed in the thirdpartyemails column as a comma delimited string.
         $warnings = $DB->get_records(
@@ -348,24 +442,7 @@ final class provider implements
             return;
         }
 
-        // Update the third party emails list for all the relevant warnings.
-        $updatedwarnings = array_map(
-            function(stdClass $warning) use ($userid) : stdClass {
-                $warning->thirdpartyemails = implode(',', array_diff(explode(',', $warning->thirdpartyemails), [$userid]));
-                return $warning;
-            },
-            array_filter(
-                $warnings,
-                function (stdClass $warning) use ($userid) : bool {
-                    return in_array($userid, explode(',', $warning->thirdpartyemails));
-                }
-            )
-        );
-
-        // Sadly need to update each individually, no way to bulk update as all the thirdpartyemails field can be different.
-        foreach ($updatedwarnings as $updatedwarning) {
-            $DB->update_record('attendance_warning', $updatedwarning);
-        }
+        attendance_remove_user_from_thirdpartyemails($warnings, $userid);
 
         // Delete any record of the user being notified.
         list($warningssql, $warningsparams) = $DB->get_in_or_equal(array_keys($warnings), SQL_PARAMS_NAMED);
