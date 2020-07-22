@@ -101,6 +101,12 @@ function attendance_add_instance($attendance) {
 
     $attendance->timemodified = time();
 
+    // Default grade (similar to what db fields defaults if no grade attribute is passed),
+    // but we need it in object for grading update.
+    if (!isset($attendance->grade)) {
+        $attendance->grade = 100;
+    }
+
     $attendance->id = $DB->insert_record('attendance', $attendance);
 
     att_add_default_statuses($attendance->id);
@@ -469,7 +475,7 @@ function attendance_print_settings_tabs($selected = 'settings') {
     global $CFG;
     // Print tabs for different settings pages.
     $tabs = array();
-    $tabs[] = new tabobject('settings', $CFG->wwwroot.'/admin/settings.php?section=modsettingattendance',
+    $tabs[] = new tabobject('settings', "{$CFG->wwwroot}/{$CFG->admin}/settings.php?section=modsettingattendance",
         get_string('settings', 'attendance'), get_string('settings'), false);
 
     $tabs[] = new tabobject('defaultstatus', $CFG->wwwroot.'/mod/attendance/defaultstatus.php',
@@ -500,4 +506,33 @@ function attendance_print_settings_tabs($selected = 'settings') {
     ob_end_clean();
 
     return $tabmenu;
+}
+
+/**
+ * Helper function to remove a user from the thirdpartyemails record of the attendance_warning table.
+ *
+ * @param array $warnings - list of warnings to parse.
+ * @param int $userid - User id of user to remove.
+ */
+function attendance_remove_user_from_thirdpartyemails($warnings, $userid) {
+    global $DB;
+
+    // Update the third party emails list for all the relevant warnings.
+    $updatedwarnings = array_map(
+        function(stdClass $warning) use ($userid) : stdClass {
+            $warning->thirdpartyemails = implode(',', array_diff(explode(',', $warning->thirdpartyemails), [$userid]));
+            return $warning;
+        },
+        array_filter(
+            $warnings,
+            function (stdClass $warning) use ($userid) : bool {
+                return in_array($userid, explode(',', $warning->thirdpartyemails));
+            }
+        )
+    );
+
+    // Sadly need to update each individually, no way to bulk update as all the thirdpartyemails field can be different.
+    foreach ($updatedwarnings as $updatedwarning) {
+        $DB->update_record('attendance_warning', $updatedwarning);
+    }
 }
