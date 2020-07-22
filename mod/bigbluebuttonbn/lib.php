@@ -28,17 +28,6 @@ defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 
-require_once($CFG->dirroot.'/calendar/lib.php');
-require_once($CFG->dirroot.'/message/lib.php');
-require_once($CFG->dirroot.'/mod/lti/OAuth.php');
-require_once($CFG->dirroot.'/tag/lib.php');
-require_once($CFG->libdir.'/accesslib.php');
-require_once($CFG->libdir.'/completionlib.php');
-require_once($CFG->libdir.'/datalib.php');
-require_once($CFG->libdir.'/enrollib.php');
-require_once($CFG->libdir.'/filelib.php');
-require_once($CFG->libdir.'/formslib.php');
-
 // JWT is included in Moodle 3.7 core, but a local package is still needed for backward compatibility.
 if (!class_exists('\Firebase\JWT\JWT')) {
     if (file_exists($CFG->libdir.'/php-jwt/src/JWT.php')) {
@@ -64,7 +53,7 @@ $CFG->bigbluebuttonbn['scheduled_duration_enabled'] = 0;
  * Remove this block when restored
  */
 
- /** @var BIGBLUEBUTTONBN_DEFAULT_SERVER_URL string of default bigbluebutton server url */
+/** @var BIGBLUEBUTTONBN_DEFAULT_SERVER_URL string of default bigbluebutton server url */
 const BIGBLUEBUTTONBN_DEFAULT_SERVER_URL = 'http://test-install.blindsidenetworks.com/bigbluebutton/';
 /** @var BIGBLUEBUTTONBN_DEFAULT_SHARED_SECRET string of default bigbluebutton server shared secret */
 const BIGBLUEBUTTONBN_DEFAULT_SHARED_SECRET = '8cd8ef52e8e101574e400365b55e11a6';
@@ -481,7 +470,7 @@ function bigbluebuttonbn_print_overview($courses, &$htmlarray) {
             if (empty($htmlarray[$bn->course]['bigbluebuttonbn'])) {
                 $htmlarray[$bn->course]['bigbluebuttonbn'] = '';
             }
-            $htmlarray[$bn->course]['bigbluebuttonbn'] = bigbluebuttonbn_print_overview_element($bn, $now);
+            $htmlarray[$bn->course]['bigbluebuttonbn'] .= bigbluebuttonbn_print_overview_element($bn, $now);
         }
     }
 }
@@ -565,6 +554,7 @@ function bigbluebuttonbn_process_pre_save(&$bigbluebuttonbn) {
  * @return void
  **/
 function bigbluebuttonbn_process_pre_save_instance(&$bigbluebuttonbn) {
+    require_once(__DIR__.'/locallib.php');
     $bigbluebuttonbn->timemodified = time();
     if ((integer)$bigbluebuttonbn->instance == 0) {
         $bigbluebuttonbn->meetingid = 0;
@@ -666,7 +656,8 @@ function bigbluebuttonbn_process_post_save_notification(&$bigbluebuttonbn) {
  * @return void
  **/
 function bigbluebuttonbn_process_post_save_event(&$bigbluebuttonbn) {
-    global $DB;
+    global $CFG, $DB;
+    require_once($CFG->dirroot.'/calendar/lib.php');
     $eventid = $DB->get_field('event', 'id', array('modulename' => 'bigbluebuttonbn',
         'instance' => $bigbluebuttonbn->id));
     // Delete the event from calendar when/if openingtime is NOT set.
@@ -719,6 +710,7 @@ function bigbluebuttonbn_process_post_save_completion($bigbluebuttonbn) {
           );
     }
 }
+
 /**
  * Get a full path to the file attached as a preuploaded presentation
  * or if there is none, set the presentation field will be set to blank.
@@ -941,7 +933,7 @@ function bigbluebuttonbn_view($bigbluebuttonbn, $course, $cm, $context) {
         'objectid' => $bigbluebuttonbn->id
     );
 
-    $event = \mod_bigbluebuttonbn\event\bigbluebuttonbn_activity_viewed::create($params);
+    $event = \mod_bigbluebuttonbn\event\activity_viewed::create($params);
     $event->add_record_snapshot('course_modules', $cm);
     $event->add_record_snapshot('course', $course);
     $event->add_record_snapshot('bigbluebuttonbn', $bigbluebuttonbn);
