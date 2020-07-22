@@ -27,7 +27,6 @@ require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/mod/attendance/lib.php');
 require_once($CFG->dirroot.'/mod/attendance/locallib.php');
 require_once($CFG->libdir.'/tablelib.php');
-require_once($CFG->libdir.'/coursecatlib.php');
 
 $category = optional_param('category', 0, PARAM_INT);
 $download = optional_param('download', '', PARAM_ALPHA);
@@ -47,7 +46,7 @@ if (empty($category)) {
     $courses = array(); // Show all courses.
 } else {
     $context = context_coursecat::instance($category);
-    $coursecat = coursecat::get($category);
+    $coursecat = core_course_category::get($category);
     $courses = $coursecat->get_courses(array('recursive' => true, 'idonly' => true));
 }
 // Check permissions.
@@ -77,7 +76,7 @@ if (!$table->is_downloading($download, $exportfilename)) {
     $url = new moodle_url('/mod/attendance/coursesummary.php', array('category' => $category, 'fromcourse' => $fromcourse));
 
     if ($admin) {
-        $options = coursecat::make_categories_list('mod/attendance:viewsummaryreports');
+        $options = core_course_category::make_categories_list('mod/attendance:viewsummaryreports');
         echo $OUTPUT->single_select($url, 'category', $options, $category);
     }
 
@@ -95,8 +94,14 @@ $table->setup();
 
 // Work out direction of sort required.
 $sortcolumns = $table->get_sort_columns();
-// Now do sorting if specified.
 
+// Sanity check $sort var before including in sql. Make sure it matches a known column.
+$allowedsort = array_diff(array_keys($table->columns), $table->column_nosort);
+if (!in_array($sort, $allowedsort)) {
+    $sort = '';
+}
+
+// Now do sorting if specified.
 $orderby = ' ORDER BY percentage ASC';
 if (!empty($sort)) {
     $direction = ' DESC';
