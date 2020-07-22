@@ -37,12 +37,13 @@ class mod_attendance_generator extends testing_module_generator {
 
     /**
      * Create new attendance module instance
+     *
      * @param array|stdClass $record
      * @param array $options
-     * @return stdClass activity record with extra cmid field
+     * @return stdClass mod_attendance_structure
      */
     public function create_instance($record = null, array $options = null) {
-        global $CFG;
+        global $CFG, $DB;
         require_once($CFG->dirroot.'/mod/attendance/lib.php');
 
         $this->instancecount++;
@@ -61,8 +62,10 @@ class mod_attendance_generator extends testing_module_generator {
             $record->grade = 100;
         }
 
-        $record->coursemodule = $this->precreate_course_module($record->course, $options);
-        $id = attendance_add_instance($record, null);
-        return $this->post_add_instance($id, $record->coursemodule);
+        $att = parent::create_instance($record, (array)$options);
+        $cm = $DB->get_record('course_modules', array('id' => $att->cmid), '*', MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+
+        return new mod_attendance_structure($att, $cm, $course);
     }
 }
