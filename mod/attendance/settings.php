@@ -52,6 +52,14 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('attendance/studentscanmark',
         get_string('studentscanmark', 'attendance'), get_string('studentscanmark_desc', 'attendance'), 1));
 
+    $settings->add(new admin_setting_configtext('attendance/rotateqrcodeinterval',
+        get_string('rotateqrcodeinterval', 'attendance'),
+        get_string('rotateqrcodeinterval_desc', 'attendance'), '15', PARAM_INT));
+
+    $settings->add(new admin_setting_configtext('attendance/rotateqrcodeexpirymargin',
+            get_string('rotateqrcodeexpirymargin', 'attendance'),
+            get_string('rotateqrcodeexpirymargin_desc', 'attendance'), '2', PARAM_INT));
+
     $settings->add(new admin_setting_configcheckbox('attendance/studentscanmarksessiontime',
         get_string('studentscanmarksessiontime', 'attendance'),
         get_string('studentscanmarksessiontime_desc', 'attendance'), 1));
@@ -96,6 +104,18 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('attendance/enablewarnings',
         get_string('enablewarnings', 'attendance'),
         get_string('enablewarnings_desc', 'attendance'), 0));
+
+    $name = new lang_string('mobilesettings', 'mod_attendance');
+    $description = new lang_string('mobilesettings_help', 'mod_attendance');
+    $settings->add(new admin_setting_heading('mobilesettings', $name, $description));
+
+    $settings->add(new admin_setting_configduration('attendance/mobilesessionfrom',
+        get_string('mobilesessionfrom', 'attendance'), get_string('mobilesessionfrom_help', 'attendance'),
+         6 * HOURSECS, PARAM_RAW));
+
+    $settings->add(new admin_setting_configduration('attendance/mobilesessionto',
+        get_string('mobilesessionto', 'attendance'), get_string('mobilesessionto_help', 'attendance'),
+        24 * HOURSECS, PARAM_RAW));
 
     $name = new lang_string('defaultsettings', 'mod_attendance');
     $description = new lang_string('defaultsettings_help', 'mod_attendance');

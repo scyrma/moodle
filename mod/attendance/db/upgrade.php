@@ -513,7 +513,7 @@ function xmldb_attendance_upgrade($oldversion=0) {
         upgrade_mod_savepoint(true, 2018050100, 'attendance');
     }
 
-    if ($oldversion < 2018051402) {
+    if ($oldversion < 2018072700) {
         $table = new xmldb_table('attendance_sessions');
         $field = new xmldb_field('calendarevent', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED,
             XMLDB_NOTNULL, null, '1', 'caleventid');
@@ -524,20 +524,20 @@ function xmldb_attendance_upgrade($oldversion=0) {
                 $DB->execute("UPDATE {attendance_sessions} set calendarevent = 0");
             }
         }
-        upgrade_mod_savepoint(true, 2018051402, 'attendance');
+        upgrade_mod_savepoint(true, 2018072700, 'attendance');
     }
 
-    if ($oldversion < 2018051404) {
+    if ($oldversion < 2018082605) {
         $table = new xmldb_table('attendance_sessions');
         $field = new xmldb_field('includeqrcode', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED,
             XMLDB_NOTNULL, null, '0', 'calendarevent');
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_mod_savepoint(true, 2018051404, 'attendance');
+        upgrade_mod_savepoint(true, 2018082605, 'attendance');
     }
 
-    if ($oldversion < 2018051408) {
+    if ($oldversion < 2019012500) {
 
         // Changing precision of field statusset on table attendance_log to (1333).
         $table = new xmldb_table('attendance_log');
@@ -547,7 +547,85 @@ function xmldb_attendance_upgrade($oldversion=0) {
         $dbman->change_field_precision($table, $field);
 
         // Attendance savepoint reached.
-        upgrade_mod_savepoint(true, 2018051408, 'attendance');
+        upgrade_mod_savepoint(true, 2019012500, 'attendance');
+    }
+
+    if ($oldversion < 2019061800) {
+
+        // Make sure default value  to '0'.
+        $table = new xmldb_table('attendance_sessions');
+        $field = new xmldb_field('preventsharedip', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED,
+            XMLDB_NOTNULL, null, '0', 'absenteereport');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+
+        // Attendance savepoint reached.
+        upgrade_mod_savepoint(true, 2019061800, 'attendance');
+    }
+
+    if ($oldversion < 2019062000) {
+        // Make sure sessiondetailspos is not null.
+        $table = new xmldb_table('attendance');
+        $field = new xmldb_field('sessiondetailspos', XMLDB_TYPE_CHAR, '5', null, XMLDB_NOTNULL, null, 'left', 'subnet');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Make sure maxwarn has default value of '1'.
+        $table = new xmldb_table('attendance_warning');
+        $field = new xmldb_field('maxwarn', XMLDB_TYPE_INTEGER, '10', null, true, null, '1', 'warnafter');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_default($table, $field);
+        }
+
+        // Attendance savepoint reached.
+        upgrade_mod_savepoint(true, 2019062000, 'attendance');
+    }
+
+    if ($oldversion < 2019062200) {
+
+        // Define table attendance_rotate_passwords to be created.
+        $table = new xmldb_table('attendance_rotate_passwords');
+
+        // Adding fields to table attendance_rotate_passwords.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('attendanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('password', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('expirytime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table attendance_rotate_passwords.
+        $table->add_key('id', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for attendance_rotate_passwords.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define field rotateqrcode to be added to attendance_sessions.
+        $table = new xmldb_table('attendance_sessions');
+        $field = new xmldb_field('rotateqrcode', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'includeqrcode');
+
+        // Conditionally launch add field rotateqrcode.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field rotateqrcodesecret to be added to attendance_sessions.
+        $table = new xmldb_table('attendance_sessions');
+        $field = new xmldb_field('rotateqrcodesecret', XMLDB_TYPE_CHAR, '10', null, null, null, null, 'rotateqrcode');
+
+        // Conditionally launch add field rotateqrcodesecret.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Attendance savepoint reached.
+        upgrade_mod_savepoint(true, 2019062200, 'attendance');
+
     }
 
     return $result;
