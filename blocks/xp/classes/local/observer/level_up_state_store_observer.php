@@ -15,51 +15,39 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Level with badge & description.
+ * Level up state store observer.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2020 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_xp\local\xp;
+namespace block_xp\local\observer;
 defined('MOODLE_INTERNAL') || die();
 
+use block_xp\local\xp\level;
+use block_xp\local\xp\state_store;
+
 /**
- * Level with badge & description.
+ * Level up state store observer.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2020 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class badged_level extends described_level implements level_with_badge {
-
-    /** @var badge_url_resolver Badge URL resolver. */
-    protected $resolver;
+interface level_up_state_store_observer {
 
     /**
-     * Constructor.
+     * The recipient leveled up.
      *
-     * @param int $level The level.
-     * @param int $xprequired The XP required.
-     * @param string $desc The description.
-     * @param badge_url_resolver $resolver The URL resolver.
-     * @param string|null $name The name.
+     * @param state_store $store The store.
+     * @param int $id The recipient.
+     * @param level $beforelevel The level before.
+     * @param level $afterlevel The level after.
+     * @return void
      */
-    public function __construct($level, $xprequired, $desc, badge_url_resolver $resolver, $name = null) {
-        parent::__construct($level, $xprequired, $desc, $name);
-        $this->resolver = $resolver;
-    }
-
-    /**
-     * Get the badge URL.
-     *
-     * @return moodle_url|null
-     */
-    public function get_badge_url() {
-        return $this->resolver->get_url_for_level($this->get_level());
-    }
+    public function leveled_up(state_store $store, $id, level $beforelevel, level $afterlevel);
 
 }

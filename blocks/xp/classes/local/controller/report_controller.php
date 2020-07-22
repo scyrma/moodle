@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use core_user;
 use html_writer;
+use single_button;
 use block_xp\local\routing\url;
 
 /**
@@ -56,6 +57,7 @@ class report_controller extends page_controller {
             ['resetdata', 0, PARAM_INT, false],
             ['action', null, PARAM_ALPHA],
             ['confirm', 0, PARAM_INT, false],
+            ['delete', 0, PARAM_INT, false],
             ['page', 0, PARAM_INT],     // To keep the table page in URL.
         ];
     }
@@ -77,9 +79,10 @@ class report_controller extends page_controller {
             }
         }
 
-        // Use edit form.
         $userid = $this->get_param('userid');
         $action = $this->get_param('action');
+
+        // Use edit form.
         if ($action === 'edit' && !empty($userid)) {
             $form = $this->get_form($userid);
             $nexturl = new url($this->pageurl, ['userid' => null]);
@@ -87,6 +90,15 @@ class report_controller extends page_controller {
                 $this->world->get_store()->set($userid, $data->xp);
                 $this->redirect($nexturl);
             } else if ($form->is_cancelled()) {
+                $this->redirect($nexturl);
+            }
+        }
+
+        // Delete user.
+        if ($this->get_param('delete')) {
+            if ($this->get_param('confirm') && confirm_sesskey()) {
+                $nexturl = new url($this->pageurl, ['userid' => null]);
+                $this->world->get_store()->delete($userid);
                 $this->redirect($nexturl);
             }
         }
@@ -124,6 +136,38 @@ class report_controller extends page_controller {
         return $this->table;
     }
 
+    /**
+     * Get the bottom action buttons.
+     *
+     * @return single_button[]
+     */
+    protected function get_bottom_action_buttons() {
+        $actions = [];
+
+        // Make sure that we can reset for a group only.
+        $groupid = $this->get_groupid();
+        $strreset = null;
+        if (empty($groupid)) {
+            $strreset = get_string('resetcoursedata', 'block_xp');
+        } else if ($this->world->get_store() instanceof \block_xp\local\xp\course_state_store) {
+            $strreset = get_string('resetgroupdata', 'block_xp');
+        }
+
+        if (!empty($strreset)) {
+            $actions[] = new single_button(
+                new url($this->pageurl->get_compatible_url(), [
+                    'resetdata' => 1,
+                    'sesskey' => sesskey(),
+                    'group' => $groupid
+                ]),
+                $strreset,
+                'get'
+            );
+        }
+
+        return $actions;
+    }
+
     protected function page_content() {
         $output = $this->get_renderer();
         $groupid = $this->get_groupid();
@@ -139,6 +183,16 @@ class report_controller extends page_controller {
             return;
         }
 
+        // Confirming delete data.
+        if ($this->get_param('delete')) {
+            echo $this->get_renderer()->confirm(
+                markdown_to_html(get_string('reallydeleteuserstate', 'block_xp')),
+                new url($this->pageurl->get_compatible_url(), ['delete' => 1, 'confirm' => 1, 'sesskey' => sesskey()]),
+                new url($this->pageurl->get_compatible_url(), ['userid' => null])
+            );
+            return;
+        }
+
         // Use edit form.
         if (!empty($this->form)) {
             $user = core_user::get_user($this->get_param('userid'));
@@ -150,26 +204,12 @@ class report_controller extends page_controller {
         $this->print_group_menu();
         echo $this->get_table()->out(20, true);
 
-        // Make sure that we can reset for a group only.
-        $strreset = null;
-        if (empty($groupid)) {
-            $strreset = get_string('resetcoursedata', 'block_xp');
-        } else if ($this->world->get_store() instanceof \block_xp\local\xp\course_state_store) {
-            $strreset = get_string('resetgroupdata', 'block_xp');
-        }
-
-        if (!empty($strreset)) {
-            echo html_writer::tag('p',
-                $output->single_button(
-                    new url($this->pageurl->get_compatible_url(), [
-                        'resetdata' => 1,
-                        'sesskey' => sesskey(),
-                        'group' => $groupid
-                    ]),
-                    $strreset,
-                    'get'
-                )
-            );
+        // Output the bottom actions.
+        $actions = $this->get_bottom_action_buttons();
+        if (!empty($actions)) {
+            echo html_writer::tag('p', implode('', array_map(function($button) use ($output) {
+                return $output->render($button);
+            }, $actions)));
         }
     }
 
