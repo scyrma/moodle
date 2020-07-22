@@ -94,14 +94,27 @@ $string['enablexpgain_help'] = 'When set to \'No\', nobody will earn points in t
 
 Please note that this can also be controlled more granularly using the capability _block/xp:earnxp_.';
 $string['entersearchterm'] = 'Enter a search term';
+$string['errorcontextcoursemismatchforwholesite'] = 'The URL of this <em>Level up!</em> page does not match the current plugin configuration. Your current configuration declares <em>Level up!</em> to be used \'For the whole site\', however this page expected it to be used \'Per course\'. Please <a href="{$a->nexturl}">click here</a> to navigate to the right page. Search for the admin setting \'block_xp_context\' if you wish to change your configuration.';
+$string['errorcontextcoursemismatchpercourse'] = 'The URL of this <em>Level up!</em> page does not match the current plugin configuration. Your current configuration declares <em>Level up!</em> to be used \'Per course\', but this page expects it to be used \'For the whole site\'. It most likely originates from a <em>block</em> that was added to the dashboard or front page while in a different configuration. You should remove the block from the latter pages, and only use the block from within individual courses.';
 $string['errorformvalues'] = 'There are some issues in the form values, please fix them.';
 $string['errorlevelsincorrect'] = 'The minimum number of levels is 2';
 $string['errornotalllevelsbadgesprovided'] = 'Not all the level badges have been provided. Missing: {$a}';
 $string['errorunknownevent'] = 'Error: unknown event';
 $string['errorunknownmodule'] = 'Error: unknown module';
 $string['errorxprequiredlowerthanpreviouslevel'] = 'The points required are lower than or equal to the previous level.';
-$string['eventis'] = 'The event is {$a}';
+$string['eventsrules'] = 'Events rules';
+$string['eventsrules_help'] = 'This plugin is making use of the events to attribute points to actions performed by the students.
+You can use the form below to add your own rules and modify the default ones.
+
+It is advised to check the plugin\'s _Log_ page to identify which events are triggered as students perform actions in the course.
+
+Additional resources:
+
+- [How are experience points calculated?](https://levelup.plus/docs/article/how-are-experience-points-calculated?ref=blockxp_help)
+- [Troubleshooting rules](https://levelup.plus/docs/article/event-rule-not-working?ref=blockxp_help)
+';
 $string['event_user_leveledup'] = 'User leveled up';
+$string['eventis'] = 'The event is {$a}';
 $string['eventname'] = 'Event name';
 $string['eventproperty'] = 'Event property';
 $string['eventtime'] = 'Event time';
@@ -131,6 +144,9 @@ $string['levelbadges'] = 'Level badges';
 $string['levelbadgesformhelp'] = 'Name the files [level].[file extension], for instance: 1.png, 2.jpg, etc... The recommended image size is 100x100.';
 $string['levelcount'] = 'Level count';
 $string['leveldesc'] = 'Level description';
+$string['leveldesc_help'] = 'A short description of the level, this is displayed on the information page alongside the level itself. You may use this to describe a reward for learners who attain the level, to include instructions on how to work towards this level, to describe the level in a playful manner (e.g. _Only the bravest souls have been known to attain this level_), etc.';
+$string['levelname'] = 'Level name';
+$string['levelname_help'] = 'A short name to display instead of the default _Level #1_, _Level #2_, etc. that is sometimes displayed. If you give names to some levels, we recommend that you give a name to all of them!';
 $string['levels'] = 'Levels';
 $string['levelup'] = 'Level up!';
 $string['levelupplus'] = 'Level up! Plus';
@@ -152,6 +168,7 @@ $string['navreport'] = 'Report';
 $string['navrules'] = 'Rules';
 $string['navsettings'] = 'Settings';
 $string['navvisuals'] = 'Visuals';
+$string['nologsrecordedyet'] = 'Logs have not been recorded yet.';
 $string['participant'] = 'Participant';
 $string['perpagecolon'] = 'Per page:';
 $string['pickaconditiontype'] = 'Pick a condition type';
@@ -182,17 +199,25 @@ $string['property:component'] = 'Event component';
 $string['property:crud'] = 'Event CRUD';
 $string['property:eventname'] = 'Event name';
 $string['property:target'] = 'Event target';
-$string['promointro'] = 'The add-on for _Level up!_ that unleashes its full potential!';
+$string['promointro'] = 'The add-on for _Level up!_ with features that can encourage learners to achieve their full potential!';
+$string['promorulesdidyouknow'] = 'Did you know that with <em>Level up! Plus</em> students can receive points for <em>completing courses</em> and <em>activities</em>, or even receive points according to their <em>grades</em>? <a href="{$a->url}">Discover more here</a>.';
 $string['participatetolevelup'] = 'Participate in the course to gain experience points and level up!';
 $string['rank'] = 'Rank';
 $string['ranking'] = 'Ranking';
 $string['ranking_help'] = 'The rank is the absolute position of the current user in the ladder. The relative rank is the difference in experience points between a user and their neighbours.';
-$string['recentrewards'] = 'Recent rewards';
+$string['reallydeleteuserstate'] = 'Deleting a user is only useful to remove them from the ladder. For any other reasons, we recommend setting their points to 0 instead. Note that deleting them does not affect their ability to earn points in the future.
+
+Importantly, when using _Level up!_ for the whole site, deleting them will make them disappear from the report, in which case you will not be able to re-assign them points. However, if you are using _Level up!_ per course, the student may still appear in the report if they are enrolled in the course.
+
+Do you really want to delete the points of this user?';
 $string['reallyresetallcoursestodefaults'] = 'Really reset all courses rules to the default rules? This action is not reversible.';
 $string['reallyresetcourserulestodefaults'] = 'Really reset the course rules to the default rules? This action is not reversible.';
 $string['reallyresetdata'] = 'Really reset the levels and points of everyone in this course?';
 $string['reallyresetgroupdata'] = 'Really reset the levels and points of everyone in this group?';
 $string['reallyreverttopluginsdefaults'] = 'Really reset the default rules to the defaults suggested by the plugin? This action is not reversible.';
+$string['recentrewards'] = 'Recent rewards';
+$string['reportisempty'] = 'The report is empty, student have yet to earn points.';
+$string['reportisemptyenrolstudents'] = 'The report is empty, have students been enrolled in this course?';
 $string['resetcoursedata'] = 'Reset course data';
 $string['resetallcoursestodefaults'] = 'Reset all courses to defaults';
 $string['resetallcoursestodefaultsintro'] = 'Click the button below to reset all courses to the above defaults.';
@@ -223,17 +248,6 @@ $string['ruleset'] = 'Set of conditions';
 $string['ruleset:all'] = 'ALL of the conditions are true';
 $string['ruleset:any'] = 'ANY of the conditions are true';
 $string['ruleset:none'] = 'NONE of the conditions are true';
-$string['rulesformhelp'] = '<p>This plugin is making use of the events to attribute points to actions performed by the students. You can use the form below to add your own rules and view the default ones.</p>
-<p>It is advised to check the plugin\'s <a href="{$a->log}">log</a> to identify what events are triggered as you perform actions in the course, and also to read more about events themselves: <a href="{$a->list}">list of all events</a>, <a href="{$a->doc}">developer documentation</a>.</p>
-<p>Finally, please note that the plugin always ignores:
-<ul>
-    <li>The actions performed by administrators, guests or non-logged in users.</li>
-    <li>The actions performed by users not having the capability <em>block/xp:earnxp</em>.</li>
-    <li>Repeated actions within a short time interval, to prevent cheating.</li>
-    <li>Events that are flagged as <em>anonymous</em>, e.g. in an anonymous Feedback.</li>
-    <li>And the events of educational level not equal to <em>Participating</em>.</li>
-</ul>
-</p>';
 $string['searchandselectcourse'] = 'Search and select a course';
 $string['searchandselectmodule'] = 'Search and select an activity or resource';
 $string['send'] = 'Send';
@@ -298,6 +312,18 @@ Note that teachers, or otherwise users with editing capabilities, will always se
 
 Note that these shortcodes CANNOT be nested within one another.
 ';
+$string['shortcode:xplevelname'] = 'Display the level name.';
+$string['shortcode:xplevelname_help'] = '
+By default the tag displays the name of the current user\'s level.
+Alternatively, you can use the `level` argument to display the name of a specific level.
+
+```
+[xplevelname]
+[xplevelname level=5]
+```
+
+If the `level` argument is provided and the level does not exist, nothing will be displayed.
+';
 $string['shortcode:xpprogressbar'] = 'The current user\'s progress bar towards the next level.';
 $string['someoneelse'] = 'Someone else';
 $string['somethinghappened'] = 'Something happened';
@@ -336,6 +362,7 @@ $string['xp:myaddinstance'] = 'Add the block to my dashboard';
 $string['xp:view'] = 'View the block and its related pages';
 $string['xptogo'] = '[[{$a}]] to go';
 $string['xpgaindisabled'] = 'Points gain disabled';
+$string['youreachedlevel'] = 'You have reached the level:';
 $string['youreachedlevela'] = 'You have reached level {$a}!';
 $string['yourmessage'] = 'Your message';
 $string['yourownrules'] = 'Your own rules';
@@ -356,3 +383,16 @@ $string['promoemailusat'] = 'E-mail us at _levelup@branchup.tech_.';
 $string['promoerrorsendingemail'] = 'Ouch! We could not send the message... please e-mail us directly at: {$a}. Thanks!';
 $string['promoifpreferemailusat'] = 'Psst! If you prefer, e-mail us directly at _{$a}_.';
 $string['promoyourmessagewassent'] = 'Thank you, your message was sent. We will get back to you very shortly.';
+
+// Deprecated since 3.8.1.
+$string['rulesformhelp'] = '<p>This plugin is making use of the events to attribute points to actions performed by the students. You can use the form below to add your own rules and view the default ones.</p>
+<p>It is advised to check the plugin\'s <a href="{$a->log}">log</a> to identify what events are triggered as you perform actions in the course, and also to read more about events themselves: <a href="{$a->list}">list of all events</a>, <a href="{$a->doc}">developer documentation</a>.</p>
+<p>Finally, please note that the plugin always ignores:
+<ul>
+    <li>The actions performed by administrators, guests or non-logged in users.</li>
+    <li>The actions performed by users not having the capability <em>block/xp:earnxp</em>.</li>
+    <li>Repeated actions within a short time interval, to prevent cheating.</li>
+    <li>Events that are flagged as <em>anonymous</em>, e.g. in an anonymous Feedback.</li>
+    <li>And the events of educational level not equal to <em>Participating</em>.</li>
+</ul>
+</p>';

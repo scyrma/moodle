@@ -15,51 +15,43 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Level with badge & description.
+ * Add-on userlist provider interface.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2020 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_xp\local\xp;
+namespace block_xp\local\privacy;
 defined('MOODLE_INTERNAL') || die();
 
+use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\shared_data_provider;
+use core_privacy\local\request\userlist;
+
 /**
- * Level with badge & description.
+ * The interface to implement by the addon to provide userlist.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2020 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class badged_level extends described_level implements level_with_badge {
-
-    /** @var badge_url_resolver Badge URL resolver. */
-    protected $resolver;
+interface addon_userlist_provider extends shared_data_provider {
 
     /**
-     * Constructor.
+     * Add the list of users who have data within a context.
      *
-     * @param int $level The level.
-     * @param int $xprequired The XP required.
-     * @param string $desc The description.
-     * @param badge_url_resolver $resolver The URL resolver.
-     * @param string|null $name The name.
+     * @param userlist $userlist The user list.
      */
-    public function __construct($level, $xprequired, $desc, badge_url_resolver $resolver, $name = null) {
-        parent::__construct($level, $xprequired, $desc, $name);
-        $this->resolver = $resolver;
-    }
+    public static function add_addon_users_in_context(userlist $userlist);
 
     /**
-     * Get the badge URL.
+     * Delete multiple users within a single context.
      *
-     * @return moodle_url|null
+     * @param approved_userlist $userlist The user list.
      */
-    public function get_badge_url() {
-        return $this->resolver->get_url_for_level($this->get_level());
-    }
+    public static function delete_addon_data_for_users(approved_userlist $userlist);
 
 }

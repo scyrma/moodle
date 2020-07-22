@@ -15,51 +15,50 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Level with badge & description.
+ * Filters widget group renderable.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2019 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_xp\local\xp;
+namespace block_xp\output;
 defined('MOODLE_INTERNAL') || die();
 
+use help_icon;
+use renderable;
+
 /**
- * Level with badge & description.
+ * Filters widget group renderable.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2019 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class badged_level extends described_level implements level_with_badge {
+class filters_widget_element implements renderable {
 
-    /** @var badge_url_resolver Badge URL resolver. */
-    protected $resolver;
+    /** @var string The description. */
+    public $description;
+    /** @var help_icon The help icon. */
+    public $helpicon;
+    /** @var string The title. */
+    public $title;
+    /** @var renderable The widget. */
+    public $widget;
 
     /**
      * Constructor.
      *
-     * @param int $level The level.
-     * @param int $xprequired The XP required.
-     * @param string $desc The description.
-     * @param badge_url_resolver $resolver The URL resolver.
-     * @param string|null $name The name.
+     * @param renderable $widget The widget, or any renderable really.
+     * @param string $title The element's title.
      */
-    public function __construct($level, $xprequired, $desc, badge_url_resolver $resolver, $name = null) {
-        parent::__construct($level, $xprequired, $desc, $name);
-        $this->resolver = $resolver;
-    }
-
-    /**
-     * Get the badge URL.
-     *
-     * @return moodle_url|null
-     */
-    public function get_badge_url() {
-        return $this->resolver->get_url_for_level($this->get_level());
+    public function __construct(renderable $widget, $title = null, $description = null, help_icon $helpicon = null) {
+        $this->widget = $widget;
+        $this->title = $title;
+        $this->description = $description;
+        $this->helpicon = $helpicon;
     }
 
 }
