@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Level with badge & description.
+ * State with subject interface.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2019 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,39 +27,36 @@ namespace block_xp\local\xp;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Level with badge & description.
+ * State with subject interface.
+ *
+ * Allows a state to be described with a name, a picture and a link.
  *
  * @package    block_xp
- * @copyright  2017 Frédéric Massart
+ * @copyright  2019 Frédéric Massart
  * @author     Frédéric Massart <fred@branchup.tech>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class badged_level extends described_level implements level_with_badge {
-
-    /** @var badge_url_resolver Badge URL resolver. */
-    protected $resolver;
+interface state_with_subject extends state {
 
     /**
-     * Constructor.
+     * Get the link to the subject.
      *
-     * @param int $level The level.
-     * @param int $xprequired The XP required.
-     * @param string $desc The description.
-     * @param badge_url_resolver $resolver The URL resolver.
-     * @param string|null $name The name.
+     * @return url|null
      */
-    public function __construct($level, $xprequired, $desc, badge_url_resolver $resolver, $name = null) {
-        parent::__construct($level, $xprequired, $desc, $name);
-        $this->resolver = $resolver;
-    }
+    public function get_link();
 
     /**
-     * Get the badge URL.
+     * Get the name of the subject.
      *
-     * @return moodle_url|null
+     * @return string
      */
-    public function get_badge_url() {
-        return $this->resolver->get_url_for_level($this->get_level());
-    }
+    public function get_name();
+
+    /**
+     * Get the picture as a URL.
+     *
+     * @return url|null
+     */
+    public function get_picture();
 
 }

@@ -455,6 +455,44 @@ function xmldb_block_xp_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2019020302, 'xp');
     }
 
-    return true;
+    if ($oldversion < 2019120200) {
 
+        // Define field category to be added to block_xp_filters.
+        $table = new xmldb_table('block_xp_filters');
+        $field = new xmldb_field('category', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'courseid');
+
+        // Conditionally launch add field category.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2019120200, 'xp');
+    }
+
+    if ($oldversion < 2019120300) {
+
+        // Define index courseidcat (not unique) to be added to block_xp_filters.
+        $table = new xmldb_table('block_xp_filters');
+        $index = new xmldb_index('courseidcat', XMLDB_INDEX_NOTUNIQUE, ['courseid', 'category']);
+
+        // Conditionally launch add index courseidcat.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2019120300, 'xp');
+    }
+
+    if ($oldversion < 2020043001) {
+
+        // For the first time since 2015, display previously dismissed notices.
+        $DB->delete_records('user_preferences', ['name' => 'block_xp_notices']);
+
+        // Xp savepoint reached.
+        upgrade_block_savepoint(true, 2020043001, 'xp');
+    }
+
+    return true;
 }
