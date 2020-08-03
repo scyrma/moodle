@@ -1051,6 +1051,11 @@ abstract class restore_dbops {
 
                 // Some file types do not include the files as they should already be
                 // present. We still need to create entries into the files table.
+                /** @uses \tool_wp\local\exportimport\wp_imported_entity::process_course_restore_file() */
+                if ($includesfiles && component_class_callback('\tool_wp\local\exportimport\wp_imported_entity',
+                        'process_course_restore_file', [$restoreid, $file_record, $file->contenthash], false)) {
+                    // Workplace migration hook.
+                } else
                 if ($includesfiles) {
                     // The file is not found in the backup.
                     if (!file_exists($backuppath)) {
