@@ -47,6 +47,10 @@ function local_moodlecloud_is_free_trial() : bool {
     return defined('MOODLECLOUD_TRIAL_START') && defined('MOODLECLOUD_TRIAL_DURATION') && is_siteadmin($USER);
 }
 
+function local_moodlecloud_add_htmlattributes() {
+    return ['class' => 'freetrial'];
+}
+
 function local_moodlecloud_before_standard_top_of_body_html() {
     if(local_moodlecloud_is_free_trial()) {
         $upgradeurl = (new moodle_url('/auth/moodlecloud/portal.php', ['gotoupgradetab' => true]))->out();
