@@ -169,6 +169,10 @@
     top: 100px !important;
 }
 
+html.freetrial .modal {
+    top: 60px !important;
+}
+
 #trialmsg {
     height: 60px;
     width: 100%;
