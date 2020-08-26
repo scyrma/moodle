@@ -63,9 +63,6 @@ class h5p_get_content_types_task extends scheduled_task {
         if (defined('BEHAT_SITE_RUNNING')) {
             return true;
         }
-        // BEGIN MOODLECLOUD HACK
-        return;
-        // END MOODLECLOUD HACK
 
         $core = $this->get_core();
 
