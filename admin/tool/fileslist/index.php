@@ -80,8 +80,7 @@ echo $OUTPUT->render_from_template(
             "filearea <> 'draft' AND " .
             "component <> 'tool_recyclebin' AND " .
             "(component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND " .
-            "component <> 'assignfeedback_editpdf' AND " .
-            "component <> 'core_h5p'"
+            "component <> 'assignfeedback_editpdf'"
         ),
         'help' => [
             'action' => $OUTPUT->help_icon('action', 'tool_fileslist')
