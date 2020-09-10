@@ -71,8 +71,7 @@ final class container {
                     "filearea <> 'draft' AND " .
                     "component <> 'tool_recyclebin' AND " .
                     "(component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND " .
-                    "component <> 'assignfeedback_editpdf' AND " .
-                    "component <> 'core_h5p' ORDER BY filesize DESC LIMIT :limit OFFSET :offset",
+                    "component <> 'assignfeedback_editpdf' ORDER BY filesize DESC LIMIT :limit OFFSET :offset",
                     [
                         'limit' => $limit,
                         'offset' => $offset,
