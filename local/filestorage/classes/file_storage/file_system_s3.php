@@ -271,11 +271,6 @@ class file_system_s3 extends \file_system {
                     'Key'           => $this->get_contentpath_from_hash($contenthash) . '_' . $dynamicsite,
                 ]
             );
-            self::log_statistic('deleted', [
-                'logmessage'    => 'File deleted from S3',
-                'contenthash'   => $contenthash,
-                'time'          => microtime_diff($start, microtime()),
-            ]);
         } catch (S3Exception $e) {
             self::log_statistic(
                 'deletefail',
@@ -355,13 +350,6 @@ class file_system_s3 extends \file_system {
                 'SaveAs'    => $temptarget,
             ));
 
-            self::log_statistic('fetched', array(
-                'logmessage'    => 'Fetched file from S3',
-                'contenthash'   => $contenthash,
-                'filesize'      => filesize($temptarget),
-                'time'          => microtime_diff($start, microtime()),
-            ));
-
             // Atomicity is nice.
             rename($temptarget, $target);
             @unlink($temptarget); // Just in case anything fails in a weird way.
@@ -406,11 +394,6 @@ class file_system_s3 extends \file_system {
             // It doesn't matter how long this presigned URL lasts as it is disposed of almost immediately.
             // It must be a sufficient period of time to allow slow reads of large files.
             $url = self::$client->createPresignedRequest($command, '+1 day');
-
-            self::log_statistic('generatedurl', array(
-                'logmessage'    => 'Generated pre-signed URL',
-                'contenthash'   => $contenthash,
-            ));
 
             return (string) $url->getUri();
         } catch (S3Exception $e) {
@@ -576,12 +559,6 @@ class file_system_s3 extends \file_system {
             if ($sizematch) {
                 // A copy of this file is already present, and it has a matching file size.
                 // No point in uploading it again so return early.
-                self::log_statistic('precheckmatch', array(
-                        'logmessage'    => 'New file matched existing file in S3',
-                        'contenthash'   => $contenthash,
-                        'filesize'      => $filesize,
-                        'time'          => microtime_diff($start, microtime()),
-                    ));
                 return $result;
             } else {
                 // There's already a key present, but it has a different file size.
@@ -625,13 +602,6 @@ class file_system_s3 extends \file_system {
                 $start = microtime();
                 // Upload the file
                 self::$client->upload(self::$bucket, $key, $fh, $acl, $options);
-                // Log about it.
-                self::log_statistic('uploaded', array(
-                    'logmessage'    => 'New file uploaded to S3',
-                    'contenthash'   => $contenthash,
-                    'filesize'      => $filesize,
-                    'time'          => microtime_diff($start, microtime()),
-                ));
 
                 // Note: No need to fclose here. The AWS API does it as part of the upload.
             }
