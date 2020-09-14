@@ -510,6 +510,12 @@ function has_capability($capability, context $context, $user = null, $doanything
         }
     }
 
+    // BEGIN MOODLECLOUD HACK.
+    if (local_moodlecloud\restrictions\capability::capability_is_restricted_by_quota($capability)) {
+        return false;
+    }
+    // END MOODLECLOUD HACK.
+
     // context path/depth must be valid
     if (empty($context->path) or $context->depth == 0) {
         // this should not happen often, each upgrade tries to rebuild the context paths
@@ -517,6 +523,16 @@ function has_capability($capability, context $context, $user = null, $doanything
         if (is_siteadmin($userid)) {
             return true;
         } else {
+            return false;
+        }
+    }
+
+    if (!empty($USER->loginascontext)) {
+        // The current user is logged in as another user and can assume their identity at or below the `loginascontext`
+        // defined in the USER session.
+        // The user may not assume their identity at any other location.
+        if (!$USER->loginascontext->is_parent_of($context, true)) {
+            // The context being checked is not the specified context, or one of its children.
             return false;
         }
     }
@@ -5587,6 +5603,30 @@ abstract class context extends stdClass implements IteratorAggregate {
     }
 
     /**
+     * Determine if the current context is a parent of the possible child.
+     *
+     * @param   context $possiblechild
+     * @param   bool $includeself Whether to check the current context
+     * @return  bool
+     */
+    public function is_parent_of(context $possiblechild, bool $includeself): bool {
+        // A simple substring check is used on the context path.
+        // The possible child's path is used as a haystack, with the current context as the needle.
+        // The path is prefixed with '+' to ensure that the parent always starts at the top.
+        // It is suffixed with '+' to ensure that parents are not included.
+        // The needle always suffixes with a '/' to ensure that the contextid uses a complete match (i.e. 142/ instead of 14).
+        // The haystack is suffixed with '/+' if $includeself is true to allow the current context to match.
+        // The haystack is suffixed with '+' if $includeself is false to prevent the current context from matching.
+        $haystacksuffix = $includeself ? '/+' : '+';
+
+        $strpos = strpos(
+            "+{$possiblechild->path}{$haystacksuffix}",
+            "+{$this->path}/"
+        );
+        return $strpos === 0;
+    }
+
+    /**
      * Returns parent contexts of this context in reversed order, i.e. parent first,
      * then grand parent, etc.
      *
@@ -5608,6 +5648,30 @@ abstract class context extends stdClass implements IteratorAggregate {
         }
 
         return $result;
+    }
+
+    /**
+     * Determine if the current context is a child of the possible parent.
+     *
+     * @param   context $possibleparent
+     * @param   bool $includeself Whether to check the current context
+     * @return  bool
+     */
+    public function is_child_of(context $possibleparent, bool $includeself): bool {
+        // A simple substring check is used on the context path.
+        // The current context is used as a haystack, with the possible parent as the needle.
+        // The path is prefixed with '+' to ensure that the parent always starts at the top.
+        // It is suffixed with '+' to ensure that children are not included.
+        // The needle always suffixes with a '/' to ensure that the contextid uses a complete match (i.e. 142/ instead of 14).
+        // The haystack is suffixed with '/+' if $includeself is true to allow the current context to match.
+        // The haystack is suffixed with '+' if $includeself is false to prevent the current context from matching.
+        $haystacksuffix = $includeself ? '/+' : '+';
+
+        $strpos = strpos(
+            "+{$this->path}{$haystacksuffix}",
+            "+{$possibleparent->path}/"
+        );
+        return $strpos === 0;
     }
 
     /**

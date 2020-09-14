@@ -1,0 +1,9 @@
+<form method="get" action="{{action}}" class="adminsearchform form-inline" role="search">
+    <div class="input-group w-100">
+        <label class="sr-only" for="adminsearchquery">{{label}}</label>
+        <input class="form-control" type="text" name="query" value="{{searchvalue}}" id="adminsearchquery">
+        <button type="submit" class="input-group-append btn btn-secondary icon-nomargin">
+        	{{#pix}}a/search, core{{/pix}}
+        </button>
+    </div>
+</form>
