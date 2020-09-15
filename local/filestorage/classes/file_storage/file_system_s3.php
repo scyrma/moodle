@@ -582,12 +582,6 @@ class file_system_s3 extends \file_system {
             } else {
                 // Only catch the NoSuchKeyException exception.
                 // There is no key here - upload the file.
-                self::log_statistic('precheckfail', array(
-                    'logmessage'    => 'Existing file not found when checking before upload',
-                    'contenthash'   => $contenthash,
-                    'filesize'      => $filesize,
-                    'time'          => microtime_diff($start, microtime()),
-                ));
 
                 // We must use a file handle here. If we were to pass the path to the sourcefile to upload, the literal
                 // string for the path would be saved as the file content.
