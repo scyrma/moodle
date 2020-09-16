@@ -40,3 +40,6 @@
 [submodule "mod_appointment"]
     path = mod/appointment
     url = git@git.in.moodle.com:workplace/moodle-mod_appointment.git
+[submodule "mod/coursecertificate"]
+	path = mod/coursecertificate
+	url = git@git.in.moodle.com:workplace/moodle-mod_coursecertificate.git
