@@ -29,6 +29,7 @@ $string['onlysiteownercanchangesettings'] = 'Only the site owner can modify thes
 $string['pluginname'] = 'MoodleCloud';
 $string['reporting_task'] = 'MoodleCloud Statistics Reporting';
 $string['touchpoint_task'] = 'MoodleCloud Touchpoints';
+$string['h5p_get_content_types_task'] = 'Download available H5P content types from h5p.org';
 $string['userquotahit'] = 'You have reached your quota for the number of users you may have on your site. To get more users, upgrade your plan using the following link https://moodlecloud.com/app/en/portal/view/{$a->sitename}/plan';
 
 $string['send_user_limit_warning'] = 'Send user limit warning';
