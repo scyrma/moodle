@@ -1,0 +1,102 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template theme_boost/flat_navigation
+
+    Display the flat navigation for the boost theme
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * flatnavigation - array of flat_navigation_nodes
+      * showdivider - boolean
+      * action - string
+      * isactive - boolean
+      * get_indent - integer
+      * is_section - boolean
+      * text - HTML
+
+    Example context (json):
+    {
+        "flatnavigation" : [
+            {
+                "showdivider": false,
+                "action": "#",
+                "isactive": true,
+                "get_indent": 1,
+                "is_section": false,
+                "text": "First"
+            },{
+                "showdivider": true,
+                "action": "#",
+                "isactive": false,
+                "get_indent": 0,
+                "is_section": true,
+                "text": "Last &amp; Second"
+            }
+        ]
+    }
+}}
+<div class="workplace-drawer-wrapper">
+<nav class="workplace-drawer-list">
+{{# flatnavigation }}
+    {{#showdivider}}
+</nav>
+<nav class="workplace-drawer-list {{key}}">
+    {{/showdivider}}
+    {{#action}}
+    <a class="drawer-item type-{{type}} {{#isactive}}active{{/isactive}}" href="{{{action}}}" data-key="{{key}}" data-isexpandable="{{isexpandable}}" data-indent="{{get_indent}}" data-showdivider="{{showdivider}}" data-type="{{type}}" data-nodetype="{{nodetype}}" data-collapse="{{collapse}}" data-forceopen="{{forceopen}}" data-isactive="{{isactive}}" data-hidden="{{hidden}}" data-preceedwithhr="{{preceedwithhr}}" {{#parent.key}}data-parent-key="{{.}}"{{/parent.key}}>
+        <div class="m-l-{{get_indent}}">
+            <div class="d-flex align-items-center">
+                {{#icon.pix}}
+                    <span class="iconcontainer {{#isactive}}active{{/isactive}}" data-toggle="tooltip" data-placement="right" title="{{{text}}}" data-container=".nav-drawer-tooltips">
+                        {{#pix}}{{{icon.pix}}}, {{{icon.component}}}, {{{icon.alt}}}{{/pix}}
+                    </span>
+                {{/icon.pix}}
+                <span class="navname text-truncate {{#isactive}}active{{/isactive}}">{{{text}}}</span>
+            </div>
+        </div>
+    </a>
+    {{/action}}
+    {{^action}}
+    <div class="drawer-item type-{{type}}" data-key="{{key}}" data-isexpandable="{{isexpandable}}" data-indent="{{get_indent}}" data-showdivider="{{showdivider}}" data-type="{{type}}" data-nodetype="{{nodetype}}" data-collapse="{{collapse}}" data-forceopen="{{forceopen}}" data-isactive="{{isactive}}" data-hidden="{{hidden}}" data-preceedwithhr="{{preceedwithhr}}" {{#parent.key}}data-parent-key="{{.}}"{{/parent.key}}>
+        <div class="m-l-{{get_indent}}">
+            <div class="d-flex">
+            {{#icon.pix}}
+                <span class="iconcontainer">
+                    {{#pix}}{{{icon.pix}}}, {{{icon.component}}}, {{{icon.alt}}}{{/pix}}
+                </span>
+            {{/icon.pix}}
+                <span class="navname text-truncate">{{{text}}}</span>
+            </div>
+        </div>
+    </div>
+    {{/action}}
+{{/ flatnavigation }}
+</nav>
+</div>

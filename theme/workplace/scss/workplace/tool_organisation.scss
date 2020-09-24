@@ -1,0 +1,70 @@
+.wp-organisation {
+    // Hiding empty headings and rows.
+    table > thead > tr > th:empty,
+    table > tbody > tr > td:empty {
+        display: none;
+    }
+    table.flexible {
+        padding: 0 1rem;
+        tbody {
+            tr {
+                background-color: transparent;
+            }
+            td {
+                border: 0;
+                padding: 0;
+            }
+        }
+    }
+
+    font-size: $font-size-menus;
+
+    .ws-toggle {
+        font-size: $font-size-menus;
+        color: $body-color;
+        text-decoration: none;
+        .icon {
+            color: $link-color;
+        }
+    }
+
+    .iconcontainer {
+        background-color: $gray010;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        text-align: center;
+        .icon {
+            color: inherit;
+        }
+    }
+    .profile_tree ul {
+        padding-left: 0;
+    }
+    .btn-circle {
+        margin: 0;
+        width: auto;
+        height: auto;
+        padding: 0.5rem 0;
+        .icon {
+            font-size: $icon-size-base;
+        }
+    }
+    .wp-jobs hr:last-child {
+        display: none;
+    }
+}
+.path-admin-tool-organisation {
+    .row.permission .checkbox {
+        position: relative;
+        left: 40px;
+        i {
+            margin-right: 7px;
+        }
+    }
+}
+.pagelayout-mydashboard {
+    .table-responsive {
+        margin: 0 1rem;
+    }
+}
