@@ -41,7 +41,11 @@ class h5p_get_content_types_task extends \core\task\scheduled_task {
     }
 
     public function execute() {
-        global $CFG, $DB;
+        global $CFG, $DB, $dynamicsite;
+
+        if (substr($dynamicsite, 0, 8) == 'template') {
+            return;
+        }
 
         autoloader::register();
 
