@@ -623,9 +623,10 @@ class file_system_s3 extends \file_system {
         }
 
         require_once($CFG->moodlecloud_template_files_path);
-        global $moodlecloud_template_files;
+        require_once($CFG->moodlecloud_h5p_files_path);
+        global $moodlecloud_template_files, $moodlecloud_h5p_files;
 
-        return in_array($contenthash, $moodlecloud_template_files) ? '' : '_' . $dynamicsite;
+        return in_array($contenthash, array_merge($moodlecloud_template_files, $moodlecloud_h5p_files)) ? '' : '_' . $dynamicsite;
     }
 
     /**
