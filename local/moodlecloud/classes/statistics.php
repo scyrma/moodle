@@ -135,8 +135,9 @@ FROM (
        AND component <> 'tool_recyclebin'
        AND (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup')
        AND component <> 'assignfeedback_editpdf'
-       AND (component <> 'core_h5p' OR filearea <> 'libraries')
-       AND (component <> 'core_h5p' OR filearea <> 'export')
+       AND component <> 'core_h5p'
+       AND component <> 'contentbank'
+       UNION SELECT filesize, contenthash from {files} WHERE (component = 'core_h5p' AND filearea = 'content' AND filesize > 0)
     {$where}
     GROUP BY filesize, contenthash
 ) AS f;
@@ -188,7 +189,10 @@ FROM (
        component <> 'tool_recyclebin' AND
        (component <> 'backup' OR mimetype <> 'application/vnd.moodle.backup') AND
        component <> 'assignfeedback_editpdf' AND
-       component <> 'core_h5p'
+       component <> 'core_h5p' AND
+       component <> 'contentbank'
+    UNION
+       SELECT filesize, regexp_replace(mimetype, '/.+\$', '') AS mimetype FROM {files} WHERE (component = 'core_h5p' AND filearea = 'content' AND filesize > 0)
     {$where}
     GROUP BY filesize, regexp_replace(mimetype, '/.+\$', ''), contenthash
 ) iq
