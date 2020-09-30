@@ -529,6 +529,9 @@ class file_system_s3 extends \file_system {
      * @throws file_pool_content_exception
      */
     private function push_to_s3($sourcefile, $contenthash = null, $filesize = null) {
+        global $CFG;
+        require_once($CFG->moodlecloud_h5p_files_path);
+
         // Note: We cannot rely on the result of $newfile as this only checks whether a file was present in filedir,
         // which may be empty.
         $key = $this->get_contentpath_from_hash($contenthash) . self::get_key_suffix_from_contenthash($contenthash);
@@ -537,6 +540,15 @@ class file_system_s3 extends \file_system {
 
         if ($filesize === 0 || is_dir($sourcefile)) {
             // We cannot push empty files or directories.
+            return $result;
+        }
+
+        global $moodlecloud_template_files, $moodlecloud_h5p_files;
+
+        // Skip H5P library files entirely. They should already be in S3, and
+        // there's so many and the API lookup overhead slows down the content
+        // types installation task.
+        if (in_array($contenthash, $moodlecloud_h5p_files)) {
             return $result;
         }
 
