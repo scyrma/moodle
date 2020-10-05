@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<footer class="py-3">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            {{#hascontacts}}
+                <div class="contact-info {{#hasleftfootnotes}}col-md-4{{/hasleftfootnotes}}{{^hasleftfootnotes}}col-md-6{{/hasleftfootnotes}}">
+                    <h4>{{#str}} contactus, theme_school {{/str}}</h4>
+                    <ul id="contact-list" class="list-unstyled">
+                        {{#address}}<li><i class="fa fa-map-marker"></i>{{.}}</li>{{/address}}
+                        {{#phone}}<li><i class="fa fa-phone"></i>{{.}}</li>{{/phone}}
+                        {{#email}}<li><i class="fa fa-envelope-o"></i>{{.}}</li>{{/email}}
+                    </ul>
+                    <ul id="social-list" class="list-unstyled">
+                        {{#twitterurl}}<li><a href="{{{.}}}" title="{{#str}} twitter, theme_school {{/str}}"><i class="fa fa-twitter"></i></a></li>{{/twitterurl}}
+                        {{#youtubeurl}}<li><a href="{{{.}}}" title="{{#str}} youtube, theme_school {{/str}}"><i class="fa fa-youtube"></i></a></li>{{/youtubeurl}}
+                        {{#facebookurl}}<li><a href="{{{.}}}" title="{{#str}} facebook, theme_school {{/str}}"><i class="fa fa-facebook"></i></a></li>{{/facebookurl}}
+                    </ul>
+                </div>
+            {{/hascontacts}}
+
+            {{{ output.get_gatc }}}
+            {{#hasleftfootnotes}}
+                <div class="{{#hascontacts}}col-md-4{{/hascontacts}}{{^hascontacts}}col-md-6{{/hascontacts}}">
+                    {{{leftfootnote}}}
+                    <p class="foot-note-links">
+                        {{#footnotelinks}}
+                            <a href="{{{url}}}">{{text}}</a>
+                            <span>|</span>
+                        {{/footnotelinks}}
+                    </p>
+                </div>
+            {{/hasleftfootnotes}}
+
+            <div class="right
+                {{#hasleftfootnotes}}
+                    {{#hascontacts}}col-md-4{{/hascontacts}}
+                    {{^hascontacts}}col-md-6{{/hascontacts}}
+                {{/hasleftfootnotes}}
+                {{^hasleftfootnotes}}
+                    {{#hascontacts}}col-md-6{{/hascontacts}}
+                    {{^hascontacts}}col-md-12{{/hascontacts}}
+                {{/hasleftfootnotes}}">
+                <div id="course-footer">{{{coursefooter}}}</div>
+                {{#footnote}}<div class="footnote text-right">{{{.}}}</div>{{/footnote}}
+                {{#footer_links}}<p class="helplink">{{{.}}}</p>{{/footer_links}}
+                {{{logininfo}}}
+                <div class="container">
+                    <div id="course-footer">{{{ output.course_footer }}}</div>
+                    <div class="tool_usertours-resettourcontainer"></div>
+                    <nav class="nav navbar-nav d-md-none" aria-label="{{#str}}custommenu, admin{{/str}}">
+                        {{# output.custom_menu_flat }}
+                            <ul class="list-unstyled pt-3">
+                                {{> theme_boost/custom_menu_footer }}
+                            </ul>
+                        {{/ output.custom_menu_flat }}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {{{ output.standard_end_of_body_html }}}
+        {{{ standardfooterhtml }}}
+    </div><!-- END of .container-fluid -->
+</footer><!-- END of footer -->
