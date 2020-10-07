@@ -41,8 +41,13 @@ class h5p_get_content_types_task extends \core\task\scheduled_task {
     }
 
     public function execute() {
-        global $CFG, $DB, $dynamicsite;
+        global $CFG, $DB;
 
+        // It would be better to use $CFG->moodlecloud_is_template here, BUT
+        // that only works if the site is on template-web - which happens after
+        // pressing the "make this site a template" button (or the update template button, not sure)
+        // So before the site is turned in to a template, it's possible cron could run. Which would
+        // pollute the DB with H5P files.
         if (substr($dynamicsite, 0, 8) == 'template') {
             return;
         }
