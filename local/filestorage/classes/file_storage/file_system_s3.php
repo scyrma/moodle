@@ -246,7 +246,8 @@ class file_system_s3 extends \file_system {
     public function remove_file($contenthash) {
         global $CFG, $dynamicsite;
         require_once($CFG->moodlecloud_template_files_path);
-        global $moodlecloud_template_files;
+        require_once($CFG->moodlecloud_h5p_files_path);
+        global $moodlecloud_template_files, $moodlecloud_h5p_files;
 
         // Never ever delete template files from a template site.
         if (isset($CFG->moodlecloud_is_template)) {
@@ -258,8 +259,8 @@ class file_system_s3 extends \file_system {
             return;
         }
 
-        if (in_array($contenthash, $moodlecloud_template_files)) {
-            // Never remove template files.
+        if (in_array($contenthash, array_merge($moodlecloud_template_files, $moodlecloud_h5p_files))) {
+            // Never remove template files or H5P files.
             return;
         }
 
