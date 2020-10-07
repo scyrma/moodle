@@ -345,7 +345,8 @@ class auth_plugin_db extends auth_plugin_base {
                         $updateuser = new stdClass();
                         $updateuser->id   = $user->id;
                         $updateuser->suspended = 1;
-                        user_update_user($updateuser, false);
+                        $updateuser = core_user::clean_data($updateuser);
+                        user_update_user($updateuser, false, true, false);
                         $trace->output(get_string('auth_dbsuspenduser', 'auth_db', array('name'=>$user->username, 'id'=>$user->id)), 1);
                     }
                 }
@@ -439,7 +440,8 @@ class auth_plugin_db extends auth_plugin_base {
                         $updateuser = new stdClass();
                         $updateuser->id = $olduser->id;
                         $updateuser->suspended = 0;
-                        user_update_user($updateuser);
+                        $updateuser = core_user::clean_data($updateuser);
+                        user_update_user($updateuser, true, true, false);
                         $trace->output(get_string('auth_dbreviveduser', 'auth_db', array('name' => $username,
                             'id' => $olduser->id)), 1);
                         continue;
