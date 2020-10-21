@@ -64,3 +64,5 @@ $string['storage'] = 'Storage';
 $string['unlimited'] = '∞';
 $string['tenantusage'] = 'Total tenants used';
 $string['freetrialmessage'] = 'Your MoodleCloud Free Trial will expire on {$a->date}. <a href="{$a->url}">Upgrade now</a> to keep this site active.';
+
+$string['invalidsessiontimeout'] = 'Session timeout must not be less than 5 minutes';
