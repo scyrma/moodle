@@ -3919,6 +3919,14 @@ class admin_setting_configduration extends admin_setting {
      * @since Moodle 3.10
      */
     protected function validate_setting(int $data): string {
+        // BEGIN MOODLECLOUD HACK
+        // This could be done the same way as sessiontimeoutwarning does it
+        // in admin/settings/server, but if we do it this way when core
+        // (possibly) add their own, it won't conflict.
+        if ($data < 5 * 60 && $this->name == 'sessiontimeout') {
+            return get_string('invalidsessiontimeout', 'local_moodlecloud');
+        }
+        //END MOODLECLOUD HACK
         // If validation function is specified, call it now.
         if ($this->validatefunction) {
             return call_user_func($this->validatefunction, $data);
