@@ -4138,11 +4138,36 @@ class admin_setting_configiplist extends admin_setting_configtextarea {
                 $badips[] = $ip;
             }
         }
-        if($result) {
-            return true;
-        } else {
+
+        // BEGIN MOODLECLOUD HACK
+        if(!$result) {
             return get_string('validateiperror', 'admin', join(', ', $badips));
         }
+
+        $notallowedips = array_filter(
+            array_map(
+                function($line) {
+                    return trim(explode('#', $line)[0]);
+                },
+                explode("\n", $data)
+            ),
+            function($ip) {
+                global $CFG;
+                return !empty(array_filter(
+                    $CFG->moodlecloud_disallowed_ip_whitelist_values,
+                    function($notallowedip) use ($ip) {
+                        return strpos($ip, $notallowedip) === 0;
+                    }
+                ));
+            }
+        );
+
+        if (!empty($notallowedips)) {
+            return get_string('validateiperror', 'local_moodlecloud', join(', ', $notallowedips));
+        }
+
+        return true;
+        // END MOODLECLOUD HACK
     }
 }
 
