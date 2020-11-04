@@ -76,6 +76,7 @@ class statistics {
                 // This does include system users (guest).
                 'total'         => self::get_user_count(),
                 'deleted'       => self::get_user_count(1),
+                'suspended'       => self::get_user_count(null, 1),
                 'lastaccess'    => $uniquelastaccess,
             );
 
@@ -208,7 +209,7 @@ EOF;
         return $data;
     }
 
-    public static function get_user_count($deleted = null) {
+    public static function get_user_count($deleted = null, $suspended = null) {
         global $DB;
         $params = array();
 
@@ -219,6 +220,11 @@ EOF;
         if (null !== $deleted) {
             $where .= ' AND deleted = ?';
             $params[] = $deleted;
+        }
+
+        if (null !== $suspended) {
+            $where .= ' AND suspended = ?';
+            $params[] = $suspended;
         }
 
         return $DB->count_records_select('user', $where, $params);
