@@ -113,6 +113,6 @@ class userquota {
 
     public static function get_user_count() {
         global $DB;
-        return $DB->count_records_select('user', 'deleted = ? AND username <> ?', array(0, 'guest'));
+        return $DB->count_records_select('user', 'deleted = ? AND suspended = ? AND username <> ?', array(0, 0, 'guest'));
     }
 }
