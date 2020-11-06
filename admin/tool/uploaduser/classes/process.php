@@ -846,6 +846,11 @@ class process {
             }
 
             if ($doupdate or $existinguser->password !== $oldpw) {
+                /** @uses \tool_wp\tool_uploaduser::can_update_user() */
+                if (!component_class_callback('tool_wp\tool_uploaduser', 'can_update_user', [$existinguser, $this->get_file_columns(), $this->upt], true)) {
+                    $this->upt->track('tool_wp', get_string('cannotupdateuser', 'error'), 'error');
+                    return;
+                }
                 // We want only users that were really updated.
                 user_update_user($existinguser, false, false);
 
@@ -878,6 +883,12 @@ class process {
                         $SESSION->bulk_users[] = $user->id;
                     }
                 }
+            }
+
+            /** @uses \tool_wp\tool_uploaduser::process_updated_user() */
+            if (!component_class_callback('tool_wp\tool_uploaduser', 'process_updated_user', [$user, $this->get_file_columns(), $this->upt], true)) {
+                $this->upt->track('tool_wp', get_string('cannotupdateuser', 'error'), 'error');
+                return;
             }
 
             if ($dologout) {
@@ -982,6 +993,13 @@ class process {
                 $this->upt->track('password', '-', 'normal', false);
             }
 
+            /** @uses \tool_wp\tool_uploaduser::can_create_user() */
+            if (!component_class_callback('tool_wp\tool_uploaduser', 'can_create_user', [$user, $this->get_file_columns(), $this->upt], true)) {
+                $this->upt->track('tool_wp', get_string('usernotaddederror', 'error'), 'error');
+                $this->userserrors++;
+                return;
+            }
+
             $user->id = user_create_user($user, false, false);
             $this->upt->track('username', \html_writer::link(
                 new \moodle_url('/user/profile.php', ['id' => $user->id]), s($user->username)), 'normal', false);
@@ -1013,6 +1031,9 @@ class process {
                     $SESSION->bulk_users[] = $user->id;
                 }
             }
+
+            /** @uses \tool_wp\tool_uploaduser::process_new_user() */
+            component_class_callback('tool_wp\tool_uploaduser', 'process_new_user', [$user, $this->get_file_columns(), $this->upt]);
         }
 
         // Update user interests.
@@ -1291,6 +1312,11 @@ class process {
                 }
             }
         }
+
+        /** @uses \tool_wp\tool_uploaduser::process_user_after_enrol() */
+        component_class_callback('tool_wp\tool_uploaduser', 'process_user_after_enrol',
+            [$user, $this->get_file_columns(), $this->upt, &$this->ccache]);
+
         if (($invalid = \core_user::validate($user)) !== true) {
             $this->upt->track('status', get_string('invaliduserdata', 'tool_uploaduser', s($user->username)), 'warning');
         }
