@@ -67,6 +67,7 @@ class file_storage implements \H5PFileStorage {
         // Currently everything uses the system context.
         $this->context = \context_system::instance();
         $this->fs = get_file_storage();
+        $this->librarycache = \cache::make('core', 'h5p_library_files');
     }
 
     /**
@@ -561,13 +562,22 @@ class file_storage implements \H5PFileStorage {
      * @param  array $library Library details
      */
     public function delete_library(array $library): void {
+        global $DB;
 
         // A library ID of false would result in all library files being deleted, which we don't want. Return instead.
         if ($library['libraryId'] === false) {
             return;
         }
 
+        $areafiles = $this->fs->get_area_files($this->context->id, self::COMPONENT, self::LIBRARY_FILEAREA, $library['libraryId']);
         $this->delete_directory($this->context->id, self::COMPONENT, self::LIBRARY_FILEAREA, $library['libraryId']);
+        foreach ($areafiles as $file) {
+            if (!$DB->record_exists('files', array('contenthash' => $file->get_contenthash(),
+                                                   'component' => self::COMPONENT,
+                                                   'filearea' => self::LIBRARY_FILEAREA))) {
+                $this->librarycache->delete($file->get_contenthash());
+            }
+        }
     }
 
     /**
@@ -607,7 +617,13 @@ class file_storage implements \H5PFileStorage {
                     $options['filepath'] = $root;
                 }
 
-                $this->fs->create_file_from_pathname($options, $item->getPathName());
+                $file = $this->fs->create_file_from_pathname($options, $item->getPathName());
+
+                if ($options['filearea'] == self::LIBRARY_FILEAREA) {
+                    if (!$this->librarycache->has($file->get_contenthash())) {
+                        $this->librarycache->set($file->get_contenthash(), file_get_contents($item->getPathName()));
+                    }
+                }
             }
             $it->next();
         }
@@ -634,7 +650,17 @@ class file_storage implements \H5PFileStorage {
             if ($file->is_directory()) {
                 check_dir_exists(rtrim($path));
             } else {
-                $file->copy_content_to($path . $file->get_filename());
+                if ($filearea == self::LIBRARY_FILEAREA) {
+                    $cachedfile = $this->librarycache->get($file->get_contenthash());
+                    if (empty($cachedfile)) {
+                        $file->copy_content_to($path . $file->get_filename());
+                        $this->librarycache->set($file->get_contenthash(), file_get_contents($path . $file->get_filename()));
+                    } else {
+                        file_put_contents($path . $file->get_filename(), $cachedfile);
+                    }
+                } else {
+                    $file->copy_content_to($path . $file->get_filename());
+                }
             }
         }
     }
