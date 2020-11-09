@@ -79,17 +79,7 @@ class h5p_get_content_types_task extends \core\task\scheduled_task {
                 if (file_exists($librarysourcepath)) {
                     $file = $fs->create_file_from_pathname($libraryfileinfo, $librarysourcepath);
                 } else {
-                    // Download the latest content type from the H5P official repository.
-                    $file = $fs->create_file_from_url(
-                        $libraryfileinfo,
-                        $this->get_api_endpoint($library['machineName']),
-                        null,
-                        true
-                    );
-
-                    if (!$file) {
-                        return null;
-                    }
+                    return null;
                 }
 
                 helper::save_h5p($factory, $file, (object) [], false, true);
