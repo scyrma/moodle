@@ -84,6 +84,23 @@ In order to work on the plugin development, just `cd` to plugin directory and
 treat it as independent git repo (you can switch branches, push upstream, this
 will not affect main workplace repo in any way).
 
+#### Pushing branches upstream
+
+We are using a workflow where developer push the feature branch to `origin`
+(plugin repo) and then creates MR to `master` branch, which triggers GitLab CI
+for the branch.
+
+Creating MRs can be done automatically if push options are passed. It is
+possible to create git alias as shortcut to the list of push options:
+
+```
+git config --global alias.pushmr '!f() { git push -o merge_request.create -o merge_request.remove_source_branch -o merge_request.title="$1" origin HEAD; }; f'
+```
+
+It allows developer to push new branch (current branch to `origin`) and create
+MR at the same time by running `git pushmr "This is MR title"` in the command line.
+
+
 ### Useful tips when working with submodules
 
 1.  Commands `git diff` and `git status` on the main repository can be used with `--ignore-submodules`
