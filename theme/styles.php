@@ -86,7 +86,8 @@ $etag = theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg);
 // BEGIN MOODLECLOUD HACK
 if (!$CFG->moodlecloud_scss_enabled) {
     global $clusterconfig;
-    $sheetname = ($usesvg ? 'svg_' : 'nosvg_') . ($type == 'all' ? 'ltr_' : 'rtl_') . $cluterconfig['siteversion'] . '.css';
+    $version = filter_var($clusterconfig['siteversion'], FILTER_SANITIZE_NUMBER_INT);
+    $sheetname = ($usesvg ? 'svg_' : 'nosvg_') . ($type == 'all' ? 'ltr_' : 'rtl_') . $themename . '_' . $version . '.css';
     $candidatesheet = '/var/www/css/' . $sheetname;
 }
 // END MOODLECLOUD HACK
