@@ -9,7 +9,7 @@ before_script:
   - export SHORT_VERSION=`echo $MOODLE_VERSION |sed -e 's/\.//g'`
 
 variables:
-  MOODLE_VERSION: "3.9.2"
+  MOODLE_VERSION: "3.10.1"
   PUSH_REPO: "git@git.in.moodle.com:hosting/moodle.git"
 
 stages:
