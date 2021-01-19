@@ -1,0 +1,136 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_tenant/users_list
+
+    Moodle template for a single select submit form.
+
+    Example context (json):
+    {
+        "adduser": true,
+        "systemcontextid": 1,
+        "tenantid": 10,
+        "bulkactionsselect": {
+            "name": "lang",
+            "method": "get",
+            "action": "http://localhost/stable_master/mod/scorm/player.php",
+            "classes": "langmenu",
+            "label": "Zombies are coming...",
+            "disabled": false,
+            "title": null,
+            "formid": "randomid",
+            "id": "single_select5833dd4f4b08d108",
+            "params": [
+                {
+                    "name": "scoid",
+                    "value": "12"
+                },
+                {
+                    "name": "cm",
+                    "value": "15"
+                },
+                {
+                    "name": "mode",
+                    "value": "review"
+                },
+                {
+                    "name": "currentorg",
+                    "value": "eXeMapADrive4823c6301cf72b22b72"
+                }
+            ],
+            "options": [
+                {
+                    "value": "en",
+                    "name": "English ‎(en)‎",
+                    "selected": true,
+                    "optgroup": false
+                },
+                {
+                    "value": "ar",
+                    "name": "Muhaaaa..",
+                    "selected": false,
+                    "optgroup": false
+                }
+            ],
+            "labelattributes": [],
+            "helpicon": false
+        }
+    }
+}}
+<div id="tool_tenant-users">
+{{> tool_wp/tab_heading }}
+
+<div class="clearfix">
+    {{{userslist}}}
+</div>
+
+{{#bulkactionsselect}}
+<div class="clearfix">
+    <form method="POST" action="{{action}}" id="{{formid}}">
+        <div class="{{classes}} d-inline-block">
+            {{#params}}
+                <input type="hidden" name="{{name}}" value="{{value}}">
+            {{/params}}
+            {{#label}}
+                <label for="{{id}}"{{#labelattributes}} {{name}}="{{value}}"{{/labelattributes}}>
+                {{{label}}}
+                </label>
+            {{/label}}
+            {{#helpicon}}
+                {{>core/help_icon}}
+            {{/helpicon}}
+            <select {{#attributes}}{{name}}="{{value}}" {{/attributes}} id="{{id}}" class="custom-select {{classes}}" name="{{name}}">
+            {{#options}}
+                {{#optgroup}}
+                    <optgroup label="{{name}}">
+                        {{#options}}
+                            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
+                        {{/options}}
+                    </optgroup>
+                {{/optgroup}}
+                {{^optgroup}}
+                    <option {{ignore}} value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
+                {{/optgroup}}
+            {{/options}}
+            </select>
+            <noscript>
+                <input type="submit" class="btn btn-secondary" value="{{#str}}go, core{{/str}}">
+            </noscript>
+        </div>
+    </form>
+</div>
+{{/bulkactionsselect}}
+</div>
+
+{{#js}}
+    M.util.js_pending('tool_tenant_users_list');
+    require(['tool_tenant/users'], function(Users) {
+        // We conditionally display the JavaScript if the variables are available.
+        {{#bulkactionsselect}}
+            Users.initBulkActions('#{{formid}}', {{tenantid}});
+        {{/bulkactionsselect}}
+        Users.init({{tenantid}}{{#adduser}}, true{{/adduser}});
+        M.util.js_complete('tool_tenant_users_list');
+    });
+{{/js}}
