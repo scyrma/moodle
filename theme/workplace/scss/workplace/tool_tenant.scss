@@ -1,0 +1,11 @@
+.path-admin-tool-tenant {
+    textarea[name="customcss"],
+    textarea[name="footertext"] {
+        width: 100%;
+        min-height: 300px;
+    }
+}
+
+.navbar .tenantswitch .icon {
+    font-size: small;
+}
