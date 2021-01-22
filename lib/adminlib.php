@@ -3871,7 +3871,7 @@ class admin_setting_configduration extends admin_setting {
         }
 
         // BEGIN MOODLECLOUD HACK
-        if ($seconds < 5 * 60) {
+        if ($seconds < 5 * 60 && $this->name == 'sessiontimeout') {
             return get_string('invalidsessiontimeout', 'local_moodlecloud');
         }
         //END MOODLECLOUD HACK
