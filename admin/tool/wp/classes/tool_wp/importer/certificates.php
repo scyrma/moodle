@@ -33,6 +33,8 @@
 
 namespace tool_wp\tool_wp\importer;
 
+use core_course_category;
+use core\output\notification;
 use tool_certificate\permission;
 use tool_certificate\persistent\element;
 use tool_certificate\persistent\page;
@@ -42,8 +44,6 @@ use tool_tenant\tenant;
 use tool_wp\importer_base;
 use tool_wp\local\exportimport\forms\import_settings_form;
 use tool_wp\local\exportimport\wp_imported_entity;
-
-defined('MOODLE_INTERNAL') || die;
 
 /**
  * Class certificates
@@ -192,6 +192,8 @@ class certificates extends importer_base {
      * @param import_settings_form $form
      */
     public function add_to_options_form(import_settings_form $form): void {
+        global $OUTPUT;
+
         $mform = $form->get_quick_form();
         $mform->addElement('header', 'headercertificates', $this->get_name());
         $mform->setExpanded('headercertificates');
@@ -241,22 +243,37 @@ class certificates extends importer_base {
             if (has_capability('tool/certificate:manage', $systemcontext)) {
                 $categories += [0 => get_string('none')];
             }
-            $categories += \core_course_category::make_categories_list('moodle/course:create');
+            $categories += core_course_category::make_categories_list('tool/certificate:manage');
         } else {
             $categories = self::make_tenant_categories_list($tenantid);
         }
 
-        $mform->addElement('select', self::IMPORT_SELECT_CATEGORY, get_string('selectcoursecategory', 'tool_wp'), $categories)
-            ->setHiddenLabel(true);
+        // We need to ensure the select element is always added so it's reported in CLI & WS tools. If there are no categories
+        // then add a warning and hide the form element (add 'd-none' class).
+        if (empty($categories)) {
+            $mform->addElement('static', 'nocategoriesavailable', '', $OUTPUT->render(
+                (new notification(get_string('nocategoriesavailable', 'tool_wp'), notification::NOTIFY_ERROR))
+                    ->set_show_closebutton(false)
+                )
+            );
+
+            $selectcategoryattr = ['class' => 'd-none'];
+        } else {
+            $selectcategoryattr = [];
+        }
+
+        $mform->addElement('select', self::IMPORT_SELECT_CATEGORY, get_string('selectcoursecategory', 'tool_wp'), $categories,
+            $selectcategoryattr)->setHiddenLabel(true);
         if ($tenantid && ($tenantcategory = tenancy::get_tenants()[$tenantid]->categoryid)) {
             $mform->setDefault(self::IMPORT_SELECT_CATEGORY, $tenantcategory);
         }
-        $mform->addRule(self::IMPORT_SELECT_CATEGORY, null, 'required', null, 'client');
 
         // Manage course categories link.
-        $manageurl = new \moodle_url('/course/management.php');
-        $html = \html_writer::link($manageurl, get_string('managecoursecategories', 'tool_wp'));
-        $mform->addElement('static', 'managecategories', '', $html);
+        if (core_course_category::has_capability_on_any('moodle/category:manage')) {
+            $manageurl = new \moodle_url('/course/management.php');
+            $html = \html_writer::link($manageurl, get_string('managecoursecategories', 'tool_wp'));
+            $mform->addElement('static', 'managecategories', '', $html);
+        }
 
         $form->add_validation_callback([$this, 'validate_options_form']);
     }
@@ -275,6 +292,20 @@ class certificates extends importer_base {
             $errors[self::IMPORT_SELECTED_TEMPLATES] = get_string('selectatleastonetemplate', 'tool_wp');
         }
 
+        // Check that user has restore capability on the selected destination course category. Note we differentiate between
+        // 'null' (nothing selected), '' (empty string selected) and '0' (system level).
+        if (($data[self::IMPORT_SELECT_CATEGORY] ?? '') === '') {
+            $errors[self::IMPORT_SELECT_CATEGORY] = get_string('err_required', 'form');
+        } else {
+            $context = $data[self::IMPORT_SELECT_CATEGORY] == 0
+                ? \context_system::instance()
+                : \context_coursecat::instance($data[self::IMPORT_SELECT_CATEGORY]);
+
+            if (!permission::can_manage($context)) {
+                $errors[self::IMPORT_SELECT_CATEGORY] = get_string('nopermissioncategoryimport', 'tool_wp');
+            }
+        }
+
         return $errors;
     }
 
@@ -290,14 +321,16 @@ class certificates extends importer_base {
         if (!$categoryid) {
             return [];
         }
-        $tenantcategory = \core_course_category::get($categoryid);
-        $allcategories = \core_course_category::make_categories_list('moodle/course:create');
-        $categories[$tenantcategory->id] = $tenantcategory->get_formatted_name();
-        foreach ($tenantcategory->get_children() as $category) {
-            $categories[$category->id] = $allcategories[$category->id];
-        }
 
-        return $categories;
+        $allcategories = core_course_category::make_categories_list('tool/certificate:manage');
+        $tenantcategory = core_course_category::get($categoryid);
+
+        // We need to return the intersection of all categories user has appropriate capability, and tenant category children.
+        $tenantcategories = array_intersect_key($allcategories,
+            array_flip($tenantcategory->get_all_children_ids()));
+
+        return [$tenantcategory->id => $tenantcategory->get_formatted_name()]
+            + $tenantcategories;
     }
 
     /**

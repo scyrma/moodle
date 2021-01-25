@@ -85,8 +85,11 @@
 {{#js}}
     require(['tool_wp/import_export'], function(s) {
         s.initImport('[data-region=newimport]');
-    {{#stage6}}
-        M.core_formchangechecker.set_form_submitted();
-    {{/stage6}}
+
+        {{#stage6}}
+        if (typeof M.core_formchangechecker !== 'undefined') {
+            M.core_formchangechecker.set_form_submitted();
+        }
+        {{/stage6}}
     });
 {{/js}}

@@ -33,11 +33,11 @@
 
 namespace tool_wp\local\exportimport\forms;
 
+use core_collator;
+use core\output\notification;
 use tool_tenant\tenancy;
 use tool_wp\exporter_base;
 use tool_wp\local\exportimport\helper;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Step 1. Select exporter
@@ -60,6 +60,18 @@ class exporter_selector_form extends export_base_form {
 
         $mform = $this->_form;
 
+        // Get list of available exporters, it empty then notify user and exit early.
+        $exporters = helper::get_all_exporters();
+        if (empty($exporters)) {
+            $mform->addElement('html', $OUTPUT->render(
+                (new notification(get_string('exportersunavailable', 'tool_wp'), notification::NOTIFY_ERROR))
+                    ->set_show_closebutton(false)
+                )
+            );
+
+            return;
+        }
+
         $mform->addElement('header', 'exporterheader', get_string('selectexporter', 'tool_wp'));
 
         $mform->addElement('hidden', 'entrypoint');
@@ -70,8 +82,7 @@ class exporter_selector_form extends export_base_form {
 
         $elements = [];
 
-        $exporters = helper::get_all_exporters();
-        \core_collator::asort_objects_by_method($exporters, 'get_name');
+        core_collator::asort_objects_by_method($exporters, 'get_name');
         foreach ($exporters as $plugin) {
             $type = $plugin->is_format(exporter_base::FORMAT_WORKPLACE) ? get_string('csvwpcolumn', 'tool_wp') : '';
             $exporterdesc = $OUTPUT->render_from_template('tool_wp/exporterimporter_selector', ['name' => $plugin->get_name(),

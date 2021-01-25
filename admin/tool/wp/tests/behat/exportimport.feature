@@ -227,6 +227,16 @@ Feature: Export and import workflows
     And I press "Next"
     And the "disabled" attribute of "Export" "button" should contain "disabled"
 
+  Scenario: A user with no available exporters cannot create an export
+    Given "1" tenants exist with "2" users and "0" courses in each
+    And the following "permission overrides" exist:
+      | capability              | permission | role | contextlevel | reference |
+      | tool/wp:useexportimport | Allow      | user | System       |           |
+    When I log in as "user11"
+    And I navigate to "Migration" in workplace launcher
+    And I press "Export"
+    Then I should see "There are no available exporters for you to use"
+
   @_file_upload
   Scenario: Checking import button is disabled in import wizard with no instances to import
     Given "2" tenants exist with "4" users and "0" courses in each

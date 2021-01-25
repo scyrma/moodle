@@ -636,13 +636,13 @@ class tool_wp_export_import_courses_testcase extends advanced_testcase {
             [coursesimporter::IMPORT_SELECT_CATEGORY => get_string('err_required', 'form')],
             $form->get_quick_form()->_errors);
 
-        // Submitting an import form with a non-existing category.
+        // Submitting an import form with a non-existing category (the form will remove invalid values).
         $importid = $this->wpgenerator->prepare_import_from_export_id($exportid);
         $settings = [coursesimporter::IMPORT_SELECT_CATEGORY => $cat->id + 1];
         $form = $this->wpgenerator->submit_import_form($importid, 3, $settings);
         $this->assertFalse($form->is_validated());
         $this->assertEquals(
-            [coursesimporter::IMPORT_SELECT_CATEGORY => 'You don\'t have permission to restore on this category.'],
+            [coursesimporter::IMPORT_SELECT_CATEGORY => get_string('err_required', 'form')],
             $form->get_quick_form()->_errors);
 
         // Submitting an import form without errors, make sure all default values apply.

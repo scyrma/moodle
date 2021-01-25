@@ -77,8 +77,11 @@
 {{#js}}
     require(['tool_wp/import_export'], function(s) {
         s.initExport('[data-region=newexport]');
+
         {{#stage4}}
+        if (typeof M.core_formchangechecker !== 'undefined') {
             M.core_formchangechecker.set_form_submitted();
+        }
         {{/stage4}}
     });
 {{/js}}

@@ -681,13 +681,14 @@ class cli_helper {
      * Prepare export settings form
      *
      * @param array $submitteddata
+     * @param \stdClass|null $tenant
      * @return export_settings_form
      */
-    protected function prepare_export_form(array $submitteddata = []): export_settings_form {
+    protected function prepare_export_form(array $submitteddata = [], ?\stdClass $tenant = null): export_settings_form {
         global $USER;
         $formdata = [
             'exporter' => get_class($this->exporter),
-            'exportertenant' => 0,
+            'exportertenant' => $tenant->id ?? 0,
             'entrypoint' => '',
             'entrypointid' => 0,
         ] + $submitteddata;
@@ -710,7 +711,7 @@ class cli_helper {
      */
     public function perform_export(?\stdClass $tenant = null): int {
         list($dirname, $filename) = $this->get_export_destination();
-        $form = $this->prepare_export_form($this->get_exporter_settings(false));
+        $form = $this->prepare_export_form($this->get_exporter_settings(false), $tenant);
 
         if (!$form->is_validated()) {
             $errors = $form->get_quick_form()->_errors;

@@ -33,6 +33,8 @@
 
 namespace tool_wp\tool_wp\importer;
 
+use core\output\notification;
+use core_course_category;
 use tool_tenant\tenancy;
 use tool_tenant\tenant;
 use tool_wp\importer_base;
@@ -229,6 +231,8 @@ class coursecategories extends importer_base {
      * @param import_settings_form $form
      */
     public function add_to_options_form(import_settings_form $form): void {
+        global $OUTPUT;
+
         $mform = $form->get_quick_form();
         $mform->addElement('header', 'headercontent', get_string('content', 'tool_wp'));
         $mform->setExpanded('headercontent');
@@ -285,28 +289,43 @@ class coursecategories extends importer_base {
         $mform->setType(self::IMPORT_SELECT_COURSE_CATEGORIES, PARAM_INT);
         $mform->hideIf(self::IMPORT_SELECT_COURSE_CATEGORIES, self::IMPORT_INSTANCES, 'noteq', self::IMPORT_INSTANCES_SELECTED);
 
-        // Manage course categories link.
-        $manageurl = new \moodle_url('/course/management.php');
-        $html = \html_writer::link($manageurl, get_string('managecoursecategories', 'tool_wp'));
-        $mform->addElement('static', 'managecategories', '', $html);
-
         $mform->addElement('header', 'destination', get_string('parentcategory'));
         $mform->setExpanded('destination');
 
         // Destination category picker. If tenant is specified only show categories for this tenant.
         $tenantid = $this->get_import_tenant_id();
         if (!$tenantid) {
-            $categories = [0 => get_string('top')] + \core_course_category::make_categories_list('moodle/course:create');
+            $categories = [0 => get_string('top')] + core_course_category::make_categories_list('moodle/category:manage');
         } else {
             $categories = self::make_tenant_categories_list($tenantid);
         }
 
-        $mform->addElement('select', self::IMPORT_SELECT_CATEGORY, get_string('selectcoursecategory', 'tool_wp'), $categories)
-            ->setHiddenLabel(true);
+        // We need to ensure the select element is always added so it's reported in CLI & WS tools. If there are no categories
+        // then add a warning and hide the form element (add 'd-none' class).
+        if (empty($categories)) {
+            $mform->addElement('static', 'nocategoriesavailable', '', $OUTPUT->render(
+                (new notification(get_string('nocategoriesavailable', 'tool_wp'), notification::NOTIFY_ERROR))
+                    ->set_show_closebutton(false)
+                )
+            );
+
+            $selectcategoryattr = ['class' => 'd-none'];
+        } else {
+            $selectcategoryattr = [];
+        }
+
+        $mform->addElement('select', self::IMPORT_SELECT_CATEGORY, get_string('selectcoursecategory', 'tool_wp'), $categories,
+            $selectcategoryattr)->setHiddenLabel(true);
         if ($tenantid && ($tenantcategory = tenancy::get_tenants()[$tenantid]->categoryid)) {
             $mform->setDefault(self::IMPORT_SELECT_CATEGORY, $tenantcategory);
         }
-        $mform->addRule(self::IMPORT_SELECT_CATEGORY, null, 'required', null, 'client');
+
+        // Manage course categories link.
+        if (core_course_category::has_capability_on_any('moodle/category:manage')) {
+            $manageurl = new \moodle_url('/course/management.php');
+            $html = \html_writer::link($manageurl, get_string('managecoursecategories', 'tool_wp'));
+            $mform->addElement('static', 'managecategories', '', $html);
+        }
 
         $form->add_validation_callback([$this, 'validate_options_form']);
     }
@@ -323,14 +342,16 @@ class coursecategories extends importer_base {
         if (!$categoryid) {
             return [];
         }
-        $tenantcategory = \core_course_category::get($categoryid);
-        $allcategories = \core_course_category::make_categories_list('moodle/course:create');
-        $categories[$tenantcategory->id] = $tenantcategory->get_formatted_name();
-        foreach ($tenantcategory->get_children() as $category) {
-            $categories[$category->id] = $allcategories[$category->id];
-        }
 
-        return $categories;
+        $allcategories = core_course_category::make_categories_list('moodle/category:manage');
+        $tenantcategory = core_course_category::get($categoryid);
+
+        // We need to return the intersection of all categories user has appropriate capability, and tenant category children.
+        $tenantcategories = array_intersect_key($allcategories,
+            array_flip($tenantcategory->get_all_children_ids()));
+
+        return [$tenantcategory->id => $tenantcategory->get_formatted_name()]
+            + $tenantcategories;
     }
 
     /**
@@ -367,13 +388,18 @@ class coursecategories extends importer_base {
             $errors[self::IMPORT_SELECT_COURSE_CATEGORIES] = get_string('selectatleastonecourse', 'tool_wp');
         }
 
-        // Check that user has restore capability on the selected destination course category.
-        $context = !empty($data[self::IMPORT_SELECT_CATEGORY])
-            ? \context_coursecat::instance($data[self::IMPORT_SELECT_CATEGORY])
-            : \context_system::instance();
+        // Check that user has restore capability on the selected destination course category. Note we differentiate between
+        // 'null' (nothing selected) and '0' (top level category).
+        if ($data[self::IMPORT_SELECT_CATEGORY] === null) {
+            $errors[self::IMPORT_SELECT_CATEGORY] = get_string('err_required', 'form');
+        } else {
+            $context = $data[self::IMPORT_SELECT_CATEGORY] == 0
+                ? \context_system::instance()
+                : \context_coursecat::instance($data[self::IMPORT_SELECT_CATEGORY]);
 
-        if (!has_all_capabilities(['moodle/course:create', 'moodle/restore:restorecourse'], $context)) {
-            $errors[self::IMPORT_SELECT_CATEGORY] = get_string('nopermissioncategoryrestore', 'tool_wp');
+            if (!has_capability('moodle/category:manage', $context)) {
+                $errors[self::IMPORT_SELECT_CATEGORY] = get_string('nopermissioncategoryimport', 'tool_wp');
+            }
         }
 
         return $errors;

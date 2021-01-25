@@ -567,7 +567,7 @@ class tool_wp_export_import_cli_testcase extends advanced_testcase {
         ]);
         $othercohort = $this->getDataGenerator()->create_cohort([
             'contextid' => context_coursecat::instance($othercategory->id)->id,
-            'name' => 'Other cohort,'
+            'name' => 'Other cohort',
         ]);
 
         $clihelper = $this->construct_helper(cli_helper::EXPORT, ['--exporter=tool_wp\\tool_wp\\exporter\\cohorts']);
@@ -577,7 +577,51 @@ class tool_wp_export_import_cli_testcase extends advanced_testcase {
         $clihelper->apply_general_settings($clihelper->choose_tenant());
         $this->expectOutputRegex('/Will be exported:[\n]  Tenant cohort[\n][\n]/m');
         $clihelper->perform_export($tenant);
-        $this->assertCount(1, $DB->get_records('tool_wp_export', []));
+
+        $exports = $DB->get_records('tool_wp_export');
+        $this->assertCount(1, $exports);
+
+        $this->assertEquals($tenant->id, reset($exports)->tenantid);
+    }
+
+    /**
+     * Test creating an export using an exporter that doesn't require a tenant
+     */
+    public function test_perform_export_no_tenant(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $tenantcategory = $this->getDataGenerator()->create_category();
+        $tenant = $this->tenantgenerator->create_tenant([
+            'idnumber' => 't1',
+            'categoryid' => $tenantcategory->id,
+        ]);
+
+        $othercategory = $this->getDataGenerator()->create_category();
+
+        // Create two cohorts, one in the tenant category, one in another category.
+        $tenantcohort = $this->getDataGenerator()->create_cohort([
+            'contextid' => context_coursecat::instance($tenantcategory->id)->id,
+            'name' => 'Tenant cohort',
+        ]);
+        $othercohort = $this->getDataGenerator()->create_cohort([
+            'contextid' => context_coursecat::instance($othercategory->id)->id,
+            'name' => 'Other cohort',
+        ]);
+
+        $clihelper = $this->construct_helper(cli_helper::EXPORT, ['--exporter=tool_wp\\tool_wp\\exporter\\cohorts']);
+        $clihelper->phpunitinputs = ['admin', '-', 'Y'];
+        cron_setup_user($clihelper->choose_user());
+        $clihelper->choose_exporter();
+        $clihelper->apply_general_settings(null);
+        $this->expectOutputRegex('/Will be exported:[\n]  Tenant cohort[\n]  Other cohort[\n][\n]/m');
+        $clihelper->perform_export(null);
+
+        $exports = $DB->get_records('tool_wp_export');
+        $this->assertCount(1, $exports);
+
+        $this->assertNull(reset($exports)->tenantid);
     }
 
     public function test_check_import_source() {
