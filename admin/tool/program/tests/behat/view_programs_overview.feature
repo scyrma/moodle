@@ -34,11 +34,11 @@ Feature: View programs overview
     And I should see "Nothing to display"
 
   Scenario: User is allocated to some programs and courses
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname |
       | Program1 |
       | Program2 |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | user     | program  |
       | student1 | Program1 |
       | student1 | Program2 |
@@ -58,21 +58,21 @@ Feature: View programs overview
     And I should see "Non-program Course 002" in the "Learning" "tool_wp > Tab content"
 
   Scenario: User should see the filter for program and course status in the dashboard
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname                     | duedatetype           | duedaterelative | generatecourses |
       | ProgramCompleted             | none                  | 1 weeks         | 1               |
       | ProgramNotCompleted          | none                  | 1 weeks         | 1               |
       | ProgramWithDueDateOverdue    | after_user_allocation | 0 weeks         | 1               |
       | ProgramWithDueDateNotOverdue | after_user_allocation | 2 weeks         | 1               |
       | ProgramUpcomingDueDate       | after_user_allocation | 1 days          | 1               |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | user     | program                      |
       | student1 | ProgramCompleted             |
       | student1 | ProgramNotCompleted          |
       | student1 | ProgramWithDueDateOverdue    |
       | student1 | ProgramWithDueDateNotOverdue |
       | student1 | ProgramUpcomingDueDate       |
-    And the following tool program user allocations are completed:
+    And the following "tool_program > program_completions" exist:
       | program          | user     |
       | ProgramCompleted | student1 |
     And the following "courses" exist:
@@ -179,10 +179,10 @@ Feature: View programs overview
     And I log out
 
   Scenario: Filter for program status in the dashboard should show Nothing to display if no results
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname            | duedatetype | duedaterelative |
       | ProgramNotCompleted | none        | 1 weeks         |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | user     | program             |
       | student1 | ProgramNotCompleted |
     And the following "courses" exist:
@@ -216,19 +216,19 @@ Feature: View programs overview
     And I log out
 
   Scenario: User should see the filter for program search
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname  | duedatetype           | duedaterelative | generatecourses |
       | ProgramA1 | none                  | 0 weeks         | 1               |
       | ProgramB2 | after_user_allocation | 2 weeks         | 1               |
       | ProgramC3 | after_user_allocation | 5 weeks         | 1               |
       | ProgramD4 | after_user_allocation | 3 weeks         | 1               |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | user     | program   |
       | student1 | ProgramA1 |
       | student1 | ProgramB2 |
       | student1 | ProgramC3 |
       | student1 | ProgramD4 |
-    And the following tool program user allocations are completed:
+    And the following "tool_program > program_completions" exist:
       | program   | user     |
       | ProgramA1 | student1 |
       | ProgramC3 | student1 |
@@ -412,7 +412,7 @@ Feature: View programs overview
     And the following users allocations to tenants exist:
       | user     | tenant  |
       | student1 | Tenant1 |
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
     And the following "courses" exist:
@@ -420,10 +420,10 @@ Feature: View programs overview
       | Course 1               | C1        | topics | CAT1     | 1                |
       | Non program Course 001 | NPC001    | topics | CAT1     | 1                |
       | Non program Course 002 | NPC002    | topics | CAT1     | 0                |
-    And the following program courses exist:
+    And the following "tool_program > program_courses" exist:
       | program  | course |
       | Program1 | C1     |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | user     | program  |
       | student1 | Program1 |
     And the following "course enrolments" exist:
@@ -466,16 +466,16 @@ Feature: View programs overview
     And the following users allocations to tenants exist:
       | user     | tenant  |
       | student1 | Tenant1 |
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
     And the following "courses" exist:
       | fullname | shortname | format | category | enablecompletion |
       | Course 1 | C1        | topics | CAT1     | 1                |
-    And the following program courses exist:
+    And the following "tool_program > program_courses" exist:
       | program  | course |
       | Program1 | C1     |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | user     | program  |
       | student1 | Program1 |
     And the following "course enrolments" exist:
@@ -518,11 +518,11 @@ Feature: View programs overview
     And I press "Close" in the modal form dialogue
 
   Scenario: Sort in the order of last access, name and due/end date.
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname  | duedatetype           | duedaterelative | generatecourses |
       | ProgramA1 | after_user_allocation | 3 days          | 1               |
       | ProgramB2 | after_user_allocation | 2 weeks         | 1               |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | user     | program   |
       | student1 | ProgramA1 |
       | student1 | ProgramB2 |

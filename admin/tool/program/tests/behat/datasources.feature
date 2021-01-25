@@ -8,7 +8,7 @@ Feature: Check datasources for programs
     Given the following tenants exist:
       | name    |
       | Tenant1 |
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  | program_tags |
       | Program1 | 0        | Tenant1 | tag 1,tag 2  |
       | Program2 | 0        | Tenant1 | tag 2        |
@@ -30,7 +30,7 @@ Feature: Check datasources for programs
       | user4      | Tenant1 |
       | manager1   | Tenant1 |
       | manager2   | Tenant1 |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user   |
       | Program1 | user1  |
       | Program1 | user2  |

@@ -7,7 +7,7 @@ Feature: It is possible to create programs in shared space
   Background:
     Given "2" tenants exist with "4" users and "0" courses in each
     And shared space is enabled
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname  | idnumber | archived | tenant  | generatecourses |
       | Program0  | prog0    | 0        | -       | 0               |
       | Archived0 | arch0    | 1        | -       | 1               |
@@ -35,12 +35,12 @@ Feature: It is possible to create programs in shared space
     And I log out
 
   Scenario: Viewing shared programs as a user and accessing its course
-    Given the following users allocations to programs exist:
+    Given the following "tool_program > program_users" exist:
       | program  | user    |
       | Program0 | user11  |
       | Program1 | user11  |
       | Program1 | user12  |
-    And the following program courses exist:
+    And the following "tool_program > program_courses" exist:
       | program  | course |
       | Program0 | SC     |
     And I log in as "user11"
@@ -113,7 +113,7 @@ Feature: It is possible to create programs in shared space
     And I log out
 
   Scenario: Tenant administrator can only allocate users from their tenant to shared programs and can not see other users
-    Given the following users allocations to programs exist:
+    Given the following "tool_program > program_users" exist:
       | program  | user    |
       | Program0 | user11  |
       | Program0 | user21  |
@@ -153,7 +153,7 @@ Feature: It is possible to create programs in shared space
     And I log out
 
   Scenario: Admin can filter users allocated to shared program by their tenant
-    Given the following users allocations to programs exist:
+    Given the following "tool_program > program_users" exist:
       | program  | user    |
       | Program0 | user11  |
       | Program0 | user21  |
@@ -174,7 +174,6 @@ Feature: It is possible to create programs in shared space
     And I set the field "Tenant value" to "Tenant2"
     And I should see "User 21"
     And I should not see "User 1"
-
     And I switch to tenant "Tenant1"
     And I navigate to "Programs" in workplace launcher
     And I click on "Users" "link" in the "Program0" "table_row"
@@ -183,7 +182,7 @@ Feature: It is possible to create programs in shared space
     And "Tenant" "text" should not exist in the "report-table" "table"
 
   Scenario: Both admin in shared space and tenant administrator in the tenant can edit user allocations in shared programs
-    Given the following users allocations to programs exist:
+    Given the following "tool_program > program_users" exist:
       | program  | user    |
       | Program0 | user11  |
       | Program0 | user12  |
@@ -208,10 +207,10 @@ Feature: It is possible to create programs in shared space
 
   Scenario: Organisation manager can see progress reports of their team members in shared programs on the dashboard
     Given user "user13" has a manager position over users "user11,user12" with permissions "3"
-    And the following program courses exist:
+    And the following "tool_program > program_courses" exist:
       | program  | course |
       | Program0 | SC     |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user         | duedate    | duedatelocked |
       | Program0 | user11       | 1577836800 | 1             |
       | Program0 | user12       |            |               |
@@ -238,7 +237,7 @@ Feature: It is possible to create programs in shared space
 
   Scenario: Organisation manager can allocate their team members to the shared program and edit allocations
     Given user "user13" has a manager position over users "user11,user12" with permissions "3"
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user         |
       | Program0 | user11       |
       | Program0 | user21       |
@@ -265,13 +264,13 @@ Feature: It is possible to create programs in shared space
     And I log out
 
   Scenario: User can complete a shared program
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname  | idnumber | archived | tenant  | generatecourses |
       | ProgramA  | progA    | 0        | -       | 3               |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user    |
       | ProgramA | user11  |
-    And the following tool program user allocations are completed:
+    And the following "tool_program > program_completions" exist:
       | program  | user    |
       | ProgramA | user11  |
     When I log in as "tenantadmin1"
@@ -282,7 +281,7 @@ Feature: It is possible to create programs in shared space
     And I log out
 
   Scenario: Viewing users progress report on a shared program
-    Given the following users allocations to programs exist:
+    Given the following "tool_program > program_users" exist:
       | program  | user    |
       | Program0 | user11  |
       | Program0 | user12  |
@@ -369,7 +368,7 @@ Feature: It is possible to create programs in shared space
     And I log out
 
   Scenario: Using Program users allocation and completion datasource with programs on different tenants
-    Given the following users allocations to programs exist:
+    Given the following "tool_program > program_users" exist:
       | program  | user    |
       | Program0 | user11  |
       | Program1 | user12  |

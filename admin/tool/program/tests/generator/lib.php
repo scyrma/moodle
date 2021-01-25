@@ -37,7 +37,6 @@ use tool_program\constants;
 use tool_program\persistent\program;
 use tool_program\persistent\program_course;
 use tool_program\persistent\program_set;
-use tool_program\persistent\program_set_completion;
 use tool_program\persistent\program_user;
 use tool_tenant\tenancy;
 
@@ -51,6 +50,110 @@ use tool_tenant\tenancy;
  * @license   Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 class tool_program_generator extends testing_module_generator {
+
+    /**
+     * Create a program
+     *
+     * Used in Behat step 'Given the following "tool_program > programs" exist:'.
+     *
+     * @param array $record
+     * @return program
+     * @throws coding_exception
+     */
+    public function create_program(array $record): program {
+
+        $data = (object) [
+            'fullname' => 'A program name',
+            'tenantid' => tenancy::get_default_tenant_id(),
+            'description' => 'A program description',
+            'descriptionformat' => FORMAT_HTML,
+            'archived' => 0,
+            'visible' => constants::VISIBILITY_AVAILABLE,
+            'allocationenddaterelative' => null,
+            'allowdirectallocation' => 1,
+            'autocreategroups' => \tool_program\api::GROUPS_TENANT,
+            'program_tags' => ['hello', 'world'],
+            'shared' => 0
+        ];
+
+        if (isset($record['program_tags']) && !is_array($record['program_tags'])) {
+            $record['program_tags'] = explode(',', $record['program_tags']);
+        }
+        $record = $this->get_date_constant($record, 'enddatetype');
+        $record = $this->get_date_constant($record, 'duedatetype');
+        $record = $this->get_date_constant($record, 'startdatetype');
+
+        $mergeddata = array_merge((array) $data, (array) $record);
+        $program = \tool_program\api::create_program((object)$mergeddata);
+
+        // Some properties like 'completioncriteria' and 'completionatleast' apply to the base set and not the program.
+        if (isset($record['completioncriteria'])) {
+            $record['setid'] = $program->get_base_set()->get('id');
+            \tool_program\api::update_set_completion_criteria((object)$record);
+        }
+
+        if (!empty($record['generatecourses'])) {
+            for ($i = 0; $i < $record['generatecourses']; $i++) {
+                $course = $this->generate_course_with_completion_self();
+                $this->add_course_to_set($course->id, $program->get_base_set()->get('id'));
+            }
+        }
+
+        return $program;
+    }
+
+    /**
+     * Convert the date constant name to its value
+     *
+     * @param array $data
+     * @param string $fieldname
+     * @return array
+     */
+    protected function get_date_constant(array $data, string $fieldname): array {
+        if (!empty($data[$fieldname]) && !is_numeric($data[$fieldname])) {
+            $data[$fieldname] = constant('\tool_program\constants::DATE_' . strtoupper($data[$fieldname]));
+        }
+        return $data;
+    }
+
+    /**
+     * Create a program user allocation
+     *
+     * Used in Behat step 'Given the following "tool_program > program_users" exist:'.
+     *
+     * @param array $record
+     * @return program_user
+     */
+    public function create_program_user(array $record): program_user {
+        $programuserdata = $this->get_dummy_program_user_data($record);
+        return \tool_program\api::allocate_user(new program($record['programid']), $programuserdata);
+    }
+
+    /**
+     * Create a program course
+     *
+     * Used in Behat step 'Given the following "tool_program > program_courses" exist:'.
+     *
+     * @param array $record
+     * @return program_course
+     */
+    public function create_program_course(array $record): program_course {
+        return \tool_program\api::add_course_to_base_set($record['programid'], $record['courseid']);
+    }
+
+    /**
+     * Create a program user allocation completion
+     *
+     * Used in Behat step 'Given the following "tool_program > program_completions" exist:'.
+     *
+     * @param array $record
+     * @return void
+     */
+    public function create_program_completion(array $record): void {
+        $program = new program($record['programid']);
+        $this->complete_program($program, $record['userid']);
+    }
+
     /**
      * Returns test data to create a program.
      *
@@ -131,6 +234,11 @@ class tool_program_generator extends testing_module_generator {
      * @return stdClass
      */
     public function get_dummy_program_user_data(array $overrides = []): stdClass {
+        // Remove empty associative array entries.
+        $overrides = array_filter($overrides, function($value) {
+            return ''.$value !== '';
+        });
+
         return (object)( $overrides + [
             'programid' => 1,
             'userid' => 1,
@@ -146,14 +254,13 @@ class tool_program_generator extends testing_module_generator {
     /**
      * Generates a program.
      *
-     * @param stdClass $programdata
+     * @param stdClass|null $programdata
      * @param bool $withdescriptioneditor Adds description editor to programdata
      * @return program
      */
     public function generate_program(stdClass $programdata = null, bool $withdescriptioneditor = false): program {
         $mergeddata = array_merge((array) $this->get_dummy_program_data($withdescriptioneditor), (array) $programdata);
-        $program = \tool_program\api::create_program((object)$mergeddata);
-        return $program;
+        return \tool_program\api::create_program((object)$mergeddata);
     }
 
     /**
@@ -209,11 +316,11 @@ class tool_program_generator extends testing_module_generator {
         global $CFG;
 
         require_once("{$CFG->libdir}/completionlib.php");
-
+        require_once($CFG->dirroot . '/course/lib.php');
         $record = $record ? (array)$record : [];
         $criteriadata = new stdClass();
         $criteriadata->criteria_self = COMPLETION_CRITERIA_TYPE_SELF;
-        $course = phpunit_util::get_data_generator()->create_course(
+        $course = \testing_util::get_data_generator()->create_course(
             array_merge($record, ['enablecompletion' => COMPLETION_ENABLED])
         );
         $criteriadata->id = $course->id;

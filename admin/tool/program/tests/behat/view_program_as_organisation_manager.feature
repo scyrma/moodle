@@ -16,10 +16,10 @@ Feature: View program as organisation manager
       | user     | role                     | contextlevel | reference |
       | manager1 | tool_program_manager     | System       |           |
       | manager1 | tool_dynamicrule_manager | System       |           |
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | tenant  |
       | Program1 | Tenant1 |
-    Given the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user    |
       | Program1 | user11  |
     And user "user13" has a department lead position over users "user12,user11" with permissions "3"

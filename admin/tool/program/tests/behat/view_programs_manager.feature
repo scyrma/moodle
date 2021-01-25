@@ -32,7 +32,7 @@ Feature: View programs manager
 
   @javascript
   Scenario: There are existing programs
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
       | Program2 | 1        | Tenant1 |

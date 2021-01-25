@@ -23,7 +23,7 @@ Feature: Create program
       | manager1 | tool_program_manager     | System       |           |
       | manager1 | tool_dynamicrule_manager | System       |           |
       | manager2 | tool_program_manager     | System       |           |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | tenant  | idnumber |
       | Program1 | Tenant1 | num1     |
     And the following "courses" exist:
@@ -139,10 +139,10 @@ Feature: Create program
     And I log out
 
   Scenario: Check calendar events for a user allocated into a program
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | tenant  | archived | startdatetype | startdaterelative | duedatetype           | duedaterelative | enddatetype    | enddaterelative |
       | Program2 | Tenant1 | 0        | none          | 0 weeks           | after_user_allocation | 1 weeks          | after_due      | 1 weeks         |
-    Given the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program   | user   |
       | Program2  | user1  |
     When I log in as "user1"

@@ -19,12 +19,12 @@ Feature: Programs should appear or hide in user dashboard when changing visibili
     And the following "role assigns" exist:
       | user     | role                 | contextlevel | reference |
       | manager1 | tool_program_manager | System       |           |
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | tenant  |
       | Program1 | Tenant1 |
       | Program2 | Tenant1 |
       | Program3 | Tenant1 |
-    Given the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user   |
       | Program1 | user1  |
       | Program2 | user1  |

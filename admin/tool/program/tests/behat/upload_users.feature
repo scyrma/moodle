@@ -5,7 +5,7 @@ Feature: Allocate users on programs in upload users
   I need to upload files containing the users data
 
   Scenario: Upload users allocating them on programs
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | idnumber | archived | tenant  |
       | Program1 | prog1    | 0        | Default tenant |
       | Program2 | prog2    | 0        | Default tenant |
@@ -43,7 +43,7 @@ Feature: Allocate users on programs in upload users
 
   Scenario: Upload users allocating them on programs as tenantadmin
     Given "2" tenants exist with "0" users and "0" courses in each
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | idnumber | archived | tenant  |
       | Program1 | prog1    | 0        | Tenant1 |
       | Program2 | prog2    | 0        | Tenant1 |
@@ -80,16 +80,16 @@ Feature: Allocate users on programs in upload users
     And the following "role assigns" exist:
       | user   | role      | contextlevel | reference |
       | user11 | allocator | System       |           |
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | idnumber | archived | tenant  |
       | Program1 | prog1    | 0        | Tenant1 |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program  |
       | Certification1 | 0        | Tenant1 | Program1 |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user   |
       | Program1 | user12 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user13 |
     And the following "permission overrides" exist:
@@ -166,7 +166,7 @@ Feature: Allocate users on programs in upload users
   Scenario: Upload users to shared programs as tenant admin
     Given "2" tenants exist with "6" users and "0" courses in each
     And shared space is enabled
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | idnumber | archived | tenant  |
       | Program1 | prog1    | 0        | -       |
     When I log in as "tenantadmin1"
@@ -195,7 +195,7 @@ Feature: Allocate users on programs in upload users
   Scenario: Upload users to shared programs as admin
     Given "2" tenants exist with "6" users and "0" courses in each
     And shared space is enabled
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | idnumber | archived | tenant  |
       | Program1 | prog1    | 0        | -       |
     When I log in as "admin"

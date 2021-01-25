@@ -8,7 +8,7 @@ Feature: Ensure program progress report works as expected
     Given the following tenants exist:
       | name    |
       | Tenant1 |
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname     | archived | tenant  | generatecourses |
       | Program_name | 0        | Tenant1 | 1               |
     Given the following "users" exist:
@@ -25,12 +25,12 @@ Feature: Ensure program progress report works as expected
       | user3      | Tenant1 |
       | user4      | Tenant1 |
       | manager1   | Tenant1 |
-    Given the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program      | user   |
       | Program_name | user1  |
       | Program_name | user2  |
       | Program_name | user4  |
-    And the following tool program user allocations are completed:
+    And the following "tool_program > program_completions" exist:
       | program      | user   |
       | Program_name | user2  |
     And the following "role assigns" exist:

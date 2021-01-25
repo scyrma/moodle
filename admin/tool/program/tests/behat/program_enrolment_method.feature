@@ -16,10 +16,10 @@ Feature: Program enrolment method works as exepcted
       | user     | role                     | contextlevel | reference |
       | manager1 | tool_program_manager     | System       |           |
       | manager1 | tool_dynamicrule_manager | System       |           |
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | tenant  |
       | Program1 | Tenant1 |
-    Given the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user    |
       | Program1 | user11  |
       | Program1 | user12  |

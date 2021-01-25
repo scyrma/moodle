@@ -11,7 +11,7 @@ Feature: Users need to be added to course groups when allocated to program
       | Sharedcourse1 nogroups  | shared1   |         | 0         | 0        |
       | Sharedcourse2 visgroups | shared2   |         | 2         | 0        |
       | Sharedcourse3 sepgroups | shared3   |         | 1         | 0        |
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname  | tenant  | completioncriteria | autocreategroups |
       | Program11 | Tenant1 | 1                  | 1                |
       | Program12 | Tenant1 | 1                  | 1                |
@@ -21,7 +21,7 @@ Feature: Users need to be added to course groups when allocated to program
       | Program32 | Tenant3 | 1                  | 3                |
 
   Scenario: Users from different tenants can enrol in shared courses and they will be in different groups
-    Given the following tool program data "program_courses" exist:
+    Given the following "tool_program > program_courses" exist:
       | program   | course  |
       | Program11 | C11     |
       | Program11 | shared1 |
@@ -31,7 +31,7 @@ Feature: Users need to be added to course groups when allocated to program
       | Program21 | shared1 |
       | Program21 | shared2 |
       | Program21 | shared3 |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program   | user   |
       | Program11 | user11 |
       | Program11 | user12 |
@@ -85,13 +85,13 @@ Feature: Users need to be added to course groups when allocated to program
     And I log out
 
   Scenario: Users in the same course enrolled via different programs can be added to different groups
-    Given the following tool program data "program_courses" exist:
+    Given the following "tool_program > program_courses" exist:
       | program   | course  |
       | Program31 | C31     |
       | Program32 | C31     |
       | Program31 | shared3 |
       | Program32 | shared3 |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program   | user   |
       | Program31 | user31 |
       | Program32 | user32 |

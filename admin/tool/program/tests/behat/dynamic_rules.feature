@@ -6,11 +6,11 @@ Feature: Program conditions and actions are marked as broken if program gets del
 
   Background:
     Given "1" tenants exist with "4" users and "1" courses in each
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | tenant  |
       | Program1 | Tenant1 |
       | Program2 | Tenant1 |
-    Given the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user    |
       | Program1 | user11  |
       | Program1 | user12  |

@@ -16,7 +16,7 @@ Feature: Create custom fields on programs
       | user     | tenant  |
       | manager1 | Tenant1 |
       | manager2 | Tenant1 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
     And the following "roles" exist:

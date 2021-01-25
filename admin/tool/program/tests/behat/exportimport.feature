@@ -7,7 +7,7 @@ Feature: Export and import programs
     Given "2" tenants exist with "1" users and "2" courses in each
 
   Scenario: Export one program
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | archived | tenant  | idnumber  |
       | Program1 | 0        | Tenant1 | idnumber1 |
       | Program2 | 0        | Tenant1 | idnumber2 |
@@ -95,7 +95,7 @@ Feature: Export and import programs
     And I log out
 
   Scenario: Export a program and check form validation
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | archived | tenant  | idnumber  |
       | Program1 | 0        | Tenant1 | idnumber1 |
       | Program3 | 0        | Tenant2 |           |

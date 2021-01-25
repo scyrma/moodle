@@ -8,7 +8,7 @@ Feature: Check user report capabilities on profile
     Given the following tenants exist:
       | name    |
       | Tenant1 |
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | tenant  | archived | startdatetype | startdaterelative | duedatetype           | duedaterelative | enddatetype    | enddaterelative |
       | Program1 | Tenant1 | 0        | none          | 0 weeks           | after_user_allocation | 6 days          | after_due      | 1 weeks         |
     Given the following "users" exist:
@@ -23,7 +23,7 @@ Feature: Check user report capabilities on profile
       | user2    | Tenant1 |
       | manager1 | Tenant1 |
       | manager2 | Tenant1 |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | user     | program  | allocationtype |
       | user1    | Program1 | 0              |
 

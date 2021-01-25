@@ -18,7 +18,7 @@ Feature: Use tags in a program
       | user     | role                 | contextlevel | reference |
       | manager1 | tool_program_manager | System       |           |
       | manager2 | tool_program_manager | System       |           |
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | tenant  | program_tags  |
       | Program1 | Tenant1 | blue, white   |
       | Program2 | Tenant1 | blue, yellow  |

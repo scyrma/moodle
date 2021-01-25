@@ -15,7 +15,7 @@ Feature: Edit program content with the drag and drop editor and check overview
     And the following "role assigns" exist:
       | user     | role                 | contextlevel | reference |
       | manager1 | tool_program_manager | System       |           |
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
     And the following "courses" exist:
@@ -26,7 +26,7 @@ Feature: Edit program content with the drag and drop editor and check overview
       | Course 4 | C4        | topics | CAT1     |
       | Course 5 | C5        | topics | CAT1     |
       | Course 6 | C6        | topics | CAT1     |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | user     | program  |
       | user11   | Program1 |
 
@@ -297,7 +297,7 @@ Feature: Edit program content with the drag and drop editor and check overview
     Given the following "courses" exist:
       | fullname      | shortname | format | category | visible |
       | Course hidden | C7        | topics | CAT1     | 0       |
-    And the following tool program data "program_courses" exist:
+    And the following "tool_program > program_courses" exist:
       | program  | course |
       | Program1 | C1    |
       | Program1 | C7    |

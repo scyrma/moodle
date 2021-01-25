@@ -12,12 +12,12 @@ Feature: Ensure that actions in programs manager view work as expected
       | user21   | tool_program_manager | System       |           |
 
   Scenario: Archive and restore existing programs
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | tenant  | idnumber |
       | Program1 | Tenant1 | num1     |
       | Program2 | Tenant1 | num2     |
       | Program3 | Tenant1 | num3     |
-    And the following tool certification data "certifications" exist:
+    And the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program   |
       | Certification1 | 0        | Tenant1 | Program1  |
       | Certification2 | 0        | Tenant1 | Program1  |
@@ -71,7 +71,7 @@ Feature: Ensure that actions in programs manager view work as expected
     And I log out
 
   Scenario: Delete existing archived programs
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 1        | Tenant1 |
       | Program2 | 1        | Tenant1 |
@@ -112,7 +112,7 @@ Feature: Ensure that actions in programs manager view work as expected
 
   @_file_upload
   Scenario: Test program edit details modal
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
       | Program2 | 0        | Tenant1 |

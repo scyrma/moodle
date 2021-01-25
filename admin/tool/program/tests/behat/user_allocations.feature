@@ -9,7 +9,7 @@ Feature: Manage users allocations in programs
       | name    |
       | Tenant1 |
       | Tenant2 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
       | Program2 | 0        | Tenant2 |
@@ -118,7 +118,7 @@ Feature: Manage users allocations in programs
     And I log out
 
   Scenario: Cannot delete allocation if allocation window is closed
-    Given the following users allocations to programs exist:
+    Given the following "tool_program > program_users" exist:
       | program  | user   |
       | Program1 | user1  |
       | Program1 | user3  |
@@ -177,7 +177,7 @@ Feature: Manage users allocations in programs
     And I log out
 
   Scenario: De-allocate users in bulk
-    Given the following users allocations to programs exist:
+    Given the following "tool_program > program_users" exist:
       | program  | user   |
       | Program1 | user1  |
       | Program1 | user3  |
@@ -205,7 +205,7 @@ Feature: Manage users allocations in programs
     Then I should see "User 4"
 
   Scenario: Update status and dates for users in bulk
-    Given the following users allocations to programs exist:
+    Given the following "tool_program > program_users" exist:
       | program  | user   |
       | Program1 | user1  |
       | Program1 | user3  |
@@ -233,7 +233,7 @@ Feature: Manage users allocations in programs
     Given the following users allocations to tenants exist:
       | user  | tenant  |
       | admin | Tenant1 |
-    Given the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user   |
       | Program1 | user1  |
       | Program1 | user3  |
