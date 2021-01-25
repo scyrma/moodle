@@ -6,10 +6,10 @@ Feature: Manage component rules
 
   Background:
     Given "1" tenants exist with "3" users and "0" courses in each
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | tenant  |
       | Program1 | Tenant1 |
-    Given the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user    |
       | Program1 | user11  |
       | Program1 | user12  |

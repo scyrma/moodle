@@ -92,13 +92,13 @@ Feature: Issue certificate with dynamic rules
 
   Scenario: Issue a certificate on program completion
     Given "2" tenants exist with "3" users and "2" courses in each
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | tenant  |
       | Program1 | Tenant1 |
-    Given the following tool program data "program_courses" exist:
+    Given the following "tool_program > program_courses" exist:
       | program  | course |
       | Program1 | C11    |
-    And the following users allocations to programs exist:
+    And the following "tool_program > program_users" exist:
       | program  | user   |
       | Program1 | user11 |
     Given the following certificate templates exist:
@@ -106,6 +106,7 @@ Feature: Issue certificate with dynamic rules
       | Certificate 1 | Category1 | 1             |
       | Certificate 2 | Category2 | 1             |
     And I log in as "tenantadmin1"
+    And I change window size to "large"
     # Create a certificate that prints the course full name.
     And I navigate to "Certificates > Manage certificate templates" in site administration
     And I click on "Edit content" "link" in the "Certificate 1" "table_row"
@@ -122,8 +123,7 @@ Feature: Issue certificate with dynamic rules
       | Name | Rule1 |
     And I press "Save" in the modal form dialogue
     And I follow "Program completed"
-    And I click on ".form-autocomplete-downarrow" "css_element" in the ".select_program_field" "css_element"
-    Then I click on "Program1" "text" in the ".select_program_field .form-autocomplete-suggestions" "css_element"
+    And I set the field "Program" to "Program1"
     And I press "Save changes"
     And I follow "Actions"
     And I click on "Issue certificate" "link" in the "#ruleoutcomes" "css_element"
@@ -158,16 +158,16 @@ Feature: Issue certificate with dynamic rules
 
   Scenario: Issue a certificate on program completion
     Given "2" tenants exist with "3" users and "2" courses in each
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | tenant  |
       | Program1 | Tenant1 |
-    Given the following tool program data "program_courses" exist:
+    Given the following "tool_program > program_courses" exist:
       | program  | course |
       | Program1 | C11    |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program  |
       | Certification1 | 0        | Tenant1 | Program1 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user11 |
     Given the following certificate templates exist:
@@ -175,6 +175,7 @@ Feature: Issue certificate with dynamic rules
       | Certificate 1 | Category1 | 1             |
       | Certificate 2 | Category2 | 1             |
     And I log in as "tenantadmin1"
+    And I change window size to "large"
     # Create a certificate that prints the course full name.
     And I navigate to "Certificates > Manage certificate templates" in site administration
     And I click on "Edit content" "link" in the "Certificate 1" "table_row"
