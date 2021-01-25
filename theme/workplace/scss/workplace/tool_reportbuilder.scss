@@ -31,8 +31,31 @@
         justify-content: center;
         align-items: center;
     }
-    .tool_reportbuilder_report_sidebar_filters {
+    .tool_reportbuilder_report_sidebar {
         max-width: 350px;
+        &.sidebar {
+            transition: none;
+        }
+        .reportbuilder-card {
+            &:not(:last-child) {
+                border-bottom: 1px solid $gray040;
+            }
+            .filter-name {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                padding-right: 1rem;
+            }
+            .filter-name:hover {
+                white-space: normal;
+                text-overflow: clip;
+                word-break: break-all;
+            }
+            button[data-action='reset-filter'] {
+                font-size: .9rem;
+                padding: 0;
+            }
+        }
     }
     .tool_reportbuilder_report_table_footer {
         .dataformatselector {
