@@ -7,7 +7,7 @@ Feature: Export and import certifications
     Given "2" tenants exist with "1" users and "2" courses in each
 
   Scenario: Export one certification
-    And the following tool certification data "certifications" exist:
+    And the following "tool_certification > certifications" exist:
       | fullname        | archived | tenant  |
       | Certification1  | 0        | Tenant1 |
       | Certification2  | 0        | Tenant2 |
@@ -68,7 +68,7 @@ Feature: Export and import certifications
     And the following users allocations to tenants exist:
       | user    | tenant  |
       | luana   | Tenant1 |
-    And the following tool certification data "certifications" exist:
+    And the following "tool_certification > certifications" exist:
       | fullname        | archived | tenant  | idnumber       |
       | Certification0  | 0        | Tenant1 | Cert1_idnumber |
     When I log in as "tenantadmin1"

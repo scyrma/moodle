@@ -22,10 +22,10 @@ Feature: Certification users belong to certification tenant and have not been de
       | user     | role                       | contextlevel | reference |
       | manager1 | tool_certification_manager | System       |           |
       | manager1 | tool_dynamicrule_manager   | System       |           |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  |
       | Certification1 | 0        | Tenant1 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user1  |
       | Certification1 | user3  |

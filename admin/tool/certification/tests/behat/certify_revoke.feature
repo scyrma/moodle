@@ -9,12 +9,12 @@ Feature: Certify and revoke user certifications
       | name    |
       | Tenant1 |
       | Tenant2 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  | generatecourses |
       | Program1 | 0        | Tenant1 | 1               |
       | Program2 | 0        | Tenant2 | 1               |
       | Program3 | 0        | Tenant1 | 1               |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program   | idnumber | requirerecertification | recertificationprogram  |
       | Certification1 | 0        | Tenant1 | Program1  |  num1    | 1                      | Program3                |
       | Certification2 | 0        | Tenant2 | Program2  |  num2    | 0                      | Program2                |
@@ -29,11 +29,11 @@ Feature: Certify and revoke user certifications
       | user1    | Tenant1 |
       | manager1 | Tenant1 |
       | manager2 | Tenant2 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user1  |
       | Certification3 | user1  |
-    Given the following tool program user allocations are completed:
+    And the following "tool_program > program_completions" exist:
       | program  | user   |
       | Program3 | user1  |
     # Completing the program will result in user being certified.

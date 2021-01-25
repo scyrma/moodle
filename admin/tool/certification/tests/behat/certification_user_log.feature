@@ -6,13 +6,13 @@ Feature: Certify and revoke a certification and access to the certification log 
 
   Background:
     Given "1" tenants exist with "4" users and "1" courses in each
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | tenant  |
       | Program1 | Tenant1 |
-    And the following tool certification data "certifications" exist:
+    And the following "tool_certification > certifications" exist:
       | fullname                | archived | tenant  | program   | startdatetype        | startdaterelative | duedatetype      | duedaterelative | expirydatetype | expirydaterelative |
       | Certification1          | 0        | Tenant1 | Program1  | user_allocation_date | 0 week            | after_start_date | 0 week          | after_due_date | 0 week             |
-    And the following users allocations to certifications exist:
+    And the following "tool_certification > certification_users" exist:
       | certification  | user     |
       | Certification1 | user12   |
       | Certification1 | user13   |

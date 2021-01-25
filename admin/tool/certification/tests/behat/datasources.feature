@@ -8,10 +8,10 @@ Feature: Check datasources for certifications
     Given the following tenants exist:
       | name    |
       | Tenant1 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname     | archived | tenant  |
       | Program name | 0        | Tenant1 |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname         | archived | tenant  | program       |
       | Certification_1A | 0        | Tenant1 | Program name  |
       | Certification_2B | 0        | Tenant1 | Program name  |
@@ -31,7 +31,7 @@ Feature: Check datasources for certifications
       | orgmanager | Tenant1 |
       | user4      | Tenant1 |
       | manager1   | Tenant1 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification    | user   |
       | Certification_1A | user1  |
       | Certification_1A | user2  |

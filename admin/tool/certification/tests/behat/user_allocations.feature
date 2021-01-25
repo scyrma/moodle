@@ -9,11 +9,11 @@ Feature: Manage users allocations
       | name    |
       | Tenant1 |
       | Tenant2 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
       | Program2 | 0        | Tenant2 |
-    Given the following tool certification data "certifications" exist:
+    And the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program   |
       | Certification1 | 0        | Tenant1 | Program1  |
       | Certification2 | 0        | Tenant2 | Program2  |
@@ -101,7 +101,7 @@ Feature: Manage users allocations
     And I log out
 
   Scenario: Cannot delete allocation if comes from a dynamic rule
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user1  |
       | Certification1 | user3  |
@@ -143,7 +143,7 @@ Feature: Manage users allocations
     And I log out
 
   Scenario: Cannot delete allocation if allocation window is closed
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user1  |
       | Certification1 | user3  |
@@ -169,7 +169,7 @@ Feature: Manage users allocations
     And "Delete" "link" should not exist in the "User 3" "table_row"
 
   Scenario: De-allocate users in bulk
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user1  |
       | Certification1 | user3  |
@@ -197,7 +197,7 @@ Feature: Manage users allocations
     Then I should see "User 4"
 
   Scenario: Update status and dates for users in bulk
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user1  |
       | Certification1 | user3  |

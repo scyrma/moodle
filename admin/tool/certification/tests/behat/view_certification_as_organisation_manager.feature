@@ -16,10 +16,10 @@ Feature: View certification as organisation manager
       | user     | role                       | contextlevel | reference |
       | manager1 | tool_certification_manager | System       |           |
       | manager1 | tool_dynamicrule_manager   | System       |           |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | tenant  |
       | Certification1 | Tenant1 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification1 | user11  |
     And user "user13" has a department lead position over users "user12,user11" with permissions "3"

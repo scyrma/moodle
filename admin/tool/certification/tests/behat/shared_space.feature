@@ -7,13 +7,13 @@ Feature: It is possible to create certifications in shared space
   Background:
     Given "2" tenants exist with "4" users and "0" courses in each
     And shared space is enabled
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | idnumber | archived | tenant  |
       | Program0 | prog0    | 0        | -       |
       | Archived0 | arch0   | 1        | -       |
       | Program1 | prog1    | 0        | Tenant1 |
       | Program2 | prog2    | 0        | Tenant2 |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname        | idnumber | archived | tenant  | program   |
       | Certification0  | cert0    | 0        | -       | Program0  |
       | Archived0       | arch0    | 1        | -       | Archived0 |
@@ -23,14 +23,14 @@ Feature: It is possible to create certifications in shared space
   # 0. When user is allocated to a shared certification, they can see the certification programs on their dashboard
   # and enrol in courses.
   Scenario: Viewing shared certification programs as a user and accessing its course
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification0 | user11  |
       | Certification1 | user11  |
     And the following "courses" exist:
       | fullname     | shortname | format |
       | Sharedcourse | SC        | topics |
-    And the following program courses exist:
+    And the following "tool_program > program_courses" exist:
       | program  | course |
       | Program0 | SC     |
     And I log in as "user11"
@@ -150,7 +150,7 @@ Feature: It is possible to create certifications in shared space
   # allocate users from their tenant (only) to this certification and they can not see users from other tenants in the
   # allocated users view.
   Scenario: Tenant administrator can allocate users from their tenant (only) to this certification
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification0 | user11  |
       | Certification0 | user21  |
@@ -171,7 +171,7 @@ Feature: It is possible to create certifications in shared space
   # admin can see the "Tenant" column in the certification user list and no Tenant column while in the tenant.
   # In the shared space admin can also filter users by tenant.
   Scenario: In the shared space admin can see the "Tenant" column in the certification user list
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification0 | user11  |
       | Certification0 | user21  |
@@ -196,7 +196,7 @@ Feature: It is possible to create certifications in shared space
   # 6. Given shared certification exists and some users are allocated (from multiple tenants). In the shared space
   # admin can edit any user allocation. Tenant administrator can edit users allocations in their tenant.
   Scenario: In the shared space admin can edit any user allocation to the certification, tenant admin only in their tenant.
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification0 | user11  |
       | Certification0 | user21  |
@@ -223,7 +223,7 @@ Feature: It is possible to create certifications in shared space
   # certifications. Manager can see all the certifications and certification progress of their team on the dashboard.
   Scenario: Manager can see all the certifications and certification progress of their team on the dashboard
     Given user "user13" has a manager position over users "user11,user12" with permissions "3"
-    And the following users allocations to certifications exist:
+    And the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification0 | user11  |
       | Certification0 | user21  |
@@ -256,7 +256,7 @@ Feature: It is possible to create certifications in shared space
   # 8. Organisation manager can allocate their team members to the shared certifications and edit their allocations
   Scenario: Organisation manager can allocate their team members to the shared certifications and edit their allocations
     Given user "user13" has a manager position over users "user11,user12" with permissions "3"
-    And the following users allocations to certifications exist:
+    And the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification0 | user11  |
       | Certification0 | user21  |
@@ -288,7 +288,7 @@ Feature: It is possible to create certifications in shared space
   # 9. Tenant administrator can see "User progress report" on the shared certification (linked from the user
   # certification allocation)
   Scenario: Tenant administrator can see "User progress report" on the shared certification
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification0 | user11  |
     When I log in as "tenantadmin1"
@@ -314,7 +314,7 @@ Feature: It is possible to create certifications in shared space
   # 17. Tenant administrator can export shared certifications from parent tenants but it would only export the allocated
   # users from the current tenant.
   Scenario: Export one shared certification with users
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification0 | user11  |
       | Certification0 | user21  |
@@ -396,7 +396,7 @@ Feature: It is possible to create certifications in shared space
     And I log out
 
   Scenario: Using Certification users allocation and completion datasource with certifications on different tenants
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification0 | user11  |
       | Certification0 | user21  |

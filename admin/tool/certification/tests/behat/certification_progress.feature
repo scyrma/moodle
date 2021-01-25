@@ -17,13 +17,13 @@ Feature: Complete a certification and check if user and manager can view the cor
       | manager1 | tool_program_manager       | System       |           |
       | manager1 | tool_certification_manager | System       |           |
       | manager1 | tool_dynamicrule_manager   | System       |           |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | tenant  |
       | Program1 | Tenant1 |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname        | tenant  | program  |
       | Noughts&Crosses | Tenant1 | Program1 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification   | user    |
       | Noughts&Crosses | user11  |
       | Noughts&Crosses | user12  |

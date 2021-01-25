@@ -51,6 +51,92 @@ use tool_program\persistent\program;
  * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 class tool_certification_generator extends component_generator_base {
+
+    /**
+     * Create a certification
+     *
+     * Used in Behat step 'Given the following "tool_certification > certifications" exist:'.
+     *
+     * @param array $record
+     * @return certification
+     */
+    public function create_certification(array $record): certification {
+
+        if (isset($record['certification_tags'])) {
+            $record['certification_tags'] = explode(',', $record['certification_tags']);
+        }
+
+        $record = $this->get_date_constant($record, 'expirydatetype');
+        $record = $this->get_date_constant($record, 'duedatetype');
+        $record = $this->get_date_constant($record, 'startdatetype');
+        $record = $this->get_date_absolute($record, 'expirydateabsolute');
+        $record = $this->get_date_absolute($record, 'duedateabsolute');
+        $record = $this->get_date_absolute($record, 'startdateabsolute');
+
+        $data = (object) [
+            'fullname' => 'A certification fullname',
+            'tenantid' => \tool_tenant\tenancy::get_default_tenant_id(),
+            'certification_tags' => ['hello', 'world'],
+            'autocreategroups' => \tool_program\api::GROUPS_AS_IN_PROGRAMS,
+            'archived' => false,
+            'shared' => 0,
+        ];
+
+        if (isset($record['certification_tags']) && !is_array($record['certification_tags'])) {
+            $record['certification_tags'] = explode(',', $record['certification_tags']);
+        }
+
+        $mergeddata = array_merge((array) $data, (array) $record);
+
+        return $this->generate_certification($mergeddata, $record['requirerecertification'] ?? 0);
+    }
+
+    /**
+     * Create a certification user allocation
+     *
+     * Used in Behat step 'Given the following "tool_certification > certification_users" exist:'.
+     *
+     * @param array $record
+     * @return certification_user
+     */
+    public function create_certification_user(array $record): certification_user {
+        if (!isset($record['status']) || !strlen($record['status'])) {
+            $record['status'] = \tool_certification\constants::STATUS_OVERRIDE_DEFAULT;
+        }
+        if (!isset($record['allocationtype']) || !strlen($record['allocationtype'])) {
+            $record['allocationtype'] = \tool_certification\constants::ALLOCATION_MANUAL;
+        }
+        return $this->allocate_user($record['userid'], $record['certificationid']);
+    }
+
+    /**
+     * Convert the date constant name to its value
+     *
+     * @param array $data
+     * @param string $fieldname
+     * @return array
+     */
+    protected function get_date_constant(array $data, string $fieldname): array {
+        if (!empty($data[$fieldname]) && !is_numeric($data[$fieldname])) {
+            $data[$fieldname] = constant('\tool_certification\constants::DATE_' . strtoupper($data[$fieldname]));
+        }
+        return $data;
+    }
+
+    /**
+     * Convert the absolute date in human-readable form into the unix timestamp
+     *
+     * @param array $data
+     * @param string $fieldname
+     * @return array
+     */
+    protected function get_date_absolute(array $data, string $fieldname): array {
+        if (!empty($data[$fieldname]) && !is_numeric($data[$fieldname])) {
+            $data[$fieldname] = strtotime($data[$fieldname]);
+        }
+        return $data;
+    }
+
     /**
      * Returns data to create a certification.
      *
@@ -113,7 +199,7 @@ class tool_certification_generator extends component_generator_base {
      */
     public function generate_certification(array $certificationdata = [], bool $requiresrecertification = false): certification {
         /** @var tool_program_generator $programgenerator */
-        $programgenerator = phpunit_util::get_data_generator()->get_plugin_generator('tool_program');
+        $programgenerator = \testing_util::get_data_generator()->get_plugin_generator('tool_program');
         if (isset($certificationdata['program'])) {
             $programid = $certificationdata['program'];
             $program = new program($programid);

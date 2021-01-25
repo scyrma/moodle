@@ -13,14 +13,16 @@ Feature: Ensure that actions in certifications manager view work as expected
       | user11   | tool_program_manager       | System       |           |
 
   Scenario: Archive and restore one certification
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname           | archived | tenant  | generatecourses |
       | A program fullname | 0        | Tenant1 | 1               |
-    Given the following tool certification data "certifications" exist:
+      | Program1           | 0        | Tenant1 | 0               |
+      | Program2           | 0        | Tenant2 | 0               |
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program            |
       | Certification1 | 0        | Tenant1 | A program fullname |
-      | Certification2 | 1        | Tenant2 |                    |
-      | Certification3 | 1        | Tenant1 |                    |
+      | Certification2 | 1        | Tenant2 | Program2           |
+      | Certification3 | 1        | Tenant1 | Program1           |
     When I log in as "user11"
     And I navigate to "Certifications" in workplace launcher
     Then I should see "Active certifications"
@@ -84,7 +86,7 @@ Feature: Ensure that actions in certifications manager view work as expected
     Then I log out
 
   Scenario: Delete one certification
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  |
       | Certification1 | 0        | Tenant1 |
       | Certification2 | 1        | Tenant2 |
@@ -112,11 +114,11 @@ Feature: Ensure that actions in certifications manager view work as expected
     Then I log out
 
   Scenario: Test certification edit details modal
-    Given the following tool program data "programs" exist:
+    Given the following "tool_program > programs" exist:
       | fullname | archived | tenant   |
       | Program1 | 0        | Tenant1  |
       | Program2 | 0        | Tenant1  |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | idnumber |
       | Certification1 | 0        | Tenant1 |  num1    |
       | Certification2 | 0        | Tenant1 |  num2    |

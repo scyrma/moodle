@@ -9,13 +9,13 @@ Feature: Edit certification users allocations
       | name    |
       | Tenant1 |
       | Tenant2 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
       | Program2 | 0        | Tenant2 |
       | Program3 | 0        | Tenant1 |
       | Program4 | 0        | Tenant1 |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program   | requirerecertification | recertificationprogram  | expirydateabsolute |
       | Certification1 | 0        | Tenant1 | Program1  | 1                      | Program3                | +5 day             |
       | Certification2 | 0        | Tenant2 | Program2  | 0                      | Program2                | +5 day             |
@@ -31,7 +31,7 @@ Feature: Edit certification users allocations
       | user2    | Tenant1 |
       | manager1 | Tenant1 |
       | manager2 | Tenant2 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user1  |
       | Certification1 | user2  |

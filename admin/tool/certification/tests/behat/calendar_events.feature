@@ -8,7 +8,7 @@ Feature: Ensure calendar events are created when user is allocated into a certif
     Given the following tenants exist:
       | name    |
       | Tenant1 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant   |
       | Program1 | 0        | Tenant1  |
     Given the following "users" exist:
@@ -24,10 +24,10 @@ Feature: Ensure calendar events are created when user is allocated into a certif
       | manager1 | tool_certification_manager | System       |           |
 
   Scenario: Check that certification due date and expiry dates appear in user calendar
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname                | archived | tenant  | program   | startdatetype        | startdaterelative | duedatetype      | duedaterelative | expirydatetype | expirydaterelative |
       | Certification example 1 | 0        | Tenant1 | Program1  | user_allocation_date | 0 week            | after_start_date | 1 week          | after_due_date | 1 week             |
-    And the following tool certification data "certification_users" exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification           | user   |
       | Certification example 1 | user1  |
     Then I log in as "user1"

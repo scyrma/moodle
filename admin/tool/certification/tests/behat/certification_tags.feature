@@ -6,7 +6,7 @@ Feature: Use tags in a certification
 
   Background:
     Given "2" tenants exist with "4" users and "1" courses in each
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | certification_tags | idnumber |
       | Certification1 | 0        | Tenant1 | blue, white        |  num1    |
       | Certification2 | 0        | Tenant1 | blue, yellow       |  num2    |

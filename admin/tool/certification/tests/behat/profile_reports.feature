@@ -6,10 +6,10 @@ Feature: Check user report capabilities for certifications on profile
 
   Background:
     Given "1" tenants exist with "4" users and "1" courses in each
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program       |
       | Certification1 | 0        | Tenant1 | Program1  |
     Given the following "users" exist:
@@ -20,7 +20,7 @@ Feature: Check user report capabilities for certifications on profile
       | user     | tenant  |
       | manager1 | Tenant1 |
       | manager2 | Tenant1 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user11 |
 

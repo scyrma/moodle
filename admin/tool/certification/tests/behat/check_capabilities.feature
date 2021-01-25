@@ -9,11 +9,11 @@ Feature: Check capabilities
       | name    |
       | Tenant1 |
       | Tenant2 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
       | Program2 | 0        | Tenant2 |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program   |
       | Certification1 | 0        | Tenant1 | Program1  |
       | Certification2 | 0        | Tenant2 | Program2  |
@@ -41,7 +41,7 @@ Feature: Check capabilities
       | manager2 | Tenant1 |
       | manager3 | Tenant1 |
       | manager4 | Tenant2 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user   |
       | Certification1 | user4  |
     And the following departments exist in organisation structure:

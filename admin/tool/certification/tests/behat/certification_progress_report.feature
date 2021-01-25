@@ -8,10 +8,10 @@ Feature: Ensure certification progress report works as expected
     Given the following tenants exist:
       | name    |
       | Tenant1 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname     | archived | tenant  | generatecourses |
       | Program_name | 0        | Tenant1 | 1               |
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname         | archived | tenant  | program       |
       | Certification_1A | 0        | Tenant1 | Program_name  |
       | Certification_2B | 0        | Tenant1 | Program_name  |
@@ -29,13 +29,13 @@ Feature: Ensure certification progress report works as expected
       | user3      | Tenant1 |
       | user4      | Tenant1 |
       | manager1   | Tenant1 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification    | user   |
       | Certification_1A | user1  |
       | Certification_1A | user2  |
       | Certification_2B | user1  |
       | Certification_1A | user4  |
-    And the following tool program user allocations are completed:
+    And the following "tool_program > program_completions" exist:
       | program      | user   |
       | Program_name | user2  |
     And the following "role assigns" exist:

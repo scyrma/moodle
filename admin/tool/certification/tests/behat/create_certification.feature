@@ -9,7 +9,7 @@ Feature: Create certification
       | name    |
       | Tenant1 |
       | Tenant2 |
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant   |
       | Program1 | 0        | Tenant1  |
       | Program2 | 1        | Tenant1  |
@@ -131,7 +131,7 @@ Feature: Create certification
     And I log out
 
   Scenario: Create a certification using duplicate certification
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program   |
       | Certification1 | 0        | Tenant1 | Program1  |
     When I log in as "manager1"

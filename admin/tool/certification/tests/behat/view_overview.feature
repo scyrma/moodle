@@ -23,15 +23,15 @@ Feature: View certifications on overview
     And the following users allocations to tenants exist:
       | user     | tenant  |
       | student1 | Tenant1 |
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  | program_tags |
       | Program1 | 0        | Tenant1 | black        |
       | Program2 | 0        | Tenant1 | red          |
-    And the following tool certification data "certifications" exist:
+    And the following "tool_certification > certifications" exist:
       | fullname       | archived | tenant  | program   | certification_tags |
       | Certification1 | 0        | Tenant1 | Program1  | white              |
       | Certification2 | 0        | Tenant1 | Program2  | red, green         |
-    And the following users allocations to certifications exist:
+    And the following "tool_certification > certification_users" exist:
       | certification  | user      |
       | Certification1 | student1  |
       | Certification2 | student1  |

@@ -9,24 +9,24 @@ Feature: Users need to be added to course groups when allocated to certification
     And the following "courses" exist:
       | fullname     | shortname    | summary | groupmode | category |
       | Sharedcourse | sharedcourse |         | 1         | 0        |
-    And the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname  | tenant  | completioncriteria | autocreategroups |
       | Program11 | Tenant1 | 1                  | 1                |
       | Program12 | Tenant1 | 1                  | 1                |
-    And the following tool certification data "certifications" exist:
+    And the following "tool_certification > certifications" exist:
       | fullname        | tenant  | program   | autocreategroups |
       | Certification11 | Tenant1 | Program11 | -1               |
       | Certification12 | Tenant1 | Program12 | 5                |
       | Certification13 | Tenant1 | Program12 | 5                |
 
   Scenario: Users from different certifications may be added to the same or different groups in courses
-    Given the following tool program data "program_courses" exist:
+    Given the following "tool_program > program_courses" exist:
       | program   | course       |
       | Program11 | C11          |
       | Program11 | sharedcourse |
       | Program12 | C12          |
       | Program12 | sharedcourse |
-    And the following tool certification data "certification_users" exist:
+    And the following "tool_certification > certification_users" exist:
       | certification   | user   |
       | Certification11 | user11 |
       | Certification12 | user11 |

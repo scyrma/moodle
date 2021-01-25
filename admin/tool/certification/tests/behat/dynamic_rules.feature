@@ -6,11 +6,11 @@ Feature: Certification conditions and actions are marked as broken if certificat
 
   Background:
     Given "1" tenants exist with "4" users and "1" courses in each
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
       | fullname       | tenant  |
       | Certification1 | Tenant1 |
       | Certification2 | Tenant1 |
-    Given the following users allocations to certifications exist:
+    Given the following "tool_certification > certification_users" exist:
       | certification  | user    |
       | Certification1 | user11  |
       | Certification1 | user12  |

@@ -9,7 +9,7 @@ Feature: View certification manager
       | name    |
       | Tenant1 |
       | Tenant2 |
-    Given the following tool program data "programs" exist:
+    And the following "tool_program > programs" exist:
       | fullname | archived | tenant  |
       | Program1 | 0        | Tenant1 |
       | Program2 | 1        | Tenant1 |
@@ -41,7 +41,7 @@ Feature: View certification manager
     And I should see "Nothing to display"
 
   Scenario: We create one certification
-    Given the following tool certification data "certifications" exist:
+    Given the following "tool_certification > certifications" exist:
     | fullname                | archived | tenant  | program   |
     | Certification example 1 | 0        | Tenant1 | Program1  |
     When I log in as "manager1"
