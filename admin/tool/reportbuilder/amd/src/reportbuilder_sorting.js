@@ -76,7 +76,7 @@ define(
         },
         TEMPLATES = {
             LOADING: 'core/overlay_loading',
-            SORTING: 'tool_reportbuilder/report_sidebar_sorting'
+            SORTING: 'tool_reportbuilder/report_sidebar_settings_sorting'
         };
 
         /**

@@ -45,7 +45,7 @@ Feature: Manage a filter
     And I should not see "Delete filter 'Surname'"
     And I should not see "Delete condition 'Surname'"
     And I should not see "Edit condition name"
-    And I should see "Reset 'Surname' field"
+    And "Reset 'Surname' field" "button" should exist
     And I log out
 
   @javascript

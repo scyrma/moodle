@@ -35,46 +35,39 @@
         "end": true
     }
 }}
+<!--Filter card start html-->
 {{#start}}
-<div class="card reportbuilder-card mb-2" data-id="{{id}}" data-type="{{filtertype}}">
-    <div
-        class='can-collapsed card-header d-flex justify-content-between p-2'
-        data-active='{{active}}'
-    >
+<div class="reportbuilder-card mb-2 pb-2" data-id="{{id}}" data-type="{{filtertype}}">
+    <div class="d-flex align-items-start justify-content-between mb-2" data-active="{{active}}">
+    <!-- Report settings conditions content -->
     {{#editing}}
-        {{{inplaceeditable}}}
-    <span class="text-right">
-         <a href="#" data-action="reset-filter" data-id="{{id}}" data-field="{{label}}" title="{{#str}} resetfield, tool_reportbuilder, {{label}} {{/str}}">
-             {{#pix}} e/backward, core, {{#str}} resetfield, tool_reportbuilder, {{label}} {{/str}} {{/pix}}
-             <span class="sr-only">{{#str}} resetfield, tool_reportbuilder, {{label}} {{/str}}</span>
-         </a>
-        <a href="#" data-action="delete-condition" data-id="{{id}}" data-name="{{label}}" title="{{#str}}deletecondition, tool_reportbuilder, {{label}}{{/str}}">
-            {{#pix}}i/trash, core{{/pix}}
-        </a>
-    </span>
+        <div class="filter-name">
+            {{{inplaceeditable}}}
+        </div>
+        <span class="text-right d-flex align-items-center">
+            <button class="btn btn-link mr-2 pr-2 border-right" data-action="reset-filter" data-id="{{id}}" data-field="{{label}}" title="{{#str}} resetfield, tool_reportbuilder, {{label}} {{/str}}">
+                {{#str}} reset {{/str}}
+            </button>
+            <a href="#" data-action="delete-condition" data-id="{{id}}" data-name="{{label}}" title="{{#str}}deletecondition, tool_reportbuilder, {{label}}{{/str}}">
+                {{#pix}}i/trash, core{{/pix}}
+            </a>
+        </span>
     {{/editing}}
+    <!-- Report sidebar content -->
     {{^editing}}
-        <div class="btn btn-link btn-block text-left ws-toggle nomargin ml-1" role="button" data-toggle="collapse" data-target="#collapse-{{id}}" aria-expanded="true" aria-controls="collapse-{{id}}">
-            <span class="togglesectionicon collapsed-icon-container">
-                {{#pix}} t/collapsedcaret, core, {{#str}} expand, moodle {{/str}}{{/pix}}
-            </span>
-            <span class="togglesectionicon expanded-icon-container">
-                {{#pix}} t/expanded, core, {{#str}} collapse, moodle {{/str}}{{/pix}}
-            </span>
+        <div class="filter-name">
             {{label}}
         </div>
         <button class="btn btn-link" data-action="reset-filter" data-id="{{id}}" title="{{#str}} resetfield, tool_reportbuilder, {{label}} {{/str}}">
-            {{#pix}} e/backward, core, {{#str}} resetfield, tool_reportbuilder, {{label}} {{/str}} {{/pix}}
-            <span class="sr-only">{{#str}} resetfield, tool_reportbuilder, {{label}} {{/str}}</span>
+            {{#str}} reset {{/str}}
         </button>
     {{/editing}}
     </div>
-    <div id="collapse-{{id}}" class="collapse show">
-        <div class="card-body" data-id="{{id}}">
+    <div class="" data-id="{{id}}">
 {{/start}}
 
+<!--Filter card end html -->
 {{#end}}
-        </div>
     </div>
 </div>
 {{/end}}

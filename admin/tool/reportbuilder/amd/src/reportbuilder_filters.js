@@ -64,7 +64,7 @@ define([
         },
             TEMPLATES = {
                 LOADING: 'core/overlay_loading',
-                FILTERSMANAGER: 'tool_reportbuilder/report_filters_manager',
+                FILTERSMANAGER: 'tool_reportbuilder/report_active_filters',
                 AVAILABLEFILTERS: 'tool_reportbuilder/report_available_filters'
         };
 

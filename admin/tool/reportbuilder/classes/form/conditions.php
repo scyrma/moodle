@@ -89,8 +89,12 @@ class conditions extends modal_form {
             $resetbutton = \html_writer::link(
                 '#',
                 get_string("resetall", 'tool_reportbuilder'),
-                array('data-action' => 'reset-all', 'title' => get_string("resetallconditions", 'tool_reportbuilder')));
-            $mform->addElement('html', \html_writer::div($resetbutton, 'p-2 mb-5 d-flex justify-content-end'));
+                [
+                    'data-action' => 'reset-all',
+                    'title' => get_string("resetallconditions", 'tool_reportbuilder'),
+                    'class' => 'btn btn-sm btn-outline-secondary'
+                ]);
+            $mform->addElement('html', \html_writer::div($resetbutton, 'py-2 mb-5 d-flex border-top justify-content-end'));
         }
 
         $mform->disable_form_change_checker();

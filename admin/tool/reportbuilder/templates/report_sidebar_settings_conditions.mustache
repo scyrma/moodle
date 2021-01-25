@@ -22,43 +22,32 @@
     and shall prevail.
 }}
 {{!
-    @template tool_reportbuilder/system_report
+    @template tool_reportbuilder/report_sidebar_settings_conditions
 
-    Template to show a system report
+    Template for the conditions
 
     Classes required for JS:
     -
     Data attributes required for JS:
     -
     Context variables required for this template:
-    -
+    * hasfiltersselected -
+    * nofiltersurl -
+    * noconditionsurl -
+    * conditionshelp - Help icon.
 
     Example context (json):
     {
-        "id": "1",
-        "table": "The table goes here",
-        "filtersinuse": "",
-        "hassidebar": false
+        "hasfiltersselected": false,
+        "nofiltersurl": "http://moodlehq.local/theme/image.php/workplace/tool_reportbuilder/1540388927/no-filters",
+        "noconditionsurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1535727318/no-filters",
+        "conditionshelp": true
     }
 }}
-<div class="tool_reportbuilder_report report system-report" data-region="system-report" data-reportid="{{id}}" data-source="{{source}}">
-    <div class="d-flex">
-        <div class="w-100">
-            {{> tool_reportbuilder/filters_icon}}
-            <div class="table-responsive position-relative" data-region="data-report" data-parameters="{{parameters}}">
-                {{{table}}}
-            </div>
-        </div>
-        {{# hassidebar}}
-            {{> tool_reportbuilder/report_sidebar}}
-        {{/ hassidebar}}
+
+<div class="tool_reportbuilder_report_sidebar_conditions" data-region="report-conditions">
+    {{> tool_reportbuilder/report_available_conditions}}
+    <div data-region="active-conditions" class="form-vertical">
+        {{> tool_reportbuilder/report_active_conditions}}
     </div>
 </div>
-{{#js}}
-    M.util.js_pending('tool_reportbuilder_system_report');
-    require(['tool_reportbuilder/system_report'],
-        function() {
-            M.util.js_complete('tool_reportbuilder_system_report');
-        }
-    );
-{{/js}}

@@ -167,14 +167,14 @@ Feature: Manage a report
     And I should not see "Prueba"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Sorting"
-    And I should see "Test&\"1" in the ".tool_reportbuilder_report_sidebar_sorting" "css_element"
+    And I should see "Test&\"1" in the ".tool_reportbuilder_report_sidebar_settings_sorting" "css_element"
     And I should not see "Prueba"
     # Now refresh the page and check the same - this will check the initial loading and moving.
     And I navigate to "Reports > Report builder > Manage custom reports" in site administration
     And I click on "Edit content" "link" in the "Report2" "table_row"
     And I click on "Show/hide filters sidebar" "button"
     And I follow "Sorting"
-    And I should see "Test&\"1" in the ".tool_reportbuilder_report_sidebar_sorting" "css_element"
+    And I should see "Test&\"1" in the ".tool_reportbuilder_report_sidebar_settings_sorting" "css_element"
     And I should not see "Prueba"
     And I click on "Move column Test&\"1" "button"
     And I click on "After \" ID number \"" "link" in the "Move column Test&\"1" "dialogue"

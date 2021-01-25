@@ -22,7 +22,7 @@
     and shall prevail.
 }}
 {{!
-    @template tool_reportbuilder/report_filters
+    @template tool_reportbuilder/report_sidebar_settings_filters
 
     Template for manage filters.
 
@@ -49,14 +49,7 @@
             {{> tool_reportbuilder/report_available_filters}}
         </div>
         <div data-region="active-filters" class="form-vertical">
-            {{> tool_reportbuilder/report_filters_manager}}
+            {{> tool_reportbuilder/report_active_filters}}
         </div>
     {{/canaddfilters}}
-    {{#filtersform}}
-        <div data-region="active-filters" class="form-vertical position-relative ml-2">
-            <div class="active_filters_form_wrapper" data-region="active-filters-form">
-                {{{filtersform}}}
-            </div>
-        </div>
-    {{/filtersform}}
 </div>

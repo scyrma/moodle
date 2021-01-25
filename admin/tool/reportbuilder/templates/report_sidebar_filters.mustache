@@ -23,65 +23,32 @@
 }}
 {{!
     @template tool_reportbuilder/report_sidebar_filters
-     Template for sidebar of the report with the filters, sorting and conditions tabs.
-     Classes required for JS:
-    -
-     Data attributes required for JS:
-    -
-    Context variables required for this template:
-        * hasfiltersselected bool
-        * nofiltersurl string
-        * nocolumnsurl string
-        * filtersform string
-        * sortablecolumns id
 
-     Example context (json):
+    Template for manage filters.
+
+    Classes required for JS:
+    -
+    Data attributes required for JS:
+    * data-action="reset-all"  - Required for call the webservice to reset all filters
+
+    Context variables required for this template:
+    -
+
+    Example context (json):
     {
-        "editon": true,
-        "hasfiltersselected": false,
         "canaddfilters": true,
-        "nofiltersurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1540388927/no-filters",
-        "nocolumnsurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1535727318/no-filters",
-        "noconditionsurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1535727318/no-filters",
-        "showexpandedintemplateeditor": true
+        "hasfiltersselected": false,
+        "nofiltersurl": "http://moodlehq.local/theme/image.php/workplace/tool_reportbuilder/1540388927/no-filters",
+        "filtershelp": true
     }
 }}
-<div class="tool_reportbuilder_report_sidebar_filters sidebar {{^showexpandedintemplateeditor}}collapse{{/showexpandedintemplateeditor}}" id="filters" data-region="sidebar-filters" style="min-width: 350px">
-    {{#editon}}
-        <ul class="nav nav-tabs nav-fill flex-nowrap ml-2" id="sidebar-pills" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link d-flex active pr-4" id="conditions-tab" data-toggle="tab" href="#conditionstab" role="tab" aria-controls="conditionstab" aria-selected="true">
-                    <span class="mr-1">{{# str }} conditionstab, tool_reportbuilder {{/ str }} </span>
-                </a>
-            </li>
-            <li>{{#conditionshelp}}{{>tool_reportbuilder/help_icon}}{{/conditionshelp}}</li>
-            <li class="nav-item">
-                <a class="nav-link d-flex pr-4" id="filters-tab" data-toggle="tab" href="#filterstab" role="tab" aria-controls="filterstab" aria-selected="false">
-                    <span class="mr-1">{{# str }} filterstab, tool_reportbuilder {{/ str }}</span>
-                </a>
-            </li>
-            <li>{{#filtershelp}}{{>tool_reportbuilder/help_icon}}{{/filtershelp}}</li>
-            <li class="nav-item">
-                <a class="nav-link d-flex pr-4" id="sorting-tab" data-toggle="tab" href="#sortingtab" role="tab" aria-controls="sortingtab" aria-selected="false">
-                    <span class="mr-1">{{# str }} sortingtab, tool_reportbuilder {{/ str }}</span>
-                </a>
-            </li>
-            <li>{{#sortingshelp}}{{>tool_reportbuilder/help_icon}}{{/sortingshelp}}</li>
-        </ul>
-        <div class="tab-content card border-top-0 ml-2">
-            <div class="tab-pane h-100 fade active show p-2" id="conditionstab" role="tabpanel" aria-labelledby="conditions-tab">
-                {{> tool_reportbuilder/report_sidebar_conditions}}
-            </div>
 
-            <div class="tab-pane h-100 fade p-2" id="filterstab" role="tabpanel" aria-labelledby="filters-tab">
-                {{> tool_reportbuilder/report_filters}}
-            </div>
-            <div class="tab-pane h-100 fade p-2" id="sortingtab" role="tabpanel" aria-labelledby="sorting-tab" data-region="sorting-tab">
-                {{> tool_reportbuilder/report_sidebar_sorting}}
+<div class="tool_reportbuilder_report_filters ml-3 pl-3 pt-3 border-left" data-region="report-filters">
+    {{#filtersform}}
+        <div data-region="active-filters" class="form-vertical position-relative ml-2">
+            <div class="active_filters_form_wrapper" data-region="active-filters-form">
+                {{{filtersform}}}
             </div>
         </div>
-    {{/editon}}
-    {{^editon}}
-        {{> tool_reportbuilder/report_filters}}
-    {{/editon}}
+    {{/filtersform}}
 </div>

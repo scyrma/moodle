@@ -22,32 +22,35 @@
     and shall prevail.
 }}
 {{!
-    @template tool_reportbuilder/report_sidebar_conditions
-
-    Template for the conditions
-
-    Classes required for JS:
+    @template tool_reportbuilder/report_sidebar
+     Template for sidebar of the report with the filters, sorting and conditions tabs.
+     Classes required for JS:
     -
-    Data attributes required for JS:
+     Data attributes required for JS:
     -
     Context variables required for this template:
-    * hasfiltersselected -
-    * nofiltersurl -
-    * noconditionsurl -
-    * conditionshelp - Help icon.
+        * hasfiltersselected bool
+        * nofiltersurl string
+        * nocolumnsurl string
+        * filtersform string
+        * sortablecolumns id
 
-    Example context (json):
+     Example context (json):
     {
+        "editon": true,
         "hasfiltersselected": false,
-        "nofiltersurl": "http://moodlehq.local/theme/image.php/workplace/tool_reportbuilder/1540388927/no-filters",
+        "canaddfilters": true,
+        "nofiltersurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1540388927/no-filters",
+        "nocolumnsurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1535727318/no-filters",
         "noconditionsurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1535727318/no-filters",
-        "conditionshelp": true
+        "showexpandedintemplateeditor": true
     }
 }}
-
-<div class="tool_reportbuilder_report_sidebar_conditions" data-region="report-conditions">
-    {{> tool_reportbuilder/report_available_conditions}}
-    <div data-region="active-conditions" class="form-vertical">
-        {{> tool_reportbuilder/report_active_conditions}}
-    </div>
+<div class="tool_reportbuilder_report_sidebar sidebar {{^showexpandedintemplateeditor}}collapse{{/showexpandedintemplateeditor}}" id="filters" data-region="sidebar-filters" style="min-width: 350px">
+    {{#editon}}
+        {{> tool_reportbuilder/report_sidebar_settings}}
+    {{/editon}}
+    {{^editon}}
+        {{> tool_reportbuilder/report_sidebar_filters}}
+    {{/editon}}
 </div>
