@@ -3907,6 +3907,10 @@ class core_course_external extends external_api {
             );
         }
 
+        /** @uses tool_program\api::filter_by_hideprogramcourses() */
+        $filteredcourses = component_class_callback('tool_program\api', 'filter_by_hideprogramcourses',
+            [$filteredcourses]);
+
         $renderer = $PAGE->get_renderer('core');
         $formattedcourses = array_map(function($course) use ($renderer, $favouritecourseids) {
             if ($course == null) {
