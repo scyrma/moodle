@@ -53,7 +53,11 @@ class reset_program extends \core\task\adhoc_task {
     public function execute() {
         // Get the custom data.
         $data = $this->get_custom_data();
-        $programuser = new program_user($data->programuser);
+        $programuser = new program_user(0, (object)[
+            'programid' => $data->programid,
+            'userid' => $data->userid,
+            'certificationid' => 0,
+        ]);
         \tool_program\api::reset_program_progress($programuser, $data->marknotcompleted, $data->resetcourses);
     }
 }

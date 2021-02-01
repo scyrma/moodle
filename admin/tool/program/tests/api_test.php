@@ -4018,9 +4018,187 @@ class tool_program_api_testcase extends advanced_testcase {
         $this->assertTrue(api::is_course_in_set($childset->get('id'), $course->id));
     }
 
-    // TODO WP-1577: test add_calendar_event.
-    // TODO WP-1577: test update_calendar_event.
-    // TODO WP-1577: test delete_calendar_events.
+    /**
+     * Test program calendar event is created.
+     */
+    public function test_add_calendar_event(): void {
+        global $DB;
+        $program = $this->generator->generate_program();
+        $user = self::getDataGenerator()->create_user();
+        $duedate = time() + DAYSECS;
+
+        $data = (object) [
+            'userid' => $user->id,
+            'name' => $program->get_formatted_name(),
+            'programid' => $program->get('id'),
+            'timestart' => $duedate,
+            'programdatetype' => constants::CALENDAR_EVENT_DUE_DATE,
+        ];
+
+        $result = $DB->get_records('event');
+        $this->assertEmpty($result);
+
+        api::add_calendar_event($data);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(1, $result);
+        $result = reset($result);
+        $str = get_string('calendarduedate', 'tool_program', $program->get_formatted_name());
+        $this->assertEquals($str, $result->name);
+        $this->assertEquals($str, $result->description);
+        $this->assertEquals($user->id, $result->userid);
+        $this->assertEquals('tool_program', $result->component);
+        $this->assertEquals($program->get('id'), $result->instance);
+        $this->assertEquals('tool_program' . constants::CALENDAR_EVENT_DUE_DATE, $result->eventtype);
+        $this->assertEquals($duedate, $result->timestart);
+        $this->assertEquals(1, $result->visible);
+    }
+
+    /**
+     * Test program calendar event is updated.
+     */
+    public function test_update_calendar_event(): void {
+        global $DB;
+        $program = $this->generator->generate_program();
+        $user = self::getDataGenerator()->create_user();
+        $enddate = time() + DAYSECS;
+
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $program->get_formatted_name(),
+            'programid' => $program->get('id'),
+            'timestart' => $enddate,
+            'programdatetype' => constants::CALENDAR_EVENT_END_DATE,
+        ];
+
+        api::add_calendar_event($data);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(1, $result);
+        $result = reset($result);
+        $str = get_string('calendarenddate', 'tool_program', $program->get_formatted_name());
+        $this->assertEquals($str, $result->name);
+        $this->assertEquals($str, $result->description);
+        $this->assertEquals($user->id, $result->userid);
+        $this->assertEquals('tool_program', $result->component);
+        $this->assertEquals($program->get('id'), $result->instance);
+        $this->assertEquals('tool_program' . constants::CALENDAR_EVENT_END_DATE, $result->eventtype);
+        $this->assertEquals($enddate, $result->timestart);
+
+        $newenddate = $enddate + DAYSECS;
+        $data = (object)[
+            'userid' => $user->id,
+            'programid' => $program->get('id'),
+            'name' => $program->get_formatted_name(),
+            'timestart' => $newenddate,
+            'programdatetype' => constants::CALENDAR_EVENT_END_DATE,
+        ];
+        api::update_calendar_event($data);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(1, $result);
+        $result = reset($result);
+        $this->assertEquals($user->id, $result->userid);
+        $this->assertEquals('tool_program', $result->component);
+        $this->assertEquals($program->get('id'), $result->instance);
+        $this->assertEquals('tool_program' . constants::CALENDAR_EVENT_END_DATE, $result->eventtype);
+        $this->assertEquals($newenddate, $result->timestart);
+
+        // Try to update a non existent event (CALENDAR_EVENT_DUE_DATE) and it will create it.
+        $data->programdatetype = constants::CALENDAR_EVENT_DUE_DATE;
+        $newdate = time() + 3 * DAYSECS;
+        $data->timestart = $newdate;
+        api::update_calendar_event($data);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(2, $result);
+    }
+
+    /**
+     * Test program calendar events are deleted.
+     */
+    public function test_delete_calendar_events(): void {
+        global $DB;
+        $program = $this->generator->generate_program();
+        $user = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+        $duedate = time() + DAYSECS;
+        $enddate = time() + 2 * DAYSECS;
+
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $program->get_formatted_name(),
+            'programid' => $program->get('id'),
+            'timestart' => $duedate,
+            'programdatetype' => constants::CALENDAR_EVENT_DUE_DATE,
+        ];
+        api::add_calendar_event($data);
+
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $program->get_formatted_name(),
+            'programid' => $program->get('id'),
+            'timestart' => $enddate,
+            'programdatetype' => constants::CALENDAR_EVENT_END_DATE,
+        ];
+        api::add_calendar_event($data);
+
+        $this->assertCount(2, $DB->get_records('event'));
+
+        // Try to delete non existent events.
+        $data = (object) [
+            'userid' => $user2->id,
+            'programid' => $program->get('id'),
+        ];
+        api::delete_calendar_events($data);
+
+        $this->assertCount(2, $DB->get_records('event'));
+
+        // Delete both user events.
+        $data = (object) [
+            'userid' => $user->id,
+            'programid' => $program->get('id'),
+        ];
+        api::delete_calendar_events($data);
+
+        $this->assertEmpty($DB->get_records('event'));
+
+        // Test to remove just one specific event type.
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $program->get_formatted_name(),
+            'programid' => $program->get('id'),
+            'timestart' => $duedate,
+            'programdatetype' => constants::CALENDAR_EVENT_DUE_DATE,
+        ];
+        api::add_calendar_event($data);
+
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $program->get_formatted_name(),
+            'programid' => $program->get('id'),
+            'timestart' => $enddate,
+            'programdatetype' => constants::CALENDAR_EVENT_END_DATE,
+        ];
+        api::add_calendar_event($data);
+
+        $this->assertCount(2, $DB->get_records('event'));
+
+        // Delete just the CALENDAR_EVENT_DUE_DATE event.
+        $data = (object) [
+            'userid' => $user->id,
+            'programid' => $program->get('id'),
+        ];
+        api::delete_calendar_events($data, constants::CALENDAR_EVENT_DUE_DATE);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(1, $result);
+        $result = reset($result);
+        $this->assertEquals($user->id, $result->userid);
+        $this->assertEquals('tool_program', $result->component);
+        $this->assertEquals($program->get('id'), $result->instance);
+        $this->assertEquals('tool_program' . constants::CALENDAR_EVENT_END_DATE, $result->eventtype);
+    }
 
     /**
      * Test send program completed notification.

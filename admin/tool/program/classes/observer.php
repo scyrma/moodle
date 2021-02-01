@@ -35,6 +35,7 @@ defined('MOODLE_INTERNAL') || die;
 
 use core\event\course_completed;
 use tool_program\api;
+use tool_program\constants;
 use tool_program\event\program_completed;
 use tool_program\event\user_allocation_created;
 use tool_program\event\user_allocation_deleted;
@@ -70,6 +71,13 @@ class tool_program_observer {
     public static function on_program_completed(program_completed $event): void {
         // Send notification to user.
         api::send_program_completed_notification($event->relateduserid, $event->other['programid']);
+
+        // Program is completed. Delete Due date calendar event for this user and program.
+        $data = (object) [
+            'userid' => $event->relateduserid,
+            'programid' => $event->other['programid'],
+        ];
+        api::delete_calendar_events($data, constants::CALENDAR_EVENT_DUE_DATE);
     }
 
     /**

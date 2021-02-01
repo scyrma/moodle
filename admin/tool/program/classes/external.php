@@ -799,16 +799,27 @@ class external extends external_api {
         foreach ($programs as $program) {
             $programstreeprogress[$program->get('id')] = new program_tree_progress($program, $userid);
         }
+
+        // Array with all user enroled course IDs (from program enrolments and from manual enrolments).
+        // This will be used to retrieve all lastaccess courses values.
+        $courseids = [];
+
+        // Get user enrolled courses using the enrol program plugin.
+        // The variable $programsenrolledcourses will store all courses the user is enroled using the enrol program plugin.
         $programsenrolledcourses = [];
         foreach ($programstreeprogress as $programtreeprogress) {
-            $programsenrolledcourses[$programtreeprogress->get_program()->get('id')] = $programtreeprogress->get_user_enrolments();
+            $userenrolments = $programtreeprogress->get_user_enrolments();
+            $courseids = array_merge($courseids, array_column($userenrolments, 'courseid'));
+            $programsenrolledcourses[$programtreeprogress->get_program()->get('id')] = $userenrolments;
         }
 
         // Get user enrolled courses excluding courses enrolled only with the enrol program plugin.
+        // The variable $exportedcourses will store all courses the user is enroled that exclude all courses enrolled only with
+        // the enrol program plugin.
         $exportedcourses = api::get_user_accessible_courses($userid);
         $coursescompletion = api::get_user_courses_completion($exportedcourses, $userid);
         $coursesprogress = api::get_user_courses_progress($userid, $exportedcourses, $coursescompletion);
-        $courseids = array_keys($exportedcourses);
+        $courseids = array_merge(array_keys($exportedcourses), $courseids);
 
         foreach ($exportedcourses as $exportedcourse) {
             $exportedcourse->coursecompletion = $coursescompletion[$exportedcourse->id];
@@ -978,9 +989,10 @@ class external extends external_api {
 
         $resettask = new reset_program();
         $resettask->set_custom_data(array(
-            'programuser' => $programuser->get('id'),
+            'programid' => $programuser->get('programid'),
+            'userid' => $programuser->get('userid'),
             'marknotcompleted' => true,
-            'resetcourses' => true
+            'resetcourses' => true,
         ));
         $resettask->set_component('tool_program');
         $resettask->set_userid($programuser->get('userid'));
@@ -1250,7 +1262,8 @@ class external extends external_api {
             } else {
                 $resettask = new reset_program();
                 $resettask->set_custom_data(array(
-                    'programuser' => $programuser->get('id'),
+                    'programid' => $programuser->get('programid'),
+                    'userid' => $programuser->get('userid'),
                     'marknotcompleted' => true,
                     'resetcourses' => true
                 ));

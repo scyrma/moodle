@@ -122,7 +122,10 @@ class allocations_report extends system_report {
         // Get list of program allocations pending to be reseted.
         $tasks = \core\task\manager::get_adhoc_tasks(reset_program::class);
         foreach ($tasks as $task) {
-            $this->tasks[] = $task->get_custom_data()->programuser;
+            $this->tasks[] = [
+                'programid' => $task->get_custom_data()->programid,
+                'userid' => $task->get_custom_data()->userid,
+            ];
         }
 
         $this->add_actions();
@@ -292,7 +295,11 @@ class allocations_report extends system_report {
         ]);
         // Check if program can be reseted for this user or if reset is in task queue.
         $action->add_callback(function($row) use ($program) {
-            if (in_array($row->id, $this->tasks, true)) {
+            // Find any existing tasks that reference the current userid & program - prevent user resetting it again.
+            $allocationsinpendingtask = array_filter($this->tasks, static function($task) use ($row) {
+                return (int) $row->programid === (int) $task['programid'] && (int) $row->userid === (int) $task['userid'];
+            });
+            if (!empty($allocationsinpendingtask)) {
                 return false;
             }
             $programuser = new program_user(0, $row);

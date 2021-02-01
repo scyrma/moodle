@@ -194,6 +194,12 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, Notificat
         // Sort by element last access date.
         } else if (sortorder === 'lastaccess') {
             programs.sort((a, b) => {
+                // If lastaccess is the same order by name to be consistent with the app.
+                if ($(b).data("lastaccess") === $(a).data("lastaccess")) {
+                    const compareA = $(a).find('[data-region="programname"]').text().toLowerCase(),
+                        compareB = $(b).find('[data-region="programname"]').text().toLowerCase();
+                    return compareA.localeCompare(compareB);
+                }
                 return $(b).data("lastaccess") - $(a).data("lastaccess");
             });
         }

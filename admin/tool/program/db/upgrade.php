@@ -464,5 +464,29 @@ function xmldb_tool_program_upgrade(int $oldversion) {
         upgrade_plugin_savepoint(true, 2020111300, 'tool', 'program');
     }
 
+    if ($oldversion < 2021011902) {
+        // Modify pending program reset pending tasks customdata.
+        $params = ['component' => 'tool_program', 'classname' => '\tool_program\task\reset_program'];
+        $tasks = $DB->get_records('task_adhoc', $params);
+        foreach ($tasks as $record) {
+            $customdata = @json_decode($record->customdata, true);
+            $programuser = $DB->get_record('tool_program_users', ['id' => $customdata['programuser']]);
+            if ($programuser) {
+                // Store programid and userid instead of programuser in customdata if programuser is still found.
+                $customdata['programid'] = $programuser->programid;
+                $customdata['userid'] = $programuser->userid;
+                unset($customdata['programuser']);
+                $record->customdata = json_encode($customdata);
+                $DB->update_record('task_adhoc', $record);
+            } else {
+                // Delete record because we cannot find out programid and userid anymore.
+                $DB->delete_records('task_adhoc', ['id' => $record->id]);
+            }
+        }
+
+        // Program savepoint reached.
+        upgrade_plugin_savepoint(true, 2021011902, 'tool', 'program');
+    }
+
     return true;
 }

@@ -233,8 +233,8 @@ class program_overview_view_exporter extends exporter {
                 // Sort by conclusion date.
                 array_multisort($sortduedate, SORT_ASC, $lastaccess, SORT_DESC, $learningelements);
             } else {
-                // Sort by last accessed time.
-                array_multisort($lastaccess, SORT_DESC, $learningelements);
+                // Sort by last accessed time, and in case it's the same by name like in program_overview JS file.
+                array_multisort($lastaccess, SORT_DESC, $sortname, SORT_ASC, $learningelements);
             }
         }
 

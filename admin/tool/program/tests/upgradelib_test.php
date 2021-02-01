@@ -106,7 +106,7 @@ class tool_program_upgradelib_testcase extends advanced_testcase {
         $this->assertCount(2, $DB->get_records('tool_program_users', ['programid' => $programid]));
         $this->assertCount(1, $DB->get_records_select('tool_program_courses', 'setid' . $setsql, $setparams));
         $this->assertCount(1, $DB->get_records_select('tool_program_set_completion', 'setid' . $setsql, $setparams));
-        $this->assertCount(4, $DB->get_records_select('event',
+        $this->assertCount(3, $DB->get_records_select('event',
             'eventtype LIKE :eventtype AND instance = :instance',
             ['eventtype' => 'tool_program%', 'instance' => $programid]));
 
@@ -136,7 +136,7 @@ class tool_program_upgradelib_testcase extends advanced_testcase {
         $this->assertCount(2, $DB->get_records('tool_program_users', ['programid' => $programid]));
         $this->assertCount(1, $DB->get_records_select('tool_program_courses', 'setid' . $setsql, $setparams));
         $this->assertCount(1, $DB->get_records_select('tool_program_set_completion', 'setid' . $setsql, $setparams));
-        $this->assertCount(4, $DB->get_records_select('event',
+        $this->assertCount(3, $DB->get_records_select('event',
             'eventtype LIKE :eventtype AND instance = :instance',
             ['eventtype' => 'tool_program%', 'instance' => $programid]));
         // TODO WP-1577 the number of events is not correct currently, for user who completed the program there should be no

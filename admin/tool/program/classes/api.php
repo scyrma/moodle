@@ -631,7 +631,7 @@ class api {
         if ($newuser->get('duedate') !== constants::DATE_NONE) {
             $data = (object) [
                 'userid' => $newuser->get('userid'),
-                'name' => format_string($program->get('fullname')),
+                'name' => $program->get_formatted_name(),
                 'programid' => $program->get('id'),
                 'timestart' => $newuser->get('duedate'),
                 'programdatetype' => constants::CALENDAR_EVENT_DUE_DATE
@@ -641,7 +641,7 @@ class api {
         if ($newuser->get('enddate') !== constants::DATE_NONE) {
             $data = (object) [
                 'userid' => $newuser->get('userid'),
-                'name' => format_string($program->get('fullname')),
+                'name' => $program->get_formatted_name(),
                 'programid' => $program->get('id'),
                 'timestart' => $newuser->get('enddate'),
                 'programdatetype' => constants::CALENDAR_EVENT_END_DATE
@@ -816,7 +816,7 @@ class api {
             // Create or update due date calendar event.
             $data = (object) [
                 'userid' => $userid,
-                'name' => format_string($program->get('fullname')),
+                'name' => $program->get_formatted_name(),
                 'programid' => $programid,
                 'timestart' => $userduedate,
                 'programdatetype' => constants::CALENDAR_EVENT_DUE_DATE
@@ -828,7 +828,7 @@ class api {
             // Create or update end date calendar event.
             $data = (object) [
                 'userid' => $userid,
-                'name' => format_string($program->get('fullname')),
+                'name' => $program->get_formatted_name(),
                 'programid' => $programid,
                 'timestart' => $userenddate,
                 'programdatetype' => constants::CALENDAR_EVENT_END_DATE
@@ -1754,7 +1754,7 @@ class api {
             // Create or update due date calendar event.
             $data = (object) [
                 'userid' => $userid,
-                'name' => format_string($program->get('fullname')),
+                'name' => $program->get_formatted_name(),
                 'programid' => $programid,
                 'timestart' => $validateddata->duedate,
                 'programdatetype' => constants::CALENDAR_EVENT_DUE_DATE
@@ -1766,7 +1766,7 @@ class api {
             // Create or update end date calendar event.
             $data = (object) [
                 'userid' => $userid,
-                'name' => format_string($program->get('fullname')),
+                'name' => $program->get_formatted_name(),
                 'programid' => $programid,
                 'timestart' => $validateddata->enddate,
                 'programdatetype' => constants::CALENDAR_EVENT_END_DATE
@@ -2754,6 +2754,9 @@ class api {
     /**
      * Update a calendar event.
      *
+     * Parameter $data must contain: userid, programid, name, timestart and programdatetype.
+     * Values for programdatetype can be: constants::CALENDAR_EVENT_DUE_DATE and constants::CALENDAR_EVENT_END_DATE.
+     *
      * @param stdClass $data
      */
     public static function update_calendar_event(stdClass $data): void {
@@ -2780,9 +2783,24 @@ class api {
      * Delete calendar events for a program user.
      *
      * @param stdClass $data
+     * @param int|null $eventtype Remove only a specific event type (eg. On program completion remove due date event).
      */
-    public static function delete_calendar_events(stdClass $data): void {
+    public static function delete_calendar_events(stdClass $data, int $eventtype = null): void {
         global $DB;
+
+        // Remove only a specific event type.
+        if ($eventtype) {
+            $params = [
+                'component' => 'tool_program',
+                'eventtype' => 'tool_program' . $eventtype,
+                'instance' => $data->programid,
+                'userid' => $data->userid,
+            ];
+
+            $DB->delete_records('event', $params);
+
+            return;
+        }
 
         $params = [
             'component' => 'tool_program',

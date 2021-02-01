@@ -181,6 +181,7 @@ class tool_program_external_testcase extends externallib_advanced_testcase {
     }
 
     public function test_get_user_programs(): void {
+        global $DB;
         $program1 = $this->generator->generate_program((object) [
             'fullname' => 'Program number 1',
             'tenantid' => $this->defaulttenantid,
@@ -203,54 +204,84 @@ class tool_program_external_testcase extends externallib_advanced_testcase {
         $this->assertDebuggingNotCalled();
         $this->assertCount(count($cleanresult), $result);
 
+        // User is not enroled to any program or course.
         $this->assertTrue($cleanresult['status']);
         $this->assertEmpty($cleanresult['programs']);
         $this->assertEmpty($cleanresult['courses']);
 
+        // Add course1 to program1.
+        $course1 = $this->getDataGenerator()->create_course();
+        $programcourse = $this->generator->add_course_to_set($course1->id, $program1->get_base_set()->get('id'));
+
+        // Allocate user into program1, program2 and program4.
         $userdata = (object) [
             'userid' => $this->user->id,
             'certificationid' => 0,
         ];
-        api::allocate_user($program1, $userdata);
+        $programuser1 = api::allocate_user($program1, $userdata);
         $programuser2 = api::allocate_user($program2, $userdata);
         api::allocate_user($program4, $userdata);
+        $this->generator->enrol_user_to_program_course($programcourse, $programuser1);
 
-        // Allocate user into a separate course.
-        $course1 = $this->getDataGenerator()->create_course();
-        $this->getDataGenerator()->enrol_user($this->user->id, $course1->id);
+        // Set a lastaccess time for the user for course1 (User has accessed the course at least this one time).
+        // Lastaccess value is used on the UI for ordering courses and programs.
+        $timeaccess1 = time();
+        $DB->insert_record('user_lastaccess',
+            ['userid' => $this->user->id, 'courseid' => $course1->id, 'timeaccess' => $timeaccess1]);
+
+        // Allocate user into a separate course that does not belong to a program and also add a different lastaccess time.
+        $course2 = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($this->user->id, $course2->id);
+        $timeaccess2 = time() + DAYSECS;
+        $DB->insert_record('user_lastaccess',
+            ['userid' => $this->user->id, 'courseid' => $course2->id, 'timeaccess' => $timeaccess2]);
 
         $result = external::get_user_programs();
         $cleanresult = external_api::clean_returnvalue(external::get_user_programs_returns(), $result);
         $this->assertDebuggingNotCalled();
         $this->assertCount(count($cleanresult), $result);
 
+        // Check that WS returns that user is enroled into 3 programs and 1 separate course.
         $this->assertNotEmpty($cleanresult);
         $this->assertCount(3, $cleanresult['programs']);
         $fullnames = array_map(static function($program) {
             return $program->fullname;
         }, $result['programs']);
-        $this->assertContains($program1->get('fullname'), $fullnames);
-        $this->assertContains($program2->get('fullname'), $fullnames);
-        $this->assertContains($program4->get('fullname'), $fullnames);
+        $this->assertContains($program1->get_formatted_name(), $fullnames);
+        $this->assertContains($program2->get_formatted_name(), $fullnames);
+        $this->assertContains($program4->get_formatted_name(), $fullnames);
+        // Check lastaccess values. One program has been accessed at least once and the other two have never been accessed.
+        $this->assertEqualsCanonicalizing([$timeaccess1, 0, 0], array_column($cleanresult['programs'], 'lastaccess'));
+        $programswithtimeaccess = array_filter($cleanresult['programs'], function($program) {
+            return $program['lastaccess'] > 0;
+        });
+        $this->assertEquals($program1->get('id'), $programswithtimeaccess[0]['id']);
+        // Check suser is enroled to course2 using manual enrolment and lastaccess value is correct.
+        $this->assertCount(1, $cleanresult['courses']);
+        $this->assertEquals($course2->id, $cleanresult['courses'][0]['id']);
+        $this->assertEquals($timeaccess2, $cleanresult['courses'][0]['lastaccess']);
 
+        // Allocate user into program3.
         $userdata = (object) [
             'userid' => $this->user->id,
             'certificationid' => 0,
         ];
         $programuser3 = api::allocate_user($program3, $userdata);
 
+        // Create a new allocation to a certification that uses program1.
         $certificationgenerator = self::getDataGenerator()->get_plugin_generator('tool_certification');
         $certification = $certificationgenerator->generate_certification([
             'tenantid' => $this->defaulttenantid,
             'program' => $program1->get('id'),
         ]);
-        $certificationgenerator->allocate_user($this->user->id, $certification->get('id'));
+        $certificationallocation = $certificationgenerator->allocate_user($this->user->id, $certification->get('id'));
 
         $result = external::get_user_programs();
         $cleanresult = external_api::clean_returnvalue(external::get_user_programs_returns(), $result);
         $this->assertDebuggingNotCalled();
         $this->assertCount(count($cleanresult), $result);
 
+        // Check that now WS returns that user is enroled into 4 programs, 1 certification allocation and 1 separate course.
         $this->assertNotEmpty($cleanresult);
         $this->assertCount(4, $cleanresult['programs']);
         $this->assertCount(1, $cleanresult['courses']);
@@ -266,8 +297,10 @@ class tool_program_external_testcase extends externallib_advanced_testcase {
         $this->assertArrayHasKey('allocations', $p);
         $this->assertArrayHasKey('certifications', $p);
 
-        $this->assertEquals($course1->fullname, $cleanresult['courses'][0]['fullname']);
-        $this->assertEquals($course1->id, $cleanresult['courses'][0]['id']);
+        $this->assertCount(1, $cleanresult['courses']);
+        $this->assertEquals($course2->fullname, $cleanresult['courses'][0]['fullname']);
+        $this->assertEquals($course2->id, $cleanresult['courses'][0]['id']);
+        $this->assertEquals($timeaccess2, $cleanresult['courses'][0]['lastaccess']);
 
         $this->assertEquals($program1->get('id'), $cleanresult['origins'][0]['programid']);
         $this->assertEquals($certification->get('id'), $cleanresult['origins'][0]['certificationid']);
@@ -276,12 +309,14 @@ class tool_program_external_testcase extends externallib_advanced_testcase {
         $programuser3->delete();
         $programuser2->delete();
 
+        // Check that now WS returns that user is enroled into 2 programs and 1 separate course.
         $result = external::get_user_programs();
         $cleanresult = external_api::clean_returnvalue(external::get_user_programs_returns(), $result);
         $this->assertDebuggingNotCalled();
         $this->assertCount(count($cleanresult), $result);
 
         $this->assertCount(2, $cleanresult['programs']);
+        $this->assertCount(1, $cleanresult['courses']);
     }
 
     public function test_duplicate_program(): void {
