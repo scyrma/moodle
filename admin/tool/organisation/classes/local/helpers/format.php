@@ -36,6 +36,7 @@ namespace tool_organisation\local\helpers;
 use tool_organisation;
 use stdClass;
 use tool_organisation\organisation;
+use tool_organisation\position;
 use tool_reportbuilder\helper;
 
 defined('MOODLE_INTERNAL') || die();
@@ -66,7 +67,7 @@ class format {
             return format_string($value);
         }
         unset($row->entityname);
-        $position = new tool_organisation\position(0, $row);
+        $position = new position(0, $row);
         $permissions = array_filter($position->get_node_roles_permissions(), function ($el) use ($permissiontype) {
             return $el['permissiontype'] === $permissiontype;
         });
@@ -75,6 +76,24 @@ class format {
             $pout .= $OUTPUT->render_from_template('tool_organisation/rolespermissions', $permission);
         }
         return format_string($value) . $pout;
+    }
+
+    /**
+     * Render roles with permission icons
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function permissions_with_icons(?string $value, stdClass $row): string {
+        global $OUTPUT;
+        $pout = '';
+        $position = new position(0, $row);
+        $permissions = $position->get_node_roles_permissions();
+        foreach ($permissions as $permission) {
+            $pout .= $OUTPUT->render_from_template('tool_organisation/rolespermissions', $permission);
+        }
+        return $pout;
     }
 
     /**

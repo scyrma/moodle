@@ -70,7 +70,7 @@ class positions_tree extends table_tree {
             'name' => get_string('positionname', 'tool_organisation'),
         ];
         $this->columns['jobs'] = helper::get_string_with_help_icon('jobsnumber', 'tool_organisation');
-        $this->columns['roles'] = get_string('roleslist', 'tool_organisation');
+        $this->columns['roles'] = get_string('positionpermissions', 'tool_organisation');
         $this->columns['actions'] = get_string('actions', 'tool_organisation');
     }
 

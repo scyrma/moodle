@@ -162,7 +162,7 @@ class tool_organisation_job_testcase extends advanced_testcase {
         $this->assertEquals(tool_organisation\jobs_list::class, get_class($report));
         $reportid = $report->get_id();
         $dbcolumns = $DB->get_records('tool_reportbuilder_column', ['reportid' => $reportid]);
-        $this->assertEquals(5, count($dbcolumns));
+        $this->assertEquals(6, count($dbcolumns));
 
         // If we initiate the same report again the id will be the same.
         $report2 = \tool_reportbuilder\system_report_factory::create(\tool_organisation\jobs_list::class);

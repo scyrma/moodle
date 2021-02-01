@@ -91,12 +91,18 @@ Feature: Organisation structure jobs management
       | enddate[enabled] | 1               |
       | enddate[year]    | 2030            |
     And I press "Save" in the modal form dialogue
-    And "Position111_" "text" should exist in the "User 11" "table_row"
-    And "Position111_" "text" should exist in the "User 12" "table_row"
+    Then the following should exist in the "report-table" table:
+      | User      | Department       | Position       | Permissions | Start date         | End date          |
+      | User 11   | Department111_   | Position111_   |             |  ##today##j/m/y##  | ##today##j/m/30## |
+      | User 12   | Department111_   | Position111_   |             |  ##today##j/m/y##  | ##today##j/m/30## |
+    # 'Permissions' column contents are checked now.
+    And "Manager" "text" should exist in the "User 11" "table_row"
+    And "Department lead" "text" should exist in the "User 11" "table_row"
     And "organisation:receivenotificationsglob" permission should be "enabled" in the "User 11" "table_row"
     And "organisation:viewusersreportglob" permission should be "enabled" in the "User 11" "table_row"
     And "organisation:allocateuserstoprogramcertificationsglob" permission should be "enabled" in the "User 11" "table_row"
     And "organisation:allocateuserstoprogramcertificationsdept" permission should be "enabled" in the "User 11" "table_row"
+    And "organisation:viewusersreportdept" permission should be "enabled" in the "User 11" "table_row"
     And "organisation:receivenotificationsdept" permission should be "disabled" in the "User 11" "table_row"
     And I log out
 

@@ -128,8 +128,9 @@ class jobs_list extends system_report {
             $column->set_is_sortable(true, true);
         }
         $defaultcolumns = [
-            'tool_organisation_jobs:departmentnamewithpermissions',
-            'tool_organisation_jobs:positionnamewithpermissions',
+            'tool_organisation_jobs:department',
+            'tool_organisation_jobs:position',
+            'tool_organisation_jobs:permissionswithicons',
             'tool_organisation_jobs:startdate',
             'tool_organisation_jobs:enddate'
         ];

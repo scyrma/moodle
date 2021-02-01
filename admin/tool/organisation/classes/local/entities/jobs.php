@@ -289,7 +289,7 @@ class jobs extends entity_base {
             ->add_callback([\tool_organisation\local\helpers\format::class, 'entityname_and_permissions'], 'departmentmanager');
         $columns[] = $newcolumn;
 
-        // Column position with permissions iccons.
+        // Column position with permissions icons.
         $namecolumn = (new report_column(
             'positionnamewithpermissions',
             new \lang_string('positionwithicons', 'tool_organisation'),
@@ -301,6 +301,18 @@ class jobs extends entity_base {
             // Argument passed to callback here is the type of permission and helps in rendering permission icons.
             ->add_callback([\tool_organisation\local\helpers\format::class, 'entityname_and_permissions'], 'globalmanager');
         $columns[] = $namecolumn;
+
+        // Column Permissions with icons.
+        $newcolumn = (new report_column(
+            'permissionswithicons',
+            new \lang_string('positionpermissions', 'tool_organisation'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->add_fields("{$posalias}.id, {$posalias}.departmentmanager, {$posalias}.departmentpermissions,
+                {$posalias}.globalmanager, {$posalias}.globalpermissions")
+            ->add_callback([\tool_organisation\local\helpers\format::class, 'permissions_with_icons']);
+        $columns[] = $newcolumn;
 
         $newcolumn = (new report_column(
             'timecreated',
