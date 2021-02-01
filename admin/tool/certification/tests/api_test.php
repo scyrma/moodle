@@ -1466,8 +1466,8 @@ class tool_certification_api_testcase extends advanced_testcase {
     /**
      * Test add default dynamicrule conditions to certification.
      *
-     * @covers \tool_program\api::add_default_dynamicrule_conditions_to_certification
-     * @uses \tool_program\api::create_certification
+     * @covers \tool_certification\api::add_default_dynamicrule_conditions_to_certification
+     * @uses \tool_certification\api::create_certification
      */
     public function test_add_default_dynamicrule_conditions_to_certification(): void {
         global $DB;
@@ -2285,7 +2285,6 @@ class tool_certification_api_testcase extends advanced_testcase {
         $user1 = self::getDataGenerator()->create_user();
         $certification = $this->generator->generate_certification(['fullname' => 'Certification ABC']);
         $this->generator->allocate_user($user1->id, $certification->get('id'));
-        api::set_user_as_certified($user1->id, $certification->get('id'));
 
         $params = [
             'component' => 'tool_certification',
@@ -2293,12 +2292,11 @@ class tool_certification_api_testcase extends advanced_testcase {
         ];
         $events = $DB->get_records('event', $params, 'eventtype');
 
+        // Only Due date event should exist. User is not certified and expiry date event should no be set in calendar.
+        $this->assertCount(1, $events);
         $expected = get_string('calendarduedate', 'tool_certification', 'Certification ABC');
         $this->assertEquals($expected, reset($events)->name);
         $this->assertEquals($expected, reset($events)->description);
-        $expected = get_string('calendarexpirydate', 'tool_certification', 'Certification ABC');
-        $this->assertEquals($expected, end($events)->name);
-        $this->assertEquals($expected, end($events)->description);
 
         api::update_certification_name_in_calendar_events($certification->get('id'), 'New certification name');
 
@@ -2307,6 +2305,22 @@ class tool_certification_api_testcase extends advanced_testcase {
         $expected = get_string('calendarduedate', 'tool_certification', 'New certification name');
         $this->assertEquals($expected, reset($events)->name);
         $this->assertEquals($expected, reset($events)->description);
+
+        api::set_user_as_certified($user1->id, $certification->get('id'));
+
+        $events = $DB->get_records('event', $params, 'eventtype');
+
+        // Only Expiry date event should exist. User is certified and due date calendar event should not exist.
+        $this->assertCount(1, $events);
+        $expected = get_string('calendarexpirydate', 'tool_certification', 'Certification ABC');
+        $this->assertEquals($expected, end($events)->name);
+        $this->assertEquals($expected, end($events)->description);
+
+        api::update_certification_name_in_calendar_events($certification->get('id'), 'New certification name');
+
+        $events = $DB->get_records('event', $params, 'eventtype');
+
+        $this->assertCount(1, $events);
         $expected = get_string('calendarexpirydate', 'tool_certification', 'New certification name');
         $this->assertEquals($expected, end($events)->name);
         $this->assertEquals($expected, end($events)->description);
@@ -2331,13 +2345,14 @@ class tool_certification_api_testcase extends advanced_testcase {
             'instance' => $certification->get('id'),
             'visible' => 1,
         ];
-        $this->assertCount(4, $DB->get_records('event', $params));
+        // Only expiry date calendar events should exist because users are certified.
+        $this->assertCount(2, $DB->get_records('event', $params));
 
         api::hide_certification_user_calendar_events($certification);
 
         $this->assertCount(0, $DB->get_records('event', $params));
         $params['visible'] = 0;
-        $this->assertCount(4, $DB->get_records('event', $params));
+        $this->assertCount(2, $DB->get_records('event', $params));
     }
 
     /**
@@ -2360,13 +2375,13 @@ class tool_certification_api_testcase extends advanced_testcase {
             'instance' => $certification->get('id'),
             'visible' => 0,
         ];
-        $this->assertCount(4, $DB->get_records('event', $params));
+        $this->assertCount(2, $DB->get_records('event', $params));
 
         api::show_certification_user_calendar_events($certification);
 
         $this->assertCount(0, $DB->get_records('event', $params));
         $params['visible'] = 1;
-        $this->assertCount(4, $DB->get_records('event', $params));
+        $this->assertCount(2, $DB->get_records('event', $params));
     }
 
     /**
@@ -2583,5 +2598,187 @@ class tool_certification_api_testcase extends advanced_testcase {
         // Tenant group and group should be deleted.
         $this->assertCount(0, \tool_tenant\tenant_group::get_records());
         $this->assertCount(0, $DB->get_records('groups'));
+    }
+
+    /**
+     * Test certification calendar event is created.
+     */
+    public function test_add_calendar_event(): void {
+        global $DB;
+        $certification = $this->generator->generate_certification(['fullname' => 'Certification ABC']);
+        $user = self::getDataGenerator()->create_user();
+        $duedate = time() + DAYSECS;
+
+        $data = (object) [
+            'userid' => $user->id,
+            'name' => $certification->get_formatted_name(),
+            'certificationid' => $certification->get('id'),
+            'timestart' => $duedate,
+            'certificationdatetype' => constants::CALENDAR_EVENT_DUE_DATE,
+        ];
+
+        $result = $DB->get_records('event');
+        $this->assertEmpty($result);
+
+        api::add_calendar_event($data);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(1, $result);
+        $result = reset($result);
+        $str = get_string('calendarduedate', 'tool_certification', $certification->get_formatted_name());
+        $this->assertEquals($str, $result->name);
+        $this->assertEquals($str, $result->description);
+        $this->assertEquals($user->id, $result->userid);
+        $this->assertEquals('tool_certification', $result->component);
+        $this->assertEquals($certification->get('id'), $result->instance);
+        $this->assertEquals('tool_certification' . constants::CALENDAR_EVENT_DUE_DATE, $result->eventtype);
+        $this->assertEquals($duedate, $result->timestart);
+        $this->assertEquals(1, $result->visible);
+    }
+
+    /**
+     * Test certification calendar event is updated.
+     */
+    public function test_update_calendar_event(): void {
+        global $DB;
+        $certification = $this->generator->generate_certification(['fullname' => 'Certification ABC']);
+        $user = self::getDataGenerator()->create_user();
+        $enddate = time() + DAYSECS;
+
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $certification->get_formatted_name(),
+            'certificationid' => $certification->get('id'),
+            'timestart' => $enddate,
+            'certificationdatetype' => constants::CALENDAR_EVENT_EXPIRY_DATE,
+        ];
+
+        api::add_calendar_event($data);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(1, $result);
+        $result = reset($result);
+        $str = get_string('calendarexpirydate', 'tool_certification', $certification->get_formatted_name());
+        $this->assertEquals($str, $result->name);
+        $this->assertEquals($str, $result->description);
+        $this->assertEquals($user->id, $result->userid);
+        $this->assertEquals('tool_certification', $result->component);
+        $this->assertEquals($certification->get('id'), $result->instance);
+        $this->assertEquals('tool_certification' . constants::CALENDAR_EVENT_EXPIRY_DATE, $result->eventtype);
+        $this->assertEquals($enddate, $result->timestart);
+
+        $newenddate = $enddate + DAYSECS;
+        $data = (object)[
+            'userid' => $user->id,
+            'certificationid' => $certification->get('id'),
+            'name' => $certification->get_formatted_name(),
+            'timestart' => $newenddate,
+            'certificationdatetype' => constants::CALENDAR_EVENT_EXPIRY_DATE,
+        ];
+        api::update_calendar_event($data);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(1, $result);
+        $result = reset($result);
+        $this->assertEquals($user->id, $result->userid);
+        $this->assertEquals('tool_certification', $result->component);
+        $this->assertEquals($certification->get('id'), $result->instance);
+        $this->assertEquals('tool_certification' . constants::CALENDAR_EVENT_EXPIRY_DATE, $result->eventtype);
+        $this->assertEquals($newenddate, $result->timestart);
+
+        // Try to update a non existent event (CALENDAR_EVENT_DUE_DATE) and it will create it.
+        $data->certificationdatetype = constants::CALENDAR_EVENT_DUE_DATE;
+        $newdate = time() + 3 * DAYSECS;
+        $data->timestart = $newdate;
+        api::update_calendar_event($data);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(2, $result);
+    }
+
+    /**
+     * Test certification calendar events are deleted.
+     */
+    public function test_delete_calendar_events(): void {
+        global $DB;
+        $certification = $this->generator->generate_certification(['fullname' => 'Certification ABC']);
+        $user = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+        $duedate = time() + DAYSECS;
+        $enddate = time() + 2 * DAYSECS;
+
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $certification->get_formatted_name(),
+            'certificationid' => $certification->get('id'),
+            'timestart' => $duedate,
+            'certificationdatetype' => constants::CALENDAR_EVENT_DUE_DATE,
+        ];
+        api::add_calendar_event($data);
+
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $certification->get_formatted_name(),
+            'certificationid' => $certification->get('id'),
+            'timestart' => $enddate,
+            'certificationdatetype' => constants::CALENDAR_EVENT_EXPIRY_DATE,
+        ];
+        api::add_calendar_event($data);
+
+        $this->assertCount(2, $DB->get_records('event'));
+
+        // Try to delete non existent events.
+        $data = (object) [
+            'userid' => $user2->id,
+            'certificationid' => $certification->get('id'),
+        ];
+        api::delete_calendar_events($data);
+
+        $this->assertCount(2, $DB->get_records('event'));
+
+        // Delete both user events.
+        $data = (object) [
+            'userid' => $user->id,
+            'certificationid' => $certification->get('id'),
+        ];
+        api::delete_calendar_events($data);
+
+        $this->assertEmpty($DB->get_records('event'));
+
+        // Test to remove just one specific event type.
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $certification->get_formatted_name(),
+            'certificationid' => $certification->get('id'),
+            'timestart' => $duedate,
+            'certificationdatetype' => constants::CALENDAR_EVENT_DUE_DATE,
+        ];
+        api::add_calendar_event($data);
+
+        $data = (object)[
+            'userid' => $user->id,
+            'name' => $certification->get_formatted_name(),
+            'certificationid' => $certification->get('id'),
+            'timestart' => $enddate,
+            'certificationdatetype' => constants::CALENDAR_EVENT_EXPIRY_DATE,
+        ];
+        api::add_calendar_event($data);
+
+        $this->assertCount(2, $DB->get_records('event'));
+
+        // Delete just the CALENDAR_EVENT_DUE_DATE event.
+        $data = (object) [
+            'userid' => $user->id,
+            'certificationid' => $certification->get('id'),
+        ];
+        api::delete_calendar_events($data, constants::CALENDAR_EVENT_DUE_DATE);
+
+        $result = $DB->get_records('event');
+        $this->assertCount(1, $result);
+        $result = reset($result);
+        $this->assertEquals($user->id, $result->userid);
+        $this->assertEquals('tool_certification', $result->component);
+        $this->assertEquals($certification->get('id'), $result->instance);
+        $this->assertEquals('tool_certification' . constants::CALENDAR_EVENT_EXPIRY_DATE, $result->eventtype);
     }
 }

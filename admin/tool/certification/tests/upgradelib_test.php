@@ -132,7 +132,7 @@ class tool_certification_upgradelib_testcase extends advanced_testcase {
         $this->assertCount(2, $DB->get_records('tool_program_users',
             ['certificationid' => $certificationid]));
         $this->assertCount(8, $DB->get_records('tool_program_users')); // Total records.
-        $this->assertCount(3, $DB->get_records_select('event',
+        $this->assertCount(2, $DB->get_records_select('event',
             'eventtype LIKE :eventtype AND instance = :instance',
             ['eventtype' => 'tool_certification%', 'instance' => $certificationid]));
 
@@ -167,7 +167,7 @@ class tool_certification_upgradelib_testcase extends advanced_testcase {
         $this->assertCount(2, $DB->get_records('tool_program_users',
             ['certificationid' => $certificationid]));
         $this->assertCount(6, $DB->get_records('tool_program_users')); // Used to be 8 in total, 2 were removed.
-        $this->assertCount(3, $DB->get_records_select('event',
+        $this->assertCount(2, $DB->get_records_select('event',
             'eventtype LIKE :eventtype AND instance = :instance',
             ['eventtype' => 'tool_certification%', 'instance' => $certificationid]));
         // TODO WP-1577 the number of events is not correct currently, for user who completed the certification there should not

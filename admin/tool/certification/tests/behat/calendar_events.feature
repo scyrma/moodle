@@ -47,7 +47,7 @@ Feature: Ensure calendar events are created when user is allocated into a certif
     Then I log in as "user1"
     And I am viewing site calendar
     And I view the calendar for "1" more weeks
-    And I should see "Due date for certification Certification example 1"
+    And I should not see "Due date for certification Certification example 1"
     And I am viewing site calendar
     And I view the calendar for "2" more weeks
     And I should see "Expiry date for certification Certification example 1"

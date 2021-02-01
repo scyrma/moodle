@@ -421,6 +421,13 @@ class api {
             $newuser->set('nextstartdate', $recertificationstartdate);
             $newuser->update();
 
+            // Delete Due date calendar event for this user and certification.
+            $eventdata = (object) [
+                'userid' => $userid,
+                'certificationid' => $certificationid,
+            ];
+            self::delete_calendar_events($eventdata, constants::CALENDAR_EVENT_DUE_DATE);
+
         } else if (!$issuspended && self::is_program_completed($programid, $userid)) {
             // If program was already completed previously set user as certified.
             self::set_user_as_certified($userid, $certificationid);
@@ -1472,6 +1479,13 @@ class api {
         $data->timestart = $expirydate;
         $data->name = format_string($certification->get('fullname'));
         self::update_calendar_event($data);
+
+        // Delete Due date calendar event for this user and certification.
+        $eventdata = (object) [
+            'userid' => $userid,
+            'certificationid' => $certificationid,
+        ];
+        self::delete_calendar_events($eventdata, constants::CALENDAR_EVENT_DUE_DATE);
     }
 
     /**
@@ -1704,6 +1718,9 @@ class api {
     /**
      * Update a calendar event.
      *
+     * Parameter $data must contain: userid, certificationid, name, timestart and certificationdatetype.
+     * Values for certificationdatetype are: constants::CALENDAR_EVENT_DUE_DATE and constants::CALENDAR_EVENT_EXPIRY_DATE.
+     *
      * @param stdClass $data
      * @throws dml_exception
      * @throws coding_exception
@@ -1732,10 +1749,25 @@ class api {
      * Delete calendar events for a certification user.
      *
      * @param stdClass $data
+     * @param int|null $eventtype Remove only a specific event type (eg. On certification completion remove due date event).
      * @throws dml_exception
      */
-    public static function delete_calendar_events(stdClass $data): void {
+    public static function delete_calendar_events(stdClass $data, int $eventtype = null): void {
         global $DB;
+
+        // Remove only a specific event type.
+        if ($eventtype) {
+            $params = [
+                'component' => 'tool_certification',
+                'eventtype' => 'tool_certification' . $eventtype,
+                'instance' => $data->certificationid,
+                'userid' => $data->userid,
+            ];
+
+            $DB->delete_records('event', $params);
+
+            return;
+        }
 
         $params = [
             'component' => 'tool_certification',
