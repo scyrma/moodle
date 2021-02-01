@@ -47,6 +47,7 @@ use tool_reportbuilder\local\filter\text;
 use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\report_filter;
 use tool_reportbuilder\report_column;
+use tool_tenant\auth_manager;
 use tool_tenant\tenancy;
 use tool_tenant\tool_reportbuilder\filter\user_tenant_filter;
 use tool_wp\db;
@@ -634,6 +635,30 @@ class user extends entity_base {
             ->add_joins($this->get_joins());
         $conditions[] = $currentjobsfilter;
 
+        // Authentication filter.
+        $authenticationfilter = (new report_filter(
+            select::class,
+            'auth',
+            new lang_string('authmethod', 'tool_reportbuilder'),
+            $this->get_entity_name(),
+            $this->get_table_alias('user') . '.auth'
+        ))
+            ->add_joins($this->get_joins())
+            ->set_options_callback(function () {
+                $auths = \core_component::get_plugin_list('auth');
+                $enabled = get_string('pluginenabled', 'core_plugin');
+                $disabled = get_string('plugindisabled', 'core_plugin');
+                $authoptions = array($enabled => array(), $disabled => array());
+                foreach ($auths as $auth => $unused) {
+                    if (is_enabled_auth($auth)) {
+                        $authoptions[$enabled][$auth] = get_string('pluginname', "auth_{$auth}");
+                    } else {
+                        $authoptions[$disabled][$auth] = get_string('pluginname', "auth_{$auth}");
+                    }
+                }
+                return $authoptions;
+            });
+        $conditions[] = $authenticationfilter;
         // Add user profile fields filters.
         $customfilters = $this->get_user_custom_filters($iscondition);
 

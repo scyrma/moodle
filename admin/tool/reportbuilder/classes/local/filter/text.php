@@ -48,13 +48,14 @@ defined('MOODLE_INTERNAL') || die;
  * @license   Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 class text extends filter_base {
+
     /**
      * Returns an array of comparison operators
      *
      * @return array of comparison operators
-     * @throws \coding_exception
      */
     public function get_operators() : array {
+        // TODO: replace all these with constants in core.
         return array(0 => get_string('contains', 'filters'),
                      1 => get_string('doesnotcontain', 'filters'),
                      2 => get_string('isequalto', 'filters'),
@@ -135,12 +136,12 @@ class text extends filter_base {
                 $value = $DB->sql_like_escape($value);
                 $params[$name] = "%$value";
                 break;
-            case 5: // Empty.
-                $res = "$field = :$name";
+            case 5: // Empty (note we also account for field not existing here).
+                $res = "COALESCE({$field}, '') = :{$name}";
                 $params[$name] = '';
                 break;
-            case 6: // Empty.
-                $res = "$field != :$name";
+            case 6: // Not empty.
+                $res = "COALESCE({$field}, '') != :{$name}";
                 $params[$name] = '';
                 break;
             default:
