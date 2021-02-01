@@ -31,7 +31,9 @@
  * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 
+use tool_tenant\tenancy;
 use tool_wp\local\exportimport\helper as exportimport_helper;
+use tool_wp\local\exportimport\import_manager;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -498,7 +500,7 @@ class tool_wp_external extends external_api {
 
         \tool_wp\permission::require_can_use_export_import();
         if ($importid) {
-            $importmanager = new \tool_wp\local\exportimport\import_manager($importid);
+            $importmanager = new import_manager($importid);
             \tool_wp\permission::require_can_view_import($importid);
         } else {
             $importmanager = null;
@@ -614,7 +616,7 @@ class tool_wp_external extends external_api {
 
         \tool_wp\permission::require_can_view_import($params['importid']);
 
-        $importmanager = new \tool_wp\local\exportimport\import_manager($params['importid']);
+        $importmanager = new import_manager($params['importid']);
 
         return [
             'status' => $importmanager->get_import_status(),

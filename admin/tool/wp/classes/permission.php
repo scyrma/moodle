@@ -99,7 +99,7 @@ class permission {
      */
     public static function can_view_export(int $exportid): bool {
         global $USER;
-        if (!self::can_use_export_import()) {
+        if (!self::can_use_export_import() || !export_persistent::record_exists($exportid)) {
             return false;
         }
         $export = new export_persistent($exportid);

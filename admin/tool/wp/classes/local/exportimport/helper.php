@@ -832,4 +832,27 @@ class helper {
         // TODO: If something ends with "id" but is not "id" - strip id.
         return $str1 === $str2;
     }
+
+    /**
+     * Locate a tenant by numeric id or non-numeric ID number
+     *
+     * @param int|string $codeorid
+     * @return \stdClass|null
+     */
+    public static function locate_tenant($codeorid): ?\stdClass {
+        $tenants = tenancy::get_tenants();
+        if (is_number($codeorid)) {
+            if (array_key_exists($codeorid, $tenants)) {
+                return $tenants[$codeorid];
+            }
+        } else {
+            $found = array_filter($tenants, function($t) use ($codeorid) {
+                return $t->idnumber === $codeorid;
+            });
+            if ($tenant = reset($found)) {
+                return $tenant;
+            }
+        }
+        return null;
+    }
 }

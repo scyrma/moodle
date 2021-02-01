@@ -276,4 +276,22 @@ abstract class export_import_base_form extends modal_form {
         return array_values($elements);
     }
 
+    /**
+     * Mock the form submission.
+     *
+     * @param array $formdata
+     * @return \stdClass $form
+     */
+    public static final function mock_form_submission($formdata) {
+        global $USER;
+        $formclass = get_called_class();
+        $formidentifier = str_replace('\\', '_', $formclass);
+        $formdata['_qf__' . $formidentifier] = 1;
+        $oldignoresesskey = $USER->ignoresesskey ?? null;
+        $USER->ignoresesskey = true;
+        $form = new $formclass(null, null, 'post', '', [], true, $formdata, true);
+        $USER->ignoresesskey = $oldignoresesskey;
+        $form->set_data_for_modal();
+        return $form;
+    }
 }

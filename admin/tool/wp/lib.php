@@ -69,10 +69,14 @@ function tool_wp_get_fontawesome_icon_map() {
  *
  * @param stdClass $function
  * @param array $params
- * @return bool
+ * @return false|mixed
  * @throws moodle_exception
  */
-function tool_wp_override_webservice_execution(stdClass $function, array $params) : bool {
+function tool_wp_override_webservice_execution(stdClass $function, array $params) {
+    global $USER;
+
+    $result = false;
+
     if (WS_SERVER) {
         $useragent = core_useragent::get_user_agent_string();
 
@@ -81,7 +85,76 @@ function tool_wp_override_webservice_execution(stdClass $function, array $params
         }
     }
 
-    return false;
+    // Add overrides to tool_mobile_get_config call.
+    if ($function->name === 'tool_mobile_get_config') {
+        $manager = new \tool_tenant\manager();
+
+        // Call the original function.
+        $result = call_user_func_array([$function->classname, $function->methodname], $params);
+
+        // Add custom tenant CSS to tool_mobile_get_config call.
+        $tenantid = \tool_tenant\tenancy::get_tenant_id($USER->id);
+        $tenant = new \tool_tenant\tenant($tenantid);
+        $cssconfig = $tenant->get('cssconfig');
+        $cssitems = $cssconfig ? json_decode($cssconfig) : (object)[];
+
+        foreach ($cssitems as $key => $value) {
+            if (strpos($key, 'mform_isexpanded') !== 0) {
+                $result['settings'][] = [
+                    'name' => 'wp_tool_tenant_config_' . $key,
+                    'value' => $value,
+                ];
+            }
+        }
+
+        if ($faviconurl = $manager->get_favicon($tenantid)) {
+            $result['settings'][] = [
+                'name' => 'wp_tool_tenant_config_favicon',
+                'value' => $faviconurl->out(false),
+            ];
+        }
+
+        if ($url = $manager->get_tenant_file_url($tenantid, 'headerlogo')) {
+            $result['settings'][] = [
+                'name' => 'wp_tool_tenant_config_headerlogo',
+                'value' => $url,
+            ];
+        }
+
+        if ($url = $manager->get_tenant_file_url($tenantid, 'loginlogo')) {
+            $result['settings'][] = [
+                'name' => 'wp_tool_tenant_config_loginlogo',
+                'value' => $url,
+            ];
+        }
+
+        if ($url = $manager->get_tenant_file_url($tenantid, 'loginbackground')) {
+            $result['settings'][] = [
+                'name' => 'wp_tool_tenant_config_loginbackground',
+                'value' => $url,
+            ];
+        }
+
+        // Add theme workplace settings to tool_mobile_get_config call.
+        $result['settings'][] = [
+            'name' => 'theme_workplace_dashboardlearning',
+            'value' => get_config('theme_workplace', 'dashboardlearning'),
+        ];
+        $result['settings'][] = [
+            'name' => 'theme_workplace_dashboardteams',
+            'value' => get_config('theme_workplace', 'dashboardteams'),
+        ];
+        $result['settings'][] = [
+            'name' => 'tool_wp_myoverviewdisplayonmobileonly',
+            'value' => get_config('tool_wp', 'myoverviewdisplayonmobileonly'),
+        ];
+        $result['settings'][] = [
+            'name' => 'theme_workplace_hideprogramcourses',
+            'value' => get_config('theme_workplace', 'hideprogramcourses'),
+        ];
+    }
+
+    return $result;
 }
 
 /**

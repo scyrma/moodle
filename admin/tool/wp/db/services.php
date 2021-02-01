@@ -34,6 +34,24 @@
 defined('MOODLE_INTERNAL') || die;
 
 $functions = [
+    'tool_wp_perform_export' => [
+        'classname' => \tool_wp\external\perform_export::class,
+        'methodname' => 'execute',
+        'description' => 'perform export',
+        'type' => 'write',
+    ],
+    'tool_wp_get_export_file' => [
+        'classname' => \tool_wp\external\get_export_file::class,
+        'methodname' => 'execute',
+        'description' => 'Get export file',
+        'type' => 'read',
+    ],
+    'tool_wp_perform_import' => [
+        'classname' => \tool_wp\external\perform_import::class,
+        'methodname' => 'execute',
+        'description' => 'Perform import',
+        'type' => 'write',
+    ],
     'tool_wp_potential_users_selector' => [
         'classname' => tool_wp_external::class,
         'methodname' => 'potential_users_selector',

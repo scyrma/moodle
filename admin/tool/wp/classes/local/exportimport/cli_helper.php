@@ -37,6 +37,7 @@ use tool_tenant\tenancy;
 use tool_wp\exporter_base;
 use tool_wp\local\exportimport\forms\export_settings_form;
 use tool_wp\local\exportimport\forms\import_base_form;
+use tool_wp\local\exportimport\helper as exportimport_helper;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -445,24 +446,11 @@ class cli_helper {
      * @return \stdClass|null
      */
     protected function locate_tenant($codeorid, $showerror = false): ?\stdClass {
-        $tenant = null;
-        $tenants = tenancy::get_tenants();
-        if (is_number($codeorid)) {
-            if (array_key_exists($codeorid, $tenants)) {
-                $tenant = $tenants[$codeorid];
-            } else if ($showerror) {
-                $this->cli_writeln('Tenant with id '.$codeorid.' not found');
-            }
-        } else {
-            $found = array_filter($tenants, function($t) use ($codeorid) {
-                return $t->idnumber === $codeorid;
-            });
-            $tenant = reset($found);
-            if ($showerror && empty($tenant)) {
-                $this->cli_writeln('Tenant with ID number \''.$codeorid.'\' not found');
-            }
+        $tenant = exportimport_helper::locate_tenant($codeorid);
+        if (is_null($tenant) && $showerror) {
+            $this->cli_writeln(get_string('migrationcannotswitchtenant', 'tool_wp', $codeorid));
         }
-        return $tenant ?: null;
+        return $tenant;
     }
 
     /**

@@ -232,21 +232,21 @@ class tool_wp_export_import_cli_testcase extends advanced_testcase {
 
         // Specify non-existing first and then existing tenant.
         $clihelper = $this->construct_helper(cli_helper::IMPORT, ['--exportid=' . $exportid]);
-        $this->expectOutputRegex('/ \'t7\' not found/');
+        $this->expectOutputRegex('/ \'t7\' is not found/');
         $clihelper->phpunitinputs = ['t7', $tenant2->id];
         $clihelper->start_importing();
         $this->assertEquals($tenant2->id, $clihelper->choose_tenant()->id);
 
         // Specify non-existing in options, a warning will be raised and then question asked.
         $clihelper = $this->construct_helper(cli_helper::IMPORT, ['--exportid=' . $exportid, '--tenant=t9']);
-        $this->expectOutputRegex('/ \'t9\' not found/');
+        $this->expectOutputRegex('/ \'t9\' is not found/');
         $clihelper->phpunitinputs = [$tenant2->id];
         $clihelper->start_importing();
         $this->assertEquals($tenant2->id, $clihelper->choose_tenant()->id);
 
         // Specify non-existing in options, a warning will be raised and then question asked.
         $clihelper = $this->construct_helper(cli_helper::IMPORT, ['--exportid=' . $exportid, '--tenant=8']);
-        $this->expectOutputRegex('/ 8 not found/');
+        $this->expectOutputRegex('/ 8 is not found/');
         $clihelper->phpunitinputs = [$tenant2->id];
         $clihelper->start_importing();
         $this->assertEquals($tenant2->id, $clihelper->choose_tenant()->id);
