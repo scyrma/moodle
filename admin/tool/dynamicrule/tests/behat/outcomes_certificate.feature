@@ -87,6 +87,7 @@ Feature: Issue certificate with dynamic rules
     And I click on "View" "link" in the "User 11" "table_row"
     # TODO WP-1212 validate that issued certificate contains the "Course11"
     #And I should see "Course11"
+    And I close all opened windows
     And I am on homepage
     And I log out
 
@@ -153,6 +154,7 @@ Feature: Issue certificate with dynamic rules
     And I click on "View" "link" in the "User 11" "table_row"
     # TODO WP-1212 validate that issued certificate contains the "Program1"
     #And I should see "Program1"
+    And I close all opened windows
     And I am on homepage
     And I log out
 
@@ -223,5 +225,6 @@ Feature: Issue certificate with dynamic rules
     And I click on "View" "link" in the "User 11" "table_row"
     # TODO WP-1212 validate that issued certificate contains the "Certification1"
     #And I should see "Certification1"
+    And I close all opened windows
     And I am on homepage
     And I log out

@@ -5,7 +5,7 @@ Feature: Creating and editing conditions for user profile fields
   I need to be able to add and edit user profile field conditions
 
   Background:
-    Given "2" tenants exist with "2" users and "2" courses in each
+    Given "2" tenants exist with "0" users and "0" courses in each
 
   Scenario: Add a rule with user profile field text condition
     Given I log in as "admin"
@@ -17,13 +17,9 @@ Feature: Creating and editing conditions for user profile fields
       | Display on signup page?       | Yes             |
       | Who is this field visible to? | Visible to everyone |
     And I click on "Save changes" "button"
-    # Set field value for user.
-    And I navigate to "All users" in workplace launcher
-    And I click on "Edit" "link" in the "tenantadmin1@invalid.com" "table_row"
-    And I expand all fieldsets
-    And I set the field "Example field" to "somevalue"
-    And I set the field "First name" to "moodler"
-    And I press "Save" in the modal form dialogue
+    And the following "tool_tenant > users" exist:
+      | tenant  | username | firstname | lastname | email                | profile_field_example_field |
+      | Tenant1 | usertest | moodler   | Test     | usertest@example.com | somevalue                   |
     And I log out
     When I log in as "tenantadmin1"
     And I navigate to "Dynamic rules" in site administration
@@ -135,15 +131,9 @@ Feature: Creating and editing conditions for user profile fields
       | Display on signup page?       | Yes             |
       | Who is this field visible to? | Visible to everyone |
     And I click on "Save changes" "button"
-    # Set field value for user.
-    And I navigate to "All users" in workplace launcher
-    And I click on "Edit" "link" in the "tenantadmin1@invalid.com" "table_row"
-    And I expand all fieldsets
-    And I click on "profile_field_datetime_field[enabled]" "checkbox"
-    And I set the field "profile_field_datetime_field[day]" to "##today##j##"
-    And I set the field "profile_field_datetime_field[month]" to "##today##n##"
-    And I set the field "profile_field_datetime_field[year]" to "##today##Y##"
-    And I press "Save" in the modal form dialogue
+    And the following "tool_tenant > users" exist:
+      | tenant  | username | firstname | lastname | email                | profile_field_datetime_field |
+      | Tenant1 | usertest | User      | Test     | usertest@example.com | ##today##U##                 |
     And I log out
     When I log in as "tenantadmin1"
     And I navigate to "Dynamic rules" in site administration
@@ -267,12 +257,9 @@ Feature: Creating and editing conditions for user profile fields
       b
       """
     And I click on "Save changes" "button"
-    # Set field value for user.
-    And I navigate to "All users" in workplace launcher
-    And I click on "Edit" "link" in the "tenantadmin1@invalid.com" "table_row"
-    And I expand all fieldsets
-    And I set the field "Menu field" to "b"
-    And I press "Save" in the modal form dialogue
+    And the following "tool_tenant > users" exist:
+      | tenant  | username | firstname | lastname | email                | profile_field_menu_field |
+      | Tenant1 | usertest | User      | Test     | usertest@example.com | b                        |
     And I log out
     When I log in as "tenantadmin1"
     And I navigate to "Dynamic rules" in site administration
@@ -287,6 +274,9 @@ Feature: Creating and editing conditions for user profile fields
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Menu field' is 'b'"
     And I should see "1 total matches"
+    And I follow "View matching users"
+    And I should see "usertest@example.com" in the "View matching users" "dialogue"
+    And I press "Cancel" in the modal form dialogue
 
   Scenario: Add a rule with user profile field checkbox condition
     Given I log in as "admin"
@@ -299,12 +289,9 @@ Feature: Creating and editing conditions for user profile fields
       | Display on signup page?       | Yes             |
       | Who is this field visible to? | Visible to everyone |
     And I click on "Save changes" "button"
-    # Set field value for user.
-    And I navigate to "All users" in workplace launcher
-    And I click on "Edit" "link" in the "tenantadmin1@invalid.com" "table_row"
-    And I expand all fieldsets
-    And I click on "profile_field_checkbox_field" "checkbox"
-    And I press "Save" in the modal form dialogue
+    And the following "tool_tenant > users" exist:
+      | tenant  | username | firstname | lastname | email                | profile_field_checkbox_field |
+      | Tenant1 | usertest | User      | Test     | usertest@example.com | 1                            |
     And I log out
     When I log in as "tenantadmin1"
     And I navigate to "Dynamic rules" in site administration
@@ -319,3 +306,6 @@ Feature: Creating and editing conditions for user profile fields
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Checkbox field' is 'Yes'"
     And I should see "1 total matches"
+    And I follow "View matching users"
+    And I should see "usertest@example.com" in the "View matching users" "dialogue"
+    And I press "Cancel" in the modal form dialogue

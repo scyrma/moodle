@@ -158,7 +158,11 @@ function($,
                 // Store label as form will overwrite wrapper content.
                 notsavedlabel = wrapper.find(SELECTORS.NOT_SAVED_LABEL);
 
-                var form = editRule.initInstanceForm(cardNode, type);
+                var form = wrapper.data('form');
+                if (!form) {
+                    form = editRule.initInstanceForm(cardNode, type);
+                    wrapper.data('form', form);
+                }
                 $(SELECTORS.EMPTY_MESSAGE).addClass('hidden');
                 return form.load(params);
             })
@@ -213,7 +217,11 @@ function($,
                 instanceclass: cardNode.data('instanceclass')
             };
             var wrapper = cardNode.find('.form-container');
-            var form = editRule.initInstanceForm(cardNode, type);
+            var form = wrapper.data('form');
+            if (!form) {
+                form = editRule.initInstanceForm(cardNode, type);
+                wrapper.data('form', form);
+            }
 
             cardNode.find('.card-body').fadeTo("fast", "0.2");
             cardNode.find('[data-action="edit-instance"]').addClass('disabled');
@@ -493,6 +501,9 @@ function($,
          * Rule edit details button handler.
          */
         initEditDetailsHandler: function() {
+            // Remove all existing events.
+            $(SELECTORS.EDITDETAILS).off('click');
+            // Register new one.
             $(SELECTORS.EDITDETAILS).on('click', function(e) {
                 e.preventDefault();
                 var ruleId = $(this).data('ruleid');
