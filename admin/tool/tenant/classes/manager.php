@@ -841,14 +841,6 @@ class manager {
             }
         }
 
-        // Include the footertext if set.
-        if (isset($storedcssconfig['footertext'])) {
-            $footertext = htmlspecialchars($storedcssconfig['footertext'], ENT_QUOTES, 'utf-8');
-
-            // We need to replace all new lines with '\A' to preserve them in the output.
-            $scss .= '$footertext: "' . str_replace(["\r\n", "\r", "\n"], ' \A ', $footertext) . '";';
-        }
-
         // Get Custom SCSS.
         if (isset($storedcssconfig['customcss'])) {
             // Strip out the tabs and carriage returns.
@@ -1527,5 +1519,29 @@ class manager {
              'itemid' => $tenantid,
              'roleid' => self::get_tenant_admin_role(),
              'userid' => $userid]);
+    }
+
+    /**
+     * Footer text for a given tenant.
+     *
+     * @return string
+     * @throws \moodle_exception
+     */
+    public static function get_footer_text(): string {
+        $tenantid = \tool_tenant\tenancy::get_tenant_id();
+        $tenantid = \tool_tenant\sharedspace::is_shared_space($tenantid) ?
+            \tool_tenant\tenancy::get_default_tenant_id() : $tenantid;
+        $footertext = '';
+        if (!$tenantid || !array_key_exists($tenantid, tenancy::get_tenants())
+            || $tenantid == sharedspace::get_shared_space_id()) {
+            $tenantid = tenancy::get_default_tenant_id();
+        }
+        $tenant = new tenant($tenantid);
+        $storedcssconfig = @json_decode($tenant->get('cssconfig'), true);
+        // Include the footertext if set.
+        if (isset($storedcssconfig['footertext'])) {
+            $footertext = $storedcssconfig['footertext'];
+        }
+        return $footertext;
     }
 }

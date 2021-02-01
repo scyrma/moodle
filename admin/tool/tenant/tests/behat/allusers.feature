@@ -257,3 +257,58 @@ Feature: Manage all users
       | tenant  | user    | userothertenant |
       | Tenant1 | User 11 | User 22         |
       | Tenant2 | User 22 | User 11         |
+
+  Scenario: Switch between user actions
+    When I log in as "admin"
+    And I navigate to "All users" in workplace launcher
+    Then "Tenant1" "text" should exist in the "User 11" "table_row"
+    And I set the field "Select user 'User 11'" to "1"
+    And I set the field "With selected users..." to "Assign Tenant administrator role"
+    And I should see "Are you sure you want to assign tenant administrator role to the selected users?"
+    And I press "Cancel" in the modal form dialogue
+    And I set the field "With selected users..." to "Unsuspend user"
+    And I should see "Are you sure you want to unsuspend the selected users?"
+    And I press "Cancel" in the modal form dialogue
+    And I log out
+
+  Scenario: As a site admin I can filter users by custom profile fields
+    When I log in as "admin"
+    And I navigate to "Users > Accounts > User profile fields" in site administration
+    And I set the field "datatype" to "Text input"
+    And I set the following fields to these values:
+      | Short name                    | Salutation          |
+      | Name                          | Salutation          |
+      | Display on signup page?       | Yes                 |
+      | Who is this field visible to? | Visible to everyone |
+    And I click on "Save changes" "button"
+    And I navigate to "Users > Accounts > All users" in site administration
+    And I click on "Edit" "link" in the "User 11" "table_row"
+    And I expand all fieldsets
+    And I set the following visible fields to these values:
+          | Salutation | Mister. |
+    And I press "Save" in the modal form dialogue
+    And I click on "Show/hide filters sidebar" "button"
+    And I should see "Salutation" in the "[data-region='report-filters']" "css_element"
+    And I set the field "Salutation field limiter" to "contains"
+    And I set the field "Salutation value" to "Mister"
+    And I press key "13" in the field "Salutation value"
+    And I should not see "User 12" in the "report-table" "table"
+    And I log out
+
+  Scenario: As a site admin I can filter users by their authentication methods
+    When I log in as "admin"
+    And I navigate to "All users" in workplace launcher
+    And I click on "Edit" "link" in the "User 11" "table_row"
+    And I set the field "Choose an authentication method" to "OAuth 2"
+    And I press "Save" in the modal form dialogue
+    And I click on "Show/hide filters sidebar" "button"
+    And I should see "Authentication" in the "[data-region='report-filters']" "css_element"
+    And I set the field "Authentication method field limiter" to "is equal to"
+    And I set the field "Authentication method value" to "OAuth 2"
+    And I should see "User 11" in the "report-table" "table"
+    And I should not see "User 12" in the "report-table" "table"
+    And I set the field "Authentication method field limiter" to "is equal to"
+    And I set the field "Authentication method value" to "Manual accounts"
+    And I should see "User 12" in the "report-table" "table"
+    And I should not see "User 11" in the "report-table" "table"
+    And I log out

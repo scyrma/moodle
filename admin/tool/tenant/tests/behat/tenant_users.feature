@@ -30,13 +30,16 @@ Feature: Manage tenant users
     And I navigate to "Users" in workplace launcher
     And "[data-tabs-element='addbutton']" "css_element" should be visible
     And I follow "New user"
+    And I expand all fieldsets
     And I set the following visible fields to these values:
       | Email address | user3@address.invalid |
     And I set the following fields to these values:
-      | First name | User |
-      | Surname | 3 |
-      | Description | Description for this profile |
-      | Super field | Superhero                    |
+      | Description   | Description for this profile |
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | First name    | User                         |
+      | Email address | user3@address.invalid        |
+      | Surname       | 3                            |
+      | Super field   | Superhero                    |
     And I should not see "Choose an authentication method"
     And I should see "Generate password and notify user"
     And I should see "Suspended account"
@@ -61,7 +64,9 @@ Feature: Manage tenant users
     And I set the following fields to these values:
       | Surname | Three |
       | Description | New description for the profile |
-      | Super field | Batman                          |
+    And I set the following fields in the ".modal-dialog" "css_element" to these values:
+      | Surname     | Three  |
+      | Super field | Batman |
     And I press "Save" in the modal form dialogue
     And I click on "Edit user account" "link" in the "User Three" "table_row"
     And the field with xpath "//div[@class='modal-content']//input[@name='lastname']" matches value "Three"
@@ -500,4 +505,36 @@ Feature: Manage tenant users
     And I press "Resend confirmation emails"
     Then I should see "Confirmation emails sent to 2 user(s)"
     And I should see "1 user(s) skipped as already confirmed"
+    And I log out
+
+  Scenario: Switch between user actions
+    When I log in as "admin"
+    And I navigate to "All tenants" in workplace launcher
+    And I click on "Tenant1" "link" in the "Tenant1" table tree node
+    And I set the field "Select user 'User 11'" to "1"
+    And I set the field "With selected users..." to "Assign Tenant administrator role"
+    And I should see "Are you sure you want to assign tenant administrator role to the selected users?"
+    And I press "Cancel" in the modal form dialogue
+    And I set the field "With selected users..." to "Unsuspend user"
+    And I should see "Are you sure you want to unsuspend the selected users?"
+    And I press "Cancel" in the modal form dialogue
+    And I log out
+
+  Scenario: Filter users by authentication method
+    When I log in as "admin"
+    And I navigate to "All tenants" in workplace launcher
+    And I click on "Tenant1" "link" in the "Tenant1" table tree node
+    And I click on "Edit" "link" in the "User 11" "table_row"
+    And I set the field "Choose an authentication method" to "OAuth 2"
+    And I press "Save" in the modal form dialogue
+    And I click on "Show/hide filters sidebar" "button"
+    And I should see "Authentication" in the "[data-region='report-filters']" "css_element"
+    And I set the field "Authentication method field limiter" to "is equal to"
+    And I set the field "Authentication method value" to "OAuth 2"
+    And I should see "User 11" in the "report-table" "table"
+    And I should not see "User 12" in the "report-table" "table"
+    And I set the field "Authentication method field limiter" to "is equal to"
+    And I set the field "Authentication method value" to "Manual accounts"
+    And I should see "User 12" in the "report-table" "table"
+    And I should not see "User 11" in the "report-table" "table"
     And I log out

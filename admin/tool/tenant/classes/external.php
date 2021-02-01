@@ -157,12 +157,14 @@ class tool_tenant_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        \tool_tenant\permission::require_can_move_users_between_tenants();
+
         $manager = new \tool_tenant\manager();
         $fails = 0;
         foreach ($params['allocations'] as $a) {
+            ['userid' => $userid, 'tenantid' => $tenantid] = $a;
             try {
-                $manager->allocate_user($a['userid'], $a['tenantid'], 'tool_tenant', 'manual');
+                \tool_tenant\permission::require_can_move_user_to_tenant($userid, $tenantid);
+                $manager->allocate_user($userid, $tenantid, 'tool_tenant', 'manual');
             } catch (Exception $e) {
                 $fails++;
             }

@@ -105,7 +105,6 @@ class tool_tenant_external_testcase extends advanced_testcase {
         $user2 = $this->getDataGenerator()->create_user();
         $user3 = $this->getDataGenerator()->create_user();
         $user4 = $this->getDataGenerator()->create_user();
-        $user5 = $this->getDataGenerator()->create_user();
 
         $allocations = [
             ['tenantid' => $tenant1->id, 'userid' => $user1->id],
@@ -114,8 +113,12 @@ class tool_tenant_external_testcase extends advanced_testcase {
             ['tenantid' => $tenant3->id, 'userid' => $user4->id]
         ];
 
-        $tenants = tool_tenant_external::allocate_users($allocations);
+        $result = tool_tenant_external::clean_returnvalue(
+            tool_tenant_external::allocate_users_returns(),
+            tool_tenant_external::allocate_users($allocations)
+        );
 
+        $this->assertEquals(['successcount' => 4, 'failcount' => 0], $result);
         $this->assertEquals($tenant1->id, \tool_tenant\tenancy::get_tenant_id($user1->id));
         $this->assertEquals($tenant1->id, \tool_tenant\tenancy::get_tenant_id($user2->id));
         $this->assertEquals($tenant2->id, \tool_tenant\tenancy::get_tenant_id($user3->id));
@@ -125,25 +128,48 @@ class tool_tenant_external_testcase extends advanced_testcase {
         $manager->allocate_user($user0->id, $tenant1->id, 'tool_tenant', 'testing');
         $manager->assign_tenant_admin_role($tenant1->id, [$user0->id]);
 
+        // Switch to tenant admin, who can't allocate users to tenants.
         $this->setUser($user0);
 
         $allocations = [
-            ['tenantid' => $tenant2->id, 'userid' => $user1->id],
+            ['tenantid' => $tenant3->id, 'userid' => $user1->id],
+            ['tenantid' => $tenant3->id, 'userid' => $user2->id],
+            ['tenantid' => $tenant1->id, 'userid' => $user3->id],
+            ['tenantid' => $tenant2->id, 'userid' => $user4->id]
         ];
 
-        $this->expectException(\moodle_exception::class);
-        tool_tenant_external::allocate_users($allocations);
+        $result = tool_tenant_external::clean_returnvalue(
+            tool_tenant_external::allocate_users_returns(),
+            tool_tenant_external::allocate_users($allocations)
+        );
 
+        $this->assertEquals(['successcount' => 0, 'failcount' => 4], $result);
         $this->assertEquals($tenant1->id, \tool_tenant\tenancy::get_tenant_id($user1->id));
+        $this->assertEquals($tenant1->id, \tool_tenant\tenancy::get_tenant_id($user2->id));
+        $this->assertEquals($tenant2->id, \tool_tenant\tenancy::get_tenant_id($user3->id));
+        $this->assertEquals($tenant3->id, \tool_tenant\tenancy::get_tenant_id($user4->id));
+    }
 
-        $allocations = [
-            ['tenantid' => $tenant1->id, 'userid' => $user1->id],
-            ['tenantid' => $tenant1->id, 'userid' => $user5->id],
+    /**
+     * Test that attempting to allocate a user to the shared space fails
+     */
+    public function test_allocate_users_shared_space(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $user = $this->getDataGenerator()->create_user();
+        $sharedspace = \tool_tenant\sharedspace::enable_shared_space();
+
+        $userallocation = [
+            'userid' => $user->id,
+            'tenantid' => $sharedspace,
         ];
 
-        tool_tenant_external::allocate_users($allocations);
-        $this->assertEquals($tenant1->id, \tool_tenant\tenancy::get_tenant_id($user1->id));
-        $this->assertEquals($tenant1->id, \tool_tenant\tenancy::get_tenant_id($user5->id));
+        $result = tool_tenant_external::clean_returnvalue(
+            tool_tenant_external::allocate_users_returns(),
+            tool_tenant_external::allocate_users([$userallocation])
+        );
+        $this->assertEquals(['successcount' => 0, 'failcount' => 1], $result);
     }
 
     /**

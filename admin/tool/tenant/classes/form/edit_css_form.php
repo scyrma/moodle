@@ -96,7 +96,7 @@ class edit_css_form extends modal_form {
         $mform->addElement('textarea', 'customcss', get_string('customcss', 'tool_tenant'));
         $mform->setType('customcss', PARAM_RAW);
         $mform->addElement('textarea', 'footertext', get_string('footertext', 'tool_tenant'));
-        $mform->setType('footertext', PARAM_TEXT);
+        $mform->setType('footertext', PARAM_RAW);
 
         $callbacks = get_plugins_with_function('extend_tenant_edit_css_form');
         foreach ($callbacks as $type => $plugins) {

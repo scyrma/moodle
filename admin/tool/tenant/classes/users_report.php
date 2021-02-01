@@ -65,6 +65,10 @@ class users_report extends \tool_reportbuilder\system_report {
      * @var array
      */
     private $additionaluserfields;
+    /**
+     * @var array
+     */
+    private $customuserfields;
 
     /**
      * Initialise the report.
@@ -84,6 +88,8 @@ class users_report extends \tool_reportbuilder\system_report {
         }
 
         $this->showtenantentities = $this->showall && tenancy::is_site_multi_tenant();
+        require_once($CFG->dirroot.'/user/profile/lib.php');
+        $this->customuserfields = profile_get_user_fields_with_data(0);
         $this->localuserfields = array('email', 'username', 'idnumber', 'phone1',
             'phone2', 'department', 'institution', 'city', 'country');
         $this->additionaluserfields = \get_extra_user_fields(\context_system::instance());
@@ -209,6 +215,17 @@ class users_report extends \tool_reportbuilder\system_report {
         if ($filter = $this->get_filter('user:tenant')) {
             $filter->set_is_default(true)
                 ->set_is_available($this->showtenantentities);
+        }
+        // Custom user profile fields filter.
+        foreach ($this->customuserfields as $profilefield) {
+            if ($filter = $this->get_filter('user:profilefield_' .
+                $profilefield->field->shortname . '_' . $profilefield->field->id)) {
+                $filter->set_is_default(true);
+            }
+        }
+        // Auth method filter.
+        if ($filter = $this->get_filter('user:auth')) {
+            $filter->set_is_default(true);
         }
     }
 

@@ -281,6 +281,9 @@ function($, Ajax, Notification, Str, Templates, ModalForm, WpNotification, Tabs,
             $(formSelector + ' select').off();
             $(formSelector + ' select').on('change', function() {
                 var func, args, confirmtext, buttontext, successtext, successtextparam, failtext, infotext, fullnames;
+                if (this.value === '') {
+                    return;
+                }
                 if (isNaN(this.value)) {
                     args = $.map($('[data-bulkuserid]:checked'), function(e) {
                         return e.value;
@@ -361,7 +364,7 @@ function($, Ajax, Notification, Str, Templates, ModalForm, WpNotification, Tabs,
                     confirmtext = 'confirmallocateusers';
                     buttontext = 'allocateusers';
                     successtext = 'usermovetotenant';
-                    failtext = 'usernotmovetotenant';
+                    failtext = 'usermovetotenantfail';
                     successtextparam = {tenant: $(this).find('option:selected').text()};
                 }
                 if (typeof func !== 'undefined') {

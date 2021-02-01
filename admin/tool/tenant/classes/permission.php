@@ -33,7 +33,7 @@
 
 namespace tool_tenant;
 
-defined('MOODLE_INTERNAL') || die();
+use moodle_exception;
 
 /**
  * Class permission
@@ -617,6 +617,33 @@ class permission {
         if (!self::can_move_users_between_tenants()) {
             throw new \required_capability_exception(\context_system::instance(),
                 'tool/tenant:allocate', 'nopermissions', 'error');
+        }
+    }
+
+    /**
+     * Determine whether current user can move given user to tenant
+     *
+     * Note that currently this only checks capabilities and ensures we aren't trying to allocate to the shared space. To be
+     * re-factored when we have tenants hierarchy
+     *
+     * @param int $userid
+     * @param int $tenantid
+     * @return bool
+     */
+    public static function can_move_user_to_tenant(int $userid, int $tenantid): bool {
+        return self::can_move_users_between_tenants() && !sharedspace::is_shared_space($tenantid);
+    }
+
+    /**
+     * Require current user can move given user to tenant
+     *
+     * @param int $userid
+     * @param int $tenantid
+     * @throws moodle_exception
+     */
+    public static function require_can_move_user_to_tenant(int $userid, int $tenantid): void {
+        if (!self::can_move_user_to_tenant($userid, $tenantid)) {
+            throw new moodle_exception('cannotallocateusertotenant', 'tool_tenant');
         }
     }
 
