@@ -273,13 +273,18 @@ $mobilespacing: 0.5rem;
     .loginmain {
         width: 100%;
     }
-    .workplacelogin {
+    .workplacelogin,
+    .signupform {
         color: $headings-color;
         width: 100%;
         margin: 0;
         padding: 1rem;
         .btn {
             width: 100%;
+        }
+        h3 {
+            padding-right: 15px;
+            padding-left: 15px;
         }
     }
     #login-page-footer {

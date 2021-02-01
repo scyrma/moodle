@@ -51,9 +51,12 @@
                 text-overflow: clip;
                 word-break: break-all;
             }
-            button[data-action='reset-filter'] {
-                font-size: .9rem;
-                padding: 0;
+            a,
+            button {
+                &[data-action='reset-filter'] {
+                    font-size: .9rem;
+                    padding: 0;
+                }
             }
         }
     }

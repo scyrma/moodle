@@ -4,6 +4,18 @@
         width: 100%;
         min-height: 300px;
     }
+    .system-report[data-source="tool_tenant\\users_report"] {
+        table {
+            [data-source="user:check"] {
+                max-width: 20px;
+            }
+        }
+    }
+    #activetenantstable {
+        .col-name > .icon.spacer {
+            margin-right: .5rem;
+        }
+    }
 }
 
 .navbar .tenantswitch .icon {

@@ -485,4 +485,14 @@ class core_renderer extends \theme_boost\output\core_renderer {
         }
         return $this->render_from_template('core/custom_menu_item', $menu);
     }
+    /**
+     * Rendering custom footer for current tenant
+     * @return string
+     */
+    public function custom_footer() {
+        $output = '';
+        $output .= format_text(component_class_callback('\tool_tenant\manager', 'get_footer_text', []),
+            FORMAT_HTML, array('context' => \context_system::instance()));
+        return $output;
+    }
 }

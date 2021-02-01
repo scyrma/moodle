@@ -35,11 +35,6 @@ body.notloggedin #nav-drawer {
     background-color: $white;
 }
 
-#maincontent {
-    display: none;
-    height: 0;
-}
-
 .page-content-inner {
     @include media-breakpoint-down(lg) {
         flex-direction: column;
@@ -694,19 +689,11 @@ $loginlogo: null !default;
         color: color-yiq($footer);
     }
 }
-
-$footertext: null !default;
-
-@if $footertext {
-    .customfooter::after {
-        content: "#{$footertext}";
-        display: block;
-        white-space: pre;
-        margin-bottom: 1rem;
-        font-size: $font-size-menus;
-    }
+.customfooter {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: $font-size-menus;
 }
-
 // Performance info styling
 .performanceinfo.container-fluid {
     margin: 0.5rem 0;
