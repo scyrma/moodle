@@ -53,7 +53,8 @@ Feature: Creating and editing rules
     And I follow "Edit rule 'Rule1'"
     And I should see "Since some users matched this rule in the past, you will be only able to edit rule actions. You might consider duplicating it to modify its conditions"
     And I press "Edit anyway"
-    And "Edit" "button" should not exist
+    And I click on "Conditions" "tool_wp > Tab"
+    And "Edit" "button" should not exist in the "Conditions" "tool_wp > Tab content"
     And "Delete condition" "button" should not exist
     And I should not see "total matches"
     And I should not see "Add conditions to this rule"
