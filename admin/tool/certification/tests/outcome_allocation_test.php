@@ -152,7 +152,7 @@ class tool_certification_outcome_allocation_testcase extends advanced_testcase {
             'startdateabsolute' => $now
         ];
         $outcome1 = allocation::create($rule2->id, $configdata);
-        $startdate = userdate($now, get_string('strftimedatefullshort'));
+        $startdate = userdate($now, get_string('strftimedatetimeshort'));
         $strparams = ['certificationname' => $certification1->get('fullname'), 'startdate' => $startdate];
         $expected = get_string('outcomeallocationdescriptionwithdate', 'tool_certification', $strparams);
         $this->assertEquals($expected, $outcome1->get_description());

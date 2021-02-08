@@ -260,7 +260,7 @@ class tool_certification_condition_recertification_grace_period_ended_testcase e
         $condition = recertification_grace_period_ended::create($rule->id, $configdata);
         $strid = 'conditionrecertificationgraceperiodendsdescriptionwithdate';
         $options = ['fullname' => $certification1->get('fullname')];
-        $options['conditiondate'] = userdate($now, get_string('strftimedatefullshort'));
+        $options['conditiondate'] = userdate($now, get_string('strftimedatetimeshort'));
         $expected = get_string($strid, 'tool_certification', $options);
         $this->assertEquals($expected, $condition->get_description());
     }

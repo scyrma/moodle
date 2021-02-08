@@ -105,7 +105,7 @@ class edit_certification_users_edit_form_modal_bulk extends \tool_wp\modal_form 
         ];
         $group = [];
         $group[] =& $mform->createElement('select', 'startdatetype', '', $options);
-        $group[] =& $mform->createElement('date_selector', 'startdate', '');
+        $group[] =& $mform->createElement('date_time_selector', 'startdate', '');
         $mform->addGroup($group, 'userstartdateformgroup', $startdatestr, ' ', false);
         $mform->hideIf('startdate', 'startdatetype', 'noteq', constants::DATE_ABSOLUTE);
         $mform->disabledIf('startdate', 'startdatetype', 'noteq', constants::DATE_ABSOLUTE);
@@ -119,7 +119,7 @@ class edit_certification_users_edit_form_modal_bulk extends \tool_wp\modal_form 
         ];
         $group = [];
         $group[] =& $mform->createElement('select', 'duedatetype', '', $options);
-        $group[] =& $mform->createElement('date_selector', 'duedate', '');
+        $group[] =& $mform->createElement('date_time_selector', 'duedate', '');
         $mform->addGroup($group, 'userduedateformgroup', $duedatestr, ' ', false);
         $mform->hideIf('duedate', 'duedatetype', 'noteq', constants::DATE_ABSOLUTE);
         $mform->disabledIf('duedate', 'duedatetype', 'noteq', constants::DATE_ABSOLUTE);

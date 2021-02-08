@@ -85,7 +85,7 @@ class allocation extends outcome_base {
         ];
         $group = [];
         $group[] =& $mform->createElement('select', 'startdatetype', '', $choices);
-        $group[] =& $mform->createElement('date_selector', 'startdateabsolute', '');
+        $group[] =& $mform->createElement('date_time_selector', 'startdateabsolute', '');
         $mform->addGroup($group, 'startdateformgroup', $startdatestr, ' ', false);
         $mform->hideIf('startdateabsolute', 'startdatetype', 'noteq', constants::DATE_ABSOLUTE);
         $mform->addHelpButton('startdateformgroup', 'startdate', 'tool_certification');
@@ -148,7 +148,7 @@ class allocation extends outcome_base {
                 break;
             case constants::DATE_ABSOLUTE:
                 $options['certificationname'] = $fullname;
-                $options['startdate'] = userdate($this->get_outcomedate(), get_string('strftimedatefullshort'));
+                $options['startdate'] = userdate($this->get_outcomedate(), get_string('strftimedatetimeshort'));
                 $description = get_string('outcomeallocationdescriptionwithdate', 'tool_certification', $options);
                 break;
         }

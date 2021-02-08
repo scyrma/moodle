@@ -87,7 +87,7 @@ class certification_certified extends condition_base {
         $datelabelstr = get_string('certifieddateisonorafter', 'tool_certification');
         $enablestr = get_string('enable');
         $group = [];
-        $group[] =& $mform->createElement('date_selector', 'conditiondate', '');
+        $group[] =& $mform->createElement('date_time_selector', 'conditiondate', '');
         $group[] =& $mform->createElement('advcheckbox', 'conditiondateenabled', null, $enablestr, 1, [0, 1]);
         $mform->addGroup($group, 'dateformgroup', $datelabelstr, ' ', false);
         $mform->disabledIf('conditiondate[day]', 'conditiondateenabled');
@@ -132,7 +132,7 @@ class certification_certified extends condition_base {
         $fullname = format_string($certification->get('fullname'), true, ['escape' => false]);
 
         if ($this->get_conditiondateenabled()) {
-            $conditiondate = userdate($this->get_conditiondate(), get_string('strftimedatefullshort'));
+            $conditiondate = userdate($this->get_conditiondate(), get_string('strftimedatetimeshort'));
             $stringparams = ['fullname' => $fullname, 'conditiondate' => $conditiondate];
             $stringid = 'conditioncertificationcertifieddescriptionwithdate';
         } else {

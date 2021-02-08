@@ -254,7 +254,7 @@ class tool_certification_condition_recertification_period_started_testcase exten
         $condition = recertification_period_started::create($rule->id, $configdata);
         $strid = 'conditionrecertificationstarteddescriptionwithdate';
         $options = ['fullname' => $certification1->get('fullname')];
-        $options['conditiondate'] = userdate($now, get_string('strftimedatefullshort'));
+        $options['conditiondate'] = userdate($now, get_string('strftimedatetimeshort'));
         $expected = get_string($strid, 'tool_certification', $options);
         $this->assertEquals($expected, $condition->get_description());
     }

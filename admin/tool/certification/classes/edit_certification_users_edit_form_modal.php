@@ -132,7 +132,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
             ];
             $group = [];
             $group[] =& $mform->createElement('select', 'expirydatetype', '', $choices, ['style' => 'max-width: 300px']);
-            $group[] =& $mform->createElement('date_selector', 'expirydate', '');
+            $group[] =& $mform->createElement('date_time_selector', 'expirydate', '');
             $mform->addGroup($group, 'expirydateformgroup', $expirydatestr, ' ', false);
             $mform->hideIf('expirydate', 'expirydatetype', 'noteq', constants::DATE_ABSOLUTE);
             $mform->disabledIf('expirydate', 'expirydatetype', 'noteq', constants::DATE_ABSOLUTE);
@@ -154,7 +154,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
             ];
             $group = [];
             $group[] =& $mform->createElement('select', 'startdatetype', '', $options);
-            $group[] =& $mform->createElement('date_selector', 'startdate', '');
+            $group[] =& $mform->createElement('date_time_selector', 'startdate', '');
             $mform->addGroup($group, 'userstartdateformgroup', $startdatestr, ' ', false);
             $mform->hideIf('startdate', 'startdatetype', 'noteq', constants::DATE_ABSOLUTE);
             $mform->disabledIf('startdate', 'startdatetype', 'noteq', constants::DATE_ABSOLUTE);
@@ -163,7 +163,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
 
         } else if ($iscertified && !$currentprogramid && (int)$certification->get('requirerecertification') === 1) {
             $group = [];
-            $group[] =& $mform->createElement('date_selector', 'startdate', '');
+            $group[] =& $mform->createElement('date_time_selector', 'startdate', '');
             $mform->addGroup($group, 'userstartdateformgroup', $startdatenextstr, ' ', false);
             $mform->hideIf('startdate', 'startdatetype', 'noteq', constants::DATE_ABSOLUTE);
             $mform->disabledIf('startdate', 'startdatetype', 'noteq', constants::DATE_ABSOLUTE);
@@ -171,7 +171,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
             $mform->addHelpButton('userstartdateformgroup', 'userstartdate', 'tool_certification');
 
         } else if ((int)$certification->get('requirerecertification') === 1) {
-            $mform->addElement('date_selector', 'startdate', $startdatenextstr)->freeze();
+            $mform->addElement('date_time_selector', 'startdate', $startdatenextstr)->freeze();
             $mform->addHelpButton('startdate', 'userstartdate', 'tool_certification');
         }
 
@@ -183,7 +183,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
             ];
             $group = [];
             $group[] =& $mform->createElement('select', 'duedatetype', '', $options);
-            $group[] =& $mform->createElement('date_selector', 'duedate', '');
+            $group[] =& $mform->createElement('date_time_selector', 'duedate', '');
             $mform->addGroup($group, 'userduedateformgroup', $duedatestr, ' ', false);
             $mform->hideIf('duedate', 'duedatetype', 'noteq', constants::DATE_ABSOLUTE);
             $mform->disabledIf('duedate', 'duedatetype', 'noteq', constants::DATE_ABSOLUTE);
@@ -192,7 +192,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
 
         } else if ($iscertified && (int)$certification->get('requirerecertification') === 1) {
             // Due date is locked to be equal to expiry date.
-            $mform->addElement('date_selector', 'duedate', $duedatestr)->freeze();
+            $mform->addElement('date_time_selector', 'duedate', $duedatestr)->freeze();
             $mform->addHelpButton('duedate', 'userduedate', 'tool_certification');
         }
 
@@ -204,7 +204,7 @@ class edit_certification_users_edit_form_modal extends \tool_wp\modal_form {
             ];
             $group = [];
             $group[] =& $mform->createElement('select', 'graceperiodendstype', '', $options);
-            $group[] =& $mform->createElement('date_selector', 'graceperiodends', '');
+            $group[] =& $mform->createElement('date_time_selector', 'graceperiodends', '');
             $mform->addGroup($group, 'graceperiodendsformgroup', $graceperiodendsstr, ' ', false);
             $mform->hideIf('graceperiodends', 'graceperiodendstype', 'noteq', constants::DATE_ABSOLUTE);
             $mform->disabledIf('graceperiodends', 'graceperiodendstype', 'noteq', constants::DATE_ABSOLUTE);

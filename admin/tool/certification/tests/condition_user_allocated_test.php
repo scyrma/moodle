@@ -208,7 +208,7 @@ class tool_certification_condition_user_allocated_testcase extends advanced_test
         $condition = user_allocated::create($rule->id, $configdata);
         $strid = 'conditionuserallocateddescriptionwithdate';
         $options = ['fullname' => $certification1->get('fullname')];
-        $options['conditiondate'] = userdate($now, get_string('strftimedatefullshort'));
+        $options['conditiondate'] = userdate($now, get_string('strftimedatetimeshort'));
         $expected = get_string($strid, 'tool_certification', $options);
         $this->assertEquals($expected, $condition->get_description());
     }

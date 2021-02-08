@@ -142,7 +142,7 @@ class edit_certification_availability_form extends modal_form {
         ];
         $group = [];
         $group[] =& $mform->createElement('select', 'startdatetype', '', $choices);
-        $group[] =& $mform->createElement('date_selector', 'startdateabsolute', '');
+        $group[] =& $mform->createElement('date_time_selector', 'startdateabsolute', '');
         $group[] =& $mform->createElement('periodduration', 'startdaterelative', '', null, null);
         $startdategroup = $mform->addGroup($group, 'startdateformgroup', $startdatestr, ' ', false);
         $mform->hideIf('startdateabsolute', 'startdatetype', 'noteq', constants::DATE_ABSOLUTE);
@@ -182,7 +182,7 @@ class edit_certification_availability_form extends modal_form {
         ];
         $group = [];
         $group[] =& $mform->createElement('select', 'expirydatetype', '', $choices);
-        $group[] =& $mform->createElement('date_selector', 'expirydateabsolute', '');
+        $group[] =& $mform->createElement('date_time_selector', 'expirydateabsolute', '');
         $group[] =& $mform->createElement('periodduration', 'expirydaterelative', '', null, null);
         $expirydategroup = $mform->addGroup($group, 'expirydateformgroup', $expirydatestr, ' ', false);
         $mform->hideIf('expirydateabsolute', 'expirydatetype', 'noteq', constants::DATE_ABSOLUTE);
@@ -205,7 +205,7 @@ class edit_certification_availability_form extends modal_form {
         $elementstartdatetype = $mform->createElement('select', 'allocationstartdatetype', '', $allocstartdateopts,
             ['class' => 'calendar-fix-selector-width']);
         $group[] =& $elementstartdatetype;
-        $elementstartdateabsolute = $mform->createElement('date_selector', 'allocationstartdateabsolute', '');
+        $elementstartdateabsolute = $mform->createElement('date_time_selector', 'allocationstartdateabsolute', '');
         $group[] =& $elementstartdateabsolute;
         $mform->addGroup($group, 'allocationstartdateformgroup', $startdatestr, ' ', false);
         $mform->hideIf('allocationstartdateabsolute', 'allocationstartdatetype', 'noteq', constants::DATE_ABSOLUTE);
@@ -222,7 +222,7 @@ class edit_certification_availability_form extends modal_form {
         $elementenddatetype = $mform->createElement('select', 'allocationenddatetype', '', $allocenddateopts,
             ['class' => 'calendar-fix-selector-width']);
         $group[] =& $elementenddatetype;
-        $elementenddateabsolute = $mform->createElement('date_selector', 'allocationenddateabsolute', '');
+        $elementenddateabsolute = $mform->createElement('date_time_selector', 'allocationenddateabsolute', '');
         $group[] =& $elementenddateabsolute;
         $mform->addGroup($group, 'allocationenddateformgroup', $enddatestr, ' ', false);
         $mform->hideIf('allocationenddateabsolute', 'allocationenddatetype', 'noteq', constants::DATE_ABSOLUTE);

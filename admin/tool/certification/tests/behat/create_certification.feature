@@ -18,6 +18,7 @@ Feature: Create certification
       | username | firstname | lastname | email                |
       | user1    | User      | 1        | user1@example.com    |
       | user2    | User      | 2        | user2@example.com    |
+      | user3    | User      | 3        | user3@example.com    |
       | manager1 | Manager   | 1        | manager1@example.com |
       | manager2 | Manager   | 2        | manager2@example.com |
       | manager3 | Manager   | 3        | manager3@example.com |
@@ -25,11 +26,10 @@ Feature: Create certification
       | user     | tenant  |
       | user1    | Tenant1 |
       | user2    | Tenant1 |
+      | user3    | Tenant2 |
       | manager1 | Tenant1 |
       | manager2 | Tenant2 |
       | manager3 | Tenant1 |
-    And user "manager1" has a department lead position over users "user1,user2" with permissions "3"
-    And user "manager3" has a department lead position over users "user1,user2" with permissions "3"
     And the following "role assigns" exist:
       | user     | role                       | contextlevel | reference |
       | manager1 | tool_certification_manager | System       |           |
@@ -88,7 +88,7 @@ Feature: Create certification
     And I should see "Nothing to display"
     Then I click on "Allocate users" "link"
     Then I open the autocomplete suggestions list in the dialog
-    And "User 2" "autocomplete_suggestions" should not exist
+    And "User 3" "autocomplete_suggestions" should not exist
     And "Manager 3" "autocomplete_suggestions" should exist
     And I click on "User 1" item in the autocomplete list
     Then I press "Save changes" in the modal form dialogue

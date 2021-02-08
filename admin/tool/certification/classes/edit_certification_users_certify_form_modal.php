@@ -94,7 +94,7 @@ class edit_certification_users_certify_form_modal extends \tool_wp\modal_form {
         ];
         $group = [];
         $group[] =& $mform->createElement('select', 'expirydatetype', '', $choices);
-        $group[] =& $mform->createElement('date_selector', 'expirydateabsolute', '');
+        $group[] =& $mform->createElement('date_time_selector', 'expirydateabsolute', '');
         $mform->addGroup($group, 'expirydateformgroup', $expirydatestr, ' ', false);
         $mform->hideIf('expirydateabsolute', 'expirydatetype', 'noteq', constants::DATE_ABSOLUTE);
         $mform->disabledIf('expirydateabsolute', 'expirydatetype', 'noteq', constants::DATE_ABSOLUTE);

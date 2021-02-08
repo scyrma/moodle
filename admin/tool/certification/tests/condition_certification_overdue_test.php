@@ -231,7 +231,7 @@ class tool_certification_condition_certification_overdue_testcase extends advanc
         $condition = certification_overdue::create($rule->id, $configdata);
         $strid = 'conditioncertificationoverduedescriptionwithdate';
         $options = ['fullname' => $certification1->get('fullname'), 'status' => $statusstr];
-        $options['conditiondate'] = userdate($now, get_string('strftimedatefullshort'));
+        $options['conditiondate'] = userdate($now, get_string('strftimedatetimeshort'));
         $expected = get_string($strid, 'tool_certification', $options);
         $this->assertEquals($expected, $condition->get_description());
     }

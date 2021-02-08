@@ -83,7 +83,7 @@ class recertification_grace_period_ended extends condition_base {
         $datelabelstr = get_string('recertificationgraceperiodendsonorbefore', 'tool_certification');
         $enablestr = get_string('enable');
         $group = [];
-        $group[] =& $mform->createElement('date_selector', 'conditiondate', '');
+        $group[] =& $mform->createElement('date_time_selector', 'conditiondate', '');
         $group[] =& $mform->createElement('advcheckbox', 'conditiondateenabled', null, $enablestr, 1, [0, 1]);
         $mform->addGroup($group, 'dateformgroup', $datelabelstr, ' ', false);
         $mform->disabledIf('conditiondate[day]', 'conditiondateenabled');
@@ -146,7 +146,7 @@ class recertification_grace_period_ended extends condition_base {
         $stringparams = ['status' => $status, 'fullname' => $fullname];
 
         if ($this->get_conditiondateenabled()) {
-            $conditiondate = userdate($this->get_conditiondate(), get_string('strftimedatefullshort'));
+            $conditiondate = userdate($this->get_conditiondate(), get_string('strftimedatetimeshort'));
             $stringparams = ['status' => $status, 'fullname' => $fullname, 'conditiondate' => $conditiondate];
             $stringid = 'conditionrecertificationgraceperiodendsdescriptionwithdate';
         } else {
