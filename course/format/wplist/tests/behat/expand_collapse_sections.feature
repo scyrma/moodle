@@ -24,7 +24,7 @@ Feature: Sections can be expanded and collapsed in wplist format
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
     Then "Expand section General" "button" should not exist
-    And "Collapse section General" "button" should not exist
+    And "Collapse section General" "button" should not be visible
     And I should see "Notice board" in the "General" "format_wplist > Section"
     And I click on "Expand section Topic 1" "button"
     And I should see "Test book name" in the "Topic 1" "format_wplist > Section"
@@ -34,7 +34,7 @@ Feature: Sections can be expanded and collapsed in wplist format
     And I should not see "Test book name" in the "Topic 1" "format_wplist > Section"
     And I turn editing mode on
     Then "Expand section General" "button" should not exist
-    And "Collapse section General" "button" should not exist
+    And "Collapse section General" "button" should not be visible
     And I should see "Notice board" in the "General" "format_wplist > Section"
     And I click on "Collapse section Topic 1" "button"
     Then "Expand section Topic 1" "button" should exist
@@ -54,7 +54,7 @@ Feature: Sections can be expanded and collapsed in wplist format
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
     Then "Expand section General" "button" should not exist
-    And "Collapse section General" "button" should not exist
+    And "Collapse section General" "button" should not be visible
     And I should see "Notice board" in the "General" "format_wplist > Section"
     And I click on "Expand all" "button"
     Then I should see "Notice board" in the "General" "format_wplist > Section"
