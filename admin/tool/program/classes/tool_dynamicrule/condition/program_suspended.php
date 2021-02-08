@@ -83,7 +83,7 @@ class program_suspended extends condition_base {
         $dateisonorafterstr = get_string('suspendeddateonorafter', 'tool_program');
         $enablestr = get_string('enable');
         $group = [];
-        $group[] =& $mform->createElement('date_selector', 'conditiondate', '');
+        $group[] =& $mform->createElement('date_time_selector', 'conditiondate', '');
         $group[] =& $mform->createElement('advcheckbox', 'conditiondateenabled', $enablestr, '', 1, [0, 1]);
         $mform->addGroup($group, 'dateformgroup', $dateisonorafterstr, ' ', false);
         $mform->disabledIf('conditiondate[day]', 'conditiondateenabled');
@@ -126,7 +126,7 @@ class program_suspended extends condition_base {
         $fullname = format_string($program->get('fullname'), true, ['escape' => false]);
 
         if ($this->get_conditiondateenabled()) {
-            $conditiondate = userdate($this->get_conditiondate(), get_string('strftimedatefullshort'));
+            $conditiondate = userdate($this->get_conditiondate(), get_string('strftimedatetimeshort'));
             $options = ['programname' => $fullname, 'conditiondate' => $conditiondate];
             $description = get_string('conditionprogramsuspendeddescriptionwithdate', 'tool_program', $options);
         } else {

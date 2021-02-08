@@ -161,7 +161,7 @@ class tool_program_outcome_allocation_testcase extends advanced_testcase {
         $outcome1 = allocation::create($rule2->id, $configdata);
 
         $options = ['programname' => $program1->get('fullname')];
-        $options['startdate'] = userdate($now, get_string('strftimedatefullshort'));
+        $options['startdate'] = userdate($now, get_string('strftimedatetimeshort'));
         $expected = get_string('outcomeallocationdescriptionwithdate', 'tool_program', $options);
         $this->assertEquals($expected, $outcome1->get_description());
     }

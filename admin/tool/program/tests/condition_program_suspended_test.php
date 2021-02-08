@@ -186,7 +186,7 @@ class tool_program_condition_program_suspended_testcase extends advanced_testcas
         $condition = program_suspended::create($rule->id, $configdata);
 
         $options = ['programname' => $program->get('fullname')];
-        $options['conditiondate'] = userdate($now, get_string('strftimedatefullshort'));
+        $options['conditiondate'] = userdate($now, get_string('strftimedatetimeshort'));
         $expected = get_string('conditionprogramsuspendeddescriptionwithdate', 'tool_program', $options);
         $this->assertEquals($expected, $condition->get_description());
     }

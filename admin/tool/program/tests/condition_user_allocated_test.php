@@ -191,7 +191,7 @@ class tool_program_condition_user_allocated_testcase extends advanced_testcase {
         $condition = user_allocated::create($rule->id, $configdata);
 
         $options = ['programname' => $program->get('fullname')];
-        $options['conditiondate'] = userdate($now, get_string('strftimedatefullshort'));
+        $options['conditiondate'] = userdate($now, get_string('strftimedatetimeshort'));
         $expected = get_string('conditionuserallocateddescriptionwithdate', 'tool_program', $options);
         $this->assertEquals($expected, $condition->get_description());
     }

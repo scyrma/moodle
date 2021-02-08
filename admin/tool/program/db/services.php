@@ -167,4 +167,12 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
+    'tool_program_get_users_courses' => [
+        'classname' => tool_program\external\get_users_courses::class,
+        'methodname' => 'execute',
+        'description' => 'Get list of courses user is enrolled in' .
+            ' and filter them by the hideprogramcourses setting',
+        'type' => 'read',
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
 ];

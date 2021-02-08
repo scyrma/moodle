@@ -255,7 +255,7 @@ class tool_program_external_testcase extends externallib_advanced_testcase {
         $programswithtimeaccess = array_filter($cleanresult['programs'], function($program) {
             return $program['lastaccess'] > 0;
         });
-        $this->assertEquals($program1->get('id'), $programswithtimeaccess[0]['id']);
+        $this->assertEquals($program1->get('id'), reset($programswithtimeaccess)['id']);
         // Check suser is enroled to course2 using manual enrolment and lastaccess value is correct.
         $this->assertCount(1, $cleanresult['courses']);
         $this->assertEquals($course2->id, $cleanresult['courses'][0]['id']);

@@ -114,7 +114,7 @@ class edit_program_users_edit_form_modal_bulk extends modal_form {
         ];
         $group = [];
         $group[] =& $mform->createElement('select', 'startdatetype', '', $availabilitystartdateoptions);
-        $group[] =& $mform->createElement('date_selector', 'startdate', '');
+        $group[] =& $mform->createElement('date_time_selector', 'startdate', '');
         $mform->addGroup($group, 'userstartdateformgroup', $startdatestr, ' ', false);
         $mform->hideIf('startdate', 'startdatetype', 'noteq', self::DATE_OVERRIDE_ABSOLUTE);
         $mform->disabledIf('startdate', 'startdatetype', 'noteq', self::DATE_OVERRIDE_ABSOLUTE);
@@ -129,7 +129,7 @@ class edit_program_users_edit_form_modal_bulk extends modal_form {
         ];
         $group = [];
         $group[] =& $mform->createElement('select', 'duedatetype', '', $availabilityduedateoptions);
-        $group[] =& $mform->createElement('date_selector', 'duedate', '');
+        $group[] =& $mform->createElement('date_time_selector', 'duedate', '');
         $mform->addGroup($group, 'userduedateformgroup', $duedatestr, ' ', false);
         $mform->hideIf('duedate', 'duedatetype', 'noteq', self::DATE_OVERRIDE_ABSOLUTE);
         $mform->disabledIf('duedate', 'duedatetype', 'noteq', self::DATE_OVERRIDE_ABSOLUTE);
@@ -144,7 +144,7 @@ class edit_program_users_edit_form_modal_bulk extends modal_form {
         ];
         $group = [];
         $group[] =& $mform->createElement('select', 'enddatetype', '', $availabilityenddateoptions);
-        $group[] =& $mform->createElement('date_selector', 'enddate', '');
+        $group[] =& $mform->createElement('date_time_selector', 'enddate', '');
         $mform->addGroup($group, 'userenddateformgroup', $enddatestr, ' ', false);
         $mform->hideIf('enddate', 'enddatetype', 'noteq', self::DATE_OVERRIDE_ABSOLUTE);
         $mform->disabledIf('enddate', 'enddatetype', 'noteq', self::DATE_OVERRIDE_ABSOLUTE);

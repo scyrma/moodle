@@ -184,7 +184,7 @@ class tool_program_condition_program_overdue_testcase extends advanced_testcase 
         $condition = program_overdue::create($rule->id, $configdata);
 
         $options = ['programname' => $program->get('fullname')];
-        $options['conditiondate'] = userdate($now, get_string('strftimedatefullshort'));
+        $options['conditiondate'] = userdate($now, get_string('strftimedatetimeshort'));
         $expected = get_string('conditionprogramoverduedescriptionwithdate', 'tool_program', $options);
         $this->assertEquals($expected, $condition->get_description());
     }

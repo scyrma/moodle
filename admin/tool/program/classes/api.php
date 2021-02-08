@@ -3801,4 +3801,20 @@ class api {
             'userenddate' => $userenddate,
         ];
     }
+
+    /**
+     * Filter array of courses by hideprogramcourses setting
+     *
+     * @param array $courses
+     * @return array
+     */
+    public static function filter_by_hideprogramcourses(array $courses): array {
+        global $USER;
+
+        // If hideprogramcourses is set, remove courses with only enrol program from $enrolledincourses.
+        $courseids = self::get_course_ids_with_only_enrol_program_instance($USER->id);
+        return array_filter($courses, static function(stdClass $course) use ($courseids) {
+            return !in_array($course->id, $courseids);
+        });
+    }
 }

@@ -5262,4 +5262,73 @@ class tool_program_api_testcase extends advanced_testcase {
         $this->assertCount(1, $groupmembers);
         $this->assertEqualsCanonicalizing([$user4->id], array_column($groupmembers, 'userid'));
     }
+
+    public function test_filter_by_hideprogramcourses() {
+        $defaulttenantid = tenancy::get_default_tenant_id();
+        $user = self::getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        $this->tenantgenerator->allocate_user($user->id, $defaulttenantid);
+
+        $program1 = $this->generator->generate_program((object) [
+            'fullname' => 'Program number 1',
+            'tenantid' => $defaulttenantid,
+        ]);
+        $program2 = $this->generator->generate_program((object) [
+            'fullname' => 'Program number 2',
+            'tenantid' => $defaulttenantid,
+        ]);
+        $program3 = $this->generator->generate_program((object) [
+            'fullname' => 'Program number 3',
+            'tenantid' => $defaulttenantid,
+        ]);
+
+        // Add course1 to program1.
+        $course1 = $this->getDataGenerator()->create_course();
+        $programcourse1 = $this->generator->add_course_to_set($course1->id, $program1->get_base_set()->get('id'));
+
+        // Add course2 to program2.
+        $course2 = $this->getDataGenerator()->create_course();
+        $programcourse2 = $this->generator->add_course_to_set($course2->id, $program2->get_base_set()->get('id'));
+
+        // Add course3 to program3.
+        $course3 = $this->getDataGenerator()->create_course();
+        $programcourse3 = $this->generator->add_course_to_set($course3->id, $program3->get_base_set()->get('id'));
+
+        // Allocate user into program1, program2 and program3.
+        $userdata = (object) [
+            'userid' => $user->id,
+            'certificationid' => 0,
+        ];
+        $programuser1 = api::allocate_user($program1, $userdata);
+        $programuser2 = api::allocate_user($program2, $userdata);
+        $programuser3 = api::allocate_user($program3, $userdata);
+        $this->generator->enrol_user_to_program_course($programcourse1, $programuser1);
+        $this->generator->enrol_user_to_program_course($programcourse2, $programuser2);
+        $this->generator->enrol_user_to_program_course($programcourse3, $programuser3);
+
+        // Enrol user into two separate courses that do not belong to a program.
+        $course4 = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($user->id, $course4->id);
+        $course5 = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($user->id, $course5->id);
+
+        $allcourses = [$course1, $course2, $course3, $course4, $course5];
+
+        // Test with hideprogramcourses set to false. Should return all 5 courses.
+        set_config('hideprogramcourses', 0, 'theme_workplace');
+        $filteredcourses = api::filter_by_hideprogramcourses($allcourses);
+        $this->assertEqualsCanonicalizing([$course1->id, $course2->id, $course3->id, $course4->id, $course5->id],
+            array_column($filteredcourses, 'id'));
+
+        // Test with hideprogramcourses set to true. Should return only course4 and course5 enrolments.
+        set_config('hideprogramcourses', 1, 'theme_workplace');
+        $filteredcourses = api::filter_by_hideprogramcourses($allcourses);
+        $this->assertEqualsCanonicalizing([$course4->id, $course5->id], array_column($filteredcourses, 'id'));
+
+        // Manual enrol user into course3, which belongs also to a program.
+        $this->getDataGenerator()->enrol_user($user->id, $course3->id);
+        $filteredcourses = api::filter_by_hideprogramcourses($allcourses);
+        $this->assertEqualsCanonicalizing([$course3->id, $course4->id, $course5->id], array_column($filteredcourses, 'id'));
+    }
 }

@@ -107,7 +107,7 @@ class edit_program_calendar_form extends modal_form {
         $group = [];
         $elementstartdatetype = $mform->createElement('select', 'startdatetype', '', $availabilitystartdateoptions);
         $group[] =& $elementstartdatetype;
-        $elementstartdateabsolute = $mform->createElement('date_selector', 'startdateabsolute', '');
+        $elementstartdateabsolute = $mform->createElement('date_time_selector', 'startdateabsolute', '');
         $group[] =& $elementstartdateabsolute;
         $elementstartdaterelative = $mform->createElement('periodduration', 'startdaterelative', '');
         $group[] =& $elementstartdaterelative;
@@ -129,7 +129,7 @@ class edit_program_calendar_form extends modal_form {
         $group = [];
         $elementduedatetype = $mform->createElement('select', 'duedatetype', '', $availabilityduedateoptions);
         $group[] =& $elementduedatetype;
-        $elementduedateabsolute = $mform->createElement('date_selector', 'duedateabsolute', '');
+        $elementduedateabsolute = $mform->createElement('date_time_selector', 'duedateabsolute', '');
         $group[] =& $elementduedateabsolute;
         $elementduedaterelative = $mform->createElement('periodduration', 'duedaterelative', '');
         $group[] =& $elementduedaterelative;
@@ -155,7 +155,7 @@ class edit_program_calendar_form extends modal_form {
         $group = [];
         $elementenddatetype = $mform->createElement('select', 'enddatetype', '', $availabilityenddateoptions);
         $group[] =& $elementenddatetype;
-        $elementenddateabsolute = $mform->createElement('date_selector', 'enddateabsolute', '');
+        $elementenddateabsolute = $mform->createElement('date_time_selector', 'enddateabsolute', '');
         $group[] =& $elementenddateabsolute;
         $elementenddaterelative = $mform->createElement('periodduration', 'enddaterelative', '');
         $group[] =& $elementenddaterelative;
@@ -179,7 +179,7 @@ class edit_program_calendar_form extends modal_form {
         $elementallocationstartdatetype = $mform->createElement('select', 'allocationstartdatetype', '',
             $allocationstartdateoptions, ['class' => 'calendar-fix-selector-width']);
         $group[] =& $elementallocationstartdatetype;
-        $elementallocationstartdateabsolute = $mform->createElement('date_selector', 'allocationstartdateabsolute', '');
+        $elementallocationstartdateabsolute = $mform->createElement('date_time_selector', 'allocationstartdateabsolute', '');
         $group[] =& $elementallocationstartdateabsolute;
         $mform->addGroup($group, 'allocationstartdateformgroup', $startdatestr, ' ', false);
         $mform->hideIf('allocationstartdateabsolute', 'allocationstartdatetype', 'noteq', constants::DATE_ABSOLUTE);
@@ -195,7 +195,7 @@ class edit_program_calendar_form extends modal_form {
         $group = [];
         $elementallocationenddatetype = $mform->createElement('select', 'allocationenddatetype', '', $allocationenddateoptions);
         $group[] =& $elementallocationenddatetype;
-        $elementallocationenddateabsolute = $mform->createElement('date_selector', 'allocationenddateabsolute', '');
+        $elementallocationenddateabsolute = $mform->createElement('date_time_selector', 'allocationenddateabsolute', '');
         $group[] =& $elementallocationenddateabsolute;
         $elementallocationenddaterelative = $mform->createElement('periodduration', 'allocationenddaterelative', '');
         $group[] =& $elementallocationenddaterelative;

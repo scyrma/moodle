@@ -311,7 +311,7 @@ class tool_program_condition_program_completed_testcase extends advanced_testcas
         $condition = program_completed::create($rule->id, $configdata);
 
         $options = ['programname' => $program->get('fullname')];
-        $options['conditiondate'] = userdate($now, get_string('strftimedatefullshort'));
+        $options['conditiondate'] = userdate($now, get_string('strftimedatetimeshort'));
         $expected = get_string('conditionprogramcompleteddescriptionwithdate', 'tool_program', $options);
         $this->assertEquals($expected, $condition->get_description());
     }
