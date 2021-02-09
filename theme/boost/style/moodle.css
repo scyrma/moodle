@@ -18926,29 +18926,17 @@ body {
   .popover-region-content-container.loading .empty-message {
     display: none; }
 
-<<<<<<< HEAD
 .navbar .popover-region.collapsed .popover-region-container {
   opacity: 0;
   visibility: hidden;
   height: 0;
   overflow: hidden;
   transition: height 0.25s, opacity 101ms 0.25s, visibility 101ms 0.25s; }
-=======
-.navbar .popover-region {
-  float: left;
-  margin-right: 10px; }
-  .navbar .popover-region.collapsed .popover-region-container {
-    opacity: 0;
-    visibility: hidden;
-    height: 0;
-    overflow: hidden;
-    transition: height 0.25s, opacity 101ms 0.25s, visibility 101ms 0.25s; }
 
 .navbar .popover-region-toggle {
   width: 25px; }
   .navbar .popover-region-toggle img {
     margin: 0; }
->>>>>>> 779de7637e5 (Remove janky hack to make the quota popover look nice on bootstrapbase themes)
 
 .navbar .count-container {
   padding: 2px;
@@ -19290,7 +19278,6 @@ span[data-flexitour="container"][x-placement="right"], span[data-flexitour="cont
       height: 1em;
       font-size: 4em; }
 
-<<<<<<< HEAD
 .form-control:-ms-input-placeholder {
   color: #6c757d; }
 
@@ -19644,7 +19631,7 @@ div.editor_atto_content:hover .atto_control {
 
 div.editor_atto_toolbar button .icon {
   color: #495057; }
-=======
+
 #portal-link-container {
   position: fixed;
   top: 45%;
@@ -19692,7 +19679,6 @@ div.editor_atto_toolbar button .icon {
     -ms-transform-origin: 0 100%;
     -o-transform-origin: 0 100%;
     transform-origin: 0 100%; }
->>>>>>> 779de7637e5 (Remove janky hack to make the quota popover look nice on bootstrapbase themes)
 
 body {
   -webkit-font-smoothing: antialiased;
