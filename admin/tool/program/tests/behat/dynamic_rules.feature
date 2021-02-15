@@ -221,6 +221,10 @@ Feature: Program conditions and actions are marked as broken if program gets del
     And I log out
 
   Scenario: Users not allocated to program condition is marked as broken if program gets archived/deleted
+    Given shared space is enabled
+    And the following "tool_program > programs" exist:
+      | fullname      | idnumber | archived | tenant  |
+      | SharedProgram | prog0    | 0        | -       |
     When I log in as "tenantadmin1"
     And I change window size to "large"
     And I navigate to "Dynamic rules" in workplace launcher
@@ -230,7 +234,10 @@ Feature: Program conditions and actions are marked as broken if program gets del
     And I press "Save" in the modal form dialogue
     # Condition User not allocated to program
     And I follow "Users not allocated to program"
-    And I set the field "Program" to "Program1"
+    # Check that shared programs are shown on the dropdown.
+    And I open the autocomplete suggestions list
+    And "SharedProgram" "autocomplete_suggestions" should exist
+    And I click on "Program1" item in the autocomplete list
     And I press "Save changes"
     And I follow "Actions"
     # Action Allocate users to programs

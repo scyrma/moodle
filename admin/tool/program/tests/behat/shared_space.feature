@@ -218,10 +218,9 @@ Feature: It is possible to create programs in shared space
       | Program0 | user21       |            |               |
       | Program0 | tenantadmin1 |            |               |
     When I log in as "user13"
-    And I click on "//button[contains(.,'User 11')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Overdue programs: 1"
-    And I should see "Active programs: 1"
-    And I follow "Overdue programs: 1"
+    And I press "User 11"
+    And I should see "1 active programs"
+    And I follow "1 overdue programs"
     And I should see "Overdue" in the "Program0" "table_row"
     And I click on "Progress overview" "link" in the "Program0" "table_row"
     And I should see "Complete all in order"
@@ -231,7 +230,7 @@ Feature: It is possible to create programs in shared space
     And "Program0 (Base set)" "text" should exist in the "Set" "table_row"
     And "Sharedcourse" "text" should exist in the "Course" "table_row"
     And I follow "Dashboard"
-    And I click on "//a[text()='Overdue programs']" "xpath_element"
+    And I click on "Overdue programs" "link"
     And "User 11" "link" should exist in the "Program0" "table_row"
     And I log out
 
@@ -292,8 +291,8 @@ Feature: It is possible to create programs in shared space
     And I should see "Open" in the "User 11" "table_row"
     And I should see "Open" in the "User 12" "table_row"
     And I should not see "User 21"
-    And I click on "//button[contains(.,'User 11')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Active programs: 1"
+    And I press "User 11"
+    And I should see "1 active programs"
     And I log out
     And I log in as "admin"
     And I switch to tenant "Shared space"

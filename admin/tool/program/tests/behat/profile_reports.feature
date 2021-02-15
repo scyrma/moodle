@@ -33,12 +33,9 @@ Feature: Check user report capabilities on profile
     When I log in as "manager1"
     Then I follow "Dashboard"
     And I should see "Teams"
-    And I should see "User a"
     And I should not see "User b"
-    And I click on "//button[contains(.,'User a')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Job assignments"
-    And I should see "Active programs: 1"
-    Then I click on "Active programs: 1" "link"
+    And I press "User a"
+    Then I click on "1 active programs" "link"
     And I should see "Program name"
     And I should see "Associated certifications"
     And I should see "Expiry date"
@@ -68,7 +65,7 @@ Feature: Check user report capabilities on profile
     And I should not see "Teams"
     And I should not see "User a"
     And I should not see "User b"
-    And I should not see "Active programs: 1"
+    And I should not see "1 active programs"
     And I log out
 
   Scenario: In programs manager can view overdue allocations report
@@ -81,8 +78,7 @@ Feature: Check user report capabilities on profile
     Then I follow "Dashboard"
     And I should see "Teams"
     And I should see "User a"
-    # To avoid partial matching of the invisible "Overdue programs: X" link we use an explicit XPATH to the desired link.
-    And I click on "//a[text()='Overdue programs']" "xpath_element"
+    And I click on "Overdue programs" "link"
     And I should see "Overdue programs"
     And I should see "User a"
     And I should see "Program1" in the "User a" "table_row"
@@ -103,7 +99,7 @@ Feature: Check user report capabilities on profile
     Then I follow "Dashboard"
     And I should see "Teams"
     And I should see "User a"
-    And I click on "//a[text()='Overdue programs']" "xpath_element"
+    And I click on "Overdue programs" "link"
     And I should see "Overdue programs"
     And I should see "User a"
     And I should see "Program1" in the "User a" "table_row"
@@ -122,7 +118,7 @@ Feature: Check user report capabilities on profile
     Then I follow "Dashboard"
     And I should see "Teams"
     And I should see "User a"
-    And I click on "//a[text()='Overdue programs']" "xpath_element"
+    And I click on "Overdue programs" "link"
     And I should see "Overdue programs"
     And I should not see "User a"
     And I log out
@@ -133,7 +129,7 @@ Feature: Check user report capabilities on profile
     Then I follow "Dashboard"
     And I should see "Teams"
     And I should see "User a"
-    And I click on "//a[text()='Overdue programs']" "xpath_element"
+    And I click on "Overdue programs" "link"
     And I should see "Overdue programs"
     And I should see "User a"
     And I should see "Program1" in the "User a" "table_row"
@@ -145,7 +141,7 @@ Feature: Check user report capabilities on profile
     Then I follow "Dashboard"
     And I should see "Teams"
     And I should see "User a"
-    And I click on "//a[text()='Overdue programs']" "xpath_element"
+    And I click on "Overdue programs" "link"
     And I should see "Overdue programs"
     And I should see "User a"
     And I should see "Program1" in the "User a" "table_row"
@@ -157,7 +153,7 @@ Feature: Check user report capabilities on profile
     Then I follow "Dashboard"
     And I should see "Teams"
     And I should see "User a"
-    And "//a[text()='Overdue programs']" "xpath_element" should not exist
+    And "Overdue programs" "link" should not exist
     And I log out
 
   Scenario: In programs manager with both allocate and view reports permissions can view overdue allocations report
@@ -166,7 +162,7 @@ Feature: Check user report capabilities on profile
     Then I follow "Dashboard"
     And I should see "Teams"
     And I should see "User a"
-    And I click on "//a[text()='Overdue programs']" "xpath_element"
+    And I click on "Overdue programs" "link"
     And I should see "Overdue programs"
     And I should see "User a"
     And I should see "Program1" in the "User a" "table_row"
@@ -178,7 +174,7 @@ Feature: Check user report capabilities on profile
     Then I follow "Dashboard"
     And I should see "Teams"
     And I should see "User a"
-    And I click on "//a[text()='Overdue programs']" "xpath_element"
+    And I click on "Overdue programs" "link"
     And I should see "Overdue programs"
     And I should see "User a"
     And I should see "Program1" in the "User a" "table_row"
