@@ -184,7 +184,7 @@ class behat_tool_organisation extends behat_base {
     /**
      * Check that the permission icon is present and enabled/disabled in the specified row of a table tree
      *
-     * @codingStandardsIgnoreLine
+     * phpcs:ignore
      * @Then /^"(?P<permission_string>(?:[^"]|\\")*)" permission should be "(?P<status_string>(?:[^"]|\\")*)" in the "(?P<tree_node_string>(?:[^"]|\\")*)" table tree node$/
      *
      * @param string $permission
@@ -220,7 +220,7 @@ class behat_tool_organisation extends behat_base {
     /**
      * Check that the permission icon is present and enabled/disabled in the specified row.
      *
-     * @codingStandardsIgnoreLine
+     * phpcs:ignore
      * @Then /^"(?P<permission_string>(?:[^"]|\\")*)" permission should be "(?P<status_string>(?:[^"]|\\")*)" in the "(?P<el_string>(?:[^"]|\\")*)" "(?P<sel_string>[^"]*)"$/
 
      * @param string $permission The name of permission e.g. "organisation:allocateuserstoprogramcertificationsdept".
@@ -256,7 +256,7 @@ class behat_tool_organisation extends behat_base {
 
     /**
      * Create a simple org structure that makes one user manager over others
-     * @codingStandardsIgnoreLine
+     * phpcs:ignore
      * @Given /^user "(?P<manager_string>(?:[^"]|\\")*)" has a manager position over users "(?P<users_string>(?:[^"]|\\")*)" with permissions "(?P<courses_number>\d+)"$/
      * @param string $manager
      * @param string $users
@@ -282,7 +282,7 @@ class behat_tool_organisation extends behat_base {
 
     /**
      * Create a simple org structure that makes one user manager over others
-     * @codingStandardsIgnoreLine
+     * phpcs:ignore
      * @Given /^user "(?P<manager_string>(?:[^"]|\\")*)" has a department lead position over users "(?P<users_string>(?:[^"]|\\")*)" with permissions "(?P<courses_number>\d+)"$/
      * @param string $manager
      * @param string $users

@@ -284,6 +284,7 @@ class user_with_jobs extends exporter {
         foreach ($category->nodes as $node) {
             $rv['nodes'][] = $output->render($node);
         }
+        $rv['nodescount'] = count($rv['nodes']);
         return $rv;
     }
 

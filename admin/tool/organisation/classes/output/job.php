@@ -146,6 +146,8 @@ class job extends persistent_exporter {
         return [
             'positionname' => ['type' => PARAM_NOTAGS],
             'departmentname' => ['type' => PARAM_NOTAGS],
+            'ismanager' => ['type' => PARAM_BOOL],
+            'isdepartmentlead' => ['type' => PARAM_BOOL],
             'dates' => ['type' => PARAM_NOTAGS],
             'ended' => ['type' => PARAM_BOOL],
         ];
@@ -171,6 +173,8 @@ class job extends persistent_exporter {
         return [
             'positionname' => $this->get_position()->get_formatted_name(),
             'departmentname' => $this->get_department()->get_formatted_name(),
+            'ismanager' => $this->get_position()->is_global_manager(),
+            'isdepartmentlead' => $this->get_position()->is_department_manager(),
             'dates' => $dates,
             'ended' => $this->get('enddate') && $this->get('enddate') < helper::round_time(time()),
         ];

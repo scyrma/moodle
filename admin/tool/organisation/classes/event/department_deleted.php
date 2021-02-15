@@ -73,7 +73,7 @@ class department_deleted extends \core\event\base {
             'objectid' => $department->get('id'),
             'other' => [
                 'isframework' => $department->is_framework(),
-                'frameworkid' => $department->get_framework_id()?:0,
+                'frameworkid' => $department->get_framework_id() ?: 0,
             ]
         ]);
         $event->add_record_snapshot(department::TABLE, $department->to_record());

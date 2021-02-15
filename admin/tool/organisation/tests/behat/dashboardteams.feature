@@ -18,6 +18,7 @@ Feature: Viewing one's team on the dashboard
       | messagingallusers | true |
     And I log out
     And I log in as "user11"
+    And I press "User 12"
     And I click on "Send message" "link" in the "User 12" "table_row"
     And I send "Welcome to Moodle Workplace" message in the message area
     And I log out
@@ -42,6 +43,7 @@ Feature: Viewing one's team on the dashboard
     And I click on "Customise..." "radio"
     And I set the field "Department" to "New department 2"
     And I press "Reset table"
+    And I press "User 12"
     And I click on "Send message" "link" in the "User 12" "table_row"
     And I send "Welcome to Moodle Workplace" message in the message area
     And I log out
