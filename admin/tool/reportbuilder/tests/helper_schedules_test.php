@@ -380,10 +380,12 @@ class tool_reportbuilder_helper_schedules_testcase extends advanced_testcase {
     /**
      * Data provider for test_needs_to_be_sent
      *
+     * TODO WP-1640: these tests are all tied to the current date. Replace with uopz and remove the phpcs exclusion
+     *
      * @return array
      */
     public function needs_to_be_sent_provider() : array {
-        // TODO WP-1640: @codingStandardsIgnoreLine these tests are all tied to the current date. Replace with uopz.
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         return [/*
             // Set 'datelastsent' to -1 (never sent).
             [constants::RECURRENCE_DAILY, -1, true],

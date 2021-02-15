@@ -32,7 +32,7 @@
  */
 
 // Require_login and other authentication is done in the index_page class.
-// @codingStandardsIgnoreLine
+// phpcs:disable moodle.Files.RequireLogin.Missing
 require_once(__DIR__ . '/../../../config.php');
 
 $outputpage = new \tool_reportbuilder\output\index_page();

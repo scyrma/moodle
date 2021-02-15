@@ -556,9 +556,9 @@ class report_table extends \table_sql {
      * @return string $html html code for the row passed.
      */
     public function get_row_html($row, $classname = '') {
-        // @codingStandardsIgnoreStart
+        // phpcs:ignore moodle.NamingConventions.ValidVariableName.VariableNameUnderscore
         static $suppress_lastrow = null;
-        // @codingStandardsIgnoreEnd
+
         $rowclasses = array();
 
         if ($classname) {
