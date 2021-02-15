@@ -72,7 +72,7 @@ class signup extends modal_form {
         $mform->addElement('select', 'notificationtype', get_string('notificationtype', 'appointment'), $options);
         $mform->addHelpButton('notificationtype', 'notificationtype', 'appointment');
         $mform->addRule('notificationtype', null, 'required', null, 'client');
-        $mform->setDefault('notificationtype', 0);
+        $mform->setDefault('notificationtype', MOD_APPOINTMENT_BOTH);
         $mform->addElement('html', '</div>');
     }
 
@@ -99,7 +99,7 @@ class signup extends modal_form {
 
         $appointment = $DB->get_record('appointment', ['id' => $session->appointment], '*', MUST_EXIST);
         $course = $DB->get_record('course', ['id' => $appointment->course], '*', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('appointment', $session->appointment, 0, false, MUST_EXIST);
+        $cm = get_coursemodule_from_instance('appointment', $session->appointment, $appointment->course, false, MUST_EXIST);
         $context = \context_module::instance($cm->id);
 
         $submissionid = appointment_user_signup($session, $appointment, $course, $data->notificationtype, $statuscode);

@@ -64,6 +64,7 @@ class external extends \external_api {
         $context = \context_module::instance($cm->id);
 
         self::validate_context($context);
+        \mod_appointment\permission::require_can_view_appointment($context);
 
         $output = $PAGE->get_renderer('mod_appointment');
 
@@ -105,6 +106,7 @@ class external extends \external_api {
         $cm = get_coursemodule_from_instance('appointment', $appointment->id, $appointment->course);
         $context = \context_module::instance($cm->id);
         self::validate_context($context);
+        \mod_appointment\permission::require_can_edit_sessions($context);
 
         if (appointment_delete_session($session)) {
             // Deleting files.
@@ -132,5 +134,142 @@ class external extends \external_api {
      */
     public static function delete_session_returns() {
         return new \external_value(PARAM_BOOL, 'True if successfully deleted.');
+    }
+
+    /**
+     * Returns the structure of parameters for user_signup function.
+     * @return \external_function_parameters
+     */
+    protected static function user_signup_parameters() {
+        $params = [
+            'sessionid' => new \external_value(PARAM_INT, 'The ID of the session to signup for', VALUE_REQUIRED),
+            'notificationtype' => new \external_value(PARAM_INT, 'Notification type', VALUE_DEFAULT, MOD_APPOINTMENT_BOTH),
+        ];
+        return new \external_function_parameters($params);
+    }
+
+    /**
+     * Signup for the session.
+     *
+     * @param int $sessionid The ID of the session
+     * @param int $notificationtype type of notifications to send to user
+     * @return bool
+     */
+    public static function user_signup($sessionid, $notificationtype) {
+        global $DB;
+        $params = self::validate_parameters(self::user_signup_parameters(), [
+            'sessionid' => $sessionid,
+            'notificationtype' => $notificationtype,
+        ]);
+
+        $session = appointment_get_session($params['sessionid']);
+        $appointment = $DB->get_record('appointment', ['id' => $session->appointment], '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $appointment->course], '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('appointment', $appointment->id, $appointment->course);
+        $context = \context_module::instance($cm->id);
+
+        self::validate_context($context);
+        \mod_appointment\permission::require_can_signup($session, $context);
+
+        // Get signup type.
+        if (empty($session->sessiondates)) {
+            $statuscode = MOD_APPOINTMENT_STATUS_WAITLISTED;
+        } else if (appointment_get_num_attendees($session->id) < $session->capacity) {
+            // Save available.
+            $statuscode = MOD_APPOINTMENT_STATUS_BOOKED;
+        } else {
+            $statuscode = MOD_APPOINTMENT_STATUS_WAITLISTED;
+        }
+
+        $submissionid = appointment_user_signup($session, $appointment, $course, $params['notificationtype'], $statuscode);
+        if ($submissionid) {
+            $params = ['context' => $context, 'objectid' => $session->id];
+            $event = \mod_appointment\event\signup_success::create($params);
+            $event->add_record_snapshot('appointment_sessions', $session);
+            $event->add_record_snapshot('appointment', $appointment);
+            $event->trigger();
+        } else {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Describes the return function of user_signup
+     *
+     * @return \external_value
+     */
+    public static function user_signup_returns() {
+        return new \external_value(PARAM_BOOL, 'True if successfully signed up.');
+    }
+
+    /**
+     * Returns the structure of parameters for user_cancel function.
+     * @return \external_function_parameters
+     */
+    protected static function user_cancel_parameters() {
+        $params = [
+            'sessionid' => new \external_value(PARAM_INT, 'The ID of the session to cancel booking for', VALUE_REQUIRED),
+            'cancelreason' => new \external_value(PARAM_TEXT, 'Reason of session booking cancellation', VALUE_DEFAULT, ''),
+        ];
+        return new \external_function_parameters($params);
+    }
+
+    /**
+     * Cancel session booking.
+     *
+     * @param int $sessionid The ID of the session
+     * @param string $cancelreason Optional justification for cancelling the signup
+     * @return bool
+     */
+    public static function user_cancel($sessionid, $cancelreason) {
+        global $DB, $USER;
+        $params = self::validate_parameters(self::user_cancel_parameters(), [
+            'sessionid' => $sessionid,
+            'cancelreason' => $cancelreason,
+        ]);
+
+        $session = appointment_get_session($params['sessionid']);
+        $appointment = $DB->get_record('appointment', ['id' => $session->appointment], '*', MUST_EXIST);
+        $course = $DB->get_record('course', ['id' => $appointment->course], '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance('appointment', $appointment->id, $appointment->course);
+        $context = \context_module::instance($cm->id);
+
+        self::validate_context($context);
+        \mod_appointment\permission::require_can_cancel_signup($context);
+
+        $error = '';
+        if (appointment_user_cancel($session, false, false, $error, $params['cancelreason'])) {
+
+            // Logging and events trigger.
+            $params = array(
+                'context'  => $context,
+                'objectid' => $session->id
+            );
+            $event = \mod_appointment\event\cancel_booking::create($params);
+            $event->add_record_snapshot('appointment_sessions', $session);
+            $event->add_record_snapshot('appointment', $appointment);
+            $event->trigger();
+
+            $message = get_string('bookingcancelled', 'appointment');
+
+            if (!empty($session->sessiondates)) {
+                $error = appointment_send_cancellation_notice($appointment, $session, $USER->id);
+                if (!empty($error)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Describes the return function of user_cancel
+     *
+     * @return \external_value
+     */
+    public static function user_cancel_returns() {
+        return new \external_value(PARAM_BOOL, 'True if successfully cancelled session booking.');
     }
 }

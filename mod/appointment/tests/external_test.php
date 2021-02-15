@@ -95,8 +95,10 @@ class mod_appointment_external_testcase extends externallib_advanced_testcase {
         $this->setUser($teacher);
         $sink = $this->redirectEvents();
 
-        // Delete session0.
-        $this->assertTrue(\mod_appointment\external::delete_session($session1->id));
+        // Delete session1.
+        $result = \mod_appointment\external::delete_session($session1->id);
+        $result = \external_api::clean_returnvalue(\mod_appointment\external::delete_session_returns(), $result);
+        $this->assertTrue($result);
 
         // Capture the event.
         $events = $sink->get_events();
@@ -110,5 +112,93 @@ class mod_appointment_external_testcase extends externallib_advanced_testcase {
         $this->assertCount(1, $DB->get_records('appointment_sessions', ['appointment' => $appointment->id]));
         $this->assertCount(0, $DB->get_records('appointment_signups_status', ['signupid' => $signup1->id]));
         $this->assertCount(0, $DB->get_records('appointment_signups', ['sessionid' => $session1->id]));
+    }
+
+    /**
+     * User signup.
+     */
+    public function test_user_signup() {
+        global $DB;
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'editingteacher');
+
+        $appointment = $this->getDataGenerator()->create_module('appointment', ['course' => $course->id]);
+        $this->assertFalse($DB->record_exists('appointment_sessions', ['appointment' => $appointment->id]));
+
+        // Create ongoing session with user.
+        $date = new stdClass();
+        $date->timestart = strtotime('+1 hour');
+        $date->timefinish = strtotime('+2 hour');
+        $session0 = $this->get_generator()->create_session(['appointment' => $appointment->id], [], [$date]);
+
+        // Prepare for tests.
+        $this->setUser($student);
+        $sink = $this->redirectEvents();
+
+        // Signup session0.
+        $result = \mod_appointment\external::user_signup($session0->id, MOD_APPOINTMENT_BOTH);
+        $result = \external_api::clean_returnvalue(\mod_appointment\external::user_signup_returns(), $result);
+        $this->assertTrue($result);
+
+        // Validate.
+        $signups = $DB->get_records('appointment_signups', array('sessionid' => $session0->id, 'userid' => $student->id));
+        $this->assertCount(1, $signups);
+
+        // Capture the event.
+        $events = $sink->get_events();
+        $sink->clear();
+
+        // Validate event.
+        $this->assertCount(1, $events);
+        $this->assertInstanceOf('mod_appointment\event\signup_success', $events[0]);
+    }
+
+    /**
+     * Cancel session booking.
+     */
+    public function test_user_cancel() {
+        global $DB;
+
+        $course = $this->getDataGenerator()->create_course();
+        $student = $this->getDataGenerator()->create_user();
+        $teacher = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, 'student');
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, 'editingteacher');
+
+        $appointment = $this->getDataGenerator()->create_module('appointment', ['course' => $course->id]);
+        $this->assertFalse($DB->record_exists('appointment_sessions', ['appointment' => $appointment->id]));
+
+        // Create ongoing session with user.
+        $date = new stdClass();
+        $date->timestart = strtotime('+1 hour');
+        $date->timefinish = strtotime('+2 hour');
+        $session0 = $this->get_generator()->create_session(['appointment' => $appointment->id], [], [$date]);
+        appointment_user_signup($session0, $appointment, $course, MOD_APPOINTMENT_BOTH,
+            MOD_APPOINTMENT_STATUS_BOOKED, $student->id);
+
+        // Validate.
+        $signups = $DB->get_records('appointment_signups', array('sessionid' => $session0->id, 'userid' => $student->id));
+        $this->assertCount(1, $signups);
+
+        // Prepare for tests.
+        $this->setUser($student);
+        $sink = $this->redirectEvents();
+
+        // Cancel booking session0.
+        $result = \mod_appointment\external::user_cancel($session0->id, '');
+        $result = \external_api::clean_returnvalue(\mod_appointment\external::user_cancel_returns(), $result);
+        $this->assertTrue($result);
+
+        // Capture the event.
+        $events = $sink->get_events();
+        $sink->clear();
+
+        // Validate event.
+        $this->assertCount(1, $events);
+        $this->assertInstanceOf('mod_appointment\event\cancel_booking', $events[0]);
     }
 }

@@ -40,5 +40,21 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'mod/appointment:editsessions',
         'ajax'         => true,
-    ]
+    ],
+    'mod_appointment_user_signup' => [
+        'classname'    => mod_appointment\external::class,
+        'methodname'   => 'user_signup',
+        'description'  => 'Sing up user for the session',
+        'type'         => 'write',
+        'capabilities' => 'mod/appointment:signup',
+        'services'     => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile'],
+    ],
+    'mod_appointment_user_cancel' => [
+        'classname'    => mod_appointment\external::class,
+        'methodname'   => 'user_cancel',
+        'description'  => 'Cancel user session booking',
+        'type'         => 'write',
+        'capabilities' => 'mod/appointment:signup',
+        'services'     => [MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile'],
+    ],
 ];
