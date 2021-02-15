@@ -151,7 +151,6 @@ class users_report_test extends \advanced_testcase {
 
     /**
      * Test visibility of user identity columns.
-     *
      */
     public function test_visible_identity_columns() {
         global $CFG;
@@ -176,7 +175,7 @@ class users_report_test extends \advanced_testcase {
         $this->assertCount(7,
             $testableexporter->get_table_rows()[0]);
 
-        // Show users from all tenants.( tenant column visible )
+        // Show users from all tenants (tenant column visible).
         $this->tenantgenator->create_tenant_and_users(2); // Parent tenant.
         $testableexporter = new testable_report_exporter($report->get_id(), true, 0, ['id' => 0, 'showall' => true]);
         // 8 columns are returned
@@ -222,7 +221,7 @@ class users_report_test extends \advanced_testcase {
         $this->assertCount(1,
             $testableexporter->get_table_rows());
 
-        // Site is multi-tenant. When using tenant report show only users for given tenant and subtenant
+        // Site is multi-tenant. When using tenant report show only users for given tenant and subtenant.
         [$tenant1, $users1] = $this->tenantgenator->create_tenant_and_users(2); // Parent tenant.
         $this->assertEquals(users_report::class, get_class($report));
         $testableexporter = new testable_report_exporter($report->get_id(), true, 0, ['id' => $tenant1->id]);

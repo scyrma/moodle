@@ -32,7 +32,7 @@
  */
 
 // This file does not need require_login, skip codechecker here.
-// @codingStandardsIgnoreLine
+// phpcs:disable moodle.Files.RequireLogin.Missing
 require_once(__DIR__ . '/../../../../../config.php');
 global $CFG, $PAGE, $OUTPUT;
 

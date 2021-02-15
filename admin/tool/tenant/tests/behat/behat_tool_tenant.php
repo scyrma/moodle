@@ -174,7 +174,7 @@ class behat_tool_tenant extends behat_base {
     /**
      * Quickly create several tenants, users and courses
      *
-     * @codingStandardsIgnoreLine
+     * phpcs:ignore moodle.Files.LineLength.TooLong
      * @Given /^"(?P<tenant_number>\d+)" tenants exist with "(?P<users_number>\d+)" users and "(?P<courses_number>\d+)" courses in each$/
      *
      * @param int $tenants
