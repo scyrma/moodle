@@ -34,6 +34,7 @@
 namespace tool_dynamicrule\tool_dynamicrule\condition;
 
 use core_plugin_manager;
+use core_user;
 use tool_dynamicrule\api;
 use tool_reportbuilder\local\helpers\relative_dates;
 
@@ -154,14 +155,15 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
      * @param \MoodleQuickForm $mform
      * @param array $group
      * @param \stdClass $field
-     * @throws \coding_exception
      */
     public function add_text_field(\MoodleQuickForm $mform, array &$group, \stdClass $field): void {
         $shortname = $field->shortname;
         $elements = [];
         $elements[] = $mform->createElement('select', $shortname . '_op', null, $this->get_text_operators());
         $elements[] = $mform->createElement('text', $shortname . '_value', null);
-        $mform->setType($shortname . '_value', PARAM_RAW);
+
+        // Field should define 'paramtype' property, otherwise be cautious and define PARAM_TEXT.
+        $mform->setType($shortname . '_value', $field->paramtype ?? PARAM_TEXT);
         $mform->hideIf($shortname . '_value', $shortname . '_op', 'in', '5|6');
 
         $group[] = $mform->createElement('group', $shortname, '', $elements, '', false);
@@ -332,7 +334,7 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
     }
 
     /**
-     * Returns array with all user profile fields shortname, name, datatype and param1.
+     * Returns array with all user profile fields shortname, name, datatype and param1, plus type for text fields
      *
      * @return \stdClass[]
      */
@@ -341,12 +343,18 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
         require_once($CFG->dirroot.'/user/profile/lib.php');
 
         $res = [];
-        $res['lastname'] = (object)['shortname' => 'lastname', 'name' => get_string('lastname'), 'datatype' => 'text'];
-        $res['firstname'] = (object)['shortname' => 'firstname', 'name' => get_string('firstname'), 'datatype' => 'text'];
-        $res['username'] = (object)['shortname' => 'username', 'name' => get_string('username'), 'datatype' => 'text'];
-        $res['email'] = (object)['shortname' => 'email', 'name' => get_string('email'), 'datatype' => 'text'];
-        $res['city'] = (object)['shortname' => 'city', 'name' => get_string('city'), 'datatype' => 'text'];
-        $res['idnumber'] = (object)['shortname' => 'idnumber', 'name' => get_string('idnumber'), 'datatype' => 'text'];
+        $res['lastname'] = (object)['shortname' => 'lastname', 'name' => get_string('lastname'), 'datatype' => 'text',
+            'paramtype' => core_user::get_property_type('lastname')];
+        $res['firstname'] = (object)['shortname' => 'firstname', 'name' => get_string('firstname'), 'datatype' => 'text',
+            'paramtype' => core_user::get_property_type('firstname')];
+        $res['username'] = (object)['shortname' => 'username', 'name' => get_string('username'), 'datatype' => 'text',
+            'paramtype' => core_user::get_property_type('username')];
+        $res['email'] = (object)['shortname' => 'email', 'name' => get_string('email'), 'datatype' => 'text',
+            'paramtype' => core_user::get_property_type('email')];
+        $res['city'] = (object)['shortname' => 'city', 'name' => get_string('city'), 'datatype' => 'text',
+            'paramtype' => core_user::get_property_type('city')];
+        $res['idnumber'] = (object)['shortname' => 'idnumber', 'name' => get_string('idnumber'), 'datatype' => 'text',
+            'paramtype' => core_user::get_property_type('idnumber')];
         $res['country'] = (object)['shortname' => 'country', 'name' => get_string('country'), 'datatype' => 'menu',
             'param1' => get_string_manager()->get_list_of_countries(true)];
 
@@ -388,6 +396,9 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
             if ($field->datatype == 'menu') {
                 $fields = explode("\n", $field->param1);
                 $field->param1 = array_combine($fields, $fields);
+            } else if ($field->datatype == 'text') {
+                // Match type defined in the class for custom 'text' profile fields.
+                $field->paramtype = PARAM_TEXT;
             }
         }
 
@@ -647,8 +658,10 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
             !isset($upfields[$this->get_configdata()['userprofilefield']])) {
             return '';
         }
-        $datatype = $upfields[$this->get_configdata()['userprofilefield']]->datatype;
+
         $field = $this->get_configdata()['userprofilefield'];
+        $datatype = $upfields[$field]->datatype;
+
         // We default to 2 (EQUAL TO) in case there is an existing old rule that doesn't have _op set.
         $opint = $this->get_configdata()[$field . '_op'] ?? self::TEXT_IS_EQUAL_TO;
 
@@ -665,7 +678,7 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
             $a->fieldvalue = $this->get_userprofilefield_op($datatype);
         } else if ($datatype == 'text') {
             $str = 'conditionuserprofilefielddescriptiontext';
-            $a->fieldvalue = $this->get_userprofilefield_op($datatype) . ' ' . $this->get_userprofilefield_value();
+            $a->fieldvalue = $this->get_userprofilefield_op($datatype) . ' ' . s($this->get_userprofilefield_value());
         } else if ($datatype == 'menu') {
             if ($field == 'country') {
                 $countries = get_string_manager()->get_list_of_countries(true);
