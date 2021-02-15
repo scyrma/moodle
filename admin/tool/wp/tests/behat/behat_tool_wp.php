@@ -68,7 +68,7 @@ class behat_tool_wp extends behat_base {
     /**
      * Click on a link in a table tree
      *
-     * @codingStandardsIgnoreLine
+     * phpcs:ignore
      * @Given /^I click on "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)" in the "(?P<tree_node_string>(?:[^"]|\\")*)" table tree node$/
      *
      * @param string $element
@@ -86,7 +86,7 @@ class behat_tool_wp extends behat_base {
     /**
      * Check that something exist
      *
-     * @codingStandardsIgnoreLine
+     * phpcs:ignore
      * @Then /^"(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)" should exist in the "(?P<tree_node_string>(?:[^"]|\\")*)" table tree node$/
      *
      * @param string $element
@@ -104,7 +104,7 @@ class behat_tool_wp extends behat_base {
     /**
      * Check that something exist
      *
-     * @codingStandardsIgnoreLine
+     * phpcs:ignore
      * @Then /^"(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)" should not exist in the "(?P<tree_node_string>(?:[^"]|\\")*)" table tree node$/
      *
      * @param string $element
