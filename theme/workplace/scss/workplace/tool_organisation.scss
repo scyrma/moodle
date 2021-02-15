@@ -75,8 +75,37 @@
         }
     }
 }
+
+/* Dashboard 'Teams' tab. */
 .pagelayout-mydashboard {
     .table-responsive {
         padding: 0 1rem;
+        // Hide 'Edit profile' link.
+        li.editprofile {
+            display: none;
+        }
+        @include media-breakpoint-down(sm) {
+            // Show borders between jobs in small screens.
+            .job-container {
+                border-top: $border-width solid $border-color;
+                flex-direction: column-reverse;
+
+            }
+            .job-permissions-container {
+                display: flex;
+            }
+            .details-container {
+                background-color: $white !important; /* stylelint-disable-line declaration-no-important */
+            }
+
+        }
+        @include media-breakpoint-down(xs) {
+            // Show full width buttons in small screens.
+            .buttons-container {
+                a {
+                    width: 100%;
+                }
+            }
+        }
     }
 }
