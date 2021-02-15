@@ -238,9 +238,8 @@ Feature: It is possible to create certifications in shared space
       | duedate[year]       | 2020        |
     And I press "Save changes" in the modal form dialogue
     Then I follow "Dashboard"
-    And I click on "//button[contains(.,'User 11')]//*[contains(@title,'Expand')]" "xpath_element"
-    And I should see "Overdue programs: 1"
-    And I follow "Overdue programs: 1"
+    And I press "User 11"
+    And I follow "1 overdue programs"
     And I should see "Overdue" in the "Program0" "table_row"
     And I click on "Progress overview" "link" in the "Program0" "table_row"
     And I should see "Complete all in order"
@@ -249,7 +248,7 @@ Feature: It is possible to create certifications in shared space
     And I click on "Progress report" "link" in the "Program0" "table_row"
     And "Program0 (Base set)" "text" should exist in the "Set" "table_row"
     And I follow "Dashboard"
-    And I click on "//a[text()='Overdue programs']" "xpath_element"
+    And I click on "Overdue programs" "link"
     And "User 11" "link" should exist in the "Program0" "table_row"
     And I log out
 

@@ -1648,14 +1648,14 @@ class api {
             return [];
         }
 
-        $tenantuser = tenancy::get_tenant_id($USER->id);
-
-        $query = "SELECT id, fullname
+        $params = ['isshared' => 1];
+        [$tenantsql, $tenantparams] = hierarchy::filter_own_or_parent_shared_entities_sql('tenantid', 'shared=:isshared');
+        $query = 'SELECT id, fullname
             FROM {tool_certification}
-            WHERE archived = 0 AND tenantid = :tenantid";
+            WHERE archived = 0 AND '.$tenantsql;
 
         $i = 0;
-        $params = ['tenantid' => $tenantuser];
+        $params += $tenantparams;
 
         foreach (preg_split('/ +/', trim($search), -1, PREG_SPLIT_NO_EMPTY) as $word) {
             $i++;

@@ -221,6 +221,13 @@ Feature: Certification conditions and actions are marked as broken if certificat
     And I log out
 
   Scenario: Users not allocated to certification condition is marked as broken if certification gets archived/deleted
+    Given shared space is enabled
+    And the following "tool_program > programs" exist:
+      | fullname      | idnumber | archived | tenant  |
+      | SharedProgram | prog0    | 0        | -       |
+    Given the following "tool_certification > certifications" exist:
+      | fullname              | idnumber | archived | tenant  | program         |
+      | SharedCertification   | cert0    | 0        | -       | SharedProgram   |
     When I log in as "tenantadmin1"
     And I change window size to "large"
     And I navigate to "Dynamic rules" in workplace launcher
@@ -230,7 +237,10 @@ Feature: Certification conditions and actions are marked as broken if certificat
     And I press "Save" in the modal form dialogue
     # Condition User not allocated to certification
     And I follow "Users not allocated to certification"
-    And I set the field "Certification" to "Certification1"
+    # Check that shared certifications are shown on the dropdown.
+    And I open the autocomplete suggestions list
+    And "SharedCertification" "autocomplete_suggestions" should exist
+    And I click on "Certification1" item in the autocomplete list
     And I press "Save changes"
     And I follow "Actions"
     # Action Allocate users to certifications
