@@ -161,8 +161,12 @@
     top: 60px !important;
 }
 
-#freetrial #page {
+body:not(#page-h5p-embed) #freetrial #page {
     margin-top: 100px !important;
+}
+
+#page-h5p-embed #trialmsg {
+    display: none;
 }
 
 #freetrial [data-region="drawer"], #freetrial [data-region="right-hand-drawer"].drawer {
