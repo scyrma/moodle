@@ -198,3 +198,7 @@ html.freetrial .modal {
     color: white !important;
     text-decoration: underline !important;
 }
+
+.popover-region {
+    float: left;
+}
