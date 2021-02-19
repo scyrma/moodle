@@ -811,14 +811,24 @@ abstract class moodleform {
      * Returns a temporary file, do not forget to delete after not needed any more.
      *
      * @param string $elname name of the elmenet
+     * @param bool $requestonly Use a per-request directory
      * @return string|bool either string or false
      */
-    function save_temp_file($elname) {
+    function save_temp_file($elname, ?bool $requestonly = null) {
         if (!$this->get_new_filename($elname)) {
             return false;
         }
-        if (!$dir = make_temp_directory('forms')) {
-            return false;
+        if ($requestonly) {
+            if (!$dir = make_request_directory('forms')) {
+                return false;
+            }
+        } else {
+            if ($requestonly === null) {
+                debugging('A new parameter to save_temp_file is now required.', DEBUG_DEVELOPER);
+            }
+            if (!$dir = make_temp_directory('forms')) {
+                return false;
+            }
         }
         if (!$tempfile = tempnam($dir, 'tempup_')) {
             return false;
