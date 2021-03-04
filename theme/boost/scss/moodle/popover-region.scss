@@ -186,14 +186,6 @@ $content-header-footer-height: $region-header-height + $region-footer-height;
         }
     }
 
-    .popover-region-toggle {
-        width: $toggle-width;
-
-        img {
-            margin: 0;
-        }
-    }
-
     .count-container {
         padding: 2px;
         border-radius: 2px;
@@ -343,8 +335,10 @@ $content-header-footer-height: $region-header-height + $region-footer-height;
 
     .all-notifications {
         @include visible();
+
         height: auto;
         overflow: hidden;
+
         &:empty + .empty-message {
             display: block;
         }
@@ -354,6 +348,7 @@ $content-header-footer-height: $region-header-height + $region-footer-height;
         display: inline-block;
         width: 8%;
         vertical-align: top;
+
         img {
             height: 75%;
         }
@@ -476,14 +471,6 @@ $content-header-footer-height: $region-header-height + $region-footer-height;
             .popover-region-container {
                 right: -70px;
             }
-        }
-    }
-    .popover-region-toggle {
-        &::before {
-            bottom: -4px;
-        }
-        &::after {
-            bottom: -4px;
         }
     }
 }
