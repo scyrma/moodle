@@ -1,0 +1,65 @@
+{{!
+    @template theme_boost/block
+
+    Example context (json):
+    {
+        "id": "block0",
+        "showskiplink": true,
+        "type": "html",
+        "ariarole": "complementary",
+        "title": "Test block",
+        "blockinstanceid": 1,
+        "content": "<p>Hello block world!</p>"
+    }
+
+}}
+{{! Block Skip Link }}
+{{#showskiplink}}
+  <a href="#sb-{{skipid}}" class="sr-only sr-only-focusable">{{#str}}skipa, access, {{title}}{{/str}}</a>
+{{/showskiplink}}
+
+{{! Start Block Container }}
+<section id="{{id}}"
+     class="{{#hidden}}hidden{{/hidden}} rounded-0 block block_{{type}} {{#hascontrols}}block_with_controls{{/hascontrols}} card p-3 mb-3"
+     role="{{ariarole}}"
+     data-block="{{type}}"
+     {{#arialabel}}
+        aria-label={{#quote}}{{{arialabel}}}{{/quote}}
+     {{/arialabel}}
+     {{^arialabel}}
+        {{#title}}
+          aria-labelledby="instance-{{blockinstanceid}}-header"
+        {{/title}}
+     {{/arialabel}}>
+
+    {{! Block contents }}
+      {{#title}}
+        <div class="card-title d-flex">
+            <h5 id="instance-{{blockinstanceid}}-header" class="mb-0">{{{title}}}</h5>
+            {{#hascontrols}}
+                <div class="block-controls ml-auto">
+                    {{{controls}}}
+                </div>
+            {{/hascontrols}}
+        </div>
+      {{/title}}
+    <div class="card-body p-0">
+
+
+
+
+        <div class="card-text content">
+            {{{content}}}
+            <div class="footer">{{{footer}}}</div>
+            {{{annotation}}}
+        </div>
+
+    </div>
+
+{{! End Block Container }}
+</section>
+
+{{! Block Skip Link Target }}
+{{#showskiplink}}
+  <span id="sb-{{skipid}}"></span>
+{{/showskiplink}}
