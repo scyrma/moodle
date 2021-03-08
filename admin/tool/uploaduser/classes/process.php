@@ -885,6 +885,14 @@ class process {
             }
 
         } else {
+            // BEGIN MOODLECLOUD HACK.
+            if (\local_moodlecloud\restrictions\userquota::number_of_user_slots_remaining() == 0) {
+                $this->upt->track('status', 'Quota limits have been exceeded.', 'error');
+                $this->userserrors++;
+                return;
+            }
+            // END MOODLECLOUD HACK.
+
             // Save the new user to the database.
             $user->confirmed    = 1;
             $user->timemodified = time();
