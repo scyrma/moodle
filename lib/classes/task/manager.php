@@ -488,12 +488,18 @@ class manager {
      * @return \core\task\scheduled_task[]
      */
     public static function get_all_scheduled_tasks() {
-        global $DB;
+        global $CFG,$DB;
 
         $records = $DB->get_records('task_scheduled', null, 'component, classname', '*', IGNORE_MISSING);
         $tasks = array();
 
         foreach ($records as $record) {
+            // START MOODLECLOUD HACK.
+            if (isset($CFG->moodlecloud_hidden_scheduledtasks) && isset($CFG->moodlecloud_hidden_scheduledtasks[$record->classname])) {
+                continue;
+            }
+            // END MOODLECLOUD HACK.
+
             $task = self::scheduled_task_from_record($record);
             // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
             if ($task) {
