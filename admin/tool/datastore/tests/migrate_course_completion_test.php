@@ -1,0 +1,256 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace Code is dual-licensed under the terms of both the
+// single GNU General Public Licence version 3.0, dated 29 June 2007
+// and the terms of the proprietary Moodle Workplace Licence strictly
+// controlled by Moodle Pty Ltd and its certified premium partners.
+// Wherever conflicting terms exist, the terms of the MWL are binding
+// and shall prevail.
+
+/**
+ * File containing tests for migration of course completion data
+ *
+ * @package     tool_datastore
+ * @category    test
+ * @copyright   2020 Moodle Pty Ltd <support@moodle.com>
+ * @author      2020 Paul Holden <paulh@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+use tool_datastore\local\models\action;
+use tool_datastore\local\models\entity;
+use tool_datastore\local\models\field;
+use tool_datastore\task\migrate_course_completion;
+
+/**
+ * Test class
+ *
+ * @package     tool_datastore
+ * @group       tool_datastore
+ * @category    test
+ * @covers      \tool_datastore\task\migrate_course_completion
+ * @copyright   2020 Moodle Pty Ltd <support@moodle.com>
+ * @author      2020 Paul Holden <paulh@moodle.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class tool_datastore_migrate_course_completion_testcase extends advanced_testcase {
+
+    /** @var stdClass $course */
+    protected $course;
+
+    /** @var stdClass $user */
+    protected $user;
+
+    /*
+     * Test setup
+     *
+     * @return void
+     */
+    public function setUp(): void {
+        global $CFG;
+
+        $this->resetAfterTest();
+
+        $CFG->enablecompletion = true;
+
+        $this->course = $this->getDataGenerator()->create_course(['enablecompletion' => true]);
+        $this->user = $this->getDataGenerator()->create_and_enrol($this->course, 'student');
+    }
+
+    /**
+     * Confirm that course completion data that isn't marked as completed is skipped
+     *
+     * @return void
+     */
+    public function test_migrate_course_completion_skip_non_completed() {
+        $this->create_completion_instance($this->course->id, $this->user->id)->insert();
+
+        // Sanity check.
+        $this->assertEquals(0, action::count_records());
+
+        // Execute the migration task.
+        (new migrate_course_completion())->execute();
+
+        $this->assertEquals(0, action::count_records());
+    }
+
+    /**
+     * Confirm that course completion data that is marked as completed is migrated
+     *
+     * @return void
+     */
+    public function test_migrate_course_completion_migrate_completed() {
+        global $DB;
+
+        // We need to manually set the completion timecompleted field to simulate old/existing data (pre-datastore).
+        $completionid = $this->create_completion_instance($this->course->id, $this->user->id)->insert();
+        $DB->set_field('course_completions', 'timecompleted', 54321, ['id' => $completionid]);
+
+        // Sanity check.
+        $this->assertEquals(0, action::count_records());
+
+        // Execute the migration task.
+        (new migrate_course_completion())->execute();
+
+        // Confirm we now have a single stored action.
+        $actions = action::get_records([
+            'action' => 'course_completed',
+            'originalcourseid' => $this->course->id,
+            'relateduserid' => $this->user->id,
+        ]);
+
+        $this->assertCount(1, $actions);
+        $action = reset($actions);
+
+        // Check we migrated the correct course.
+        $entitycourse = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'course',
+            'originalid' => $action->get('originalcourseid'),
+        ]);
+
+        $this->assertEquals($this->course->shortname, field::get_record([
+            'entityid' => $entitycourse->get('id'),
+            'name' => 'shortname',
+        ])->get('value'));
+
+        // We should have migrated the correct user.
+        $entityuser = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'user',
+            'originalid' => $action->get('relateduserid'),
+        ]);
+
+        $this->assertEquals($this->user->username, field::get_record([
+            'entityid' => $entityuser->get('id'),
+            'name' => 'username',
+        ])->get('value'));
+
+        // Check stored completion date.
+        $entitycompletion = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'course_completion',
+            'originalid' => $completionid,
+        ]);
+
+        $this->assertEquals(54321, field::get_record([
+            'entityid' => $entitycompletion->get('id'),
+            'name' => 'timecompleted',
+        ])->get('value'));
+    }
+
+    /**
+     * Confirm that course completion data that already exists in the datastore isn't re-created
+     *
+     * @return void
+     */
+    public function test_migrate_course_completion_skip_existing() {
+        $this->create_completion_instance($this->course->id, $this->user->id)->mark_complete();
+
+        // Sanity check.
+        $actioncount = action::count_records([
+            'action' => 'course_completed',
+            'originalcourseid' => $this->course->id,
+            'relateduserid' => $this->user->id,
+        ]);
+
+        $this->assertEquals(1, $actioncount);
+
+        // Execute the migration task.
+        (new migrate_course_completion())->execute();
+
+        // Confirm we still have just a single stored action.
+        $actioncount = action::count_records([
+            'action' => 'course_completed',
+            'originalcourseid' => $this->course->id,
+            'relateduserid' => $this->user->id,
+        ]);
+
+        $this->assertEquals(1, $actioncount);
+    }
+
+    /**
+     * Test migration of a single course by passing it to the migration task
+     *
+     * @return void
+     */
+    public function test_migrate_single_course() {
+        global $DB;
+
+        // We need to manually set the completion timecompleted field to simulate old/existing data (pre-datastore).
+        $completionid1 = $this->create_completion_instance($this->course->id, $this->user->id)->insert();
+        $DB->set_field('course_completions', 'timecompleted', 54321, ['id' => $completionid1]);
+
+        // Create second course, with manually set completion timecompleted field.
+        $course2 = $this->getDataGenerator()->create_course();
+        $this->getDataGenerator()->enrol_user($this->user->id, $course2->id);
+
+        $completionid2 = $this->create_completion_instance($course2->id, $this->user->id)->insert();
+        $DB->set_field('course_completions', 'timecompleted', 65432, ['id' => $completionid2]);
+
+        // Sanity check.
+        $this->assertEquals(0, action::count_records());
+
+        $task = new migrate_course_completion();
+        $task->set_custom_data(['courseid' => $this->course->id]);
+        $task->execute();
+
+        // Confirm we now have a single stored action.
+        $actions = action::get_records([
+            'action' => 'course_completed',
+            'relateduserid' => $this->user->id,
+        ]);
+
+        $this->assertCount(1, $actions);
+        $action = reset($actions);
+
+        // Check we migrated the correct course.
+        $entitycourse = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'course',
+            'originalid' => $action->get('originalcourseid'),
+        ]);
+
+        $this->assertEquals($this->course->shortname, field::get_record([
+            'entityid' => $entitycourse->get('id'),
+            'name' => 'shortname',
+        ])->get('value'));
+    }
+
+    /**
+     * Helper method for creating a completion instance
+     *
+     * @param int $courseid
+     * @param int $userid
+     * @return completion_completion
+     */
+    private function create_completion_instance(int $courseid, int $userid): completion_completion {
+        $timenow = time();
+
+        return new completion_completion([
+            'course' => $courseid,
+            'userid' => $userid,
+            'timeenrolled' => $timenow,
+            'timestarted' => $timenow,
+            'reaggregate' => $timenow,
+        ]);
+    }
+}
