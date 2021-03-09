@@ -85,7 +85,6 @@ class process {
     protected $usersskipped  = 0;
     /** @var int */
     protected $weakpasswords = 0;
-
     /** @var array course cache - do not fetch all courses here, we  will not probably use them all anyway */
     protected $ccache         = [];
     /** @var array */
@@ -883,6 +882,14 @@ class process {
             }
 
         } else {
+            // BEGIN MOODLECLOUD HACK.
+            if (\local_moodlecloud\restrictions\userquota::number_of_user_slots_remaining() == 0) {
+                $this->upt->track('status', 'Quota limits have been exceeded.', 'error');
+                $this->userserrors++;
+                return;
+            }
+            // END MOODLECLOUD HACK.
+
             // Save the new user to the database.
             $user->confirmed    = 1;
             $user->timemodified = time();
