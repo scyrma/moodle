@@ -1,0 +1,54 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_wp/modal_save_cancel_delete
+
+    Moodle modal template with save and cancel and other buttons.
+
+    The purpose of this template is to render a modal.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * title A cleaned string (use clean_text()) to display.
+    * body HTML content for the boday
+
+    Example context (json):
+    {
+        "title": "Example save cancel modal",
+        "body": "Some example content for the body"
+    }
+}}
+
+{{< core/modal }}
+    {{$footer}}
+        <button type="button" class="btn btn-primary" data-action="save">{{#str}} enablesharedspace,tool_tenant {{/str}}</button>
+        <button type="button" class="btn btn-outline-secondary" data-action="other">Other</button>
+        <button type="button" class="btn btn-secondary" data-action="cancel">{{#str}} cancel {{/str}}</button>
+    {{/footer}}
+{{/ core/modal }}
