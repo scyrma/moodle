@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template theme_workplace/wpmenu_modal
+
+    This template renders the main content area for the myoverview block.
+
+    Example context (json):
+    {
+        "uniqid": 123456,
+        "haslinks": true,
+        "courses": { "url": "#", "name": "Courses"},
+        "organisation": { "url": "#", "name": "Organisation structure"}
+    }
+}}
+
+{{#haslinks}}
+<div id="workplace-menu" data-region="workplace-menu-content" class="modal fade workplace-menu" tabindex='-1'>
+    <div class="modal-dialog wpmenu-modal-dialog" role="document">
+        <div class="modal-content p-0">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            <div class="content card-deck-wrapper">
+                <div class="card-deck d-flex flex-wrap mt-5 pt-2 m-2 m-sm-4">
+                    {{#elements}}
+                    <a class="card border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                        <img class="icon" alt="" src="{{imgurl}}">
+                        <span class="mt-2 mb-2">{{{name}}}</span>
+                    </a>
+                    {{/elements}}
+                </div>
+                {{#hasgloballinks}}
+                <div class="border-top">
+                    <div class="mx-5 mt-4 font-weight-bold small">
+                        {{#str}} global, theme_workplace {{/str}}
+                    </div>
+                    <div class="card-deck d-flex flex-wrap m-2 mx-sm-4 mb-sm-4">
+                    {{#globalelements}}
+                        <a class="card border-0 wpmenu-item my-3 d-flex flex-column text-center align-items-center justify-content-center m-0 p-0" href="{{url}}">
+                            <img class="icon" alt="" src="{{imgurl}}">
+                            <span class="mt-2 mb-2">{{{name}}}</span>
+                        </a>
+                    {{/globalelements}}
+                    </div>
+                </div>
+                {{/hasgloballinks}}
+            </div>
+        </div>
+    </div>
+</div>
+{{/haslinks}}
