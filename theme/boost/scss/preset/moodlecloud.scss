@@ -152,3 +152,15 @@ a.nav-link .icon {
 .action-menu .userpicture {
     margin-left: 1rem;
 }
+
+.btn-secondary {
+    color: $black;
+}
+
+.dropdown-item:hover a {
+    color: #3a3a3a !important;
+}
+
+.dropdown-item:focus-within a {
+    color: #3a3a3a !important;
+}
