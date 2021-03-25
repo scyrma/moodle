@@ -1,0 +1,54 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_wp/export_file_preview
+
+    Display an export file preview
+
+    Example context (json):
+    {
+        "importid": 10,
+        "preview": "My file preview",
+        "showmore": true,
+        "showmorecount": 7
+    }
+}}
+
+<div class="export-file-preview-container" style="max-height: 320px; overflow-y: auto;">
+    {{{preview}}}
+
+    {{#showmore}}
+        <button class="btn btn-link p-0 m-1 float-right" id="export-file-preview-{{uniqid}}" data-importid="{{importid}}">
+            {{#str}} showxmore, tool_wp, {{showmorecount}} {{/str}}
+        </button>
+    {{/showmore}}
+</div>
+
+{{#js}}
+    {{#showmore}}
+        require(['tool_wp/export_file_preview'], function(fp) {
+            fp.init('{{uniqid}}');
+        });
+    {{/showmore}}
+{{/js}}
