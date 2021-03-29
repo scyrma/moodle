@@ -1,0 +1,200 @@
+@media (max-width: 505px)  {
+    #nav-moodlecloud-quota-popover-container {
+        display: none;
+    }
+}
+
+@media (max-width: 870px)  {
+    .fixed-top .logo-wr {
+        display: none !important;
+    }
+}
+
+#nav-moodlecloud-quota-popover-container > div > div {
+    line-height: 1.3;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle {
+    padding: 0px;
+    width: auto;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-container {
+    margin-top: 14px;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle::before {
+    display: none;
+}
+
+#nav-moodlecloud-quota-popover-container .popover-region-toggle::after {
+    display: none !important;
+}
+
+#nav-moodlecloud-quota-popover-container.workplace {
+    padding-top: 6px !important;
+}
+
+#nav-moodlecloud-quota-popover-container progress {
+    display:inline-block;
+    vertical-align: middle !important;
+    width:100px;
+    height:10px;
+    background:grey;
+    border: 0;
+    float: right;
+    margin-top: 6px;
+    margin-left: 5px;
+    position:relative;
+    -webkit-appearance: progress-bar;
+}
+
+/* IE10 */
+#nav-moodlecloud-quota-popover-container progress.ok {
+    color: red;
+}
+
+.nav-item {
+    z-index: 9 !important;
+}
+
+/* Firefox */
+#nav-moodlecloud-quota-popover-container progress.ok::-moz-progress-bar {
+    background: green;
+}
+
+/* Chrome */
+#nav-moodlecloud-quota-popover-container progress.ok::-webkit-progress-value {
+    background: green;
+}
+
+/* IE10 */
+#nav-moodlecloud-quota-popover-container progress.warn {
+    color: orange;
+}
+
+/* Firefox */
+#nav-moodlecloud-quota-popover-container progress.warn::-moz-progress-bar {
+    background: orange;
+}
+
+/* Chrome */
+#nav-moodlecloud-quota-popover-container progress.warn::-webkit-progress-value {
+    background: orange;
+}
+
+/* IE10 */
+#nav-moodlecloud-quota-popover-container progress.danger {
+    color: red;
+}
+
+/* Firefox */
+#nav-moodlecloud-quota-popover-container progress.danger::-moz-progress-bar {
+    background: red;
+}
+
+/* Chrome */
+#nav-moodlecloud-quota-popover-container progress.danger::-webkit-progress-value {
+    background: red;
+}
+
+.popover-region.popover-region-quotas.collapsed .items {
+    display: none;
+}
+
+#nav-moodlecloud-quota-popover-container .items {
+    text-align: center;
+    margin-top: 10px;
+}
+
+#nav-moodlecloud-quota-popover-container .item {
+    position: relative;
+    display: inline-block;
+}
+
+#nav-moodlecloud-quota-popover-container .item h2 {
+    font-size:19px;
+    text-align:center;
+    position: absolute;
+    line-height: 152px;
+    width: 100%;
+}
+
+#nav-moodlecloud-quota-popover-container .item h3 {
+    font-size: 15px;
+    font-weight: bold;
+    color: #bcbcbc;
+    text-align:center;
+    position: absolute;
+    line-height: 200px;
+    width: 100%;
+}
+
+#nav-moodlecloud-quota-popover-container svg {
+    transform: rotate(-90deg);
+}
+
+#nav-moodlecloud-quota-popover-container .circle_animation {
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+}
+
+@keyframes moodlecloud_quota_popover_users {
+    0% {stroke-dashoffset: 440;}
+}
+
+#nav-moodlecloud-quota-popover-container .users .circle_animation {
+    -webkit-animation: users 1s ease-out forwards;
+    animation: moodlecloud_quota_popover_users 1s ease-out forwards;
+}
+
+@keyframes moodlecloud_quota_popover_storage {
+    0% {stroke-dashoffset: 440;}
+}
+
+#nav-moodlecloud-quota-popover-container .storage .circle_animation {
+    -webkit-animation: storage 1s ease-out forwards;
+    animation: moodlecloud_quota_popover_storage 1s ease-out forwards;
+}
+
+#freetrial .fixed-top {
+    top: 60px !important;
+}
+
+body:not(#page-h5p-embed) #freetrial #page {
+    margin-top: 100px !important;
+}
+
+#page-h5p-embed #trialmsg {
+    display: none;
+}
+
+#freetrial [data-region="drawer"], #freetrial [data-region="right-hand-drawer"].drawer {
+    top: 100px !important;
+}
+
+html.freetrial .modal {
+    top: 60px !important;
+}
+
+#trialmsg {
+    height: 60px;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    background-color: #ec7f13;
+    color: white !important;
+    z-index: 999999 !important;
+    text-align: center;
+}
+
+#trialmsg > div {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#trialmsg a {
+    color: white !important;
+    text-decoration: underline !important;
+}
