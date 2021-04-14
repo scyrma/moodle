@@ -27,6 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
     $temp = new admin_settingpage('locationsettings', new lang_string('locationsettings', 'core_admin'));
+    $temp->add(new admin_setting_heading('iplookup', new lang_string('iplookup', 'admin'), new lang_string('iplookupinfo', 'admin')));
+    // BEGIN MOODLECLOUD HACK.
+    $temp->add(new admin_setting_configfile('geoip2file', new lang_string('geoipfile', 'admin'),
+        new lang_string('configgeoipfile', 'admin', '/dataroot/geoip/'), '/dataroot/geoip/GeoLite2-City.mmdb'));
+    // END MOODLECLOUD HACK.
+    $temp->add(new admin_setting_configtext('googlemapkey3', new lang_string('googlemapkey3', 'admin'), new lang_string('googlemapkey3_help', 'admin'), '', PARAM_RAW, 60));
 
     if ($ADMIN->fulltree) {
         $temp->add(new admin_setting_servertimezone());
