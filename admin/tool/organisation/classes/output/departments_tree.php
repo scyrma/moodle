@@ -1,0 +1,223 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace Code is dual-licensed under the terms of both the
+// single GNU General Public Licence version 3.0, dated 29 June 2007
+// and the terms of the proprietary Moodle Workplace Licence strictly
+// controlled by Moodle Pty Ltd and its certified premium partners.
+// Wherever conflicting terms exist, the terms of the MWL are binding
+// and shall prevail.
+
+/**
+ * Class departments_tree
+ *
+ * @package     tool_organisation
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+namespace tool_organisation\output;
+
+use renderer_base;
+use tool_organisation\department;
+use tool_organisation\department_manager;
+use tool_organisation\helper;
+use tool_organisation\permission;
+use tool_tenant\sharedspace;
+use tool_wp\output\table_tree;
+
+defined('MOODLE_INTERNAL') || die();
+global $CFG;
+require_once($CFG->dirroot.'/admin/tool/organisation/lib.php');
+
+/**
+ * Class departments_tree
+ *
+ * @package     tool_organisation
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class departments_tree extends table_tree {
+
+    /** @var array */
+    protected $columns;
+
+    /** @var department */
+    protected $framework;
+
+    /** @var bool */
+    protected $disabledragdrop;
+
+    /**
+     * departments_tree constructor.
+     *
+     * @param department $framework department structure
+     */
+    public function __construct(department $framework) {
+        $this->framework = $framework;
+        $manager = new department_manager();
+        // Disable drag&drop if departments in framework are more than 200.
+        $this->disabledragdrop = $manager->too_many_children_disable_sorting($this->framework);
+        $this->columns = ['name' => get_string('departmentname', 'tool_organisation')];
+        $this->columns['jobs'] = helper::get_string_with_help_icon('jobsnumber', 'tool_organisation');
+        $this->columns['actions'] = get_string('actions', 'tool_organisation');
+    }
+
+    /**
+     * Returns the list of the node children
+     *
+     * @param mixed|null $node null for the root element or the tree node
+     * @return array|false list of children or false if this node can not have children
+     */
+    protected function get_node_children($node = null) {
+        if (!$node) {
+            return $this->framework->get_children();
+        } else if ($node instanceof department) {
+            return $node->get_children();
+        }
+        return false;
+    }
+
+    /**
+     * List of columns aliases
+     *
+     * @return string[]
+     */
+    protected function get_columns(): array {
+        return array_keys($this->columns);
+    }
+
+    /**
+     * Returns the width of the column. The total of all widths must be 12
+     *
+     * @param string $columnname
+     * @return int
+     */
+    protected function get_column_width(string $columnname): int {
+        if ($columnname === 'name') {
+            return 8;
+        }
+        return 2;
+    }
+
+    /**
+     * Attributes to add to the node <div> element (may include data- attributes, id, class)
+     *
+     * @param department|null $node null for the root element or the tree node
+     * @return array associative array with attributes
+     */
+    protected function get_node_attributes($node = null): array {
+        $attributes = [];
+        $attributes['data-department-id'] = $node ? $node->get('id') : $this->framework->get_framework_id();
+        return $attributes;
+    }
+
+    /**
+     * Returns the contents of the cell
+     *
+     * When $node===null return the header of the column
+     *
+     * @param renderer_base $output
+     * @param string $columnname
+     * @param department|null $node null for the root element or the tree node
+     * @return string
+     */
+    protected function export_cell(renderer_base $output, string $columnname, $node = null): string {
+        if (!$node) {
+            return $this->columns[$columnname];
+        }
+
+        $s = '';
+        if ($columnname === 'name') {
+            if (permission::can_edit_department($this->framework)) {
+                if (!$this->disabledragdrop) {
+                    $s .= $output->render_from_template('core/drag_handle',
+                        ['movetitle' => get_string('move')]);
+                }
+                $s .= $output->render_from_template('core/inplace_editable',
+                    $node->get_editable_name()->export_for_template($output));
+            } else {
+                $s .= $node->get_formatted_name();
+            }
+        } else if ($columnname === 'actions') {
+            foreach ($this->get_actions($node) as $action) {
+                $s .= $output->render_from_template('core/action_link',
+                    $action->export_for_template($output));
+            }
+        } else if ($columnname === 'jobs') {
+            if ($jobscount = $this->framework->get_jobs_count($node->get('id'))) {
+                $s = ($jobscount->active || $jobscount->expired) ? $jobscount->active . "&nbsp;(" . $jobscount->expired . ")" : "0";
+            } else {
+                $s = '0';
+            }
+        }
+
+        return $s;
+    }
+
+    /**
+     * Attributes to add to the tree <div> element (may include data- attributes, id, class)
+     *
+     * @return array associative array with attributes
+     */
+    protected function get_tree_attributes(): array {
+        return ['data-framework-id' => $this->framework->get_framework_id(), 'class' => 'tool-organisation-departments'];
+    }
+
+    /**
+     * Actions for a department
+     *
+     * @param department $node
+     * @return \action_link[]
+     */
+    protected function get_actions(department $node): array {
+        // Do not show action icons if it's a shared framework and is not in shared space.
+        if (!permission::can_edit_department($node)) {
+            return [];
+        }
+
+        $url = new \moodle_url('#');
+        $formattedname = $node->get_formatted_name();
+        if ($node->is_framework()) {
+            $stradddepartment = get_string('adddepartment', 'tool_organisation', $formattedname);
+            $streditdepartment = get_string('editdepartmentframework', 'tool_organisation', $formattedname);
+            $strdeletedepartment = get_string('deletedepartmentframework', 'tool_organisation', $formattedname);
+        } else {
+            $stradddepartment = get_string('addchilddepartment', 'tool_organisation', $formattedname);
+            $streditdepartment = get_string('editdepartment', 'tool_organisation', $formattedname);
+            $strdeletedepartment = get_string('deletedepartment', 'tool_organisation', $formattedname);
+        }
+        $return = [];
+        if (!$node->is_framework()) {
+            $return[] = new \action_link($url, '', null,
+                ['data-action' => 'addchild', 'data-departmentid' => $node->get('id'), 'title' => $stradddepartment],
+                new \pix_icon('t/add', $stradddepartment, 'core'));
+        }
+        $return[] = new \action_link($url, '', null,
+            ['data-action' => 'edit', 'data-departmentid' => $node->get('id'), 'title' => $streditdepartment],
+            new \pix_icon('i/settings', $streditdepartment, 'core'));
+        if (!$this->framework->get_jobs_count($node->get('id'))->totalwithchildren) {
+            $return[] = new \action_link($url, '', null,
+                ['data-action' => 'delete', 'data-departmentid' => $node->get('id'), 'data-name' => $formattedname],
+                new \pix_icon('i/trash', $strdeletedepartment, 'core'));
+        }
+        return $return;
+    }
+}

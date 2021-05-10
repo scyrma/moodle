@@ -1,0 +1,4 @@
+username,firstname,lastname,email,jobdepartment1,jobposition1,jobstartdate1,jobenddate1
+jonest,Tom,Jones,jonest@example.com,exampleshareddep,examplesharedpos,,
+reznor,Trent,Reznor,reznor@example.com,exampleshareddep2,examplesharedpos2,2021-02-15,
+jon,Jon,Whatever,jon@example.com,exampleshareddep2,examplesharedpos2,2021-02-15,2033-03-03
