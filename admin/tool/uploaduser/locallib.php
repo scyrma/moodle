@@ -85,6 +85,9 @@ class uu_progress_tracker {
             'theme' => get_string('theme'),
             'deleted' => get_string('delete'),
         ];
+        if (core_component::get_component_directory('tool_wp')) {
+            $this->headers['tool_wp'] = get_string('pluginname', 'tool_wp');
+        }
         $this->columns = array_keys($this->headers);
     }
 
@@ -222,6 +225,9 @@ function uu_validate_user_upload_columns(csv_import_reader $cir, $stdfields, $pr
             // special fields for enrolments
             $newfield = $lcfield;
 
+        } else if (component_class_callback('tool_wp\tool_uploaduser', 'validate_column', [$lcfield])) {
+            /** @uses \tool_wp\tool_uploaduser::validate_column() */
+            $newfield = $lcfield;
         } else {
             $cir->close();
             $cir->cleanup();
