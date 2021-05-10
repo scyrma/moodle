@@ -1,0 +1,5 @@
+username,course1,role1,group1,coursecompleted1,coursecompleteddate1
+student1,,,,CE,2019-02-19
+student2,,,,CE,
+student3,CE,student,,CE,
+student4,CE,student,G1,CE,
