@@ -202,9 +202,9 @@ $string['csvinvalidcolsnum'] = 'Invalid CSV file - each line must include 49 or 
 $string['csvloaderror'] = 'An error occurred while loading the CSV file: {$a}';
 $string['csvnodata'] = 'Invalid CSV file - The CSV file has headers but does not contain any data.';
 $string['csvweirdcolumns'] = 'Invalid CSV file format - number of columns is not constant!';
-$string['dbconnectionfailed'] = '<p>Error: Database connection failed</p>
-<p>It is possible that the database is overloaded or otherwise not running properly.</p>
-<p>The site administrator should also check that the database details have been correctly specified in config.php</p>';
+// START MOODLECLOUD HACK
+$string['dbconnectionfailed'] = '<p>Sorry, something went wrong.</p><p>We\'re working on it and we\'ll get it fixed as soon as we can.</p>';
+// END MOODLECLOUD HACK
 $string['dbdriverproblem'] = '<p>Error: database driver problem detected</p>
 <p>The site administrator should verify server configuration</p><p>{$a}</p>';
 $string['dbsessionbroken'] = 'Serious database session problem detected.<br /><br />Please notify server administrator.';
@@ -391,6 +391,7 @@ $string['loginasnoenrol'] = 'You cannot use enrol or unenrol when in course "Log
 $string['loginasonecourse'] = 'You cannot enter this course.<br /> You have to terminate the "Login as" session before entering any other course.';
 $string['maxbytesfile'] = 'The file {$a->file} is too large. The maximum size you can upload is {$a->size}.';
 $string['maxareabytes'] = 'The file is larger than the space remaining in this area.';
+$string['maxdraftitemids'] = 'Due to uploading a high volume of files, your file uploads are temporarily limited. Please try again after a few seconds.';
 $string['messageundeliveredbynotificationsettings'] = 'The message could not be sent because personal messages between users (in Notification settings) has been disabled by a site administrator.';
 $string['messagingdisable'] = 'Messaging is disabled on this site';
 $string['mimetexisnotexist'] = 'Your system is not configured to run mimeTeX. You need to obtain the C source from <a href="https://www.forkosh.com/mimetex.zip">https://www.forkosh.com/mimetex.zip</a>, compile it and put the executable into your moodle/filter/tex/ directory.';

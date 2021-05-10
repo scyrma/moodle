@@ -287,6 +287,9 @@ class auth_plugin_mnet extends auth_plugin_base {
         // add the remote user to the database if necessary, and if allowed
         // TODO: refactor into a separate function
         if (empty($localuser) || ! $localuser->id) {
+            // BEGIN MOODLECLOUD HACK.
+            local_moodlecloud\restrictions\userquota::site_is_over_user_quota();
+            // END MOODLECLOUD HACK.
             /*
             if (empty($this->config->auto_add_remote_users)) {
                 print_error('nolocaluser', 'mnet');
@@ -710,9 +713,7 @@ class auth_plugin_mnet extends auth_plugin_base {
 
         foreach($superArray as $subArray) {
             $subArray = array_values($subArray);
-            $instring = "('".implode("', '",$subArray)."')";
-            $query = "select id, session_id, username from {mnet_session} where username in $instring";
-            $results = $DB->get_records_sql($query);
+            $results = $DB->get_records_list('mnet_session', 'username', $subArray, '', 'id, session_id, username');
 
             if ($results == false) {
                 // We seem to have a username that breaks our query:
