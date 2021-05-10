@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/appointment/db" VERSION="2021050700" COMMENT="XMLDB file for Moodle mod/appointment"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="appointment" COMMENT="Each appointment activity has an entry here">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="id of the table, please edit me"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="intro"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="introformat"/>
+        <FIELD NAME="thirdparty" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="email address of a third party involved in this activity"/>
+        <FIELD NAME="thirdpartywaitlist" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Set to 1 if the third party wants to receive signups/cancellations about wait-listed sessions, 0 otherwise."/>
+        <FIELD NAME="display" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="confirmationsubject" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Subject line for the confirmation emails"/>
+        <FIELD NAME="confirmationinstrmngr" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of confirmation emails sent to instructors and managers"/>
+        <FIELD NAME="confirmationmessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of confirmation emails sent to students"/>
+        <FIELD NAME="confirmationmessageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="waitlistedsubject" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Subject of the email sent when the user is on a wait-list"/>
+        <FIELD NAME="waitlistedmessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of the email sent when a user is on a wait-list"/>
+        <FIELD NAME="waitlistedmessageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="cancellationsubject" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Subject of the emails sent when users get out of an activity"/>
+        <FIELD NAME="cancellationinstrmngr" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of the emails sent to instructors and managers when students get out of an activity"/>
+        <FIELD NAME="cancellationmessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of the emails sent to users who got out of an activity"/>
+        <FIELD NAME="cancellationmessageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="remindersubject" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Subject of reminder emails sent before an activity"/>
+        <FIELD NAME="reminderinstrmngr" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of the emails sent to instructors and managers when a user is reminded of an upcoming activity"/>
+        <FIELD NAME="remindermessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of the emails sent to users reminding them of an upcoming activity"/>
+        <FIELD NAME="remindermessageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="reminderperiod" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The number of days before the activity that reminders will be sent.  A value of 0 disables the reminder."/>
+        <FIELD NAME="requestsubject" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Subject of booking request emails"/>
+        <FIELD NAME="requestinstrmngr" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of the emails sent to instructors and managers when a user requests a activity booking"/>
+        <FIELD NAME="requestmessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of the emails sent to users requesting an activity booking"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="shortname" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="showoncalendar" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="approvalreqd" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="usercalentry" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="allowcancellationsdefault" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="completionbooked" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If this field is set to 1, then the activity will be automatically marked as 'complete' once the user books an appointment."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for appointment"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="appointment_session_roles" COMMENT="Users with a trainer role in a appointment session">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="id of the table"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="sessionid" TYPE="foreign" FIELDS="sessionid" REFTABLE="appointment_sessions" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="appointment_sessions" COMMENT="A given appointment activity may be given at different times and places">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="id of the table, please edit me"/>
+        <FIELD NAME="appointment" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="ID of the appointment activity this session is for"/>
+        <FIELD NAME="capacity" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Number of students who can enroll in this session. A value of 0 means unlimited."/>
+        <FIELD NAME="allowwaitlist" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Flag to turn on waitlisting of signups over capacity."/>
+        <FIELD NAME="details" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Extra information about this session"/>
+        <FIELD NAME="detailsformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="allowcancellations" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="primary key of the table, please edit me"/>
+        <KEY NAME="appointment" TYPE="foreign" FIELDS="appointment" REFTABLE="appointment" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="appointment_sessions_dates" COMMENT="The dates and times for each session.  Sessions can be set over multiple days or blocks of time.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="id of the table, please edit me"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timestart" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timefinish" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="primary key of the table, please edit me"/>
+        <KEY NAME="sessionid" TYPE="foreign" FIELDS="sessionid" REFTABLE="appointment_sessions" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="appointment_signups" COMMENT="User/session signups">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="mailedreminder" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="notificationtype" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="primary key of the table, please edit me"/>
+        <KEY NAME="sessionid" TYPE="foreign" FIELDS="sessionid" REFTABLE="appointment_sessions" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="appointment_signups_status" COMMENT="User/session signup status">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="signupid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="statuscode" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="superceded" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="5"/>
+        <FIELD NAME="note" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="advice" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="primary key of the table, please edit me"/>
+        <KEY NAME="signupid" TYPE="foreign" FIELDS="signupid" REFTABLE="appointment_signups" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
