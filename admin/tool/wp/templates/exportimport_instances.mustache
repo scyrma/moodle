@@ -1,0 +1,89 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_wp/exportimport_instances
+
+    Export/Import instances
+
+    Classes required for JS:
+    * None
+
+    Data attibutes required for JS:
+    * None
+
+    Context variables required for this template:
+    * None
+
+    Example context (json):
+    {
+        "instances":
+            {
+                "count": 4,
+                "morecount": 1,
+                "list": [
+                    {
+                        "name": "Program 01",
+                        "value": true
+                    },
+                    {
+                        "name": "Program 02",
+                        "value": true
+                    },
+                    {
+                        "name": "Program 03",
+                        "value": true
+                    },
+                    {
+                        "name": "Program 04",
+                        "value": true
+                    }
+                ]
+            }
+    }
+}}
+<div data-region="exportimport-instances">
+    {{#instances}}
+    <strong>{{#str}} instancescount, tool_wp, {{instances.count}} {{/str}}</strong>
+        <div class="showmorelist">
+            <ul class="mb-0" style="list-style: none;">
+                {{#instances.list}}
+                    <li>
+                        {{#value}}{{name}}{{/value}}
+                        {{^value}}<del>{{name}}</del>{{/value}}
+                    </li>
+                {{/instances.list}}
+            </ul>
+            {{#instances.morecount}}
+            <button class="btn btn-link showmore">{{#str}} showxmore, tool_wp, {{ instances.morecount }} {{/str}}</button>
+            <button class="btn btn-link showless">{{#str}} showless, tool_wp {{/str}}</button>
+            {{/instances.morecount}}
+        </div>
+    {{/instances}}
+</div>
+
+{{#js}}
+    require(['tool_wp/import_export'], function(s) {
+        s.initShowMoreList();
+    });
+{{/js}}
