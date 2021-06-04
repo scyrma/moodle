@@ -121,6 +121,7 @@ class block_accessreview extends block_base {
             switch ($COURSE->format) {
                 case accessibility::TOOL_BRICKFIELD_FORMAT_TOPIC:
                 case accessibility::TOOL_BRICKFIELD_FORMAT_WEEKLY:
+                case 'wplist':
                     $showhighlighting = true;
                     break;
             }
