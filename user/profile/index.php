@@ -157,6 +157,10 @@ foreach ($categories as $category) {
     ];
 }
 
+/** @uses \tool_tenant\profile_manager::add_tenant_info() */
+$outputcategories = component_class_callback('\tool_tenant\profile_manager', 'add_tenant_info',
+    [$outputcategories], $outputcategories);
+
 echo $OUTPUT->render_from_template('core_user/edit_profile_fields', [
     'categories' => $outputcategories,
     'sesskey' => sesskey(),
