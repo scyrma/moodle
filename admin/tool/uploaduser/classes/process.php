@@ -167,7 +167,9 @@ class process {
     protected function find_profile_fields(): void {
         global $CFG;
         require_once($CFG->dirroot . '/user/profile/lib.php');
-        $this->allprofilefields = profile_get_user_fields_with_data(0);
+        /** @uses \tool_tenant\profile_manager::profile_get_all_user_fields() */
+        $this->allprofilefields = component_class_callback('\tool_tenant\profile_manager', 'profile_get_all_user_fields',
+            [], profile_get_user_fields_with_data(0));
         $this->profilefields = [];
         if ($proffields = $this->allprofilefields) {
             foreach ($proffields as $key => $proffield) {
