@@ -30,9 +30,6 @@ have signed an MWL with Moodle Pty Ltd ensuring (among other things) that you:
 - will not distribute copies of Moodle Workplace™ Code to any third party not a
   party to the MWL that you have signed and you must indemnify Moodle for any
   loss suffered by Moodle due to failure by you to comply with the MWL;
-- agree that AUD $5 million represents a genuine estimate of liquidated damages
-  for any single contract breach related to unauthorised or unlawful use of
-  Moodle Workplace Code;
 - agree that any improvements to Moodle Workplace™ Code must be explicitly
   shared with Moodle Pty Ltd and its certified premium partners, with such
   rights in the improvements assigned to Moodle Pty Ltd thereby allowing Moodle
