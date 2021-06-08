@@ -46,6 +46,10 @@ class block_myoverview extends block_base {
      * @return stdClass contents of block
      */
     public function get_content() {
+        /** @uses \tool_wp\block_myoverview::content_hook() */
+        if (($result = component_class_callback('tool_wp\block_myoverview', 'content_hook', [], false)) !== false) {
+            $this->content = $result;
+        }
         if (isset($this->content)) {
             return $this->content;
         }
