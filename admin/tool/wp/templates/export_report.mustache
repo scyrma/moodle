@@ -1,0 +1,117 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_wp/export_report
+
+    Export report
+
+    Classes required for JS:
+    * None
+
+    Data attibutes required for JS:
+    * None
+
+    Context variables required for this template:
+    * None
+
+    Example context (json):
+    {
+        "export":
+            {
+                "statusstr": "Done",
+                "date": "1 Jan 2020, 00:00 AM",
+                "user": "User Name",
+                "iscomplete": 1,
+                "isinprogress": 0,
+                "issuccess": 1,
+                "progress": 0,
+                "exporterstr": "Exporter name",
+                "size": 1,
+                "tenant": "Tenant name",
+                "version": "3.8.3 (Build: 20200518)",
+                "summary": ""
+            }
+    }
+}}
+<div class="container-fluid" data-region="export-report">
+    <table class="admintable generaltable">
+        <tbody>
+            <tr>
+                <td>{{#str}} status {{/str}}</td>
+                <td>
+                    <span class="export-status">{{{export.statusstr}}}</span>
+                    {{^export.iscomplete}}
+                        <button class="btn btn-sm btn-outline-secondary ml-2 my-auto float-right"
+                                title="Update export progress"
+                                data-action="update-export-progress"
+                                data-exportid={{export.id}}>
+                            <i class="icon fa fa-refresh fa-fw " aria-hidden="true"></i>
+                            {{#str}} refresh, tool_wp {{/str}}
+                        </button>
+                    {{/export.iscomplete}}
+                </td>
+            </tr>
+            {{#export.errors}}
+            <tr>
+                <td></td>
+                <td>{{{ . }}}</td>
+            </tr>
+            {{/export.errors}}
+            <tr><td>{{#str}} date {{/str}}</td><td>{{export.date}}</td></tr>
+            <tr><td>{{#str}} createdby, tool_wp {{/str}}</td><td>{{export.user}}</td></tr>
+            {{#export.tenant}}
+                <tr><td>{{#str}} tenant, tool_wp  {{/str}}</td><td>{{export.tenant}}</td></tr>
+            {{/export.tenant}}
+            <tr><td>{{#str}} exporter, tool_wp {{/str}}</td><td>{{export.exporterstr}}</td></tr>
+            {{#export.issuccess}}
+            <tr><td>{{#str}} exported, tool_wp {{/str}}</td><td>{{{export.summary}}}</td></tr>
+            {{/export.issuccess}}
+            <tr><td>{{#str}} version {{/str}}</td><td>{{export.version}}</td></tr>
+            {{#export.issuccess}}
+            <tr><td>{{#str}} size {{/str}}</td><td>{{export.size}}</td></tr>
+            {{/export.issuccess}}
+        </tbody>
+    </table>
+    {{#export.isinprogress}}
+        <div class="alert alert-info">{{#str}} safenavigation , tool_wp {{/str}}</div>
+    {{/export.isinprogress}}
+    <div class="d-flex justify-content-end">
+        <!-- TODO: iscomplete includes ERROR and these buttons are only for SUCCESS. -->
+        {{#export.issuccess}}
+        <a role="button" href="{{downloadurl}}" class="btn btn-primary mr-2">{{#str}} downloadfile {{/str}}</a>
+        <a role="button" href="{{importfromfileurl}}" class="btn btn-primary mr-2">{{#str}} importfromfile, tool_wp {{/str}}</a>
+        {{/export.issuccess}}
+        <a role="button" href="{{mainurl}}" class="btn btn-secondary mr-2">{{#str}} close, core_form {{/str}}</a>
+    </div>
+</div>
+
+{{#js}}
+    require(['tool_wp/import_export'], function(s) {
+    s.initExportProgress(0);
+    });
+{{/js}}
