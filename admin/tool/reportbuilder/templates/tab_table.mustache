@@ -1,0 +1,141 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_reportbuilder/tab_table
+
+    Template for the report tab
+
+    Classes required for JS:
+    -
+
+    Data attributes required for JS:
+    * data-region
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "reportid": 1,
+        "ispreview": "false",
+        "table": "",
+        "hascolumns": "false",
+        "hassidebar": "true",
+        "name": "example",
+        "editon": true,
+        "conditionshelp": true,
+        "filtershelp": true,
+        "sortinghelp": true,
+        "nofiltersurl": "https://via.placeholder.com/150?text=No+filters",
+        "nocolumnsurl": "https://via.placeholder.com/150?text=No+sorting",
+        "noconditionsurl": "https://via.placeholder.com/150?text=No+conditions",
+        "canaddfilters": true,
+        "tabheading": "Table"
+    }
+}}
+<div id="tool-reportbuilder-{{uniqid}}" class="w-100 tool_reportbuilder_tab_table" data-region="report-builder" data-reportid="{{reportid}}" {{^ispreview}}data-editon="1"{{/ispreview}}>
+    {{> tool_wp/tab_heading }}
+    <div class="row h-100 no-gutters fit-container">
+        {{# hascolumns}}
+            <div data-region="sidebar-columns" class="col-4 col-lg-3 pr-2 d-flex flex-column fill-column columns-wrapper">
+                <div class="flex-1 overflow-hidden min-height">
+                    <div class="position-absolute w-100 pr-md-2 scroll-y">
+                        <div class="h-100 scroll-y">
+                            {{> tool_reportbuilder/report_sidebar_columns}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/ hascolumns}}
+        <div data-region="report-content" class="d-flex flex-column fill-column {{^ispreview}}col-8 col-lg-9{{/ispreview}}{{#ispreview}}col-12{{/ispreview}}">
+            <div class="flex-1 overflow-hidden min-height">
+                <div class="{{^ispreview}}position-absolute{{/ispreview}} w-100 px-md-2 scroll-y">
+                    <div id="conditions-container" class="h-100 d-flex scroll-y">
+                        <div class="card flex-fill no-overflow">
+                            <div class="card-header d-flex justify-content-center">
+                                {{# hascolumns}}
+                                    {{^ispreview}}
+                                    <div class="text-right sidebar-icon py-1">
+                                        <button data-action="toggle-sidebar" class="button_sidebar_collapse open btn btn-sm btn-outline-secondary mr-2 nomargin" title="{{#str}} sidebarbutton, tool_reportbuilder {{/str}}">
+                                            <span class="sidebarbtnopen">{{#pix}} a/wp-chevron-double-left, theme {{/pix}}</span>
+                                            <span class="sidebarbtnclosed hidden">{{#pix}} a/wp-chevron-double-right, theme {{/pix}}</span>
+                                            <div class="sr-only"> {{#str}} sidebarbutton, tool_reportbuilder {{/str}} </div>
+                                        </button>
+                                    </div>
+                                    {{/ispreview}}
+                                {{/ hascolumns}}
+                                <h4 class="mb-0 my-auto">{{{name}}}</h4>
+                                <div class="ml-auto d-flex align-items-center">
+                                    {{^ispreview}}
+                                        <button data-action="show-preview" class="btn btn-sm btn-outline-secondary mr-2" title="{{#str}} previewmode, tool_reportbuilder {{/str}}">
+                                            {{#pix}} i/hide, core,  {{/pix}}
+                                            {{#str}} preview, tool_reportbuilder {{/str}}
+                                            <span class="sr-only">{{#str}} previewmode, tool_reportbuilder {{/str}}</span>
+                                        </button>
+                                        <button id="reportbuilder-filters-collapse" data-toggle="collapse" data-target="#filters" class="btn btn-sm btn-outline-secondary" title="{{#str}} filtersbutton, tool_reportbuilder {{/str}}">
+                                            {{#pix}} userpreferences, tool_wp {{/pix}}
+                                            {{#str}} settings, tool_reportbuilder {{/str}}
+                                        </button>
+                                    {{/ispreview}}
+                                    {{#ispreview}}
+                                        <button data-action="show-edit" class="btn btn-sm btn-outline-secondary mr-2" title="{{#str}} editmode, tool_reportbuilder {{/str}}">
+                                            {{#pix}} t/editstring, core {{/pix}}
+                                            {{#str}} edit {{/str}}
+                                            <span class="sr-only">{{#str}} editmode, tool_reportbuilder {{/str}}</span>
+                                        </button>
+                                        {{> tool_reportbuilder/filters_icon}}
+                                    {{/ispreview}}
+                                </div>
+                            </div>
+                            <div class="card-body p-2 bg-white">
+                                <div class="table-responsive position-relative" data-region="data-report" data-parameters="{{parameters}}">
+                                    {{{table}}}
+                                </div>
+                            </div>
+                        </div>
+                        {{# hassidebar}}
+                            {{> tool_reportbuilder/report_sidebar}}
+                        {{/ hassidebar}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{#js}}
+    M.util.js_pending('tool_reportbuilder_tab_table');
+    require(['tool_reportbuilder/reportbuilder'],
+        function() {
+            M.util.js_complete('tool_reportbuilder_tab_table');
+        }
+    );
+    require(['tool_reportbuilder/sidebar'],
+        function(sideBar) {
+            sideBar.init('#tool-reportbuilder-{{uniqid}}');
+        }
+    );
+{{/js}}
