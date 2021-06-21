@@ -136,8 +136,11 @@ if (empty($CFG->forcedefaultmymoodle) && $PAGE->user_allowed_editing()) {
         } else {
             // For the page to display properly with the user context header the page blocks need to
             // be copied over to the user context.
-            if (!$currentpage = my_copy_page($USER->id, MY_PAGE_PRIVATE)) {
-                throw new \moodle_exception('mymoodlesetup');
+            /** @uses \tool_tenant\dashboard_manager::copy_dashboard_page() */
+            if (!$currentpage = component_class_callback('\tool_tenant\dashboard_manager', 'copy_dashboard_page', [$USER->id], false)) {
+                if (!$currentpage = my_copy_page($USER->id, MY_PAGE_PRIVATE)) {
+                    throw new \moodle_exception('mymoodlesetup');
+                }
             }
             $context = context_user::instance($USER->id);
             $PAGE->set_context($context);
