@@ -82,6 +82,10 @@ $PAGE->set_subpage($currentpage->id);
 $url = $PAGE->url;
 $url->params(['resetall' => true, 'sesskey' => sesskey()]);
 $button = $OUTPUT->single_button($url, get_string('reseteveryonesdashboard', 'my'));
+
+/** @uses \tool_tenant\dashboard_manager::default_system_dashboard() */
+$button = component_class_callback('\tool_tenant\dashboard_manager', 'default_system_dashboard', [], $button);
+
 $PAGE->set_button($button . $PAGE->button);
 
 echo $OUTPUT->header();
