@@ -2277,6 +2277,11 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
             // Can not move to itself or it's own child.
             return false;
         }
+        /** @uses \tool_tenant\permission::can_change_category_parent() */
+        if (!component_class_callback('\tool_tenant\permission', 'can_change_category_parent',
+            [$this->id, $newparentcat], true)) {
+            return false;
+        }
         if ($newparentcat->id) {
             return has_capability('moodle/category:manage', context_coursecat::instance($newparentcat->id));
         } else {
