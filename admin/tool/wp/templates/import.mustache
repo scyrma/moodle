@@ -1,0 +1,95 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_wp/import
+
+    Create a new import
+
+    Classes required for JS:
+    * None
+
+    Data attibutes required for JS:
+    * None
+
+    Context variables required for this template:
+    * None
+
+    Example context (json):
+    {
+        "formclass": "some\\class",
+        "form": "Form contents",
+        "stage1": "1"
+    }
+}}
+<div data-region="newimport">
+{{^stage6}}
+    <div class="d-flex flex-row-reverse flex-wrap flex-md-nowrap justify-content-center justify-content-md-between">
+        {{{stageindicator}}}
+        <div class="mr-auto p-2 pr-md-5 mt-3 mt-md-0">
+        {{#stage1}}
+            <h2 class="mb-2">{{#str}} stepx, tool_wp, 1 {{/str}} {{#str}} importselectsource, tool_wp{{/str}}</h2>
+            <p>{{#str}} importselectsourcedesc, tool_wp{{/str}}</p>
+        {{/stage1}}
+        {{#stage2}}
+            <h2 class="mb-2">{{#str}} stepx, tool_wp, 2 {{/str}} {{#str}} importgeneralsettings, tool_wp{{/str}}</h2>
+            {{! TODO: once we support shifting dates, set this string back to the previous version. }}
+            <p>{{#str}} importgeneralsettingsalt, tool_wp{{/str}}</p>
+        {{/stage2}}
+        {{#stage3}}
+            <h2 class="mb-2">{{#str}} stepx, tool_wp, 3 {{/str}} {{#str}} importoptions, tool_wp{{/str}}</h2>
+            <p>{{#str}} importoptionsdesc, tool_wp{{/str}}</p>
+        {{/stage3}}
+        {{#stage4}}
+            <h2 class="mb-2">{{#str}} stepx, tool_wp, 4 {{/str}} {{#str}} importconflicts, tool_wp{{/str}}</h2>
+            <p>{{#str}} importconflictsdesc, tool_wp{{/str}}</p>
+        {{/stage4}}
+        {{#stage5}}
+            <h2 class="mb-2">{{#str}} stepx, tool_wp, 5 {{/str}} {{#str}} importreview, tool_wp{{/str}}</h2>
+            <p>{{#str}} importreviewdesc, tool_wp{{/str}}</p>
+        {{/stage5}}
+        </div>
+    </div>
+    <hr>
+    {{#form}}
+        <div data-formclass="{{formclass}}" data-region="formwrapper">
+            {{{form}}}
+        </div>
+    {{/form}}
+{{/stage6}}
+{{#stage6}}
+    {{> tool_wp/import_report }}
+{{/stage6}}
+</div>
+
+{{#js}}
+    require(['tool_wp/import_export'], function(s) {
+        s.initImport('[data-region=newimport]');
+
+        {{#stage6}}
+        if (typeof M.core_formchangechecker !== 'undefined') {
+            M.core_formchangechecker.set_form_submitted();
+        }
+        {{/stage6}}
+    });
+{{/js}}
