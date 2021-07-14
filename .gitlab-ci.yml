@@ -118,10 +118,9 @@ merge_workplace:
     - >
       if [ "$BUILD" == "workplace" ]; then
         echo "======= Merging latest workplace code ======="
-        MAJOR_VERSION=${MOODLE_VERSION::-2}
-        grep workplacebuild .git/config || git remote add workplacebuild git@git.in.moodle.com:workplace/workplacebuild.git
-        git fetch workplacebuild WP-${MAJOR_VERSION}-build-workplace_moodlecloud || ( echo "======= FAILED TO FETCH WORKPLACE BUILD"; exit 1 )
-        git merge workplacebuild/WP-${MAJOR_VERSION}-build-workplace_moodlecloud || ( echo "======= FAILED TO MERGE WORKPLACE ======="; exit 1 )
+        grep workplacebuild .git/config || git remote add workplacebuild git@git.in.moodle.com:workplace/workplace_moodlecloud.git
+        git fetch --tags workplacebuild || ( echo "======= FAILED TO FETCH WORKPLACE BUILD"; exit 1 )
+        git merge workplacebuild v${MOODLE_VERSION}+workplace || ( echo "======= FAILED TO MERGE WORKPLACE ======="; exit 1 )
         git push origin || ( echo "======= FAILED TO PUSH ======="; exit 1 )
         echo "======= Merge successfull ======="
       fi
