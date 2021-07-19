@@ -948,6 +948,11 @@ class core_user_external extends \core_external\external_api {
         // Finally retrieve each users information.
         $returnedusers = array();
         foreach ($users as $user) {
+            /** @uses \tool_tenant\tenancy::is_user_hidden_by_tenancy() */
+            if (component_class_callback('tool_tenant\\tenancy', 'is_user_hidden_by_tenancy', [$user->id])) {
+                continue;
+            }
+
             $userdetails = user_get_user_details_courses($user);
 
             // Return the user only if all the searched fields are returned.
