@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template theme_workplace/header
+
+    This template renders the header.
+
+    Example context (json):
+    {
+        "contextheader": "context_header_html",
+        "settingsmenu": "settings_html",
+        "hasnavbar": false,
+        "navbar": "navbar_if_available",
+        "courseheader": "course_header_html"
+    }
+}}
+<header id="page-header">
+    <div class="w-100">
+        <div class="bg-gray010 border border-gray040 {{^contextheader}}border-0 bg-transparent{{/contextheader}}">
+            <div class="p-4{{^contextheader}}p-2{{/contextheader}}">
+                <div class="d-flex w-100">
+                    <div class="headerimage mr-2">
+                        {{{image}}}
+                    </div>
+                    <div class="w-100">
+                        <div class="d-flex">
+                            <div class="mr-auto">
+                                {{{contextheader}}}
+                            </div>
+                            {{#settingsmenu}}
+                            <div class="context-header-settings-menu">
+                                {{{settingsmenu}}}
+                            </div>
+                            {{/settingsmenu}}
+                        </div>
+                        {{#hasnavbar}}
+                        <div id="page-navbar">
+                            {{{navbar}}}
+                            <div class="d-flex pageheadingbutton">
+                                {{{pageheadingbutton}}}
+                            </div>
+                        </div>
+                        {{/hasnavbar}}
+
+                    </div>
+                </div>
+                <div id="course-header">
+                    {{{courseheader}}}
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
