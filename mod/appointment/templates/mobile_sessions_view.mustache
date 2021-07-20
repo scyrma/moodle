@@ -1,0 +1,77 @@
+{{!
+    This file is part of the mod_appointment plugin for Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+ }}
+{{!
+    @template mod_appointment/mobile_sessions_view
+
+    Template for showing list of sessions in mobile app.
+
+    Example context (json):
+    {
+    }
+}}
+{{=<% %>=}}
+<div>
+    <ion-list>
+        <%#appointment.intro%>
+        <ion-item>
+            <ion-row>
+                <ion-col>
+                    <p><core-format-text text="<% appointment.intro %>" component="mod_appointment" componentId="<% cmid %>"></core-format-text></p>
+                </ion-col>
+            </ion-row>
+        </ion-item>
+        <%/appointment.intro%>
+        <%#sessions%>
+        <ion-item>
+            <ion-row>
+                <ion-col>
+                    <%#sessiontimes%>
+                    <p style="margin-top: 10px;"><strong><% date %> <br> <% time %></strong></p>
+                    <%/sessiontimes%>
+                    <p style="margin-top: 10px;">{{ 'plugin.mod_appointment.capacity' | translate }}: <% capacity %></p>
+                    <p style="margin-top: 10px;">{{ 'plugin.mod_appointment.status' | translate }}: <% status %></p>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <button ion-button block color="light" core-site-plugins-new-content title="<% detailstitle %>"
+                    component="mod_appointment" method="mobile_session_details" [args]="{cmid: <% cmid %>, sessionid: <% sessionid %>}">
+                        <% detailstitle %>
+                    </button>
+                </ion-col>
+                <ion-col>
+                <%#bookaction%>
+                    <%^iscancelling%>
+                    <button ion-button block core-site-plugins-new-content title="<% bookactiontitle %>"
+                    component="mod_appointment" method="mobile_session_book" [args]="{cmid: <% cmid %>, sessionid: <% sessionid %>}">
+                        <% bookactiontitle %>
+                    </button>
+                    <%/iscancelling%>
+                    <%#iscancelling%>
+                    <button ion-button block core-site-plugins-new-content color="danger" title="{{ 'plugin.mod_appointment.cancelbooking' | translate }}"
+                    component="mod_appointment" method="mobile_session_cancel" [args]="{cmid: <% cmid %>, sessionid: <% sessionid %>}">
+                        <% bookactiontitle %>
+                    </button>
+                    <%/iscancelling%>
+                <%/bookaction%>
+                </ion-col>
+            </ion-row>
+        </ion-item>
+        <%/sessions%>
+    </ion-list>
+
+</div>
