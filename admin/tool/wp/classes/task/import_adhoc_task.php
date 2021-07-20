@@ -1,0 +1,127 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace™ Code is the collection of software scripts
+// (plugins and modifications, and any derivations thereof) that are
+// exclusively owned and licensed by Moodle under the terms of this
+// proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+// software package offering which itself is freely downloadable at
+// "download.moodle.org" and which is provided by Moodle under a single
+// GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+// MWL is strictly controlled by Moodle Pty Ltd and its certified
+// premium partners. Wherever conflicting terms exist, the terms of the
+// MWL are binding and shall prevail.
+
+/**
+ * Class import_adhoc_task
+ *
+ * @package     tool_wp
+ * @copyright   2020 Moodle Pty Ltd <support@moodle.com>
+ * @author      2020 Marina Glancy
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+namespace tool_wp\task;
+
+use core\task\adhoc_task;
+use tool_tenant\permission;
+use tool_tenant\tenancy;
+use tool_wp\local\exportimport\helper;
+use tool_wp\local\exportimport\import_manager;
+use tool_wp\local\exportimport\import_persistent;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Class import_adhoc_task
+ *
+ * @package     tool_wp
+ * @copyright   2020 Moodle Pty Ltd <support@moodle.com>
+ * @author      2020 Marina Glancy
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class import_adhoc_task extends adhoc_task {
+
+    /**
+     * Setter for $customdata.
+     * @param mixed $customdata (anything that can be handled by json_encode)
+     */
+    public function set_custom_data($customdata) {
+        if (permission::can_switch_tenant()) {
+            $customdata = $customdata ? (array)$customdata : [];
+            $customdata['currenttenantid'] = tenancy::get_tenant_id();
+        }
+        parent::set_custom_data($customdata);
+    }
+
+    /**
+     * Runs the import as ad-hoc task
+     */
+    public function execute() {
+        try {
+            $persistent = new import_persistent($this->get_custom_data()->id);
+        } catch (\Throwable $e) {
+            // Import was deleted before the task was executed.
+            return;
+        }
+
+        // Set the user who created the import as the current user.
+        try {
+            $user = \core_user::get_user($persistent->get('createdby'));
+            \core_user::require_active_user($user);
+            cron_setup_user($user);
+            $oldtenantid = $this->switch_tenant();
+        } catch (\moodle_exception $e) {
+            // User not found or could not switch current tenant.
+            $persistent->set('status', helper::STATUS_ERROR);
+            $persistent->save();
+            (new import_manager(0, $persistent))->log_exception($e);
+            return;
+        }
+
+        (new import_manager(0, $persistent))->perform_import();
+        if ($oldtenantid) {
+            tenancy::set_switched_tenant_id($oldtenantid);
+        }
+    }
+
+    /**
+     * Switch the user tenant to the current tenant as it was during requesting import
+     *
+     * Throws exception if the switch is not possible (user does not have capability or tenant no longer exists)
+     *
+     * @return int if tenant was switched - id of the previous tenant, if tenant was not switched 0
+     * @throws \moodle_exception
+     */
+    protected function switch_tenant() {
+        if (empty($this->get_custom_data()->currenttenantid) ||
+                $this->get_custom_data()->currenttenantid == tenancy::get_tenant_id()) {
+            // Nothing to do.
+            return 0;
+        }
+
+        permission::require_can_switch_tenant();
+        $oldtenantid = tenancy::get_tenant_id();
+        $currenttenantid = $this->get_custom_data()->currenttenantid;
+
+        if (!array_key_exists($currenttenantid, tenancy::get_tenants())) {
+            throw new \moodle_exception('tenantnotfound', 'tool_tenant');
+        }
+        tenancy::set_switched_tenant_id($currenttenantid);
+
+        return $oldtenantid;
+    }
+}
