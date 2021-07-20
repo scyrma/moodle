@@ -1,0 +1,98 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_reportbuilder/audiences
+
+    Template for showing report audience types form.
+
+    Example context (json):
+    {
+        "tabheading": "Audiences",
+        "menucards": [],
+        "instances": [],
+        "noinstances": "1",
+        "noinstancesurl": "https://moodle.org/theme/image.php/moodleorg/theme_moodleorg/1623157737/moodle_logo_small"
+    }
+}}
+{{#tabheading}}
+    <h2>
+        {{{tabheading}}}
+    </h2>
+{{/tabheading}}
+<div class="row h-100 no-gutters fit-container">
+    <div class="col-4 d-flex flex-column fill-column" id="audiences-menu">
+        <div class="flex-1 overflow-hidden min-height">
+            <div class="position-absolute w-100 pr-md-2 scroll-y">
+                <div class="h-100 scroll-y">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text pr-0 bg-white">
+                                {{#pix}} a/search, core {{/pix}}
+                            </span>
+                        </div>
+                        <input
+                                type="text"
+                                class="form-control border-left-0"
+                                placeholder="{{#str}} search, core_search {{/str}}"
+                                aria-label="{{#str}} search, core_search {{/str}}"
+                                data-region="aside-search-input"
+                        >
+                    </div>
+                    <div data-region="aside-search-area">
+                        {{#menucards}}
+                            {{> tool_reportbuilder/audiences_menucard}}
+                        {{/menucards}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="scroller" class="col-8 d-flex flex-column fill-column">
+        <div id="scroller-inner" class="flex-1 overflow-hidden min-height">
+            <div class="position-absolute w-100 pl-md-2 scroll-y">
+                <div id="audiences-container" class="h-100 scroll-y">
+                    {{> tool_reportbuilder/audiences_no_instances}}
+                    {{#instances}}
+                        {{> tool_reportbuilder/audience_form_instance}}
+                    {{/instances}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{#js}}
+    require(['tool_reportbuilder/reportbuilder_audience'], function(audience) {
+        audience.init({{reportid}});
+    });
+    require(['jquery', 'tool_wp/accordion_search'],
+        function($, Search) {
+        var root = $('#audiences-menu');
+        Search.init(root);
+    });
+{{/js}}
+
