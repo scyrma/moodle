@@ -645,7 +645,8 @@ function enable_cli_maintenance_mode() {
     } else {
         $data = get_string('sitemaintenance', 'admin');
         $data = bootstrap_renderer::early_error_content($data, null, null, null);
-        $data = bootstrap_renderer::plain_page(get_string('sitemaintenancetitle', 'admin', $SITE->fullname), $data);
+        $data = bootstrap_renderer::plain_page(get_string('sitemaintenancetitle', 'admin',
+            format_string($SITE->fullname, true, ['context' => context_system::instance()])), $data);
     }
 
     file_put_contents("$CFG->dataroot/climaintenance.html", $data);
@@ -1702,6 +1703,11 @@ abstract class admin_setting {
         $this->visiblename    = $visiblename;
         $this->description    = $description;
         $this->defaultsetting = $defaultsetting;
+
+        /** @uses \tool_tenant\config::add_flag_to_admin_setting() */
+        if ($args = component_class_callback('\tool_tenant\config', 'add_flag_to_admin_setting', [$this])) {
+            $this->set_flag_options($args[0], $args[1], $args[2], $args[3]);
+        }
     }
 
     /**

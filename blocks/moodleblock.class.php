@@ -575,6 +575,10 @@ class block_base {
         if (has_capability('moodle/block:edit', $this->context)) {
             return true;
         }
+        /** @uses tool_tenant\dashboard_manager::hook_can_edit_block() */
+        if (component_class_callback('tool_tenant\dashboard_manager', 'hook_can_edit_block', [$this], false)) {
+            return true;
+        }
 
         // The blocks in My Moodle are a special case.  We want them to inherit from the user context.
         if (!empty($USER->id)

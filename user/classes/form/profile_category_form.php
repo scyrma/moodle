@@ -46,6 +46,9 @@ class profile_category_form extends dynamic_form {
         $mform->addElement('text', 'name', get_string('profilecategoryname', 'admin'), 'maxlength="255" size="30"');
         $mform->setType('name', PARAM_TEXT);
         $mform->addRule('name', $strrequired, 'required', null, 'client');
+
+        /** @uses \tool_tenant\profile_manager::category_definition() */
+        component_class_callback('\tool_tenant\profile_manager', 'category_definition', [$this, $mform]);
     }
 
     /**
@@ -74,6 +77,9 @@ class profile_category_form extends dynamic_form {
             $errors['name'] = get_string('profilecategorynamenotunique', 'admin');
         }
 
+        /** @uses \tool_tenant\profile_manager::category_validation() */
+        $errors = component_class_callback('\tool_tenant\profile_manager', 'category_validation',
+            [$this, $data, $files, $errors], $errors);
         return $errors;
     }
 
@@ -99,7 +105,12 @@ class profile_category_form extends dynamic_form {
     public function process_dynamic_submission() {
         global $CFG;
         require_once($CFG->dirroot.'/user/profile/definelib.php');
-        profile_save_category($this->get_data());
+        $data = $this->get_data();
+        profile_save_category($data);
+
+        /** @uses \tool_tenant\profile_manager::category_process_dynamic_submission() */
+        component_class_callback('\tool_tenant\profile_manager', 'category_process_dynamic_submission',
+            [$this, $data]);
     }
 
     /**
@@ -110,6 +121,8 @@ class profile_category_form extends dynamic_form {
         if ($id = $this->optional_param('id', 0, PARAM_INT)) {
             $this->set_data($DB->get_record('user_info_category', ['id' => $id], '*', MUST_EXIST));
         }
+        /** @uses \tool_tenant\profile_manager::category_set_data_for_dynamic_submission() */
+        component_class_callback('\tool_tenant\profile_manager', 'category_set_data_for_dynamic_submission', [$this]);
     }
 
     /**

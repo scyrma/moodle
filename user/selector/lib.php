@@ -494,8 +494,18 @@ abstract class user_selector_base {
      *      this uses ? style placeholders.
      */
     protected function search_sql(string $search, string $u): array {
-        return users_search_sql($search, $u, $this->searchanywhere, array_values($this->userfieldsmappings),
+        $extrafields = $this->includecustomfields
+            ? array_values($this->userfieldsmappings)
+            : $this->extrafields;
+
+        list ($sql, $params) =  users_search_sql($search, $u, $this->searchanywhere, $extrafields,
                 $this->exclude, $this->validatinguserids);
+
+        // Add tenant condition.
+        /** @uses \tool_tenant\tenancy::get_users_subquery */
+        $tenantwhere = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery',
+            [true, true, ($u ? "{$u}." : '') . 'id'], '');
+        return [$tenantwhere . $sql, $params];
     }
 
     /**

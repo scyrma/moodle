@@ -1284,7 +1284,7 @@ function fix_utf8($value) {
         if ($buggyiconv) {
             if (function_exists('mb_convert_encoding')) {
                 $subst = mb_substitute_character();
-                mb_substitute_character('');
+                mb_substitute_character('none');
                 $result = mb_convert_encoding($value, 'utf-8', 'utf-8');
                 mb_substitute_character($subst);
 
@@ -1515,6 +1515,9 @@ function get_config($plugin, $name = null) {
         }
         $cache->set($plugin, $result);
     }
+
+    /** @uses \tool_tenant\config::get_config_hook() */
+    component_class_callback('tool_tenant\config', 'get_config_hook', [$plugin, &$result]);
 
     if (!empty($name)) {
         if (array_key_exists($name, $result)) {
@@ -6422,7 +6425,6 @@ function send_confirmation_email($user, $confirmationurl = null) {
     $supportuser = core_user::get_support_user();
 
     $data = new stdClass();
-    $data->firstname = fullname($user);
     $data->sitename  = format_string($site->fullname);
     $data->admin     = generate_email_signoff();
 
@@ -9902,6 +9904,11 @@ function setup_lang_from_browser() {
     if (!empty($SESSION->lang) or !empty($USER->lang) or empty($CFG->autolang)) {
         // Lang is defined in session or user profile, nothing to do.
         return;
+    }
+
+    /** @uses \tool_wp\language::get_recommended_language */
+    if ($lang = component_class_callback('tool_wp\language', 'get_recommended_language', [])) {
+        return $lang;
     }
 
     if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) { // There isn't list of browser langs, nothing to do.
