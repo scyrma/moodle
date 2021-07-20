@@ -1,0 +1,3 @@
+username,firstname,lastname,email,tenant,profile_field_f0,profile_field_f1,profile_field_f2
+t1,T1,1,user1@address.invalid,tenant1,VF0T1,VF1T1,VF2T1
+t2,T2,2,user2@address.invalid,tenant2,VF0T2,VF1T2,VF2T2
