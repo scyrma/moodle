@@ -237,6 +237,7 @@ information provided here is intended especially for developers.
 * New CFPropertyList library has been added to Moodle core in /lib/plist.
 * behat_data_generators::the_following_exist() has been removed, please use
   behat_data_generators::the_following_entities_exist() instead. See MDL-67691 for more info.
+* format_float() now accepts a special value (-1) as the $decimalpoints parameter which means auto-detecting number of decimal points.
 * admin/tool/task/cli/adhoc_task.php now observers the concurrency limits.
   If you want to get the previous (unlimited) behavior, use the --ignorelimits switch).
 * Removed the following deprecated functions:
