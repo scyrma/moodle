@@ -897,7 +897,7 @@ function choicegroup_get_response_data($choicegroup, $cm) {
     // First get all the users who have access here.
     // To start with we assume they are all "unanswered" then move them later.
     $ctx = \context_module::instance($cm->id);
-    $users = get_enrolled_users($ctx, 'mod/choicegroup:choose', 0, user_picture::fields('u', array('idnumber')), 'u.lastname ASC,u.firstname ASC');
+    $users = get_enrolled_users($ctx, 'mod/choicegroup:choose', 0, 'u.*', 'u.lastname ASC,u.firstname ASC');
     if ($users) {
         $modinfo = get_fast_modinfo($cm->course);
         $cminfo = $modinfo->get_cm($cm->id);
@@ -1024,32 +1024,6 @@ function choicegroup_extend_settings_navigation(settings_navigation $settings, n
             $viewallresponsestext .= ' ' . get_string("byparticipants", "choicegroup", count($respondents));
         }
         $choicegroupnode->add($viewallresponsestext, new moodle_url('/mod/choicegroup/report.php', array('id'=>$PAGE->cm->id)));
-    }
-}
-
-/**
- * Obtains the automatic completion state for this choicegroup based on any conditions
- * in forum settings.
- *
- * @param object $course Course
- * @param object $cm Course-module
- * @param int $userid User ID
- * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
- * @return bool True if completed, false if not, $type if conditions not set.
- */
-function choicegroup_get_completion_state($course, $cm, $userid, $type) {
-    global $DB;
-
-    // Get choicegroup details
-    $choicegroup = $DB->get_record('choicegroup', array('id'=>$cm->instance), '*', MUST_EXIST);
-
-    // If completion option is enabled, evaluate it and return true/false
-    if($choicegroup->completionsubmit) {
-        $useranswer = choicegroup_get_user_answer($choicegroup, $userid);
-        return $useranswer !== false;
-    } else {
-        // Completion option is not enabled so just return $type
-        return $type;
     }
 }
 
