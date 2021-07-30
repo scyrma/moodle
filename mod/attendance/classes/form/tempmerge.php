@@ -22,10 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace mod_attendance\form;
 
-global $CFG;
-require_once($CFG->libdir.'/formslib.php');
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Temp merge form class.
@@ -34,7 +33,7 @@ require_once($CFG->libdir.'/formslib.php');
  * @copyright  2013 Davo Smith, Synergy Learning
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tempmerge_form extends moodleform {
+class tempmerge extends \moodleform {
     /**
      * Called to define this moodle form
      *
@@ -43,8 +42,9 @@ class tempmerge_form extends moodleform {
     public function definition() {
         global $COURSE;
 
-        $context = context_course::instance($COURSE->id);
-        $namefields = get_all_user_name_fields(true, 'u');
+        $context = \context_course::instance($COURSE->id);
+        $userfieldsapi = \core_user\fields::for_name();
+        $namefields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
         $students = get_enrolled_users($context, 'mod/attendance:canbelisted', 0, 'u.id,'.$namefields.',u.email',
                                        'u.lastname, u.firstname', 0, 0, true);
         $partarray = array();

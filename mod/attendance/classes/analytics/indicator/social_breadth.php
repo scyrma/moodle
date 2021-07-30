@@ -14,53 +14,56 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Class definition for mod_attendance_sessions_page_params
+ * Social breadth indicator - attendance.
  *
  * @package   mod_attendance
- * @copyright  2016 Dan Marsden http://danmarsden.com
+ * @copyright 2020 Catalyst IT
+ * @author    Dan Marsden
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace mod_attendance\analytics\indicator;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * stores constants/data used by sessions page params.
+ * Social breadth indicator - attendance.
  *
- * @copyright  2016 Dan Marsden http://danmarsden.com
+ * @package   mod_attendance
+ * @copyright 2020 Catalyst IT
+ * @author    Dan Marsden
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_attendance_sessions_page_params {
-    /**
-     *  Add Session.
-     */
-    const ACTION_ADD               = 1;
+class social_breadth extends activity_base {
 
     /**
-     *  Update Session.
+     * Returns the name.
+     *
+     * If there is a corresponding '_help' string this will be shown as well.
+     *
+     * @return \lang_string
      */
-    const ACTION_UPDATE            = 2;
+    public static function get_name() : \lang_string {
+        return new \lang_string('indicator:socialbreadth', 'mod_attendance');
+    }
 
     /**
-     * Delete Session
+     * Defines indicator type.
+     *
+     * @return string
      */
-    const ACTION_DELETE            = 3;
+    public function get_indicator_type() {
+        return self::INDICATOR_SOCIAL;
+    }
 
     /**
-     *  Delete selected Sessions.
+     * Returns the potential level of social breadth.
+     *
+     * @param \cm_info $cm
+     * @return int
      */
-    const ACTION_DELETE_SELECTED   = 4;
-
-    /**
-     *  Change duration of a session.
-     */
-    const ACTION_CHANGE_DURATION   = 5;
-
-    /**
-     *  Delete a hidden session.
-     */
-    const ACTION_DELETE_HIDDEN     = 6;
-
-    /** @var int view mode of taking attendance page*/
-    public $action;
+    public function get_social_breadth_level(\cm_info $cm) {
+        return self::SOCIAL_LEVEL_2;
+    }
 }
