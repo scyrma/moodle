@@ -112,9 +112,9 @@ class mod_attendance_structure {
      * with a full database record (course should not be stored in instances table anyway).
      *
      * @param stdClass $dbrecord Attandance instance data from {attendance} table
-     * @param stdClass $cm       Course module record as returned by {@link get_coursemodule_from_id()}
+     * @param stdClass $cm       Course module record as returned by {@see get_coursemodule_from_id()}
      * @param stdClass $course   Course record from {course} table
-     * @param stdClass $context  The context of the workshop instance
+     * @param stdClass $context  The context of the attendance instance
      * @param stdClass $pageparams
      */
     public function __construct(stdClass $dbrecord, stdClass $cm, stdClass $course, stdClass $context=null, $pageparams=null) {
@@ -534,6 +534,9 @@ class mod_attendance_structure {
             $sess->rotateqrcode = 0;
             $sess->rotateqrcodesecret = '';
         }
+        if (!isset($sess->automarkcmid)) {
+            $sess->automarkcmid = null;
+        }
         $event->add_record_snapshot('attendance_sessions', $sess);
         $event->trigger();
 
@@ -550,7 +553,7 @@ class mod_attendance_structure {
         global $DB;
 
         if (!$sess = $DB->get_record('attendance_sessions', array('id' => $sessionid) )) {
-            print_error('No such session in this course');
+            throw new moodle_exception('No such session in this course');
         }
 
         $sesstarttime = $formdata->sestime['starthour'] * HOURSECS + $formdata->sestime['startminute'] * MINSECS;
@@ -703,26 +706,28 @@ class mod_attendance_structure {
     /**
      * Take attendance from form data.
      *
-     * @param stdClass $formdata
+     * @param stdClass $data
      */
-    public function take_from_form_data($formdata) {
-        global $DB, $USER;
-        // TODO: WARNING - $formdata is unclean - comes from direct $_POST - ideally needs a rewrite but we do some cleaning below.
-        // This whole function could do with a nice clean up.
+    public function take_from_form_data($data) {
+        global $USER;
+        // WARNING - $data is unclean - comes from direct $_POST - ideally needs a rewrite but we do some cleaning below.
+
         $statuses = implode(',', array_keys( (array)$this->get_statuses() ));
         $now = time();
         $sesslog = array();
-        $formdata = (array)$formdata;
+
+        $formdata = (array)$data;
+
         foreach ($formdata as $key => $value) {
             // Look at Remarks field because the user options may not be passed if empty.
             if (substr($key, 0, 7) == 'remarks') {
                 $sid = substr($key, 7);
                 if (!(is_numeric($sid))) { // Sanity check on $sid.
-                    print_error('nonnumericid', 'attendance');
+                    throw new moodle_exception('nonnumericid', 'attendance');
                 }
                 $sesslog[$sid] = new stdClass();
                 $sesslog[$sid]->studentid = $sid; // We check is_numeric on this above.
-                if (array_key_exists('user'.$sid, $formdata) && is_numeric($formdata['user' . $sid])) {
+                if (array_key_exists('user' . $sid, $formdata) && is_numeric($formdata['user' . $sid])) {
                     $sesslog[$sid]->statusid = $formdata['user' . $sid];
                 }
                 $sesslog[$sid]->statusset = $statuses;
@@ -732,6 +737,19 @@ class mod_attendance_structure {
                 $sesslog[$sid]->takenby = $USER->id;
             }
         }
+
+        $this->save_log($sesslog);
+    }
+
+    /**
+     * Helper function to save attendance and trigger events.
+     *
+     * @param array $sesslog
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function save_log($sesslog) {
+        global $DB, $USER;
         // Get existing session log.
         $dbsesslog = $this->get_session_log($this->pageparams->sessionid);
         foreach ($sesslog as $log) {
@@ -754,7 +772,7 @@ class mod_attendance_structure {
         }
 
         $session = $this->get_session_info($this->pageparams->sessionid);
-        $session->lasttaken = $now;
+        $session->lasttaken = time();
         $session->lasttakenby = $USER->id;
 
         $DB->update_record('attendance_sessions', $session);
@@ -786,12 +804,9 @@ class mod_attendance_structure {
     public function get_users($groupid = 0, $page = 1) : array {
         global $DB;
 
-        $fields = array('username' , 'idnumber' , 'institution' , 'department');
-        // Get user identity fields if required - doesn't return original $fields array.
-        $extrafields = get_extra_user_fields($this->context, $fields);
-        $fields = array_merge($fields, $extrafields);
-
-        $userfields = user_picture::fields('u', $fields);
+        $fields = array('username' , 'idnumber' , 'institution' , 'department', 'city', 'country');
+        $userf = \core_user\fields::for_identity($this->context)->with_userpic()->including(...$fields);
+        $userfields = $userf->get_sql('u', false, '', 'id', false)->selects;
 
         if (empty($this->pageparams->sort)) {
             $this->pageparams->sort = ATT_SORT_DEFAULT;
@@ -897,7 +912,7 @@ class mod_attendance_structure {
             'picture' => 0,
             'type' => 'temporary',
         );
-        $allfields = get_all_user_name_fields();
+        $allfields = \core_user\fields::get_name_fields();
         if (!empty($CFG->showuseridentity)) {
             $allfields = array_merge($allfields, explode(',', $CFG->showuseridentity));
         }

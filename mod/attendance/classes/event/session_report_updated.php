@@ -15,40 +15,46 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Attendance task - clear temporary passwords.
+ * This file contains an event for when a student's attendance report is viewed.
  *
  * @package    mod_attendance
- * @copyright  2019 Maksud R
+ * @copyright  2014 onwards Dan Marsden
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_attendance\task;
+namespace mod_attendance\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * clear_temporary_passwords class, used to clean up the temporary passwords.
+ * Event for when a student's attendance report is updated.
  *
+ * @property-read array $other {
+ *      Extra information about event properties.
+ *
+ *      string studentid Id of student whose attendances were updated.
+ *      string mode Mode of the report updated.
+ * }
  * @package    mod_attendance
- * @copyright  2019 Maksud R
+ * @copyright  2013 onwards Dan Marsden
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class clear_temporary_passwords extends \core\task\scheduled_task {
+class session_report_updated extends \mod_attendance\event\session_report_viewed {
+
     /**
-     * Return the task's name as shown in admin screens.
-     *
-     * @return string
+     * Init method.
      */
-    public function get_name() {
-        return get_string('rotateqrcode_cleartemppass_task', 'mod_attendance');
+    protected function init() {
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
+        // Objecttable and objectid can't be meaningfully specified.
     }
 
     /**
-     * Execute the task.
+     * Returns localised general event name.
+     *
+     * @return string
      */
-    public function execute() {
-        global $DB;
-
-        $params = array('currenttime' => time());
-        $DB->delete_records_select('attendance_rotate_passwords', 'expirytime < :currenttime', $params);
+    public static function get_name() {
+        return get_string('eventstudentattendancesessionsupdated', 'mod_attendance');
     }
 }
