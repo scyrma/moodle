@@ -14,53 +14,35 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Class definition for mod_attendance_sessions_page_params
+ * Activity base class.
  *
  * @package   mod_attendance
- * @copyright  2016 Dan Marsden http://danmarsden.com
+ * @copyright 2020 Catalyst IT
+ * @author    Dan Marsden
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace mod_attendance\analytics\indicator;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * stores constants/data used by sessions page params.
+ * Activity base class.
  *
- * @copyright  2016 Dan Marsden http://danmarsden.com
+ * @package   mod_attendance
+ * @copyright 2020 Catalyst IT
+ * @author    Dan Marsden
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_attendance_sessions_page_params {
-    /**
-     *  Add Session.
-     */
-    const ACTION_ADD               = 1;
+abstract class activity_base extends \core_analytics\local\indicator\community_of_inquiry_activity {
 
     /**
-     *  Update Session.
+     * feedback_viewed_events
+     *
+     * @return string[]
      */
-    const ACTION_UPDATE            = 2;
-
-    /**
-     * Delete Session
-     */
-    const ACTION_DELETE            = 3;
-
-    /**
-     *  Delete selected Sessions.
-     */
-    const ACTION_DELETE_SELECTED   = 4;
-
-    /**
-     *  Change duration of a session.
-     */
-    const ACTION_CHANGE_DURATION   = 5;
-
-    /**
-     *  Delete a hidden session.
-     */
-    const ACTION_DELETE_HIDDEN     = 6;
-
-    /** @var int view mode of taking attendance page*/
-    public $action;
+    protected function feedback_viewed_events() {
+        return array('\mod_attendance\event\session_report_viewed');
+    }
 }
