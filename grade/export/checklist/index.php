@@ -30,7 +30,7 @@ $courseid = required_param('id', PARAM_INT);
 
 $PAGE->set_url(new moodle_url('/grade/export/checklist/index.php', array('id' => $courseid)));
 if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-    print_error('nocourseid');
+    throw new moodle_exception('nocourseid');
 }
 
 require_login($course->id);
@@ -41,7 +41,7 @@ require_capability('gradeexport/checklist:view', $context);
 $viewall = has_capability('gradeexport/checklist:viewall', $context);
 $viewdistrict = has_capability('gradeexport/checklist:viewdistrict', $context);
 if (!$viewall && !$viewdistrict) {
-    print_error('nopermission', 'gradeexport_checklist');
+    throw new moodle_exception('nopermission', 'gradeexport_checklist');
 }
 
 // Build navigation.
@@ -51,10 +51,13 @@ $strchkgrades = get_string('pluginname', 'gradeexport_checklist');
 print_grade_page_head($COURSE->id, 'export', 'checklist', $strchkgrades);
 
 // Get list of appropriate checklists.
-$checklists = $DB->get_records('checklist', array('course' => $course->id));
+$modinfo = get_fast_modinfo($course);
+$checklists = $modinfo->get_instances_of('checklist');
 
 if (empty($checklists)) {
-    print_error('nochecklists', 'gradeexport_checklist');
+    echo '<div class="alert alert-info">'.get_string('nochecklists', 'gradeexport_checklist').'</div>';
+    echo $OUTPUT->footer();
+    die();
 }
 
 // Get list of districts.
@@ -103,8 +106,10 @@ echo '<label for="choosechecklist">'.get_string('choosechecklist', 'gradeexport_
     '<select id="choosechecklist" name="choosechecklist">';
 $selected = ' selected="selected" ';
 foreach ($checklists as $checklist) {
-    echo "<option $selected value='{$checklist->id}'>{$checklist->name}</option>";
-    $selected = '';
+    if (!$checklist->deletioninprogress) {
+        echo "<option $selected value='{$checklist->instance}'>{$checklist->get_formatted_name()}</option>";
+        $selected = '';
+    }
 }
 echo '</select><br/>';
 
