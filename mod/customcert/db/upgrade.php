@@ -152,7 +152,7 @@ function xmldb_customcert_upgrade($oldversion) {
         if ($dbman->index_exists($table, $index)) {
             $dbman->drop_index($table, $index);
         }
-        $key = new xmldb_key('templateid', XMLDB_KEY_FOREIGN, array('templateid'), 'customcert_templates', array('id'));
+        $key = new xmldb_key('templateid', XMLDB_KEY_FOREIGN, ['templateid'], 'customcert_templates', ['id']);
         $dbman->add_key($table, $key);
 
         $table = new xmldb_table('customcert_pages');
@@ -160,10 +160,22 @@ function xmldb_customcert_upgrade($oldversion) {
         if ($dbman->index_exists($table, $index)) {
             $dbman->drop_index($table, $index);
         }
-        $key = new xmldb_key('templateid', XMLDB_KEY_FOREIGN, array('templateid'), 'customcert_templates', array('id'));
+        $key = new xmldb_key('templateid', XMLDB_KEY_FOREIGN, ['templateid'], 'customcert_templates', ['id']);
         $dbman->add_key($table, $key);
 
         upgrade_mod_savepoint(true, 2019111803, 'customcert');
+    }
+
+    if ($oldversion < 2020110901) {
+        $table = new xmldb_table('customcert');
+        $field = new xmldb_field('deliveryoption', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'verifyany');
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2020110901, 'customcert');
     }
 
     return true;
