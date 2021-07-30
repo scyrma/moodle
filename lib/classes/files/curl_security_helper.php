@@ -146,6 +146,12 @@ class curl_security_helper extends curl_security_helper_base {
             return false;
         }
 
+        // BEGIN MOODLECLOUD HACK.
+        // In addition to MDL-61143, this converts a unicode domain to ascii compatible format.
+        // without this, you can still bypass the blocklist by doing some funky stuff.
+        $host = idn_to_ascii($host, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
+        // END MOODLECLOUD HACK
+
         // Fix for square brackets in the 'host' portion of the URL (only occurs if an IPv6 address is specified).
         $host = str_replace(array('[', ']'), '', $host); // RFC3986, section 3.2.2.
         $blockedhosts = $this->get_blocked_hosts_by_category();
