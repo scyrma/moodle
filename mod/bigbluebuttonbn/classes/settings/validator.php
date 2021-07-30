@@ -90,7 +90,8 @@ class validator {
                 !isset($CFG->bigbluebuttonbn['recordings_imported_default']) ||
                 !isset($CFG->bigbluebuttonbn['recordings_imported_editable']) ||
                 !isset($CFG->bigbluebuttonbn['recordings_preview_default']) ||
-                !isset($CFG->bigbluebuttonbn['recordings_preview_editable'])
+                !isset($CFG->bigbluebuttonbn['recordings_preview_editable']) ||
+                !isset($CFG->bigbluebuttonbn['recordings_validate_url'])
               );
     }
 
@@ -124,7 +125,7 @@ class validator {
      */
     public static function section_preupload_presentation_shown() {
         global $CFG;
-        return (!isset($CFG->bigbluebuttonbn['preuploadpresentation_enabled']));
+        return (!isset($CFG->bigbluebuttonbn['preuploadpresentation_editable']));
     }
 
     /**
@@ -206,5 +207,104 @@ class validator {
         global $CFG;
         return (!isset($CFG->bigbluebuttonbn['muteonstart_default']) ||
             !isset($CFG->bigbluebuttonbn['muteonstart_editable']));
+    }
+
+    /**
+     * Validate if disablecam section will be shown.
+     *
+     * @return boolean
+     */
+    public static function section_disablecam_shown() {
+        global $CFG;
+        return (!isset($CFG->bigbluebuttonbn['disablecam_default']) ||
+            !isset($CFG->bigbluebuttonbn['disablecam_editable']));
+    }
+
+    /**
+     * Validate if disablemic section will be shown.
+     *
+     * @return boolean
+     */
+    public static function section_disablemic_shown() {
+        global $CFG;
+        return (!isset($CFG->bigbluebuttonbn['disablemic_default']) ||
+            !isset($CFG->bigbluebuttonbn['disablemic_editable']));
+    }
+
+    /**
+     * Validate if disableprivatechat section will be shown.
+     *
+     * @return boolean
+     */
+    public static function section_disableprivatechat_shown() {
+        global $CFG;
+        return (!isset($CFG->bigbluebuttonbn['disableprivatechat_default']) ||
+            !isset($CFG->bigbluebuttonbn['disableprivatechat_editable']));
+    }
+
+    /**
+     * Validate if disablepublicchat section will be shown.
+     *
+     * @return boolean
+     */
+    public static function section_disablepublicchat_shown() {
+        global $CFG;
+        return (!isset($CFG->bigbluebuttonbn['disablepublicchat_default']) ||
+            !isset($CFG->bigbluebuttonbn['disablepublicchat_editable']));
+    }
+
+    /**
+     * Validate if disablenote section will be shown.
+     *
+     * @return boolean
+     */
+    public static function section_disablenote_shown() {
+        global $CFG;
+        return (!isset($CFG->bigbluebuttonbn['disablenote_default']) ||
+            !isset($CFG->bigbluebuttonbn['disablenote_editable']));
+    }
+
+    /**
+     * Validate if hideuserlist section will be shown.
+     *
+     * @return boolean
+     */
+    public static function section_hideuserlist_shown() {
+        global $CFG;
+        return (!isset($CFG->bigbluebuttonbn['hideuserlist_default']) ||
+            !isset($CFG->bigbluebuttonbn['hideuserlist_editable']));
+    }
+
+    /**
+     * Validate if lockedlayout section will be shown.
+     *
+     * @return boolean
+     */
+    public static function section_lockedlayout_shown() {
+        global $CFG;
+        return (!isset($CFG->bigbluebuttonbn['lockedlayout_default']) ||
+            !isset($CFG->bigbluebuttonbn['lockedlayout_editable']));
+    }
+
+    /**
+     * Validate if lockonjoin section will be shown.
+     *
+     * @return boolean
+     */
+    public static function section_lockonjoin_shown() {
+        global $CFG;
+        return (!isset($CFG->bigbluebuttonbn['lockonjoin_default']) ||
+            !isset($CFG->bigbluebuttonbn['lockonjoin_editable']));
+    }
+
+    /**
+     * Validate if lockonjoinconfigurable section will be shown.
+     *
+     * @return boolean
+     */
+    public static function section_lockonjoinconfigurable_shown() {
+        global $CFG;
+        return (!isset($CFG->bigbluebuttonbn['lockonjoinconfigurable_default']) ||
+            !isset($CFG->bigbluebuttonbn['lockonjoinconfigurable_editable']));
     }
 }

@@ -3,7 +3,7 @@
 
 BigBlueButtonBN Activity Module for Moodle
 ==========================================
-BigBlueButton is an open source web conferencing system that enables universities and colleges to deliver a high-quality learning experience to remote students.  
+BigBlueButton is an open source web conferencing system that enables universities and colleges to deliver a high-quality learning experience to remote students.
 
 These instructions describe how to install the BigBlueButtonBN Activity Module for Moodle.  This module is developed and supported by Blindside Networks, the company that started the BigBlueButton project in 2007.
 
@@ -23,12 +23,14 @@ With the latest version of this plugin you can
 
 Note that on previous versions of Moodle you will need to use the specific version of this plugin.
 
-- For Moodle 1.9 use version 1.0.9 (2013071000).
-- For Moodle 2.0 to 2.5 use version 1.1.1 (2015062101)
-- For Moodle 2.6 use version 2.0.4 (2015080611).
-- For Moodle 2.7 to 3.4 use version 2.1.14 (2016051919).
-- For Moodle 3.0+ can use version 2.2-rc (2017101007).
-
+| Moodle Version    |  Branch      | Version                 |
+|-------------------|--------------|-------------------------|
+| Moodle 2.0 - 2.5  | v1.1-stable  | v1.1.1  (2015062101)    |
+| Moodle 2.6        | v2.0-stable  | v2.0.4  (2015080611)    |
+| Moodle 2.7 - 2.9  | v2.1-stable  | v2.1.15 (2016051920)    |
+| Moodle 3.0 - 3.1  | v2.2-stable  | v2.2.12 (2017101020)    |
+| Moodle 3.2 - 3.9  | v2.3-stable  | v2.3.4  (2019042009)    |
+| Moodle 3.4 - 3.11 | v2.4-stable  | v2.4    (2019101007)    |
 
 Prerequisites
 =============
@@ -56,7 +58,7 @@ https://github.com/blindsidenetworks/moodle-mod_bigbluebuttonbn/
 contains the latest source. We recommend to download the latest snapshot from the Moodle Plugin Directory.
 
 
-Note: You may want to install the RecordingsBN activity module to access recordings as well.
+Note: Since version 2.2 the use of the RecordingsBN activity module to access recordings is no longer needed. But when running an older version, it is requiered in order to gain access to the recordings.
 
 
 Contact Us
@@ -64,6 +66,3 @@ Contact Us
 If you have feedback, enhancement requests, or would like commercial support for hosting, integrating, customizing, branding, or scaling BigBlueButton, contact us at
 
 http://blindsidenetworks.com/
-
-Regards,... Fred Dixon
-ffdixon [at] blindsidenetworks [dt] com
