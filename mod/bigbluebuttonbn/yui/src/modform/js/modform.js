@@ -57,7 +57,7 @@ M.mod_bigbluebuttonbn.modform = {
         this.showFieldset('id_room', showAll ||
                           this.isFeatureEnabled(profileType, 'showroom'));
         this.showInput('id_record', showAll ||
-                       this.isFeatureEnabled(profileType, 'showrecordings'));
+                       this.isFeatureEnabled(profileType, 'showroom'));
         // Show recordings settings validation.
         this.showFieldset('id_recordings', showAll ||
                           this.isFeatureEnabled(profileType, 'showrecordings'));
@@ -84,6 +84,12 @@ M.mod_bigbluebuttonbn.modform = {
         // Competencies validation.
         this.showFieldset('id_competenciessection', showAll ||
                           this.isFeatureEnabled(profileType, 'competenciessection'));
+        // Completion validation.
+        this.showFormGroup('completionattendancegroup', showAll ||
+                          this.isFeatureEnabled(profileType, 'completionattendance'));
+        // Completion validation.
+        this.showFormGroup('completionengagementgroup', showAll ||
+                          this.isFeatureEnabled(profileType, 'completionengagement'));
     },
 
     isFeatureEnabled: function(profileType, feature) {
@@ -93,29 +99,42 @@ M.mod_bigbluebuttonbn.modform = {
 
     showFieldset: function(id, show) {
         // Show room settings validation.
-        var fieldset = Y.DOM.byId(id);
-        if (!fieldset) {
+        var node = Y.one('#' + id);
+        if (!node) {
             return;
         }
-        if (show) {
-            Y.DOM.setStyle(fieldset, 'display', 'block');
-            return;
-        }
-        Y.DOM.setStyle(fieldset, 'display', 'none');
-    },
-
-    showInput: function(id, show) {
-        // Show room settings validation.
-        var inputset = Y.DOM.byId(id);
-        if (!inputset) {
-            return;
-        }
-        var node = Y.one(inputset).ancestor('div').ancestor('div');
         if (show) {
             node.setStyle('display', 'block');
             return;
         }
         node.setStyle('display', 'none');
+    },
+
+    showInput: function(id, show) {
+        // Show room settings validation.
+        var node = Y.one('#' + id);
+        if (!node) {
+            return;
+        }
+        var ancestor = node.ancestor('div').ancestor('div');
+        if (show) {
+            ancestor.setStyle('display', 'block');
+            return;
+        }
+        ancestor.setStyle('display', 'none');
+    },
+
+    showFormGroup: function(id, show) {
+        // Show room settings validation.
+        var node = Y.one('#fgroup_id_' + id);
+        if (!node) {
+            return;
+        }
+        if (show) {
+            node.removeClass('hidden');
+            return;
+        }
+        node.addClass('hidden');
     },
 
     participantSelectionSet: function() {
@@ -155,8 +174,8 @@ M.mod_bigbluebuttonbn.modform = {
                 this.participantRemoveFromMemory(selectionTypeValue, selectionValue);
                 continue;
             }
-            // Add it to the form.
-            this.participantAddToForm(selectionTypeValue, selectionValue, selectionRole);
+            // Add it to the form, but don't add the delete button if it is the first item.
+            this.participantAddToForm(selectionTypeValue, selectionValue, selectionRole, (i > 0));
         }
         // Update in the form.
         this.participantListUpdate();
@@ -220,7 +239,7 @@ M.mod_bigbluebuttonbn.modform = {
         // Add it to memory.
         this.participantAddToMemory(selectionType.value, selection.value);
         // Add it to the form.
-        this.participantAddToForm(selectionType.value, selection.value, 'viewer');
+        this.participantAddToForm(selectionType.value, selection.value, 'viewer', true);
         // Update in the form.
         this.participantListUpdate();
     },
@@ -233,7 +252,7 @@ M.mod_bigbluebuttonbn.modform = {
         });
     },
 
-    participantAddToForm: function(selectionTypeValue, selectionValue, selectionRole) {
+    participantAddToForm: function(selectionTypeValue, selectionValue, selectionRole, canDelete) {
         var listTable, innerHTML, selectedHtml, removeHtml, removeClass, bbbRoles, i, row, cell0, cell1, cell2, cell3;
         listTable = document.getElementById('participant_list_table');
         row = listTable.insertRow(listTable.rows.length);
@@ -271,9 +290,12 @@ M.mod_bigbluebuttonbn.modform = {
             removeHtml = this.bigbluebuttonbn.pixIconDelete;
             removeClass = "btn btn-link";
         }
-        innerHTML = '<a class="' + removeClass + '" onclick="M.mod_bigbluebuttonbn.modform.participantRemove(\'';
-        innerHTML += selectionTypeValue + '\', \'' + selectionValue;
-        innerHTML += '\'); return 0;" title="' + this.strings.remove + '">' + removeHtml + '</a>';
+        innerHTML = "";
+        if (canDelete) {
+            innerHTML = '<a class="' + removeClass + '" onclick="M.mod_bigbluebuttonbn.modform.participantRemove(\'';
+            innerHTML += selectionTypeValue + '\', \'' + selectionValue;
+            innerHTML += '\'); return 0;" title="' + this.strings.remove + '">' + removeHtml + '</a>';
+        }
         cell3.innerHTML = innerHTML;
     },
 
@@ -286,7 +308,6 @@ M.mod_bigbluebuttonbn.modform = {
                 this.bigbluebuttonbn.participantList[i].role = participantListRoleSelection.value;
             }
         }
-
         // Update in the form.
         this.participantListUpdate();
     },
@@ -315,4 +336,6 @@ M.mod_bigbluebuttonbn.modform = {
         option.value = value;
         select.add(option, option.length);
     }
+
 };
+

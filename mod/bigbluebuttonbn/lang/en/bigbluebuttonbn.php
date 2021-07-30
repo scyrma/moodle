@@ -37,18 +37,18 @@ $string['bigbluebuttonbn:managerecordings'] = 'Manage bigbluebuttonbn recordings
 $string['bigbluebuttonbn:meeting'] = 'Create instances with live meeting capabilities';
 $string['bigbluebuttonbn:recording'] = 'Create instances with recording capabilities';
 $string['bigbluebuttonbn'] = 'BigBlueButton';
-$string['indicator:cognitivedepth'] = 'BigBlueButtonBN cognitive';
-$string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in a BigBlueButtonBN activity.';
-$string['indicator:socialbreadth'] = 'BigBlueButtonBN social';
-$string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in a BigBlueButtonBN activity.';
-$string['modulename'] = 'BigBlueButtonBN';
-$string['modulenameplural'] = 'BigBlueButtonBN';
-$string['modulename_help'] = 'BigBlueButtonBN lets you create from within Moodle links to real-time on-line classrooms using BigBlueButton, an open source web conferencing system for distance education.
+$string['indicator:cognitivedepth'] = 'BigBlueButton cognitive';
+$string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in a BigBlueButton activity.';
+$string['indicator:socialbreadth'] = 'BigBlueButton social';
+$string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in a BigBlueButton activity.';
+$string['modulename'] = 'BigBlueButton';
+$string['modulenameplural'] = 'BigBlueButton';
+$string['modulename_help'] = 'BigBlueButton lets you create from within Moodle links to real-time on-line classrooms using BigBlueButton, an open source web conferencing system for distance education.
 
-Using BigBlueButtonBN you can specify for the title, description, calendar entry (which gives a date range for joining the session), groups, and details about the recording of the on-line session.';
-$string['modulename_link'] = 'BigBlueButtonBN/view';
+Using BigBlueButton you can specify for the title, description, calendar entry (which gives a date range for joining the session), groups, and details about the recording of the on-line session.';
+$string['modulename_link'] = 'BigBlueButton/view';
 $string['pluginadministration'] = 'BigBlueButton administration';
-$string['pluginname'] = 'BigBlueButtonBN';
+$string['pluginname'] = 'BigBlueButton';
 
 $string['removedevents'] = 'Deleted events';
 $string['removedtags'] = 'Deleted tags';
@@ -61,8 +61,8 @@ $string['resetrecordings'] = 'Delete recordings';
 $string['resetlogs_help'] = 'Deleting the logs will cause the lost of references to recordings';
 $string['resetrecordings_help'] = 'Deleting the recordings will make them inaccessible from anywhere and it can not be undone';
 
-$string['search:activity'] = 'BigBlueButtonBN - activity information';
-$string['search:tags'] = 'BigBlueButtonBN - tags information';
+$string['search:activity'] = 'BigBlueButton - activity information';
+$string['search:tags'] = 'BigBlueButton - tags information';
 
 $string['privacy:metadata:bigbluebuttonbn'] = 'Stores the configuration for the room or activity that defines the features and general behaviour of the BigBlueButton session.';
 $string['privacy:metadata:bigbluebuttonbn:participants'] = 'A list of rules that define the role users will in the live meeting. A user ID may be stored as permissions can be granted per role or user.';
@@ -75,6 +75,31 @@ $string['privacy:metadata:bigbluebuttonbn_logs:meta'] = 'May include extra infor
 $string['privacy:metadata:bigbluebutton'] = 'In order to create and join BigBlueButton sessions, user data needs to be exchanged with the server.';
 $string['privacy:metadata:bigbluebutton:userid'] = 'The userid of the user accessing the BigBlueButton server.';
 $string['privacy:metadata:bigbluebutton:fullname'] = 'The fullname of the user accessing the BigBlueButton server.';
+
+$string['completionattendance'] = 'Student must attend the meeting for:';
+$string['completionattendancedesc'] = 'Student must attend the meeting and remain in the session for at least {$a} minute(s)';
+$string['completionattendancegroup'] = 'Require attendance';
+$string['completionattendancegroup_help'] = 'Attending the meeting for (n) minutes is required for completion';
+
+$string['completionengagementchats'] = 'Chat events';
+$string['completionengagementtalks'] = 'Talk events';
+$string['completionengagementtalktime'] = 'Talk time';
+$string['completionengagementraisehand'] = 'Raise hand events';
+$string['completionengagementpollvotes'] = 'Poll votes';
+$string['completionengagementemojis'] = 'Emojis';
+
+$string['completionengagementdesc'] = 'Student must engage in activities during the meeting';
+$string['completionengagementgroup'] = 'Require engagement';
+$string['completionengagementgroup_help'] = 'Active participation during the session is required for completion';
+
+$string['completionupdatestate'] = "Completion update state";
+$string['completionvalidatestate'] = "Validate completion";
+$string['completionvalidatestatetriggered'] = "Validate completion has been triggered.";
+
+$string['sendnotification'] = "Send notification";
+
+$string['minute'] = 'minute';
+$string['minutes'] = 'minutes';
 
 $string['config_general'] = 'General configuration';
 $string['config_general_description'] = 'These settings are <b>always</b> used';
@@ -122,6 +147,8 @@ $string['config_recordings_preview_editable'] = 'Preview feature can be edited';
 $string['config_recordings_preview_editable_description'] = 'Preview feature can be edited when the instance is added or updated.';
 $string['config_recordings_sortorder'] = 'Order the recordings in ascending order.';
 $string['config_recordings_sortorder_description'] = 'By default recordings are displayed in descending order. When checked they will be sorted in ascending order.';
+$string['config_recordings_validate_url'] = 'Validate URL';
+$string['config_recordings_validate_url_description'] = 'If checked the playback URL will be validated before the user access it.';
 
 $string['config_importrecordings'] = 'Configuration for "Import recordings" feature';
 $string['config_importrecordings_description'] = 'These settings are feature specific';
@@ -148,8 +175,8 @@ $string['config_voicebridge_editable_description'] = 'Conference voice bridge nu
 
 $string['config_preuploadpresentation'] = 'Configuration for "Pre-upload presentation" feature';
 $string['config_preuploadpresentation_description'] = 'These settings enable or disable options in the UI and also define default values for these options. The feature works only if the Moodle server is accessible to BigBlueButton..';
-$string['config_preuploadpresentation_enabled'] = 'Pre-uploading presentation enabled';
-$string['config_preuploadpresentation_enabled_description'] = 'Preupload presentation feature is enabled in the UI when the room or conference is added or updated.';
+$string['config_preuploadpresentation_editable'] = 'Pre-uploading presentation editable';
+$string['config_preuploadpresentation_editable_description'] = 'Preupload presentation feature is editable in the UI when the room or conference is added or updated.';
 
 $string['config_presentation_default'] = 'Default file for "Pre-upload presentation" feature';
 $string['config_presentation_default_description'] = 'This setting allow to select a file to use as default in all BBB instances if "Pre-upload presentation" is enabled.';
@@ -178,19 +205,19 @@ $string['config_scheduled_pre_opening_description'] = 'The time in minutes for t
 $string['config_sendnotifications'] = 'Configuration for "Send notifications" feature';
 $string['config_sendnotifications_description'] = 'These settings enable or disable options in the UI and also define default values for these options.';
 $string['config_sendnotifications_enabled'] = 'Send notifications enabled';
-$string['config_sendnotifications_enabled_description'] = 'Send notifications feature is enabled in the UI when the room or conference is added or updated.';
+$string['config_sendnotifications_enabled_description'] = 'If enabled the UI for editing the activity includes an option for sending a notification to enrolled user when the activity is added or updated.';
 
 $string['config_extended_capabilities'] = 'Configuration for extended capabilities';
 $string['config_extended_capabilities_description'] = 'Configuration for extended capabilities when the BigBlueButton server offers them.';
 $string['config_uidelegation_enabled'] = 'UI delegation is enabled';
 $string['config_uidelegation_enabled_description'] = 'These settings enable or disable the UI delegation to the BigBlueButton server.';
-$string['config_recordingready_enabled'] = 'Notifications when recording ready enabled';
-$string['config_recordingready_enabled_description'] = 'Notifications when recording ready feature is enabled.';
-$string['config_meetingevents_enabled'] = 'Register meeting events';
-$string['config_meetingevents_enabled_description'] = 'Register meeting events feature is enabled.';
+$string['config_recordingready_enabled'] = 'Send notifications when a recording is ready';
+$string['config_recordingready_enabled_description'] = 'Enable the plugin for sending notifications when the recording is ready. (It will only work if the script post_publish_recording_ready_callback is enabled in the BigBlueButton server)';
+$string['config_meetingevents_enabled'] = 'Register live events';
+$string['config_meetingevents_enabled_description'] = 'Enable the plugin for accepting and processing live events after the session ends. (It must be enabled for "Activity completion" and will only work if the BigBlueButton server is capable of processing post_events scripts)';
 
 $string['config_warning_curl_not_installed'] = 'This feature requires the CURL extension for php installed and enabled. The settings will be accessible only if this condition is fulfilled.';
-$string['config_warning_bigbluebuttonbn_cfg_deprecated'] = 'BigBlueButtonBN is making use of config.php with a global variable that has been deprecated. Please convert the file as it will not be supported in future versions';
+$string['config_warning_bigbluebuttonbn_cfg_deprecated'] = 'BigBlueButton is making use of config.php with a global variable that has been deprecated. Please convert the file as it will not be supported in future versions';
 
 $string['config_muteonstart'] = 'Configuration for "Mute on Start" feature';
 $string['config_muteonstart_description'] = 'These settings enable or disable options in the UI and also define default values for these options.';
@@ -198,6 +225,64 @@ $string['config_muteonstart_default'] = 'Mute on start enabled by default';
 $string['config_muteonstart_default_description'] = 'If enabled the session will be muted on start.';
 $string['config_muteonstart_editable'] = 'Mute on start can be edited';
 $string['config_muteonstart_editable_description'] = 'Mute on start by default can be edited when the instance is added or updated.';
+$string['config_welcome_default'] = 'Default welcome message';
+$string['config_welcome_default_description'] = 'Replaces the default message set up for the BigBlueButton server. The message can includes keywords  (%%CONFNAME%%, %%DIALNUM%%, %%CONFNUM%%) which will be substituted automatically, and also html tags like <b>...</b> or <i></i> ';
+$string['config_welcome_editable'] = 'Default welcome message is editable by teachers';
+$string['config_welcome_editable_description'] = 'Welcome message can be edited when the instance is added or updated';
+
+$string['config_default_messages'] = 'Default messages';
+$string['config_default_messages_description'] = 'Set message defaults for activities';
+
+$string['config_locksettings'] = 'Configuration for locking settings';
+$string['config_locksettings_description'] = 'These setttings enable or disable options in the UI for locking settings, and also define default values for these options.';
+
+$string['config_disablecam_default'] = 'Disable cam enabled by default';
+$string['config_disablecam_default_description'] = 'If enabled the webcams will be disabled.';
+$string['config_disablecam_editable'] = 'Disable cam can be edited';
+$string['config_disablecam_editable_description'] = 'Disable cam by default can be edited when the instance is added or updated.';
+
+$string['config_disablemic_default'] = 'Disable mic enabled by default';
+$string['config_disablemic_default_description'] = 'If enabled the microphones will be disabled.';
+$string['config_disablemic_editable'] = 'Disable mic can be edited';
+$string['config_disablemic_editable_description'] = 'Disable mic by default can be edited when the instance is added or updated.';
+
+$string['config_disableprivatechat_default'] = 'Disable private chat enabled by default';
+$string['config_disableprivatechat_default_description'] = 'If enabled the private chat will be disabled.';
+$string['config_disableprivatechat_editable'] = 'Disable private chat can be edited';
+$string['config_disableprivatechat_editable_description'] = 'Disable private chat by default can be edited when the instance is added or updated.';
+
+$string['config_disablepublicchat_default'] = 'Disable public chat enabled by default';
+$string['config_disablepublicchat_default_description'] = 'If enabled the public chat will be disabled.';
+$string['config_disablepublicchat_editable'] = 'Disable public chat can be edited';
+$string['config_disablepublicchat_editable_description'] = 'Disable public chat by default can be edited when the instance is added or updated.';
+
+$string['config_disablenote_default'] = 'Disable shared notes enabled by default';
+$string['config_disablenote_default_description'] = 'If enabled the shared notes will be disabled.';
+$string['config_disablenote_editable'] = 'Disable shared notes can be edited';
+$string['config_disablenote_editable_description'] = 'Disable shared notes by default can be edited when the instance is added or updated.';
+
+$string['config_hideuserlist_default'] = 'Hide user list enabled by default';
+$string['config_hideuserlist_default_description'] = 'If enabled the session user list will be hidden.';
+$string['config_hideuserlist_editable'] = 'Hide user list can be edited';
+$string['config_hideuserlist_editable_description'] = 'Hide user list by default can be edited when the instance is added or updated.';
+
+$string['config_lockedlayout_default'] = 'Locked layout enabled by default';
+$string['config_lockedlayout_default_description'] = 'If enabled the session layout will be locked.';
+$string['config_lockedlayout_editable'] = 'Locked layout can be edited';
+$string['config_lockedlayout_editable_description'] = 'Locked layout by default can be edited when the instance is added or updated.';
+
+$string['config_lockonjoin_default'] = 'Ignore lock on join enabled by default';
+$string['config_lockonjoin_default_description'] = 'If enabled the lock settings will be ignored. Lock configuration must be enabled for this to apply.';
+$string['config_lockonjoin_editable'] = 'Ignore lock on join can be edited';
+$string['config_lockonjoin_editable_description'] = 'Ignore lock on join by default can be edited when the instance is added or updated.';
+
+$string['config_lockonjoinconfigurable_default'] = 'Lock configuration enabled by default';
+$string['config_lockonjoinconfigurable_default_description'] = 'If enabled the session lock settings can be enabled or disabled from the above control.';
+$string['config_lockonjoinconfigurable_editable'] = 'Lock configuration can be edited';
+$string['config_lockonjoinconfigurable_editable_description'] = 'Lock configuration by default can be edited when the instance is added or updated.';
+
+$string['config_experimental_features'] = 'Configuration for experimental features';
+$string['config_experimental_features_description'] = 'Configuration for experimental features.';
 
 $string['general_error_unable_connect'] = 'Unable to connect. Please check the url of the BigBlueButton server AND check to see if the BigBlueButton server is running.';
 $string['general_error_not_allowed_to_create_instances'] = 'User is not allowed to create any type of instances.';
@@ -219,10 +304,10 @@ $string['index_heading_viewer'] = 'Viewers';
 $string['index_heading'] = 'BigBlueButton Rooms';
 $string['mod_form_block_general'] = 'General settings';
 $string['mod_form_block_room'] = 'Activity/Room settings';
-$string['mod_form_block_recordings'] = 'Recording settings';
+$string['mod_form_block_recordings'] = 'View for recording';
 $string['mod_form_block_presentation'] = 'Presentation content';
 $string['mod_form_block_presentation_default'] = 'Presentation default content';
-$string['mod_form_block_participants'] = 'Participants';
+$string['mod_form_block_participants'] = 'Role assigned during live session';
 $string['mod_form_block_schedule'] = 'Schedule for session';
 $string['mod_form_block_record'] = 'Record settings';
 $string['mod_form_field_openingtime'] = 'Join open';
@@ -244,28 +329,28 @@ $string['mod_form_field_voicebridge_notunique_error'] = 'Not a unique value. Thi
 $string['mod_form_field_wait'] = 'Wait for moderator';
 $string['mod_form_field_wait_help'] = 'Viewers must wait until a moderator enters the session before they can do so';
 $string['mod_form_field_welcome'] = 'Welcome message';
-$string['mod_form_field_welcome_help'] = 'Replaces the default message setted up for the BigBlueButton server. The message can includes keywords  (%%CONFNAME%%, %%DIALNUM%%, %%CONFNUM%%) which will be substituted automatically, and also html tags like <b>...</b> or <i></i> ';
+$string['mod_form_field_welcome_help'] = 'Replaces the default message setted up for the BigBlueButton server. The message can includes keywords  (%%CONFNAME%%, %%DIALNUM%%, %%CONFNUM%%) which will be substituted automatically, and also html tags like &lt;b>...&lt;/b>, &lt;br />, &lt;u>&lt;/u> or &lt;i>&lt;/i> ';
 $string['mod_form_field_welcome_default'] = '<br>Welcome to <b>%%CONFNAME%%</b>!<br><br>For help on using BigBlueButton see these (short)  <a href="event:http://www.bigbluebutton.org/content/videos"><u>tutorial videos</u></a>.<br><br>To join the audio bridge click the phone icon (top center). <b>Please use a headset to avoid causing background noise for others.</b>';
-$string['mod_form_field_participant_add'] = 'Add participant';
-$string['mod_form_field_participant_list'] = 'Participant list';
+$string['mod_form_field_participant_add'] = 'Add assignation';
+$string['mod_form_field_participant_list'] = 'Assignation list';
 $string['mod_form_field_participant_list_type_all'] = 'All users enrolled';
 $string['mod_form_field_participant_list_type_role'] = 'Role';
 $string['mod_form_field_participant_list_type_user'] = 'User';
 $string['mod_form_field_participant_list_type_owner'] = 'Owner';
-$string['mod_form_field_participant_list_text_as'] = 'as';
+$string['mod_form_field_participant_list_text_as'] = 'joins session as';
 $string['mod_form_field_participant_list_action_add'] = 'Add';
 $string['mod_form_field_participant_list_action_remove'] = 'Remove';
 $string['mod_form_field_participant_bbb_role_moderator'] = 'Moderator';
 $string['mod_form_field_participant_bbb_role_viewer'] = 'Viewer';
 $string['mod_form_field_instanceprofiles'] = 'Instance type';
-$string['mod_form_field_instanceprofiles_help'] = 'Select the type for this BigBlueButtonBN instance.';
+$string['mod_form_field_instanceprofiles_help'] = 'Select the type for this BigBlueButton instance.';
 $string['mod_form_field_muteonstart'] = 'Mute on start';
-$string['mod_form_field_notification'] = 'Send notification';
-$string['mod_form_field_notification_help'] = 'Send a notification to users enrolled to let them know that this activity has been created or modified';
-$string['mod_form_field_notification_created_help'] = 'Send a notification to users enrolled to let them know that this activity has been created';
-$string['mod_form_field_notification_modified_help'] = 'Send a notification to users enrolled to let them know that this activity has been modified';
-$string['mod_form_field_notification_msg_created'] = 'created';
-$string['mod_form_field_notification_msg_modified'] = 'modified';
+$string['mod_form_field_notification'] = 'Notify this change to users enrolled';
+$string['mod_form_field_notification_help'] = 'Send a notification to all users enrolled to let them know that this activity has been added or updated';
+$string['mod_form_field_notification_created_help'] = 'Send a notification to all users enrolled to let them know that this activity has been created';
+$string['mod_form_field_notification_modified_help'] = 'Send a notification to all users enrolled to let them know that this activity has been updated';
+$string['mod_form_field_notification_msg_created'] = 'added';
+$string['mod_form_field_notification_msg_modified'] = 'updated';
 $string['mod_form_field_notification_msg_at'] = 'at';
 $string['mod_form_field_recordings_html'] = 'Show the table in plain html';
 $string['mod_form_field_recordings_deleted'] = 'Include recordings from deleted activities';
@@ -274,6 +359,17 @@ $string['mod_form_field_recordings_preview'] = 'Show recording preview';
 $string['mod_form_field_recordallfromstart'] = 'Record all from start';
 $string['mod_form_field_recordhidebutton'] = 'Hide recording button';
 $string['mod_form_field_nosettings'] = 'No settings can be edited';
+$string['mod_form_field_disablecam'] = 'Disable webcams';
+$string['mod_form_field_disablemic'] = 'Disable microphones';
+$string['mod_form_field_disableprivatechat'] = 'Disable private chat';
+$string['mod_form_field_disablepublicchat'] = 'Disable public chat';
+$string['mod_form_field_disablenote'] = 'Disable shared notes';
+$string['mod_form_field_hideuserlist'] = 'Hide user list';
+$string['mod_form_field_lockedlayout'] = 'Lock room layout';
+$string['mod_form_field_lockonjoin'] = 'Ignore lock settings';
+$string['mod_form_field_lockonjoinconfigurable'] = 'Allow ignore locking settings';
+$string['mod_form_locksettings'] = 'Lock settings';
+
 
 $string['starts_at'] = 'Starts';
 $string['started_at'] = 'Started';
@@ -297,7 +393,7 @@ $string['view_groups_selection_join'] = 'Join';
 $string['view_groups_selection'] = 'Select the group you want to join and confirm the action';
 $string['view_login_moderator'] = 'Logging in as moderator ...';
 $string['view_login_viewer'] = 'Logging in as viewer ...';
-$string['view_noguests'] = 'The BigBlueButtonBN is not open to guests';
+$string['view_noguests'] = 'The BigBlueButton is not open to guests';
 $string['view_nojoin'] = 'You are not in a role allowed to join this session.';
 $string['view_recording_list_actionbar_edit'] = 'Edit';
 $string['view_recording_list_actionbar_delete'] = 'Delete';
@@ -369,11 +465,11 @@ $string['view_message_conference_wait_for_moderator'] = 'Waiting for a moderator
 $string['view_message_conference_in_progress'] = 'This conference is in progress.';
 $string['view_message_conference_has_ended'] = 'This conference has ended.';
 $string['view_message_tab_close'] = 'This tab/window must be closed manually';
-$string['view_message_recordings_disabled'] = 'Recordings were disabled on this server. BigBlueButtonBN instances for recordings only can not be used.';
+$string['view_message_recordings_disabled'] = 'Recordings were disabled on this server. BigBlueButton instances for recordings only can not be used.';
 $string['view_message_importrecordings_disabled'] = 'Feature for import recording links is disabled on this server.';
 
 $string['view_groups_selection_warning'] = 'There is a conference room for each group and you have access to more than one. Be sure to select the correct one.';
-$string['view_groups_nogroups_warning'] = 'The room was configured for using groups but the course does not have goups defined.';
+$string['view_groups_nogroups_warning'] = 'The room was configured for using groups but the course does not have groups defined.';
 $string['view_groups_notenrolled_warning'] = 'The room was configured for using groups but you are not enrolled in any of them.';
 $string['view_conference_action_join'] = 'Join session';
 $string['view_conference_action_end'] = 'End session';
