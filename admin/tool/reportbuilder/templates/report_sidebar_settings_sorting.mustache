@@ -1,0 +1,82 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+  @template tool_reportbuilder/report_sidebar_settings_sorting
+
+  Reportbuilder report_sidebar_sorting template.
+
+  The purpose of this template is to render the sorting tab content.
+
+  Classes required for JS:
+  * js-sorting-list Used to allow list sorting.
+  * js-enable-sort Used to enable the sorting of the column.
+  * js-column-name Used to change the name when the column name is changed.
+
+  Data attributes required for JS:
+  * data-region Used to reload the region with new content after add or remove a column.
+
+  Context variables required for this template:
+  * sortablecolumns array - Array of report columns to be sorting:
+      * columnname string - The column name
+      * enabled bool - If the sorting if enabled for this column.
+      * icon string - The icon of the sorting (sort_desc | sort_asc).
+      * columnid id - The id of the column.
+
+  Example context (json):
+  {
+      "nocolumnsurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1535727318/no-filters",
+      "hassortablecolumns": true,
+      "sortablecolumns": [
+          { "formattedheading": "Column name 1", "enabledsorting": 1, "sorticon": "sort_desc", "id": 1 },
+          { "formattedheading": "Column name 3", "enabledsorting": 0, "sorticon": "sort_asc", "id": 2 },
+          { "formattedheading": "Column name 4", "enabledsorting": 1, "sorticon": "sort_asc", "id": 3 }
+      ],
+      "sortingshelp" : true
+  }
+}}
+<div class="tool_reportbuilder_report_sidebar_settings_sorting position-relative" id="region-report-sorting" data-region="report-sorting">
+    {{#hassortablecolumns}}
+        <ul class="list-group js-sorting-list reportbuilder-sortable-list mt-2">
+            {{#sortablecolumns}}
+                <li class="list-group-item list-group-item-action d-flex align-items-start mb-2 reportbuilder-sortable-list__item" data-id="{{id}}" data-order="{{sortorder}}">
+                        {{>core/drag_handle}}
+                        {{#sorticon}}
+                            <span class="float-right">
+                                <a class="js-sort-direction" href="#" data-column-id="{{id}}" title="{{sortdirectionlabel}}">{{# pix }} t/{{sorticon}}, core {{/ pix }}</a>
+                            </span>
+                        {{/sorticon}}
+                    <span>
+                        <input class="js-enable-sort" id="enablesorting-{{id}}" data-column-id="{{id}}" type="checkbox" {{#enabledsorting}}checked{{/enabledsorting}}>
+                        <label for="enablesorting-{{id}}">
+                            <span role="button" title="{{{sortenabledlabel}}}" class="js-column-name text-dark {{^enabledsorting}}text-muted{{/enabledsorting}}">{{{formattedheading}}}</span>
+                        </label>
+                    </span>
+                </li>
+            {{/sortablecolumns}}
+        </ul>
+    {{/hassortablecolumns}}
+    {{^hassortablecolumns}}
+        {{> tool_reportbuilder/no-sortable-columns}}
+    {{/hassortablecolumns}}
+</div>
