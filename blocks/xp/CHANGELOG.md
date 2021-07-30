@@ -1,6 +1,78 @@
 Changelog
 =========
 
+v3.11.2
+-------
+
+Bug fixes
+
+- Some CSS styles were not applied for some older Moodle versions
+
+v3.11.1
+-------
+
+Quality of life
+
+- Update information in promotional page
+
+v3.11.0
+-------
+
+New features
+
+- Complete revamp of the user interface to setup the levels
+- Rule picker redesigned to include a description of each rule
+
+Quality of life
+
+- Confirmation asked when deleting a rule or condition with children
+- A help message is displayed when other plugins cause the rules screen to crash
+
+Bug fixes
+
+- The leaderboard was not accessible when using Oracle
+- The filters on the log table could not be removed when empty
+
+Technical changes
+
+- Compatibility with Moodle 3.11
+
+v3.10.2
+-------
+
+Bug fixes
+
+- The filtered_config class did not work with excluded keys
+
+v3.10.1
+-------
+
+Technical changes
+
+- Rules base class includes the get_renderer method for children classes to use
+- Switched to using numday, numweek, etc. language strings for durations in log settings
+- Travis configuration changes
+
+v3.10.0
+-------
+
+New features
+
+- Administrators can enforce the anonymity of the leaderboard
+- An additional capability to control access to the logs was added
+
+Bug fixes
+
+- The report could be stuck in an empty state after using some filters
+
+Quality of life
+
+- Display a warning when leaving the rules page without saving
+- Inform users when the cheat guard settings may become ineffective
+- Keep promo page visible when the add-on has been installed
+
+_Level up! Plus_ users may be required to upgrade the add-on for some of these changes to take effect.
+
 v3.9.0
 ------
 
