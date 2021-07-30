@@ -44,7 +44,7 @@ class promo_controller extends route_controller {
     /** Seen flag. */
     const SEEN_FLAG = 'promo-page-seen';
     /** Page version. */
-    const VERSION = 20200430;
+    const VERSION = 20210428;
 
     /** @var string The normal route name. */
     protected $routename = 'promo';
@@ -121,8 +121,24 @@ class promo_controller extends route_controller {
     protected function content() {
         self::mark_as_seen();
 
+        $pluginman = \core_plugin_manager::instance();
+        $localxp = $pluginman->get_plugin_info('local_xp');
+        if ($localxp) {
+            $this->content_installed();
+            return;
+        }
+
+        $this->content_not_installed();
+    }
+
+    /**
+     * Content when not installed.
+     *
+     * @return void
+     */
+    protected function content_not_installed() {
         $output = \block_xp\di::get('renderer');
-        $siteurl = "http://levelup.plus?utm_source=plugin_promopage";
+        $siteurl = "https://levelup.plus?ref=plugin_promopage";
 
         if (!$this->is_admin_page()) {
             echo $output->heading(get_string('levelupplus', 'block_xp'));
@@ -133,7 +149,7 @@ class promo_controller extends route_controller {
         echo $output->heading(get_string('discoverlevelupplus', 'block_xp'), 3);
         echo markdown_to_html(get_string('promointro', 'block_xp'));
 
-        $new = '<span class="label label-info">New</span>';
+        $new = '🆕';
 
         echo <<<EOT
 <style>
@@ -161,12 +177,13 @@ class promo_controller extends route_controller {
     <tr>
         <td><img src="{$output->pix_url('noun/checklist', 'block_xp')}" alt=""></td>
         <td>
-            <h4>Additional rules</h4>
+            <h4>Additional rules $new</h4>
             <p>Reward your students for completing their tasks and courses.</p>
             <ul>
                 <li>Support for activity completion</li>
                 <li>Support for course completion</li>
-                <li>Support for targeting specific courses</li>
+                <li>Target specific courses</li>
+                <li>Target activities by name $new</li>
             </ul>
         </td>
     </tr>
@@ -184,7 +201,7 @@ class promo_controller extends route_controller {
     <tr>
         <td><img src="{$output->pix_url('noun/manual', 'block_xp')}" alt=""></td>
         <td>
-            <h4>Issue individual rewards $new</h4>
+            <h4>Issue individual rewards</h4>
             <p>Manually award points to specific students.</p>
             <ul>
                 <li>A great way to reward offline or punctual actions</li>
@@ -221,7 +238,8 @@ class promo_controller extends route_controller {
             <p>Get better control of students' rewards.</p>
             <ul>
                 <li>Limit your students' rewards per day (or any other time limit you want to set)</li>
-                <li>Be on top of potential false student activities</li>
+                <li>Get peace of mind with a more robust and resilient anti-cheat</li>
+                <li>Increase the time limits to greater values</li>
             </ul>
         </td>
     </tr>
@@ -232,6 +250,7 @@ class promo_controller extends route_controller {
             <p>Better control and information about your students' actions.</p>
             <ul>
                 <li>Export the report to look at it in more details</li>
+                <li>Export the logs to look at them in more details $new</li>
                 <li>Allocate points in bulk from an imported CSV file</li>
                 <li>Track the events with logs containing human-friendly descriptions and originating locations</li>
             </ul>
@@ -290,6 +309,47 @@ EOT;
 
     }
 
+    protected function content_installed() {
+        $output = \block_xp\di::get('renderer');
+        $siteurl = new url('https://levelup.plus?ref=localxp_promopage');
+        $docsurl = new url('https://levelup.plus/docs?ref=localxp_promopage');
+        $recoverurl = new url('https://levelup.plus/recover?ref=localxp_promopage');
+        $releasenotesurl = new url('https://levelup.plus/docs/topic/release-notes?ref=localxp_promopage');
+        $upgradeurl = new url('https://levelup.plus/docs/article/upgrading-level-up?ref=localxp_promopage');
+        $outofsyncurl = new url('https://levelup.plus/docs/article/plugins-out-of-sync?ref=localxp_promopage');
+        $pluginman = \core_plugin_manager::instance();
+        $localxp = $pluginman->get_plugin_info('local_xp');
+
+        if (!$this->is_admin_page()) {
+            echo $output->heading(get_string('levelupplus', 'block_xp'));
+            echo $output->course_world_navigation($this->world, $this->routename);
+        }
+
+        if (!$localxp->is_installed_and_upgraded()) {
+            echo $output->notification_without_close(get_string('addoninstallationerror', 'block_xp'), 'error');
+            return;
+        }
+
+        if (self::versions_out_of_sync()) {
+            echo $output->notification_without_close(markdown_to_html(get_string('pluginsoutofsync', 'block_xp', [
+                'url' => $outofsyncurl->out(false)
+            ])), 'error');
+        }
+
+        echo $output->heading(get_string('thankyou', 'block_xp'), 3);
+        echo markdown_to_html(get_string('promointroinstalled', 'block_xp'));
+
+        echo html_writer::tag('p', get_string('version', 'core') . ' ' . $localxp->release);
+
+        echo $output->heading(get_string('additionalresources', 'block_xp'), 4);
+        echo html_writer::start_tag('ul');
+        echo html_writer::tag('li', html_writer::link($docsurl, get_string('documentation', 'block_xp')));
+        echo html_writer::tag('li', html_writer::link($releasenotesurl, get_string('releasenotes', 'block_xp')));
+        echo html_writer::tag('li', html_writer::link($upgradeurl, get_string('upgradingplugins', 'block_xp')));
+
+        echo html_writer::end_tag('ul');
+    }
+
     /**
      * Check whether there is new content for the user.
      *
@@ -304,7 +364,7 @@ EOT;
         $indicator = \block_xp\di::get('user_generic_indicator');
         $value = $indicator->get_user_flag($USER->id, self::SEEN_FLAG);
 
-        return $value < self::VERSION;
+        return $value < self::VERSION || self::versions_out_of_sync();
     }
 
     /**
@@ -322,4 +382,30 @@ EOT;
         $value = $indicator->set_user_flag($USER->id, self::SEEN_FLAG, self::VERSION);
     }
 
+    /**
+     * Check whether the versions are out of sync.
+     *
+     * @return bool
+     */
+    protected static function versions_out_of_sync() {
+        global $USER;
+
+        if (!isloggedin() || isguestuser()) {
+            return false;
+        }
+
+        $pluginman = \core_plugin_manager::instance();
+        $blockxp = $pluginman->get_plugin_info('block_xp');
+        $localxp = $pluginman->get_plugin_info('local_xp');
+        if (!$localxp || !$localxp->is_installed_and_upgraded()) {
+            return false;
+        } else if (!$blockxp || !$blockxp->is_installed_and_upgraded()) {
+            return false;
+        }
+
+        // Versions should have the same date.
+        $blockxpversion = floor($blockxp->versiondb / 100);
+        $localxpversion = floor($localxp->versiondb / 100);
+        return $blockxpversion > $localxpversion;
+    }
 }

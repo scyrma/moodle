@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 use admin_category;
 use admin_settingpage;
 use admin_externalpage;
+use admin_setting_flag;
 use admin_setting_heading;
 use admin_setting_configcheckbox;
 use admin_setting_configmultiselect;
@@ -53,16 +54,20 @@ class default_settings_maker implements settings_maker {
     protected $defaults;
     /** @var url_resolver The URL resolver. */
     protected $urlresolver;
+    /** @var config The repository of locked config. */
+    protected $configlocked;
 
     /**
      * Constructor.
      *
      * @param config $defaults The config object to get the defaults from.
      * @param url_resolver $urlresolver The URL resolver.
+     * @param config|null $configlocked The repository of locked config.
      */
-    public function __construct(config $defaults, url_resolver $urlresolver) {
+    public function __construct(config $defaults, url_resolver $urlresolver, config $configlocked = null) {
         $this->defaults = $defaults;
         $this->urlresolver = $urlresolver;
+        $this->configlocked = $configlocked;
     }
 
     /**
@@ -93,6 +98,9 @@ class default_settings_maker implements settings_maker {
         $settingspage = new admin_settingpage('block_xp_default_settings', get_string('defaultsettings', 'block_xp'));
         if ($env->is_full_tree()) {
             array_map(function($setting) use ($settingspage) {
+                if ($this->configlocked && $this->configlocked->has($setting->name)) {
+                    $setting->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+                }
                 $settingspage->add($setting);
             }, $this->get_default_settings());
         }
@@ -117,8 +125,10 @@ class default_settings_maker implements settings_maker {
         $settings->add($catname, $settingspage);
 
         // Add the promo page.
+        $pluginman = \core_plugin_manager::instance();
+        $localxp = $pluginman->get_plugin_info('local_xp');
         $settingspage = new admin_externalpage('block_xp_promo',
-            '⭐ ' . get_string('navpromo', 'block_xp'),
+            ($localxp ? '' : '⭐ ') . get_string('navpromo', 'block_xp'),
             $this->urlresolver->reverse('admin/promo'));
         $settings->add($catname, $settingspage);
 
@@ -153,10 +163,10 @@ class default_settings_maker implements settings_maker {
             get_string('keeplogs', 'block_xp'), '',
             $this->defaults->get('keeplogs'), [
                 '0' => get_string('forever', 'block_xp'),
-                '1' => get_string('for1day', 'block_xp'),
-                '3' => get_string('for3days', 'block_xp'),
-                '7' => get_string('for1week', 'block_xp'),
-                '30' => get_string('for1month', 'block_xp'),
+                '1' => get_string('numday', 'core', 1),
+                '3' => get_string('numdays', 'core', 3),
+                '7' => get_string('numweek', 'core', 1),
+                '30' => get_string('nummonth', 'core', 1),
             ]
         ));
 
