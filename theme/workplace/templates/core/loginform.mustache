@@ -1,0 +1,203 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template core/loginform
+
+    Moodle template for the login page.
+
+    Context variables required for this template:
+    * autofocusform: Auto focus on form ?,
+    * canloginasguest - Is guest login allowed?,
+    * canloginbyemail - Is login by email allowed?,
+    * cansignup - Signup allowed?,
+    * cookieshelpicon - cookies help icon details
+    * error - Any errors in the form?,
+    * forgotpasswordurl - Forgot password url,
+    * hasidentityproviders - Flag, set to true to hide identity providers,
+    * hasinstructions - Flag, set to true to show instructions,
+    * identityproviders - List of identiy providers,
+    * instructions - Instructions,
+    * instructionsformat - Format of instructions,
+    * loginurl - Login url,
+    * rememberusername - Remeber username?,
+    * signupurl - Signup url,
+    * cookieshelpiconformatted - Formatted html of cookies help icon,
+    * errorformatted - Formatted error,
+    * logourl - Flag, logo url,
+    * sitename - Name of site.
+    * logintoken - Random token to protect login request.
+
+    Example context (json):
+    {
+        "autofocusform": false,
+        "canloginasguest": "1",
+        "canloginbyemail": false,
+        "cansignup": true,
+        "cookieshelpicon": {
+            "heading": "Cookies must be enabled in your browser",
+            "text": "<div class=\"no-overflow\">Two cookies are used on this site. Both died..</div>",
+            "icon": {
+                "attributes": [
+                    {
+                        "name": "class",
+                        "value": "iconhelp"
+                    },
+                    {
+                        "name": "alt",
+                        "value": "Help with Cookies must be enabled in your browser"
+                    },
+                    {
+                        "name": "title",
+                        "value": "Help with Cookies must be enabled in your browser"
+                    },
+                    {
+                        "name": "src",
+                        "value": "http://localhost/stable_master/theme/image.php?theme=boost&component=core&image=help"
+                    }
+                ]
+            },
+            "linktext": null,
+            "title": "Help with Cookies must be enabled in your browser",
+            "url": "http://localhost/stable_master/help.php?component=core&identifier=cookiesenabled&lang=en",
+            "ltr": true
+        },
+        "error": "",
+        "forgotpasswordurl": "http://localhost/stable_master/login/forgot_password.php",
+        "hasidentityproviders": false,
+        "hasinstructions": true,
+        "identityproviders": [],
+        "instructions": "For full access to this site, you first need to create an account.",
+        "instructionsformat": "1",
+        "loginurl": "http://localhost/stable_master/login/index.php",
+        "rememberusername": true,
+        "signupurl": "http://localhost/stable_master/login/signup.php",
+        "cookieshelpiconformatted": "",
+        "errorformatted": "",
+        "logourl": false,
+        "sitename": "Beer & Chips",
+        "logintoken": "randomstring"
+    }
+}}
+<div class="workplacelogin">
+    <div class="d-flex mb-3 font-size-14">
+        <a class="btn-link py-2 d-none" id="login-tab" data-toggle="tab" href="#logintab">
+            {{#str}} login {{/str}}
+        </a>
+        <nav class="workplacelangselector ml-auto">
+            <ul class="navbar-nav">
+                {{{ workplace_lang_menu }}}
+            </ul>
+        </nav>
+    </div>
+    <div class="tab-content" id="login-register">
+        <div class="tab-pane fade show active" id="logintab" role="tabpanel" aria-labelledby="login-tab">
+
+            {{> theme_workplace/wploginform }}
+
+            <hr class="my-4">
+            {{#cansignup}}
+            <div class="signup mt-3 font-size-14">
+                <p><a href="{{signupurl}}">{{#str}}startsignup{{/str}}</a></p>
+            </div>
+            {{/cansignup}}
+            <div class="forgetpass mt-3 font-size-14">
+                <p><a href="{{forgotpasswordurl}}">{{#str}}forgotten{{/str}}</a></p>
+            </div>
+            {{#hasinstructions}}
+            <div class="logininstructions mt-3 font-size-14">
+                <p>
+                    <a class="btn-link" id="instructions-tab" data-toggle="tab" href="#instructions">
+                        {{#str}}logininstructions, theme_workplace{{/str}}
+                    </a>
+                </p>
+            </div>
+            {{/hasinstructions}}
+            {{#canloginasguest}}
+                <hr class="my-4">
+                <div class="loginasguest">
+                    <p>{{#str}}someallowguest{{/str}}</p>
+                    <form action="{{loginurl}}" method="post" id="guestlogin">
+                        <input type="hidden" name="logintoken" value="{{logintoken}}">
+                        <input type="hidden" name="username" value="guest" />
+                        <input type="hidden" name="password" value="guest" />
+                        <button class="btn btn-lg btn-outline-secondary" type="submit">{{#str}}loginguest{{/str}}</button>
+                    </form>
+                </div>
+            {{/canloginasguest}}
+        </div>
+        {{#hasinstructions}}
+        <div class="tab-pane fade" id="instructions" role="tabpanel" aria-labelledby="instructions-tab">
+                <div class="instructions mt-5">
+                    <div class="card-title">
+                        <h2>{{#str}}firsttime{{/str}}</h2>
+                    </div>
+                    <div>
+                    {{{instructions}}}
+                    </div>
+                </div>
+        </div>
+        {{/hasinstructions}}
+    </div>
+
+    <div class="mt-5 small">
+        {{#str}} cookiesenabled {{/str}}
+        {{{cookieshelpiconformatted}}}
+    </div>
+</div>
+{{#js}}
+    require(['jquery'], function($) {
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function() {
+            $(this).removeClass('active');
+            if ($(this).attr('id') === 'instructions-tab') {
+                $('#login-tab').removeClass('d-none');
+                // Add a browser history entry for the loginpage.
+                history.pushState(null, "{{#str}} login {{/str}}", "#logintab");
+            } else {
+                $('#login-tab').addClass('d-none');
+            }
+        });
+
+        // Always show the loginpage when the history state has changed.
+        window.addEventListener('hashchange', function() {
+            $('#login-tab').tab('show');
+        });
+
+    {{#error}}
+        $('#loginerrormessage').focus();
+    {{/error}}
+    {{^error}}
+        {{#autofocusform}}
+            if ($('#username').val()) {
+                $('#password').focus();
+            } else {
+                $('#username').focus();
+            }
+        {{/autofocusform}}
+    {{/error}}
+    });
+{{/js}}
