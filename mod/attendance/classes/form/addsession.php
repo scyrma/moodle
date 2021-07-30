@@ -15,16 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the forms to add
+ * This file contains the forms to add session.
  *
  * @package   mod_attendance
  * @copyright  2011 Artem Andreev <andreev.artem@gmail.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace mod_attendance\form;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir.'/formslib.php');
+use moodleform;
+use mod_attendance_structure;
+use DateTime;
+use DateInterval;
+use DatePeriod;
 
 /**
  * class for displaying add form.
@@ -32,7 +37,7 @@ require_once($CFG->libdir.'/formslib.php');
  * @copyright  2011 Artem Andreev <andreev.artem@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_attendance_add_form extends moodleform {
+class addsession extends moodleform {
 
     /**
      * Called to define this moodle form
@@ -41,7 +46,7 @@ class mod_attendance_add_form extends moodleform {
      */
     public function definition() {
 
-        global $CFG, $USER;
+        global $CFG, $USER, $DB;
         $mform    =& $this->_form;
 
         $course        = $this->_customdata['course'];
@@ -210,6 +215,12 @@ class mod_attendance_add_form extends moodleform {
         $mform->addHelpButton('automark', 'automark', 'attendance');
         $mform->setDefault('automark', $this->_customdata['att']->automark);
 
+        $automarkcmoptions = attendance_get_coursemodulenames($course->id);
+
+        $mform->addElement('select', 'automarkcmid', get_string('selectactivity', 'attendance'), $automarkcmoptions);
+        $mform->setType('automarkcmid', PARAM_INT);
+        $mform->hideif('automarkcmid', 'automark', 'neq', '3');
+
         if (!empty($studentscanmark)) {
             $mgroup = array();
 
@@ -235,6 +246,7 @@ class mod_attendance_add_form extends moodleform {
             $mform->addElement('checkbox', 'autoassignstatus', '', get_string('autoassignstatus', 'attendance'));
             $mform->addHelpButton('autoassignstatus', 'autoassignstatus', 'attendance');
             $mform->hideif('autoassignstatus', 'studentscanmark', 'notchecked');
+
             if (isset($pluginconfig->autoassignstatus)) {
                 $mform->setDefault('autoassignstatus', $pluginconfig->autoassignstatus);
             }
@@ -247,9 +259,8 @@ class mod_attendance_add_form extends moodleform {
             if (isset($pluginconfig->includeqrcode_default)) {
                 $mform->setDefault('includeqrcode', $pluginconfig->includeqrcode_default);
             }
-            // TODO - Change in DB and provide value.
-            if (isset($pluginconfig->includeqrcode_default)) {
-                $mform->setDefault('rotateqrcode', $pluginconfig->includeqrcode_default);
+            if (isset($pluginconfig->rotateqrcode_default)) {
+                $mform->setDefault('rotateqrcode', $pluginconfig->rotateqrcode_default);
             }
             if (isset($pluginconfig->automark_default)) {
                 $mform->setDefault('automark', $pluginconfig->automark_default);
