@@ -1,0 +1,94 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_program/edit_program_user_allocation
+
+    Template for user allocation into program.
+
+    Example context (json):
+    {
+        "tabheading": "Users list",
+        "addbuttontitle": "Allocate user",
+        "programid": "1",
+        "content": "<div>Table goes here...</div>"
+    }
+}}
+<div id="tool_program-users" data-programid="{{programid}}">
+    {{> tool_wp/tab_heading }}
+    <div data-region="edit-program-user-allocation">
+        <div data-region="edit-program-user-list">
+            {{{userslist}}}
+        </div>
+    </div>
+
+    {{#bulkactionsselect}}
+        <div class="clearfix">
+            <form method="POST" action="{{action}}" id="bulk_selector_form">
+                <div class="{{classes}} d-inline-block">
+                    {{#params}}
+                        <input type="hidden" name="{{name}}" value="{{value}}">
+                    {{/params}}
+                    {{#label}}
+                        <label for="{{id}}"{{#labelattributes}} {{name}}="{{value}}"{{/labelattributes}}>
+                        {{{label}}}
+                        </label>
+                    {{/label}}
+                    {{#helpicon}}
+                        {{>core/help_icon}}
+                    {{/helpicon}}
+                    <select {{#attributes}}{{name}}="{{value}}" {{/attributes}} id="{{id}}" class="custom-select {{classes}}" name="{{name}}">
+                    {{#options}}
+                        {{#optgroup}}
+                            <optgroup label="{{name}}">
+                                {{#options}}
+                                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
+                                {{/options}}
+                            </optgroup>
+                        {{/optgroup}}
+                        {{^optgroup}}
+                            <option {{ignore}} value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
+                        {{/optgroup}}
+                    {{/options}}
+                    </select>
+                    <noscript>
+                        <input type="submit" class="btn btn-secondary" value="{{#str}}go, core{{/str}}">
+                    </noscript>
+                </div>
+            </form>
+        </div>
+    {{/bulkactionsselect}}
+</div>
+
+{{#js}}
+    require(['tool_program/user_allocations', 'tool_program/program_progress_modal'], function(UserAllocations, progressmodal) {
+        UserAllocations.init();
+        progressmodal.init();
+    });
+
+    {{#bulkactionsselect}}
+    require(['tool_program/user_allocations_bulk_actions'], function(UserAllocationsBulk) {
+        UserAllocationsBulk.init('#bulk_selector_form');
+    });
+    {{/bulkactionsselect}}
+{{/js}}
