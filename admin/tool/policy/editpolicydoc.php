@@ -144,7 +144,11 @@ if (!$versionid && $policyid) {
         $policy = null;
     }
 }
-
+// BEGIN MOODLECLOUD HACK.
+if (api::is_version_locked($policyversion->get('id'))) {
+    redirect(new moodle_url('/admin/tool/policy/managedocs.php'));
+}
+// END MOODLECLOUD HACK.
 $formdata = api::form_policydoc_data($policyversion);
 
 if ($policy && $formdata->id && $policy->currentversionid == $formdata->id) {
