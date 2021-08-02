@@ -159,6 +159,11 @@
 
         if ($user = $DB->get_record('user', array('id'=>$unsuspend, 'mnethostid'=>$CFG->mnet_localhost_id, 'deleted'=>0))) {
             if ($user->suspended != 0) {
+                // BEGIN MOODLECLOUD HACK.
+                // Ideally this should go in user/lib.php in the update_user function
+                // But it's too risky as it might prevent other operations.
+                local_moodlecloud\restrictions\userquota::site_is_over_user_quota();
+                // END MOODLECLOUD HACK.
                 $user->suspended = 0;
                 user_update_user($user, false);
             }
