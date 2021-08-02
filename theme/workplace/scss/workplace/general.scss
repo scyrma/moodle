@@ -1058,7 +1058,7 @@ input[type="button"] {
     &:focus {
         box-shadow: none;
         > .modal-content {
-            box-shadow: 0 0 0 0.2rem rgb(53, 121, 146, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(53, 121, 146, 0.25);
         }
     }
 }
