@@ -56,6 +56,11 @@ function my_get_page(?int $userid, int $private = MY_PAGE_PRIVATE, string $pagen
         }
     }
 
+    /** @uses \tool_tenant\dashboard_manager::show_tenant_dashboard_if_enabled() */
+    if ($page = component_class_callback('\tool_tenant\dashboard_manager', 'show_tenant_dashboard_if_enabled', [])) {
+        return $page;
+    }
+
     // Otherwise return the system default page
     return $DB->get_record('my_pages', array('userid' => null, 'name' => $pagename, 'private' => $private), '*', IGNORE_MULTIPLE);
 }
