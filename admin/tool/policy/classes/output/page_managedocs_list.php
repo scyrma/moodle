@@ -206,7 +206,9 @@ class page_managedocs_list implements renderable, templatable {
             get_string('view'),
             false
         ));
-        if ($status != policy_version::STATUS_ARCHIVED) {
+        // BEGIN MOODLECLOUD HACK.
+        if ($status != policy_version::STATUS_ARCHIVED && !api::is_version_locked($version->id)) {
+        // END MOODLECLOUD HACK.
             $actionmenu->add(new action_menu_link(
                 new moodle_url($editbaseurl, ['versionid' => $version->id]),
                 null,
@@ -214,7 +216,9 @@ class page_managedocs_list implements renderable, templatable {
                 false
             ));
         }
-        if ($status == policy_version::STATUS_ACTIVE) {
+        // BEGIN MOODLECLOUD HACK.
+        if ($status == policy_version::STATUS_ACTIVE && !api::is_version_locked($version->id)) {
+        // END MOODLECLOUD HACK.
             $actionmenu->add(new action_menu_link(
                 new moodle_url($editbaseurl, ['inactivate' => $policy->id]),
                 null,
