@@ -183,6 +183,9 @@ class helper {
             return true;
         }
 
+        // BEGIN MOODLECLOUD HACK
+        return false;
+        // END MOODLECLOUD HACK
         // Check if the owner of the .h5p file has the capability to manage content-types.
         $context = \context::instance_by_id($file->get_contextid());
         if (has_capability('moodle/h5p:updatelibraries', $context, $file->get_userid())) {
