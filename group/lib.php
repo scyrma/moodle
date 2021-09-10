@@ -381,7 +381,7 @@ function groups_update_group_icon($group, $data, $editform) {
     if (!empty($data->deletepicture)) {
         $fs->delete_area_files($context->id, 'group', 'icon', $group->id);
         $newpicture = 0;
-    } else if ($iconfile = $editform->save_temp_file('imagefile')) {
+    } else if ($iconfile = $editform->save_temp_file('imagefile', true)) {
         if ($rev = process_new_icon($context, 'group', 'icon', $group->id, $iconfile)) {
             $newpicture = $rev;
         } else {
