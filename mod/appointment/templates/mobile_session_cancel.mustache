@@ -1,0 +1,44 @@
+{{!
+    This file is part of the mod_appointment plugin for Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+ }}
+{{!
+    @template mod_appointment/mobile_session_cancel
+
+    Template for showing session cancellation form in mobile app.
+
+    Example context (json):
+    {
+    }
+}}
+{{=<% %>=}}
+<form id="cancel">
+<ion-list>
+    <ion-item>
+        <ion-textarea placeholder="{{ 'plugin.mod_appointment.cancelreason' | translate }}" [(ngModel)]="cancelreason" name="cancelreason"></ion-textarea>
+    </ion-item>
+    <ion-item>
+        <ion-row>
+            <ion-col>
+                <button ion-button block type="submit" core-site-plugins-call-ws color="danger" name="mod_appointment_user_cancel" title="{{ 'plugin.mod_appointment.confirmcancelbooking' | translate }}" goBackOnSuccess="true"
+                [params]="{sessionid: <% sessionid %>, cancelreason: cancelreason}" form="cancel"
+                [preSets]="{getFromCache: 0, saveToCache: 0, typeExpected: 'boolean'}" (onSuccess)="afterCall();">
+                    {{ 'plugin.mod_appointment.confirmcancelbooking' | translate }}
+                </button>
+            </ion-col>
+        </ion-row>
+    </ion-item>
+</ion-list>
+</form>
