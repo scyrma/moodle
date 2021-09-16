@@ -1,0 +1,70 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_dynamicrule/form_instance
+
+    Template for showing rule condition/outcome instance form card.
+
+    Example context (json):
+    {}
+}}
+
+<div class="card mb-3 instance-card" data-instanceclass="{{instanceclass}}" data-instanceid="{{instanceid}}" data-title="{{title}}">
+    <div class="card-header p-0" id="form-instance-{{elementid}}-heading">
+        <div class="mb-0 d-flex">
+            <span class="text-left ml-1 nomargin btn">
+                {{title}}
+                {{#isscheduledtask}}
+                    <span class="badge badge-secondary ml-2">{{#str}} scheduledtask , tool_dynamicrule {{/str}}</span>
+                {{/isscheduledtask}}
+            </span>
+            <span class="ml-auto">
+                {{#isbroken}}
+                    <span class="badge badge-warning broken mr-2" title="{{brokenlabel}}">{{#str}} error {{/str}}</span>
+                {{/isbroken}}
+                {{#canedit}}
+                    <a class="btn btn-link px-0" data-action="edit-instance" href="#">
+                        {{#pix}} i/settings, core, {{editlabel}} {{/pix}}
+                    </a>
+                {{/canedit}}
+                {{#candelete}}
+                    <a class="btn btn-link pl-0 pr-2" data-action="delete-instance" href="#">
+                        {{#pix}} i/trash, core, {{deletelabel}} {{/pix}}
+                    </a>
+                {{/candelete}}
+            </span>
+        </div>
+    </div>
+    <div id="form-instance-{{elementid}}" aria-labelledby="form-instance-{{elementid}}-heading">
+        <div class="card-body p-3">
+            <div class="description-container" {{^description}}style="display: none;"{{/description}}>
+                {{{description}}}
+            </div>
+            <div class="form-container" {{^form}}style="display: none;"{{/form}}>
+                <div id="form-instance-notsaved-label" class="alert alert-warning p-2">{{notsavedlabel}}</div>
+                {{{form}}}
+            </div>
+        </div>
+    </div>
+</div>
