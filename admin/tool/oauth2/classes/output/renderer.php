@@ -136,6 +136,11 @@ class renderer extends plugin_renderer_base {
             $editlink = html_writer::link($editurl, $this->pix_icon('t/edit', get_string('edit')));
             $links .= ' ' . $editlink;
 
+            // Tenant availability links.
+            /** @uses \tool_tenant\local\auth\oauth2\manager::issuer_tenant_availability_button() */
+            $links .= component_class_callback('\tool_tenant\local\auth\oauth2\manager',
+                'issuer_tenant_availability_button', [$issuer], '');
+
             // Endpoints.
             $editendpointsurl = new moodle_url('/admin/tool/oauth2/endpoints.php', ['issuerid' => $issuer->get('id')]);
             $str = get_string('editendpoints', 'tool_oauth2');
