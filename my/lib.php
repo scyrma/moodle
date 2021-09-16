@@ -47,7 +47,8 @@ function my_get_page($userid, $private=MY_PAGE_PRIVATE) {
     }
 
     /** @uses \tool_tenant\dashboard_manager::show_tenant_dashboard_if_enabled() */
-    if ($page = component_class_callback('\tool_tenant\dashboard_manager', 'show_tenant_dashboard_if_enabled', [])) {
+    if ($page = component_class_callback('\tool_tenant\dashboard_manager',
+            'show_tenant_dashboard_if_enabled', [$userid, $private])) {
         return $page;
     }
 
