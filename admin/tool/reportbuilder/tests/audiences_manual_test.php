@@ -1,0 +1,175 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace™ Code is the collection of software scripts
+// (plugins and modifications, and any derivations thereof) that are
+// exclusively owned and licensed by Moodle under the terms of this
+// proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+// software package offering which itself is freely downloadable at
+// "download.moodle.org" and which is provided by Moodle under a single
+// GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+// MWL is strictly controlled by Moodle Pty Ltd and its certified
+// premium partners. Wherever conflicting terms exist, the terms of the
+// MWL are binding and shall prevail.
+
+/**
+ * File containing tests for manual added users audience type
+ *
+ * @package     tool_reportbuilder
+ * @category    test
+ * @copyright   2021 Moodle Pty Ltd <support@moodle.com>
+ * @author      2021 David Matamoros <davidmc@moodle.com>
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+use tool_reportbuilder\test\mock_report;
+use tool_reportbuilder\tool_reportbuilder\audiences\manual;
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Test class
+ *
+ * @package     tool_reportbuilder
+ * @group       tool_reportbuilder
+ * @category    test
+ * @covers      \tool_reportbuilder\local\helpers\audience
+ * @covers      \tool_reportbuilder\tool_reportbuilder\audiences\manual
+ * @copyright   2021 Moodle Pty Ltd <support@moodle.com>
+ * @author      2021 David Matamoros <davidmc@moodle.com>
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class tool_reportbuilder_audiences_manual_testcase extends advanced_testcase {
+    /**
+     * Set up
+     */
+    public function setUp(): void {
+        $this->resetAfterTest();
+    }
+
+    /**
+     * Get report builder generator
+     *
+     * @return tool_reportbuilder_generator
+     * @throws coding_exception
+     */
+    protected function get_generator(): tool_reportbuilder_generator {
+        return $this->getDataGenerator()->get_plugin_generator('tool_reportbuilder');
+    }
+
+    /**
+     * Test get_title()
+     */
+    public function test_get_title(): void {
+        $user1 = $this->getDataGenerator()->create_user();
+        $report = $this->get_generator()->create_report([
+            'source' => mock_report::class,
+        ]);
+        $audience = manual::create($report->get_id(), ['users' => [$user1->id]]);
+        $this->assertNotEmpty($audience->get_title());
+    }
+
+    /**
+     * Test get_description()
+     */
+    public function test_get_description(): void {
+        $user1 = $this->getDataGenerator()->create_user(['firstname' => 'User', 'lastname' => 'A']);
+        $user2 = $this->getDataGenerator()->create_user(['firstname' => 'User', 'lastname' => 'B']);
+        $report = $this->get_generator()->create_report([
+            'source' => mock_report::class,
+        ]);
+        $audience = manual::create($report->get_id(), ['users' => [$user1->id, $user2->id]]);
+        $this->assertEquals($audience->get_title() . ' ' . implode(', ', [fullname($user1), fullname($user2)]),
+            $audience->get_description());
+    }
+
+    /**
+     * Test user_can_add()
+     */
+    public function test_user_can_add(): void {
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $report = $this->get_generator()->create_report([
+            'source' => mock_report::class,
+        ]);
+        $audience = manual::create($report->get_id(), ['users' => [$user1->id, $user2->id]]);
+
+        // Admin user.
+        self::setAdminUser();
+        $this->assertTrue($audience->user_can_add());
+
+        // Non-priveleged user.
+        $user = self::getDataGenerator()->create_user();
+        self::setUser($user);
+        $this->assertFalse($audience->user_can_add());
+
+        // Grant priveleges to user.
+        $roleid = create_role('Dummy role', 'dummyrole', 'dummy role description');
+        assign_capability('moodle/user:viewalldetails', CAP_ALLOW, $roleid, context_system::instance()->id);
+        assign_capability('tool/tenant:manage', CAP_ALLOW, $roleid, context_system::instance()->id);
+        role_assign($roleid, $user->id, context_system::instance()->id);
+        $this->assertTrue($audience->user_can_add());
+    }
+
+    /**
+     * Test user_can_edit()
+     */
+    public function test_user_can_edit(): void {
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $report = $this->get_generator()->create_report([
+            'source' => mock_report::class,
+        ]);
+        $audience = manual::create($report->get_id(), ['users' => [$user1->id, $user2->id]]);
+
+        // Admin user.
+        self::setAdminUser();
+        $this->assertTrue($audience->user_can_edit());
+
+        // Non-priveleged user.
+        $user = self::getDataGenerator()->create_user();
+        self::setUser($user);
+        $this->assertFalse($audience->user_can_edit());
+
+        // Grant priveleges to user.
+        $roleid = create_role('Dummy role', 'dummyrole', 'dummy role description');
+        assign_capability('moodle/user:viewalldetails', CAP_ALLOW, $roleid, context_system::instance()->id);
+        assign_capability('tool/tenant:manage', CAP_ALLOW, $roleid, context_system::instance()->id);
+        role_assign($roleid, $user->id, context_system::instance()->id);
+        $this->assertTrue($audience->user_can_edit());
+    }
+
+    /**
+     * Test get_sql()
+     */
+    public function test_get_sql(): void {
+        global $DB;
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $user3 = $this->getDataGenerator()->create_user();
+
+        $report = $this->get_generator()->create_report([
+            'source' => mock_report::class,
+        ]);
+        $audience = manual::create($report->get_id(), ['users' => [$user1->id, $user3->id]]);
+
+        [$join, $where, $params] = $audience->get_sql('u');
+        $query = 'SELECT u.* FROM {user} u ' . $join . ' WHERE ' . $where;
+        $records = $DB->get_records_sql($query, $params);
+
+        $this->assertEqualsCanonicalizing([$user1->id, $user3->id], array_column($records, 'id'));
+    }
+}
