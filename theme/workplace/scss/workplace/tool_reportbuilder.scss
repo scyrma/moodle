@@ -1,0 +1,390 @@
+.tool_reportbuilder_report {
+    .large-multiple-select {
+        width: 100%;
+    }
+    table.flexible {
+        .emptyrow {
+            visibility: hidden;
+        }
+    }
+    .ui-droppable-active {
+        border: 2px dotted black;
+        tr {
+            background-color: $brand030;
+            opacity: 0.4;
+        }
+        td {
+            background-color: $brand030;
+            opacity: 0.4;
+        }
+    }
+    .filters-icon {
+        .btn {
+            position: relative;
+        }
+    }
+    .tool_reportbuilder_loading {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .tool_reportbuilder_report_sidebar {
+        max-width: 350px;
+        &.sidebar {
+            transition: none;
+        }
+        .reportbuilder-card {
+            &:not(:last-child) {
+                border-bottom: 1px solid $gray040;
+            }
+            .filter-name {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                padding-right: 1rem;
+            }
+            .filter-name:hover {
+                white-space: normal;
+                text-overflow: clip;
+                word-break: break-all;
+            }
+            a,
+            button {
+                &[data-action='reset-filter'] {
+                    font-size: .9rem;
+                    padding: 0;
+                }
+            }
+        }
+    }
+    .tool_reportbuilder_report_table_footer {
+        .dataformatselector {
+            label {
+                @extend .sr-only;
+            }
+        }
+    }
+}
+
+#wpdashboardContent {
+    .tool_reportbuilder_report.system-report {
+        .filters-icon {
+            margin-right: 15px;
+        }
+    }
+}
+
+.tool_reportbuilder_report.system-report {
+    th.header {
+        border-top: none;
+    }
+    .filters-icon {
+        margin: 4px 0;
+    }
+    // TODO: Use specific classes instead of attributes as spec on WP-687.
+    [data-source="actions"] {
+        text-align: right;
+    }
+    // Use this class whenever needed to hide a column title.
+    .sr-only-header.header {
+        @extend .sr-only;
+    }
+}
+ul.reportbuilder-sortable-list.sortable-list-target {
+    li {
+        &:not(.sortable-list-current-position) {
+            opacity: 0.4;
+        }
+    }
+}
+ul.reportbuilder-sortable-list {
+    li.reportbuilder-sortable-list__item {
+        background-color: $white;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: none;
+    }
+    li.reportbuilder-sortable-list__item.sortable-list-current-position {
+        background-color: $brand030;
+    }
+    li.reportbuilder-sortable-list__item.sortable-list-is-dragged {
+        opacity: 0.9;
+        min-width: 200px;
+        .icon {
+            display: none;
+        }
+        input {
+            display: none;
+        }
+    }
+}
+
+.tool_reportbuilder_report_filters {
+    .js-filters-list {
+        .list-group-item {
+            background-color: $white;
+            -webkit-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: none;
+        }
+    }
+    .filters-list {
+        .form-group {
+            select {
+                max-width: 250px;
+            }
+        }
+    }
+    .fdate_selector {
+        flex-wrap: wrap;
+    }
+}
+#region-main {
+    form.sortable-list-target {
+        .card {
+            &:not(.sortable-list-current-position) {
+                opacity: 0.4;
+            }
+        }
+        .card.sortable-list-is-dragged {
+            opacity: 0.9;
+            .icon {
+                display: none;
+            }
+            .card-body {
+                display: none;
+            }
+        }
+    }
+    .sortable-list-current-position {
+        background-color: $brand030;
+        .card-body {
+            display: none;
+        }
+        .icon {
+            &:not(:first-child) {
+                display: none;
+            }
+        }
+    }
+}
+
+.form-vertical .mform.full-width-labels {
+    .fitem.row {
+        > .col-md-3 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        > .col-md-9 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+}
+
+
+// Un-dim actions icons in dimmed rows
+.system-report {
+    .dimmed_text a,
+    .dimmed_text a:link {
+        &.action-icon {
+            color: $primary !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+}
+
+.autocomplete input {
+    @extend .form-control;
+}
+#downloadtype_download {
+    @extend .custom-select;
+}
+
+.path-admin-tool-reportbuilder {
+    // Table Tab.
+    #table.tab-pane {
+        #workplace-accordion {
+            .card-header {
+                border-bottom: none;
+                .togglesectionicon > .icon {
+                    font-size: 1.5em;
+                    font-weight: 700;
+                    color: $gray-600;
+                }
+            }
+            .card-body {
+                border-top: $card-border-width solid $card-border-color;
+            }
+        }
+    }
+    // Audiences Tab.
+    #audiences.tab-pane {
+        .audience-separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .audience-separator::before,
+        .audience-separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(0, 0, 0, .125);
+        }
+
+        .audience-separator:not(:empty)::before {
+            margin-right: .25em;
+        }
+
+        .audience-separator:not(:empty)::after {
+            margin-left: .25em;
+        }
+    }
+    // Schedules Tab.
+    .mform .form-group[data-groupname='audiences'] .form-check-input {
+        align-self: baseline;
+        margin-top: .3rem;
+    }
+}
+
+/* Report table card view styles */
+@mixin table-cards {
+    .tool_reportbuilder_report_view > div.p-2 {
+        padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        > div.p-2 {
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+    .table-responsive {
+        thead {
+            display: none;
+        }
+        tr {
+            display: flex;
+            flex-direction: column;
+            margin: .5rem 0;
+            padding: .5rem .5rem 0 .5rem;
+            background-color: $card-bg !important; /* stylelint-disable-line declaration-no-important */
+            word-wrap: break-word;
+            background-clip: border-box;
+            border: $card-border-width solid $card-border-color;
+            @include border-radius($card-border-radius);
+            &:hover {
+                background-color: $card-bg !important; /* stylelint-disable-line declaration-no-important */
+            }
+            &.emptyrow {
+                display: none;
+            }
+            &:not(.show) {
+                td[data-cardviewhidden] {
+                    display: none;
+                }
+            }
+            td {
+                min-height: 2rem;
+                padding: .5rem .25rem;
+                border: none;
+                &::before {
+                    content: attr(data-cardtitle);
+                    display: block;
+                    text-transform: uppercase;
+                    font-size: 70%;
+                    color: $gray080;
+                }
+                &:not(:first-child):not(.card-toggle) {
+                    border-top: $card-border-width solid $card-border-color;
+                }
+                &:first-child,
+                &:nth-last-child(2) {
+                    margin-bottom: .5rem;
+                }
+            }
+            td.card-toggle {
+                display: block !important; /* stylelint-disable-line declaration-no-important */
+                position: absolute;
+                right: 10px;
+                button {
+                    padding: 0 .5rem;
+                    color: $gray-600;
+                    i {
+                        font-size: 1.5em;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+        .tool_reportbuilder_report_table_pagination {
+            flex-direction: column;
+            .pagination {
+                flex-wrap: wrap;
+                ul {
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+}
+
+/* Report table card view for small screens */
+@include media-breakpoint-down(xs) {
+    // Show as cards in small screens except for blocks with table layout setting.
+    div:not(.rblayout-table) > .tool_reportbuilder_report:not(.system-report) {
+        &[data-region='report-builder'],
+        [data-region='report-builder']:not([data-editon='1']) {
+            @include table-cards;
+        }
+    }
+}
+
+/* Report table card view for 'Custom report' blocks */
+.block-region {
+    .block_rbreport .report-name {
+        display: none;
+    }
+    // Always show as cards with cards layout setting.
+    .block_rbreport .rblayout.rblayout-cards {
+        @include table-cards;
+    }
+    // Show as cards in side regions except with table layout setting.
+    @include media-breakpoint-up(xl) {
+        &:not(#block-region-content) .block_rbreport {
+            .rblayout:not(.rblayout-table) {
+                @include table-cards;
+            }
+            .content {
+                display: flex;
+                flex-direction: column-reverse;
+                .footer {
+                    align-self: flex-end;
+                }
+            }
+        }
+    }
+    // Show as cards in small screens except with table layout setting.
+    @include media-breakpoint-down(xs) {
+        .block_rbreport .rblayout:not(.rblayout-table) {
+            @include table-cards;
+        }
+    }
+    // Show filters only in main block region for desktop media.
+    .block_rbreport {
+        .filters-icon,
+        [data-region='sidebar-filters'] {
+            display: none;
+        }
+        .tool_reportbuilder_report_table_export.d-flex {
+            display: none !important; /* stylelint-disable-line declaration-no-important */
+        }
+    }
+    @include media-breakpoint-up(sm) {
+        &#block-region-content .block_rbreport {
+            .filters-icon,
+            [data-region='sidebar-filters'].show {
+                display: block;
+            }
+        }
+    }
+}

@@ -1,0 +1,1074 @@
+// Global layout
+
+%hover-bg {
+    position: relative;
+    &:after {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        opacity: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        content: "";
+        transition: all;
+    }
+    &:hover:after {
+        transform: scale3d(1, 1, 1);
+        opacity: 1;
+    }
+}
+
+body.notloggedin #nav-drawer {
+    display: none;
+}
+
+#region-main {
+    border: 0;
+    border-radius: $card-border-radius;
+    h2 {
+        margin-bottom: 1.5rem;
+    }
+}
+.region_main_settings_menu_proxy {
+    background-color: $white;
+}
+
+.page-content-inner {
+    @include media-breakpoint-down(lg) {
+        flex-direction: column;
+        .blockswrapper {
+            padding: 0 1rem 1rem 1rem;
+            background-color: transparent !important; /* stylelint-disable-line declaration-no-important */
+            [data-region="blocks-column"] {
+                box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+            }
+        }
+    }
+    .contentwrapper.no-overflow {
+        overflow: initial;
+    }
+}
+
+#block-region-content .block {
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.2);
+    background-color: $white;
+    border-radius: $card-border-radius;
+}
+
+.dashboard-card,
+.block .block-cards .course-summaryitem {
+    background-color: $white;
+}
+
+.card,
+#page-enrol-users #filterform,
+.que .history,
+.userprofile .profile_tree section,
+.groupinfobox,
+.well {
+    background-color: $gray010;
+}
+
+.block.block_with_controls {
+    .moodle-core-dragdrop-draghandle {
+        position: absolute;
+        left: 0;
+        padding-left: 10px;
+        @include media-breakpoint-up(sm) {
+            padding-left: 20px;
+        }
+    }
+    .card-title {
+        margin-left: 20px;
+    }
+}
+
+#page-my-index {
+    background-color: $body-bg;
+    .wp-organisation {
+        .tool_reportbuilder_report_filters {
+            padding-right: 1rem;
+        }
+    }
+}
+
+#page-navbar .breadcrumb {
+    padding: 0;
+    margin: 0;
+}
+
+#page-header h1 {
+    margin-bottom: 0;
+}
+
+// Navigation
+
+.dropdown-toggle.nocaret::after,
+#usermenulink::after {
+    display: none;
+}
+
+// Course header
+.course-header-image-wrapper {
+    width: 55px;
+    height: 55px;
+    .course-header-image {
+        background-size: cover;
+        background-position: center;
+    }
+}
+
+// Type
+h1,
+h2,
+h3 {
+    font-weight: 700 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+h4,
+h5 {
+    font-weight: 400 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// Forms
+.btn-lg,
+.input-rounded {
+    border-radius: 3px;
+}
+
+.btn {
+    border-radius: 2px;
+}
+
+.btn-primary {
+    color: color-yiq($button);
+    background-color: $button;
+    border-color: darken($button, 10%);
+    &:not(:disabled):not(.disabled):hover {
+        color: color-yiq($button);
+        background-color: darken($button, 10%);
+        border-color: darken($button, 10%);
+    }
+    &:not(:disabled):not(.disabled):active {
+        color: color-yiq($button);
+        background-color: darken($button, 20%);
+        border-color: darken($button, 20%);
+    }
+    &:not(:disabled):not(.disabled):focus,
+    &:not(:disabled):not(.disabled):active:focus {
+        box-shadow: 0 0 0 .2rem rgba($button, .5);
+    }
+    &:disabled {
+        color: color-yiq($button);
+        background-color: lighten($button, 10%);
+        border-color: lighten($button, 10%);
+    }
+    &.close {
+        color: inherit;
+    }
+}
+
+a.btn-secondary {
+    color: $white;
+    &:hover {
+        color: $white;
+    }
+}
+
+.btn-outline-secondary {
+    border-color: $gray050;
+    background-color: $white;
+}
+
+.input-group-lg > .form-control {
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+}
+
+.signupform {
+    width: 446px;
+    margin: 3rem auto 0;
+    .col-md-3,
+    .col-md-9 {
+        flex: 0 0 100%;
+        padding: 0;
+        max-width: 100%;
+    }
+    .col-form-label {
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: bold;
+        color: $gray080;
+    }
+    .float-sm-right {
+        float: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+    .fa-exclamation-circle {
+        margin-right: 0;
+    }
+    .fcontainer {
+        display: block !important; /* stylelint-disable-line declaration-no-important */
+    }
+    .mform fieldset {
+        margin-left: 0;
+        border: 0;
+    }
+    .form-inline .form-control {
+        width: 100%;
+    }
+    .form-control-static {
+        font-size: 14px;
+        width: 100%;
+        padding: 0.5rem;
+    }
+    .row {
+        margin: 0;
+    }
+    .ftoggler,
+    .collapsible-actions {
+        display: none;
+    }
+}
+
+.flex-fill {
+    -ms-flex: 1 1 auto !important; /* stylelint-disable-line declaration-no-important */
+    flex: 1 1 auto !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// Navbar Menus
+
+$headerlogo: null !default;
+
+.navbar.fixed-top {
+    min-height: $navbar-height;
+
+    .popover-region-header-actions a i {
+        color: $body-color !important; /* stylelint-disable-line declaration-no-important */
+        font-size: 14px;
+    }
+
+    .navbar-brand {
+        padding: 0;
+        .site-name {
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        @if $headerlogo {
+            .site-name {
+                @include sr-only;
+            }
+            .site-logo {
+                display: block;
+                background-image: url("#{$headerlogo}");
+                width: 200px;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: left center;
+            }
+        }
+    }
+    .btn.nav-link {
+        min-height: $navbar-height;
+    }
+    .userpicture {
+        border-radius: 50%;
+    }
+    .notloggedinas .userpicture {
+        width: 35px;
+        height: 35px;
+        margin: 0;
+    }
+    .navbar-nav > li > .nav-link {
+        text-transform: uppercase;
+        font-size: $font-size-small;
+        padding-left: .4rem;
+    }
+    .drawer-toggle-button {
+        padding-left: 5px;
+        padding-right: 5px;
+        .icon {
+            color: $white;
+        }
+    }
+    .icon {
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+        margin: 0;
+        opacity: .8;
+    }
+    .nav-link,
+    .show > .nav-link {
+        outline: 0;
+        color: color-yiq($brand);
+
+        &:hover,
+        &:focus,
+        &:active {
+            color: color-yiq($brand);
+        }
+
+        .icon {
+            &.wp-launcher,
+            &.wp-bell,
+            &.wp-messages,
+            &.wp-menu {
+                padding: 10px;
+                border-radius: 50%;
+                &:hover {
+                    opacity: 1;
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+            }
+        }
+    }
+
+    .simplesearchform {
+        ::placeholder {
+            color: color-yiq($brand);
+            opacity: 1; /* Firefox */
+        }
+        ::-ms-input-placeholder {
+            color: color-yiq($brand);
+        }
+        :-ms-input-placeholder {
+            color: color-yiq($brand);
+        }
+        input {
+            border-radius: 3px;
+            background-color: rgba(0, 0, 0, 0.15);
+            border: 0;
+            color: color-yiq($brand);
+        }
+        .btn-submit {
+            background-color: $brand;
+            border-color: transparent;
+            color: color-yiq($brand);
+        }
+        .btn-close,
+        .btn-clear {
+            color: color-yiq($brand);
+        }
+    }
+
+    .popover-region {
+        margin-right: 0;
+        &.collapsed .popover-region-container {
+            transition: opacity 0ms;
+        }
+    }
+    .popover-region-container {
+        transition: opacity 0ms;
+        top: 3.6rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        .popover-region-footer-container {
+            border-bottom: 1px solid #ddd;
+        }
+    }
+    .popover-region-toggle {
+        width: auto;
+        &::after,
+        &::before {
+            display: none;
+        }
+    }
+    $wsmenu-dropdown-cardwidth: 110px;
+
+    .dropdown-menu.workplace-menu {
+        width: auto;
+        height: auto;
+        right: 0;
+        left: auto;
+        a.wpmenu-item {
+            .icon {
+                height: 60px;
+                width: 60px;
+                margin: 0;
+                transition: transform 0.05s; /* stylelint-disable-line time-min-milliseconds */
+            }
+            color: $headings-color;
+            &:hover {
+                text-decoration: none;
+                .icon {
+                    transform: scale(1.06);
+                }
+            }
+        }
+        .card-deck {
+            @for $i from 1 through 3 {
+                &.columns-#{$i} {
+                    width: ($wsmenu-dropdown-cardwidth * $i);
+                }
+            }
+            .card {
+                width: 110px;
+                max-width: 110px;
+                flex-basis: auto;
+            }
+        }
+    }
+
+    .dropdown .dropdown-menu.workplace-usermenu {
+        width: 500px;
+        position: fixed;
+        top: $navbar-height;
+        overflow-y: hidden;
+        height: 500px;
+        right: 0;
+        left: auto;
+        .userinfo {
+            height: 100px;
+            .userdetails {
+                max-width: 190px;
+            }
+        }
+        color: $headings-color;
+        a {
+            color: $headings-color;
+        }
+        &.show {
+            display: flex;
+            flex-direction: column;
+        }
+        .course-list-img {
+            width: 50px;
+            min-width: 50px;
+            height: 50px;
+            background-size: cover;
+            background-position: center;
+        }
+        .coursename {
+            color: $headings-color;
+            font-size: $font-size-menus;
+        }
+        .useraction {
+            padding: 0 8px;
+            &:hover,
+            &:focus {
+                text-decoration: none;
+            }
+        }
+
+        .list-group-item {
+            &:nth-child(odd) {
+                background-color: $gray010;
+            }
+            &:hover {
+                background-color: $gray020;
+            }
+        }
+        .progress {
+            height: 5px;
+            border-radius: 0;
+            width: 70px;
+        }
+        .progress-text {
+            width: 2.5rem;
+        }
+        .dropdown-menu {
+            font-size: $font-size-menus;
+        }
+        a .icon {
+            color: $gray080 !important; /* stylelint-disable-line declaration-no-important */
+            font-size: 20px;
+            height: 20px;
+            width: 20px;
+        }
+    }
+}
+
+$wsmenu-modal-cardwidth: 160px;
+
+.modal.workplace-menu {
+    a.wpmenu-item {
+        .icon {
+            height: 75px;
+            width: 75px;
+            margin: 0;
+            transition: transform 0.05s; /* stylelint-disable-line time-min-milliseconds */
+        }
+        color: $headings-color;
+    }
+    @media (min-width: 700px) {
+        .modal-dialog.wpmenu-modal-dialog {
+            width: fit-content;
+            max-width: initial;
+            padding: 5rem 10rem;
+            margin: auto;
+        }
+    }
+    .modal-content {
+        padding: 50px;
+    }
+    .close {
+        position: absolute;
+        right: 0.7rem;
+        top: 0;
+        padding: 1rem;
+    }
+    .card-deck {
+        align-items: center;
+        .card {
+            width: $wsmenu-modal-cardwidth;
+            max-width: $wsmenu-modal-cardwidth;
+            flex-basis: auto;
+            background-color: $white;
+            height: 140px;
+            border-radius: 5px;
+            overflow-wrap: anywhere;
+            &:hover {
+                background-color: $gray010;
+            }
+        }
+    }
+}
+
+.tooltip .tooltip-inner,
+.text-uppercase {
+    text-transform: uppercase;
+}
+
+// Activity Navigation.
+// Mobile version.
+@include media-breakpoint-down(sm) {
+    .activity-navigation #prev-activity-link,
+    .activity-navigation #next-activity-link {
+        white-space: normal;
+        padding: 1rem;
+        background-color: $gray030;
+        width: 100%;
+        border-radius: $card-border-radius;
+    }
+    .activity-navigation #prev-activity-link {
+        margin-bottom: 1rem;
+        text-align: left;
+    }
+    .activity-navigation #next-activity-link {
+        margin-top: 1rem;
+        text-align: right;
+    }
+}
+
+// Desktop version.
+@include media-breakpoint-up(sm) {
+    .activity-navigation {
+        .wpnavicon {
+            white-space: normal;
+            display: inline-block;
+            .icon {
+                font-size: 20px;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                background-color: $gray030;
+                line-height: 50px;
+            }
+            &.wpright {
+                margin-left: 1rem;
+            }
+            &.wpleft {
+                margin-right: 1rem;
+            }
+        }
+    }
+}
+
+// Page Header
+.pageheadingbutton .singlebutton:first-child {
+    margin-left: auto;
+}
+
+// Toggle icons using standard bootstrap collapse.
+.ws-toggle {
+    .collapsed-icon-container {
+        display: none;
+    }
+    .expanded-icon-container {
+        display: inline-block;
+    }
+
+    &.collapsed {
+        .collapsed-icon-container {
+            display: inline-block;
+        }
+        .expanded-icon-container {
+            display: none;
+        }
+    }
+}
+
+// Workplace needs custom icon styling utilities.
+.nomargin {
+    .icon {
+        margin: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+// Remove transition effects.
+.notransition {
+    -webkit-transition: none !important; /* stylelint-disable-line declaration-no-important */
+    -moz-transition: none !important; /* stylelint-disable-line declaration-no-important */
+    -o-transition: none !important; /* stylelint-disable-line declaration-no-important */
+    transition: none !important; /* stylelint-disable-line declaration-no-important */
+}
+
+.iconlarge .icon {
+    font-size: 1.5rem;
+    height: 1.5rem;
+    width: 1.5rem;
+    vertical-align: top;
+}
+
+// Login page
+$loginbackground: null !default;
+
+@if $loginbackground {
+    .background-container {
+        background-image: url("#{$loginbackground}");
+        background-size: cover;
+    }
+}
+.loginmain {
+    width: 720px;
+}
+
+$loginlogo: null !default;
+
+.workplacelogin {
+    color: $headings-color;
+    width: 446px;
+    margin: 3rem auto 0;
+    .uppercase {
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: bold;
+        color: $gray080;
+    }
+}
+
+.workplacelogin,
+.signupform {
+    @if $loginlogo {
+        .site-name {
+            @include sr-only;
+        }
+        .site-logo {
+            display: block;
+            background-image: url("#{$loginlogo}");
+            width: 90%;
+            margin: 0 auto;
+            height: 200px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    }
+}
+#login-page-footer {
+    color: $headings-color;
+    width: 446px;
+    margin: 0 auto 3rem;
+}
+#page-login-index {
+    .modal-dialog.modal-in-page {
+        width: 446px;
+        margin: 3rem auto 0;
+        .modal-content,
+        .modal-footer,
+        .modal-header,
+        .modal-conent,
+        .modal-body {
+            display: block;
+            padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+            margin: 0;
+            border: 0;
+            background-color: transparent;
+        }
+    }
+}
+#page-footer a .icon {
+    margin-left: 0;
+}
+
+#page-footer {
+    background-color: $footer;
+    color: color-yiq($footer);
+    a {
+        color: color-yiq($footer);
+    }
+}
+.customfooter {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: $font-size-menus;
+}
+// Performance info styling
+.performanceinfo.container-fluid {
+    margin: 0.5rem 0;
+    border: 1px solid $gray080;
+    font-size: 12px;
+    padding: 0.25rem;
+    .cache-total-stats,
+    .cache-suma {
+        margin: 0;
+    }
+    .ml-1 {
+        margin-left: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+    .cache-definition-stats {
+        margin: 0 0.25rem;
+        background-color: $gray080;
+        width: 250px;
+    }
+    background-color: $footer;
+    color: color-yiq($footer);
+    a {
+        color: color-yiq($footer);
+    }
+}
+
+// Utility classes
+.progress-bar {
+    height: inherit;
+}
+.bg-secondary {
+    background-color: $gray050 !important; /* stylelint-disable-line declaration-no-important */
+}
+.font-size-menus,
+.font-size-medium {
+    font-size: $font-size-menus;
+}
+.font-color-headings {
+    color: $headings-color;
+}
+.font-small {
+    font-size: $font-size-small;
+}
+.font-mini {
+    font-size: $font-size-mini;
+}
+.icon-large .icon,
+.icon-lg {
+    font-size: $icon-size-large;
+    width: $icon-size-large;
+    height: $icon-size-large;
+    line-height: $icon-size-large;
+}
+.icon-xlarge .icon,
+.icon-xl {
+    font-size: $icon-size-xlarge;
+    width: $icon-size-xlarge;
+    height: $icon-size-xlarge;
+    line-height: $icon-size-xlarge;
+}
+.wp-boxshadow-1 {
+    box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.2);
+}
+.wp-boxshadow-2 {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .08);
+}
+.wp-boxshadow-3 {
+    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.2);
+}
+.wp-boxshadow-4 {
+    box-shadow: 10px 0 74px 0 rgba(0, 0, 0, 0.25);
+}
+.font-size-14 {
+    font-size: 14px;
+}
+.font-size-16 {
+    font-size: 16px;
+}
+.border-radius {
+    border-radius: $card-border-radius;
+}
+// Reset CSS from Moodle core.
+.nav-tabs .nav-link.disabled {
+    font-style: normal;
+    opacity: 0.5;
+}
+
+[data-region="drawer"] {
+    padding: 0;
+    background-color: transparent;
+    scrollbar-width: thin; /* stylelint-disable-line */
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    .workplace-drawer-wrapper {
+        background-color: $drawer;
+        flex: 1;
+    }
+    .workplace-drawer-list .drawer-item {
+        padding: 0;
+        line-height: 2.5rem;
+        min-height: 2.5rem;
+        height: auto;
+        color: color-yiq($drawer);
+        text-decoration: none;
+        display: block;
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            .icon,
+            .navname {
+                opacity: 1;
+            }
+        }
+        .icon {
+            font-size: 1.2rem;
+            line-height: 24px;
+            width: 24px;
+            height: 24px;
+            margin: 13px;
+            position: relative;
+            opacity: 0.9;
+        }
+        &.active {
+            background-color: rgba(0, 0, 0, 0.2);
+            .icon {
+                opacity: 1;
+            }
+        }
+        .navname {
+            display: inline;
+            opacity: 0.9;
+            max-width: calc(#{$drawer-width} - 60px);
+            &.active {
+                opacity: 1;
+            }
+        }
+    }
+    .workplace-drawer-list.participants,
+    .workplace-drawer-list.sitesettings {
+        border-top: 1px solid rgba(0, 0, 0, 0.3);
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+    }
+    .workplace-drawer-list.participants {
+        a[data-parent-key="mycourses"] {
+            display: none;
+        }
+    }
+}
+
+.bg-brand,
+.bg-brand a {
+    .icon,
+    .site-name {
+        color: color-yiq($brand) !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+// Toogle icons style
+.wp-toggle {
+    text-align: center;
+    width: 70px;
+    padding: .5rem 0 !important; /* stylelint-disable-line declaration-no-important */
+    a {
+        width: 40px;
+        color: $gray070 !important; /* stylelint-disable-line declaration-no-important */
+
+        &:not(.hidden) {
+            display: inline-block;
+        }
+
+        &.disabled {
+            opacity: 0.3;
+        }
+
+        i {
+            font-size: 34px;
+            margin-right: 15px;
+            height: 20px;
+            width: 40px;
+
+            &.wp-toggle-on {
+                color: $success;
+            }
+        }
+    }
+}
+
+.moodle-dialogue-base .moodle-dialogue .moodle-dialogue-bd {
+    padding: 1.3rem 1.3rem 2rem;
+    .confirmation-message {
+        margin: .5rem 0 2rem;
+    }
+}
+
+// Extends bootstrap notification classes to some
+// that are generated automatically by Moodle
+.path-admin-tool-uploaduser {
+    .uuwarning {
+        @extend .alert-warning;
+        @extend .wp-text-to-block;
+    }
+    .uuinfo {
+        @extend .alert-info;
+        @extend .wp-text-to-block;
+    }
+    .uudanger {
+        @extend .alert-danger;
+        @extend .wp-text-to-block;
+    }
+    .uusuccess {
+        @extend .alert-success;
+        @extend .wp-text-to-block;
+    }
+}
+.wp-text-to-block {
+    display: block;
+    padding: 0.9rem;
+    border-radius: 5px;
+    margin-top: 0.5rem;
+}
+
+// Status pill for using e.g. in system report.
+.wp_status_tag {
+    @extend .badge-pill;
+}
+
+@include media-breakpoint-up(sm) {
+    body.pagelayout-login,
+    body.pagelayout-maintenance,
+    body.h5p-embed {
+        margin-left: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+
+    body:not(.notloggedin) {
+        margin-left: 50px;
+    }
+
+    body.drawer-open-left {
+        margin-left: $drawer-width;
+        .nav-drawer-tooltips {
+            display: none;
+        }
+    }
+
+    [data-region="drawer"] {
+        position: fixed;
+        width: $drawer-width;
+        top: $fixed-header-y;
+        height: calc(100% - #{$navbar-height});
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        z-index: $zindex-dropdown - 1;
+        transition: width 0.5s ease, left 0.5s ease;
+        background-color: transparent;
+        left: 0;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        &.closed {
+            width: 50px;
+        }
+    }
+
+    #nav-drawer.closed {
+        left: 0;
+        .drawer-item.type-30 {
+            display: none;
+        }
+    }
+}
+
+.block_recentlyaccesseditems img.icon {
+    width: 24px;
+}
+
+.dropdown-menu {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.modal-xl .modal-body {
+    overflow: hidden;
+}
+
+.userpicture {
+    border-radius: 50%;
+}
+
+#region-main-settings-menu.has-blocks,
+#region-main.has-blocks {
+    width: inherit;
+}
+
+// Badge pills for statuses e.g. in programs users.
+.badge-pill {
+    padding-top: $badge-pill-padding-y;
+    padding-bottom: $badge-pill-padding-y;
+    border-radius: $badge-pill-border-radius;
+}
+
+// Alerts. Override bootstrap alerts background colours.
+@each $color, $value in $theme-colors {
+    .alert-#{$color} {
+        color: $value;
+        background-color: theme-color(#{$color}-light);
+        border-color: transparent;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .modal-xl {
+        max-width: $modal-lg;
+    }
+}
+
+@include media-breakpoint-up(xl) {
+    .modal-xl {
+        max-width: $modal-xl;
+    }
+}
+
+// Button spinner.
+@keyframes loading {
+    to {
+        transform: rotate(1turn);
+    }
+}
+button,
+a[role="button"],
+input[type="submit"],
+input[type="button"] {
+    &.loading {
+        display: inline-flex;
+        @extend .disabled;
+        &::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            align-self: center;
+            margin-left: .5rem;
+            border: 3px solid $gray-500;
+            border-top-color: $gray-800;
+            border-radius: 50%;
+            animation: loading 1s ease infinite;
+        }
+    }
+}
+
+// Fixing date selector in modals.
+#dateselector-calendar-panel {
+    z-index: 99001 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// Fixing 'Login' block buttons.
+.block.block_login {
+    .potentialidp {
+        margin-bottom: .5rem;
+    }
+}
+
+// Fixing modal-dialog-centered outline. Display box-shadow in 'modal-content' child element.
+.modal-dialog.modal-dialog-centered[tabindex="0"] {
+    &:focus {
+        box-shadow: none;
+        > .modal-content {
+            box-shadow: 0 0 0 0.2rem rgba(53, 121, 146, 0.25);
+        }
+    }
+}
