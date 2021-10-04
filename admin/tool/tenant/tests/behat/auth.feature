@@ -87,6 +87,35 @@ Feature: Test authentication in mutli-tenancy
     And I follow "Log in"
     And I should not see "Create new account"
 
+  Scenario: Some tenants may disable self-registration plugin
+    Given the following "tool_tenant > tenants" exist:
+      | name    | sitename  |
+      | Tenant1 | SITENAME1 |
+      | Tenant2 | Wrong tenant |
+    And the following config values are set as admin:
+      | registerauth    | email |
+      | passwordpolicy  | 0     |
+    When I log in as "admin"
+    And I change window size to "large"
+    # Enable self-registration plugin for all tenants except Default tenant.
+    And I navigate to "Plugins > Authentication > Manage authentication" in site administration
+    And I click on "Edit status" "link" in the "Email-based self-registration" "table_row"
+    And I set the field "New status for Email-based self-registration" to "Enabled, optional"
+    And I navigate to "Users" in workplace launcher
+    And I follow "Authentication"
+    And I click on "Disable" "link" in the "Email-based self-registration" "tool_wp > Row"
+    And I log out
+    # Default tenant does not have self-registration link on the login page but other tenant does.
+    And I am on homepage for tenant "Default tenant"
+    And I follow "Log in"
+    Then I should not see "Create new account"
+    And I am on homepage for tenant "Tenant1"
+    And I follow "Log in"
+    And I should see "Create new account"
+    And I am on homepage for tenant "Tenant2"
+    And I follow "Log in"
+    And I should see "Create new account"
+
   Scenario: Site admin can allow and prevent tenants from overriding common settings
     Given "2" tenants exist with "5" users and "0" courses in each
     When I log in as "admin"

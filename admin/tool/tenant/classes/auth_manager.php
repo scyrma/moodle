@@ -447,6 +447,25 @@ class auth_manager {
     }
 
     /**
+     * Hook used in {@see get_config()} - changes some config values for the current tenant
+     *
+     * @param array $cfg current default config (instead of using $CFG), passed by reference so it can be modified
+     * @param array $tenantoverrides all overrides for this tenant, passed by reference for performance
+     */
+    public static function calculate_config_for_tenant(array &$cfg, array &$tenantoverrides): void {
+        foreach (self::overridable_auth_settings() as $key => $unused) {
+            if (empty($cfg[$key.'_wforce']) && array_key_exists($key, $tenantoverrides)) {
+                $cfg[$key] = $tenantoverrides[$key];
+            }
+        }
+        $cfg['auth'] = self::calculate_config_auth_for_tenant($cfg, $tenantoverrides);
+        if (!empty($cfg['registerauth']) && !in_array($cfg['registerauth'], preg_split('/,/', $cfg['auth']))) {
+            // Remove 'registerauth' if it points to the plugin that is disabled for the current tenant.
+            $cfg['registerauth'] = '';
+        }
+    }
+
+    /**
      * List of the authentication plugins available for the tenant and their settings (to be used on "Autentication" tab)
      *
      * @param int $tenantid

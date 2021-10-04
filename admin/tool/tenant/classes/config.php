@@ -309,12 +309,9 @@ class config {
         }
         if ($plugin === 'core') {
             $pluginconfig = self::get_config_tenant_overrides($tenantid, $plugin);
-            foreach (auth_manager::overridable_auth_settings() as $key => $unused) {
-                if (empty($config[$key.'_wforce']) && array_key_exists($key, $pluginconfig)) {
-                    $config[$key] = $pluginconfig[$key];
-                }
-            }
-            $config['auth'] = auth_manager::calculate_config_auth_for_tenant($config, $pluginconfig);
+            // Substitute auth-related config settings (auth, registerauth, auth_instructions, etc).
+            auth_manager::calculate_config_for_tenant($config, $pluginconfig);
+            // Substitute profiles-related config settings (showuseridentity).
             profile_manager::calculate_config_for_tenant($config);
         } else if (auth_manager::is_multitenant_auth_plugin($plugin)) {
             $pluginconfig = self::get_config_tenant_overrides($tenantid, $plugin);
