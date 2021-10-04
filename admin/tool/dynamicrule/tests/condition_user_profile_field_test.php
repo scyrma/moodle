@@ -462,7 +462,7 @@ class tool_dynamicrule_condition_user_profile_field_testcase extends \advanced_t
             'previousday3' => [user_profile_field::DATE_PREVIOUS, user_profile_field::TIME_DAY, 0, '+1 day', 0],
             'previousweek' => [user_profile_field::DATE_PREVIOUS, user_profile_field::TIME_WEEK, 0, '-1 week', 1],
             'previousmonth' => [user_profile_field::DATE_PREVIOUS, user_profile_field::TIME_MONTH, 0, '-1 month', 1],
-            'previousquart' => [user_profile_field::DATE_PREVIOUS, user_profile_field::TIME_QUARTER, 0, '-85 days', 1],
+            'previousquart' => [user_profile_field::DATE_PREVIOUS, user_profile_field::TIME_QUARTER, 0, '- 3 month', 1],
             'previousyear' => [user_profile_field::DATE_PREVIOUS, user_profile_field::TIME_YEAR, 0, '-1 year', 1],
             'nextday' => [user_profile_field::DATE_UPCOMING, user_profile_field::TIME_DAY, 0, '+1 day', 1],
             'nextday1' => [user_profile_field::DATE_UPCOMING, user_profile_field::TIME_DAY, 0, '+2 day', 0],
@@ -470,7 +470,7 @@ class tool_dynamicrule_condition_user_profile_field_testcase extends \advanced_t
             'nextday3' => [user_profile_field::DATE_UPCOMING, user_profile_field::TIME_DAY, 0, '-1 day', 0],
             'nextweek' => [user_profile_field::DATE_UPCOMING, user_profile_field::TIME_WEEK, 0, '+1 week', 1],
             'nextmonth' => [user_profile_field::DATE_UPCOMING, user_profile_field::TIME_MONTH, 0, '+1 month', 1],
-            'nextquarter' => [user_profile_field::DATE_UPCOMING, user_profile_field::TIME_QUARTER, 0, '+95 days', 1],
+            'nextquarter' => [user_profile_field::DATE_UPCOMING, user_profile_field::TIME_QUARTER, 0, '+3 month', 1],
             'nextyear' => [user_profile_field::DATE_UPCOMING, user_profile_field::TIME_YEAR, 0, '+1 year', 1],
         ];
     }
