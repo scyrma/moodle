@@ -183,6 +183,14 @@ class registration {
 
         // Version and url.
         $siteinfo['moodlerelease'] = $CFG->release;
+        // BEGIN MOODLECLOUD HACK.
+        if (isset($CFG->moodlecloudproduct)) {
+            $partner = get_config('local_moodlecloud', 'partner');
+            $siteinfo['moodleproduct'] = $CFG->moodlecloudproduct . ($partner ? ":$partner" : "");
+        } else {
+            $siteinfo['moodleproduct'] = 'moodlecloud:unknown:oops';
+        }
+        // END MOODLECLOUD HACK.
         $siteinfo['url'] = $CFG->wwwroot;
 
         // Mobile related information.
