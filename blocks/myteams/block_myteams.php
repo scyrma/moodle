@@ -51,11 +51,12 @@ class block_myteams extends block_base {
         global $OUTPUT;
 
         if (isset($this->content)) {
-            return $this->content;
+            return (object) $this->content;
         }
-        $this->content = new stdClass();
         $view = new \tool_organisation\output\managed_users_view();
-        $this->content->text = html_writer::div($OUTPUT->render($view, ['block' => 'test']), 'wp-organisation');;
+        $blockcontent = $OUTPUT->render($view);
+        $this->content = new stdClass();
+        $this->content->text = empty($blockcontent) ? '' : html_writer::div($blockcontent, 'wp-organisation');
         $this->content->footer = '';
 
         return $this->content;
