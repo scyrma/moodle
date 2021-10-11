@@ -59,13 +59,6 @@ $settings->add(new admin_setting_configcheckbox(
     0
 ));
 
-$settings->add(new admin_setting_configcheckbox(
-    'appointment_disableicalcancel',
-    get_string('setting:disableicalcancel_caption', 'appointment'),
-    get_string('setting:disableicalcancel', 'appointment'),
-    0
-));
-
 // New category.
 $ADMIN->add('modsettings', new admin_category('modappointmentfolder',
     new lang_string('pluginname', 'mod_appointment'), $module->is_enabled() === false));

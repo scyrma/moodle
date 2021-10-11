@@ -72,6 +72,8 @@ if ($data = $mform->get_data()) {
     ];
     $appointment = file_prepare_standard_editor($appointment, 'confirmationmessage', $options, $context,
         'appointment', 'notifications', $appointment->id);
+    $appointment = file_prepare_standard_editor($appointment, 'updatemessage', $options, $context,
+        'appointment', 'notifications', $appointment->id);
     $appointment = file_prepare_standard_editor($appointment, 'remindermessage', $options, $context,
         'appointment', 'notifications', $appointment->id);
     $appointment = file_prepare_standard_editor($appointment, 'waitlistedmessage', $options, $context,

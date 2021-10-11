@@ -136,16 +136,6 @@ class mod_appointment_mod_form extends moodleform_mod {
         } else {
             $defaultvalues['emailmanagercancellation'] = 1;
         }
-
-        $defaultvalues['confirmationsubject'] = get_string('setting:defaultconfirmationsubjectdefault', 'mod_appointment');
-        $defaultvalues['confirmationmessage'] = get_string('setting:defaultconfirmationmessagedefault', 'mod_appointment');
-        $defaultvalues['remindersubject'] = get_string('setting:defaultremindersubjectdefault', 'mod_appointment');
-        $defaultvalues['remindermessage'] = get_string('setting:defaultremindermessagedefault', 'mod_appointment');
-        $defaultvalues['reminderperiod'] = 2;
-        $defaultvalues['waitlistedsubject'] = get_string('setting:defaultwaitlistedsubjectdefault', 'mod_appointment');
-        $defaultvalues['waitlistedmessage'] = get_string('setting:defaultwaitlistedmessagedefault', 'mod_appointment');
-        $defaultvalues['cancellationsubject'] = get_string('setting:defaultcancellationsubjectdefault', 'mod_appointment');
-        $defaultvalues['cancellationmessage'] = get_string('setting:defaultcancellationmessagedefault', 'mod_appointment');
     }
 
     /**

@@ -45,8 +45,6 @@ class cancelsignup extends dynamic_form {
 
     /**
      * Form definition
-     *
-     * This form is only used for adding. For editing, we use the session form.
      */
     public function definition() {
         $mform =& $this->_form;
@@ -83,19 +81,9 @@ class cancelsignup extends dynamic_form {
             $event->add_record_snapshot('appointment', $appointment);
             $event->trigger();
 
-            $message = get_string('bookingcancelled', 'appointment');
-
             if (!empty($session->sessiondates)) {
                 $error = appointment_send_cancellation_notice($appointment, $session, $USER->id);
-                if (empty($error)) {
-                    if (!empty($session->sessiondates) && $appointment->cancellationinstrmngr) {
-                        $message .= html_writer::empty_tag('br') . html_writer::empty_tag('br') .
-                            get_string('cancellationsentmgr', 'appointment');
-                    } else {
-                        $message .= html_writer::empty_tag('br') . html_writer::empty_tag('br') .
-                            get_string('cancellationsent', 'appointment');
-                    }
-                } else {
+                if ($error) {
                     throw new \moodle_exception($error, 'appointment');
                 }
             }

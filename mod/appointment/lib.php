@@ -42,20 +42,22 @@ require_once($CFG->libdir . '/completionlib.php');
  * Definitions for setting notification types.
  */
 
+// TODO: WP-2920 Remove deprecated constants in 3.11.4.
+define('MOD_APPOINTMENT_ICAL', 0); // Deprecated.
+define('MOD_APPOINTMENT_TEXT', 0); // Deprecated.
+define('MOD_APPOINTMENT_BOTH', 0); // Deprecated.
+define('MOD_APPOINTMENT_INVITE_BOTH', 0); // Deprecated.
+define('MOD_APPOINTMENT_INVITE_TEXT', 0); // Deprecated.
+define('MOD_APPOINTMENT_INVITE_ICAL', 0); // Deprecated.
+define('MOD_APPOINTMENT_CANCEL_BOTH', 0); // Deprecated.
+define('MOD_APPOINTMENT_CANCEL_TEXT', 0); // Deprecated.
+define('MOD_APPOINTMENT_CANCEL_ICAL', 0); // Deprecated.
+
 // Utility definitions.
-define('MOD_APPOINTMENT_ICAL', 1);
-define('MOD_APPOINTMENT_TEXT', 2);
-define('MOD_APPOINTMENT_BOTH', 3);
+define('MOD_APPOINTMENT_WAITLIST', 2);
 define('MOD_APPOINTMENT_INVITE', 4);
 define('MOD_APPOINTMENT_CANCEL', 8);
-
-// Definitions for use in forms.
-define('MOD_APPOINTMENT_INVITE_BOTH', 7);     // Send a copy of both 4+1+2.
-define('MOD_APPOINTMENT_INVITE_TEXT', 6);     // Send just a plain email 4+2.
-define('MOD_APPOINTMENT_INVITE_ICAL', 5);     // Send just a combined text/ical message 4+1.
-define('MOD_APPOINTMENT_CANCEL_BOTH', 11);    // Send a copy of both 8+2+1.
-define('MOD_APPOINTMENT_CANCEL_TEXT', 10);    // Send just a plan email 8+2.
-define('MOD_APPOINTMENT_CANCEL_ICAL', 9);     // Send just a combined text/ical message 8+1.
+define('MOD_APPOINTMENT_UPDATE', 16);
 
 // Name of the custom field where the manager's email address is stored.
 define('MDL_MANAGERSEMAIL_FIELD', 'managersemail');
@@ -67,9 +69,6 @@ define('MOD_APPOINTMENT_CAL_SITE', 2);
 
 // Signup status codes (remember to update appointment_statuses()).
 define('MOD_APPOINTMENT_STATUS_USER_CANCELLED', 10);
-
-// SESSION_CANCELLED is not yet implemented.
-define('MOD_APPOINTMENT_STATUS_SESSION_CANCELLED', 20);
 define('MOD_APPOINTMENT_STATUS_DECLINED', 30);
 define('MOD_APPOINTMENT_STATUS_REQUESTED', 40);
 define('MOD_APPOINTMENT_STATUS_APPROVED', 50);
@@ -90,7 +89,6 @@ function appointment_statuses() {
 
     return array(
         MOD_APPOINTMENT_STATUS_USER_CANCELLED => 'user_cancelled',
-        // MOD_APPOINTMENT_STATUS_SESSION_CANCELLED   => 'session_cancelled', // Not yet implemented.
         MOD_APPOINTMENT_STATUS_DECLINED => 'declined',
         MOD_APPOINTMENT_STATUS_REQUESTED => 'requested',
         MOD_APPOINTMENT_STATUS_APPROVED => 'approved',
@@ -500,16 +498,6 @@ function cleanup_session_data($session) {
         $session->capacity = $maxcap;
     }
 
-    // Get the decimal point separator.
-    setlocale(LC_MONETARY, get_string('locale', 'langconfig'));
-    $localeinfo = localeconv();
-    $symbol = $localeinfo['decimal_point'];
-    if (empty($symbol)) {
-
-        // Cannot get the locale information, default to en_US.UTF-8.
-        $symbol = '.';
-    }
-
     return $session;
 }
 
@@ -522,13 +510,22 @@ function cleanup_session_data($session) {
  * @return int session id
  */
 function appointment_add_session(\stdClass $session, array $sessiondates, $context): int {
-    global $USER, $DB;
+    global $DB;
 
-    $session->timecreated = time();
+    // Check context is matching appointment id.
+    $cminstance = $DB->get_field('course_modules', 'instance', ['id' => $context->instanceid], MUST_EXIST);
+    if ($cminstance != $session->appointment) {
+        throw new \moodle_exception('error:couldnotaddsession', 'appointment');
+    }
+
+    $appointment = $DB->get_record('appointment', ['id' => $session->appointment], '*', MUST_EXIST);
+
+    $now = time();
+    $session->timecreated = $now;
+    $session->timemodified = $now;
     $session = cleanup_session_data($session);
 
-    $eventname = $DB->get_field('appointment', 'name,id', array('id' => $session->appointment), MUST_EXIST);
-
+    $transaction = $DB->start_delegated_transaction();
     $session->id = $DB->insert_record('appointment_sessions', $session);
 
     if (!empty($sessiondates)) {
@@ -565,7 +562,66 @@ function appointment_add_session(\stdClass $session, array $sessiondates, $conte
     // Create any calendar entries.
     appointment_update_calendar_entries($session);
 
+    $transaction->allow_commit();
+
+    // Trigger event.
+    $session = appointment_get_session($session->id);
+    $params = [
+        'context' => $context,
+        'objectid' => $session->id
+    ];
+    $event = \mod_appointment\event\add_session::create($params);
+    $event->add_record_snapshot('appointment_sessions', $session);
+    $event->add_record_snapshot('appointment', $appointment);
+    $event->trigger();
+
     return $session->id;
+}
+
+/**
+ * Checks if update and user notification is required.
+ *
+ * @param stdClass $oldsession Old session object
+ * @param stdClass $session New session object
+ * @param array $sessiondates New session dates
+ * @return array Array of two boolean variables [$updaterequired, $notifyusers].
+ */
+function appointment_is_session_update_required(\stdClass $oldsession, \stdClass $session, array $sessiondates): array {
+    $updaterequired = false;
+
+    // Date check.
+    $hashdatescallback = function ($value) {
+        return md5(json_encode([(int) $value->timestart, (int) $value->timefinish]));
+    };
+    $sessiondateshashed = array_map($hashdatescallback, $sessiondates);
+    $oldsessiondateshashed = array_map($hashdatescallback, $oldsession->sessiondates);
+    $datechanged = !empty(array_merge(array_diff($sessiondateshashed, $oldsessiondateshashed),
+        array_diff($oldsessiondateshashed, $sessiondateshashed)));
+
+    if ($datechanged || $session->details != $oldsession->details) {
+        // Date or session details changed, update and notification are needed.
+        return [true, true];
+    }
+
+    // Customfields check.
+    $handler = \mod_appointment\customfield\appointment_handler::create();
+    foreach ($handler->export_instance_data($oldsession->id, true) as $fielddata) {
+        $prop = 'customfield_' . $fielddata->get_shortname();
+        if (isset($session->$prop) && $session->$prop != $fielddata->get_data_controller()->get_value()) {
+            // At least one field has changed.
+            return [true, true];
+        }
+    }
+
+    // See if any other field changed.
+    $fields = ['capacity', 'allowwaitlist', 'allowcancellations'];
+    foreach ($fields as $field) {
+        if ($session->$field != $oldsession->$field) {
+            $updaterequired = true;
+            break;
+        }
+    }
+    return [$updaterequired, false];
 }
 
 /**
@@ -579,15 +635,44 @@ function appointment_add_session(\stdClass $session, array $sessiondates, $conte
 function appointment_update_session($session, $sessiondates, $context) {
     global $DB;
 
-    $session->timemodified = time();
+    // Check context is matching appointment id.
+    $cminstance = $DB->get_field('course_modules', 'instance', ['id' => $context->instanceid], MUST_EXIST);
+    if ($cminstance != $session->appointment) {
+        throw new \moodle_exception('error:couldnotupdatesession', 'appointment');
+    }
+
+    if (!$oldsession = appointment_get_session($session->id)) {
+        throw new \moodle_exception('error:couldnotupdatesession', 'appointment');
+    }
+
+    $appointment = $DB->get_record('appointment', ['id' => $session->appointment], '*', MUST_EXIST);
     $session = cleanup_session_data($session);
 
+    if (isset($session->details_editor)) {
+        $editoroptions = [
+            'noclean' => false,
+            'maxfiles' => EDITOR_UNLIMITED_FILES,
+            'context' => $context,
+        ];
+        $session = file_postupdate_standard_editor($session, 'details', $editoroptions,
+            $context, 'mod_appointment', 'session', $session->id);
+    }
+
+    // Before making changes, determine if we need to update.
+    [$updaterequired, $notifyusers] = appointment_is_session_update_required($oldsession, $session, $sessiondates);
+
+    if (!$updaterequired) {
+        // Nothing changed, leave record untouched.
+        return $session->id;
+    }
+
     $transaction = $DB->start_delegated_transaction();
+    $session->timemodified = time();
+    $session->countmodified = (int) ++$oldsession->countmodified;
     $DB->update_record('appointment_sessions', $session);
     $DB->delete_records('appointment_sessions_dates', array('sessionid' => $session->id));
 
     if (empty($sessiondates)) {
-
         // Insert a dummy date record.
         $date = new stdClass();
         $date->sessionid = $session->id;
@@ -602,20 +687,8 @@ function appointment_update_session($session, $sessiondates, $context) {
     }
 
     if (isset($session->details_editor)) {
-        $editoroptions = [
-            'noclean' => false,
-            'maxfiles' => EDITOR_UNLIMITED_FILES,
-            'context' => $context,
-        ];
-        $session = file_postupdate_standard_editor($session, 'details', $editoroptions,
-            $context, 'mod_appointment', 'session', $session->id);
-
-        $DB->update_record('appointment_sessions',
-            ['id' => $session->id, 'details' => $session->details, 'detailsformat' => $session->detailsformat]);
-
         $details = file_rewrite_pluginfile_urls($session->details, 'pluginfile.php', $context->id,
             'mod_appointment', 'session', $session->id);
-
         $session->details = format_text($details, $session->detailsformat);
     }
 
@@ -630,7 +703,28 @@ function appointment_update_session($session, $sessiondates, $context) {
     // Update attendee list status on booking size change.
     appointment_update_attendees($session);
 
+    // Commit changes.
     $transaction->allow_commit();
+
+    // Trigger event.
+    $session = appointment_get_session($session->id);
+    $params = [
+        'context' => $context,
+        'objectid' => $session->id
+    ];
+    $event = \mod_appointment\event\update_session::create($params);
+    $event->add_record_snapshot('appointment_sessions', $session);
+    $event->add_record_snapshot('appointment', $appointment);
+    $event->trigger();
+
+    // Notify users if required.
+    if ($notifyusers && $users = appointment_get_attendees($session->id)) {
+        foreach ($users as $user) {
+            if (in_array($user->statuscode, [MOD_APPOINTMENT_STATUS_BOOKED, MOD_APPOINTMENT_STATUS_WAITLISTED])) {
+                appointment_send_update_notice($appointment, $session, $user->id);
+            }
+        }
+    }
 
     return $session->id;
 }
@@ -688,7 +782,7 @@ function appointment_update_calendar_entries($session, $appointment = null): boo
  * @return int session id
  */
 function appointment_update_attendees($session) {
-    global $USER, $DB;
+    global $DB;
 
     // Get appointment.
     $appointment = $DB->get_record('appointment', array('id' => $session->appointment));
@@ -708,8 +802,8 @@ function appointment_update_attendees($session) {
             foreach ($users as $user) {
                 if ($user->statuscode == MOD_APPOINTMENT_STATUS_BOOKED) {
 
-                    if (!appointment_user_signup($session, $appointment, $course,
-                            $user->notificationtype, MOD_APPOINTMENT_STATUS_WAITLISTED, $user->id)) {
+                    if (!appointment_user_signup($session, $appointment, $course, null,
+                            MOD_APPOINTMENT_STATUS_WAITLISTED, $user->id)) {
                         return false;
                     }
                 }
@@ -737,8 +831,8 @@ function appointment_update_attendees($session) {
 
                     if ($user->statuscode == MOD_APPOINTMENT_STATUS_WAITLISTED) {
 
-                        if (!appointment_user_signup($session, $appointment, $course,
-                                $user->notificationtype, MOD_APPOINTMENT_STATUS_BOOKED, $user->id)) {
+                        if (!appointment_user_signup($session, $appointment, $course, null,
+                                MOD_APPOINTMENT_STATUS_BOOKED, $user->id)) {
                             return false;
                         }
                         $booked++;
@@ -1218,7 +1312,6 @@ function appointment_get_attendees($sessionid) {
         SELECT u.id, {$usernamefields},
             u.email,
             su.id AS submissionid,
-            su.notificationtype,
             f.id AS appointmentid,
             f.course,
             ss.grade,
@@ -1285,7 +1378,6 @@ function appointment_get_attendee($sessionid, $userid) {
             u.firstname,
             u.lastname,
             u.email,
-            su.notificationtype,
             f.id AS appointmentid,
             f.course,
             ss.grade,
@@ -1426,21 +1518,27 @@ function appointment_get_unmailed_reminders() {
  * Add a record to the appointment submissions table and sends out an
  * email confirmation
  *
+ * TODO: WP-2920 Remove $notificationtype attribute.
+ *
  * @param \stdClass $session record from the appointment_sessions table
  * @param \stdClass $appointment record from the appointment table
  * @param \stdClass $course record from the course table
- * @param int $notificationtype type of notifications to send to user
+ * @param int|null $notificationtype type of notifications to send to user (deprecated WP-2920)
  * @param int $statuscode Status code to set
  * @param int|null $userid user to signup or null for current user
  * @param bool $notifyuser whether or not to send an email confirmation
  * @return bool true on success
  */
-function appointment_user_signup($session, $appointment, $course,
-                                 int $notificationtype, int $statuscode, int $userid = null, $notifyuser = true): bool {
-    global $CFG, $DB, $USER;
+function appointment_user_signup($session, $appointment, $course, ?int $notificationtype,
+                                 int $statuscode, ?int $userid = null, $notifyuser = true): bool {
+    global $DB, $USER;
+
+    if ($notificationtype !== null) {
+        debugging('$notificationtype attribute is deprecated and will be removed in upcoming relese, see WP-2920 for details',
+            DEBUG_DEVELOPER);
+    }
 
     $userid = $userid ?? $USER->id;
-    $return = false;
     $timenow = time();
 
     // Check to see if a signup already exists.
@@ -1455,7 +1553,6 @@ function appointment_user_signup($session, $appointment, $course,
     }
 
     $usersignup->mailedreminder = 0;
-    $usersignup->notificationtype = $notificationtype;
 
     // Update/insert the signup record.
     if (!empty($usersignup->id)) {
@@ -1537,11 +1634,11 @@ function appointment_user_signup($session, $appointment, $course,
         // If booked/waitlisted.
         switch ($newstatus) {
             case MOD_APPOINTMENT_STATUS_BOOKED:
-                $error = appointment_send_confirmation_notice($appointment, $session, $userid, $notificationtype, false);
+                $error = appointment_send_confirmation_notice($appointment, $session, $userid, null, false);
                 break;
 
             case MOD_APPOINTMENT_STATUS_WAITLISTED:
-                $error = appointment_send_confirmation_notice($appointment, $session, $userid, $notificationtype, true);
+                $error = appointment_send_confirmation_notice($appointment, $session, $userid, null, true);
                 break;
 
             case MOD_APPOINTMENT_STATUS_REQUESTED:
@@ -1730,7 +1827,7 @@ function appointment_user_cancel($session, $userid = false, $forcecancel = false
  */
 function appointment_send_notice($postsubject, $posttext, $posttextmgrheading,
                                  $notificationtype, $appointment, $session, $userid) {
-    global $CFG, $DB;
+    global $DB;
 
     $user = $DB->get_record('user', array('id' => $userid));
     if (!$user) {
@@ -1741,61 +1838,59 @@ function appointment_send_notice($postsubject, $posttext, $posttextmgrheading,
         return '';
     }
 
-    // If no notice type is defined (TEXT or ICAL).
-    if (!($notificationtype & MOD_APPOINTMENT_BOTH)) {
+    $skipattachment = false;
 
-        // If none, make sure they at least get a text email.
-        $notificationtype |= MOD_APPOINTMENT_TEXT;
-    }
-
-    // If we are cancelling, check if ical cancellations are disabled.
-    if (($notificationtype & MOD_APPOINTMENT_CANCEL) &&
-        get_config(null, 'appointment_disableicalcancel')) {
-        $notificationtype |= MOD_APPOINTMENT_TEXT; // Add a text notification.
-        $notificationtype &= ~MOD_APPOINTMENT_ICAL; // Remove the iCalendar notification.
-    }
-
-    // If we are sending an ical attachment, set file name.
-    if ($notificationtype & MOD_APPOINTMENT_ICAL) {
-        if ($notificationtype & MOD_APPOINTMENT_INVITE) {
-            $attachmentfilename = 'invite.ics';
-        } else if ($notificationtype & MOD_APPOINTMENT_CANCEL) {
-            $attachmentfilename = 'cancel.ics';
-        }
+    // Set ical attachment file name.
+    if ($notificationtype & MOD_APPOINTMENT_INVITE) {
+        $attachmentfilename = 'invite.ics';
+    } else if ($notificationtype & MOD_APPOINTMENT_CANCEL && !appointment_was_user_on_waitlist($session, $userid)) {
+        $attachmentfilename = 'cancel.ics';
+    } else if ($notificationtype & MOD_APPOINTMENT_UPDATE && !appointment_is_user_on_waitlist($session, $userid)) {
+        $attachmentfilename = 'update.ics';
+    } else {
+        $skipattachment = true;
+        $attachmentfilename = '';
     }
 
     // Do iCal attachement stuff.
     $icalattachments = array();
-    if ($notificationtype & MOD_APPOINTMENT_ICAL) {
-        if (get_config(null, 'appointment_oneemailperday')) {
+    if (!empty($session->sessiondates)) {
+        // Keep track of all sessiondates.
+        $sessiondates = $session->sessiondates;
+        $sessiondatessplit = [];
 
-            // Keep track of all sessiondates.
-            $sessiondates = $session->sessiondates;
-
+        if (!get_config(null, 'appointment_oneemailperday') || $skipattachment) {
+            $sessiondatessplit[] = $sessiondates;
+        } else {
             foreach ($sessiondates as $sessiondate) {
-                $session->sessiondates = array($sessiondate); // One day at a time.
-
-                $filename = appointment_get_ical_attachment($notificationtype, $appointment, $session, $user);
-                $subject = appointment_email_substitutions($postsubject, $appointment->name, $appointment->reminderperiod,
-                    $user, $session, $session->id);
-                $body = appointment_email_substitutions($posttext, $appointment->name, $appointment->reminderperiod,
-                    $user, $session, $session->id);
-                $htmlbody = ''; // TODO.
-                $icalattachments[] = array('filename' => $filename, 'subject' => $subject,
-                    'body' => $body, 'htmlbody' => $htmlbody);
+                $sessiondatessplit[] = [$sessiondate]; // One day at a time.
             }
+        }
 
-            // Restore session dates.
-            $session->sessiondates = $sessiondates;
-        } else if (!empty($session->sessiondates)) {
-            $filename = appointment_get_ical_attachment($notificationtype, $appointment, $session, $user);
+        foreach ($sessiondatessplit as $sessiondatesplit) {
+            $session->sessiondates = $sessiondatesplit;
+
+            $filename = $skipattachment ? '' : appointment_get_ical_attachment($notificationtype, $appointment, $session, $user);
             $subject = appointment_email_substitutions($postsubject, $appointment->name, $appointment->reminderperiod,
                 $user, $session, $session->id);
             $body = appointment_email_substitutions($posttext, $appointment->name, $appointment->reminderperiod,
                 $user, $session, $session->id);
-            $htmlbody = ''; // FIXME.
+            $htmlbody = ''; // TODO.
             $icalattachments[] = array('filename' => $filename, 'subject' => $subject,
                 'body' => $body, 'htmlbody' => $htmlbody);
+        }
+
+        // Restore session dates.
+        $session->sessiondates = $sessiondates;
+    }
+
+    $from = core_user::get_noreply_user();
+
+    // Send email with iCal attachment.
+    foreach ($icalattachments as $attachment) {
+        if (!email_to_user($user, $from, $attachment['subject'], $attachment['body'],
+            $attachment['htmlbody'], $attachment['filename'], $attachmentfilename)) {
+            return 'error:cannotsendconfirmationuser';
         }
     }
 
@@ -1809,25 +1904,6 @@ function appointment_send_notice($postsubject, $posttext, $posttextmgrheading,
         $user, $session, $session->id);
 
     $posthtml = ''; // FIXME.
-    $from = core_user::get_noreply_user();
-
-    // Send email with iCal attachment.
-    if ($notificationtype & MOD_APPOINTMENT_ICAL) {
-        foreach ($icalattachments as $attachment) {
-            if (!email_to_user($user, $from, $attachment['subject'], $attachment['body'],
-                $attachment['htmlbody'], $attachment['filename'], $attachmentfilename)) {
-
-                return 'error:cannotsendconfirmationuser';
-            }
-        }
-    }
-
-    // Send plain text email.
-    if ($notificationtype & MOD_APPOINTMENT_TEXT) {
-        if (!email_to_user($user, $from, $postsubject, $posttext, $posthtml)) {
-            return 'error:cannotsendconfirmationuser';
-        }
-    }
 
     // Manager notification.
     $manageremail = appointment_get_manageremail($userid);
@@ -1864,31 +1940,35 @@ function appointment_send_notice($postsubject, $posttext, $posttextmgrheading,
 /**
  * Send a confirmation email to the user and manager
  *
+ * TODO: WP-2920 Remove $notificationtype attribute.
+ *
  * @param stdClass $appointment record from the appointment table
  * @param stdClass $session record from the appointment_sessions table
  * @param int $userid ID of the recipient of the email
- * @param int $notificationtype Type of notifications to be sent, see {{MOD_APPOINTMENT_INVITE}}
+ * @param int|null $notificationtype Type of notifications to be sent (deprecated WP-2920)
  * @param boolean $iswaitlisted If the user has been waitlisted
  * @return string Error message (or empty string if successful)
  */
 function appointment_send_confirmation_notice($appointment, $session, $userid, $notificationtype, $iswaitlisted) {
+
+    if ($notificationtype !== null) {
+        debugging('$notificationtype attribute is deprecated and will be removed in upcoming relese, see WP-2920 for details',
+            DEBUG_DEVELOPER);
+    }
 
     $posttextmgrheading = $appointment->confirmationinstrmngr;
 
     if (!$iswaitlisted) {
         $postsubject = $appointment->confirmationsubject;
         $posttext = $appointment->confirmationmessage;
+        // Set invite bit.
+        $notificationtype = MOD_APPOINTMENT_INVITE;
     } else {
         $postsubject = $appointment->waitlistedsubject;
         $posttext = $appointment->waitlistedmessage;
-
-        // Don't send an iCal attachement when we don't know the date!
-        $notificationtype |= MOD_APPOINTMENT_TEXT; // Add a text notification.
-        $notificationtype &= ~MOD_APPOINTMENT_ICAL; // Remove the iCalendar notification.
+        // Set invite bit.
+        $notificationtype = MOD_APPOINTMENT_WAITLIST;
     }
-
-    // Set invite bit.
-    $notificationtype |= MOD_APPOINTMENT_INVITE;
 
     return appointment_send_notice($postsubject, $posttext, $posttextmgrheading,
         $notificationtype, $appointment, $session, $userid);
@@ -1904,20 +1984,33 @@ function appointment_send_confirmation_notice($appointment, $session, $userid, $
  * @return string Error message (or empty string if successful)
  */
 function appointment_send_cancellation_notice($appointment, $session, $userid) {
-    global $DB;
-
     $postsubject = $appointment->cancellationsubject;
     $posttext = $appointment->cancellationmessage;
     $posttextmgrheading = $appointment->cancellationinstrmngr;
 
-    // Lookup what type of notification to send.
-    $notificationtype = $DB->get_field('appointment_signups', 'notificationtype',
-        array('sessionid' => $session->id, 'userid' => $userid));
-
     // Set cancellation bit.
-    $notificationtype |= MOD_APPOINTMENT_CANCEL;
+    $notificationtype = MOD_APPOINTMENT_CANCEL;
 
     return appointment_send_notice($postsubject, $posttext, $posttextmgrheading,
+        $notificationtype, $appointment, $session, $userid);
+}
+
+/**
+ * Send session update email to the user
+ *
+ * @param stdClass $appointment record from the appointment table
+ * @param stdClass $session record from the appointment_sessions table
+ * @param int $userid ID of the recipient of the email
+ * @return string Error message (or empty string if successful)
+ */
+function appointment_send_update_notice($appointment, $session, $userid) {
+    $postsubject = $appointment->updatesubject;
+    $posttext = $appointment->updatemessage;
+
+    // Set update bit.
+    $notificationtype = MOD_APPOINTMENT_UPDATE;
+
+    return appointment_send_notice($postsubject, $posttext, '',
         $notificationtype, $appointment, $session, $userid);
 }
 
@@ -2115,7 +2208,7 @@ function appointment_approve_requests($data) {
                     $session,
                     $appointment,
                     $course,
-                    $attendee->notificationtype,
+                    null,
                     $status,
                     $attendee->id
                 )) {
@@ -2270,11 +2363,15 @@ function appointment_get_ical_attachment($method, $appointment, $session, $user)
     $context = \context_module::instance($cm->id);
 
     $ical = new iCalendar();
-    $icalmethod = ($method & MOD_APPOINTMENT_INVITE) ? 'PUBLISH' : 'CANCEL';
+    $icalmethod = ($method & MOD_APPOINTMENT_CANCEL) ? 'CANCEL' : 'PUBLISH';
     $ical->add_property('method', $icalmethod);
     $ical->add_property('prodid', '-//Moodle Pty Ltd//NONSGML Moodle Version ' . $CFG->version . '//EN');
 
+    // Sequence. Effectively the number of times session was updated. When cancelling, increment sequence.
+    $sequence = ($method & MOD_APPOINTMENT_CANCEL) ? (int) $session->countmodified + 1 : $session->countmodified;
+
     // Events for each session date.
+    $datecounter = 1;
     foreach ($session->sessiondates as $date) {
         $ev = new iCalendar_event();
 
@@ -2282,9 +2379,7 @@ function appointment_get_ical_attachment($method, $appointment, $session, $user)
         $ev->add_property('dtstamp', Bennu::timestamp_to_datetime());
         $ev->add_property('created', Bennu::timestamp_to_datetime($session->timecreated));
         $ev->add_property('last-modified', Bennu::timestamp_to_datetime($session->timemodified));
-        // Sequence. Currently we are not sending updates if the times of the session are changed,
-        // for new appoinmtent set to 0, for cancellation 1.
-        $ev->add_property('sequence', ($method & MOD_APPOINTMENT_CANCEL) ? 1 : 0);
+        $ev->add_property('sequence', $sequence);
 
         // Relationship properties.
         $sql = "SELECT COUNT(*)
@@ -2296,10 +2391,10 @@ function appointment_get_ical_attachment($method, $appointment, $session, $user)
                 AND sus.statuscode = ? ";
         $params = [$user->id, $session->id, MOD_APPOINTMENT_STATUS_USER_CANCELLED];
         $host = (new moodle_url($CFG->wwwroot))->get_host();
-        // UIDs should be globally unique. It should be the same for booking
-        // and cancellation of this booking.
+        // UIDs should be globally unique. It should be the same for bookings,
+        // updates and cancellation of this booking.
         $uid = Bennu::timestamp_to_datetime($session->timecreated) .
-            '-' . substr(md5($CFG->siteidentifier . $session->id . $date->id), -8) . // Unique identifier, salted.
+            '-' . substr(md5($CFG->siteidentifier . $session->id . $datecounter), -8) . // Unique identifier, salted.
             '-' . $DB->count_records_sql($sql, $params) .                            // New UID if this is a re-signup.
             '@' . $host;                                                             // Hostname for this moodle installation.
         $ev->add_property('uid', $uid);
@@ -2329,6 +2424,7 @@ function appointment_get_ical_attachment($method, $appointment, $session, $user)
         $ev->add_property('X-ALT-DESC', $xaltdescr, ["FMTTYPE" => "text/html"]);
 
         $ical->add_component($ev);
+        $datecounter++;
     }
 
     $template = $ical->serialize();
@@ -2360,6 +2456,33 @@ function appointment_is_user_on_waitlist($session, $userid = null) {
               AND ss.statuscode = ?";
 
     return $DB->record_exists_sql($sql, array($session->id, $userid, MOD_APPOINTMENT_STATUS_WAITLISTED));
+}
+
+/**
+ * Determine if a user was in the waitlist in previous status.
+ *
+ * @param stdClass $session A session object
+ * @param int $userid The user ID
+ * @return bool True if the user was on waitlist in the previous status, false otherwise.
+ */
+function appointment_was_user_on_waitlist($session, $userid = null) {
+    global $DB, $USER;
+
+    if ($userid === null) {
+        $userid = $USER->id;
+    }
+
+    $sql = "SELECT ss.statuscode
+            FROM {appointment_signups} su
+            JOIN {appointment_signups_status} ss ON su.id = ss.signupid
+            WHERE su.sessionid = :sessionid
+              AND ss.superceded = :superceded
+              AND su.userid = :userid
+            ORDER BY ss.timecreated DESC, ss.id DESC";
+    $params = ['sessionid' => $session->id, 'superceded' => 1, 'userid' => $userid];
+
+    $signupstatus = $DB->get_record_sql($sql, $params, IGNORE_MULTIPLE);
+    return $signupstatus && ($signupstatus->statuscode == MOD_APPOINTMENT_STATUS_WAITLISTED);
 }
 
 /**
@@ -2500,7 +2623,6 @@ function appointment_get_user_submissions($appointmentid, $userid, $includecance
             ss.timecreated as timegraded,
             s.timemodified,
             0 as timecancelled,
-            su.notificationtype,
             ss.statuscode
         FROM
             {appointment_sessions} s
@@ -3471,7 +3593,7 @@ class appointment_existing_selector extends user_selector_base {
         list($wherecondition, $whereparams) = $this->search_sql($search, 'u');
 
         $fields = 'SELECT ' . $this->required_fields_sql('u');
-        $fields .= ', su.id AS submissionid, su.notificationtype, f.id AS appointmentid,
+        $fields .= ', su.id AS submissionid, f.id AS appointmentid,
             f.course, ss.grade, ss.statuscode, sign.timecreated';
         $countfields = 'SELECT COUNT(1)';
         $sql = "

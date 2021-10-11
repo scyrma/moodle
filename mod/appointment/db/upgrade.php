@@ -281,5 +281,77 @@ function xmldb_appointment_upgrade($oldversion=0) {
         upgrade_mod_savepoint(true, 2021050700, 'appointment');
     }
 
+    if ($oldversion < 2021092901) {
+
+        // Define session update message fields to be added to appointment.
+        $table = new xmldb_table('appointment');
+
+        // Conditionally launch add field updatesubject.
+        $field = new xmldb_field('updatesubject', XMLDB_TYPE_TEXT, null, null,
+            null, null, null, 'confirmationmessageformat');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Conditionally launch add field updatemessage.
+        $field = new xmldb_field('updatemessage', XMLDB_TYPE_TEXT, null, null,
+            null, null, null, 'updatesubject');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Conditionally launch add field updatemessageformat.
+        $field = new xmldb_field('updatemessageformat', XMLDB_TYPE_INTEGER, '2', null,
+            XMLDB_NOTNULL, null, '0', 'updatemessage');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Set default update message settings for existing appointments.
+        $defaults = [
+            'updatesubject' => get_string('setting:defaultupdatesubjectdefault', 'appointment'),
+            'updatemessage' => get_string('setting:defaultupdatemessagedefault', 'appointment'),
+            'updatemessageformat' => FORMAT_HTML,
+        ];
+        $appointments = $DB->get_records('appointment');
+        foreach ($appointments as $appointment) {
+            $appointment = (object) array_merge((array) $appointment, $defaults);
+            $DB->update_record('appointment', $appointment);
+        }
+
+        // Define field countmodified to be added to appointment_sessions.
+        $table = new xmldb_table('appointment_sessions');
+        $field = new xmldb_field('countmodified', XMLDB_TYPE_INTEGER, '20', null, XMLDB_NOTNULL, null, '0', 'timemodified');
+
+        // Conditionally launch add field countmodified.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Appointment savepoint reached.
+        upgrade_mod_savepoint(true, 2021092901, 'appointment');
+    }
+
+    if ($oldversion < 2021100400) {
+        // Define field notificationtype to be dropped from appointment_signups.
+        $table = new xmldb_table('appointment_signups');
+        $field = new xmldb_field('notificationtype');
+
+        // Conditionally launch drop field notificationtype.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Remove MOD_APPOINTMENT_STATUS_SESSION_CANCELLED constant.
+        $updatesql = 'UPDATE {appointment_signups_status} SET statuscode = ? WHERE statuscode = ?';
+        $DB->execute($updatesql, [MOD_APPOINTMENT_STATUS_USER_CANCELLED, 20]);
+
+        // Remove configuration for sending ical attachment.
+        unset_config('appointment_disableicalcancel');
+
+        // Appointment savepoint reached.
+        upgrade_mod_savepoint(true, 2021100400, 'appointment');
+    }
+
     return true;
 }

@@ -190,9 +190,6 @@ class mobile {
         $signupcontext = new session_signup($session);
         $data += $signupcontext->export_for_template($output);
 
-        // Add notification types option for booking form.
-        $data['notificationtype'] = MOD_APPOINTMENT_ICAL;
-
         return [
             'templates' => [
                 [

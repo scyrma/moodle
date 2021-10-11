@@ -18,6 +18,9 @@
         <FIELD NAME="confirmationinstrmngr" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of confirmation emails sent to instructors and managers"/>
         <FIELD NAME="confirmationmessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of confirmation emails sent to students"/>
         <FIELD NAME="confirmationmessageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="updatesubject" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Subject line for the update emails"/>
+        <FIELD NAME="updatemessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of update emails sent to students"/>
+        <FIELD NAME="updatemessageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="waitlistedsubject" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Subject of the email sent when the user is on a wait-list"/>
         <FIELD NAME="waitlistedmessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Contents of the email sent when a user is on a wait-list"/>
         <FIELD NAME="waitlistedmessageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -72,6 +75,7 @@
         <FIELD NAME="allowcancellations" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="countmodified" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Counts how many times session was modified"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="primary key of the table, please edit me"/>
@@ -96,7 +100,6 @@
         <FIELD NAME="sessionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="mailedreminder" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="notificationtype" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="primary key of the table, please edit me"/>

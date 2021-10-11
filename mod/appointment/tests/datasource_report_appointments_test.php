@@ -109,10 +109,10 @@ class mod_appointment_datasource_report_appointments_testcase extends advanced_t
         $date->timefinish = $date->timestart + 3600;
         $session2 = $this->get_generator()->create_session(['appointment' => $appointment->id, 'capacity' => 1], [], [$date]);
 
-        appointment_user_signup($session, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $student->id);
 
-        appointment_user_signup($session2, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session2, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $student->id);
 
         $users[] = $student->id;

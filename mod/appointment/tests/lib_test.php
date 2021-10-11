@@ -111,7 +111,7 @@ class mod_appointment_lib_testcase extends advanced_testcase {
         $this->assertTrue(appointment_session_has_capacity($session, $context));
 
         // Add other user and test again.
-        appointment_user_signup($session, $this->appointment, $this->course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session, $this->appointment, $this->course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $studentother->id);
 
         // Test full session.
@@ -136,7 +136,7 @@ class mod_appointment_lib_testcase extends advanced_testcase {
 
         // Create a new session, add our test user to it.
         $session = $this->get_generator()->create_session(['appointment' => $this->appointment->id], [], [$date]);
-        appointment_user_signup($session, $this->appointment, $this->course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session, $this->appointment, $this->course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $this->student->id);
 
         // Simulate course reset with timeshift.
@@ -197,7 +197,7 @@ class mod_appointment_lib_testcase extends advanced_testcase {
 
         // Create a new session, add our test user to it.
         $session = $this->get_generator()->create_session(['appointment' => $this->appointment->id], [], [$date]);
-        appointment_user_signup($session, $this->appointment, $this->course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session, $this->appointment, $this->course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $this->student->id);
 
         // Sanity check, our test student should now be an attendee with a calendar event for the session.
@@ -240,7 +240,7 @@ class mod_appointment_lib_testcase extends advanced_testcase {
         $timefinishs0 = $timestarts0 + HOURSECS;
         $session0 = $this->get_generator()->create_session(['appointment' => $this->appointment->id], [],
             [(object)['timestart' => $timestarts0, 'timefinish' => $timefinishs0]]);
-        appointment_user_signup($session0, $this->appointment, $this->course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session0, $this->appointment, $this->course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $this->student->id);
 
         // Create another new sessions with user sign-up.
@@ -249,7 +249,7 @@ class mod_appointment_lib_testcase extends advanced_testcase {
         $timefinishs1 = $timestarts1 + HOURSECS;
         $session1 = $this->get_generator()->create_session(['appointment' => $this->appointment->id], [],
             [(object)['timestart' => $timestarts1, 'timefinish' => $timefinishs1]]);
-        appointment_user_signup($session1, $this->appointment, $this->course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $this->appointment, $this->course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $student1->id);
 
         // Make sure the calendar event for users matches the initial due date.
@@ -306,7 +306,59 @@ class mod_appointment_lib_testcase extends advanced_testcase {
     }
 
     /**
-     * User signup notification.
+     * Test appointment_add_session.
+     *
+     * @covers ::appointment_get_session
+     * @covers ::appointment_add_session
+     */
+    public function test_appointment_add_session() {
+        $studentother = $this->getDataGenerator()->create_and_enrol($this->course, 'student');
+        $teacher = $this->getDataGenerator()->create_and_enrol($this->course, 'editingteacher');
+
+        $cm = get_coursemodule_from_instance('appointment', $this->appointment->id, $this->course->id);
+        $context = \context_module::instance($cm->id);
+
+        // Add session.
+        $date = new stdClass();
+        $date->timestart = strtotime('+1 day');
+        $date->timefinish = $date->timestart + 3600;
+
+        $sessiondata = [
+            'appointment' => $this->appointment->id,
+            'capacity' => 10,
+            'allowwaitlist' => true,
+            'details' => 'Session0',
+            'detailsformat' => 1,
+        ];
+
+        $sink = $this->redirectEvents();
+        $sessionid = appointment_add_session((object) $sessiondata, [$date], $context);
+
+        // Retrieve session details.
+        $session = appointment_get_session($sessionid);
+
+        // Validate settings.
+        $this->assertNotFalse($session);
+        $this->assertEquals($sessiondata['details'], $session->details);
+        $this->assertEquals($sessiondata['detailsformat'], $session->detailsformat);
+        $this->assertEquals($sessiondata['allowwaitlist'], $session->allowwaitlist);
+        $this->assertEquals($sessiondata['capacity'], $session->capacity);
+        $this->assertEquals($date->timestart, $session->sessiondates[0]->timestart);
+        $this->assertEquals($date->timefinish, $session->sessiondates[0]->timefinish);
+
+        // Validate event.
+        $events = $sink->get_events();
+        $event = reset($events);
+        $this->assertInstanceOf('\mod_appointment\event\add_session', $event);
+        $this->assertEquals($context, $event->get_context());
+        $url = new moodle_url('/mod/appointment/sessions.php', ['s' => $session->id]);
+        $this->assertEquals($url, $event->get_url());
+    }
+
+    /**
+     * User sign-up.
+     *
+     * @covers ::appointment_user_signup
      */
     public function test_user_signup_notification() {
         global $DB;
@@ -327,30 +379,32 @@ class mod_appointment_lib_testcase extends advanced_testcase {
             'customfield_venue' => $venue,
             'customfield_room' => $room,
         ];
-        // Need to be a teacher to save session.
+        // Need to be a teacher to save session customfields.
         $teacher = $this->getDataGenerator()->create_and_enrol($this->course, 'editingteacher');
         $this->setUser($teacher);
         $session0 = $this->get_generator()->create_session($sessionsettings, [], [$date]);
 
         // Prepare for tests.
         $this->setUser($student);
-        $sink = $this->redirectEmails();
+        $mailsink = $this->redirectEmails();
 
         // Signup session0.
-        $submissionid = appointment_user_signup($session0, $this->appointment, $this->course,
-            MOD_APPOINTMENT_TEXT, MOD_APPOINTMENT_STATUS_BOOKED);
+        $submissionid = appointment_user_signup($session0, $this->appointment, $this->course, null,
+            MOD_APPOINTMENT_STATUS_BOOKED);
 
-        // Validate.
+        // Validate record present.
         $signups = $DB->get_records('appointment_signups', ['sessionid' => $session0->id, 'userid' => $student->id]);
         $this->assertCount(1, $signups);
 
-        // Capture the message.
-        $messages = $sink->get_messages();
-        $sink->clear();
-
         // Validate messages.
+        $messages = $mailsink->get_messages();
+        $mailsink->clear();
         $this->assertCount(1, $messages);
         $body = quoted_printable_decode($messages[0]->body);
+        $subject = quoted_printable_decode($messages[0]->subject);
+        $expectedsubject = appointment_email_substitutions($this->appointment->confirmationsubject,
+            $this->appointment->name, $this->appointment->reminderperiod, $student, $session0, $session0->id);
+        $this->assertEquals($expectedsubject, $subject);
         $this->assertStringContainsString($this->appointment->name, $body);
         $this->assertStringContainsString($student->firstname, $body);
         $this->assertStringContainsString($student->lastname, $body);
@@ -359,6 +413,259 @@ class mod_appointment_lib_testcase extends advanced_testcase {
         $this->assertStringContainsString($location, $body);
         $this->assertStringContainsString($venue, $body);
         $this->assertStringContainsString($room, $body);
+    }
+
+    /**
+     * User session update notification.
+     *
+     * @covers ::appointment_update_session
+     * @uses ::appointment_get_session
+     * @uses ::appointment_user_signup
+     */
+    public function test_session_update_user_notification() {
+        global $DB;
+
+        $student = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $this->course->id, 'student');
+
+        $cm = get_coursemodule_from_instance('appointment', $this->appointment->id, $this->course->id);
+        $context = \context_module::instance($cm->id);
+
+        // Create ongoing session. Customfileds are already hardcoded in email template.
+        $date = new stdClass();
+        $date->timestart = strtotime('+1 hour');
+        $date->timefinish = strtotime('+2 hour');
+        $sessionsettings = [
+            'allowwaitlist' => true,
+            'capacity' => 5,
+            'appointment' => $this->appointment->id,
+        ];
+
+        // Signup session0.
+        $session0 = $this->get_generator()->create_session($sessionsettings, [], [$date]);
+        appointment_user_signup($session0, $this->appointment, $this->course, null,
+            MOD_APPOINTMENT_STATUS_BOOKED, $student->id);
+
+        // Validate record present.
+        $signups = $DB->get_records('appointment_signups', ['sessionid' => $session0->id, 'userid' => $student->id]);
+        $this->assertCount(1, $signups);
+
+        // Need to be a teacher to save session customfields.
+        $teacher = $this->getDataGenerator()->create_and_enrol($this->course, 'editingteacher');
+        $this->setUser($teacher);
+
+        // Prepare for capturing mail and events.
+        $mailsink = $this->redirectEmails();
+        $eventsink = $this->redirectEvents();
+
+        // Edit session time.
+        $date->timefinish = strtotime('+3 hour');
+        appointment_update_session($session0, [$date], $context);
+
+        // Validate message is update conmfirmation.
+        $messages = $mailsink->get_messages();
+        $mailsink->clear();
+        $session0 = appointment_get_session($session0->id);
+        $this->assertCount(1, $messages);
+        $body = quoted_printable_decode($messages[0]->body);
+        $subject = quoted_printable_decode($messages[0]->subject);
+        $session0 = appointment_get_session($session0->id);
+        $expectedsubject = appointment_email_substitutions($this->appointment->updatesubject,
+            $this->appointment->name, $this->appointment->reminderperiod, $student, $session0, $session0->id);
+        $this->assertEquals($expectedsubject, $subject);
+        $this->assertStringContainsString($this->appointment->name, $body);
+        $this->assertStringContainsString($student->firstname, $body);
+        $this->assertStringContainsString($student->lastname, $body);
+        $this->assertStringContainsString(userdate($date->timestart, get_string('strftimetime')), $body);
+        $this->assertStringContainsString(userdate($date->timefinish, get_string('strftimetime')), $body);
+
+        // Validate events.
+        $events = $eventsink->get_events();
+        $eventsink->clear();
+        $this->assertCount(1, $events);
+        $event = reset($events);
+        $this->assertInstanceOf('\mod_appointment\event\update_session', $event);
+        $this->assertEquals($context, $event->get_context());
+
+        // Edit session customfield.
+        $location = 'Lancaster University';
+        $session0->customfield_location = $location;
+        appointment_update_session($session0, [$date], $context);
+
+        // Validate message is update conmfirmation.
+        $messages = $mailsink->get_messages();
+        $mailsink->clear();
+        $this->assertCount(1, $messages);
+        $body = quoted_printable_decode($messages[0]->body);
+        $subject = quoted_printable_decode($messages[0]->subject);
+        $expectedsubject = appointment_email_substitutions($this->appointment->updatesubject,
+            $this->appointment->name, $this->appointment->reminderperiod, $student, $session0, $session0->id);
+        $this->assertEquals($expectedsubject, $subject);
+        $this->assertStringContainsString($this->appointment->name, $body);
+        $this->assertStringContainsString($student->firstname, $body);
+        $this->assertStringContainsString($student->lastname, $body);
+        $this->assertStringContainsString(userdate($date->timestart, get_string('strftimetime')), $body);
+        $this->assertStringContainsString(userdate($date->timefinish, get_string('strftimetime')), $body);
+        $this->assertStringContainsString($location, $body);
+
+        // Validate events.
+        $events = $eventsink->get_events();
+        $eventsink->clear();
+        $this->assertCount(1, $events);
+        $event = reset($events);
+        $this->assertInstanceOf('\mod_appointment\event\update_session', $event);
+        $this->assertEquals($context, $event->get_context());
+
+        // Edit session, change capacity. Keep location customfield the same, so we change only capacity.
+        $session0->capacity = 2;
+        appointment_update_session($session0, [$date], $context);
+
+        // Validate message, no updates expected.
+        $messages = $mailsink->get_messages();
+        $mailsink->clear();
+        $this->assertCount(0, $messages);
+
+        // Validate events, we expect event to be triggered.
+        $events = $eventsink->get_events();
+        $eventsink->clear();
+        $this->assertCount(1, $events);
+        $event = reset($events);
+        $this->assertInstanceOf('\mod_appointment\event\update_session', $event);
+        $this->assertEquals($context, $event->get_context());
+
+        // Simply edit session without changing anything.
+        appointment_update_session($session0, [$date], $context);
+
+        // Validate message, no updates expected.
+        $messages = $mailsink->get_messages();
+        $mailsink->clear();
+        $this->assertCount(0, $messages);
+
+        // Validate events, no events expected.
+        $events = $eventsink->get_events();
+        $eventsink->clear();
+        $this->assertCount(0, $events);
+    }
+
+    /**
+     * User becomes booked when capacity permits and receive notification.
+     */
+    public function test_session_update_waitlisted_becomes_booked() {
+        global $DB;
+
+        $student = $this->getDataGenerator()->create_user();
+        $student1 = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student->id, $this->course->id, 'student');
+        $this->getDataGenerator()->enrol_user($student1->id, $this->course->id, 'student');
+
+        // Create ongoing session. Customfileds are already hardcoded in email template.
+        $date = new stdClass();
+        $date->timestart = strtotime('+1 hour');
+        $date->timefinish = strtotime('+2 hour');
+        $sessionsettings = [
+            'allowwaitlist' => true,
+            'capacity' => 1,
+            'appointment' => $this->appointment->id,
+        ];
+
+        // Signup session0.
+        $session0 = $this->get_generator()->create_session($sessionsettings, [], [$date]);
+        appointment_user_signup($session0, $this->appointment, $this->course, null,
+            MOD_APPOINTMENT_STATUS_BOOKED, $student->id);
+        appointment_user_signup($session0, $this->appointment, $this->course, null,
+            MOD_APPOINTMENT_STATUS_WAITLISTED, $student1->id);
+
+        // Validate.
+        $signups = $DB->get_records('appointment_signups', ['sessionid' => $session0->id]);
+        $this->assertCount(2, $signups);
+
+        $sink = $this->redirectEmails();
+
+        // Need to be a teacher to save session customfields.
+        $teacher = $this->getDataGenerator()->create_and_enrol($this->course, 'editingteacher');
+        $this->setUser($teacher);
+
+        // Edit session, change capacity.
+        $session0->capacity = 2;
+        $cm = get_coursemodule_from_instance('appointment', $this->appointment->id, $this->course->id);
+        appointment_update_session($session0, [$date], \context_module::instance($cm->id));
+
+        // Capture the message.
+        $messages = $sink->get_messages();
+        $sink->clear();
+
+        // Validate message is booking confirmation.
+        $this->assertCount(1, $messages);
+        $body = quoted_printable_decode($messages[0]->body);
+        $subject = quoted_printable_decode($messages[0]->subject);
+        $expectedsubject = appointment_email_substitutions($this->appointment->confirmationsubject,
+            $this->appointment->name, $this->appointment->reminderperiod, $student1, $session0, $session0->id);
+        $this->assertEquals($expectedsubject, $subject);
+        $this->assertStringContainsString($this->appointment->name, $body);
+        $this->assertStringContainsString($student1->firstname, $body);
+        $this->assertStringContainsString($student1->lastname, $body);
+        $this->assertStringContainsString(userdate($date->timestart, get_string('strftimetime')), $body);
+        $this->assertStringContainsString(userdate($date->timefinish, get_string('strftimetime')), $body);
+    }
+
+    /**
+     * User becomes booked when capacity permits and receive notification.
+     */
+    public function test_session_update_waitlisted_becomes_cancelled() {
+        global $DB;
+        $student0 = $this->getDataGenerator()->create_user();
+        $student1 = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($student0->id, $this->course->id, 'student');
+        $this->getDataGenerator()->enrol_user($student1->id, $this->course->id, 'student');
+
+        // Create ongoing session. Customfileds are already hardcoded in email template.
+        $date = new stdClass();
+        $date->timestart = strtotime('+1 hour');
+        $date->timefinish = strtotime('+2 hour');
+        $sessionsettings = [
+            'allowwaitlist' => true,
+            'capacity' => 1,
+            'appointment' => $this->appointment->id,
+        ];
+
+        // Signup session0.
+        $session0 = $this->get_generator()->create_session($sessionsettings, [], [$date]);
+        appointment_user_signup($session0, $this->appointment, $this->course, null,
+            MOD_APPOINTMENT_STATUS_BOOKED, $student0->id);
+        appointment_user_signup($session0, $this->appointment, $this->course, null,
+            MOD_APPOINTMENT_STATUS_WAITLISTED, $student1->id);
+
+        // Validate that student1 IS waitlisted.
+        $this->assertTrue(appointment_is_user_on_waitlist($session0, $student1->id));
+        $this->assertFalse(appointment_was_user_on_waitlist($session0, $student1->id));
+        $this->assertFalse(appointment_is_user_on_waitlist($session0, $student0->id));
+        $this->assertFalse(appointment_was_user_on_waitlist($session0, $student0->id));
+
+        // Cancel the student1.
+        $errorstr = '';
+        appointment_user_cancel($session0, $student1->id, false, $errorstr, '');
+
+        // Validate that student1 WAS waitlisted and now is not.
+        $this->assertFalse(appointment_is_user_on_waitlist($session0, $student1->id));
+        $this->assertTrue(appointment_was_user_on_waitlist($session0, $student1->id));
+
+        // Waitlist student1.
+        appointment_user_signup($session0, $this->appointment, $this->course, null,
+            MOD_APPOINTMENT_STATUS_WAITLISTED, $student1->id);
+
+        // Validate that student1 is waitlisted.
+        $this->assertTrue(appointment_is_user_on_waitlist($session0, $student1->id));
+        $this->assertFalse(appointment_was_user_on_waitlist($session0, $student1->id));
+
+        // Cancel student0.
+        appointment_user_cancel($session0, $student0->id, false, $errorstr, '');
+
+        // Validate that student1 was waitlisted and it is not anymore.
+        $this->assertFalse(appointment_is_user_on_waitlist($session0, $student1->id));
+        $this->assertTrue(appointment_was_user_on_waitlist($session0, $student1->id));
+        // Validate that student0 was and is not waitlisted.
+        $this->assertFalse(appointment_is_user_on_waitlist($session0, $student0->id));
+        $this->assertFalse(appointment_was_user_on_waitlist($session0, $student0->id));
     }
 
     /**

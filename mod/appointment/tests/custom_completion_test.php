@@ -92,7 +92,7 @@ class custom_completion_test extends \advanced_testcase {
 
         // User books a session.
         $this->setUser($student);
-        appointment_user_signup($session, $appointment, $course, MOD_APPOINTMENT_TEXT, MOD_APPOINTMENT_STATUS_BOOKED);
+        appointment_user_signup($session, $appointment, $course, null, MOD_APPOINTMENT_STATUS_BOOKED);
         $status = ($available === COMPLETION_ENABLED) ? COMPLETION_COMPLETE : null;
         $this->assertEquals($status, $customcompletion->get_state($rule));
 
@@ -102,7 +102,7 @@ class custom_completion_test extends \advanced_testcase {
         $this->assertEquals($status, $customcompletion->get_state($rule));
 
         // User books a session again.
-        appointment_user_signup($session, $appointment, $course, MOD_APPOINTMENT_TEXT, MOD_APPOINTMENT_STATUS_BOOKED);
+        appointment_user_signup($session, $appointment, $course, null, MOD_APPOINTMENT_STATUS_BOOKED);
         $status = ($available === COMPLETION_ENABLED) ? COMPLETION_COMPLETE : null;
         $this->assertEquals($status, $customcompletion->get_state($rule));
 

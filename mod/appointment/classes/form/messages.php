@@ -62,6 +62,19 @@ class messages extends \moodleform {
         $mform->setDefault('confirmationmessage_editor', ['text' => $defaults['confirmationmessage'], 'format' => FORMAT_HTML]);
         $mform->setType('confirmationmessage_editor', PARAM_RAW);
 
+        // Session update message.
+        $mform->addElement('header', 'update', get_string('updatemessage', 'appointment'));
+        $mform->addHelpButton('update', 'updatemessage', 'appointment');
+
+        $mform->addElement('text', 'updatesubject', get_string('email:subject', 'appointment'), array('size' => '55'));
+        $mform->setType('updatesubject', PARAM_TEXT);
+        $mform->setDefault('updatesubject', $defaults['updatesubject']);
+
+        $mform->addElement('editor', 'updatemessage_editor', get_string('email:message', 'appointment'),
+            self::editor_options());
+        $mform->setDefault('updatemessage_editor', ['text' => $defaults['updatemessage'], 'format' => FORMAT_HTML]);
+        $mform->setType('updatemessage_editor', PARAM_RAW);
+
         // Reminder message.
         $mform->addElement('header', 'reminder', get_string('remindermessage', 'appointment'));
         $mform->addHelpButton('reminder', 'remindermessage', 'appointment');
@@ -128,6 +141,10 @@ class messages extends \moodleform {
             $data = file_postupdate_standard_editor($data, 'confirmationmessage', self::editor_options(),
                 $context, 'appointment', 'notifications', $data->id);
         }
+        if (isset($data->updatemessage_editor)) {
+            $data = file_postupdate_standard_editor($data, 'updatemessage', self::editor_options(),
+                $context, 'appointment', 'notifications', $data->id);
+        }
         if (isset($data->remindermessage_editor)) {
             $data = file_postupdate_standard_editor($data, 'remindermessage', self::editor_options(),
                 $context, 'appointment', 'notifications', $data->id);
@@ -170,6 +187,9 @@ class messages extends \moodleform {
             'confirmationsubject' => get_string('setting:defaultconfirmationsubjectdefault', 'appointment'),
             'confirmationmessage' => get_string('setting:defaultconfirmationmessagedefault', 'appointment'),
             'confirmationmessageformat' => FORMAT_HTML,
+            'updatesubject' => get_string('setting:defaultupdatesubjectdefault', 'appointment'),
+            'updatemessage' => get_string('setting:defaultupdatemessagedefault', 'appointment'),
+            'updatemessageformat' => FORMAT_HTML,
             'remindersubject'     => get_string('setting:defaultremindersubjectdefault', 'appointment'),
             'remindermessage'     => get_string('setting:defaultremindermessagedefault', 'appointment'),
             'remindermessageformat' => FORMAT_HTML,

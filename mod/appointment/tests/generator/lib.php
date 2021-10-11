@@ -50,43 +50,6 @@ class mod_appointment_generator extends testing_module_generator {
     }
 
     /**
-     * Creates a new appointment.
-     *
-     * @param array|\stdClass $record data for module being generated.
-     * @param null|array $options general options for course module.
-     * @return \stdClass record from appointment table
-     */
-    public function create_instance($record = null, array $options = null) {
-        $record = (object)(array)$record;
-
-        $defaultsettings = [
-            'requestsubject' => get_string('setting:defaultrequestsubjectdefault', 'appointment'),
-            'requestmessage' => get_string('setting:defaultrequestmessagedefault', 'appointment'),
-            'requestinstrmngr' => get_string('setting:defaultrequestinstrmngrdefault', 'appointment'),
-            'confirmationsubject' => get_string('setting:defaultconfirmationsubjectdefault', 'appointment'),
-            'confirmationmessage' => get_string('setting:defaultconfirmationmessagedefault', 'appointment'),
-            'confirmationinstrmngr' => get_string('setting:defaultconfirmationinstrmngrdefault', 'appointment'),
-            'remindersubject' => get_string('setting:defaultremindersubjectdefault', 'appointment'),
-            'remindermessage' => get_string('setting:defaultremindermessagedefault', 'appointment'),
-            'reminderinstrmngr' => get_string('setting:defaultreminderinstrmngrdefault', 'appointment'),
-            'reminderperiod' => 2,
-            'waitlistedsubject' => get_string('setting:defaultwaitlistedsubjectdefault', 'appointment'),
-            'waitlistedmessage' => get_string('setting:defaultwaitlistedmessagedefault', 'appointment'),
-            'cancellationsubject' => get_string('setting:defaultcancellationsubjectdefault', 'appointment'),
-            'cancellationmessage' => get_string('setting:defaultcancellationmessagedefault', 'appointment'),
-            'cancellationinstrmngr' => get_string('setting:defaultcancellationinstrmngrdefault', 'appointment'),
-        ];
-
-        foreach ($defaultsettings as $name => $value) {
-            if (!isset($record->{$name})) {
-                $record->{$name} = $value;
-            }
-        }
-
-        return parent::create_instance($record, (array)$options);
-    }
-
-    /**
      * Creates a new session.
      *
      * @param array|\stdClass $record
@@ -110,7 +73,6 @@ class mod_appointment_generator extends testing_module_generator {
         $defaultsettings = [
             'capacity' => 10,
             'allowwaitlist' => false,
-            'duration' => 1,
             'details' => '',
             'detailsformat' => 1,
         ];

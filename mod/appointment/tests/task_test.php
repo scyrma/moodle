@@ -72,7 +72,7 @@ class mod_appointment_task_testcase extends advanced_testcase {
         $session1 = $this->get_generator()->create_session(['appointment' => $appointment1->id]);
 
         // User is signed up for session1.
-        appointment_user_signup($session1, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_WAITLISTED, $user->id);
 
         // Run job.
@@ -91,7 +91,7 @@ class mod_appointment_task_testcase extends advanced_testcase {
         $session2 = $this->get_generator()->create_session(['appointment' => $appointment1->id], [], [$date]);
 
         // User is signed up for session2.
-        appointment_user_signup($session2, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session2, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user->id);
 
         // Run job.
@@ -130,9 +130,9 @@ class mod_appointment_task_testcase extends advanced_testcase {
         $session2 = $this->get_generator()->create_session(['appointment' => $appointment->id], [], [$date]);
 
         // Users are signed up for appointments.
-        appointment_user_signup($session1, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user1->id);
-        appointment_user_signup($session2, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session2, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user2->id);
 
         // Sanity check, our test students should now be an attendee with a calendar event for the session.
@@ -245,7 +245,7 @@ class mod_appointment_task_testcase extends advanced_testcase {
         $timefinishs0 = $timestarts0 + HOURSECS;
         $session0 = $this->get_generator()->create_session(['appointment' => $appointment->id], [],
             [(object)['timestart' => $timestarts0, 'timefinish' => $timefinishs0]]);
-        appointment_user_signup($session0, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session0, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $student0->id);
 
         // Create another new sessions with user sign-up.
@@ -254,9 +254,9 @@ class mod_appointment_task_testcase extends advanced_testcase {
         $session1 = $this->get_generator()->create_session(
             ['appointment' => $appointment->id, 'allowwaitlist' => true, 'capacity' => 1], [],
             [(object)['timestart' => $timestarts1, 'timefinish' => $timefinishs1]]);
-        appointment_user_signup($session1, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $student1->id);
-        appointment_user_signup($session1, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_WAITLISTED, $student2->id);
 
         // Sanity check.

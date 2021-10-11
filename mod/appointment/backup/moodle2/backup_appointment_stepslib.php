@@ -59,9 +59,12 @@ class backup_appointment_activity_structure_step extends backup_activity_structu
         $appointment = new backup_nested_element('appointment', array('id'), array(
             'name', 'intro', 'introformat', 'thirdparty', 'thirdpartywaitlist', 'display',
             'timecreated', 'timemodified', 'shortname', 'showoncalendar', 'usercalentry',
-            'confirmationsubject', 'confirmationinstrmngr', 'confirmationmessage', 'waitlistedsubject', 'waitlistedmessage',
-            'cancellationsubject', 'cancellationinstrmngr', 'cancellationmessage', 'remindersubject', 'reminderinstrmngr',
-            'remindermessage', 'reminderperiod', 'requestsubject', 'requestinstrmngr', 'requestmessage',
+            'confirmationsubject', 'confirmationinstrmngr', 'confirmationmessage', 'confirmationmessageformat',
+            'updatesubject', 'updatemessage', 'updatemessageformat',
+            'waitlistedsubject', 'waitlistedmessage', 'waitlistedmessageformat',
+            'cancellationsubject', 'cancellationinstrmngr', 'cancellationmessage', 'cancellationmessageformat',
+            'remindersubject', 'reminderinstrmngr', 'remindermessage', 'reminderperiod', 'remindermessageformat',
+            'requestsubject', 'requestinstrmngr', 'requestmessage',
             'approvalreqd', 'allowcancellationsdefault', 'completionbooked'));
 
         $sessions = new backup_nested_element('sessions');
@@ -73,7 +76,7 @@ class backup_appointment_activity_structure_step extends backup_activity_structu
         $signups = new backup_nested_element('signups');
 
         $signup = new backup_nested_element('signup', array('id'), array(
-            'sessionid', 'userid', 'mailedreminder', 'notificationtype'));
+            'sessionid', 'userid', 'mailedreminder'));
 
         $signupsstatus = new backup_nested_element('signups_status');
 

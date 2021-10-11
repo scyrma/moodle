@@ -62,28 +62,14 @@ class signup extends dynamic_form {
         $details = new \mod_appointment\output\session_details_modal($session, $context);
         $mform->addElement('html',
             $output->render_from_template('mod_appointment/session_details_modal', $details->export_for_template($output)));
-
-        $options = array(
-            MOD_APPOINTMENT_BOTH => get_string('notificationboth', 'appointment'),
-            MOD_APPOINTMENT_TEXT => get_string('notificationemail', 'appointment'),
-            MOD_APPOINTMENT_ICAL => get_string('notificationical', 'appointment')
-        );
-
-        $mform->addElement('html', '<div class="container-fluid">');
-        $mform->addElement('select', 'notificationtype', get_string('notificationtype', 'appointment'), $options);
-        $mform->addHelpButton('notificationtype', 'notificationtype', 'appointment');
-        $mform->addRule('notificationtype', null, 'required', null, 'client');
-        $mform->setDefault('notificationtype', MOD_APPOINTMENT_BOTH);
-        $mform->addElement('html', '</div>');
     }
 
     /**
      * Process form submission.
      *
-     * @return string
+     * @return void
      */
     public function process_dynamic_submission() {
-        $data = $this->get_data();
         global $DB;
 
         $session = $this->get_session();
@@ -103,7 +89,7 @@ class signup extends dynamic_form {
         $cm = $this->get_cm();
         $context = \context_module::instance($cm->id);
 
-        $submissionid = appointment_user_signup($session, $appointment, $course, $data->notificationtype, $statuscode);
+        $submissionid = appointment_user_signup($session, $appointment, $course, null, $statuscode);
         if ($submissionid) {
             $params = ['context' => $context, 'objectid' => $session->id];
             $event = \mod_appointment\event\signup_success::create($params);

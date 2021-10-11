@@ -59,19 +59,17 @@ class session extends dynamic_form {
         global $CFG, $DB;
 
         $mform =& $this->_form;
-        $cmid = $this->optional_param('cmid', 0, PARAM_INT);
-
-        $cm = $DB->get_record('course_modules', ['id' => $cmid], '*', MUST_EXIST);
-        $appointment = $DB->get_record('appointment', ['id' => $cm->instance], '*', MUST_EXIST);
 
         $context = $this->get_context_for_dynamic_submission();
+        $cminstance = $DB->get_field('course_modules', 'instance', ['id' => $context->instanceid], MUST_EXIST);
+        $appointment = $DB->get_record('appointment', ['id' => $cminstance], '*', MUST_EXIST);
 
         // Course Module ID.
         $mform->addElement('hidden', 'cmid');
         $mform->setType('cmid', PARAM_INT);
 
         // Appointment Instance ID.
-        $mform->addElement('hidden', 'appointment', $cm->instance);
+        $mform->addElement('hidden', 'appointment', $appointment->id);
         $mform->setType('appointment', PARAM_INT);
 
         // Appointment Session ID.
@@ -218,61 +216,19 @@ class session extends dynamic_form {
      * @param array $sessiondates
      */
     protected function save(\stdClass $data, array $sessiondates) {
-        global $DB;
-
-        $appointment = $DB->get_record('appointment', ['id' => $data->appointment], '*', MUST_EXIST);
         $context = $this->get_context_for_dynamic_submission();
-
         if (!has_capability('mod/appointment:configurecancellation', $context)) {
             unset($data->allowcancellations);
         }
 
-        if (empty($data->sessionid)) {
-            $session = null;
+        if (!empty($data->sessionid)) {
+            // Update session.
+            $data->id = $data->sessionid;
+            appointment_update_session($data, $sessiondates, $context);
         } else {
-            $session = appointment_get_session($data->sessionid);
+            // Create session.
+            appointment_add_session($data, $sessiondates, $context);
         }
-        $update = false;
-        $transaction = $DB->start_delegated_transaction();
-        if ($session != null) {
-            $update = true;
-            $data->id = $session->id;
-
-            if (!appointment_update_session($data, $sessiondates, $context)) {
-                $transaction->force_transaction_rollback();
-                throw new \moodle_exception('error:couldnotupdatesession', 'appointment');
-            }
-        } else {
-            if (!$data->id = appointment_add_session($data, $sessiondates, $context)) {
-                $transaction->force_transaction_rollback();
-                throw new \moodle_exception('error:couldnotaddsession', 'appointment');
-            }
-        }
-
-        // Retrieve record that was just inserted/updated.
-        if (!$session = appointment_get_session($data->id)) {
-            $transaction->force_transaction_rollback();
-            throw new \moodle_exception('error:couldnotfindsession', 'appointment');
-        }
-
-        // Logging and events trigger.
-        $params = [
-            'context' => $context,
-            'objectid' => $session->id
-        ];
-        if ($update) {
-            $event = \mod_appointment\event\update_session::create($params);
-            $event->add_record_snapshot('appointment_sessions', $session);
-            $event->add_record_snapshot('appointment', $appointment);
-            $event->trigger();
-        } else {
-            $event = \mod_appointment\event\add_session::create($params);
-            $event->add_record_snapshot('appointment_sessions', $session);
-            $event->add_record_snapshot('appointment', $appointment);
-            $event->trigger();
-        }
-
-        $transaction->allow_commit();
     }
 
     /**

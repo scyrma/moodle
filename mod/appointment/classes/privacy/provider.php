@@ -60,7 +60,6 @@ class provider implements
                 'sessionid' => 'privacy:metadata:appointment_signups:sessionid',
                 'userid' => 'privacy:metadata:userid',
                 'mailedreminder' => 'privacy:metadata:appointment_signups:mailedreminder',
-                'notificationtype' => 'privacy:metadata:appointment_signups:notificationtype',
             ],
             'privacy:metadata:appointment_signups'
         );
@@ -183,7 +182,6 @@ class provider implements
         $sql = "SELECT ss.id,
                        ss.sessionid,
                        ss.mailedreminder,
-                       ss.notificationtype,
                        fss.statuscode,
                        fss.grade,
                        fss.note,

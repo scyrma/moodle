@@ -101,7 +101,7 @@ if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
                 } else {
                     $status = MOD_APPOINTMENT_STATUS_BOOKED;
                 }
-                if (!appointment_user_signup($session, $appointment, $course, MOD_APPOINTMENT_BOTH,
+                if (!appointment_user_signup($session, $appointment, $course, null,
                 $status, $adduser, !$suppressemail)) {
                     $erruser = $DB->get_record('user', array('id' => $adduser), "id, {$usernamefields}");
                     $errors[] = get_string('error:addattendee', 'appointment', fullname($erruser));

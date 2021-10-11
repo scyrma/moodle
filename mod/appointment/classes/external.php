@@ -143,7 +143,7 @@ class external extends \external_api {
     protected static function user_signup_parameters() {
         $params = [
             'sessionid' => new \external_value(PARAM_INT, 'The ID of the session to signup for', VALUE_REQUIRED),
-            'notificationtype' => new \external_value(PARAM_INT, 'Notification type', VALUE_DEFAULT, MOD_APPOINTMENT_BOTH),
+            'notificationtype' => new \external_value(PARAM_INT, 'Notification type', VALUE_DEFAULT, null),
         ];
         return new \external_function_parameters($params);
     }
@@ -151,8 +151,10 @@ class external extends \external_api {
     /**
      * Signup for the session.
      *
+     * TODO: WP-2920 Remove $notificationtype attribute.
+     *
      * @param int $sessionid The ID of the session
-     * @param int $notificationtype type of notifications to send to user
+     * @param int|null $notificationtype type of notifications to send to user (deprecated WP-2920)
      * @return bool
      */
     public static function user_signup($sessionid, $notificationtype) {
@@ -250,8 +252,6 @@ class external extends \external_api {
             $event->add_record_snapshot('appointment_sessions', $session);
             $event->add_record_snapshot('appointment', $appointment);
             $event->trigger();
-
-            $message = get_string('bookingcancelled', 'appointment');
 
             if (!empty($session->sessiondates)) {
                 $error = appointment_send_cancellation_notice($appointment, $session, $USER->id);

@@ -82,7 +82,7 @@ class mod_appointment_external_testcase extends externallib_advanced_testcase {
         $date->timestart = strtotime('-1 hour');
         $date->timefinish = strtotime('+1 hour');
         $session1 = $this->get_generator()->create_session(['appointment' => $appointment->id], [], [$date]);
-        appointment_user_signup($session1, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $student->id);
 
         $this->assertCount(2, $DB->get_records('appointment_sessions', ['appointment' => $appointment->id]));
@@ -140,7 +140,7 @@ class mod_appointment_external_testcase extends externallib_advanced_testcase {
         $sink = $this->redirectEvents();
 
         // Signup session0.
-        $result = \mod_appointment\external::user_signup($session0->id, MOD_APPOINTMENT_BOTH);
+        $result = \mod_appointment\external::user_signup($session0->id, null);
         $result = \external_api::clean_returnvalue(\mod_appointment\external::user_signup_returns(), $result);
         $this->assertTrue($result);
 
@@ -177,7 +177,7 @@ class mod_appointment_external_testcase extends externallib_advanced_testcase {
         $date->timestart = strtotime('+1 hour');
         $date->timefinish = strtotime('+2 hour');
         $session0 = $this->get_generator()->create_session(['appointment' => $appointment->id], [], [$date]);
-        appointment_user_signup($session0, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session0, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $student->id);
 
         // Validate.

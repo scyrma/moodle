@@ -85,7 +85,7 @@ class mod_appointment_restore_date_testcase extends restore_date_testcase {
         $session = appointment_get_session($session->id);
 
         // User is signed up for appointment1.
-        appointment_user_signup($session, $appointment, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session, $appointment, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user->id);
         $signup = $DB->get_record('appointment_signups', array('sessionid' => $session->id, 'userid' => $user->id));
         $signupstatus = $DB->get_record('appointment_signups_status', ['signupid' => $signup->id]);

@@ -77,7 +77,7 @@ class mod_appointment_privacy_provider_testcase extends provider_testcase {
         $this->assertEquals('appointment_signups', $table->get_name());
         $this->assertEquals('privacy:metadata:appointment_signups', $table->get_summary());
         $privacyfields = $table->get_privacy_fields();
-        $fields = ['sessionid', 'userid', 'mailedreminder', 'notificationtype'];
+        $fields = ['sessionid', 'userid', 'mailedreminder'];
         foreach ($fields as $field) {
             $this->assertArrayHasKey($field, $privacyfields);
         }
@@ -140,14 +140,14 @@ class mod_appointment_privacy_provider_testcase extends provider_testcase {
 
         // User1 sign up for session1 and session3.
         $this->setUser($user1);
-        appointment_user_signup($session1, $appointment1, $course1, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course1, null,
             MOD_APPOINTMENT_STATUS_WAITLISTED);
-        appointment_user_signup($session3, $appointment3, $course3, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session3, $appointment3, $course3, null,
             MOD_APPOINTMENT_STATUS_WAITLISTED);
 
         // User2 sign up for session2.
         $this->setUser($user2);
-        appointment_user_signup($session2, $appointment2, $course2, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session2, $appointment2, $course2, null,
             MOD_APPOINTMENT_STATUS_WAITLISTED);
 
         // Check contexts for user.
@@ -185,16 +185,16 @@ class mod_appointment_privacy_provider_testcase extends provider_testcase {
         $session2 = $this->get_generator()->create_session(['appointment' => $appointment1->id], [$teacher->id]);
 
         // User is signed up for appointment1.
-        appointment_user_signup($session1, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user1->id);
-        appointment_user_signup($session2, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session2, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user2->id);
         $context1 = \context_module::instance($appointment1->cmid);
 
         // Add another appointment.
         $appointment2 = $this->getDataGenerator()->create_module('appointment', ['course' => $course->id]);
         $session3 = $this->get_generator()->create_session(['appointment' => $appointment2->id]);
-        appointment_user_signup($session3, $appointment2, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session3, $appointment2, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user3->id);
         $context2 = \context_module::instance($appointment2->cmid);
 
@@ -239,7 +239,7 @@ class mod_appointment_privacy_provider_testcase extends provider_testcase {
         $session2 = $this->get_generator()->create_session(['appointment' => $appointment1->id]);
 
         // User is signed up for appointment1.
-        appointment_user_signup($session1, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user->id);
         $usersubmissions = appointment_get_user_submissions($appointment1->id, $user->id);
         $context1 = \context_module::instance($appointment1->cmid);
@@ -300,7 +300,7 @@ class mod_appointment_privacy_provider_testcase extends provider_testcase {
         $session2 = $this->get_generator()->create_session(['appointment' => $appointment2->id], [$teacher->id]);
 
         // User is signed up for appointment1.
-        appointment_user_signup($session1, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user->id);
         $usersubmissions = appointment_get_user_submissions($appointment1->id, $user->id);
         $context1 = \context_module::instance($appointment1->cmid);
@@ -348,7 +348,7 @@ class mod_appointment_privacy_provider_testcase extends provider_testcase {
         $session1 = $this->get_generator()->create_session(['appointment' => $appointment1->id], [$teacher->id]);
 
         // User is signed up for appointment1.
-        appointment_user_signup($session1, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user->id);
         $context1 = \context_module::instance($appointment1->cmid);
 
@@ -396,9 +396,9 @@ class mod_appointment_privacy_provider_testcase extends provider_testcase {
         $session1 = $this->get_generator()->create_session(['appointment' => $appointment1->id], [], [$date]);
 
         // User is signed up for appointment1.
-        appointment_user_signup($session1, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user->id);
-        appointment_user_signup($session1, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user2->id);
 
         // Pre-check, we should have signup and calendar event records for each user.
@@ -461,7 +461,7 @@ class mod_appointment_privacy_provider_testcase extends provider_testcase {
         $session1 = $this->get_generator()->create_session(['appointment' => $appointment1->id], [$teacher->id]);
 
         // User is signed up for appointment1.
-        appointment_user_signup($session1, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user->id);
 
         // Pre-check.
@@ -508,16 +508,16 @@ class mod_appointment_privacy_provider_testcase extends provider_testcase {
         $session2 = $this->get_generator()->create_session(['appointment' => $appointment1->id], [$teacher->id]);
 
         // User is signed up for appointment1.
-        appointment_user_signup($session1, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session1, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user1->id);
-        appointment_user_signup($session2, $appointment1, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session2, $appointment1, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user2->id);
         $context1 = \context_module::instance($appointment1->cmid);
 
         // Add another appointment.
         $appointment2 = $this->getDataGenerator()->create_module('appointment', ['course' => $course->id]);
         $session3 = $this->get_generator()->create_session(['appointment' => $appointment2->id]);
-        appointment_user_signup($session3, $appointment2, $course, MOD_APPOINTMENT_BOTH,
+        appointment_user_signup($session3, $appointment2, $course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $user3->id);
         $context2 = \context_module::instance($appointment2->cmid);
 

@@ -46,7 +46,7 @@
                 <ion-col>
                     <%#bookaction%>
                     <ion-button block type="submit" core-site-plugins-call-ws name="mod_appointment_user_signup" title="<% bookactiontitle %>" goBackOnSuccess="true"
-                    [params]="{sessionid: <% sessionid %>, notificationtype: <% notificationtype %>}" form="signup"
+                    [params]="{sessionid: <% sessionid %>}" form="signup"
                     [preSets]="{getFromCache: 0, saveToCache: 0, typeExpected: 'boolean'}" (onSuccess)="afterCall();">
                         <% bookactiontitle %>
                     </ion-button>
