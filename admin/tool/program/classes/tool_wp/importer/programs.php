@@ -67,9 +67,9 @@ class programs extends importer_base {
 
     /** @var string Element for selecting what to import. */
     const IMPORT_INSTANCES = 'import_instances';
-    /** @var int Element for import all programs. */
+    /** @var string Element for import all programs. */
     const IMPORT_INSTANCES_ALL = 'all';
-    /** @var int Element for import manually selected programs. */
+    /** @var string Element for import manually selected programs. */
     const IMPORT_INSTANCES_SELECTED = 'selected';
     /** @var string Element for selecting what to import. */
     const IMPORT_SELECTED_PROGRAMS = 'select_programs';

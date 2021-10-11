@@ -142,10 +142,14 @@ class tool_program_api_testcase extends advanced_testcase {
         // Test defaults to current user tenantid if none provided.
         $programdata = $this->generator->get_dummy_program_data();
         unset($programdata->tenantid);
+        // Test defaults to empty array if no program_tags provided.
+        unset($programdata->program_tags);
         $program = api::create_program($programdata);
 
         $expectedtenantid = tenancy::get_tenant_id();
         $this->assertSame($expectedtenantid, (int) $program->get('tenantid'));
+        $emptytags = core_tag_tag::get_item_tags_array('tool_program', 'tool_program', $program->get('id'));
+        $this->assertEmpty($emptytags);
     }
 
     /**

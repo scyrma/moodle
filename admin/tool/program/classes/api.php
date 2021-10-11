@@ -174,7 +174,8 @@ class api {
             $context, 'tool_program', 'program_image', $newprogram->get('id'));
 
         // Save program tags.
-        core_tag_tag::set_item_tags('tool_program', 'tool_program', $newprogram->get('id'), $context, $data->program_tags);
+        $tagnames = empty($data->program_tags) ? [] : $data->program_tags;
+        core_tag_tag::set_item_tags('tool_program', 'tool_program', $newprogram->get('id'), $context, $tagnames);
 
         // Create default dynamic rules for dynamic rules tab.
         self::add_default_dynamicrule_conditions_to_program($newprogram->get('id'), $newprogram->get('tenantid'));
@@ -253,7 +254,8 @@ class api {
             $context, 'tool_program', 'program_image', $data->id);
 
         // Update program tags.
-        core_tag_tag::set_item_tags('tool_program', 'tool_program', $data->id, $context, $data->program_tags);
+        $tagnames = empty($data->program_tags) ? [] : $data->program_tags;
+        core_tag_tag::set_item_tags('tool_program', 'tool_program', $data->id, $context, $tagnames);
 
         $program = new program($data->id);
         $oldrecord = $program->to_record();
