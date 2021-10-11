@@ -69,9 +69,9 @@ class certifications extends importer_base {
 
     /** @var string Element for selecting what to import. */
     const IMPORT_INSTANCES = 'import_instances';
-    /** @var int Element for import all certifications. */
+    /** @var string Element for import all certifications. */
     const IMPORT_INSTANCES_ALL = 'all';
-    /** @var int Element for import manually selected certifications. */
+    /** @var string Element for import manually selected certifications. */
     const IMPORT_INSTANCES_SELECTED = 'selected';
     /** @var string Element for selecting if certification settings have to be imported. */
     const IMPORT_CONTENT = 'import_content';

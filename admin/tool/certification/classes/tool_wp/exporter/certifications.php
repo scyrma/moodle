@@ -64,11 +64,11 @@ class certifications extends exporter_base {
 
     /** @var string Element for selecting what to export. */
     const EXPORT_INSTANCES = 'export_instances';
-    /** @var int Element for export all programs. */
+    /** @var string Element for export all programs. */
     const EXPORT_INSTANCES_ALL = 'all';
-    /** @var int Element for export only active programs. */
+    /** @var string Element for export only active programs. */
     const EXPORT_INSTANCES_ACTIVE = 'active';
-    /** @var int Element for export manually selected programs. */
+    /** @var string Element for export manually selected programs. */
     const EXPORT_INSTANCES_SELECTED = 'selected';
     /** @var string Element for selecting if certification settings have to be exported. */
     const EXPORT_CONTENT = 'export_content';
