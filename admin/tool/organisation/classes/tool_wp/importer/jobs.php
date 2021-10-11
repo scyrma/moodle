@@ -62,9 +62,9 @@ class jobs extends \tool_wp\importer_base {
     const IMPORT_FRAMEWORKS = 'import_frameworks';
     /** @var string */
     const IMPORT_TYPE = 'import_instances';
-    /** @var int */
+    /** @var string */
     const IMPORT_TYPE_ALL = 'all';
-    /** @var int */
+    /** @var string */
     const IMPORT_TYPE_MANUALLY = 'selected';
     /** @var string */
     const IMPORT_FROM_SELECTED_FRAMEWORKS = 'select_frameworks';

@@ -64,11 +64,11 @@ class jobs extends \tool_wp\exporter_base {
 
     /** @var string */
     const EXPORT_TYPE = 'export_instances';
-    /** @var int */
+    /** @var string */
     const EXPORT_TYPE_CURRENT = 'current';
-    /** @var int */
+    /** @var string */
     const EXPORT_TYPE_ALL = 'all';
-    /** @var int */
+    /** @var string */
     const EXPORT_TYPE_MANUALLY = 'selectedframeworks';
     /** @var string */
     const EXPORT_FROM_SELECTED_FRAMEWORKS = 'select_frameworks';

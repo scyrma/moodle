@@ -72,13 +72,13 @@ class orgstructure extends \tool_wp\exporter_base {
     const EXPORT_SETTINGS = 'export_content';
     /** @var string */
     const EXPORT_INSTANCES = 'export_instances';
-    /** @var int */
+    /** @var string */
     const EXPORT_INSTANCES_ALL = 'all';
-    /** @var int */
+    /** @var string */
     const EXPORT_INSTANCES_DEPARTMENTS = 'departments';
-    /** @var int */
+    /** @var string */
     const EXPORT_INSTANCES_POSITIONS = 'positions';
-    /** @var int */
+    /** @var string */
     const EXPORT_INSTANCES_SELECTED = 'selected';
     /** @var string */
     const EXPORT_SELECT_FRAMEWORKS = 'select_frameworks';

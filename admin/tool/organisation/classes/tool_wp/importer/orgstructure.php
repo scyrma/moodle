@@ -73,13 +73,13 @@ class orgstructure extends \tool_wp\importer_base {
     const IMPORT_CONTENT = 'import_content';
     /** @var string */
     const IMPORT_INSTANCES = 'import_instances';
-    /** @var int */
+    /** @var string */
     const IMPORT_INSTANCES_ALL = 'all';
-    /** @var int */
+    /** @var string */
     const IMPORT_INSTANCES_DEPARTMENTS = 'departments';
-    /** @var int */
+    /** @var string */
     const IMPORT_INSTANCES_POSITIONS = 'positions';
-    /** @var int */
+    /** @var string */
     const IMPORT_INSTANCES_SELECTED = 'selected';
     /** @var string */
     const IMPORT_SELECT_FRAMEWORKS = 'select_frameworks';
