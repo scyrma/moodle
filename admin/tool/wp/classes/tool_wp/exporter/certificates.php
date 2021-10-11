@@ -68,11 +68,11 @@ class certificates extends exporter_base {
     const EXPORT_SELECTED_CATEGORIES = 'select_categories';
     /** @var string Element for selecting what templates to export. */
     const EXPORT_SELECTED_TEMPLATES = 'select_templates';
-    /** @var int Element for export all templates that the user is able to access. */
+    /** @var string Element for export all templates that the user is able to access. */
     const EXPORT_TYPE_ALL = 'all';
-    /** @var int Element for export manually selected categories. */
+    /** @var string Element for export manually selected categories. */
     const EXPORT_TYPE_CAT_MANUALLY = 'incategories';
-    /** @var int Element for export manually selected templates. */
+    /** @var string Element for export manually selected templates. */
     const EXPORT_TYPE_MANUALLY = 'selected';
 
     /**

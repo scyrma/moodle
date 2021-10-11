@@ -94,7 +94,8 @@ class tool_wp_course_reset_testcase extends advanced_testcase {
         $date = (object) ['timestart' => strtotime('+1 hour'), 'timefinish' => strtotime('+2 hour')];
         $session = $generator->create_session(['appointment' => $appointment->id], [], [$date]);
 
-        appointment_user_signup($session, $appointment, $this->course, MOD_APPOINTMENT_BOTH,
+        // TODO: WP-2920 Remove $notificationtype attribute param.
+        appointment_user_signup($session, $appointment, $this->course, null,
             MOD_APPOINTMENT_STATUS_BOOKED, $this->user->id);
     }
 

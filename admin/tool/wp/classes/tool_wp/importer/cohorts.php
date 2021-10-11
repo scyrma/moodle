@@ -64,9 +64,9 @@ class cohorts extends importer_base {
     public const IMPORT_USERS = 'import_users';
     /** @var string Element for selecting what to import. */
     public const IMPORT_INSTANCES = 'import_instances';
-    /** @var int Element for import all cohorts. */
+    /** @var string Element for import all cohorts. */
     public const IMPORT_INSTANCES_ALL = 'all';
-    /** @var int Element for import manually selected cohorts. */
+    /** @var string Element for import manually selected cohorts. */
     public const IMPORT_INSTANCES_SELECTED = 'selected';
     /** @var string Element for selecting what to import. */
     public const IMPORT_SELECT_COHORTS = 'select_cohorts';

@@ -66,9 +66,9 @@ class coursecategories extends importer_base {
     public const IMPORT_INSTANCES = 'import_instances';
     /** @var string */
     public const IMPORT_CERTIFICATE_TEMPLATES = 'import_certificate_templates';
-    /** @var int Element for import all courses. */
+    /** @var string Element for import all courses. */
     public const IMPORT_INSTANCES_ALL = 'all';
-    /** @var int Element for import manually selected course categories. */
+    /** @var string Element for import manually selected course categories. */
     public const IMPORT_INSTANCES_SELECTED = 'selected';
     /** @var string Element for selecting what to import. */
     public const IMPORT_SELECT_COURSE_CATEGORIES = 'select_courses';

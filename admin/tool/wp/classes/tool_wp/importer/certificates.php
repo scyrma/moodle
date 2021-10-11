@@ -64,11 +64,11 @@ class certificates extends importer_base {
     const IMPORT_CERTIFICATE_ISSUES = 'import_issued';
     /** @var string Element for selecting what to import. */
     const IMPORT_TYPE = 'import_instances';
-    /** @var int Element for import all templates. */
+    /** @var string Element for import all templates. */
     const IMPORT_TYPE_ALL = 'all';
-    /** @var int Element for import manually selected templates. */
+    /** @var string Element for import manually selected templates. */
     const IMPORT_TYPE_SELECTED = 'selected';
-    /** @var int Element for import manually selected templates. */
+    /** @var string Element for import manually selected templates. */
     const IMPORT_SELECTED_TEMPLATES = 'select_templates';
     /** @var string Element for selecting course category. */
     const IMPORT_SELECT_CATEGORY = 'select_category';

@@ -64,11 +64,11 @@ class courses extends exporter_base {
     const EXPORT_COURSES_CONTENT_ALL = 'export_courses_content_all';
     /** @var string Element for selecting what to export. */
     const EXPORT_INSTANCES = 'export_instances';
-    /** @var int Element for export all courses in the export tenant category. */
+    /** @var string Element for export all courses in the export tenant category. */
     const EXPORT_INSTANCES_ALL = 'all';
-    /** @var int Element for export manually selected course categories. */
+    /** @var string Element for export manually selected course categories. */
     const EXPORT_INSTANCES_CATEGORY = 'incategories';
-    /** @var int Element for export manually selected courses. */
+    /** @var string Element for export manually selected courses. */
     const EXPORT_INSTANCES_SELECTED = 'selected';
     /** @var string Element for selecting what to export. */
     const EXPORT_SELECT_CATEGORIES = 'select_categories';

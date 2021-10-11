@@ -64,13 +64,13 @@ class cohorts extends exporter_base {
     public const EXPORT_USERS = 'export_users';
     /** @var string Element for selecting what to export. */
     public const EXPORT_INSTANCES = 'export_instances';
-    /** @var int Element for export all cohorts. */
+    /** @var string Element for export all cohorts. */
     public const EXPORT_INSTANCES_ALL = 'all';
     /** @var string Element for export all system cohorts. */
     public const EXPORT_INSTANCES_ALL_SYSTEM = 'allsystem';
-    /** @var int Element for export manually selected course categories. */
+    /** @var string Element for export manually selected course categories. */
     public const EXPORT_INSTANCES_CATEGORY = 'incategories';
-    /** @var int Element for export manually selected cohorts. */
+    /** @var string Element for export manually selected cohorts. */
     public const EXPORT_INSTANCES_SELECTED = 'selected';
     /** @var string Element for selecting what to export. */
     public const EXPORT_SELECT_CATEGORIES = 'select_categories';
