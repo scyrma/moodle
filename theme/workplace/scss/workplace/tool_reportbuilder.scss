@@ -316,7 +316,6 @@ ul.reportbuilder-sortable-list {
             }
         }
         .tool_reportbuilder_report_table_pagination {
-            flex-direction: column;
             .pagination {
                 flex-wrap: wrap;
                 ul {
@@ -353,9 +352,15 @@ ul.reportbuilder-sortable-list {
         .tool_reportbuilder_report_table_export.d-flex {
             display: none !important; /* stylelint-disable-line declaration-no-important */
         }
-        // Hide filters.
-        .filters-icon,
+        .reportbuilder-filters-collapse,
         [data-region='sidebar-filters'] {
+            display: none;
+        }
+    }
+    // Remove 'Show all X' link in Custom report blocks.
+    .block_rbreport .tool_reportbuilder_report_table_pagination {
+        justify-content: center !important; /* stylelint-disable-line declaration-no-important */
+        button[data-action='showall'] {
             display: none;
         }
     }
@@ -364,13 +369,6 @@ ul.reportbuilder-sortable-list {
         &:not(#block-region-content) .block_rbreport {
             .rblayout:not(.rblayout-table) {
                 @include table-cards;
-            }
-            .content {
-                display: flex;
-                flex-direction: column-reverse;
-                .footer {
-                    align-self: flex-end;
-                }
             }
         }
     }
@@ -383,7 +381,7 @@ ul.reportbuilder-sortable-list {
     // Show filters only in main block region for desktop media.
     @include media-breakpoint-up(sm) {
         &#block-region-content .block_rbreport {
-            .filters-icon,
+            .reportbuilder-filters-collapse,
             [data-region='sidebar-filters'].show {
                 display: block;
             }
