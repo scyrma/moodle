@@ -221,10 +221,6 @@ Feature: Ensure that actions in certifications manager view work as expected
       | Certification2      | blue   | Program1      |
     Then I press "Reset table"
     And I set the field "Tags" to "red"
-    # Because it doesn't auto-submit, set another filter too (WP-2760).
-    And I set the field "Certification name field limiter" to "contains"
-    And I set the field "Certification name value" to "Certification"
-    And I press the enter key
     Then the following should exist in the "report-table" table:
       | Certification name  | Tags   | Program name     |
       | Certification1      | red    | Program1         |
