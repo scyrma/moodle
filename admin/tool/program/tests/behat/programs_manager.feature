@@ -205,10 +205,6 @@ Feature: Ensure that actions in programs manager view work as expected
       | Program3      | blue   |                            |
     Then I press "Reset table"
     And I set the field "Tags" to "red"
-    # Because it doesn't auto-submit, set another filter too (WP-2760).
-    And I set the field "Program name field limiter" to "contains"
-    And I set the field "Program name value" to "Program"
-    And I press the enter key
     Then the following should exist in the "report-table" table:
       | Program name  | Tags   | Associated certifications  |
       | Program1      | red    | Certification1             |

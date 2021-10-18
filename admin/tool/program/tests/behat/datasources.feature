@@ -211,7 +211,5 @@ Feature: Check datasources for programs
     And I click on "Switch to preview view" "button"
     And I click on "Show/hide filters sidebar" "button"
     And I set the field "Tags" to "tag 1"
-    # Because it doesn't auto-submit, set another filter too (WP-2760).
-    And I set the field "Archived" to "No"
     Then I should see "Program1" in the "report-table" "table"
     And I should not see "Program2" in the "report-table" "table"
