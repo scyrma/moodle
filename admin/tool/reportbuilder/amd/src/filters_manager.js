@@ -71,7 +71,8 @@ define(
             RESETFILTER: "[data-action='reset-filter']",
             SIDEBARFILTERS: "[data-region='sidebar-filters']",
             ACTIVEFILTERFORM: "[data-region='active-filters-form']",
-            TABLEREGION: "[data-region='data-report']"
+            TABLEREGION: "[data-region='data-report']",
+            SHOWEDIT: "[data-action='show-edit']"
         },
         SERVICES = {
             SETFILTER: 'tool_reportbuilder_set_filter',
@@ -164,6 +165,45 @@ define(
         };
 
         /**
+         * Register and handle events listener based on filter array attributes and callback.
+         *
+         * @param {Array.<object>} filtersAttr - Array of filter attributes to be handle.
+         * filtersAttr.selector - Filter selector to be listen.
+         * filtersAttr.eventlisten - Event to listen when filter is trigger.
+         * filtersAttr.root - Region to find above selector.
+         * filtersAttr.capture (optional) - Boolean to specify the propagation type used,
+         * by default is false that means use bubbling, if true then use capturing.
+         * @param {Function} callback - Function to be executed when conditions is done.
+         */
+        FiltersManager.prototype.onDelegateRootEvent = function(filtersAttr, callback) {
+            filtersAttr.forEach((value) => {
+                // Only trigger click event on td element inside YUI calendar.
+                if (value.root === '#dateselector-calendar-panel') {
+                    // Delegate YUI event listener to value.selector on value.root region.
+                    let calendar = Y.delegate(value.eventlisten, callback, value.root, value.selector);
+                    // Set listener to clean previously subscribed events when change to edit mode.
+                    const editButton = document.querySelector(SELECTORS.SHOWEDIT);
+                    if (editButton !== null) {
+                        editButton.addEventListener(value.eventlisten, () => {
+                            // Get previous YUI node, and detaching subscriptions.
+                            calendar.detach();
+                        });
+                    }
+                } else {
+                    document.querySelector(value.root).addEventListener(value.eventlisten, (event) => {
+                        // Set current element on event.
+                        const targetElement = event.target;
+                        // Check if current element on event is some of selectors set in array or is hitting return key.
+                        if (targetElement.closest(value.selector)
+                            && (event.keyCode === 13 || typeof event.keyCode === "undefined")) {
+                            callback(event);
+                        }
+                    }, value.capture ?? false);
+                }
+            });
+        };
+
+        /**
          * Called when a filter form was added to the page
          *
          * @param {Event} ev
@@ -186,18 +226,31 @@ define(
                 form.submitFormAjax();
                 M.util.js_complete(pending);
             };
-
-            $(form.container)
-                // Filter form elements other than hidden and text inputs should auto-submit when changed.
-                .on('change', 'form select, form input:not([type=hidden],[type=text])',
-                    handleFormSubmission)
-
-                // Hitting return in a text input can trigger the "reset filter" button - we don't want that.
-                .on('keypress', 'form input[type=text]', (event) => {
-                    if (event.keyCode === 13) {
-                        handleFormSubmission(event);
-                    }
-                });
+            // Array of filters attributes to handle expected action.
+            const filtersAttr = [
+                {
+                    selector: 'form select, form input:not([type=hidden]):not([type=text])',
+                    eventlisten: 'change',
+                    root: SELECTORS.ACTIVEFILTERFORM
+                },
+                {
+                    selector: '[data-fieldtype="autocomplete"] > select.custom-select',
+                    eventlisten: 'change',
+                    root: SELECTORS.ACTIVEFILTERFORM,
+                    capture: true
+                },
+                {
+                    selector: '.yui3-calendar-day',
+                    eventlisten: 'click',
+                    root: '#dateselector-calendar-panel'
+                },
+                {
+                    selector: 'form input[type=text]',
+                    eventlisten: 'keypress',
+                    root: SELECTORS.ACTIVEFILTERFORM
+                }
+            ];
+            this.onDelegateRootEvent(filtersAttr, handleFormSubmission);
         };
 
         /**

@@ -5,9 +5,12 @@ Feature: Manage a filter
   I need to be able to add filters, remove filters, view filters in reports, reset filters, reset a filter
 
   Background:
-    Given the following tenants exist:
-      | name    |
-      | Tenant1 |
+    Given the following "categories" exist:
+      | name      | category | idnumber |
+      | Category1 | 0        | CAT1     |
+    And the following tenants exist:
+      | name    | category  |
+      | Tenant1 | Category1 |
     And the following "users" exist:
       | username | firstname | lastname | email                |
       | manager1 | Manager   | 1        | manager1@example.com |
@@ -312,4 +315,89 @@ Feature: Manage a filter
     And the "Select a filter" select box should contain "Custom menu field"
     And the "Select a filter" select box should contain "Custom textarea field"
     And the "Select a filter" select box should not contain "Custom text field (hidden)"
+    And I log out
+
+  @javascript
+  Scenario: Use course select filter
+    Given the following "tool_reportbuilder > reports" exist:
+      | name    | tenant  | source                                                                               |
+      | Report1 | Tenant1 | tool_reportbuilder\tool_reportbuilder\datasources\report_course_enrolment_completion |
+    And the following "courses" exist:
+      | fullname | shortname | category |
+      | Course 1 | C1        | CAT1     |
+      | Course 2 | C2        | CAT1     |
+    And the following "users" exist:
+      | username | firstname | lastname | email                |
+      | student1 | Student   | 1        | student1@example.com |
+      | student2 | Student   | 2        | student2@example.com |
+    And the following users allocations to tenants exist:
+      | user     | tenant  |
+      | student1 | Tenant1 |
+      | student2 | Tenant1 |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | student1 | C1     | student        |
+      | student2 | C2     | student        |
+    When I log in as "manager1"
+    And I navigate to "Report builder" in workplace launcher
+    And I click on "Edit content" "link" in the "Report1" "table_row"
+    And I click on "Add field 'Course full name' to the report" "button"
+    And I click on "Show/hide filters sidebar" "button"
+    And I click on "Expand filters" "button"
+    And I set the field "Select a filter" to "Select courses"
+    And I click on "Switch to preview view" "button"
+    And I click on "Show/hide filters sidebar" "button"
+    Then I should see "No selection"
+    And I set the field "Select courses" to "Course 1"
+    And the following should not exist in the "report-table" table:
+      | Course fullname with link | Full name with profile link | Completed | Course full name |
+      | Course 2                  | Student 2                   | No        | Course 2         |
+    And the following should exist in the "report-table" table:
+      | Course fullname with link | Full name with profile link | Completed | Course full name |
+      | Course 1                  | Student 1                   | No        | Course 1         |
+    And I log out
+
+  @javascript
+  Scenario: Use datepicker filter
+    Given the following "tool_reportbuilder > reports" exist:
+      | name    | tenant  | source                                                                               |
+      | Report1 | Tenant1 | tool_reportbuilder\tool_reportbuilder\datasources\report_course_enrolment_completion |
+    And the following "courses" exist:
+      | fullname | shortname | startdate | category |
+      | Course 1 | C1        | ## today ##   | CAT1     |
+      | Course 2 | C2        | ## tomorrow ##   | CAT1     |
+    And the following "users" exist:
+      | username | firstname | lastname | email                |
+      | student1 | Student   | 1        | student1@example.com |
+      | student2 | Student   | 2        | student2@example.com |
+    And the following users allocations to tenants exist:
+      | user     | tenant  |
+      | student1 | Tenant1 |
+      | student2 | Tenant1 |
+    And the following "course enrolments" exist:
+      | user     | course | role           |
+      | student1 | C1     | student        |
+      | student2 | C2     | student        |
+    When I log in as "manager1"
+    And I navigate to "Report builder" in workplace launcher
+    And I click on "Edit content" "link" in the "Report1" "table_row"
+    And I click on "Show/hide filters sidebar" "button"
+    And I click on "Expand filters" "button"
+    And I set the field "Select a filter" to "Course start date"
+    And I click on "Switch to preview view" "button"
+    And I click on "Show/hide filters sidebar" "button"
+    And I select "Date range" from the "course:startdate_op" singleselect
+    And I click on "course:startdate_daterangefrom[enabled]" "checkbox"
+    And I click on "[name='course:startdate_daterangefrom[calendar]']" "css_element"
+    And I click on "//td[contains(@class,'yui3-calendar-day-selected')]" "xpath_element" in the ".yui3-calendar-grid" "css_element"
+    Then the following should exist in the "report-table" table:
+      | Course fullname with link | Full name with profile link | Completed |
+      | Course 1                  | Student 1                   | No        |
+      | Course 2                  | Student 2                   | No        |
+    And I click on "course:startdate_daterangeto[enabled]" "checkbox"
+    And I click on "[name='course:startdate_daterangeto[calendar]']" "css_element"
+    And I click on "//td[contains(@class,'yui3-calendar-day-selected')]" "xpath_element" in the ".yui3-calendar-grid" "css_element"
+    And the following should not exist in the "report-table" table:
+      | Course fullname with link | Full name with profile link | Completed |
+      | Course 2                  | Student 2                   | No        |
     And I log out

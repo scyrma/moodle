@@ -49,7 +49,9 @@
 <div class="tool_reportbuilder_report report system-report" data-region="system-report" data-reportid="{{id}}" data-source="{{source}}" id="{{htmlid}}">
     <div class="d-flex">
         <div class="w-100">
-            {{> tool_reportbuilder/filters_icon}}
+            <div class="d-flex">
+                {{> tool_reportbuilder/filters_icon}}
+            </div>
             <div class="table-responsive position-relative" data-region="data-report" data-parameters="{{parameters}}">
                 {{{table}}}
             </div>
