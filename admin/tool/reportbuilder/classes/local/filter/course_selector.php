@@ -65,7 +65,8 @@ class course_selector extends filter_base {
         $options = [
             'multiple' => true,
         ];
-        $mform->addElement('course', $this->name.'_op', get_string('selectcourses', 'tool_reportbuilder'), $options);
+        $mform->addElement('course', $this->name.'_op', get_string('selectcourses', 'tool_reportbuilder'), $options)
+            ->setHiddenLabel(true);
 
         $this->common_footer($mform);
     }
