@@ -38,7 +38,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 use tool_organisation\tool_dynamicrule\condition\user_department;
-use tool_organisation\tool_dynamicrule\condition\user_not_in_department;
 
 /**
  * Unit tests for condition user_department  class.
@@ -46,7 +45,6 @@ use tool_organisation\tool_dynamicrule\condition\user_not_in_department;
  * @package    tool_organisation
  * @group      tool_organisation
  * @covers     \tool_organisation\tool_dynamicrule\condition\user_department
- * @covers     \tool_organisation\tool_dynamicrule\condition\user_not_in_department
  * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
@@ -69,8 +67,17 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
      *
      * @return tool_dynamicrule_generator
      */
-    protected function get_generator(): tool_dynamicrule_generator {
+    protected function get_tool_dynamicrule_generator(): tool_dynamicrule_generator {
         return $this->getDataGenerator()->get_plugin_generator('tool_dynamicrule');
+    }
+
+    /**
+     * Get organisation generator
+     *
+     * @return tool_organisation_generator
+     */
+    protected function get_generator(): tool_organisation_generator {
+        return $this->getDataGenerator()->get_plugin_generator('tool_organisation');
     }
 
     /**
@@ -78,9 +85,6 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
      */
     public function test_get_title() {
         $condition = user_department::instance();
-        $this->assertNotEmpty($condition->get_title());
-
-        $condition = user_not_in_department::instance();
         $this->assertNotEmpty($condition->get_title());
     }
 
@@ -90,21 +94,15 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
     public function test_get_category() {
         $condition = user_department::instance();
         $this->assertEquals(get_string('pluginname', 'tool_organisation'), $condition->get_category());
-
-        $conditionneg = user_not_in_department::instance();
-        $this->assertEquals($condition->get_category(), $conditionneg->get_category());
     }
 
     /**
      * Test validate_config_form
      */
     public function test_validate_config_form() {
+        $department1 = $this->get_generator()->create_department();
         $condition = user_department::instance();
-        $configform = ['departmentid' => 0];
-        $this->assertArrayHasKey('departmentid', $condition->validate_config_form($configform));
-
-        $condition = user_not_in_department::instance();
-        $configform = ['departmentid' => 0];
+        $configform = ['departmentid' => [1000, $department1->id]];
         $this->assertArrayHasKey('departmentid', $condition->validate_config_form($configform));
     }
 
@@ -121,8 +119,7 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         $user3 = $this->getDataGenerator()->create_user();
         $user4 = $this->getDataGenerator()->create_user();
 
-        /** @var tool_organisation_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
+        $generator = $this->get_generator();
 
         $department1 = $generator->create_department();
         $department1a = $generator->create_department(['parentid' => $department1->id]);
@@ -149,7 +146,7 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
             'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1262304000]);
 
         // Department 1.
-        $rule1 = $this->get_generator()->create_rule();
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['departmentid' => $department1->id, 'withsubdepartments' => 0];
         user_department::create($rule1->id, $configdata);
 
@@ -157,17 +154,8 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
         $this->assertEqualsCanonicalizing([$user1->id, $user2->id], array_column($users, 'id'));
 
-        // Department 1 negated.
-        $rule12 = $this->get_generator()->create_rule();
-        $configdata = ['departmentid' => $department1->id, 'withsubdepartments' => 0];
-        user_not_in_department::create($rule12->id, $configdata);
-
-        $this->assertEquals(4, \tool_dynamicrule\api::count_matching_users($rule12->id));
-        $users = \tool_dynamicrule\api::get_matching_users($rule12->id);
-        $this->assertEqualsCanonicalizing([$user1a->id, $user3->id, $user4->id, get_admin()->id], array_column($users, 'id'));
-
         // Department 2.
-        $rule2 = $this->get_generator()->create_rule();
+        $rule2 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['departmentid' => $department2->id, 'withsubdepartments' => 0];
         user_department::create($rule2->id, $configdata);
 
@@ -175,32 +163,14 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         $users = \tool_dynamicrule\api::get_matching_users($rule2->id);
         $this->assertEqualsCanonicalizing([$user3->id, $user4->id], array_column($users, 'id'));
 
-        // Department 2 negated.
-        $rule22 = $this->get_generator()->create_rule();
-        $configdata = ['departmentid' => $department2->id, 'withsubdepartments' => 0];
-        user_not_in_department::create($rule22->id, $configdata);
-
-        $this->assertEquals(4, \tool_dynamicrule\api::count_matching_users($rule22->id));
-        $users = \tool_dynamicrule\api::get_matching_users($rule22->id);
-        $this->assertEqualsCanonicalizing([$user1->id, $user1a->id, $user2->id, get_admin()->id], array_column($users, 'id'));
-
         // Department 1 with subdepartments.
-        $rule1 = $this->get_generator()->create_rule();
+        $rule3 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['departmentid' => $department1->id, 'withsubdepartments' => 1];
-        user_department::create($rule1->id, $configdata);
+        user_department::create($rule3->id, $configdata);
 
-        $this->assertEquals(3, \tool_dynamicrule\api::count_matching_users($rule1->id));
-        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEquals(3, \tool_dynamicrule\api::count_matching_users($rule3->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule3->id);
         $this->assertEqualsCanonicalizing([$user1->id, $user1a->id, $user2->id], array_column($users, 'id'));
-
-        // Department 1 with subdepartments negated.
-        $rule12 = $this->get_generator()->create_rule();
-        $configdata = ['departmentid' => $department1->id, 'withsubdepartments' => 1];
-        user_not_in_department::create($rule12->id, $configdata);
-
-        $this->assertEquals(3, \tool_dynamicrule\api::count_matching_users($rule12->id));
-        $users = \tool_dynamicrule\api::get_matching_users($rule12->id);
-        $this->assertEqualsCanonicalizing([$user3->id, $user4->id, get_admin()->id], array_column($users, 'id'));
 
         // Let's test if startdate is working properly.
         $user5 = $this->getDataGenerator()->create_user();
@@ -208,7 +178,7 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
             'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1583193600]);
 
         // Only user5 should be found using this startdate and department2.
-        $rule33 = $this->get_generator()->create_rule();
+        $rule33 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['departmentid' => $department2->id, 'jobstartdate' => 1583193600];
         user_department::create($rule33->id, $configdata);
 
@@ -217,7 +187,7 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         $this->assertEqualsCanonicalizing([$user5->id], array_column($users, 'id'));
 
         // No user should be found using this start date.
-        $rule34 = $this->get_generator()->create_rule();
+        $rule34 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['departmentid' => $department2->id, 'jobstartdate' => 1614729600];
         user_department::create($rule34->id, $configdata);
 
@@ -225,7 +195,7 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         $this->assertEmpty(\tool_dynamicrule\api::get_matching_users($rule34->id));
 
         // Three users should be found using this start date and department2.
-        $rule35 = $this->get_generator()->create_rule();
+        $rule35 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['departmentid' => $department2->id, 'jobstartdate' => 1262304000];
         user_department::create($rule35->id, $configdata);
 
@@ -235,18 +205,147 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
     }
 
     /**
+     * Test condition matching for multiple departments
+     *
+     * @uses \tool_dynamicrule\api::get_matching_users
+     * @uses \tool_dynamicrule\api::count_matching_users
+     */
+    public function test_get_matching_users_multiple_depts() {
+        $user1 = $this->getDataGenerator()->create_user();
+        $user1a = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $user3 = $this->getDataGenerator()->create_user();
+        $user4 = $this->getDataGenerator()->create_user();
+
+        $generator = $this->get_generator();
+
+        $department1 = $generator->create_department();
+        $department1a = $generator->create_department(['parentid' => $department1->id]);
+        $department2 = $generator->create_department();
+
+        $position1 = $generator->create_position();
+        $position2 = $generator->create_position();
+
+        $manager = new \tool_organisation\job_manager();
+
+        // User1 - department1.
+        $manager->create_job((object)['userid' => $user1->id,
+            'positionid' => $position1->id, 'departmentid' => $department1->id, 'startdate' => 1262304000]);
+
+        // User1a - department1a.
+        $manager->create_job((object)['userid' => $user1a->id,
+            'positionid' => $position1->id, 'departmentid' => $department1a->id, 'startdate' => 1262304000]);
+
+        // User2 - department1 and department2.
+        $manager->create_job((object)['userid' => $user2->id,
+            'positionid' => $position2->id, 'departmentid' => $department1->id, 'startdate' => 1262304000]);
+        $manager->create_job((object)['userid' => $user2->id,
+            'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1262304000]);
+
+        // User3 - department2.
+        $manager->create_job((object)['userid' => $user3->id,
+            'positionid' => $position1->id, 'departmentid' => $department2->id, 'startdate' => 1262304000]);
+
+        // User4 - department1 and department2.
+        $manager->create_job((object)['userid' => $user4->id,
+            'positionid' => $position2->id, 'departmentid' => $department1->id, 'startdate' => 1262304000]);
+        $manager->create_job((object)['userid' => $user4->id,
+            'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1262304000]);
+
+        // Department 1 && 2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id],
+            'criteria' => user_department::CRITERIA_ALL, 'withsubdepartments' => 0];
+        user_department::create($rule1->id, $configdata);
+
+        $this->assertEquals(2, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user2->id, $user4->id], array_column($users, 'id'));
+
+        // Department 1 || 2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id],
+            'criteria' => user_department::CRITERIA_ANY, 'withsubdepartments' => 0];
+        user_department::create($rule1->id, $configdata);
+
+        $this->assertEquals(4, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user1->id, $user2->id, $user3->id, $user4->id], array_column($users, 'id'));
+
+        // Department 1 || 2 with subdepartments.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id],
+            'criteria' => user_department::CRITERIA_ANY, 'withsubdepartments' => 1];
+        user_department::create($rule1->id, $configdata);
+
+        $this->assertEquals(5, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user1->id, $user1a->id, $user2->id, $user3->id, $user4->id],
+            array_column($users, 'id'));
+
+        // Let's test if startdate is working properly.
+        $user5 = $this->getDataGenerator()->create_user();
+        $manager->create_job((object)['userid' => $user5->id,
+            'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1583193600]);
+
+        // Only user5 should be found using this startdate and department1 || department2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id],
+            'criteria' => user_department::CRITERIA_ANY, 'jobstartdate' => 1583193600];
+        user_department::create($rule1->id, $configdata);
+
+        $this->assertEquals(1, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user5->id], array_column($users, 'id'));
+
+        // No user should be found using this startdate and department1 && department2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id],
+            'criteria' => user_department::CRITERIA_ALL, 'jobstartdate' => 1583193600];
+        user_department::create($rule1->id, $configdata);
+
+        $this->assertEquals(0, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $this->assertEmpty(\tool_dynamicrule\api::get_matching_users($rule1->id));
+
+        // No user should be found using this start date.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id],
+            'criteria' => user_department::CRITERIA_ANY, 'jobstartdate' => 1614729600];
+        user_department::create($rule1->id, $configdata);
+
+        $this->assertEquals(0, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $this->assertEmpty(\tool_dynamicrule\api::get_matching_users($rule1->id));
+
+        // Five users should be found using this start date and department1 || department2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id],
+            'criteria' => user_department::CRITERIA_ANY, 'jobstartdate' => 1262304000];
+        user_department::create($rule1->id, $configdata);
+
+        $this->assertEquals(5, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user1->id, $user2->id, $user3->id, $user4->id, $user5->id], array_column($users, 'id'));
+
+        // One user should be found using this start date and department1 && department2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id],
+            'criteria' => user_department::CRITERIA_ALL, 'jobstartdate' => 1262304000];
+        user_department::create($rule1->id, $configdata);
+
+        $this->assertEquals(2, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user2->id, $user4->id], array_column($users, 'id'));
+    }
+
+    /**
      * Test get_description
      */
     public function test_get_description() {
+        $department1 = $this->get_generator()->create_department();
+        $department2 = $this->get_generator()->create_department();
 
-        $this->resetAfterTest();
-
-        /** @var tool_organisation_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
-
-        $department1 = $generator->create_department();
-
-        $rule1 = $this->get_generator()->create_rule();
+        // One department.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['departmentid' => $department1->id];
         $condition1 = user_department::create($rule1->id, $configdata);
 
@@ -254,12 +353,23 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         $expected = get_string('conditionuserdepartmentdescription', 'tool_organisation', $options);
         $this->assertEquals($expected, $condition1->get_description());
 
-        $rule2 = $this->get_generator()->create_rule();
-        $condition2 = user_not_in_department::create($rule2->id, $configdata);
+        // All departments.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id], 'criteria' => user_department::CRITERIA_ALL];
+        $condition1 = user_department::create($rule1->id, $configdata);
 
-        $options = ['deptname' => $department1->name, 'subdeptsinclude' => 'Not included'];
-        $expected = get_string('conditionuserdepartmentdescriptionnegated', 'tool_organisation', $options);
-        $this->assertEquals($expected, $condition2->get_description());
+        $options = ['deptname' => "{$department1->name}', '{$department2->name}", 'subdeptsinclude' => 'Not included'];
+        $expected = get_string('conditionuserdepartmentsalldescription', 'tool_organisation', $options);
+        $this->assertEquals($expected, $condition1->get_description());
+
+        // Any departments.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id], 'criteria' => user_department::CRITERIA_ANY];
+        $condition1 = user_department::create($rule1->id, $configdata);
+
+        $options = ['deptname' => "{$department1->name}', '{$department2->name}", 'subdeptsinclude' => 'Not included'];
+        $expected = get_string('conditionuserdepartmentsanydescription', 'tool_organisation', $options);
+        $this->assertEquals($expected, $condition1->get_description());
     }
 
     /**
@@ -267,15 +377,12 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
      */
     public function test_is_configuration_valid(): void {
         global $DB;
-
-        /** @var tool_organisation_generator $generator */
-        $generator = self::getDataGenerator()->get_plugin_generator('tool_organisation');
-        $department1 = $generator->create_department();
-        $department2 = $generator->create_department();
+        $department1 = $this->get_generator()->create_department();
+        $department2 = $this->get_generator()->create_department();
 
         // Users in department.
-        $rule1 = $this->get_generator()->create_rule();
-        $configdata = ['departmentid' => $department1->id];
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['departmentid' => [$department1->id, $department2->id]];
         $condition1 = user_department::create($rule1->id, $configdata);
 
         $this->assertTrue($condition1->is_configuration_valid());
@@ -283,17 +390,6 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         $DB->delete_records('tool_organisation_department', ['id' => $department1->id]);
 
         $this->assertFalse($condition1->is_configuration_valid());
-
-        // Users not in department.
-        $rule1 = $this->get_generator()->create_rule();
-        $configdata = ['departmentid' => $department2->id];
-        $condition2 = user_not_in_department::create($rule1->id, $configdata);
-
-        $this->assertTrue($condition2->is_configuration_valid());
-
-        $DB->delete_records('tool_organisation_department', ['id' => $department2->id]);
-
-        $this->assertFalse($condition2->is_configuration_valid());
     }
 
     /**
@@ -306,14 +402,12 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
     public function test_trigger_rule_processing() {
         global $DB;
 
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
-
         $user0 = $this->getDataGenerator()->create_user();
-        $department0 = $generator->create_department();
-        $position0 = $generator->create_position();
+        $department0 = $this->get_generator()->create_department();
+        $position0 = $this->get_generator()->create_position();
 
         // Create rule0 with user in department conditon and notification outcome.
-        $rule0 = $this->get_generator()->create_rule(['enabled' => 1]);
+        $rule0 = $this->get_tool_dynamicrule_generator()->create_rule(['enabled' => 1]);
         $configdata = ['departmentid' => $department0->id, 'withsubdepartments' => 0];
         user_department::create($rule0->id, $configdata);
         $configdata = ['subject' => 'You are in department0',
@@ -347,18 +441,120 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
      * @uses \tool_dynamicrule\tool_dynamicrule\outcome\notification
      * @uses \tool_dynamicrule\api::process_rule
      */
+    public function test_trigger_rule_processing_multiple_departments_all() {
+        global $DB;
+
+        $user0 = $this->getDataGenerator()->create_user();
+        $department0 = $this->get_generator()->create_department();
+        $department1 = $this->get_generator()->create_department();
+        $position0 = $this->get_generator()->create_position();
+        $position1 = $this->get_generator()->create_position();
+
+        // Create rule0 with user in department conditon and notification outcome.
+        $rule0 = $this->get_tool_dynamicrule_generator()->create_rule(['enabled' => 1]);
+        $configdata = ['departmentid' => [$department0->id, $department1->id],
+            'withsubdepartments' => 0, 'criteria' => user_department::CRITERIA_ALL];
+        user_department::create($rule0->id, $configdata);
+        $configdata = ['subject' => 'You are in departments 0 and 1',
+            'body' => ['text' => 'Congratulations, you are in departments 0 and 1.', 'format' => FORMAT_MOODLE]];
+        \tool_dynamicrule\tool_dynamicrule\outcome\notification::create($rule0->id, $configdata);
+
+        // Prepare messages sink.
+        $sink = $this->redirectMessages();
+        $this->assertEquals(0, $DB->count_records('notifications'));
+
+        // Allocate user to department0, this supposed to trigger rule0, but nothing will happen.
+        $manager = new \tool_organisation\job_manager();
+        $manager->create_job((object)['userid' => $user0->id,
+            'positionid' => $position0->id, 'departmentid' => $department0->id, 'startdate' => 1262304000]);
+
+        // Check outcomes.
+        $messages = $sink->get_messages();
+        $this->assertEquals(0, $sink->count());
+        $sink->clear();
+
+        // Check matches record presence.
+        $this->assertEquals(0, $DB->count_records('tool_dynamicrule_match'));
+        $this->assertEquals(0, $DB->count_records('tool_dynamicrule_match', ['ruleid' => $rule0->id]));
+
+        // Allocate user to department1, this supposed to trigger rule0, now user matches condition.
+        $manager = new \tool_organisation\job_manager();
+        $manager->create_job((object)['userid' => $user0->id,
+            'positionid' => $position1->id, 'departmentid' => $department1->id, 'startdate' => 1262304000]);
+
+        // Check outcomes.
+        $messages = $sink->get_messages();
+        $this->assertEquals(1, $sink->count());
+        $this->assertEquals($messages[0]->subject, 'You are in departments 0 and 1');
+        $sink->clear();
+
+        // Check matches record presence.
+        $this->assertEquals(1, $DB->count_records('tool_dynamicrule_match'));
+        $this->assertEquals(1, $DB->count_records('tool_dynamicrule_match', ['ruleid' => $rule0->id]));
+    }
+
+    /**
+     * Test \tool_organisation\event\job_created event is triggering rule processing.
+     *
+     * @uses \tool_dynamicrule\event\observer
+     * @uses \tool_dynamicrule\tool_dynamicrule\outcome\notification
+     * @uses \tool_dynamicrule\api::process_rule
+     */
+    public function test_trigger_rule_processing_multiple_departments_any() {
+        global $DB;
+
+        $user0 = $this->getDataGenerator()->create_user();
+        $department0 = $this->get_generator()->create_department();
+        $department1 = $this->get_generator()->create_department();
+        $position0 = $this->get_generator()->create_position();
+        $position1 = $this->get_generator()->create_position();
+
+        // Create rule0 with user in department conditon and notification outcome.
+        $rule0 = $this->get_tool_dynamicrule_generator()->create_rule(['enabled' => 1]);
+        $configdata = ['departmentid' => [$department0->id, $department1->id],
+            'withsubdepartments' => 0, 'criteria' => user_department::CRITERIA_ANY];
+        user_department::create($rule0->id, $configdata);
+        $configdata = ['subject' => 'You are in departments 0 or 1',
+            'body' => ['text' => 'Congratulations, you are in departments 0 or 1.', 'format' => FORMAT_MOODLE]];
+        \tool_dynamicrule\tool_dynamicrule\outcome\notification::create($rule0->id, $configdata);
+
+        // Prepare messages sink.
+        $sink = $this->redirectMessages();
+        $this->assertEquals(0, $DB->count_records('notifications'));
+
+        // Allocate user to department0, this supposed to trigger rule0.
+        $manager = new \tool_organisation\job_manager();
+        $manager->create_job((object)['userid' => $user0->id,
+            'positionid' => $position0->id, 'departmentid' => $department0->id, 'startdate' => 1262304000]);
+
+        // Check outcomes.
+        $messages = $sink->get_messages();
+        $this->assertEquals(1, $sink->count());
+        $this->assertEquals($messages[0]->subject, 'You are in departments 0 or 1');
+        $sink->clear();
+
+        // Check matches record presence.
+        $this->assertEquals(1, $DB->count_records('tool_dynamicrule_match'));
+        $this->assertEquals(1, $DB->count_records('tool_dynamicrule_match', ['ruleid' => $rule0->id]));
+    }
+
+    /**
+     * Test \tool_organisation\event\job_created event is triggering rule processing.
+     *
+     * @uses \tool_dynamicrule\event\observer
+     * @uses \tool_dynamicrule\tool_dynamicrule\outcome\notification
+     * @uses \tool_dynamicrule\api::process_rule
+     */
     public function test_trigger_rule_processing_update() {
         global $DB;
 
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
-
         $user0 = $this->getDataGenerator()->create_user();
-        $department0 = $generator->create_department();
-        $position0 = $generator->create_position();
+        $department0 = $this->get_generator()->create_department();
+        $position0 = $this->get_generator()->create_position();
         $startdate = 1577841120;
 
         // Create rule0 with user in department conditon and notification outcome.
-        $rule0 = $this->get_generator()->create_rule(['enabled' => 1]);
+        $rule0 = $this->get_tool_dynamicrule_generator()->create_rule(['enabled' => 1]);
         $configdata = ['departmentid' => $department0->id, 'withsubdepartments' => 0, 'jobstartdate' => $startdate];
         user_department::create($rule0->id, $configdata);
         $configdata = ['subject' => 'You are in department0',
@@ -397,32 +593,27 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
      * Test user_can_add
      */
     public function test_user_can_add(): void {
-        $generator = self::getDataGenerator()->get_plugin_generator('tool_organisation');
         $user = self::getDataGenerator()->create_user();
 
         // Admin user.
         self::setAdminUser();
         $this->assertTrue(user_department::instance()->user_can_add());
-        $this->assertTrue(user_not_in_department::instance()->user_can_add());
 
         // Non-priveleged user.
         self::setUser($user);
         $this->assertFalse(user_department::instance()->user_can_add());
-        $this->assertFalse(user_not_in_department::instance()->user_can_add());
 
         // Grant priveleges to user.
-        $generator->assign_capability('tool/organisation:assignjobs', $user->id, \context_system::instance());
+        $this->get_generator()->assign_capability('tool/organisation:assignjobs', $user->id, \context_system::instance());
         $this->assertTrue(user_department::instance()->user_can_add());
-        $this->assertTrue(user_not_in_department::instance()->user_can_add());
     }
 
     /**
      * Test user_can_edit
      */
     public function test_user_can_edit(): void {
-        $generator = self::getDataGenerator()->get_plugin_generator('tool_organisation');
         $user = self::getDataGenerator()->create_user();
-        $department0 = $generator->create_department();
+        $department0 = $this->get_generator()->create_department();
         // In this test using $configdata is not compulstory, as underlying permission check is not
         // using it, we pass it for consistency with other tests.
         $configdata = ['departmentid' => $department0->id, 'withsubdepartments' => 0];
@@ -430,24 +621,20 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         // Admin user.
         self::setAdminUser();
         $this->assertTrue(user_department::instance()->user_can_edit($configdata));
-        $this->assertTrue(user_not_in_department::instance()->user_can_edit($configdata));
 
         // Non-priveleged user.
         self::setUser($user);
         $this->assertFalse(user_department::instance()->user_can_edit($configdata));
-        $this->assertFalse(user_not_in_department::instance()->user_can_edit($configdata));
 
         // Grant priveleges to user.
-        $generator->assign_capability('tool/organisation:assignjobs', $user->id, \context_system::instance());
+        $this->get_generator()->assign_capability('tool/organisation:assignjobs', $user->id, \context_system::instance());
         $this->assertTrue(user_department::instance()->user_can_edit($configdata));
-        $this->assertTrue(user_not_in_department::instance()->user_can_edit($configdata));
     }
 
     /**
      * Test test_user_can_edit by tenant.
      */
     public function test_user_can_edit_tenant() {
-        $generator = self::getDataGenerator()->get_plugin_generator('tool_organisation');
         $tenantgenerator = $this->getDataGenerator()->get_plugin_generator('tool_tenant');
         $tenant = $tenantgenerator->create_tenant();
         $tenantadmin = $this->getDataGenerator()->create_user();
@@ -455,7 +642,7 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         $manager = new \tool_tenant\manager();
         $manager->assign_tenant_admin_role($tenant->id, [$tenantadmin->id]);
 
-        $department0 = $generator->create_department(['tenantid' => $tenant->id]);
+        $department0 = $this->get_generator()->create_department(['tenantid' => $tenant->id]);
         // In this test using $configdata is not compulstory, as underlying permission check is not
         // using it, we pass it for consistency with other tests.
         $configdata = ['departmentid' => $department0->id, 'withsubdepartments' => 0];
@@ -463,11 +650,9 @@ class tool_organisation_condition_user_department_testcase extends advanced_test
         // Sanity check.
         self::setAdminUser();
         $this->assertTrue(user_department::instance()->user_can_edit($configdata));
-        $this->assertTrue(user_not_in_department::instance()->user_can_edit($configdata));
 
         // Tenant admin can edit conditions.
         self::setUser($tenantadmin);
         $this->assertTrue(user_department::instance()->user_can_edit($configdata));
-        $this->assertTrue(user_not_in_department::instance()->user_can_edit($configdata));
     }
 }

@@ -86,7 +86,7 @@ class export_import_rule_condition_mapping_testcase extends \advanced_testcase {
 
         // Create rule containing given condition, pointing to the department we just created.
         $rule = $this->get_rule_generator()->create_rule();
-        $this->get_rule_generator()->create_condition($conditionclass, $rule->id, ['departmentid' => $department->id]);
+        $this->get_rule_generator()->create_condition($conditionclass, $rule->id, ['departmentid' => [$department->id]]);
 
         // Export our rule.
         $exportid = $this->get_workplace_generator()->perform_export(exporter::class, [
@@ -120,7 +120,7 @@ class export_import_rule_condition_mapping_testcase extends \advanced_testcase {
         /** @var condition_base $condition */
         $condition = $conditionclass::instance(0, condition::get_record(['ruleid' => end($rules)->get('id')])->to_record());
 
-        $this->assertEquals($newdepartment->id, $condition->get_configdata()['departmentid']);
+        $this->assertEqualsCanonicalizing([$newdepartment->id], $condition->get_configdata()['departmentid']);
         $this->assertTrue($condition->is_configuration_valid());
     }
 
@@ -151,7 +151,7 @@ class export_import_rule_condition_mapping_testcase extends \advanced_testcase {
 
         // Create rule containing given condition, pointing to the position we just created.
         $rule = $this->get_rule_generator()->create_rule();
-        $this->get_rule_generator()->create_condition($conditionclass, $rule->id, ['positionid' => $position->id]);
+        $this->get_rule_generator()->create_condition($conditionclass, $rule->id, ['positionid' => [$position->id]]);
 
         // Export our rule.
         $exportid = $this->get_workplace_generator()->perform_export(exporter::class, [
@@ -185,7 +185,7 @@ class export_import_rule_condition_mapping_testcase extends \advanced_testcase {
         /** @var condition_base $condition */
         $condition = $conditionclass::instance(0, condition::get_record(['ruleid' => end($rules)->get('id')])->to_record());
 
-        $this->assertEquals($newposition->id, $condition->get_configdata()['positionid']);
+        $this->assertEqualsCanonicalizing([$newposition->id], $condition->get_configdata()['positionid']);
         $this->assertTrue($condition->is_configuration_valid());
     }
 

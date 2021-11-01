@@ -38,7 +38,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 use tool_organisation\tool_dynamicrule\condition\user_position;
-use tool_organisation\tool_dynamicrule\condition\user_without_position;
 
 /**
  * Unit tests for condition user_position  class.
@@ -46,7 +45,6 @@ use tool_organisation\tool_dynamicrule\condition\user_without_position;
  * @package    tool_organisation
  * @group      tool_organisation
  * @covers     \tool_organisation\tool_dynamicrule\condition\user_position
- * @covers     \tool_organisation\tool_dynamicrule\condition\user_without_position
  * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
  * @author     2019 Daniel Neis Araujo <daniel@moodle.com>
  * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
@@ -69,8 +67,17 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
      *
      * @return tool_dynamicrule_generator
      */
-    protected function get_generator(): tool_dynamicrule_generator {
+    protected function get_tool_dynamicrule_generator(): tool_dynamicrule_generator {
         return $this->getDataGenerator()->get_plugin_generator('tool_dynamicrule');
+    }
+
+    /**
+     * Get organisation generator
+     *
+     * @return tool_organisation_generator
+     */
+    protected function get_generator(): tool_organisation_generator {
+        return $this->getDataGenerator()->get_plugin_generator('tool_organisation');
     }
 
     /**
@@ -78,9 +85,6 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
      */
     public function test_get_title() {
         $condition = user_position::instance();
-        $this->assertNotEmpty($condition->get_title());
-
-        $condition = user_without_position::instance();
         $this->assertNotEmpty($condition->get_title());
     }
 
@@ -90,21 +94,15 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
     public function test_get_category() {
         $condition = user_position::instance();
         $this->assertEquals(get_string('pluginname', 'tool_organisation'), $condition->get_category());
-
-        $condition2 = user_without_position::instance();
-        $this->assertEquals($condition->get_category(), $condition2->get_category());
     }
 
     /**
      * Test validate_config_form
      */
     public function test_validate_config_form() {
+        $position1 = $this->get_generator()->create_position();
         $condition = user_position::instance();
-        $configform = ['positionid' => 0];
-        $this->assertArrayHasKey('positionid', $condition->validate_config_form($configform));
-
-        $condition = user_without_position::instance();
-        $configform = ['positionid' => 0];
+        $configform = ['positionid' => [1000, $position1->id]];
         $this->assertArrayHasKey('positionid', $condition->validate_config_form($configform));
     }
 
@@ -120,8 +118,7 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         $user3 = $this->getDataGenerator()->create_user();
         $user4 = $this->getDataGenerator()->create_user();
 
-        /** @var tool_organisation_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
+        $generator = $this->get_generator();
 
         $department1 = $generator->create_department();
         $department2 = $generator->create_department();
@@ -144,7 +141,7 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
             'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1262304000]);
 
         // Position1.
-        $rule1 = $this->get_generator()->create_rule();
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['positionid' => $position1->id];
         user_position::create($rule1->id, $configdata);
 
@@ -152,17 +149,8 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
         $this->assertEqualsCanonicalizing([$user1->id, $user3->id], array_column($users, 'id'));
 
-        // Rule 1, negated.
-        $rule12 = $this->get_generator()->create_rule();
-        $configdata = ['positionid' => $position1->id];
-        user_without_position::create($rule12->id, $configdata);
-
-        $this->assertEquals(3, \tool_dynamicrule\api::count_matching_users($rule12->id));
-        $users = \tool_dynamicrule\api::get_matching_users($rule12->id);
-        $this->assertEqualsCanonicalizing([$user2->id, $user4->id, get_admin()->id], array_column($users, 'id'));
-
         // Position2.
-        $rule2 = $this->get_generator()->create_rule();
+        $rule2 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['positionid' => $position2->id];
         user_position::create($rule2->id, $configdata);
 
@@ -170,22 +158,13 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         $users = \tool_dynamicrule\api::get_matching_users($rule2->id);
         $this->assertEqualsCanonicalizing([$user2->id, $user4->id], array_column($users, 'id'));
 
-        // Rule 2, negated.
-        $rule22 = $this->get_generator()->create_rule();
-        $configdata = ['positionid' => $position2->id];
-        user_without_position::create($rule22->id, $configdata);
-
-        $this->assertEquals(3, \tool_dynamicrule\api::count_matching_users($rule22->id));
-        $users = \tool_dynamicrule\api::get_matching_users($rule22->id);
-        $this->assertEqualsCanonicalizing([$user1->id, $user3->id, get_admin()->id], array_column($users, 'id'));
-
         // Let's test if startdate is working properly.
         $user5 = $this->getDataGenerator()->create_user();
         $manager->create_job((object)['userid' => $user5->id,
             'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1583193600]);
 
         // Only user5 should be found using this startdate and position2.
-        $rule33 = $this->get_generator()->create_rule();
+        $rule33 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['positionid' => $position2->id, 'jobstartdate' => 1583193600];
         user_position::create($rule33->id, $configdata);
 
@@ -194,7 +173,7 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         $this->assertEqualsCanonicalizing([$user5->id], array_column($users, 'id'));
 
         // No user should be found using this start date.
-        $rule34 = $this->get_generator()->create_rule();
+        $rule34 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['positionid' => $position2->id, 'jobstartdate' => 1614729600];
         user_position::create($rule34->id, $configdata);
 
@@ -202,7 +181,7 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         $this->assertEmpty(\tool_dynamicrule\api::get_matching_users($rule34->id));
 
         // Two users should be found using this start date and position1.
-        $rule35 = $this->get_generator()->create_rule();
+        $rule35 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['positionid' => $position1->id, 'jobstartdate' => 1262304000];
         user_position::create($rule35->id, $configdata);
 
@@ -212,18 +191,148 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
     }
 
     /**
+     * Test condition matching
+     *
+     * @uses \tool_dynamicrule\api::get_matching_users
+     * @uses \tool_dynamicrule\api::count_matching_users
+     */
+    public function test_get_matching_users_multiple_pos() {
+        $user1 = $this->getDataGenerator()->create_user();
+        $user1a = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $user3 = $this->getDataGenerator()->create_user();
+        $user4 = $this->getDataGenerator()->create_user();
+
+        $generator = $this->get_generator();
+
+        $department1 = $generator->create_department();
+        $department2 = $generator->create_department();
+
+        $position1 = $generator->create_position();
+        $position1a = $generator->create_position(['parentid' => $position1->id]);
+        $position2 = $generator->create_position();
+
+        $manager = new \tool_organisation\job_manager();
+
+        // User1 - position1.
+        $manager->create_job((object)['userid' => $user1->id,
+            'positionid' => $position1->id, 'departmentid' => $department1->id, 'startdate' => 1262304000]);
+
+        // User1a - position1a.
+        $manager->create_job((object)['userid' => $user1a->id,
+            'positionid' => $position1a->id, 'departmentid' => $department1->id, 'startdate' => 1262304000]);
+
+        // User2 - position1 and position2.
+        $manager->create_job((object)['userid' => $user2->id,
+            'positionid' => $position1->id, 'departmentid' => $department1->id, 'startdate' => 1262304000]);
+        $manager->create_job((object)['userid' => $user2->id,
+            'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1262304000]);
+
+        // User3 - position2.
+        $manager->create_job((object)['userid' => $user3->id,
+            'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1262304000]);
+
+        // User4 - position1 and position2.
+        $manager->create_job((object)['userid' => $user4->id,
+            'positionid' => $position1->id, 'departmentid' => $department1->id, 'startdate' => 1262304000]);
+        $manager->create_job((object)['userid' => $user4->id,
+            'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1262304000]);
+
+        // Position 1 && 2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id],
+            'criteria' => user_position::CRITERIA_ALL, 'withsubpositions' => 0];
+        user_position::create($rule1->id, $configdata);
+
+        $this->assertEquals(2, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user2->id, $user4->id], array_column($users, 'id'));
+
+        // Position 1 || 2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id],
+            'criteria' => user_position::CRITERIA_ANY, 'withsubpositions' => 0];
+        user_position::create($rule1->id, $configdata);
+
+        $this->assertEquals(4, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user1->id, $user2->id, $user3->id, $user4->id], array_column($users, 'id'));
+
+        // Position 1 || 2 with subpositions.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id],
+            'criteria' => user_position::CRITERIA_ANY, 'withsubpositions' => 1];
+        user_position::create($rule1->id, $configdata);
+
+        $this->assertEquals(5, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user1->id, $user1a->id, $user2->id, $user3->id, $user4->id],
+            array_column($users, 'id'));
+
+        // Let's test if startdate is working properly.
+        $user5 = $this->getDataGenerator()->create_user();
+        $manager->create_job((object)['userid' => $user5->id,
+            'positionid' => $position2->id, 'departmentid' => $department2->id, 'startdate' => 1583193600]);
+
+        // Only user5 should be found using this startdate and position1 || position2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id],
+            'criteria' => user_position::CRITERIA_ANY, 'jobstartdate' => 1583193600];
+        user_position::create($rule1->id, $configdata);
+
+        $this->assertEquals(1, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user5->id], array_column($users, 'id'));
+
+        // No user should be found using this startdate and position1 && position2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id],
+            'criteria' => user_position::CRITERIA_ALL, 'jobstartdate' => 1583193600];
+        user_position::create($rule1->id, $configdata);
+
+        $this->assertEquals(0, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $this->assertEmpty(\tool_dynamicrule\api::get_matching_users($rule1->id));
+
+        // No user should be found using this start date.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id],
+            'criteria' => user_position::CRITERIA_ANY, 'jobstartdate' => 1614729600];
+        user_position::create($rule1->id, $configdata);
+
+        $this->assertEquals(0, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $this->assertEmpty(\tool_dynamicrule\api::get_matching_users($rule1->id));
+
+        // Five users should be found using this start date and position1 || position2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id],
+            'criteria' => user_position::CRITERIA_ANY, 'jobstartdate' => 1262304000];
+        user_position::create($rule1->id, $configdata);
+
+        $this->assertEquals(5, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user1->id, $user2->id, $user3->id, $user4->id, $user5->id],
+            array_column($users, 'id'));
+
+        // One user should be found using this start date and position1 && position2.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id],
+            'criteria' => user_position::CRITERIA_ALL, 'jobstartdate' => 1262304000];
+        user_position::create($rule1->id, $configdata);
+
+        $this->assertEquals(2, \tool_dynamicrule\api::count_matching_users($rule1->id));
+        $users = \tool_dynamicrule\api::get_matching_users($rule1->id);
+        $this->assertEqualsCanonicalizing([$user2->id, $user4->id], array_column($users, 'id'));
+    }
+
+    /**
      * Test get_description
      */
     public function test_get_description() {
+        $position1 = $this->get_generator()->create_position();
+        $position2 = $this->get_generator()->create_position();
 
-        $this->resetAfterTest();
-
-        /** @var tool_organisation_generator $generator */
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
-
-        $position1 = $generator->create_position();
-
-        $rule1 = $this->get_generator()->create_rule();
+        // One position.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
         $configdata = ['positionid' => $position1->id];
         $condition1 = user_position::create($rule1->id, $configdata);
 
@@ -231,12 +340,23 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         $expected = get_string('conditionuserpositiondescription', 'tool_organisation', $options);
         $this->assertEquals($expected, $condition1->get_description());
 
-        $rule2 = $this->get_generator()->create_rule();
-        $condition2 = user_without_position::create($rule2->id, $configdata);
+        // All positions.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id], 'criteria' => user_position::CRITERIA_ALL];
+        $condition1 = user_position::create($rule1->id, $configdata);
 
-        $options = ['posname' => $position1->name, 'subposinclude' => 'Not included'];
-        $expected = get_string('conditionuserpositiondescriptionnegated', 'tool_organisation', $options);
-        $this->assertEquals($expected, $condition2->get_description());
+        $options = ['posname' => "{$position1->name}', '{$position2->name}", 'subposinclude' => 'Not included'];
+        $expected = get_string('conditionuserpositionsalldescription', 'tool_organisation', $options);
+        $this->assertEquals($expected, $condition1->get_description());
+
+        // Any positions.
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id], 'criteria' => user_position::CRITERIA_ANY];
+        $condition1 = user_position::create($rule1->id, $configdata);
+
+        $options = ['posname' => "{$position1->name}', '{$position2->name}", 'subposinclude' => 'Not included'];
+        $expected = get_string('conditionuserpositionsanydescription', 'tool_organisation', $options);
+        $this->assertEquals($expected, $condition1->get_description());
     }
 
     /**
@@ -245,14 +365,12 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
     public function test_is_configuration_valid(): void {
         global $DB;
 
-        /** @var tool_organisation_generator $generator */
-        $generator = self::getDataGenerator()->get_plugin_generator('tool_organisation');
-        $position1 = $generator->create_position();
-        $position2 = $generator->create_position();
+        $position1 = $this->get_generator()->create_position();
+        $position2 = $this->get_generator()->create_position();
 
         // Users with position.
-        $rule1 = $this->get_generator()->create_rule();
-        $configdata = ['positionid' => $position1->id];
+        $rule1 = $this->get_tool_dynamicrule_generator()->create_rule();
+        $configdata = ['positionid' => [$position1->id, $position2->id]];
         $condition1 = user_position::create($rule1->id, $configdata);
 
         $this->assertTrue($condition1->is_configuration_valid());
@@ -260,17 +378,6 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         $DB->delete_records('tool_organisation_position', ['id' => $position1->id]);
 
         $this->assertFalse($condition1->is_configuration_valid());
-
-        // Users without position.
-        $rule1 = $this->get_generator()->create_rule();
-        $configdata = ['positionid' => $position2->id];
-        $condition2 = user_without_position::create($rule1->id, $configdata);
-
-        $this->assertTrue($condition2->is_configuration_valid());
-
-        $DB->delete_records('tool_organisation_position', ['id' => $position2->id]);
-
-        $this->assertFalse($condition2->is_configuration_valid());
     }
 
     /**
@@ -283,14 +390,12 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
     public function test_trigger_rule_processing() {
         global $DB;
 
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
-
         $user0 = $this->getDataGenerator()->create_user();
-        $department0 = $generator->create_department();
-        $position0 = $generator->create_position();
+        $department0 = $this->get_generator()->create_department();
+        $position0 = $this->get_generator()->create_position();
 
         // Create rule0 with user has position conditon and notification outcome.
-        $rule0 = $this->get_generator()->create_rule(['enabled' => 1]);
+        $rule0 = $this->get_tool_dynamicrule_generator()->create_rule(['enabled' => 1]);
         $configdata = ['positionid' => $position0->id];
         user_position::create($rule0->id, $configdata);
         $configdata = ['subject' => 'You are having position0',
@@ -324,18 +429,120 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
      * @uses \tool_dynamicrule\tool_dynamicrule\outcome\notification
      * @uses \tool_dynamicrule\api::process_rule
      */
+    public function test_trigger_rule_processing_multiple_positions_all() {
+        global $DB;
+
+        $user0 = $this->getDataGenerator()->create_user();
+        $position0 = $this->get_generator()->create_position();
+        $position1 = $this->get_generator()->create_position();
+        $department0 = $this->get_generator()->create_department();
+        $department1 = $this->get_generator()->create_department();
+
+        // Create rule0 with user in position conditon and notification outcome.
+        $rule0 = $this->get_tool_dynamicrule_generator()->create_rule(['enabled' => 1]);
+        $configdata = ['positionid' => [$position0->id, $position1->id],
+            'withsubpositions' => 0, 'criteria' => user_position::CRITERIA_ALL];
+        user_position::create($rule0->id, $configdata);
+        $configdata = ['subject' => 'You are in positions 0 and 1',
+            'body' => ['text' => 'Congratulations, you are in positions 0 and 1.', 'format' => FORMAT_MOODLE]];
+        \tool_dynamicrule\tool_dynamicrule\outcome\notification::create($rule0->id, $configdata);
+
+        // Prepare messages sink.
+        $sink = $this->redirectMessages();
+        $this->assertEquals(0, $DB->count_records('notifications'));
+
+        // Allocate user to position0, this supposed to trigger rule0, but nothing will happen.
+        $manager = new \tool_organisation\job_manager();
+        $manager->create_job((object)['userid' => $user0->id,
+            'positionid' => $position0->id, 'departmentid' => $department0->id, 'startdate' => 1262304000]);
+
+        // Check outcomes.
+        $messages = $sink->get_messages();
+        $this->assertEquals(0, $sink->count());
+        $sink->clear();
+
+        // Check matches record presence.
+        $this->assertEquals(0, $DB->count_records('tool_dynamicrule_match'));
+        $this->assertEquals(0, $DB->count_records('tool_dynamicrule_match', ['ruleid' => $rule0->id]));
+
+        // Allocate user to position1, this supposed to trigger rule0, now user matches condition.
+        $manager = new \tool_organisation\job_manager();
+        $manager->create_job((object)['userid' => $user0->id,
+            'positionid' => $position1->id, 'departmentid' => $department1->id, 'startdate' => 1262304000]);
+
+        // Check outcomes.
+        $messages = $sink->get_messages();
+        $this->assertEquals(1, $sink->count());
+        $this->assertEquals($messages[0]->subject, 'You are in positions 0 and 1');
+        $sink->clear();
+
+        // Check matches record presence.
+        $this->assertEquals(1, $DB->count_records('tool_dynamicrule_match'));
+        $this->assertEquals(1, $DB->count_records('tool_dynamicrule_match', ['ruleid' => $rule0->id]));
+    }
+
+    /**
+     * Test \tool_organisation\event\job_created event is triggering rule processing.
+     *
+     * @uses \tool_dynamicrule\event\observer
+     * @uses \tool_dynamicrule\tool_dynamicrule\outcome\notification
+     * @uses \tool_dynamicrule\api::process_rule
+     */
+    public function test_trigger_rule_processing_multiple_positions_any() {
+        global $DB;
+
+        $user0 = $this->getDataGenerator()->create_user();
+        $position0 = $this->get_generator()->create_position();
+        $position1 = $this->get_generator()->create_position();
+        $department0 = $this->get_generator()->create_department();
+        $department1 = $this->get_generator()->create_department();
+
+        // Create rule0 with user in position conditon and notification outcome.
+        $rule0 = $this->get_tool_dynamicrule_generator()->create_rule(['enabled' => 1]);
+        $configdata = ['positionid' => [$position0->id, $position1->id],
+            'withsubpositions' => 0, 'criteria' => user_position::CRITERIA_ANY];
+        user_position::create($rule0->id, $configdata);
+        $configdata = ['subject' => 'You are in positions 0 or 1',
+            'body' => ['text' => 'Congratulations, you are in positions 0 or 1.', 'format' => FORMAT_MOODLE]];
+        \tool_dynamicrule\tool_dynamicrule\outcome\notification::create($rule0->id, $configdata);
+
+        // Prepare messages sink.
+        $sink = $this->redirectMessages();
+        $this->assertEquals(0, $DB->count_records('notifications'));
+
+        // Allocate user to position0, this supposed to trigger rule0.
+        $manager = new \tool_organisation\job_manager();
+        $manager->create_job((object)['userid' => $user0->id,
+            'positionid' => $position0->id, 'departmentid' => $department0->id, 'startdate' => 1262304000]);
+
+        // Check outcomes.
+        $messages = $sink->get_messages();
+        $this->assertEquals(1, $sink->count());
+        $this->assertEquals($messages[0]->subject, 'You are in positions 0 or 1');
+        $sink->clear();
+
+        // Check matches record presence.
+        $this->assertEquals(1, $DB->count_records('tool_dynamicrule_match'));
+        $this->assertEquals(1, $DB->count_records('tool_dynamicrule_match', ['ruleid' => $rule0->id]));
+    }
+
+    /**
+     * Test \tool_organisation\event\job_created event is triggering rule processing.
+     *
+     * @uses \tool_dynamicrule\event\observer
+     * @uses \tool_dynamicrule\tool_dynamicrule\outcome\notification
+     * @uses \tool_dynamicrule\api::process_rule
+     */
     public function test_trigger_rule_processing_update() {
         global $DB;
 
-        $generator = $this->getDataGenerator()->get_plugin_generator('tool_organisation');
-
         $user0 = $this->getDataGenerator()->create_user();
-        $department0 = $generator->create_department();
-        $position0 = $generator->create_position();
+        $department0 = $this->get_generator()->create_department();
+        $position0 = $this->get_generator()->create_position();
         $startdate = 1577841120;
 
         // Create rule0 with user has position conditon and notification outcome.
-        $rule0 = $this->get_generator()->create_rule(['enabled' => 1]);
+        $rule0 = $this->get_tool_dynamicrule_generator()->create_rule(['enabled' => 1]);
         $configdata = ['positionid' => $position0->id, 'jobstartdate' => $startdate];
         user_position::create($rule0->id, $configdata);
         $configdata = ['subject' => 'You are having position0',
@@ -374,29 +581,23 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
      * Test user_can_add
      */
     public function test_user_can_add(): void {
-        $generator = self::getDataGenerator()->get_plugin_generator('tool_organisation');
         $user = self::getDataGenerator()->create_user();
         self::setUser($user);
 
         // Can add user in position conditon.
         $this->assertFalse(user_position::instance()->user_can_add());
 
-        // Can add user without position conditon.
-        $this->assertFalse(user_without_position::instance()->user_can_add());
-
         // We assign capability to user.
-        $generator->assign_capability('tool/organisation:assignjobs', $user->id, \context_system::instance());
+        $this->get_generator()->assign_capability('tool/organisation:assignjobs', $user->id, \context_system::instance());
         $this->assertTrue(user_position::instance()->user_can_add());
-        $this->assertTrue(user_without_position::instance()->user_can_add());
     }
 
     /**
      * Test user_can_edit
      */
     public function test_user_can_edit(): void {
-        $generator = self::getDataGenerator()->get_plugin_generator('tool_organisation');
         $user = self::getDataGenerator()->create_user();
-        $position0 = $generator->create_position();
+        $position0 = $this->get_generator()->create_position();
         // In this test using $configdata is not compulstory, as underlying permission check is not
         // using it, we pass it for consistency with other tests.
         $configdata = ['positionid' => $position0->id];
@@ -404,24 +605,20 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         // Admin user.
         self::setAdminUser();
         $this->assertTrue(user_position::instance()->user_can_edit($configdata));
-        $this->assertTrue(user_without_position::instance()->user_can_edit($configdata));
 
         // Non-priveleged user.
         self::setUser($user);
         $this->assertFalse(user_position::instance()->user_can_edit($configdata));
-        $this->assertFalse(user_without_position::instance()->user_can_edit($configdata));
 
         // Grant priveleges to user.
-        $generator->assign_capability('tool/organisation:assignjobs', $user->id, \context_system::instance());
+        $this->get_generator()->assign_capability('tool/organisation:assignjobs', $user->id, \context_system::instance());
         $this->assertTrue(user_position::instance()->user_can_edit($configdata));
-        $this->assertTrue(user_without_position::instance()->user_can_edit($configdata));
     }
 
     /**
      * Test test_user_can_edit by tenant.
      */
     public function test_user_can_edit_tenant(): void {
-        $generator = self::getDataGenerator()->get_plugin_generator('tool_organisation');
         $tenantgenerator = $this->getDataGenerator()->get_plugin_generator('tool_tenant');
         $tenant = $tenantgenerator->create_tenant();
         $tenantadmin = $this->getDataGenerator()->create_user();
@@ -429,7 +626,7 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         $manager = new \tool_tenant\manager();
         $manager->assign_tenant_admin_role($tenant->id, [$tenantadmin->id]);
 
-        $position0 = $generator->create_position(['tenantid' => $tenant->id]);
+        $position0 = $this->get_generator()->create_position(['tenantid' => $tenant->id]);
         // In this test using $configdata is not compulstory, as underlying permission check is not
         // using it, we pass it for consistency with other tests.
         $configdata = ['positionid' => $position0->id];
@@ -437,11 +634,9 @@ class tool_organisation_condition_user_position_testcase extends advanced_testca
         // Sanity check.
         self::setAdminUser();
         $this->assertTrue(user_position::instance()->user_can_edit($configdata));
-        $this->assertTrue(user_without_position::instance()->user_can_edit($configdata));
 
         // Tenant admin can edit conditions.
         self::setUser($tenantadmin);
         $this->assertTrue(user_position::instance()->user_can_edit($configdata));
-        $this->assertTrue(user_without_position::instance()->user_can_edit($configdata));
     }
 }

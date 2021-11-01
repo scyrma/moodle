@@ -421,3 +421,49 @@ Feature: Export and import or organisation structure
     And I should see "Position frameworks"
     And I should see "Main hierarchy"
     And I log out
+
+  @_file_upload
+  Scenario: Importing export created when jobs DR conditions were single-value selects
+    When I log in as "admin"
+    And I perform a new import with these options:
+      | Step 1 | Upload a file | admin/tool/organisation/tests/fixtures/dr_export_using_singleselects.zip |
+    And I navigate to "All tenants" in workplace launcher
+    And I switch to tenant "Test DR export import"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I should see "Users who have a job in the department 'dep1'"
+    And I should see "Users who have position 'pos1'"
+    And I should see "Users who don't have a job in the department 'dep1'"
+    And I should see "Users who don't have position 'pos1'"
+    Then I follow "indep1"
+    And I should see "1 total matches"
+    Given the following "tool_tenant > users" exist:
+      | username | firstname | lastname | email              | tenant                |
+      | u2       | U2        | U2       | u2@address.invalid | Test DR export import |
+      | u3       | U3        | U3       | u3@address.invalid | Test DR export import |
+    And I navigate to "Dynamic rules" in workplace launcher
+    Then I click on "Enable rule" "link" in the "indep1" "table_row"
+    And I click on "Enable" "button" in the "Confirm" "dialogue"
+    Then I click on "Enable rule" "link" in the "inpos1" "table_row"
+    And I click on "Enable" "button" in the "Confirm" "dialogue"
+    Then I click on "Enable rule" "link" in the "not in dep1" "table_row"
+    And I click on "Enable" "button" in the "Confirm" "dialogue"
+    Then I click on "Enable rule" "link" in the "not in pos1" "table_row"
+    And I click on "Enable" "button" in the "Confirm" "dialogue"
+    And I run all adhoc tasks
+    And I follow "View report for 'indep1'"
+    And I should see "DR1 U1"
+    And I should not see "U2 U2"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I follow "View report for 'not in dep1'"
+    And I should not see "DR1 U1"
+    And I should see "U2 U2"
+    And I should see "U3 U3"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I follow "View report for 'inpos1'"
+    And I should see "DR1 U1"
+    And I should not see "U2 U2"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I follow "View report for 'not in pos1'"
+    And I should not see "DR1 U1"
+    And I should see "U2 U2"
+    And I should see "U3 U3"

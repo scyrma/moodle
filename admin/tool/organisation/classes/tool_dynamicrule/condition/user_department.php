@@ -40,9 +40,6 @@ use tool_organisation\event\job_created;
 use tool_organisation\event\job_updated;
 use tool_organisation\helper;
 use tool_organisation\organisation;
-use tool_wp\exporter_base;
-use tool_wp\importer_base;
-use tool_organisation\permission;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -54,7 +51,7 @@ defined('MOODLE_INTERNAL') || die;
  * @author     2019 Daniel Neis <daniel@moodle.com>
  * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
-class user_department extends \tool_dynamicrule\condition_sql {
+class user_department extends condition_department_base {
 
     /**
      * Returns the title of the condition
@@ -90,19 +87,34 @@ class user_department extends \tool_dynamicrule\condition_sql {
      */
     public function get_description(): string {
         global $DB;
-        $name = $DB->get_field('tool_organisation_department', 'name', ['id' => $this->get_departmentid()]);
-        $options = ['deptname' => format_string($name, true, ['escape' => false])];
+        [$list, $params] = $DB->get_in_or_equal($this->get_departmentid());
+        $names = $DB->get_fieldset_sql("SELECT name FROM {tool_organisation_department} WHERE id "
+            . $list . " ORDER BY name", $params);
 
-        $options['subdeptsinclude'] = $this->get_with_subdepartments() ? get_string('included') : get_string('notincluded');
+        $deptnames = implode("', '", array_map(function(string $name) {
+            return format_string($name, true, ['escape' => false]);
+        }, $names));
 
+        $options = [
+            'deptname' => $deptnames,
+            'subdeptsinclude' => $this->get_with_subdepartments() ? get_string('included') : get_string('notincluded'),
+        ];
+
+        $withdatefragment = '';
         if ($this->get_conditiondateenabled()) {
             $options['conditiondate'] = userdate($this->get_conditiondate(), get_string('strftimedatefullshort'));
-            $description = get_string('conditionuserdepartmentdescriptionwithdate', 'tool_organisation', $options);
-        } else {
-            $description = get_string('conditionuserdepartmentdescription', 'tool_organisation', $options);
+            $withdatefragment = 'withdate';
         }
 
-        return $description;
+        if (count($names) > 1) {
+            // Many departments.
+            $identifier = 'conditionuserdepartments' . $this->get_criteria() . 'description' . $withdatefragment;
+        } else {
+            // One department.
+            $identifier = 'conditionuserdepartmentdescription' . $withdatefragment;
+        }
+
+        return get_string($identifier, 'tool_organisation', $options);
     }
 
     /**
@@ -111,34 +123,38 @@ class user_department extends \tool_dynamicrule\condition_sql {
      * @param \MoodleQuickForm $mform The form to add elements to
      */
     public function get_config_form(\MoodleQuickForm $mform) {
-        global $CFG;
+        global $CFG, $OUTPUT;
 
         $mform->addElement('selectgroups', 'departmentid', get_string('entitydepartment', 'tool_organisation'),
-            organisation::get_all_departments_menu(['' => '']));
-        $mform->addRule('departmentid', null, 'required', null, 'client');
-        $mform->setType('departmentid', PARAM_INT);
+            organisation::get_all_departments_menu(), ['multiple' => true]);
 
         $mform->addElement('advcheckbox', 'withsubdepartments',
             '', get_string('withsubdepartments', 'tool_organisation'));
 
+        $group = [];
+        $group[] = $mform->createElement('radio', 'criteria',
+            get_string('conditionuserdepartmentsallcriteria', 'tool_organisation'),
+            '',
+            self::CRITERIA_ALL);
+        $group[] = $mform->createElement('radio', 'criteria',
+            get_string('conditionuserdepartmentsanycriteria', 'tool_organisation'),
+            $OUTPUT->help_icon('conditionuserdepartmentsanycriteria', 'tool_organisation'),
+            self::CRITERIA_ANY);
+        $group[] = $mform->createElement('radio', 'criteria',
+            get_string('conditionuserdepartmentseachcriteria', 'tool_organisation'),
+            $OUTPUT->help_icon('conditionuserdepartmentseachcriteria', 'tool_organisation') .
+            get_string('conditioncriterianotavailableyet', 'tool_dynamicrule'),
+            self::CRITERIA_EACH, ['disabled' => true]);
+        $mform->addGroup($group, 'criteria_group',
+            get_string('conditioncriteria', 'tool_dynamicrule'),
+            \html_writer::div('', 'w-100'),
+            false);
+        $mform->setType('criteria', PARAM_ALPHANUM);
+        $mform->setDefault('criteria', self::CRITERIA_ANY);
+
         $options = ['optional' => true, 'timezone' => $CFG->timezone];
         $mform->addElement('date_selector', 'jobstartdate', get_string('jobstartdateafter', 'tool_organisation'), $options);
         $mform->setDefault('jobstartdate', time());
-    }
-
-    /**
-     * Validates the configform of the outcome
-     *
-     * @param array $data Data from the form
-     * @return array Array with errors for each element
-     */
-    public function validate_config_form(array $data): array {
-        global $DB;
-        $errors = [];
-        if (empty($data['departmentid']) || !$DB->record_exists('tool_organisation_department', ['id' => $data['departmentid']])) {
-            $errors['departmentid'] = get_string('errorinvaliddepartment', 'tool_organisation');
-        }
-        return $errors;
     }
 
     /**
@@ -151,39 +167,27 @@ class user_department extends \tool_dynamicrule\condition_sql {
         if ($this->get_conditiondateenabled()) {
             $startdate = $this->get_conditiondate();
         }
-        list($where, $params) = helper::user_is_in_department_select($this->get_departmentid(),
-            $this->get_with_subdepartments(), 'u', $startdate, $this->get_tenantid());
+        $withsubdepartments = $this->get_with_subdepartments();
+        $tenantid = $this->get_tenantid();
 
-        $join = '';
-        return [$join, $where, $params];
-    }
+        $departmentwheres = [];
+        $departmentparams = [];
+        foreach ($this->get_departmentid() as $departmentid) {
+            [$where, $params] = helper::user_is_in_department_select($departmentid,
+                $withsubdepartments, 'u', $startdate, $tenantid);
 
-    /**
-     * Return the configured departmentid
-     *
-     * @return int
-     */
-    private function get_departmentid(): int {
-        return $this->get_configdata()['departmentid'];
-    }
+            $departmentwheres[] = $where;
+            $departmentparams = array_merge($departmentparams, $params);
+        }
 
-    /**
-     * Return the configured departmentid
-     *
-     * @return bool
-     */
-    private function get_with_subdepartments(): bool {
-        return !empty($this->get_configdata()['withsubdepartments']);
-    }
+        if (count($departmentwheres) > 1) {
+            $separator = ($this->get_criteria() === self::CRITERIA_ALL) ? ' AND ' : ' OR ';
+            $departmentwheres = implode($separator, $departmentwheres);
+        } else {
+            $departmentwheres = $departmentwheres[0];
+        }
 
-    /**
-     * Check if department still exists.
-     *
-     * @return bool
-     */
-    public function is_configuration_valid(): bool {
-        global $DB;
-        return $DB->record_exists('tool_organisation_department', ['id' => $this->get_departmentid()]);
+        return ['', $departmentwheres, $departmentparams];
     }
 
     /**
@@ -193,46 +197,5 @@ class user_department extends \tool_dynamicrule\condition_sql {
      */
     public function get_event_subscription() {
         return [job_created::class, job_updated::class];
-    }
-
-    /**
-     * Add departmentid condition field mapping during export
-     *
-     * @param exporter_base $exporter
-     */
-    public function add_exporter_mapping(exporter_base $exporter): void {
-        $exporter->add_mapping('tool_organisation_department', $this->get_departmentid());
-    }
-
-    /**
-     * Get departmentid condition field mapping during import
-     *
-     * @param importer_base $importer
-     */
-    public function get_importer_mapping(importer_base $importer): void {
-        $configdata = $this->get_configdata();
-        $configdata['departmentid'] =
-            $importer->get_mapping('tool_organisation_department', $this->get_departmentid(), IGNORE_MISSING) ?? 0;
-
-        $this->update_configdata($configdata);
-    }
-
-    /**
-     * If the current user is able to add this condition.
-     *
-     * @return bool
-     */
-    public function user_can_add(): bool {
-        return permission::can_view_jobs();
-    }
-
-    /**
-     * If the current user is able to edit this condition.
-     *
-     * @param array $configdata
-     * @return bool
-     */
-    public function user_can_edit(array $configdata): bool {
-        return permission::can_view_jobs();
     }
 }

@@ -40,9 +40,6 @@ use tool_organisation\event\job_created;
 use tool_organisation\event\job_updated;
 use tool_organisation\helper;
 use tool_organisation\organisation;
-use tool_wp\exporter_base;
-use tool_wp\importer_base;
-use tool_organisation\permission;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -54,7 +51,7 @@ defined('MOODLE_INTERNAL') || die;
  * @author     2019 Daniel Neis <daniel@moodle.com>
  * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
-class user_position extends \tool_dynamicrule\condition_sql {
+class user_position extends condition_position_base {
 
     /**
      * Returns the title of the condition
@@ -71,15 +68,34 @@ class user_position extends \tool_dynamicrule\condition_sql {
      * @param \MoodleQuickForm $mform The form to add elements to
      */
     public function get_config_form(\MoodleQuickForm $mform) {
-        global $CFG;
+        global $CFG, $OUTPUT;
 
         $mform->addElement('selectgroups', 'positionid', get_string('entityposition', 'tool_organisation'),
-            organisation::get_all_positions_menu(['' => '']));
-        $mform->addRule('positionid', null, 'required', null, 'client');
-        $mform->setType('positionid', PARAM_INT);
+            organisation::get_all_positions_menu(), ['multiple' => true]);
 
         $mform->addElement('advcheckbox', 'withsubpositions',
             '', get_string('withsubpositions', 'tool_organisation'));
+
+        $group = [];
+        $group[] = $mform->createElement('radio', 'criteria',
+            get_string('conditionuserpositionsallcriteria', 'tool_organisation'),
+            '',
+            self::CRITERIA_ALL);
+        $group[] = $mform->createElement('radio', 'criteria',
+            get_string('conditionuserpositionsanycriteria', 'tool_organisation'),
+            $OUTPUT->help_icon('conditionuserpositionsanycriteria', 'tool_organisation'),
+            self::CRITERIA_ANY);
+        $group[] = $mform->createElement('radio', 'criteria',
+            get_string('conditionuserpositionseachcriteria', 'tool_organisation'),
+            $OUTPUT->help_icon('conditionuserpositionseachcriteria', 'tool_organisation') .
+            get_string('conditioncriterianotavailableyet', 'tool_dynamicrule'),
+            self::CRITERIA_EACH, ['disabled' => true]);
+        $mform->addGroup($group, 'criteria_group',
+            get_string('conditioncriteria', 'tool_dynamicrule'),
+            \html_writer::div('', 'w-100'),
+            false);
+        $mform->setType('criteria', PARAM_ALPHANUM);
+        $mform->setDefault('criteria', self::CRITERIA_ANY);
 
         $options = ['optional' => true, 'timezone' => $CFG->timezone];
         $mform->addElement('date_selector', 'jobstartdate', get_string('jobstartdateafter', 'tool_organisation'), $options);
@@ -93,19 +109,34 @@ class user_position extends \tool_dynamicrule\condition_sql {
      */
     public function get_description(): string {
         global $DB;
-        $name = $DB->get_field('tool_organisation_position', 'name', ['id' => $this->get_positionid()]);
-        $options = ['posname' => format_string($name, true, ['escape' => false])];
+        [$list, $params] = $DB->get_in_or_equal($this->get_positionid());
+        $names = $DB->get_fieldset_sql("SELECT name FROM {tool_organisation_position} WHERE id "
+            . $list . " ORDER BY name", $params);
 
-        $options['subposinclude'] = $this->get_with_subpositions() ? get_string('included') : get_string('notincluded');
+        $deptnames = implode("', '", array_map(function(string $name) {
+            return format_string($name, true, ['escape' => false]);
+        }, $names));
 
+        $options = [
+            'posname' => $deptnames,
+            'subposinclude' => $this->get_with_subpositions() ? get_string('included') : get_string('notincluded'),
+        ];
+
+        $withdatefragment = '';
         if ($this->get_conditiondateenabled()) {
             $options['conditiondate'] = userdate($this->get_conditiondate(), get_string('strftimedatefullshort'));
-            $description = get_string('conditionuserpositiondescriptionwithdate', 'tool_organisation', $options);
-        } else {
-            $description = get_string('conditionuserpositiondescription', 'tool_organisation', $options);
+            $withdatefragment = 'withdate';
         }
 
-        return $description;
+        if (count($names) > 1) {
+            // Many positions.
+            $identifier = 'conditionuserpositions' . $this->get_criteria() . 'description' . $withdatefragment;
+        } else {
+            // One position.
+            $identifier = 'conditionuserpositiondescription' . $withdatefragment;
+        }
+
+        return get_string($identifier, 'tool_organisation', $options);
     }
 
     /**
@@ -127,21 +158,6 @@ class user_position extends \tool_dynamicrule\condition_sql {
     }
 
     /**
-     * Validates the configform of the outcome
-     *
-     * @param array $data Data from the form
-     * @return array Array with errors for each element
-     */
-    public function validate_config_form(array $data): array {
-        global $DB;
-        $errors = [];
-        if (empty($data['positionid']) || !$DB->record_exists('tool_organisation_position', ['id' => $data['positionid']])) {
-            $errors['positionid'] = get_string('errorinvalidposition', 'tool_organisation');
-        }
-        return $errors;
-    }
-
-    /**
      * Helps to build SQL to retrieve users that matches the current condition
      *
      * @return array array of three elements [$join, $where, $params]
@@ -151,39 +167,27 @@ class user_position extends \tool_dynamicrule\condition_sql {
         if ($this->get_conditiondateenabled()) {
             $startdate = $this->get_conditiondate();
         }
-        list($where, $params) = helper::user_has_position_select($this->get_positionid(),
-            $this->get_with_subpositions(), 'u', $startdate, $this->get_tenantid());
+        $withsubpositions = $this->get_with_subpositions();
+        $tenantid = $this->get_tenantid();
 
-        $join = '';
-        return [$join, $where, $params];
-    }
+        $positionwheres = [];
+        $positionparams = [];
+        foreach ($this->get_positionid() as $positionid) {
+            [$where, $params] = helper::user_has_position_select($positionid,
+                $withsubpositions, 'u', $startdate, $tenantid);
 
-    /**
-     * Return the configured positionid
-     *
-     * @return int
-     */
-    private function get_positionid(): int {
-        return $this->get_configdata()['positionid'];
-    }
+            $positionwheres[] = $where;
+            $positionparams = array_merge($positionparams, $params);
+        }
 
-    /**
-     * Return the configured departmentid
-     *
-     * @return bool
-     */
-    private function get_with_subpositions(): bool {
-        return !empty($this->get_configdata()['withsubpositions']);
-    }
+        if (count($positionwheres) > 1) {
+            $separator = ($this->get_criteria() === self::CRITERIA_ALL) ? ' AND ' : ' OR ';
+            $positionwheres = implode($separator, $positionwheres);
+        } else {
+            $positionwheres = $positionwheres[0];
+        }
 
-    /**
-     * Check if position still exists.
-     *
-     * @return bool
-     */
-    public function is_configuration_valid(): bool {
-        global $DB;
-        return $DB->record_exists('tool_organisation_position', ['id' => $this->get_positionid()]);
+        return ['', $positionwheres, $positionparams];
     }
 
     /**
@@ -193,46 +197,5 @@ class user_position extends \tool_dynamicrule\condition_sql {
      */
     public function get_event_subscription() {
         return [job_created::class, job_updated::class];
-    }
-
-    /**
-     * Add positionid condition field mapping during export
-     *
-     * @param exporter_base $exporter
-     */
-    public function add_exporter_mapping(exporter_base $exporter): void {
-        $exporter->add_mapping('tool_organisation_position', $this->get_positionid());
-    }
-
-    /**
-     * Get positionid condition field mapping during import
-     *
-     * @param importer_base $importer
-     */
-    public function get_importer_mapping(importer_base $importer): void {
-        $configdata = $this->get_configdata();
-        $configdata['positionid'] =
-            $importer->get_mapping('tool_organisation_position', $this->get_positionid(), IGNORE_MISSING) ?? 0;
-
-        $this->update_configdata($configdata);
-    }
-
-    /**
-     * If the current user is able to add this condition.
-     *
-     * @return bool
-     */
-    public function user_can_add(): bool {
-        return permission::can_view_jobs();
-    }
-
-    /**
-     * If the current user is able to edit this condition.
-     *
-     * @param array $configdata
-     * @return bool
-     */
-    public function user_can_edit(array $configdata): bool {
-        return permission::can_view_jobs();
     }
 }
