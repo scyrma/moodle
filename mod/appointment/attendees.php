@@ -230,7 +230,8 @@ if ($canviewattendees || $cantakeattendance) {
 
         $table = new html_table();
         $table->head = array(get_string('name'));
-        $table->summary = get_string('attendeestablesummary', 'appointment');
+        $table->caption = get_string('attendeestablesummary', 'appointment');
+        $table->captionhide = true;
         $table->align = array('left');
         $table->size = array('100%');
 
@@ -306,6 +307,35 @@ if ($backtoallsessions) {
     $url = new moodle_url('/mod/appointment/view.php', array('f' => $appointment->id, 'backtoallsessions' => $backtoallsessions));
 }
 echo html_writer::link($url, get_string('goback', 'appointment')) . html_writer::end_tag('p');
+
+/*
+ * Print cancellations (if user able to view)
+ */
+if (!$takeattendance && $canviewcancellations && $cancellations) {
+
+    echo html_writer::empty_tag('br');
+    echo $OUTPUT->heading(get_string('cancellations', 'appointment'));
+
+    $table = new html_table();
+    $table->caption = get_string('cancellationstablesummary', 'appointment');
+    $table->captionhide = true;
+
+    $table->head = [get_string('name'), get_string('timesignedup', 'appointment'),
+                         get_string('timecancelled', 'appointment'), get_string('cancelreason', 'appointment')];
+    $table->align = ['left', 'center', 'center'];
+
+    $dateformat = get_string('strftimedatetime');
+    foreach ($cancellations as $attendee) {
+        $data = [];
+        $attendeelink = new moodle_url('/user/view.php', ['id' => $attendee->id, 'course' => $course->id]);
+        $data[] = html_writer::link($attendeelink, format_string(fullname($attendee)));
+        $data[] = userdate($attendee->timesignedup, $dateformat);
+        $data[] = userdate($attendee->timecancelled, $dateformat);
+        $data[] = format_string($attendee->cancelreason);
+        $table->data[] = $data;
+    }
+    echo html_writer::table($table);
+}
 
 /*
  * Print page footer

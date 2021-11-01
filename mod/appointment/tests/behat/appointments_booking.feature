@@ -162,3 +162,39 @@ Feature: Book appointments
     And I should see "Wait-listed" in the "Details" "dialogue"
     And I click on "Cancel" "button" in the "Details" "dialogue"
     And I log out
+
+  Scenario: Test attendees list
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    Then I click on "Actions menu" "link" in the "1:00" "table_row"
+    And I choose "Settings" in the open action menu
+    And I set the following fields in the "Editing appointment" "dialogue" to these values:
+      | allowcancellations | 1 |
+    And I click on "Save" "button" in the "Editing appointment" "dialogue"
+    And I log out
+    And I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    And I click on "Book" "button" in the "1:00" "table_row"
+    And I click on "Book" "button" in the "Details" "dialogue"
+    And I log out
+    And I log in as "student2"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    And I click on "Book" "button" in the "1:00" "table_row"
+    And I click on "Book" "button" in the "Details" "dialogue"
+    And I follow "Test appointment"
+    And I press "Cancel"
+    And I set the field "Reason for cancellation" to "Short on time"
+    And I click on "Confirm cancellation" "button" in the "Cancel booking" "dialogue"
+    And I log out
+    And I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    And I click on "Actions menu" "link" in the "1:00" "table_row"
+    And I choose "Attendees" in the open action menu
+    And I should see "Student First" in the "People planning on or having attended this session." "table"
+    And I should see "Student Second" in the "List of people who have cancelled their session signups." "table"
+    And I should see "Short on time" in the "Student Second" "table_row"
+    And I log out

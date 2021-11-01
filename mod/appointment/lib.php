@@ -3033,7 +3033,8 @@ function appointment_print_session($session, $showcapacity, $calendaroutput = fa
     global $CFG, $DB, $PAGE;
 
     $table = new html_table();
-    $table->summary = get_string('sessionsdetailstablesummary', 'appointment');
+    $table->caption = get_string('sessionsdetailstablesummary', 'appointment');
+    $table->captionhide = true;
     $table->attributes['class'] = 'generaltable appointmentsession';
     $table->align = array('right', 'left');
     if ($calendaroutput) {
@@ -3332,7 +3333,7 @@ function appointment_get_cancellations($sessionid) {
 
     $fullname = $DB->sql_fullname('u.firstname', 'u.lastname');
     $usernamefields = \core_user\fields::for_name()->get_sql('u', false, '', '', false)->selects;
-    $instatus = array(MOD_APPOINTMENT_STATUS_BOOKED, MOD_APPOINTMENT_STATUS_WAITLISTED, MOD_APPOINTMENT_STATUS_REQUESTED);
+    $instatus = array(MOD_APPOINTMENT_STATUS_BOOKED, MOD_APPOINTMENT_STATUS_WAITLISTED);
     list($insql, $inparams) = $DB->get_in_or_equal($instatus);
 
     // Nasty SQL follows:
