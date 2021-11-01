@@ -69,23 +69,26 @@ class dynamic_rules {
     /**
      * Returns a program that exists, not archived and either belongs to the same tenant as the rule or is shared in a parent tenant
      *
-     * @param int $programid
+     * @param int|array $programid
      * @param rule $rule
-     * @return program
+     * @return program[]
      */
-    public static function get_program_if_valid(?int $programid, rule $rule): ?program {
+    public static function get_program_if_valid($programid, rule $rule): ?array {
+        global $DB;
         if (!$programid) {
             return null;
         }
         [$select, $params] = hierarchy::filter_own_or_parent_shared_entities_sql('tenantid', 'shared=1',
             $rule->get('tenantid'));
-        $select .= ' AND archived=:archived AND id=:id';
-        $params += [
-            'id' => $programid,
+
+        [$whereinprogram, $programids] = $DB->get_in_or_equal($programid, SQL_PARAMS_NAMED);
+
+        $select .= " AND archived=:archived AND id {$whereinprogram}";
+        $params += $programids + [
             'archived' => 0
         ];
         $records = program::get_records_select($select, $params);
-        return $records ? reset($records) : null;
+        return $records ?: null;
     }
 
     /**

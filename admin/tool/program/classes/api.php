@@ -75,6 +75,7 @@ use core_text;
 use tool_tenant\tenant;
 use tool_tenant\tenant_group;
 use tool_wp\course_reset_api;
+use tool_wp\db;
 use tool_wp\local\helpers\string_helper;
 
 defined('MOODLE_INTERNAL') || die();
@@ -476,7 +477,9 @@ class api {
 
         // Add enrol_program enrolment method to the course.
         $course = get_course($newprogramcourse->get('courseid'));
-        self::enable_program_course_enrol_instance($data->programid, $course);
+        if (!self::enable_program_course_enrol_instance($data->programid, $course)) {
+            throw new moodle_exception('errornostudentsrolefound', 'tool_program');
+        }
 
         // Enrol users who have completed the course in the past or enrolled already.
         $program = new program($data->programid);
@@ -1051,7 +1054,12 @@ class api {
             return $currentenrolinstance;
         }
 
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']); // TODO make sure it is customizable.
+        // Get all roles from archetype student, ordered by sortorder, and use the first one.
+        $studentroles = get_archetype_roles('student');
+        if (empty($studentroles)) {
+            return null;
+        }
+        $studentrole = reset($studentroles);
         $id = $enrolplugin->add_instance($course, ['customint1' => $programid, 'roleid' => $studentrole->id]);
         return $DB->get_record('enrol', ['id' => $id]);
     }
@@ -2512,6 +2520,47 @@ class api {
     }
 
     /**
+     * Returns subquery that checks that a user has expected status on the given program
+     *
+     * Example - select all users who completed the program $pid:
+     *     [$where,$params] = api::get_programs_with_criteria_conditions($pid, constants::STATUS_COMPLETED);
+     *     $sql = "SELECT * FROM {user} u WHERE $where";
+     *
+     * @param int $programid Given program id
+     * @param int $status Expected status of the program
+     * @param int|null $datecreated Minimum completion date for the program (if $status==constants::STATUS_COMPLETED)
+     * @param string $u Table alias for table {user} from the main query
+     * @return array array [$sqlsubquery, $params]
+     */
+    public static function get_programs_with_criteria_conditions(int $programid, int $status,
+                int $datecreated = null, string $u = 'u'): array {
+
+        $wheredate = '';
+        $u2 = db::generate_alias();
+        $pu = db::generate_alias();
+        $p = db::generate_alias();
+        $ps = db::generate_alias();
+        $psc = db::generate_alias();
+        $programparam = db::generate_param_name();
+
+        $join = self::get_status_sql_join($u2, $pu, $p, $ps, $psc, $programparam);
+        $statuscase = self::get_status_sql_cases($status, $pu, $psc);
+
+        if ($datecreated) {
+            $wheredate = " AND {$psc}.timecreated >= " . $datecreated;
+        }
+
+        $where = " EXISTS (SELECT 1 FROM {user} {$u2}
+                      {$join}
+                WHERE {$u2}.id = {$u}.id
+                  AND {$statuscase} = {$status}
+                  AND {$p}.archived = 0  {$wheredate})";
+
+        $params = [$programparam => $programid];
+        return [$where, $params];
+    }
+
+    /**
      * Get programs by status and userid.
      *
      * @param int $status
@@ -2847,7 +2896,6 @@ class api {
             'siteurl' => (new \moodle_url('/'))->out(false),
         ];
         $fullmessage = get_string_manager()->get_string('notificationprogramcompleted', 'tool_program', $a, $user->lang);
-
         self::send_moodle_notification($user, $provider, $subject, $fullmessage, $program);
     }
 

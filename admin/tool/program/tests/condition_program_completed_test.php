@@ -36,6 +36,7 @@
  */
 
 use tool_dynamicrule\api;
+use tool_dynamicrule\condition_base;
 use tool_program\tool_dynamicrule\condition\program_completed;
 
 defined('MOODLE_INTERNAL') || die();
@@ -170,6 +171,53 @@ class tool_program_condition_program_completed_testcase extends advanced_testcas
     }
 
     /**
+     * Test mutiple completed completed condition matching
+     */
+    public function test_get_matching_users_given_multiple_completed_completed(): void {
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+
+        $tenant = $this->tenantgenerator->create_tenant();
+        $tenant2 = $this->tenantgenerator->create_tenant();
+        $this->tenantgenerator->allocate_user($user1->id, $tenant->id);
+        $this->tenantgenerator->allocate_user($user2->id, $tenant2->id);
+
+        $program1 = $this->generator->generate_program_with_course((object)['tenantid' => $tenant->id]);
+        $program2 = $this->generator->generate_program_with_course((object)['tenantid' => $tenant->id]);
+        $program3 = $this->generator->generate_program_with_course((object)['tenantid' => $tenant2->id]);
+        $program4 = $this->generator->generate_program_with_course((object)['tenantid' => $tenant2->id]);
+        $this->generator->allocate_user_to_program($program1->get('id'), $user1->id);
+        $this->generator->allocate_user_to_program($program2->get('id'), $user1->id);
+        $this->generator->allocate_user_to_program($program4->get('id'), $user2->id);
+
+        // Complete program1 AND program2 for this user.
+        $this->generator->complete_program($program1, $user1->id);
+        $this->generator->complete_program($program2, $user1->id);
+
+        // Test users that completed program1 AND program2.
+        $ruleall = $this->drgenerator->create_rule(['tenantid' => $tenant->id]);
+        $configdataall = ['programid' => [$program1->get('id'), $program2->get('id')],
+            'criteria' => condition_base::CRITERIA_ALL];
+        program_completed::create($ruleall->id, $configdataall);
+        $this->assertEquals(1, api::count_matching_users($ruleall->id));
+        $users = api::get_matching_users($ruleall->id);
+        $this->assertEqualsCanonicalizing([$user1->id], array_column($users, 'id'));
+
+        // Complete only program4 for user2.
+        $this->generator->complete_program($program4, $user2->id);
+
+        // Test users that completed at least one program in condition.
+        $ruleany = $this->drgenerator->create_rule(['tenantid' => $tenant2->id]);
+        $configdataany = ['programid' => [$program3->get('id'), $program4->get('id')],
+            'criteria' => condition_base::CRITERIA_ANY];
+        $conditionany = program_completed::create($ruleany->id, $configdataany);
+        $this->assertEquals(1, api::count_matching_users($ruleany->id));
+        $users = api::get_matching_users($ruleany->id);
+        $this->assertEqualsCanonicalizing([$user2->id], array_column($users, 'id'));
+
+    }
+
+    /**
      * Test completed completed condition matching
      */
     public function test_get_matching_users_shared_program(): void {
@@ -243,7 +291,8 @@ class tool_program_condition_program_completed_testcase extends advanced_testcas
 
         // Create rule to send notification on program completion.
         $rule = $this->drgenerator->create_rule(['enabled' => 1, 'tenantid' => $tenant->id]);
-        $configdata = ['programid' => $program1->get('id'), 'conditiondateenabled' => true, 'conditiondate' => time() - 1];
+        $configdata = ['programid' => $program1->get('id'), 'criteria' => 'any', 'conditiondateenabled' => true,
+            'conditiondate' => time() - 1];
         program_completed::create($rule->id, $configdata);
 
         $configdata = ['subject' => 'You matched!',
@@ -291,31 +340,87 @@ class tool_program_condition_program_completed_testcase extends advanced_testcas
      * Test get_description
      */
     public function test_get_description(): void {
-        $program = $this->generator->generate_program();
+        $program1 = $this->generator->generate_program();
+        $program2 = $this->generator->generate_program();
 
+        // One program completed.
         $rule = $this->drgenerator->create_rule();
-        $configdata = ['programid' => $program->get('id')];
+        $configdata = ['programid' => $program1->get('id')];
         /** @var program_completed $condition */
         $condition = program_completed::create($rule->id, $configdata);
-
-        $expectedstr = get_string('conditionprogramcompleteddescription', 'tool_program', $program->get('fullname'));
+        $options = $program1->get('fullname');
+        $expectedstr = get_string('conditionprogramcompleteddescription', 'tool_program',
+            $options);
         $this->assertEquals($expectedstr, $condition->get_description());
 
-        // Description when date is enabled.
+        // One program completed with description when date is enabled.
         $rule = $this->drgenerator->create_rule();
         $now = time();
         $configdata = [
-            'programid' => $program->get('id'),
+            'programid' => $program1->get('id'),
             'conditiondateenabled' => true,
             'conditiondate' => $now,
         ];
         /** @var program_completed $condition */
         $condition = program_completed::create($rule->id, $configdata);
-
-        $options = ['programname' => $program->get('fullname')];
-        $options['conditiondate'] = userdate($now, get_string('strftimedatetimeshort'));
+        $options = ['programname' => $program1->get('fullname'), 'conditiondate' =>
+            userdate($now, get_string('strftimedatefullshort'))];
         $expected = get_string('conditionprogramcompleteddescriptionwithdate', 'tool_program', $options);
         $this->assertEquals($expected, $condition->get_description());
+
+        // All Programs completed.
+        $ruleall = $this->drgenerator->create_rule();
+        $configdataall = ['programid' => [$program1->get('id'), $program2->get('id')],
+            'criteria' => condition_base::CRITERIA_ALL];
+        /** @var program_completed $conditionall */
+        $conditionall = program_completed::create($ruleall->id, $configdataall);
+        $optionsall = ['programname' => "{$program1->get('fullname')}', '{$program2->get('fullname')}"];
+        $expectedstr = get_string('conditionprogramcompletedalldescription', 'tool_program',
+            $optionsall);
+        $this->assertEquals($expectedstr, $conditionall->get_description());
+
+        // All program completed with description when date is enabled.
+        $ruleallwithdate = $this->drgenerator->create_rule();
+        $now = time();
+        $configdataallwithdate = [
+            'programid' => [$program1->get('id'), $program2->get('id')],
+            'conditiondateenabled' => true,
+            'conditiondate' => $now,
+            'criteria' => condition_base::CRITERIA_ALL
+        ];
+        /** @var program_completed $conditionallwithdate */
+        $conditionallwithdate = program_completed::create($ruleallwithdate->id, $configdataallwithdate);
+        $optionsallwithdate = ['programname' => "{$program1->get('fullname')}', '{$program2->get('fullname')}", 'conditiondate' =>
+            userdate($now, get_string('strftimedatefullshort'))];
+        $expected = get_string('conditionprogramcompletedalldescriptionwithdate', 'tool_program', $optionsallwithdate);
+        $this->assertEquals($expected, $conditionallwithdate->get_description());
+
+        // Any Programs completed.
+        $ruleany = $this->drgenerator->create_rule();
+        $configdataany = ['programid' => [$program1->get('id'), $program2->get('id')],
+            'criteria' => condition_base::CRITERIA_ANY];
+        /** @var program_completed $conditionany */
+        $conditionany = program_completed::create($ruleany->id, $configdataany);
+        $optionsany = ['programname' => "{$program1->get('fullname')}', '{$program2->get('fullname')}"];
+        $expectedstr = get_string('conditionprogramcompletedanydescription', 'tool_program',
+            $optionsany);
+        $this->assertEquals($expectedstr, $conditionany->get_description());
+
+        // Any program completed with description when date is enabled.
+        $ruleanywithdate = $this->drgenerator->create_rule();
+        $now = time();
+        $configdataanywithdate = [
+            'programid' => [$program1->get('id'), $program2->get('id')],
+            'conditiondateenabled' => true,
+            'conditiondate' => $now,
+            'criteria' => condition_base::CRITERIA_ANY
+        ];
+        /** @var program_completed $conditionanywithdate */
+        $conditionanywithdate = program_completed::create($ruleanywithdate->id, $configdataanywithdate);
+        $optionsanywithdate = ['programname' => "{$program1->get('fullname')}', '{$program2->get('fullname')}", 'conditiondate' =>
+            userdate($now, get_string('strftimedatefullshort'))];
+        $expected = get_string('conditionprogramcompletedanydescriptionwithdate', 'tool_program', $optionsanywithdate);
+        $this->assertEquals($expected, $conditionanywithdate->get_description());
     }
 
     /**

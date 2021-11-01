@@ -37,14 +37,18 @@
 namespace tool_program\tool_dynamicrule\condition;
 
 use MoodleQuickForm;
-use tool_dynamicrule\api as dynamicruleapi;
 use tool_program\api;
 use tool_program\constants;
 use tool_program\local\helpers\dynamic_rules;
+use tool_program\local\helpers\dynamic_rules as helper;
+use tool_program\permission;
 use tool_program\persistent\program;
 use tool_program\persistent\program_set;
 use tool_program\persistent\program_set_completion;
 use tool_program\program_tree;
+use tool_wp\db;
+use tool_wp\exporter_base;
+use tool_wp\importer_base;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -60,6 +64,26 @@ require_once($CFG->libdir . '/completionlib.php');
  * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 class program_completed extends condition_base {
+
+    /**
+     * Return the configured criteria
+     *
+     * @return string
+     */
+    protected function get_criteria(): string {
+        return $this->get_configdata()['criteria'] ?? self::CRITERIA_ALL;
+    }
+
+    /**
+     * Return the configured programid as array
+     *
+     * @return array
+     */
+    protected function get_multipleprogramid(): array {
+        $programid = !empty($this->get_configdata()) ? $this->get_configdata()['programid'] : [0];
+        return (array) $programid;
+    }
+
     /**
      * Returns the title of the condition
      *
@@ -70,15 +94,42 @@ class program_completed extends condition_base {
     }
 
     /**
+     * If the current user is able to edit this outcome.
+     *
+     * @param array $configdata
+     * @return bool
+     */
+    public function user_can_edit(array $configdata): bool {
+        $programid = (array) $configdata['programid'] ?: [0];
+        $validprograms = helper::get_program_if_valid($programid, $this->get_rule());
+
+        if (!$validprograms) {
+            return false;
+        }
+
+        $programscannotedit = array_filter($validprograms, function($program) {
+            return permission::can_edit_dynamicrule_condition($program, $this->get_rule());
+        });
+
+        return count($programscannotedit) === count($programid);
+    }
+
+    /**
      * Adds outcome's elements to the given mform
      *
      * @param MoodleQuickForm $mform The form to add elements to
      */
     public function get_config_form(MoodleQuickForm $mform): void {
+        global $OUTPUT;
         $options = dynamic_rules::get_selector_options();
+
         if ($this->is_configuration_valid()) {
             $options['valuehtmlcallback'] = dynamic_rules::get_program_fullname_callback();
         }
+
+        // Enable multiple selection (autocomplete) field.
+        $options['multiple'] = true;
+
         // Program select (autocomplete) field.
         $selectprogramstr = get_string('selectprogramcondition', 'tool_program');
         $missingprogramstr = get_string('missingprogram', 'tool_program');
@@ -86,6 +137,25 @@ class program_completed extends condition_base {
         $mform->addRule('programid', $missingprogramstr, 'required', null, 'client');
         $mform->addHelpButton('programid', 'selectprogramcondition', 'tool_program');
         $mform->setType('programid', PARAM_INT);
+
+        $groupcriteria = [];
+        $groupcriteria[] = $mform->createElement('radio', 'criteria', get_string('criteriaall', 'tool_program'),
+            '', self::CRITERIA_ALL);
+
+        $groupcriteria[] = $mform->createElement('radio', 'criteria', get_string('criteriaany', 'tool_program'),
+            $OUTPUT->help_icon('criteriaany', 'tool_program'), self::CRITERIA_ANY);
+
+        $groupcriteria[] = $mform->createElement('radio', 'criteria', get_string('criteriaeach', 'tool_program'),
+            $OUTPUT->help_icon('criteriaeach', 'tool_program'). get_string('conditioncriterianotavailableyet', 'tool_dynamicrule'),
+            self::CRITERIA_EACH, ['disabled' => 'disabled']);
+
+        $mform->addGroup($groupcriteria, 'criteria_group',
+            get_string('conditioncriteria', 'tool_dynamicrule'),
+            \html_writer::div('', 'w-100'),
+            false);
+
+        $mform->setType('criteria', PARAM_ALPHANUM);
+        $mform->setDefault('criteria', self::CRITERIA_ALL);
 
         // Optional date field.
         $dateisonorafterstr = get_string('completiondateonorafter', 'tool_program');
@@ -101,26 +171,79 @@ class program_completed extends condition_base {
     }
 
     /**
+     * Validates the configform of the condition
+     *
+     * @param array $data Data from the form
+     * @return array Array with errors for each element
+     */
+    public function validate_config_form(array $data): array {
+        $errors = [];
+        $data['programid'] = (array) $data['programid'];
+
+        $validprograms = helper::get_program_if_valid($data['programid'], $this->get_rule());
+        if (!$validprograms || (count($validprograms) !== count($data['programid']))) {
+            $errors['programid'] = get_string('errorinvalidprogram', 'tool_program');
+            return $errors;
+        }
+
+        $programscannotedit = array_filter($validprograms, function($program) {
+            return !permission::can_edit_dynamicrule_condition($program, $this->get_rule());
+        });
+
+        if (!empty($programscannotedit)) {
+            // We need to check permission here as listed program might be viewable to user,
+            // but user does not have capability to view allocates users.
+            $errors['programid'] = get_string('errornopermissionviewallocatedusers', 'tool_program');
+        }
+
+        return $errors;
+    }
+
+    /**
      * Helps to build SQL to retrieve programs that matches the current condition
      *
      * @return array array of three elements [$join, $where, $params]
      */
     public function get_sql(): array {
-        $pu = dynamicruleapi::generate_alias();
-        $pro = dynamicruleapi::generate_alias();
-        $pse = dynamicruleapi::generate_alias();
-        $psc = dynamicruleapi::generate_alias();
-        $pid = dynamicruleapi::generate_param_name();
-        $programid = $this->get_programid();
-        $status = constants::STATUS_COMPLETED;
-        [$join, $where, $params] = api::get_program_status_sql_query($programid, $status, false, 'u', $pu, $pro, $pse, $psc, $pid);
+        $programids = $this->get_multipleprogramid();
 
-        // If date enabled, check that user has completed the program on or after the chosen date.
+        $status = constants::STATUS_COMPLETED;
+        $conditiondate = null;
+        $programwheres = [];
+        $progroamparams = [];
+
         if ($this->get_conditiondateenabled()) {
-            $where .= " AND {$psc}.timecreated >= " . $this->get_conditiondate();
+            $conditiondate = $this->get_conditiondate();
         }
 
-        return [$join, $where, $params];
+        foreach ($programids as $programid) {
+            [$where, $params] = api::get_programs_with_criteria_conditions($programid, $status, $conditiondate, 'u');
+
+            $programwheres[] = $where;
+            $progroamparams = array_merge($progroamparams, $params);
+
+        }
+
+        $separator = ($this->get_criteria() === self::CRITERIA_ALL) ? ' AND ' : ' OR ';
+        $programwheres = implode($separator, $programwheres);
+        return ['', $programwheres, $progroamparams];
+    }
+
+    /**
+     * Check if program still exists.
+     *
+     * @return bool
+     */
+    public function is_configuration_valid(): bool {
+        $programids = $this->get_multipleprogramid();
+
+        if (in_array(0, $programids)) {
+            return false;
+        }
+
+        $validprograms = helper::get_program_if_valid($programids, $this->get_rule());
+
+        return !is_null($validprograms) && (count($validprograms) === count($programids));
     }
 
     /**
@@ -129,18 +252,35 @@ class program_completed extends condition_base {
      * @return string
      */
     public function get_description(): string {
-        $program = new program($this->get_programid());
-        $fullname = format_string($program->get('fullname'), true, ['escape' => false]);
+        global $DB;
 
+        [$whereprogramid, $programids] = $DB->get_in_or_equal($this->get_multipleprogramid(), SQL_PARAMS_NAMED);
+
+        $names = $DB->get_fieldset_sql("SELECT fullname FROM {tool_program} WHERE id " . $whereprogramid . " ORDER BY fullname",
+            $programids);
+
+        $programnames = implode("', '", array_map(function(string $name) {
+            return format_string($name, true, ['escape' => false]);
+        }, $names));
+
+        $options = ['programname' => $programnames];
+
+        $withdatefragment = '';
         if ($this->get_conditiondateenabled()) {
-            $conditiondate = userdate($this->get_conditiondate(), get_string('strftimedatetimeshort'));
-            $options = ['programname' => $fullname, 'conditiondate' => $conditiondate];
-            $description = get_string('conditionprogramcompleteddescriptionwithdate', 'tool_program', $options);
-        } else {
-            $description = get_string('conditionprogramcompleteddescription', 'tool_program', $fullname);
+            $options['conditiondate'] = userdate($this->get_conditiondate(), get_string('strftimedatefullshort'));
+            $withdatefragment = 'withdate';
         }
 
-        return $description;
+        if (count($names) > 1) {
+            // Many programs.
+            $identifier = 'conditionprogramcompleted' . $this->get_criteria() . 'description' . $withdatefragment;
+        } else {
+            // One program.
+            $options = empty($withdatefragment) ? $programnames : $options;
+            $identifier = 'conditionprogramcompleteddescription' . $withdatefragment;
+        }
+
+        return get_string($identifier, 'tool_program', $options);
     }
 
     /**
@@ -159,6 +299,32 @@ class program_completed extends condition_base {
      */
     private function get_conditiondateenabled(): ?int {
         return $this->get_configdata()['conditiondateenabled'] ?? null;
+    }
+
+    /**
+     * Add programid condition field mapping during export
+     *
+     * @param exporter_base $exporter
+     */
+    public function add_exporter_mapping(exporter_base $exporter): void {
+        foreach ($this->get_multipleprogramid() as $programid) {
+            $exporter->add_mapping('tool_program', $programid);
+        }
+
+    }
+
+    /**
+     * Get programid condition field mapping during import
+     *
+     * @param importer_base $importer
+     */
+    public function get_importer_mapping(importer_base $importer): void {
+        $configdata = $this->get_configdata();
+        $configdata['programid'] = [];
+        foreach ($this->get_multipleprogramid() as $programid) {
+            $configdata['programid'][] = $importer->get_mapping('tool_program', $programid, IGNORE_MISSING) ?? 0;
+        }
+        $this->update_configdata($configdata);
     }
 
     /**
@@ -186,14 +352,17 @@ class program_completed extends condition_base {
      */
     public function get_data_for_outcome(array $keys, array $users, \tool_dynamicrule\outcome_base $calleroutcome): array {
         $data = [];
-        if (!$users) {
+
+        $programid = $this->get_multipleprogramid();
+
+        if (!$users || $this->get_criteria() === self::CRITERIA_ALL || count($programid) > 1) {
             return [];
         }
 
         if (in_array('programname', $keys, true)
             || in_array('programcompletedcourses', $keys, true)
             || in_array('programcompletiondate', $keys, true)) {
-            $program = new program($this->get_programid());
+            $program = new program($programid[0]);
         }
 
         foreach ($users as $user) {

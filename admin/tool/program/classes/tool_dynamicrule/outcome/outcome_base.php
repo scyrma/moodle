@@ -68,7 +68,7 @@ abstract class outcome_base extends \tool_dynamicrule\outcome_base {
             return $errors;
         }
 
-        if (!permission::can_edit_dynamicrule_outcome($program, $this->get_rule())) {
+        if (!permission::can_edit_dynamicrule_outcome(reset($program), $this->get_rule())) {
             // We need to check permission here as listed program might be viewable to user,
             // but user does not have capability to allocate users.
             $errors['programid'] = get_string('errornopermissionallocateusers', 'tool_certification');

@@ -5357,4 +5357,74 @@ class tool_program_api_testcase extends advanced_testcase {
         $filteredcourses = api::filter_by_hideprogramcourses($allcourses);
         $this->assertEqualsCanonicalizing([$course3->id, $course4->id, $course5->id], array_column($filteredcourses, 'id'));
     }
+
+    /**
+     * Test for enable_program_course_enrol_instance()
+     */
+    public function test_enable_program_course_enrol_instance(): void {
+        global $DB;
+
+        // Method enable_program_course_enrol_instance is a private method.
+        $reflector = new ReflectionClass('\tool_program\api');
+        $method = $reflector->getMethod('enable_program_course_enrol_instance');
+        $method->setAccessible(true);
+
+        $defaulttenantid = tenancy::get_default_tenant_id();
+        $course = self::getDataGenerator()->create_course();
+        $program = $this->generator->generate_program((object) [
+            'tenantid' => $defaulttenantid,
+        ]);
+        $params = [
+            'courseid' => $course->id,
+            'enrol' => 'program',
+            'customint1' => $program->get('id'),
+        ];
+
+        // Assert program course enrol instance still does not exist.
+        $currentenrolinstance = $DB->get_record('enrol', $params);
+        $this->assertEmpty($currentenrolinstance);
+
+        $instance = $method->invokeArgs(null, [$program->get('id'), $course]);
+        $this->assertEquals('program', $instance->enrol);
+        $this->assertEquals($course->id, $instance->courseid);
+
+        // Assert program course enrol instance has been created and is enabled.
+        $currentenrolinstance = $DB->get_record('enrol', $params);
+        $this->assertEquals(ENROL_INSTANCE_ENABLED, $currentenrolinstance->status);
+
+        // Disable existing program course enrol instance.
+        $enrolplugin = enrol_get_plugin('program');
+        $enrolplugin->update_status($currentenrolinstance, ENROL_INSTANCE_DISABLED);
+        $currentenrolinstance = $DB->get_record('enrol', $params);
+        $this->assertEquals(ENROL_INSTANCE_DISABLED, $currentenrolinstance->status);
+
+        // Assert program course enrol instance has been enabled again.
+        $instance = $method->invokeArgs(null, [$program->get('id'), $course]);
+        $this->assertNotEmpty($instance);
+        $currentenrolinstance = $DB->get_record('enrol', $params);
+        $this->assertEquals(ENROL_INSTANCE_ENABLED, $currentenrolinstance->status);
+    }
+
+    /**
+     * Test for enable_program_course_enrol_instance() when no student roles exist in the instance
+     */
+    public function test_enable_program_course_enrol_instance_no_student_role(): void {
+        global $DB;
+
+        $DB->delete_records('role', ['archetype' => 'student']);
+
+        // Method enable_program_course_enrol_instance is a private method.
+        $reflector = new ReflectionClass('\tool_program\api');
+        $method = $reflector->getMethod('enable_program_course_enrol_instance');
+        $method->setAccessible(true);
+
+        $defaulttenantid = tenancy::get_default_tenant_id();
+        $course = self::getDataGenerator()->create_course();
+        $program = $this->generator->generate_program((object)[
+            'tenantid' => $defaulttenantid,
+        ]);
+
+        $instance = $method->invokeArgs(null, [$program->get('id'), $course]);
+        $this->assertNull($instance);
+    }
 }

@@ -183,3 +183,52 @@ Feature: Export and import programs
     And the "Program user allocations" "checkbox" should be disabled
     And the "Dynamic rules" "checkbox" should be disabled
     And I log out
+
+  @_file_upload
+  Scenario: Importing export created when program complete DR conditions were single-value selects
+    When I log in as "admin"
+    And I perform a new import with these options:
+      | Step 1 | Upload a file | admin/tool/program/tests/fixtures/dr_export_using_singleselects_pc.zip |
+    And the following "tool_tenant > users" exist:
+      | username | firstname | lastname | email                   | tenant   |
+      | user11   | User      | 11       | user11@address.invalid  | TenantDR |
+      | user12   | User      | 12       | user12@address.invalid  | TenantDR |
+    And the following "tool_program > program_users" exist:
+      | program   | user    |
+      | ProgramDR | user11  |
+      | ProgramDR | user12  |
+    And I navigate to "All tenants" in workplace launcher
+    And I switch to tenant "TenantDR"
+    And I navigate to "Dynamic rules" in workplace launcher
+    Then I should see "Users who have status 'Completed' in program 'ProgramDR'"
+    And I follow "DR PROGRAM"
+    And I should see "0 total matches"
+    And I navigate to "Programs" in workplace launcher
+    And I should see "Programs"
+    And I click on "Edit content" "link" in the "ProgramDR" "table_row"
+    And I click on "Add a set or a course" "button"
+    And I click on "Course" "link" in the ".program-items .dropdown .dropdown-menu" "css_element"
+    And I set the field "Select courses" to "Course 11"
+    Then I press "Save changes"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I click on "Enable rule" "link" in the "DR PROGRAM" "table_row"
+    And I click on "Enable" "button" in the "Confirm" "dialogue"
+    And I log out
+    When I log in as "user12"
+    And I click on "Program information" "button" in the "ProgramDR" "tool_program > Dashboard item"
+    And I click on "Start" "button" in the "ProgramDR" "dialogue"
+    Then I should see "Announcements"
+    And I should see "Topic 1"
+    And I should see "Topic 2"
+    And I click on "[data-modulename='URL1']" "css_element"
+    And I click on "[data-modulename='URL2']" "css_element"
+    When I am on homepage
+    Then I should see "100%"
+    And I should see "Completed"
+    And I log out
+    When I log in as "admin"
+    And I switch to tenant "TenantDR"
+    Then I navigate to "Dynamic rules" in workplace launcher
+    And I follow "View report for 'DR PROGRAM'"
+    And I should see "User 12"
+    And I should not see "User user11"

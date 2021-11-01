@@ -139,7 +139,18 @@ class tool_program_export_import_rule_mapping_testcase extends advanced_testcase
         /** @var condition_base $condition */
         $condition = $conditionclass::instance(0, condition::get_record(['ruleid' => end($rules)->get('id')])->to_record());
 
-        $this->assertEquals($newprogram->get('id'), $condition->get_configdata()['programid']);
+        $programid = $condition->get_configdata()['programid'];
+        $newprogramid = $newprogram->get('id');
+        $assertion = 'assertEquals';
+
+        // If condition class is program_completed then we need to cast data to test based on new multi select.
+        if ($conditionclass === 'tool_program\tool_dynamicrule\condition\program_completed') {
+            $programid = (array) $programid;
+            $newprogramid = [$newprogramid];
+            $assertion .= 'Canonicalizing';
+        }
+
+        $this->$assertion($newprogramid, $programid);
         $this->assertTrue($condition->is_configuration_valid());
     }
 

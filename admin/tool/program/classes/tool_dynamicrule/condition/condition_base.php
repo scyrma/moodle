@@ -70,7 +70,7 @@ abstract class condition_base extends \tool_dynamicrule\condition_sql {
             return $errors;
         }
 
-        if (!permission::can_edit_dynamicrule_condition($program, $this->get_rule())) {
+        if (!permission::can_edit_dynamicrule_condition(reset($program), $this->get_rule())) {
             // We need to check permission here as listed program might be viewable to user,
             // but user does not have capability to view allocates users.
             $errors['programid'] = get_string('errornopermissionviewallocatedusers', 'tool_program');
