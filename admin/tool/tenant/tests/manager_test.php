@@ -538,8 +538,9 @@ class tool_tenant_manager_testcase extends advanced_testcase {
         $this->assertEquals(\tool_tenant\tenancy::get_default_tenant_id(), \tool_tenant\tenancy::get_tenant_id($user1->id));
         $logs = array_values($DB->get_records_select('logstore_standard_log', 'id>?', [$maxlogid], 'id'));
 
-        $this->assertEquals(1, count($logs));
+        $this->assertEquals(2, count($logs));
         $this->assertEquals('\\' . \core\event\user_created::class, $logs[0]->eventname);
+        $this->assertEquals('\\' . \tool_tenant\event\tenant_user_created::class, $logs[1]->eventname);
         $this->assertEquals($user1->id, $logs[0]->relateduserid);
 
         // User is moved to another tenant. The tenant_user_updated is triggered.

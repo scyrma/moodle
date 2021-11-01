@@ -38,10 +38,10 @@ defined('MOODLE_INTERNAL') || die();
 
 // This plugin is part of Moodle Workplace product.
 $plugin->component    = 'tool_tenant';
-$plugin->release      = '3.11.3+ (Build: 20211025)';
-$plugin->version      = 2021102500;
+$plugin->release      = '3.11.3+ (Build: 20211101)';
+$plugin->version      = 2021110100;
 $plugin->requires     = 2021051703.00;
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = [
-    'tool_wp'         => 2021102500,
+    'tool_wp'         => 2021110100,
 ];

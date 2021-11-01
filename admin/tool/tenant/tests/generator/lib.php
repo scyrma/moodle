@@ -129,7 +129,7 @@ class tool_tenant_generator extends component_generator_base {
         $istenantadmin = !empty($userrecord['tenantadmin']);
         unset($userrecord['tenantadmin']);
 
-        if ($tenantid != \tool_tenant\tenancy::get_default_tenant_id()) {
+        if ($tenantid != \tool_tenant\tenancy::get_tenant_id()) {
             \tool_tenant\manager::preallocate_new_user((object)$userrecord, $tenantid, 'tool_tenant', 'unittest');
         }
         $user = $this->datagenerator->create_user($userrecord);

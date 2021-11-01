@@ -243,7 +243,8 @@ class tool_tenant_external_testcase extends advanced_testcase {
         $this->setUser($tenant2admin->id);
 
         // Try to confirm a user from a different tenant.
-        $user4 = $this->getDataGenerator()->create_user(['confirmed' => 0]);
+        $user4 = $this->get_generator()->create_user(
+            ['confirmed' => 0, 'tenantid' => \tool_tenant\tenancy::get_default_tenant_id()]);
         $confirmed = external_api::clean_returnvalue(
             confirm_users::execute_returns(),
             confirm_users::execute([$user4->id])
@@ -484,5 +485,95 @@ class tool_tenant_external_testcase extends advanced_testcase {
         $this->assertEquals(0, $allocated['successcount']);
         $this->assertEquals(0, $allocated['failcount']);
 
+    }
+
+    /**
+     * Creates profile fields
+     *
+     * f0 - available for all tenants
+     * f1 - available for tenant1 only
+     * f2 - available for tenant2 only
+     *
+     * @param stdClass $tenant1
+     * @param stdClass $tenant2
+     * @return array
+     */
+    protected function create_profile_fields(stdClass $tenant1, stdClass $tenant2) {
+        global $CFG;
+
+        // Set up - several profile field categories, several fields and several tenants.
+        // Field 'f1' is only available for tenant 1.
+        $cat0 = $this->getDataGenerator()->create_custom_profile_field_category(['name' => 'Cat all']);
+        $cat1 = $this->getDataGenerator()->create_custom_profile_field_category(['name' => 'Cat 1']);
+        $cat2 = $this->getDataGenerator()->create_custom_profile_field_category(['name' => 'Cat 2']);
+
+        // Add a custom field of textarea type.
+        $f0 = $this->getDataGenerator()->create_custom_profile_field([
+            'categoryid' => $cat0->id, 'shortname' => 'f0', 'name' => 'Field0',
+            'datatype' => 'text', 'param2' => 200])->id;
+        $f1 = $this->getDataGenerator()->create_custom_profile_field([
+            'categoryid' => $cat1->id, 'shortname' => 'f1', 'name' => 'Field1',
+            'datatype' => 'text', 'param2' => 200])->id;
+        $f2 = $this->getDataGenerator()->create_custom_profile_field([
+            'categoryid' => $cat2->id, 'shortname' => 'f2', 'name' => 'Field2',
+            'datatype' => 'text', 'param2' => 200])->id;
+
+        \tool_tenant\profile_manager::save_category_config((object)[
+            'id' => $cat1->id,
+            \tool_tenant\profile_manager::AVAILABILITY => \tool_tenant\profile_manager::TENANT_ONLY,
+            \tool_tenant\profile_manager::ONLYTENANTS => [$tenant1->id],
+        ]);
+
+        \tool_tenant\profile_manager::save_category_config((object)[
+            'id' => $cat2->id,
+            \tool_tenant\profile_manager::AVAILABILITY => \tool_tenant\profile_manager::TENANT_ONLY,
+            \tool_tenant\profile_manager::ONLYTENANTS => [$tenant2->id],
+        ]);
+
+        return [$f0, $f1, $f2];
+    }
+
+    /**
+     * Test that WS core_user_create_users creates users in the current tenant
+     */
+    public function test_create_user_in_another_tenant() {
+        global $DB, $CFG;
+        require_once($CFG->dirroot . '/user/externallib.php');
+        require_once($CFG->dirroot . '/user/profile/lib.php');
+        $this->resetAfterTest();
+
+        $tenant1 = $this->get_generator()->create_tenant();
+        $tenant2 = $this->get_generator()->create_tenant();
+        $this->create_profile_fields($tenant1, $tenant2);
+
+        // Create a user in tenant1 with role manager.
+        $managerrole = $DB->get_record('role', array('shortname' => 'manager'));
+        $manager = $this->get_generator()->create_user(['tenantid' => $tenant1->id]);
+        $this->getDataGenerator()->role_assign($managerrole->id, $manager->id);
+
+        // Call core_user_external::create_users(), user will be created in tenant1.
+        $this->setUser($manager);
+        $user = [
+            'username' => 'user2',
+            'firstname' => 'Firstname',
+            'lastname' => 'Lastname',
+            'email' => 'usertest2@example.com',
+            'password' => 'MoodleTest-1',
+            'customfields' => [
+                ['type' => 'f0', 'value' => 'value0'],
+                ['type' => 'f1', 'value' => 'value1'],
+                ['type' => 'f2', 'value' => 'value2'], // This will be ignored because this field is not available.
+            ]
+        ];
+        $createdusers = core_user_external::create_users([$user]);
+        $this->assertEquals($tenant1->id, \tool_tenant\tenancy::get_tenant_id($createdusers[0]['id']));
+
+        // Check that profile fields were populated except for profile_field_f2 that is not available for tenant1.
+        $user = core_user::get_user($createdusers[0]['id']);
+        profile_load_data($user);
+        $this->assertEquals('user2', $user->username);
+        $this->assertEquals('value0', $user->profile_field_f0);
+        $this->assertEquals('value1', $user->profile_field_f1);
+        $this->assertFalse(property_exists($user, 'profile_field_f2'));
     }
 }

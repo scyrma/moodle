@@ -310,6 +310,8 @@ class tool_tenant_hierarchy_testcase extends advanced_testcase {
         // Only covering hierarchy, other tests are in tenancy_test.php.
         global $DB, $CFG;
         $this->resetAfterTest();
+        $user01 = $this->getDataGenerator()->create_user();
+        $user02 = $this->getDataGenerator()->create_user();
 
         $tenant = $this->create_tenant();
         $tenant2 = $this->create_tenant(['parentid' => $tenant->id]);
@@ -319,8 +321,6 @@ class tool_tenant_hierarchy_testcase extends advanced_testcase {
         $defaulttenantid = \tool_tenant\tenancy::get_default_tenant_id();
         $tenant6 = $this->create_tenant(['parentid' => $defaulttenantid]);
 
-        $user01 = $this->getDataGenerator()->create_user();
-        $user02 = $this->getDataGenerator()->create_user();
         $user11 = $this->generator->create_user(['tenantid' => $tenant->id]);
         $user21 = $this->generator->create_user(['tenantid' => $tenant2->id]);
         $user31 = $this->generator->create_user(['tenantid' => $tenant3->id]);

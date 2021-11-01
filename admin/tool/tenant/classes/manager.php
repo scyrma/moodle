@@ -437,7 +437,9 @@ class manager {
     }
 
     /**
-     * Executed from the function user_create_user(), checks the site/tenant user limit
+     * Executed from the function user_create_user(), checks the preallocation and site/tenant user limit
+     *
+     * If user is not preallocated, pre-allocate to the current tenant.
      *
      * Throws an exception if the limit was reached and it is impossible to create a new user
      *
@@ -445,11 +447,13 @@ class manager {
      * @throws \moodle_exception
      */
     public static function precheck_create_user(\stdClass $user): void {
+        $tenantid = 0;
         if ($preallocation = self::find_user_preallocation($user, false)) {
             [$user, $tenantid, $component, $reason] = $preallocation;
-        } else {
-            // Current tenant.
-            $tenantid = 0;
+        } else if (tenancy::is_site_multi_tenant()) {
+            // User is not preallocated. Pre-allocate to the current tenant.
+            $tenantid = tenancy::get_tenant_id();
+            self::preallocate_new_user($user, $tenantid, 'tool_tenant', 'Default allocation to the current tenant');
         }
         if (!permission::check_quotas_to_add_users($tenantid, 1)) {
             throw new \moodle_exception('userslimitreached', 'tool_tenant');
