@@ -66,7 +66,7 @@ class tool_uploaduser {
             $f = 'coursecompleted|coursecompleteddate|' .
                  'jobposition|jobdepartment|jobstartdate|jobenddate|' .
                  'program|programstartdate|programenddate|programduedate|' .
-                 'certification|certificationstartdate|certificationenddate|certificationduedate|certificationexpirydate|' .
+                 'certification|certificationstartdate|certificationduedate|certificationexpirydate|' .
                  'certificationcertify|certificationcertifytimecertified|certificationcertifyexpires|' .
                  'certificationcertifyprogramallocation';
             return preg_match("/^({$f})\d+$/", $columname);

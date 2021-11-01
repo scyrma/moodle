@@ -121,7 +121,11 @@ class tool_wp_external extends external_api {
         $viewfullnames = has_capability('moodle/site:viewfullnames', $context);
         if ($result) {
             $result = array_map(function($record) use ($viewfullnames) {
-                return (object)['id' => $record->id, 'fullname' => fullname($record, $viewfullnames), 'email' => $record->email];
+                return (object)[
+                    'id' => $record->id,
+                    'fullname' => fullname($record, $viewfullnames),
+                    'email' => clean_param($record->email, core_user::get_property_type('email')),
+                ];
             }, $result);
         }
         return $result;

@@ -79,12 +79,16 @@ class tool_wp_external_testcase extends advanced_testcase {
      * @dataProvider potential_users_selector_provider
      */
     public function test_potential_users_selector(string $search, array $expectedfullnames): void {
+        global $DB;
         $this->resetAfterTest();
         $this->setAdminUser();
 
         $tenant = $this->get_tenant_generator()->create_tenant();
 
-        $user1 = $this->getDataGenerator()->create_user(['firstname' => 'Bob', 'lastname' => 'Smith']);
+        $user1 = $this->getDataGenerator()->create_user(
+            ['firstname' => 'Bob', 'lastname' => 'Smith', 'email' => 'test@example.invalid']);
+        // Add a space to this user's email (may accidentally happen when importing from some external sources).
+        $DB->update_record('user', ['id' => $user1->id, 'email' => ' test@example.invalid']);
         $this->get_tenant_generator()->allocate_user($user1->id, $tenant->id);
         $user2 = $this->getDataGenerator()->create_user(['firstname' => 'Lee', 'lastname' => 'Smith']);
         $this->get_tenant_generator()->allocate_user($user2->id, $tenant->id);
