@@ -103,7 +103,8 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
     /**
      * @var array Fields on user table that are filterable by this condition.
      */
-    private static $defaultfields = ['lastname', 'firstname', 'username', 'email', 'city', 'idnumber', 'country', 'auth'];
+    private static $defaultfields = ['lastname', 'firstname', 'username', 'email', 'city', 'idnumber', 'institution',
+        'country', 'auth'];
 
     /**
      * Returns the title of the condition
@@ -380,6 +381,8 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
             'paramtype' => core_user::get_property_type('city')];
         $res['idnumber'] = (object)['shortname' => 'idnumber', 'name' => get_string('idnumber'), 'datatype' => 'text',
             'paramtype' => core_user::get_property_type('idnumber')];
+        $res['institution'] = (object)['shortname' => 'institution', 'name' => get_string('institution'), 'datatype' => 'text',
+            'paramtype' => core_user::get_property_type('institution')];
         $res['country'] = (object)['shortname' => 'country', 'name' => get_string('country'), 'datatype' => 'menu',
             'param1' => get_string_manager()->get_list_of_countries(true)];
 

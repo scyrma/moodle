@@ -83,4 +83,4 @@ Feature: Manage component rules
     Then I click on "Edit content" "link" in the "Program1" "table_row"
     And I click on "Dynamic rules" "tool_wp > Tab"
     And I should see "Scheduled task" in the "Users allocated to program 'Program1'" "table_row"
-    And I should not see "Scheduled task" in the "Users that have status 'Completed' in program 'Program1'" "table_row"
+    And I should not see "Scheduled task" in the "Users who have status 'Completed' in program 'Program1'" "table_row"

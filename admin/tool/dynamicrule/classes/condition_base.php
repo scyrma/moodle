@@ -50,6 +50,12 @@ defined('MOODLE_INTERNAL') || die;
  * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 abstract class condition_base {
+    /** @var string Element for selecting all entities. */
+    const CRITERIA_ALL = 'all';
+    /** @var string Element for selecting any entities. */
+    const CRITERIA_ANY = 'any';
+    /** @var string Element for selecting each entity. */
+    const CRITERIA_EACH = 'each';
 
     /**
      * The persistent object associated with this condition

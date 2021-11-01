@@ -231,6 +231,7 @@ class tool_dynamicrule_condition_user_profile_field_testcase extends \advanced_t
             'custommenuopt2' => ['menupublic', '', 'OPTION2', null, ['user3']],
             'customcheckbox0' => ['checkboxpublic', '', 0, null, ['user1']],
             'customcheckbox1' => ['checkboxpublic', '', 1, null, ['user0']],
+            'institutions' => ['institution', 'Workplace', user_profile_field::TEXT_IS_EQUAL_TO, null, ['user0']],
         ];
     }
 
@@ -266,6 +267,7 @@ class tool_dynamicrule_condition_user_profile_field_testcase extends \advanced_t
         $users = [
             'user0' => $this->getDataGenerator()->create_user([
                 'city' => 'Lancaster',
+                'institution' => 'Workplace',
                 'firstname' => 'Alex',
                 'profile_field_textprivate' => 'Hello world',
                 'profile_field_checkboxpublic' => 1,
