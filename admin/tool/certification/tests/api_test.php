@@ -1083,8 +1083,10 @@ class tool_certification_api_testcase extends advanced_testcase {
             'status' => constants::STATUS_OVERRIDE_SUSPENDED,
         ]);
 
-        // Mark the program related to the certification as completed by the user.
+        // Complete all courses in the program.
         $this->programgenerator->complete_program($program, $user->id);
+        // At this moment program is not completed because the allocation was not active.
+        $this->assertFalse(api::is_program_completed($program->get('id'), $user->id));
 
         // Updating user allocation while keeping status as suspended should not trigger the certification completion.
         $sink = $this->redirectEvents();

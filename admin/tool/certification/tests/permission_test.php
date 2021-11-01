@@ -586,4 +586,157 @@ class tool_certification_permission_testcase extends advanced_testcase {
             get_capability_info($cap->capability);
         }
     }
+
+    /**
+     * Test that manager can certify and recertify user more than once
+     */
+    public function test_can_certify_user_deep_certification(): void {
+        $tenant = $this->tenantgenerator->create_tenant();
+        $manager = $this->getDataGenerator()->create_user();
+        $user = $this->getDataGenerator()->create_user();
+        $this->tenantgenerator->allocate_user($manager->id, $tenant->id);
+        $this->tenantgenerator->allocate_user($user->id, $tenant->id);
+
+        $this->setUser($manager);
+
+        // We assign capability to user.
+        $this->generator->assign_allocateuser_capability($manager->id, context_system::instance());
+
+        $certification = $this->generator->generate_certification([
+            'fullname' => 'Cert1',
+            'tenantid' => $tenant->id,
+        ], true);
+        $certificationuser = $this->generator->allocate_user($user->id, $certification->get('id'));
+
+        // User can be certified.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+        $this->assertTrue(permission::can_certify_user_deep($certificationuser, $iscertified));
+
+        \tool_certification\api::set_user_as_certified($user->id, $certification->get('id'));
+        \tool_certification\api::allocate_user_recertification($certification, $certification->get('recertificationprogram'),
+            $user->id, constants::STATUS_OVERRIDE_DEFAULT);
+
+        // User can be re-certified.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+        $this->assertTrue(permission::can_certify_user_deep($certificationuser, $iscertified));
+
+        \tool_certification\api::set_user_as_certified($user->id, $certification->get('id'));
+        \tool_certification\api::allocate_user_recertification($certification, $certification->get('recertificationprogram'),
+            $user->id, constants::STATUS_OVERRIDE_DEFAULT);
+
+        // User can be re-certified again.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+        $this->assertTrue(permission::can_certify_user_deep($certificationuser, $iscertified));
+    }
+
+    /**
+     * Test that manager can not re-certify user if certification has expiry date set to Never
+     */
+    public function test_can_certify_user_deep_certification_expirydate_never(): void {
+        $tenant = $this->tenantgenerator->create_tenant();
+        $manager = $this->getDataGenerator()->create_user();
+        $user = $this->getDataGenerator()->create_user();
+        $this->tenantgenerator->allocate_user($manager->id, $tenant->id);
+        $this->tenantgenerator->allocate_user($user->id, $tenant->id);
+
+        $this->setUser($manager);
+
+        // We assign capability to user.
+        $this->generator->assign_allocateuser_capability($manager->id, context_system::instance());
+
+        $certification = $this->generator->generate_certification([
+            'fullname' => 'Cert1',
+            'tenantid' => $tenant->id,
+            'expirydatetype' => constants::DATE_NEVER,
+        ]);
+        $certificationuser = $this->generator->allocate_user($user->id, $certification->get('id'));
+
+        // User can be certified.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+        $this->assertTrue(permission::can_certify_user_deep($certificationuser, $iscertified));
+
+        \tool_certification\api::set_user_as_certified($user->id, $certification->get('id'));
+
+        // Certification is set to never expire and we cannot certify user again.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+        $this->assertFalse(permission::can_certify_user_deep($certificationuser, $iscertified));
+    }
+
+    /**
+     * Test that manager can not re-certify user more than once if re-certification has expiry date set to Never
+     */
+    public function test_can_certify_user_deep_recertification_expirydate_never(): void {
+        $tenant = $this->tenantgenerator->create_tenant();
+        $manager = $this->getDataGenerator()->create_user();
+        $user = $this->getDataGenerator()->create_user();
+        $this->tenantgenerator->allocate_user($manager->id, $tenant->id);
+        $this->tenantgenerator->allocate_user($user->id, $tenant->id);
+
+        $this->setUser($manager);
+
+        // We assign capability to user.
+        $this->generator->assign_allocateuser_capability($manager->id, context_system::instance());
+
+        $certification = $this->generator->generate_certification([
+            'fullname' => 'Cert1',
+            'tenantid' => $tenant->id,
+        ], true);
+        $certification->set('recertexpirydatetype', constants::RECERT_EXPIRY_DATE_NEVER_DATE);
+        $certification->update();
+        $certificationuser = $this->generator->allocate_user($user->id, $certification->get('id'));
+
+        // User can be certified.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+        $this->assertTrue(permission::can_certify_user_deep($certificationuser, $iscertified));
+
+        \tool_certification\api::set_user_as_certified($user->id, $certification->get('id'));
+        \tool_certification\api::allocate_user_recertification($certification, $certification->get('recertificationprogram'),
+            $user->id, constants::STATUS_OVERRIDE_DEFAULT);
+
+        // User can be re-certified.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+        $this->assertTrue(permission::can_certify_user_deep($certificationuser, $iscertified));
+
+        \tool_certification\api::set_user_as_certified($user->id, $certification->get('id'));
+
+        // Re-certification is set to never expire and we cannot re-certify user again.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+        $this->assertFalse(permission::can_certify_user_deep($certificationuser, $iscertified));
+    }
+
+    /**
+     * Test require_can_certify_user_deep
+     */
+    public function test_require_can_certify_user_deep(): void {
+        $tenant = $this->tenantgenerator->create_tenant();
+        $manager = $this->getDataGenerator()->create_user();
+        $user = $this->getDataGenerator()->create_user();
+        $this->tenantgenerator->allocate_user($manager->id, $tenant->id);
+        $this->tenantgenerator->allocate_user($user->id, $tenant->id);
+
+        $this->setUser($manager);
+
+        // We assign capability to user.
+        $this->generator->assign_allocateuser_capability($manager->id, context_system::instance());
+
+        $certification = $this->generator->generate_certification([
+            'fullname' => 'Cert1',
+            'tenantid' => $tenant->id,
+            'expirydatetype' => constants::DATE_NEVER,
+        ]);
+        $certificationuser = $this->generator->allocate_user($user->id, $certification->get('id'));
+
+        // User can be certified.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+        $this->assertTrue(permission::can_certify_user_deep($certificationuser, $iscertified));
+
+        \tool_certification\api::set_user_as_certified($user->id, $certification->get('id'));
+
+        // Certification is set to never expire and we cannot certify user again.
+        $iscertified = \tool_certification\api::is_user_certified($user->id, $certification->get('id'));
+
+        $str = get_string('errornopermissioncertifyuser', 'tool_certification');
+        $this->expectExceptionMessage($str);
+        permission::require_can_certify_user_deep($certificationuser, $iscertified);
+    }
 }

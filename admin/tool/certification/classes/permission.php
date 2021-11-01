@@ -680,6 +680,55 @@ class permission {
     }
 
     /**
+     * Check if current user can certify a given user. To use outside loops.
+     *
+     * @param certification_user $certificationuser
+     * @param bool $certificationcompleted user has completed the certification
+     * @return bool
+     */
+    public static function can_certify_user_deep(certification_user $certificationuser,
+                                            bool $certificationcompleted): bool {
+        $certification = $certificationuser->get_certification();
+        $userid = $certificationuser->get('userid');
+        $certificationid = $certificationuser->get('certificationid');
+
+        // If recertification is disabled and the certification for this user has expired, user can not be certified again.
+        $certcompletion = api::get_last_completion_record($userid, $certificationid);
+        if ((int)$certification->get('requirerecertification') === 0 && $certcompletion !== false) {
+            return false;
+        }
+
+        // If recertification is enabled and recertification expiry date is set to Never, if the user has already been
+        // recertified it can not be certified again.
+        // Note that user could have more than 2 completions if we change recertification settings after was already recertified.
+        $completions = certification_completion::count_records([
+            'userid' => $userid,
+            'certificationid' => $certificationid,
+            'timerevoked' => 0,
+        ]);
+        if ($completions >= 2 &&
+            (int)$certification->get('recertexpirydatetype') === constants::RECERT_EXPIRY_DATE_NEVER_DATE) {
+            return false;
+        }
+
+        return self::can_certify_user($certificationuser, $certificationcompleted);
+    }
+
+    /**
+     * Require that current user can certify a given user.
+     *
+     * @param certification_user $certificationuser
+     * @param bool $certificationcompleted user has completed the certification
+     * @throws moodle_exception
+     */
+    public static function require_can_certify_user_deep(certification_user $certificationuser,
+                                                          bool $certificationcompleted) {
+        if (!self::can_certify_user_deep($certificationuser, $certificationcompleted)) {
+            throw new moodle_exception('errornopermissioncertifyuser', 'tool_certification');
+        }
+    }
+
+    /**
      * Check if current user can revoke the certification from a given user.
      *
      * @param certification_user $certificationuser

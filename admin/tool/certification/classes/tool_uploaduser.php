@@ -93,7 +93,7 @@ class tool_uploaduser {
                     : permission::can_allocate_user($certificationobj, $user->id);
 
                 if (!$canallocate) {
-                    $errorstr = get_string('errorcantallocateusers', 'tool_certification');
+                    $errorstr = get_string('errorcantallocateusers', 'tool_program');
                     $upt->track('tool_wp', $errorstr, 'error');
                     continue;
                 }
@@ -102,7 +102,9 @@ class tool_uploaduser {
                     continue;
                 }
                 if ($certuser) {
-                    $params = array_merge((array)$certuser->to_record(), self::date_params($user, $i));
+                    $dateparams = self::date_params($user, $i);
+                    $params = $params + $dateparams +
+                        edit_certification_users_edit_form_modal::prepare_data_for_dynamic_submission($certuser);
                     api::update_certification_user_dates_and_status($certuser, (object)$params);
                 } else {
                     $params['status'] = constants::STATUS_OVERRIDE_DEFAULT;
@@ -115,10 +117,6 @@ class tool_uploaduser {
                     $timecertified = time();
                     if (!empty($user->{'certificationcertifytimecertified' . $i})) {
                         $timecertified = strtotime($user->{'certificationcertifytimecertified' . $i});
-                        if ($timecertified === false) {
-                            $upt->track('tool_wp', get_string('errorinvalidcertifytimecertified', 'tool_certification'), 'error');
-                            continue;
-                        }
                     }
                     $iscertified = api::is_user_certified($params['userid'], $params['certificationid']);
 
@@ -126,19 +124,11 @@ class tool_uploaduser {
                         $upt->track('tool_wp', get_string('erroralreadycertified', 'tool_certification'), 'error');
                         continue;
                     }
-                    if (permission::can_certify_user($certuser, $iscertified)) {
-                        if (isset($user->{'certificationcertifyexpires' . $i})) {
-                            if (empty($user->{'certificationcertifyexpires' . $i})) {
-                                $expirydate = null;
-                            } else {
-                                $expirydate = strtotime($user->{'certificationcertifyexpires' . $i});
-                                if ($expirydate === false) {
-                                    $upt->track('tool_wp', get_string('errorinvalidexpirydate', 'tool_certification'), 'error');
-                                    continue;
-                                }
-                            }
-                        } else {
+                    if (permission::can_certify_user_deep($certuser, $iscertified)) {
+                        if (empty($user->{'certificationcertifyexpires' . $i})) {
                             $expirydate = null;
+                        } else {
+                            $expirydate = strtotime($user->{'certificationcertifyexpires' . $i});
                         }
                         api::set_user_as_certified(
                             $params['userid'],
@@ -147,6 +137,13 @@ class tool_uploaduser {
                             $timecertified,
                             $USER->id
                         );
+                        // Effectively run recertification task but for this user allocation only.
+                        // Do not reset the program when a past certification has been manually imported.
+                        api::allocate_recertification_users($certuser, false);
+                        api::deallocate_users_after_grace_period_end($certuser, false);
+                    } else {
+                        $upt->track('tool_wp', get_string('errornopermissioncertifyuser', 'tool_certification'), 'error');
+                        continue;
                     }
                 }
             }
@@ -196,7 +193,14 @@ class tool_uploaduser {
      * @return bool
      */
     private static function validate_date_params($user, $i) : bool {
-        foreach (['certificationstartdate', 'certificationduedate', 'certificationexpirydate'] as $param) {
+        $datefields = [
+            'certificationstartdate',
+            'certificationduedate',
+            'certificationexpirydate',
+            'certificationcertifytimecertified',
+            'certificationcertifyexpires',
+        ];
+        foreach ($datefields as $param) {
             if (!empty($user->{$param.$i}) && !self::validate_date($user->{$param.$i})) {
                 return false;
             }

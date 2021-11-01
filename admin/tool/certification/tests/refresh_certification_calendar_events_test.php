@@ -91,7 +91,7 @@ class tool_certification_refresh_certification_calendar_events_testcase extends 
         $certificationuser11 = $this->generator->allocate_user($user11->id, $certification1->get('id'));
         $programuser11 = program_user::get_record(['certificationid' => $certification1->get('id'), 'userid' => $user11->id]);
         $certifieddate11 = 1614726000;
-        api::set_user_as_certified($user11->id, $certification1->get('id'), $certifieddate11);
+        api::set_user_as_certified($user11->id, $certification1->get('id'), null, $certifieddate11);
         $certificationuser12 = $this->generator->allocate_user($user12->id, $certification1->get('id'));
         $programuser12 = program_user::get_record(['certificationid' => $certification1->get('id'), 'userid' => $user12->id]);
 

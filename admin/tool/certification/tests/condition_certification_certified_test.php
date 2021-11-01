@@ -472,4 +472,108 @@ class tool_certification_condition_certification_certified_testcase extends adva
         $users = api::get_matching_users($rule->id);
         $this->assertEqualsCanonicalizing([$user11->id], array_column($users, 'id'));
     }
+
+    /**
+     * Test complete dynamic rule that sends notification on certification completion
+     */
+    public function test_completion_of_certification(): void {
+        global $DB;
+        $this->setAdminUser();
+        [$tenant, [$user11]] = $this->tenantgenerator->create_tenant_and_users(1);
+
+        $p1 = $this->programgenerator->generate_program_with_course((object)['tenantid' => $tenant->id]);
+        $c1 = $this->generator->generate_certification(
+            ['tenantid' => $tenant->id, 'program' => $p1->get('id'), 'fullname' => 'Cert1']);
+
+        $this->generator->allocate_users_to_certification($c1->get('id'), array_column([$user11], 'id'));
+
+        // Test users that matched the dynamic rule condition.
+        $rule = $this->drgenerator->create_rule(['tenantid' => $tenant->id, 'enabled' => 1]);
+        $configdata = ['certificationid' => $c1->get('id')];
+        certification_certified::create($rule->id, $configdata);
+        $configdata = [
+            'subject' => 'TEST: {{certificationname}} completed',
+            'body' => ['text' => 'Test body', 'format' => FORMAT_MOODLE],
+        ];
+        \tool_dynamicrule\tool_dynamicrule\outcome\notification::create($rule->id, $configdata);
+
+        // Prepare messages sink.
+        $sink = $this->redirectMessages();
+
+        // Mark user as certified, a notification should be sent.
+        \tool_certification\api::set_user_as_certified($user11->id, $c1->get('id'));
+
+        $messages = $sink->get_messages();
+        $subjects = array_map(function($m) {
+            return $m->subject;
+        }, $messages);
+        $this->assertContains('TEST: Cert1 completed', $subjects);
+        $sink->close();
+
+        // Check matches record presence.
+        $this->assertEquals(1, $DB->count_records('tool_dynamicrule_match', ['ruleid' => $rule->id]));
+    }
+
+    /**
+     * Test that completion of one certification does not trigger rule set on completion of another
+     */
+    public function test_completion_of_another_certification(): void {
+        global $DB;
+        $this->setAdminUser();
+        [$tenant, [$user11]] = $this->tenantgenerator->create_tenant_and_users(1);
+
+        $p1 = $this->programgenerator->generate_program_with_course((object)['tenantid' => $tenant->id]);
+        $c1 = $this->generator->generate_certification(['tenantid' => $tenant->id, 'program' => $p1->get('id'),
+            'fullname' => 'Cert1']);
+        $p2 = $this->programgenerator->generate_program_with_course((object)['tenantid' => $tenant->id]);
+        $c2 = $this->generator->generate_certification(['tenantid' => $tenant->id, 'program' => $p2->get('id'),
+            'fullname' => 'Cert2']);
+
+        $this->generator->allocate_users_to_certification($c1->get('id'), array_column([$user11], 'id'));
+        $this->generator->allocate_users_to_certification($c2->get('id'), array_column([$user11], 'id'));
+
+        // Test users that matched the dynamic rule condition.
+        $rule = $this->drgenerator->create_rule(['tenantid' => $tenant->id, 'enabled' => 1]);
+        $configdata = ['certificationid' => $c1->get('id')];
+        certification_certified::create($rule->id, $configdata);
+        $certificate = self::getDataGenerator()->get_plugin_generator('tool_certificate')
+            ->create_template((object)['name' => 'Test template']);
+        $configdata = ['certificate' => $certificate->get_id()];
+        \tool_dynamicrule\tool_dynamicrule\outcome\certificate::create($rule->id, $configdata);
+
+        // Prepare messages sink.
+        $sink = $this->redirectMessages();
+
+        // Mark user as certified.
+        \tool_certification\api::set_user_as_certified($user11->id, $c1->get('id'));
+
+        // Two messages sent - that certification is completed and that certificate is issued.
+        $messages = $sink->get_messages();
+        $this->assertEquals(2, count($messages));
+        $subjects = [$messages[0]->subject, $messages[1]->subject];
+        $this->assertEqualsCanonicalizing(
+            ['Your certificate is available!', "Congratulations - 'Cert1' certification!"], $subjects);
+        $sink->close();
+
+        // There is a record in the certificate issue table.
+        $this->assertEqualsCanonicalizing([$user11->id], array_column($DB->get_records('tool_certificate_issues'), 'userid'));
+
+        // Complete another certification.
+
+        // Prepare messages sink.
+        $sink = $this->redirectMessages();
+
+        // Mark user as certified.
+        \tool_certification\api::set_user_as_certified($user11->id, $c2->get('id'));
+
+        // There is one message that certification is completed.
+        $messages = $sink->get_messages();
+        $this->assertEquals(1, count($messages));
+        $this->assertEquals("Congratulations - 'Cert2' certification!", $messages[0]->subject);
+        $sink->close();
+
+        // There is still only one issue in the certificate issues table.
+        $this->assertEqualsCanonicalizing([$user11->id], array_column($DB->get_records('tool_certificate_issues'), 'userid'));
+
+    }
 }

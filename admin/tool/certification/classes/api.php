@@ -635,8 +635,7 @@ class api {
 
         $certificationid = $certificationuser->get('certificationid');
         $userid = $certificationuser->get('userid');
-        /** @var program_user $programuser */
-        $programuser = program_user::get_record(['certificationid' => $certificationid, 'userid' => $userid]);
+        $programuser = self::get_latest_programuser_allocation($userid, $certificationid);
 
         $userallocdate = (int) $certificationuser->get('timecreated');
         $userstartdate = self::recalculate_user_start_date($certification, $certificationuser, $programuser, $userallocdate);
@@ -982,18 +981,20 @@ class api {
      * @param certification_user $certificationuser
      * @param int $userallocationdate
      * @param int $userduedate
+     * @param certification_completion|null $certcompletion last certification completion record, if known
      * @return int
      */
     public static function recalculate_user_expiry_date(certification $certification,
         certification_user $certificationuser,
         int $userallocationdate,
-        int $userduedate): int {
+        int $userduedate,
+        ?certification_completion $certcompletion = null): int {
 
         $userid = $certificationuser->get('userid');
 
         // Check if its a recertification.
         if ((bool) $certificationuser->get('isrecertification')) {
-            return self::recalculate_recertification_user_expiry_date($certification, $userid);
+            return self::recalculate_recertification_user_expiry_date($certification, $userid, $certcompletion);
         }
 
         switch ($certification->get('expirydatetype')) {
@@ -1008,7 +1009,7 @@ class api {
                 $userexpirydate = (int) $certification->get('expirydateabsolute');
                 break;
             case constants::DATE_AFTER_COMPLETION:
-                $certcompletion = self::get_last_completion_record($userid, $certification->get('id'));
+                $certcompletion = $certcompletion ?? self::get_last_completion_record($userid, $certification->get('id'));
                 if (!$certcompletion) {
                     $expirydaterelative = $certification->get('expirydaterelative');
                     $userexpirydate = strtotime('+' . $expirydaterelative);
@@ -1052,12 +1053,13 @@ class api {
      *
      * @param certification $certification
      * @param int $userid
+     * @param certification_completion|null $certcompletion last certification completion record, if known
      * @return false|int
      * @throws coding_exception
      */
     private static function recalculate_recertification_user_expiry_date(certification $certification,
-                                                                         int $userid) {
-        $certcompletion = self::get_last_completion_record($userid, $certification->get('id'));
+                int $userid, ?certification_completion $certcompletion = null) {
+        $certcompletion = $certcompletion ?? self::get_last_completion_record($userid, $certification->get('id'));
         if (!$certcompletion) {
             throw new coding_exception('completion should exist for this allocation');
         }
@@ -1107,17 +1109,22 @@ class api {
         }
         $certificationuser->set('status', $validateddata->status);
 
-        $iscertified = (bool)self::get_last_completion_record($userid, $certificationid);
+        $hascompletionrecord = (bool)self::get_last_completion_record($userid, $certificationid);
         $currentprogramid = (int)$certificationuser->get('currentprogramid');
 
         /** @var program_user $programuser */
-        $programuser = program_user::get_record(['certificationid' => $certificationid, 'userid' => $userid]);
-        $programvalidateddata = $programuser->to_record();
-        $programvalidateddata->status = $newstatus;
-        \tool_program\api::update_program_user_dates_and_status($programuser, $programvalidateddata);
+        $programuser = self::get_latest_programuser_allocation($userid, $certificationid);
+        if ($hasbeenactivated && $programuser->get('programid') == $certificationuser->get('currentprogramid')) {
+            $programdata = $programuser->to_record();
+            $programdata->status = $validateddata->status;
+            \tool_program\api::update_program_user_dates_and_status($programuser, $programdata);
+        } else if ($hasbeensuspended) {
+            $programuser->set('status', $validateddata->status);
+            $programuser->set('timesuspended', $now);
+        }
 
-        if (!$iscertified) {
-            // User is not certified. We just update status, startdate and duedate.
+        if (!$hascompletionrecord) {
+            // User has never been certified. We just update status, startdate and duedate.
             // Update program user dates for this certification allocation.
             if (isset($validateddata->startdatelocked)) {
                 $programuser->set('startdatelocked', $validateddata->startdatelocked);
@@ -1132,7 +1139,7 @@ class api {
                 $programuser->set('duedate', $validateddata->duedate);
             }
 
-        } else if ($iscertified && !$currentprogramid) {
+        } else if ($hascompletionrecord && !$currentprogramid) {
             // User is certified and has not started a recertification.
 
             // Check if expiry date has changed. If it has changed duplicate completion record.
@@ -1406,14 +1413,16 @@ class api {
      *
      * @param int $userid
      * @param int $certificationid
-     * @param int|null $expirydate Timestamp with the expirydate
-     * @param int $timecertified Timestamp with the date user was certified
+     * @param int|null $expirydate Timestamp with the expirydate:
+     *     >0 - absolute date of expiration; 0 - Never expires; null - calculate the expiration date (default)
+     * @param int $timecertified Timestamp with the date user was certified:
+     *     >0 - set specific time; 0 - use current time (default)
      * @param int|null $certifiedby userid for manual certification
      */
-    public static function set_user_as_certified(int $userid, int $certificationid, int $expirydate = null, int $timecertified = 0,
-        int $certifiedby = null): void {
+    public static function set_user_as_certified(int $userid, int $certificationid, ?int $expirydate = null, int $timecertified = 0,
+            ?int $certifiedby = null): void {
         // Check if there is a previous active completion. Set is last to zero in case it exists.
-        $certificationcompletion = self::get_last_completion_record($userid, $certificationid);
+        $previouscertcompletion = self::get_last_completion_record($userid, $certificationid);
         $certification = new certification($certificationid);
         $now = time();
         $params = ['userid' => $userid, 'certificationid' => $certificationid];
@@ -1430,22 +1439,30 @@ class api {
             $timecertified = $now;
         }
 
-        // If there is no expiry date set or expirydate is set in the past we calculate default expirydate.
-        if ($expirydate === null || ($expirydate > 0 && $now > $expirydate)) {
+        // We create the new completion record.
+        $userdata = (object) [
+            'userid' => $userid,
+            'certificationid' => $certificationid,
+            'expirydate' => $expirydate,
+            'timerevoked' => 0,
+            'revokedby' => null,
+            'programid' => $currentprogramid,
+            'islast' => 1,
+            'timecertified' => $timecertified,
+            'certifiedby' => $certifiedby,
+        ];
+        $certcompletion = new certification_completion(0, $userdata);
+
+        // If there is no expiry date set, we calculate default expirydate.
+        if ($expirydate === null) {
             // Find CURRENT programuser allocation.
             $programuser = self::get_latest_programuser_allocation($userid, $certificationid);
 
             $userallocdate = (int) $certificationuser->get('timecreated');
             $userduedate = (int) $programuser->get('duedate');
-            $expirydate = self::recalculate_user_expiry_date($certification, $certificationuser, $userallocdate, $userduedate);
-
-            // When this is a recertification round and recertification is set to 'After current certification completion' we need
-            // to use the timecertified date from this completion we are creating now to calculate the new expiry date.
-            if ((int)$certification->get('requirerecertification') === 1 &&
-                (int)$certification->get('recertexpirydatetype') === constants::RECERT_EXPIRY_DATE_AFTR_PREV_COMPL &&
-                (int)$certificationuser->get('isrecertification') === 1) {
-                $expirydate = strtotime('+' . $certification->get('recertexpirydaterelative'), $timecertified);
-            }
+            $expirydate = self::recalculate_user_expiry_date($certification, $certificationuser, $userallocdate, $userduedate,
+                $certcompletion);
+            $certcompletion->set('expirydate', $expirydate);
         }
 
         // We calculate next start date for recertification.
@@ -1466,24 +1483,11 @@ class api {
         $certificationuser->update();
 
         // We update previous completion record.
-        if ($certificationcompletion) {
-            $certificationcompletion->set('islast', 0);
-            $certificationcompletion->update();
+        if ($previouscertcompletion) {
+            $previouscertcompletion->set('islast', 0);
+            $previouscertcompletion->update();
         }
 
-        // We create the new completion record.
-        $userdata = (object) [
-            'userid' => $userid,
-            'certificationid' => $certificationid,
-            'expirydate' => $expirydate,
-            'timerevoked' => 0,
-            'revokedby' => null,
-            'programid' => $currentprogramid,
-            'islast' => 1,
-            'timecertified' => $timecertified,
-            'certifiedby' => $certifiedby,
-        ];
-        $certcompletion = new certification_completion(0, $userdata);
         $certcompletion->create();
 
         // Trigger event.
@@ -2586,10 +2590,12 @@ class api {
      * Also checks that expirydate is not set to never, that certification has not been deleted and
      * That requirerecertification is enabled.
      *
-     * @throws dml_exception
-     * @throws moodle_exception
+     * @param certification_user|null $certuser if specified, we will execute only for this user and this certification
+     * @param bool $resetprogram if recertification starts, reset the recertification program,
+     *     this can be set to false in case of manually marking user as certified in the past
      */
-    public static function allocate_recertification_users(): void {
+    public static function allocate_recertification_users(?certification_user $certuser = null,
+                                                          bool $resetprogram = true): void {
         global $DB;
 
         $sql = '
@@ -2602,7 +2608,12 @@ class api {
             WHERE tcu.nextstartdate > 0 AND tcu.nextstartdate <= :now AND tcu.currentprogramid IS NULL AND tcu.status = :enabled
             AND tc.requirerecertification = 1
         ';
-        $records = $DB->get_records_sql($sql, ['now' => time(), 'enabled' => constants::STATUS_OVERRIDE_DEFAULT]);
+        $params = ['now' => time(), 'enabled' => constants::STATUS_OVERRIDE_DEFAULT];
+        if ($certuser) {
+            $sql .= ' AND tcu.userid = :userid AND tcu.certificationid = :certid';
+            $params += ['userid' => $certuser->get('userid'), 'certid' => $certuser->get('certificationid')];
+        }
+        $records = $DB->get_records_sql($sql, $params);
 
         foreach ($records as $record) {
             $certificationid = $record->certificationid;
@@ -2615,14 +2626,16 @@ class api {
             $certificationuser = self::allocate_user_recertification($certification, $programid, $record->userid,
                 constants::STATUS_OVERRIDE_DEFAULT);
 
-            // Reset program for this user.
             $params = [
                 'programid' => $programid,
                 'certificationid' => $certificationid,
                 'userid' => $record->userid,
             ];
             $programuser = program_user::get_record($params);
-            \tool_program\api::reset_program_progress($programuser);
+            // Reset program for this user.
+            if ($resetprogram) {
+                \tool_program\api::reset_program_progress($programuser);
+            }
 
             // Trigger event.
             recertification_started::create_from_recertification_started($certificationuser, $programuser)->trigger();
@@ -2635,10 +2648,12 @@ class api {
      * We reallocate user from recertification program to initial program and reset all courses in the initial program
      * that ARE NOT present in the recertification program.
      *
-     * @throws coding_exception
-     * @throws dml_exception
+     * @param certification_user|null $certuser if specified, we will execute only for this user and this certification
+     * @param bool $resetprogram if recertification starts, reset the recertification program,
+     *     this can be set to false in case of manually marking user as certified in the past
      */
-    public static function deallocate_users_after_grace_period_end(): void {
+    public static function deallocate_users_after_grace_period_end(?certification_user $certuser = null,
+                                                                   bool $resetprogram = true): void {
         global $DB;
 
         $now = time();
@@ -2656,6 +2671,10 @@ class api {
             AND tcu.status = :enabled AND tc.requirerecertification = 1
         ';
         $params = ['now1' => $now, 'now2' => $now, 'now3' => $now, 'enabled' => constants::STATUS_OVERRIDE_DEFAULT];
+        if ($certuser) {
+            $sql .= ' AND tcu.userid = :userid AND tcu.certificationid = :certid';
+            $params += ['userid' => $certuser->get('userid'), 'certid' => $certuser->get('certificationid')];
+        }
         $records = $DB->get_records_sql($sql, $params);
 
         if ($records) {
@@ -2671,8 +2690,11 @@ class api {
                 self::reallocate_user_into_initial_program($certification, $certificationuser);
 
                 // Reset all courses for this user in the initial program that ARE NOT present in the recertification program.
-                $programrecertification = new program($record->currentprogramid);
-                self::reset_courses_in_program1_not_present_in_program2($programinitial, $programrecertification, $record->userid);
+                if ($resetprogram) {
+                    $programrecertification = new program($record->currentprogramid);
+                    self::reset_courses_in_program1_not_present_in_program2(
+                        $programinitial, $programrecertification, $record->userid);
+                }
 
                 // Set currentprogramid to initial certification program id.
                 $certificationuser->set('currentprogramid', $programid);

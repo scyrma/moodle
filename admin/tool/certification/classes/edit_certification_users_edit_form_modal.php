@@ -261,10 +261,20 @@ class edit_certification_users_edit_form_modal extends dynamic_form {
      */
     public function set_data_for_dynamic_submission(): void {
         $certificationuser = $this->get_certification_user();
+        $this->set_data(self::prepare_data_for_dynamic_submission($certificationuser));
+    }
+
+    /**
+     * Set Data for the modal form.
+     *
+     * @param certification_user $certificationuser
+     * @return array array that can be passed to {@see api::update_certification_user_dates_and_status()}
+     */
+    public static function prepare_data_for_dynamic_submission(certification_user $certificationuser): array {
         $userid = $certificationuser->get('userid');
         $certificationid = $certificationuser->get('certificationid');
         /** @var program_user $programuser */
-        $programuser = program_user::get_record(['userid' => $userid, 'certificationid' => $certificationid]);
+        $programuser = api::get_latest_programuser_allocation($userid, $certificationid);
         $startdate = $programuser->get('startdate');
 
         // If user is certified we need expirydate and expirydatetype.
@@ -295,9 +305,10 @@ class edit_certification_users_edit_form_modal extends dynamic_form {
             'expirydatetype' => $expirydatetype,
             'expirydate' => $expirydate,
             'graceperiodends' => $graceperiodends,
-            'graceperiodendstype' => $graceperiodendslocked
+            'graceperiodendstype' => $graceperiodendslocked,
+            'currentprogram' => $certificationuser->get('currentprogramid'),
         ];
-        $this->set_data($formdata);
+        return $formdata;
     }
 
     /**

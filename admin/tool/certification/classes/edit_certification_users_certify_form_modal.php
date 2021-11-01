@@ -37,8 +37,10 @@
 namespace tool_certification;
 
 use coding_exception;
+use context;
+use context_system;
 use core_form\dynamic_form;
-use tool_program\persistent\program_user;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -111,7 +113,8 @@ class edit_certification_users_certify_form_modal extends dynamic_form {
      */
     public function check_access_for_dynamic_submission(): void {
         $certificationuser = $this->get_certification_user();
-        permission::require_can_edit_user_allocation($certificationuser);
+        $certified = api::is_user_certified($certificationuser->get('userid'), $certificationuser->get('certificationid'));
+        permission::require_can_certify_user_deep($certificationuser, $certified);
     }
 
     /**
@@ -156,6 +159,8 @@ class edit_certification_users_certify_form_modal extends dynamic_form {
         }
 
         api::set_user_as_certified($certificationuser->get('userid'), $certification->get('id'), $expirydate, 0, $USER->id);
+        // TODO WP-2986 - if the nextstartdate is in the past - start the next certification round immediately but without
+        // resetting the program. Display a notice that program will not be reset. See issue for more details.
     }
 
     /**
@@ -164,7 +169,7 @@ class edit_certification_users_certify_form_modal extends dynamic_form {
      * @param array $data
      * @param array $files
      * @return array
-     * @throws \coding_exception
+     * @throws coding_exception
      */
     public function validation($data, $files): array {
         $errors = [];
@@ -182,19 +187,19 @@ class edit_certification_users_certify_form_modal extends dynamic_form {
     /**
      * Returns context where this form is used
      *
-     * @return \context
+     * @return context
      */
-    public function get_context_for_dynamic_submission(): \context {
-        return \context_system::instance();
+    public function get_context_for_dynamic_submission(): context {
+        return context_system::instance();
     }
 
     /**
      * Returns url to set in $PAGE->set_url() when form is being rendered or submitted via AJAX
      *
-     * @return \moodle_url
+     * @return moodle_url
      */
-    protected function get_page_url_for_dynamic_submission(): \moodle_url {
-        return new \moodle_url('/admin/tool/tenant/index.php', [
+    protected function get_page_url_for_dynamic_submission(): moodle_url {
+        return new moodle_url('/admin/tool/tenant/index.php', [
             'form' => get_class($this),
             'id' => $this->get_certification_user()->get('id'),
         ]);
