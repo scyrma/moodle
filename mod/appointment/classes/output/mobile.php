@@ -228,7 +228,7 @@ class mobile {
         // Capabilities check.
         require_course_login($cm->course, false, $cm, true, true);
         $context = \context_module::instance($cm->id);
-        \mod_appointment\permission::require_can_cancel_signup($context);
+        \mod_appointment\permission::require_can_cancel_signup($session, $context);
 
         // Populate context for session details.
         $data = [

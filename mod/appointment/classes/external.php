@@ -238,7 +238,7 @@ class external extends \external_api {
         $context = \context_module::instance($cm->id);
 
         self::validate_context($context);
-        \mod_appointment\permission::require_can_cancel_signup($context);
+        \mod_appointment\permission::require_can_cancel_signup($session, $context);
 
         $error = '';
         if (appointment_user_cancel($session, false, false, $error, $params['cancelreason'])) {

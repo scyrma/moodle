@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
 // This plugin is part of Moodle Workplace product.
 $plugin->component    = 'mod_appointment';
 $plugin->release      = '3.11.3';
-$plugin->version      = 2021100400;
+$plugin->version      = 2021101100;
 $plugin->requires     = 2021051703.00;
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = [

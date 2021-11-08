@@ -47,6 +47,7 @@ $addons = [
             ['status', 'appointment'],
             ['details', 'appointment'],
             ['sessiondescription', 'appointment'],
+            ['cancel', 'appointment'],
             ['cancelbooking', 'appointment'],
             ['cancelreason', 'appointment'],
             ['confirmcancelbooking', 'appointment'],

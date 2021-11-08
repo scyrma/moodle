@@ -96,6 +96,19 @@ class permission {
     }
 
     /**
+     * If user can cancel the given session.
+     *
+     * @param stdClass $session
+     * @param \context_module $contextmodule
+     * @return bool
+     */
+    public static function can_cancel_signup(\stdClass $session, \context_module $contextmodule): bool {
+        return $session->allowcancellations && has_capability('mod/appointment:signup', $contextmodule) &&
+            (!empty($session->usersubmission) || appointment_check_signup($session->appointment) === $session->id) &&
+            !appointment_has_session_started($session, time());
+    }
+
+    /**
      * Make sure user can signup to given session.
      *
      * @param stdClass $session
@@ -110,10 +123,13 @@ class permission {
     /**
      * Make sure user can cancel signup in any session on given module context.
      *
+     * @param stdClass $session
      * @param \context_module $contextmodule
      */
-    public static function require_can_cancel_signup(\context_module $contextmodule) {
-        require_capability('mod/appointment:signup', $contextmodule);
+    public static function require_can_cancel_signup(\stdClass $session, \context_module $contextmodule) {
+        if (!self::can_cancel_signup($session, $contextmodule)) {
+            throw new \moodle_exception('error:nopermissiontocancelsignup', 'mod_appointment');
+        }
     }
 
     /**

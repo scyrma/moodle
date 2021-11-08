@@ -96,7 +96,7 @@ class cancelsignup extends dynamic_form {
      * Check permissions.
      */
     protected function check_access_for_dynamic_submission(): void {
-        \mod_appointment\permission::require_can_cancel_signup($this->get_context_for_dynamic_submission());
+        \mod_appointment\permission::require_can_cancel_signup($this->get_session(), $this->get_context_for_dynamic_submission());
     }
 
     /**

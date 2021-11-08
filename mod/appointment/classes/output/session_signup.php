@@ -63,14 +63,11 @@ class session_signup implements \renderable, \templatable {
         global $PAGE;
         $bookaction = '';
         $bookactiontitle = '';
-        $iscancelling = false;
+        $cancelaction = '';
 
-        if ($this->session->usersubmission) {
+        if (\mod_appointment\permission::can_cancel_signup($this->session, $PAGE->context)) {
             // User is already signed up, display "Cancel".
-            // TODO: check config allow cancelling.
-            $bookaction = 'cancelsignup';
-            $bookactiontitle = get_string('cancel', 'mod_appointment');
-            $iscancelling = true;
+            $cancelaction = 'cancelsignup';
         } else if (\mod_appointment\permission::can_signup($this->session, $PAGE->context)) {
             $signupcount = appointment_get_num_attendees($this->session->id, MOD_APPOINTMENT_STATUS_APPROVED);
             if ($signupcount >= $this->session->capacity) {
@@ -85,7 +82,7 @@ class session_signup implements \renderable, \templatable {
         return [
             'bookaction' => $bookaction,
             'bookactiontitle' => $bookactiontitle,
-            'iscancelling' => $iscancelling,
+            'cancelaction' => $cancelaction,
             'sessionid' => $this->session->id,
             'detailstitle' => get_string('details', 'mod_appointment'),
         ];

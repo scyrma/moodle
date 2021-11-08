@@ -66,12 +66,92 @@ Feature: Book appointments
     And I should see "Open" in the "Details" "dialogue"
     And I click on "Book" "button" in the "Details" "dialogue"
     And "Book" "button" should not exist in the "1:00" "table_row"
+    And "Cancel" "button" should not exist in the "1:00" "table_row"
     And I should not see "Open" in the "1:00" "table_row"
     And I should see "Booked" in the "1:00" "table_row"
     And I click on "Details" "button" in the "1:00" "table_row"
     And I should see "Booked" in the "Details" "dialogue"
     And I should not see "Open" in the "Details" "dialogue"
     And I click on "Cancel" "button" in the "Details" "dialogue"
+    And I log out
+
+  Scenario: Test booking cancellation
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    Then I click on "Actions menu" "link" in the "1:00" "table_row"
+    And I choose "Settings" in the open action menu
+    And I set the following fields in the "Editing appointment" "dialogue" to these values:
+      | allowcancellations | 1 |
+    And I click on "Save" "button" in the "Editing appointment" "dialogue"
+    And I log out
+    When I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    And I should see "1:00"
+    And I should see "Open" in the "1:00" "table_row"
+    And I click on "Book" "button" in the "1:00" "table_row"
+    And I click on "Book" "button" in the "Details" "dialogue"
+    And "Book" "button" should not exist in the "1:00" "table_row"
+    And "Cancel" "button" should exist in the "1:00" "table_row"
+    And I should not see "Open" in the "1:00" "table_row"
+    And I should see "Booked" in the "1:00" "table_row"
+    And I click on "Cancel" "button" in the "1:00" "table_row"
+    And I click on "Confirm cancellation" "button" in the "Cancel booking" "dialogue"
+    And I should see "Open" in the "1:00" "table_row"
+    And "Book" "button" should exist in the "1:00" "table_row"
+    And "Cancel" "button" should not exist in the "1:00" "table_row"
+    And I log out
+
+  Scenario: Test booking cancellation for session in the past
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    Then I click on "Actions menu" "link" in the "1:00" "table_row"
+    And I choose "Settings" in the open action menu
+    And I set the following fields in the "Editing appointment" "dialogue" to these values:
+      | allowcancellations | 1 |
+    And I click on "Save" "button" in the "Editing appointment" "dialogue"
+    And I log out
+    When I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    And I should see "1:00"
+    And I should see "Open" in the "1:00" "table_row"
+    And I click on "Book" "button" in the "1:00" "table_row"
+    And I click on "Book" "button" in the "Details" "dialogue"
+    And "Book" "button" should not exist in the "1:00" "table_row"
+    And "Cancel" "button" should exist in the "1:00" "table_row"
+    And I should not see "Open" in the "1:00" "table_row"
+    And I should see "Booked" in the "1:00" "table_row"
+    And I log out
+    When I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    Then I click on "Actions menu" "link" in the "1:00" "table_row"
+    And I choose "Settings" in the open action menu
+    And I set the following fields in the "Editing appointment" "dialogue" to these values:
+      | Date                 | ##-3 days## |
+    And I click on "Save" "button" in the "Editing appointment" "dialogue"
+    And I log out
+    When I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    And "Book" "button" should not exist in the "1:00" "table_row"
+    And "Cancel" "button" should not exist in the "1:00" "table_row"
+    And I should see "Finished" in the "1:00" "table_row"
+    And I log out
+
+  Scenario: Test booking cancellation is not possible when cancellation is disabled
+    When I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Test appointment"
+    And I should see "1:00"
+    And I should see "Open" in the "1:00" "table_row"
+    And I click on "Book" "button" in the "1:00" "table_row"
+    And I click on "Book" "button" in the "Details" "dialogue"
+    And "Book" "button" should not exist in the "1:00" "table_row"
+    And "Cancel" "button" should not exist in the "1:00" "table_row"
     And I log out
 
   Scenario: Test booking through calendar

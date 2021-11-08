@@ -58,19 +58,17 @@
                     </ion-col>
                     <ion-col>
                     <%#bookaction%>
-                        <%^iscancelling%>
                         <ion-button block core-site-plugins-new-content title="<% bookactiontitle %>"
                         component="mod_appointment" method="mobile_session_book" [args]="{cmid: <% cmid %>, sessionid: <% sessionid %>}">
                             <% bookactiontitle %>
                         </ion-button>
-                        <%/iscancelling%>
-                        <%#iscancelling%>
+                    <%/bookaction%>
+                    <%#cancelaction%>
                         <ion-button block core-site-plugins-new-content color="danger" title="{{ 'plugin.mod_appointment.cancelbooking' | translate }}"
                         component="mod_appointment" method="mobile_session_cancel" [args]="{cmid: <% cmid %>, sessionid: <% sessionid %>}">
-                            <% bookactiontitle %>
+                            {{ 'plugin.mod_appointment.cancel' | translate }}
                         </ion-button>
-                        <%/iscancelling%>
-                    <%/bookaction%>
+                    <%/cancelaction%>
                     </ion-col>
                 </ion-row>
             </ion-grid>

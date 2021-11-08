@@ -44,10 +44,15 @@
                         data-action="details" data-id="{{sessionid}}"
                         title="{{detailstitle}}">{{detailstitle}}</button>
                     {{#bookaction}}
-                    <button class="btn {{#iscancelling}}btn-danger{{/iscancelling}}{{^iscancelling}}btn-primary{{/iscancelling}} d-inline-block"
+                    <button class="btn btn-primary d-inline-block"
                         data-action="{{bookaction}}" data-id="{{sessionid}}"
                         title="{{bookactiontitle}}">{{bookactiontitle}}</button>
                     {{/bookaction}}
+                    {{#cancelaction}}
+                    <button class="btn btn-danger d-inline-block"
+                        data-action="{{cancelaction}}" data-id="{{sessionid}}"
+                        title="{{#str}} cancelbooking, mod_appointment {{/str}}">{{#str}} cancel, mod_appointment {{/str}}</button>
+                    {{/cancelaction}}
                     {{#actions}}
                     <div class="d-inline-block pl-3">
                         {{> core/action_menu}}

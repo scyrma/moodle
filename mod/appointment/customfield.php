@@ -34,6 +34,6 @@ $handler = mod_appointment\customfield\appointment_handler::create();
 $outputpage = new \core_customfield\output\management($handler);
 
 echo $output->header(),
-     $output->heading(new lang_string('course_customfield', 'admin')),
+     $output->heading(new lang_string('appointmentcustomfields', 'appointment')),
      $output->render($outputpage),
      $output->footer();

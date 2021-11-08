@@ -179,8 +179,12 @@ class appointment_signups_entity extends entity_base {
      */
     public function get_appointment_statuses(): array {
         $statuslist = [];
+        // TODO: WP-1210 Removed excluded statuses when approval functionality is back.
+        $excluded = [MOD_APPOINTMENT_STATUS_DECLINED, MOD_APPOINTMENT_STATUS_REQUESTED, MOD_APPOINTMENT_STATUS_APPROVED];
         foreach (appointment_statuses() as $key => $status) {
-            $statuslist[$key] = get_string('status_' . $status, 'appointment');
+            if (!in_array($key, $excluded)) {
+                $statuslist[$key] = get_string('status_' . $status, 'appointment');
+            }
         }
         return $statuslist;
     }
