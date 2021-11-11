@@ -24,6 +24,9 @@
  * @author    Fred Dixon  (ffdixon [at] blindsidenetworks [dt] com)
  */
 
+use mod_bigbluebuttonbn\locallib\config;
+use mod_bigbluebuttonbn\plugin;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/locallib.php');
@@ -49,16 +52,15 @@ class mod_bigbluebuttonbn_mod_form extends moodleform_mod {
         // Validates if the BigBlueButton server is running.
         $serverversion = bigbluebuttonbn_get_server_version();
         if (is_null($serverversion)) {
-            print_error('general_error_unable_connect', 'bigbluebuttonbn',
+            throw new moodle_exception('general_error_unable_connect', plugin::COMPONENT,
                 $CFG->wwwroot.'/admin/settings.php?section=modsettingbigbluebuttonbn');
-            return;
         }
         $bigbluebuttonbn = null;
         if ($this->current->id) {
             $bigbluebuttonbn = $DB->get_record('bigbluebuttonbn', array('id' => $this->current->id), '*', MUST_EXIST);
         }
         // UI configuration options.
-        $cfg = \mod_bigbluebuttonbn\locallib\config::get_options();
+        $cfg = config::get_options();
 
         $jsvars = array();
 
@@ -79,9 +81,8 @@ class mod_bigbluebuttonbn_mod_form extends moodleform_mod {
                 );
             // If still none is allowed, fail and return.
             if (empty($jsvars['instanceTypeProfiles'])) {
-                print_error('general_error_not_allowed_to_create_instances)', 'bigbluebuttonbn',
+                throw new moodle_exception('general_error_not_allowed_to_create_instances)', plugin::COMPONENT,
                     $CFG->wwwroot.'/admin/settings.php?section=modsettingbigbluebuttonbn');
-                return;
             }
         }
         $jsvars['instanceTypeDefault'] = array_keys($jsvars['instanceTypeProfiles'])[0];
@@ -156,7 +157,7 @@ class mod_bigbluebuttonbn_mod_form extends moodleform_mod {
      *
      * @param array $data
      * @param array $files
-     * @return void
+     * @return array
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
@@ -182,7 +183,7 @@ class mod_bigbluebuttonbn_mod_form extends moodleform_mod {
      */
     public function add_completion_rules() {
         $mform = $this->_form;
-        if (!(boolean)\mod_bigbluebuttonbn\locallib\config::get('meetingevents_enabled')) {
+        if (!(boolean) config::get('meetingevents_enabled')) {
             return [];
         }
 
@@ -259,7 +260,7 @@ class mod_bigbluebuttonbn_mod_form extends moodleform_mod {
      * @return void
      */
     private function bigbluebuttonbn_mform_add_block_profiles(&$mform, $profiles) {
-        if ((boolean)\mod_bigbluebuttonbn\locallib\config::recordings_enabled()) {
+        if ((boolean) config::recordings_enabled()) {
             $mform->addElement('select', 'type', get_string('mod_form_field_instanceprofiles', 'bigbluebuttonbn'),
                 bigbluebuttonbn_get_instance_profiles_array($profiles),
                 array('onchange' => 'M.mod_bigbluebuttonbn.modform.updateInstanceTypeProfile(this);'));
@@ -716,10 +717,10 @@ class mod_bigbluebuttonbn_mod_form extends moodleform_mod {
      *
      * This method is designed to add an element in a way that will work in both Moodle and Totara.
      *
-     * @param $mform Moodle form object
-     * @param $name Form element name
-     * @param $descriptionkey String key for the element label and help description
-     * @param $html HTML string to be displayed in the static element.
+     * @param object $mform Moodle form object
+     * @param string $name Form element name
+     * @param string $descriptionkey String key for the element label and help description
+     * @param string $html HTML string to be displayed in the static element.
      *
      * @return null No return but form element added to $mform as a side-effect.
      */
