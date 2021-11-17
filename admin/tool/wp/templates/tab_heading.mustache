@@ -1,0 +1,52 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_wp/tab_heading
+
+    Template for showing tabs
+
+    Example context (json):
+    {
+        "tabheading": "Hello",
+        "addbutton": true,
+        "addbuttontitle": "Add",
+        "addbuttonicon": true,
+        "addbuttonurl": "",
+        "addbuttonclasses": ["disabled", "p-3"],
+        "addbuttonattrs": [{"name": "data-foo", "value": "bar"}]
+    }
+}}
+<div>
+{{#addbutton}}
+    <a href="{{#addbuttonurl}}{{addbuttonurl}}{{/addbuttonurl}}{{^addbuttonurl}}#{{/addbuttonurl}}" role="button"
+       class="btn btn-primary float-right iconlarge nomargin{{#addbuttonclasses}} {{.}}{{/addbuttonclasses}}"
+       data-tabs-element="addbutton" {{#addbuttonattrs}}{{name}}="{{value}}"{{/addbuttonattrs}}>
+       {{#addbuttonicon}}{{#pix}}t/add, core{{/pix}}{{/addbuttonicon}}{{#addbuttontitle}}{{addbuttontitle}}{{/addbuttontitle}}
+    </a>
+{{/addbutton}}
+{{#tabheading}}
+    <h2>{{{tabheading}}}</h2>
+{{/tabheading}}
+</div>
+<div class="clearfix"></div>
