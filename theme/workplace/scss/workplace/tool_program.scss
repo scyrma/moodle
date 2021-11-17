@@ -1,0 +1,321 @@
+.programs-view {
+    .programimage,
+    .courseimage {
+        width: 75px;
+        height: 55px;
+        background-size: cover;
+    }
+    .viewcards,
+    .viewlist,
+    .programinfomodal,
+    .courseinfomodal {
+        .element-type {
+            color: $gray-700;
+            text-transform: uppercase;
+            font-size: .75rem;
+        }
+    }
+
+    .viewlist {
+        .element-type,
+        .element-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .viewcards {
+        .element-name {
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+    }
+    .viewlist {
+        .element-name {
+            display: block;
+            font-size: 1rem;
+        }
+        .togglesectionicon {
+            width: 1.3rem;
+            .icon {
+                margin: 0;
+                font-size: 1rem;
+                width: initial;
+            }
+        }
+        .calltoaction {
+            min-width: 10rem;
+        }
+        .media-body {
+            min-width: 0;
+        }
+    }
+
+    .btn-info-small {
+        .icon {
+            font-size: 1rem;
+            margin: 0;
+            color: $gray-700;
+            width: auto;
+        }
+    }
+
+    .completed .icon {
+        color: $success;
+    }
+
+    .programitem:hover {
+        background-color: $gray010;
+    }
+
+    .programitem:not(.programrow):hover {
+        cursor: pointer;
+    }
+
+    .programitem:hover .middle {
+        opacity: 1;
+    }
+
+    .middle {
+        opacity: 0;
+    }
+
+    .itemrow {
+        min-height: 60px;
+    }
+
+    @include media-breakpoint-up(sm) {
+        @for $i from 2 through 10 {
+            .indent-#{$i} {
+                padding-left: ($i - 1) * 2rem;
+            }
+        }
+    }
+
+    .icon {
+        color: $gray060;
+        font-size: 1.3rem;
+        height: 1.3rem;
+        width: 1.3rem;
+        line-height: 1.3rem;
+        margin: 0.25rem 0 0 0;
+        &.small {
+            font-size: 1rem;
+        }
+    }
+
+    .togglesectionicon .icon {
+        color: $gray060;
+        margin-right: 0.7rem;
+    }
+
+    .text-info .icon {
+        color: $info;
+    }
+
+    .alert .icon {
+        color: inherit;
+    }
+
+    .programprogress {
+        width: 75px;
+
+        &.progress-thin {
+            height: 3px;
+        }
+    }
+}
+
+#wpdashboardContent .programs-view {
+    .dashboard-item > .view {
+        display: none;
+    }
+    .dashboard-item > .view.viewlist {
+        margin-bottom: -1px;
+    }
+
+    &.viewlist .dashboard-item > .view.viewlist {
+        display: block;
+    }
+    &.viewcards .dashboard-item > .view.viewcards {
+        display: block;
+    }
+    .search-hidden {
+        display: none;
+    }
+    .search-visible {
+        display: block;
+    }
+    .filter-visible {
+        display: block;
+        &.search-hidden {
+            display: none;
+        }
+    }
+    .filter-hidden {
+        display: none;
+        &.search-visible {
+            display: none;
+        }
+    }
+    .courseinfomodal {
+        .modal-body {
+            .progress-container,
+            .coursename-container {
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+        }
+    }
+
+    .courseinfomodal,
+    .programinfomodal {
+        .modal-header {
+            padding: 0;
+            margin: 0;
+            position: relative;
+            display: block;
+            overflow-y: hidden;
+            min-width: 10px;
+            height: 140px;
+            width: 100%;
+        }
+        .modal-body {
+            padding: 0;
+            margin: 0;
+            height: 400px;
+            overflow-y: auto;
+            .coursebox {
+                margin: 0;
+                .info { // TODO: WP-1597 Remove this when course renderer is split in different methods
+                    .coursename {
+                        display: none;
+                    }
+                }
+                .summary {
+                    float: initial;
+                    width: initial;
+                }
+                .courseimage {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
+.dashboard-control {
+    gap: .5rem;
+    .programs-display .buttontext {
+        display: none;
+    }
+    .programs-display.viewlist .buttontext.viewlist {
+        display: block;
+    }
+    .programs-display.viewcards .buttontext.viewcards {
+        display: block;
+    }
+    .programs-sorting .buttontext {
+        display: none;
+    }
+    .programs-sorting.programname .buttontext.programname {
+        display: block;
+    }
+    .programs-sorting.duedate .buttontext.duedate {
+        display: block;
+    }
+    .programs-sorting.programname .buttontext.programname {
+        display: block;
+    }
+    .programs-sorting.lastaccess .buttontext.lastaccess {
+        display: block;
+    }
+}
+
+.path-admin-tool-program {
+    [data-region="edit-program-calendar"] {
+        .calendar-fix-selector-width select {
+            min-width: 221px;
+        }
+    }
+
+    [data-region="edit-content"] {
+        .dropdown-toggle::after {
+            display: none;
+            visibility: hidden;
+            height: 0;
+            width: 0;
+        }
+
+        .program-item.sortable-list-current-position .card-body {
+            background-color: #d7f0ee;
+        }
+
+        .program-item.sortable-list-is-dragged {
+            opacity: 0.65;
+        }
+
+        [data-groupname="completioncriteriagroup"] {
+            margin-bottom: 0;
+            margin-left: 0;
+            margin-right: 0;
+
+            // Removes empty form group label spacing.
+            &.femptylabel {
+                margin-left: 0;
+
+                .col-md-3 {
+                    display: none;
+                    visibility: hidden;
+                }
+
+                .col-md-9 {
+                    flex: 0 0 100%;
+                    max-width: 100%;
+                    padding-right: 0;
+                    padding-left: 0;
+                }
+            }
+        }
+    }
+
+    [data-region="programs-overview-recursive-view"] .text-warning > .wp-hourglass {
+        color: #ffd166;
+    }
+}
+
+// Program tags and statuses.
+.tool_program_program_archived,
+.tool_program_program_user_status_overdue {
+    @extend .wp_status_tag;
+    @extend .badge-warning;
+}
+
+.tool_program_program_user_status_expired,
+.tool_program_program_user_status_suspended,
+.tool_program_program_program_deleted {
+    @extend .wp_status_tag;
+    @extend .badge-danger;
+}
+
+.tool_program_program_user_status_open,
+.tool_program_program_user_status_futureallocation,
+.tool_program_program_user_status_active {
+    @extend .wp_status_tag;
+    @extend .badge-info;
+}
+
+.tool_program_program_user_status_certified,
+.tool_program_program_user_status_completed {
+    @extend .wp_status_tag;
+    @extend .badge-success;
+}
+
+// Dashboard overflow fix.
+body.pagelayout-mydashboard {
+    #region-main,
+    .page-content-inner > .contentwrapper {
+        overflow: initial;
+    }
+}

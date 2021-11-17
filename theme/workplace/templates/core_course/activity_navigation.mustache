@@ -1,0 +1,94 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template core_course/activity_navigation
+
+    Displays the activity navigation
+
+    Context variables required for this template:
+    * prevlink Object - The action link data for the previous activity link. Corresponds with the core/action_link context.
+    * nextlink Object - The action link data for the next activity link. Corresponds with the core/action_link context.
+    * activitylist Object - The data for the activity selector menu. Corresponds with the core/url_select context.
+
+    Example context (json):
+    {
+        "prevlink": {
+            "disabled": false,
+            "url": "#",
+            "id": "test-id-1",
+            "classes": "btn btn-link",
+            "attributes": [
+                {
+                    "name": "title",
+                    "value": "Activity A"
+                }
+            ],
+            "text": "◄ Activity A"
+        },
+        "nextlink": {
+            "disabled": false,
+            "url": "#",
+            "id": "test-id-2",
+            "classes": "btn btn-link",
+            "attributes": [
+                {
+                    "name": "title",
+                    "value": "Activity C"
+                }
+            ],
+            "text": "Activity C ►"
+        },
+        "activitylist": {
+            "id": "url_select_test",
+            "showbutton": "Go",
+            "formid": "formid",
+            "action": "#",
+            "options": [
+                {"name": "Jump to...", "value": "#0"},
+                {"name": "Activity A", "value": "#1"},
+                {"name": "Activity B", "value": "#2"},
+                {"name": "Activity C", "value": "#3"}
+            ]
+        }
+    }
+}}
+<div class="my-4 pt-4 border-top activity-navigation">
+    <div class="row align-items-center m-0">
+        <div class="col-md-4">
+            <div class="text-truncate align-items-start text-left">
+                {{#prevlink}}{{> theme_workplace/action_link }}{{/prevlink}}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            {{#activitylist}}{{> core/url_select }}{{/activitylist}}
+        </div>
+
+        <div class="col-md-4">
+            <div class="text-truncate align-items-start text-right">
+                {{#nextlink}}{{> theme_workplace/action_link }}{{/nextlink}}
+            </div>
+        </div>
+    </div>
+</div>
