@@ -1,0 +1,145 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_organisation/dashboard_team_user
+
+    Tab with jobs (for management)
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "id": 1,
+        "userpicture": "<img src='https://raw.githubusercontent.com/moodle/moodle/master/pix/g/f1.png' width='35' height='35' alt='pic'>",
+        "userfullname": "John Doe",
+        "isglobalmanager": 1,
+        "isdepartmentmanager": 1,
+        "messageurl": "#",
+        "profileurl": "#",
+        "attentiontext": "1 expired certification",
+        "jobs": [
+            { "positionname": "Main developer", "departmentname": "Product", "dates": "From 01/07/2018 to 01/07/2019" },
+            { "positionname": "Team lead", "departmentname": "Main office", "dates": "From 01/01/2016" }
+        ],
+        "userdetails": {"classes": "", "nodes": ["<li>Detail1</li>", "<li>Detail2</li>"]},
+        "learning": {"classes": "", "nodes": ["<li>Report1</li>", "<li>Report 2</li>"]}
+    }
+}}
+<div class="pl-0 d-flex align-items-center align-self-start">
+    <button class="btn btn-link py-3 pl-3 pr-0 text-truncate d-flex align-items-center border-0 ws-toggle collapsed
+         text-decoration-none"
+            data-toggle="collapse" data-target="#extendeddetails-{{certificationuserid}}" aria-expanded="false"
+            aria-controls="extendeddetails-{{certificationuserid}}">
+        <span class="togglesectionicon collapsed-icon-container">
+            {{#pix}} t/collapsedcaret, core, {{#str}} expand, moodle {{/str}}{{/pix}}
+        </span>
+        <span class="togglesectionicon expanded-icon-container">
+            {{#pix}} t/expanded, core, {{#str}} collapse, moodle {{/str}}{{/pix}}
+        </span>
+        <span class="mr-2">
+            {{#userpicture}}
+                {{{userpicture}}}
+            {{/userpicture}}
+        </span>
+        <span class="text-truncate">
+            {{{userfullname}}}
+        </span>
+    </button>
+    <div class="usertypeicons ml-3">
+        {{#isglobalmanager}}
+            <span class="mr-2"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="{{#str}}globalmanager, tool_organisation{{/str}}">
+                <i class="icon fa fa-globe" aria-hidden="true" title="{{#str}}globalmanager, tool_organisation{{/str}}">
+                </i>
+            </span>
+        {{/isglobalmanager}}
+        {{#isdepartmentmanager}}
+            <span class="mr-2"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="{{#str}}departmentmanager, tool_organisation{{/str}}">
+                <i class="icon fa fa-circle-o" aria-hidden="true" title="{{#str}}departmentmanager, tool_organisation{{/str}}">
+                </i>
+            </span>
+        {{/isdepartmentmanager}}
+    </div>
+</div>
+
+<div id="extendeddetails-{{certificationuserid}}" class="collapse">
+    <div class="px-5 pb-5 pt-3">
+        <h4>{{#str}}details, tool_organisation{{/str}}</h4>
+        <hr class="mt-0">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                {{#userdetails}}
+                    <div class="profile_tree">
+                        <div class="node_category {{classes}}">
+                            <ul class="unlist">
+                                {{#nodes}}{{{.}}}{{/nodes}}
+                            </ul>
+                        </div>
+                    </div>
+                {{/userdetails}}
+            </div>
+            <div class="col-md-6">
+                {{#learning}}
+                    <div class="profile_tree">
+                        <div class="node_category {{classes}}">
+                            <ul class="unlist">
+                                {{#nodes}}{{{.}}}{{/nodes}}
+                            </ul>
+                        </div>
+                    </div>
+                {{/learning}}
+            </div>
+        </div>
+
+        <h4>{{#str}}jobs, tool_organisation{{/str}}</h4>
+        <hr class="mt-0 mb-4">
+
+        <div class="wp-jobs">
+            {{#jobs}}
+                <div class="row">
+                    <div class="col-md-4"><b>{{{positionname}}}</b></div>
+                    <div class="col-md-4">{{{departmentname}}}</div>
+                    <div class="col-md-4">{{{dates}}}</div>
+                </div>
+                <hr class="my-2">
+            {{/jobs}}
+        </div>
+    </div>
+</div>
+
+{{#js}}
+    require(['jquery'], function($) {
+    var $newRow = '<tr id="dummycell-{{certificationuserid}}" style="display:none;"><td colspan="13"></td></tr>'
+    + '<tr><td colspan="13" id="targetcell-{{certificationuserid}}" style="border:0;padding:0;background:#fff;"></td></tr>';
+    var $collapsible = $("#extendeddetails-{{certificationuserid}}");
+    var $parentRow = $collapsible.closest("tr");
+    $parentRow.after($newRow);
+    $("#targetcell-{{certificationuserid}}").append($collapsible);
+    });
+{{/js}}
