@@ -199,6 +199,13 @@ class course_enrolment_manager {
         if ($this->totalotherusers === null) {
             list($ctxcondition, $params) = $DB->get_in_or_equal($this->context->get_parent_context_ids(true), SQL_PARAMS_NAMED, 'ctx');
             $params['courseid'] = $this->course->id;
+            /** @uses \tool_tenant\tenancy::get_users_subquery */
+            $tenantcondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [true, true, 'u.id'], '');
+            // Exclude tenant admin (system) and tenant user (category) roles, but leave the tenant admin (category) role since it can
+            // have course-related capabilities and may be helpful in this list.
+            /** @uses \tool_tenant\role::get_exclude_tenant_roles_subquery() */
+            $tenantcondition .= component_class_callback('tool_tenant\\role', 'get_exclude_tenant_roles_subquery',
+                [['user', 'admin'], 'ra.roleid'], '');
             $sql = "SELECT COUNT(DISTINCT u.id)
                       FROM {role_assignments} ra
                       JOIN {user} u ON u.id = ra.userid
@@ -210,6 +217,7 @@ class course_enrolment_manager {
                             WHERE e.courseid = :courseid
                          ) ue ON ue.userid=u.id
                      WHERE ctx.id $ctxcondition AND
+                           $tenantcondition
                            ue.id IS NULL";
             $this->totalotherusers = (int)$DB->count_records_sql($sql, $params);
         }
@@ -350,6 +358,13 @@ class course_enrolment_manager {
             ['selects' => $fieldselect, 'joins' => $fieldjoin, 'params' => $fieldjoinparams] =
                     (array)$userfields->get_sql('u', true);
             $params += $fieldjoinparams;
+            /** @uses \tool_tenant\tenancy::get_users_subquery() */
+            $tenantcondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [true, true, 'u.id'], '');
+            // Exclude tenant admin (system) and tenant user (category) roles, but leave the tenant admin (category) role since it can
+            // have course-related capabilities and may be helpful in this list.
+            /** @uses \tool_tenant\role::get_exclude_tenant_roles_subquery() */
+            $tenantcondition .= component_class_callback('tool_tenant\\role', 'get_exclude_tenant_roles_subquery',
+                [['user', 'admin'], 'ra.roleid'], '');
             $sql = "SELECT ra.id as raid, ra.contextid, ra.component, ctx.contextlevel, ra.roleid,
                            coalesce(u.lastaccess,0) AS lastaccess
                            $fieldselect
@@ -364,6 +379,7 @@ class course_enrolment_manager {
                         WHERE e.courseid = :courseid
                        ) ue ON ue.userid=u.id
                      WHERE ctx.id $ctxcondition AND
+                           $tenantcondition
                            ue.id IS NULL
                   ORDER BY $sort $direction, ctx.depth DESC";
             $this->otherusers[$key] = $DB->get_records_sql($sql, $params, $page*$perpage, $perpage);
