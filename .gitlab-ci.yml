@@ -18,6 +18,7 @@ stages:
 
 merge_free:
   stage: build
+  needs: []
   tags:
     - git-octopus
   except:
@@ -36,6 +37,7 @@ merge_free:
 
 merge_school:
   stage: build
+  needs: []
   tags:
     - git-octopus
   except:
@@ -54,6 +56,7 @@ merge_school:
 
 merge_starter:
   stage: build
+  needs: []
   tags:
     - git-octopus
   except:
@@ -72,6 +75,7 @@ merge_starter:
 
 merge_lms:
   stage: build
+  needs: []
   tags:
     - git-octopus
   except:
@@ -91,6 +95,7 @@ merge_lms:
 
 merge_testing_school:
   stage: build
+  needs: []
   tags:
     - git-octopus
   except:
@@ -109,6 +114,7 @@ merge_testing_school:
 
 merge_workplace:
   stage: build
+  needs: []
   tags:
     - git-octopus
   script:
@@ -133,6 +139,9 @@ merge_workplace:
 
 deploy_staging:
   stage: deploy
+  needs: ["merge_free","merge_starter","merge_school","merge_lms","merge_testing_school","merge_workplace"]
+  interruptible: true
+  environment: staging
   tags:
     - git-octopus
   script:
