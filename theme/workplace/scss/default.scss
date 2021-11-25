@@ -1,0 +1,21 @@
+// WorkPlace
+@import "workplace/variables";
+// Import FontAwesome.
+@import "fontawesome";
+@import "workplace/fonts";
+// Import All of Bootstrap
+@import "bootstrap";
+// Import Core moodle CSS
+@import "moodle";
+@import "workplace/general";
+@import "workplace/course";
+@import "workplace/dashboard";
+@import "workplace/progress";
+@import "workplace/tool_program";
+@import "workplace/tool_organisation";
+@import "workplace/tool_reportbuilder";
+@import "workplace/tool_dynamicrules";
+@import "workplace/tool_certification";
+@import "workplace/tool_wp";
+@import "workplace/mobile";
+@import "workplace/tool_tenant";
