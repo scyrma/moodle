@@ -1,0 +1,179 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_program/programs_overview_view
+
+    Template for showing overview.
+
+    Example context (json):
+    {
+        "programs": [],
+        "programiscompleted": "1",
+        "fullname": "Name",
+        "statuspercentage": "10",
+        "status": "Completed",
+        "formatedduedate": "01/01/2018",
+        "description": "Description text",
+        "image": "url",
+        "uniqueid": "rAnd0m"
+    }
+}}
+<div id="dashboard-learning-{{uniqueid}}" class="dashboard-learning">
+{{#showfilters}}
+    <div class="d-flex flex-wrap mb-3 dashboard-control" data-region="dashboard-controls">
+        <div class="dropdown programs-status-filter">
+            <button id="programs-status-filter-dropdown" type="button" class="btn btn-outline-secondary dropdown-toggle d-inline-flex align-items-center" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false" title="{{#str}} programstatus, tool_program {{/str}}">
+                {{#pix}} i/filter {{/pix}}
+                <span class="d-sm-inline-block" data-active-item-text>
+            {{#programstatusfilterstr}}{{programstatusfilterstr}}{{/programstatusfilterstr}}{{^programstatusfilterstr}}{{#str}} all, tool_program {{/str}}{{/programstatusfilterstr}}
+        </span>
+            </button>
+            <ul class="dropdown-menu" data-show-active-item data-active-item-text aria-labelledby="programs-status-filter-dropdown">
+                <li>
+                    <a class="dropdown-item" href="#" data-value="all">
+                        {{#str}} all, tool_program {{/str}}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" data-value="courses">
+                        {{#str}} courses {{/str}}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" data-value="programs">
+                        {{#str}} programs, tool_program {{/str}}
+                    </a>
+                </li>
+                <li class="dropdown-divider" role="presentation">
+                    <span class="filler">&nbsp;</span>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" data-value="notcompleted">
+                        {{#str}} notcompleted, tool_program {{/str}}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" data-value="completed">
+                        {{#str}} completed, tool_program {{/str}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="flex-fill">
+            <div class="input-group">
+                <div class="input-group-prepend">
+        <span class="input-group-text pr-0 bg-white">
+            {{#pix}} a/search, core {{/pix}}
+        </span>
+                </div>
+                <input
+                        type="text"
+                        class="form-control border-left-0 col-xs-4"
+                        placeholder="{{#str}} search {{/str}}"
+                        aria-label="{{#str}} search, core_search {{/str}}"
+                        data-region="programs-search-input"
+                        name="programs-search-input"
+                >
+            </div>
+        </div>
+
+        <div class="dropdown programs-sorting {{ sort }}">
+            <button id="programs-sorting-dropdown" type="button" class="btn btn-outline-secondary dropdown-toggle d-inline-flex align-items-center" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false" title="{{#str}} programsort, tool_program {{/str}}">
+                {{#pix}} t/sort_by {{/pix}}
+                <span class="d-sm-inline-block" data-active-item-text>
+                    <span class="buttontext programname">{{#str}} name {{/str}}</span>
+                    <span class="buttontext duedate">{{#str}} conclusiondate, tool_program {{/str}}</span>
+                    <span class="buttontext lastaccess">{{#str}} lastaccessed, tool_program {{/str}}</span>
+                </span>
+            </button>
+            <ul class="dropdown-menu" data-show-active-item data-active-item-text aria-labelledby="programs-sorting-dropdown">
+                <li>
+                    <a class="dropdown-item" href="#" data-value="programname">
+                        {{#str}} name {{/str}}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" data-value="duedate">
+                        {{#str}} conclusiondate, tool_program {{/str}}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" data-value="lastaccess">
+                        {{#str}} lastaccessed, tool_program {{/str}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="dropdown programs-display {{ view }}">
+            <button id="programs-display-dropdown" type="button" class="btn btn-outline-secondary dropdown-toggle d-inline-flex align-items-center" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false" title="{{#str}} programdisplay, tool_program {{/str}}">
+                {{#pix}} a/view_icon_active {{/pix}}
+                <span class="d-sm-inline-block" data-active-item-text>
+            <span class="buttontext viewcards">{{#str}} expanded, tool_program {{/str}}</span>
+            <span class="buttontext viewlist">{{#str}} collapsed, tool_program {{/str}}</span>
+        </span>
+            </button>
+            <ul class="dropdown-menu" data-show-active-item data-active-item-text aria-labelledby="programs-view-dropdown">
+                <li>
+                    <a class="dropdown-item" href="#" data-value="viewcards">
+                        {{#str}} expanded, tool_program {{/str}}
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" data-value="viewlist">
+                        {{#str}} collapsed, tool_program {{/str}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+{{/showfilters}}
+    <div class="programs-view {{ view }} d-flex flex-column" data-region="programs-overview-view" data-showfilters="{{showfilters}}">
+        <div class="nothingtodisplay p-5 text-center hide">
+            <h5 class="text-gray070">{{#str}} nothingtodisplay, moodle {{/str}}</h5>
+        </div>
+        {{#learningelements}}
+            {{#isprogram}}
+                {{> tool_program/programs_overview_view_program }}
+            {{/isprogram}}
+            {{^isprogram}}
+                {{> tool_program/programs_overview_view_course }}
+            {{/isprogram}}
+        {{/learningelements}}
+        {{#coursesmodals}}
+            {{> tool_program/programs_overview_view_course_info }}
+        {{/coursesmodals}}
+    </div>
+</div>
+{{#js}}
+    require(['tool_program/program_overview'], function(s) {
+        s.init('#dashboard-learning-{{uniqueid}}');
+    });
+{{/js}}
