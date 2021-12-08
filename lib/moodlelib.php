@@ -4317,6 +4317,13 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
             $select = "mnethostid = :mnethostid AND LOWER(email) = LOWER(:email) AND deleted = 0";
             $params = array('mnethostid' => $CFG->mnet_localhost_id, 'email' => $email);
             $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
+            // When same email is used in more than one user we need to match with current tenant based in login url.
+            if (count($users) > 1 && class_exists('tool_tenant\\tenancy')) {
+                /** @uses \tool_tenant\tenancy::get_users_subquery */
+                $select = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery',
+                        [false, true, 'id'], '').$select;
+                $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
+            }
             if (count($users) === 1) {
                 // Use email for login only if unique.
                 $user = reset($users);
