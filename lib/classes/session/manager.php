@@ -1002,7 +1002,10 @@ class manager {
             $rs->close();
 
             // Kill sessions of users with disabled plugins.
-            $authsequence = get_enabled_auth_plugins();
+            /** @uses \tool_tenant\auth_manager::get_plugins_enabled_anywhere() */
+            $authsequence = component_class_callback('tool_tenant\auth_manager', 'get_plugins_enabled_anywhere', [],
+                get_enabled_auth_plugins());
+
             $authsequence = array_flip($authsequence);
             unset($authsequence['nologin']); // No login means user cannot login.
             $authsequence = array_flip($authsequence);
