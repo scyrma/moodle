@@ -28,8 +28,9 @@ merge_free:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+    - export COMMON_BRANCHES=`eval "echo \\$$(echo COMMON_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
     - export FREE_BRANCHES=`eval "echo \\$$(echo FREE_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
-    - git octopus $FREE_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
+    - git octopus $COMMON_BRANCHES $FREE_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
     - git push --force origin +HEAD:FREE-$MOODLE_VERSION/octopus-staging
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
@@ -47,8 +48,9 @@ merge_school:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+    - export COMMON_BRANCHES=`eval "echo \\$$(echo COMMON_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
     - export SCHOOL_BRANCHES=`eval "echo \\$$(echo SCHOOL_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
-    - git octopus $SCHOOL_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
+    - git octopus $COMMON_BRANCHES $SCHOOL_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
     - git push $PUSH_REPO +HEAD:SCHOOL-$MOODLE_VERSION/octopus-staging
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
@@ -66,8 +68,9 @@ merge_starter:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+    - export COMMON_BRANCHES=`eval "echo \\$$(echo COMMON_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
     - export STARTER_BRANCHES=`eval "echo \\$$(echo STARTER_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
-    - git octopus $STARTER_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
+    - git octopus $COMMON_BRANCHES $STARTER_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
     - git push $PUSH_REPO +HEAD:STARTER-$MOODLE_VERSION/octopus-staging
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
@@ -85,15 +88,16 @@ merge_lms:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+    - export COMMON_BRANCHES=`eval "echo \\$$(echo COMMON_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
     - export LMS_BRANCHES=`eval "echo \\$$(echo LMS_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
-    - git octopus $LMS_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
+    - git octopus $COMMON_BRANCHES $LMS_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
     - git push --force origin +HEAD:LMS-$MOODLE_VERSION/octopus-staging
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
   allow_failure: false
 
 
-merge_testing_school:
+merge_lms_testing:
   stage: build
   needs: []
   tags:
@@ -105,8 +109,31 @@ merge_testing_school:
     - git remote set-url --push origin $PUSH_REPO
     - git checkout CLOUD-$MOODLE_VERSION/base
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
-    - export TESTING_BRANCHES=`eval "echo \\$$(echo TESTING_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
-    - git octopus $TESTING_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
+    - export COMMON_BRANCHES=`eval "echo \\$$(echo COMMON_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
+    - export LMS_BRANCHES=`eval "echo \\$$(echo LMS_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
+    - export LMS_TESTING_BRANCHES=`eval "echo \\$$(echo LMS_TESTING_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
+    - git octopus $COMMON_BRANCHES $LMS_BRANCHES $LMS_TESTING_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
+    - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
+    - git push --force origin +HEAD:LMS-$MOODLE_VERSION/octopus-staging
+    - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+  allow_failure: false
+
+merge_school_testing:
+  stage: build
+  needs: []
+  tags:
+    - git-octopus
+  except:
+    variables:
+      - $BUILD == "workplace"
+  script:
+    - git remote set-url --push origin $PUSH_REPO
+    - git checkout CLOUD-$MOODLE_VERSION/base
+    - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
+    - export COMMON_BRANCHES=`eval "echo \\$$(echo COMMON_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
+    - export SCHOOL_BRANCHES=`eval "echo \\$$(echo SCHOOL_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
+    - export SCHOOL_TESTING_BRANCHES=`eval "echo \\$$(echo SCHOOL_TESTING_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
+    - git octopus $COMMON_BRANCHES $SCHOOL_BRANCHES $SCHOOL_TESTING_BRANCHES origin/CLOUD-$MOODLE_VERSION/base
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
     - git push $PUSH_REPO +HEAD:SCHOOL-$MOODLE_VERSION/octopus-testing
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/base
@@ -130,19 +157,11 @@ merge_workplace:
         git push origin || ( echo "======= FAILED TO PUSH ======="; exit 1 )
         echo "======= Merge successfull ======="
       fi
+    - export COMMON_BRANCHES=`eval "echo \\$$(echo COMMON_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
     - export WORKPLACE_BRANCHES=`eval "echo \\$$(echo WORKPLACE_BRANCHES_${SHORT_VERSION})" |sed -e "s#FEATURE-#origin/CLOUD-$MOODLE_VERSION/FEATURE-#g"`
-    - git octopus $WORKPLACE_BRANCHES origin/CLOUD-$MOODLE_VERSION/FEATURE-Workplace
+    - git octopus $COMMON_BRANCHES $WORKPLACE_BRANCHES origin/CLOUD-$MOODLE_VERSION/FEATURE-Workplace
     - if [ -e .gitlab-ci.yml ]; then git rm .gitlab-ci.yml; git commit -m "Removing gitlab-ci.yml"; fi
     - git push --force origin +HEAD:WORKPLACE-$MOODLE_VERSION/octopus-staging
     - git reset --hard origin/CLOUD-$MOODLE_VERSION/FEATURE-Workplace
   allow_failure: false
 
-deploy_staging:
-  stage: deploy
-  needs: ["merge_free","merge_starter","merge_school","merge_lms","merge_testing_school","merge_workplace"]
-  interruptible: true
-  environment: staging
-  tags:
-    - git-octopus
-  script:
-    - ssh cibot@staging.gl.moodlecloud.com "sudo /opt/deploy_moodle_chef.sh"
