@@ -448,6 +448,9 @@ class auth extends \auth_plugin_base {
         $issuer = $client->get_issuer();
         // First we try and find a defined mapping.
         $linkedlogin = api::match_username_to_user($userinfo['username'], $issuer);
+        /** @uses \tool_tenant\auth_manager::auth_oauth2_complete_login_hook() */
+        component_class_callback('tool_tenant\auth_manager', 'auth_oauth2_complete_login_hook',
+            [$client, $userinfo, $linkedlogin]);
 
         if (!empty($linkedlogin) && empty($linkedlogin->get('confirmtoken'))) {
             $mappeduser = get_complete_user_data('id', $linkedlogin->get('userid'));
