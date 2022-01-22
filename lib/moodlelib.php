@@ -1540,6 +1540,9 @@ function get_config($plugin, $name = null) {
         $cache->set($plugin, $result);
     }
 
+    /** @uses \tool_tenant\config::get_config_hook() */
+    component_class_callback('tool_tenant\config', 'get_config_hook', [$plugin, &$result]);
+
     if (!empty($name)) {
         if (array_key_exists($name, $result)) {
             return $result[$name];
