@@ -32,8 +32,12 @@ if ($confirm and confirm_sesskey()) {
         if ($user->confirmed) {
             continue;
         }
+        /** @uses \tool_tenant\config::push_for_user() */
+        component_class_callback('tool_tenant\config', 'push_for_user', [$user->id]);
         $auth = get_auth_plugin($user->auth);
         $result = $auth->user_confirm($user->username, $user->secret);
+        /** @uses \tool_tenant\config::pop() */
+        component_class_callback('tool_tenant\config', 'pop', []);
         if ($result != AUTH_CONFIRM_OK && $result != AUTH_CONFIRM_ALREADY) {
             $notifications .= $OUTPUT->notification(get_string('usernotconfirmed', '', fullname($user, true)));
         }
