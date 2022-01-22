@@ -78,6 +78,8 @@ class core_auth_external extends external_api {
 
         $context = context_system::instance();
         $PAGE->set_context($context);
+        /** @uses \tool_tenant\config::push_for_user() */
+        component_class_callback('tool_tenant\config', 'push_for_user', [0, $username]);
 
         if (!$authplugin = signup_get_user_confirmation_authplugin()) {
             throw new moodle_exception('confirmationnotenabled');
@@ -158,6 +160,8 @@ class core_auth_external extends external_api {
                 'email' => $email,
             )
         );
+        /** @uses \tool_tenant\config::push_for_user() */
+        component_class_callback('tool_tenant\config', 'push_for_user', [0, $params['username'], $params['email']]);
 
         $context = context_system::instance();
         $PAGE->set_context($context);   // Needed by format_string calls.
@@ -183,6 +187,8 @@ class core_auth_external extends external_api {
         } else {
             list($status, $notice, $url) = core_login_process_password_reset($params['username'], $params['email']);
         }
+        /** @uses \tool_tenant\config::pop() */
+        component_class_callback('tool_tenant\config', 'pop', []);
 
         return array(
             'status' => $status,
@@ -386,6 +392,8 @@ class core_auth_external extends external_api {
             throw new moodle_exception('restoredaccountresetpassword', 'webservice');
         }
 
+        /** @uses \tool_tenant\config::push_for_user() */
+        component_class_callback('tool_tenant\config', 'push_for_user', [0, $username]);
         $user = authenticate_user_login($username, $password);
 
         if (empty($user)) {
@@ -405,6 +413,8 @@ class core_auth_external extends external_api {
             $confirmationurl = new moodle_url('/login/confirm.php', array('redirect' => $redirect->out()));
         }
         $status = send_confirmation_email($user, $confirmationurl);
+        /** @uses \tool_tenant\config::pop() */
+        component_class_callback('tool_tenant\config', 'pop', []);
 
         return array(
             'status' => $status,
