@@ -2,7 +2,7 @@
 
 namespace local_filestorage\exception;
 
-require_once(dirname(dirname(__DIR__)) . '/sdk/aws-autoloader.php');
+require_once($CFG->dirroot . '/local/aws/sdk/aws-autoloader.php');
 
 /**
  * File Quota exception.
