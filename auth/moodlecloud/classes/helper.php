@@ -3,7 +3,7 @@
 namespace auth_moodlecloud;
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/local/aws/sdk/aws-autoloader.php');;
+require_once($CFG->dirroot . '/local/aws/sdk/aws-autoloader.php');
 
 class helper {
 
