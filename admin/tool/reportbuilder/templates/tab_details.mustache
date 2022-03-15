@@ -1,0 +1,60 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+  @template tool_reportbuilder/tab_details
+
+  The content for tab detail with the form.
+
+  The purpose of this template is to render the form for the details of the report.
+
+  Classes required for JS:
+  * none
+
+  Data attributes required for JS:
+  * none
+
+  Context variables required for this template:
+  * form The renderer form.
+  * reportid The report id.
+
+  Example context (json):
+  {
+      "form": "The form goes here",
+      "reportid": 1,
+      "tabheading": "Details"
+  }
+
+}}
+<div class="tool_reportbuilder_tab_details">
+    {{> tool_wp/tab_heading }}
+    {{{form}}}
+</div>
+{{#js}}
+    M.util.js_pending('tool_reportbuilder_init');
+    require(['tool_reportbuilder/reportbuilder'],
+        function() {
+            M.util.js_complete('tool_reportbuilder_init');
+        }
+    );
+{{/js}}
