@@ -247,21 +247,21 @@ class core_completion_api_testcase extends advanced_testcase {
             array('completion' => 1));
         $cmdata = get_coursemodule_from_id('data', $data->cmid);
         $cm = get_coursemodule_from_instance('data', $data->id);
-        $c = new completion_info($course);
+        $c = new \completion_info($course);
 
         // Add activity completion criteria.
-        $criteriadata = new stdClass();
+        $criteriadata = new \stdClass();
         $criteriadata->id = $course->id;
         $criteriadata->criteria_activity = array();
         // Some activities.
         $criteriadata->criteria_activity[$cmdata->id] = 1;
-        $criterion = new completion_criteria_activity();
+        $criterion = new \completion_criteria_activity();
         $criterion->update_config($criteriadata);
 
         $this->setUser($teacher);
 
         // Mark activity complete for both users.
-        $completion = new stdClass();
+        $completion = new \stdClass();
         $completion->coursemoduleid = $cm->id;
         $completion->completionstate = COMPLETION_COMPLETE;
         $completion->timemodified = time();
