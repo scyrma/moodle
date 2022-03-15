@@ -610,6 +610,8 @@ class core_user_external extends external_api {
                 }
             }
 
+            /** @uses \tool_tenant\config::push_for_user() */
+            component_class_callback('tool_tenant\config', 'push_for_user', [$user['id']]);
             user_update_user($user, true, false);
 
             $userobject = (object)$user;
