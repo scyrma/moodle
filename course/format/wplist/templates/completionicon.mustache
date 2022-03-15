@@ -1,0 +1,104 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template format_wplist/completionicon
+
+    This template renders action menu for each course.
+
+    Example context (json):
+    {
+        "hascompletion": true,
+        "editing": false,
+        "self": true,
+        "auto": false,
+        "imgalt": "completed when ...",
+        "newstate": 1,
+        "mod": {
+            "id": 254,
+            "name": "Activity One",
+            "courseid": 3,
+            "completionicon": "manual-n",
+            "checked": false,
+            "sectionnumber": 2
+        }
+    }
+}}
+{{#hascompletion}}
+    {{#editing}}
+        {{#self}}
+            <div class="checkbox">
+                <div class="checkbox-icon iconlarge nomargin">
+                    {{#pix}}check-on-gray, format_wplist, {{imgalt}}{{/pix}}
+                </div>
+            </div>
+        {{/self}}
+        {{#auto}}
+            <div class="checkbox">
+                <div class="checkbox-icon iconlarge nomargin">
+                    {{#pix}}check-on-dotted, format_wplist, {{imgalt}}{{/pix}}
+                </div>
+            </div>
+        {{/auto}}
+    {{/editing}}
+    {{^editing}}
+        {{#self}}
+            <div class="checkbox" tabindex="0" role="button"
+                data-region="completioncheck"
+                data-targetstate="{{newstate}}"
+                data-modulename="{{mod.name}}"
+                data-module="{{mod.id}}"
+                data-courseid="{{courseid}}"
+                {{#reloadonchange}}
+                    data-reloadonchange="1"
+                {{/reloadonchange}}
+                data-image="{{completionicon}}"
+                data-checked="{{#checked}}1{{/checked}}{{^checked}}0{{/checked}}"
+                data-sectionnumber="{{sectionnumber}}"
+            >
+                <div data-region="check" class="checkbox-icon">
+                    {{#pix}}{{#checked}}check-on{{/checked}}{{^checked}}check-off{{/checked}}, format_wplist, {{imgalt}}{{/pix}}
+                </div>
+            </div>
+
+        {{/self}}
+        {{#auto}}
+            <div class="checkbox">
+                {{#checked}}
+                <div class="checkbox-icon">
+                    {{#pix}}check-green-dotted, format_wplist, {{imgalt}}{{/pix}}
+                </div>
+                {{/checked}}
+                {{^checked}}
+                <div data-region="checkoff" class="checkbox-icon {{#checked}}hidden{{/checked}}">
+                    {{#pix}}check-off-dotted, format_wplist, {{imgalt}}{{/pix}}
+                </div>
+                {{/checked}}
+            </div>
+        {{/auto}}
+    {{/editing}}
+{{/hascompletion}}
