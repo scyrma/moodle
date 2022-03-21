@@ -451,9 +451,9 @@ Feature: Check dynamic rules capabilities
     And the "userprofilefield" select box should contain "Text field 1"
     And the "userprofilefield" select box should not contain "Text field hidden"
     And I set the following fields to these values:
-      | Field | text_field1 |
-      | text_field1_op | 2 |
-      | text_field1_value | Workplace |
+      | Field                                  | custom_profile_field_text_field1 |
+      | custom_profile_field_text_field1_op    | 2                                |
+      | custom_profile_field_text_field1_value | Workplace                        |
     And I press "Save changes"
     And I follow "Actions"
     And I click on "Notification" "link" in the "#ruleoutcomes" "css_element"
@@ -476,9 +476,9 @@ Feature: Check dynamic rules capabilities
     And the "userprofilefield" select box should contain "Text field 1"
     And the "userprofilefield" select box should contain "Text field hidden"
     And I set the following fields to these values:
-      | Field | text_field_hidden |
-      | text_field_hidden_op | 2 |
-      | text_field_hidden_value | Workplace2 |
+      | Field                                        | custom_profile_field_text_field_hidden |
+      | custom_profile_field_text_field_hidden_op    | 2                               |
+      | custom_profile_field_text_field_hidden_value | Workplace2                      |
     And I press "Save changes"
     And I follow "Actions"
     And I click on "Notification" "link" in the "#ruleoutcomes" "css_element"

@@ -25,33 +25,25 @@
 // premium partners. Wherever conflicting terms exist, the terms of the
 // MWL are binding and shall prevail.
 
+namespace tool_dynamicrule\task;
+
 /**
- * View report for rule.
+ * Define adhoc task to update user profile fields conditions.
  *
- * @package     tool_dynamicrule
- * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
- * @author      2019 Daniel Neis Araujo <daniel@moodle.com>
- * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ * @package    tool_dynamicrule
+ * @copyright  2022 Moodle Pty Ltd <support@moodle.com>
+ * @author     2022 Carlos Castillo <carlos.castillo@moodle.com>
+ * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
+class update_user_profile_fields extends \core\task\adhoc_task {
 
-require_once(__DIR__ . '/../../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
-
-$ruleid = required_param('id', PARAM_INT);
-
-admin_externalpage_setup('tool_dynamicrule', '', ['id' => $ruleid]);
-
-$rule = \tool_dynamicrule\api::get_rule($ruleid);
-\tool_dynamicrule\permission::require_can_view_matched_users_report($rule);
-$title = $rule->get_formatted_name();
-
-$PAGE->set_title($title);
-$PAGE->set_heading($title);
-$PAGE->navbar->add($title);
-
-$renderer = $PAGE->get_renderer('tool_dynamicrule');
-$report = \tool_reportbuilder\system_report_factory::create(\tool_dynamicrule\rule_matches_report::class, ['ruleid' => $ruleid]);
-$PAGE->requires->js_call_amd('tool_dynamicrule/show_matching_details', 'init');
-echo $renderer->header(),
-     $report->output(),
-     $renderer->footer();
+    /**
+     * Process single rule.
+     */
+    public function execute() {
+        global $CFG;
+        require_once($CFG->dirroot . '/'.$CFG->admin.'/tool/dynamicrule/db/upgradelib.php');
+        // Process custom profile fields DR conditions and update it .
+        tool_dynamicrule_upgrade_update_user_profile_fields();
+    }
+}

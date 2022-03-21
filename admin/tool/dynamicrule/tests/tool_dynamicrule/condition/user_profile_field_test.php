@@ -128,42 +128,44 @@ class user_profile_field_test extends \advanced_testcase {
 
         // Add a custom field of text type.
         $categoryid = $this->add_profile_category();
-        $DB->insert_record('user_info_field', (object)['shortname' => 'frogdesc', 'name' => 'Description of frog',
+        $fieldshortname = 'frogdesc';
+        $DB->insert_record('user_info_field', (object)['shortname' => $fieldshortname, 'name' => 'Description of frog',
             'categoryid' => $categoryid, 'datatype' => 'text', 'visible' => $this->visibility]);
-
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configform = [
-            'userprofilefield' => 'frogdesc',
-            'frogdesc_value' => 'Froggy',
-            'frogdesc_op' => user_profile_field::TEXT_IS_EQUAL_TO
+            "userprofilefield" => $fieldshortname,
+            "{$fieldshortname}_value" => "Froggy",
+            "{$fieldshortname}_op" => user_profile_field::TEXT_IS_EQUAL_TO
         ];
         $this->assertArrayNotHasKey('userprofilefieldgroup', $condition->validate_config_form($configform));
 
         // Add a custom field of date type.
-        $categoryid = $this->add_profile_category();
-        $DB->insert_record('user_info_field', (object)['shortname' => 'timedesc', 'name' => 'Description of time',
+        $fieldshortname = 'timedesc';
+        $DB->insert_record('user_info_field', (object)['shortname' => $fieldshortname, 'name' => 'Description of time',
             'categoryid' => $categoryid, 'datatype' => 'datetime', 'visible' => $this->visibility]);
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
 
         // Negative value of days.
         $configform = [
-            'userprofilefield' => 'timedesc',
-            'timedesc_value' => '-1',
-            'timedesc_op' => user_profile_field::DATE_LAST_X_DAYS,
+            "userprofilefield" => $fieldshortname,
+            "{$fieldshortname}_value" => '-1',
+            "{$fieldshortname}_op" => user_profile_field::DATE_LAST_X_DAYS,
         ];
         $this->assertArrayHasKey('userprofilefieldgroup', $condition->validate_config_form($configform));
 
         // Zero value of days.
         $configform = [
-            'userprofilefield' => 'timedesc',
-            'timedesc_value' => '0',
-            'timedesc_op' => user_profile_field::DATE_NEXT_X_DAYS,
+            "userprofilefield" => $fieldshortname,
+            "{$fieldshortname}_value" => '0',
+            "{$fieldshortname}_op" => user_profile_field::DATE_NEXT_X_DAYS,
         ];
         $this->assertArrayHasKey('userprofilefieldgroup', $condition->validate_config_form($configform));
 
         // Correct value of days.
         $configform = [
-            'userprofilefield' => 'timedesc',
-            'timedesc_value' => '5',
-            'timedesc_op' => user_profile_field::DATE_NEXT_X_DAYS,
+            "userprofilefield" => $fieldshortname,
+            "{$fieldshortname}_value" => '5',
+            "{$fieldshortname}_op" => user_profile_field::DATE_NEXT_X_DAYS,
         ];
         $this->assertArrayNotHasKey('userprofilefieldgroup', $condition->validate_config_form($configform));
     }
@@ -178,9 +180,9 @@ class user_profile_field_test extends \advanced_testcase {
         $rule1 = $this->get_generator()->create_rule();
         $fieldshortname = 'city';
         $configdata = [
-            'userprofilefield' => $fieldshortname,
-            $fieldshortname . '_value' => 'Perth',
-            $fieldshortname . '_op' => user_profile_field::TEXT_IS_EQUAL_TO,
+            "userprofilefield" => $fieldshortname,
+            "{$fieldshortname}_value" => 'Perth',
+            "{$fieldshortname}_op" => user_profile_field::TEXT_IS_EQUAL_TO,
         ];
         $condition = user_profile_field::create($rule1->id, $configdata);
         $a = (object)['fieldname' => get_string('city'), 'fieldvalue' => 'is equal to Perth'];
@@ -191,14 +193,15 @@ class user_profile_field_test extends \advanced_testcase {
         $fieldshortname = 'someinfo';
         $fieldname = 'Example field';
         $categoryid = $this->add_profile_category();
-        $fieldid = $DB->insert_record('user_info_field', (object)['shortname' => $fieldshortname, 'name' => $fieldname,
+        $DB->insert_record('user_info_field', (object)['shortname' => $fieldshortname, 'name' => $fieldname,
             'categoryid' => $categoryid, 'datatype' => 'text', 'visible' => $this->visibility]);
 
         $rule2 = $this->get_generator()->create_rule();
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata = [
             'userprofilefield' => $fieldshortname,
-            $fieldshortname . '_value' => 'Example value',
-            $fieldshortname . '_op' => user_profile_field::TEXT_IS_EQUAL_TO
+            "{$fieldshortname}_value" => 'Example value',
+            "{$fieldshortname}_op" => user_profile_field::TEXT_IS_EQUAL_TO
         ];
         $condition = user_profile_field::create($rule2->id, $configdata);
 
@@ -207,16 +210,18 @@ class user_profile_field_test extends \advanced_testcase {
         $this->assertEquals($str, $condition->get_description());
 
         // Add a custom field of date type.
+        $fieldshortname = 'timedesc';
         $fieldname = 'Description of time';
-        $DB->insert_record('user_info_field', (object)['shortname' => 'timedesc', 'name' => $fieldname,
+        $DB->insert_record('user_info_field', (object)['shortname' => $fieldshortname, 'name' => $fieldname,
             'categoryid' => $categoryid, 'datatype' => 'datetime', 'visible' => $this->visibility]);
 
         // Text string for 1 day.
         $rule4 = $this->get_generator()->create_rule();
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata = [
-            'userprofilefield' => 'timedesc',
-            'timedesc_value' => '1',
-            'timedesc_op' => user_profile_field::DATE_LAST_X_DAYS,
+            "userprofilefield" => $fieldshortname,
+            "{$fieldshortname}_value" => '1',
+            "{$fieldshortname}_op" => user_profile_field::DATE_LAST_X_DAYS,
         ];
         $condition = user_profile_field::create($rule4->id, $configdata);
 
@@ -227,9 +232,9 @@ class user_profile_field_test extends \advanced_testcase {
         // Text string for 5 days.
         $rule5 = $this->get_generator()->create_rule();
         $configdata = [
-            'userprofilefield' => 'timedesc',
-            'timedesc_value' => '5',
-            'timedesc_op' => user_profile_field::DATE_NEXT_X_DAYS,
+            "userprofilefield" => $fieldshortname,
+            "{$fieldshortname}_value" => '5',
+            "{$fieldshortname}_op" => user_profile_field::DATE_NEXT_X_DAYS,
         ];
         $condition = user_profile_field::create($rule5->id, $configdata);
 
@@ -283,26 +288,32 @@ class user_profile_field_test extends \advanced_testcase {
 
         // Create custom fields.
         $categoryid = $this->add_profile_category();
-        $fieldid0 = $this->add_profile_field('text', $categoryid, 'visibleall', PROFILE_VISIBLE_ALL);
-        $fieldid1 = $this->add_profile_field('text', $categoryid, 'visibleprivate', PROFILE_VISIBLE_PRIVATE);
 
+        $fieldshortname0 = 'visibleall';
+        $fieldshortname1 = 'visibleprivate';
+
+        $fieldid0 = $this->add_profile_field('text', $categoryid, $fieldshortname0, PROFILE_VISIBLE_ALL);
+        $fieldid1 = $this->add_profile_field('text', $categoryid, $fieldshortname1, PROFILE_VISIBLE_PRIVATE);
+
+        $fieldshortname0 = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname0;
+        $fieldshortname1 = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname1;
         // Test as admin, all custom fields are listed.
         self::setAdminUser();
         $fields = $method->invoke($condition);
-        $this->assertArrayHasKey('visibleall', $fields);
-        $this->assertArrayHasKey('visibleprivate', $fields);
+        $this->assertArrayHasKey($fieldshortname0, $fields);
+        $this->assertArrayHasKey($fieldshortname1, $fields);
 
         // Test as user, private field is not listed.
         $user0 = $this->getDataGenerator()->create_user();
         self::setUser($user0);
         $fields = $method->invoke($condition);
-        $this->assertArrayHasKey('visibleall', $fields);
-        $this->assertArrayNotHasKey('visibleprivate', $fields);
+        $this->assertArrayHasKey($fieldshortname0, $fields);
+        $this->assertArrayNotHasKey($fieldshortname1, $fields);
 
         // Test as user with ignore permission check, private field is listed.
         $fields = $method->invoke($condition, false);
-        $this->assertArrayHasKey('visibleall', $fields);
-        $this->assertArrayHasKey('visibleprivate', $fields);
+        $this->assertArrayHasKey($fieldshortname0, $fields);
+        $this->assertArrayHasKey($fieldshortname1, $fields);
     }
 
     /**
@@ -396,6 +407,11 @@ class user_profile_field_test extends \advanced_testcase {
 
         // Rule with profile field condition.
         $rule0 = $this->get_generator()->create_rule();
+        $defaultfields = ['lastname', 'firstname', 'username', 'email', 'city', 'idnumber', 'institution',
+            'lang', 'country', 'auth'];
+        $fieldshortname = in_array($fieldshortname, $defaultfields)
+            ? $fieldshortname
+            : user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata = ['userprofilefield' => $fieldshortname, $fieldshortname . '_value' => $fieldvalue,
             $fieldshortname . '_op' => $fieldop, $fieldshortname . '_op2' => $fieldop2];
         user_profile_field::create($rule0->id, $configdata);
@@ -518,6 +534,7 @@ class user_profile_field_test extends \advanced_testcase {
 
         // Rule with profile field condition.
         $rule1 = $this->get_generator()->create_rule();
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata = ['userprofilefield' => $fieldshortname, $fieldshortname . '_value' => $opvalue,
             $fieldshortname . '_op' => $operator];
         user_profile_field::create($rule1->id, $configdata);
@@ -598,6 +615,7 @@ class user_profile_field_test extends \advanced_testcase {
         $fieldid = $this->add_profile_field('datetime', $categoryid, $fieldshortname, $this->visibility, 1970, 2030);
 
         $rule1 = $this->get_generator()->create_rule();
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata = [
             'userprofilefield' => $fieldshortname,
             $fieldshortname . '_value' => $value,
@@ -629,6 +647,7 @@ class user_profile_field_test extends \advanced_testcase {
 
         // Check for value OPTION2.
         $rule1 = $this->get_generator()->create_rule();
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata = ['userprofilefield' => $fieldshortname, $fieldshortname . '_value' => '', $fieldshortname . '_op' => 1,
             $fieldshortname . '_op2' => 1];
         user_profile_field::create($rule1->id, $configdata);
@@ -653,6 +672,7 @@ class user_profile_field_test extends \advanced_testcase {
 
         // Check for value checked.
         $rule1 = $this->get_generator()->create_rule();
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata = ['userprofilefield' => $fieldshortname, $fieldshortname . '_value' => '', $fieldshortname . '_op' => 1,
             $fieldshortname . '_op2' => 1];
         user_profile_field::create($rule1->id, $configdata);
@@ -673,7 +693,7 @@ class user_profile_field_test extends \advanced_testcase {
         $categoryid = $this->add_profile_category();
         $fieldshortname = 'upf_field_visible_all';
         $this->add_profile_field('text', $categoryid, $fieldshortname, PROFILE_VISIBLE_ALL);
-
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata0 = ['userprofilefield' => $fieldshortname, $fieldshortname . '_value' => 'Hello',
             $fieldshortname . '_op' => user_profile_field::TEXT_STARTS_WITH];
 
@@ -705,7 +725,7 @@ class user_profile_field_test extends \advanced_testcase {
         // Create a PROFILE_VISIBLE_PRIVATE user profile field.
         $fieldshortname = 'upf_field_visible_private';
         $this->add_profile_field('text', $categoryid, $fieldshortname, PROFILE_VISIBLE_PRIVATE);
-
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata1 = ['userprofilefield' => $fieldshortname, $fieldshortname . '_value' => 'Hello',
             $fieldshortname . '_op' => user_profile_field::TEXT_STARTS_WITH];
 
@@ -718,7 +738,7 @@ class user_profile_field_test extends \advanced_testcase {
         // Create a PROFILE_VISIBLE_NONE user profile field.
         $fieldshortname = 'upf_field_visible_none';
         $this->add_profile_field('text', $categoryid, $fieldshortname, PROFILE_VISIBLE_NONE);
-
+        $fieldshortname = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
         $configdata2 = ['userprofilefield' => $fieldshortname, $fieldshortname . '_value' => 'Hello',
             $fieldshortname . '_op' => user_profile_field::TEXT_STARTS_WITH];
 

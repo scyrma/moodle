@@ -827,6 +827,8 @@ class api_test extends \advanced_testcase {
         $this->assertNull($matchuser2->unmatchedtime);
         $this->assertEquals(\tool_dynamicrule\api::STATUS_DONE, $matchuser1->status);
         $this->assertEquals(\tool_dynamicrule\api::STATUS_DONE, $matchuser2->status);
+        $this->assertEmpty($matchuser1->errordata);
+        $this->assertEmpty($matchuser2->errordata);
 
         // Process rule manually as if we enabled it.
         $sink = $this->redirectMessages();
@@ -845,6 +847,8 @@ class api_test extends \advanced_testcase {
         $this->assertNull($matchuser2->unmatchedtime);
         $this->assertEquals(\tool_dynamicrule\api::STATUS_DONE, $matchuser1->status);
         $this->assertEquals(\tool_dynamicrule\api::STATUS_DONE, $matchuser2->status);
+        $this->assertEmpty($matchuser1->errordata);
+        $this->assertEmpty($matchuser2->errordata);
     }
 
     /**
@@ -919,11 +923,14 @@ class api_test extends \advanced_testcase {
         $this->getDataGenerator()->enrol_user($user1->id, $course1->id, 'student', 'manual');
         $this->getDataGenerator()->enrol_user($user2->id, $course1->id, 'student', 'manual');
 
-        // A rule with valid condition and donothing outcome with error.
+        // A rule with valid condition and donothing outcomes with error.
         $rule0 = $this->get_generator()->create_rule(['enabled' => 1]);
         $configdata = ['courseid' => $course1->id, 'enrol' => 'manual'];
         \tool_dynamicrule\tool_dynamicrule\condition\user_enrolled::create($rule0->id, $configdata);
-        $this->get_generator()->create_outcome_donothing($rule0->id, true);
+        // 3 outcomes, only second and third ones have errors.
+        $outcome0 = $this->get_generator()->create_outcome_donothing($rule0->id);
+        $outcome1 = $this->get_generator()->create_outcome_donothing($rule0->id, true);
+        $outcome2 = $this->get_generator()->create_outcome_donothing($rule0->id, true);
 
         // Process rule manually as if we enabled it.
         $ruleinstance = new \tool_dynamicrule\rule(0, $rule0);
@@ -937,6 +944,10 @@ class api_test extends \advanced_testcase {
         $this->assertNull($matchuser2->unmatchedtime);
         $this->assertEquals(\tool_dynamicrule\api::STATUS_ERROR, $matchuser1->status);
         $this->assertEquals(\tool_dynamicrule\api::STATUS_ERROR, $matchuser2->status);
+        $errordata1 = json_decode($matchuser1->errordata, true);
+        $errordata2 = json_decode($matchuser2->errordata, true);
+        $this->assertEqualsCanonicalizing([$outcome1->get_id(), $outcome2->get_id()], array_keys($errordata1));
+        $this->assertEqualsCanonicalizing([$outcome1->get_id(), $outcome2->get_id()], array_keys($errordata2));
 
         // Process rule manually as if we enabled it.
         $sink = $this->redirectMessages();
@@ -950,6 +961,10 @@ class api_test extends \advanced_testcase {
         $this->assertNull($matchuser2->unmatchedtime);
         $this->assertEquals(\tool_dynamicrule\api::STATUS_ERROR, $matchuser1->status);
         $this->assertEquals(\tool_dynamicrule\api::STATUS_ERROR, $matchuser2->status);
+        $errordata1 = json_decode($matchuser1->errordata, true);
+        $errordata2 = json_decode($matchuser2->errordata, true);
+        $this->assertEqualsCanonicalizing([$outcome1->get_id(), $outcome2->get_id()], array_keys($errordata1));
+        $this->assertEqualsCanonicalizing([$outcome1->get_id(), $outcome2->get_id()], array_keys($errordata2));
     }
 
     /**

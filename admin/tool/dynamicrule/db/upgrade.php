@@ -244,5 +244,19 @@ function xmldb_tool_dynamicrule_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021110800, 'tool', 'dynamicrule');
     }
 
+    if ($oldversion < 2022031502) {
+
+        // Schedule ad-hoc task to update current custom user profile field conditions.
+        $record = new \stdClass();
+        $record->classname = '\tool_dynamicrule\task\update_user_profile_fields';
+        $record->component = 'tool_dynamicrule';
+        // Next run time based from nextruntime computation in \core\task\manager::queue_adhoc_task().
+        $nextruntime = time() - 1;
+        $record->nextruntime = $nextruntime;
+        $DB->insert_record('task_adhoc', $record);
+
+        upgrade_plugin_savepoint(true, 2022031502, 'tool', 'dynamicrule');
+    }
+
     return true;
 }

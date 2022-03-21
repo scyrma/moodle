@@ -856,3 +856,94 @@ Feature: Creating and editing rules
     And "Duplicate rule 'Rule3'" "link" should be visible
     And "Duplicate rule 'Rule3'" "link" should be visible
     And I log out
+
+  Scenario: Check matched report
+    Given the following dynamic rules exist:
+      | name  | tenant  |
+      | Rule1 | Tenant1 |
+    And the following config values are set as admin:
+      | debug | 0 |
+      | debugdisplay | 0 |
+    When I log in as "tenantadmin1"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I click on "Edit rule 'Rule1'" "link"
+    And I should see "Add conditions to this rule"
+    And I follow "User profile field"
+    And I set the following fields to these values:
+      | Field | First name |
+      | firstname_op | 2 |
+      | firstname_value | User |
+    And I press "Save changes"
+    And I click on "Actions" "tool_wp > Tab"
+    Then I should see "Add actions to this rule"
+    And I click on "Notification" "link" in the "#ruleoutcomes" "css_element"
+    And I set the following fields to these values:
+      | Subject | Test notification |
+      | Body | Test body |
+    And I should see "Action is not saved"
+    And I press "Save changes"
+    Then I navigate to "Dynamic rules" in workplace launcher
+    And I follow "View report for 'Rule1'"
+    Then I should see "Nothing to display"
+    Then I navigate to "Dynamic rules" in workplace launcher
+    And I click on "Enable rule" "link"
+    And I click on "Enable" "button" in the "Confirm" "dialogue"
+    And I run all adhoc tasks
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I follow "View report for 'Rule1'"
+    And I should see "user11@invalid.com"
+    And I should see "user12@invalid.com"
+    And I click on "See details" "link" in the "User 11" "table_row"
+    And I should see "Notification"
+    And I should see "Completed"
+    And I should not see "Debug info"
+    And I click on "Cancel" "button" in the "Details" "dialogue"
+    And I click on "See details" "link" in the "User 12" "table_row"
+    And I should see "Notification"
+    And I should see "Completed"
+    And I should not see "Debug info"
+    And I click on "Cancel" "button" in the "Details" "dialogue"
+
+  Scenario: Check matched report debug info
+    Given the following dynamic rules exist:
+      | name  | tenant  |
+      | Rule1 | Tenant1 |
+    When I log in as "tenantadmin1"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I click on "Edit rule 'Rule1'" "link"
+    And I should see "Add conditions to this rule"
+    And I follow "User profile field"
+    And I set the following fields to these values:
+      | Field | First name |
+      | firstname_op | 2 |
+      | firstname_value | User |
+    And I press "Save changes"
+    And I click on "Actions" "tool_wp > Tab"
+    Then I should see "Add actions to this rule"
+    And I click on "Notification" "link" in the "#ruleoutcomes" "css_element"
+    And I set the following fields to these values:
+      | Subject | Test notification |
+      | Body | Test body |
+    And I should see "Action is not saved"
+    And I press "Save changes"
+    Then I navigate to "Dynamic rules" in workplace launcher
+    And I follow "View report for 'Rule1'"
+    Then I should see "Nothing to display"
+    Then I navigate to "Dynamic rules" in workplace launcher
+    And I click on "Enable rule" "link"
+    And I click on "Enable" "button" in the "Confirm" "dialogue"
+    And I run all adhoc tasks
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I follow "View report for 'Rule1'"
+    And I should see "user11@invalid.com"
+    And I should see "user12@invalid.com"
+    And I click on "See details" "link" in the "User 11" "table_row"
+    And I should see "Notification"
+    And I should see "Completed"
+    And I should see "Debug info"
+    And I click on "Cancel" "button" in the "Details" "dialogue"
+    And I click on "See details" "link" in the "User 12" "table_row"
+    And I should see "Notification"
+    And I should see "Completed"
+    And I should see "Debug info"
+    And I click on "Cancel" "button" in the "Details" "dialogue"

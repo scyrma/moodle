@@ -63,6 +63,9 @@ class export_import_test extends advanced_testcase {
     /** @var string $importfixture */
     protected $importfixture = __DIR__ . '/fixtures/dynamic-rules-export.zip';
 
+    /** @var string $importprofilefieldsfixture */
+    protected $importprofilefieldsfixture = __DIR__ . '/fixtures/dynamic-rules-export-profile-field.zip';
+
     /** @var string $importfixtureinvalid Test fixture containing invalid rule condition/outcome. */
     protected $importfixtureinvalid = __DIR__ . '/fixtures/dynamic-rules-export-invalid.zip';
 
@@ -578,5 +581,59 @@ class export_import_test extends advanced_testcase {
         // The configuration of the new rule condition should have been reset/emptied.
         $condition = condition::get_record(['ruleid' => $newrule->get('id')]);
         $this->assertEquals([], json_decode($condition->get('configdata'), true));
+    }
+
+    /**
+     * Test importing a rule with profile field condition
+     */
+    public function test_import_profile_field_conditions(): void {
+        global $DB;
+
+        $this->setAdminUser();
+
+        // Add a custom field to be restored in import process.
+        $categoryid = $DB->insert_record('user_info_category', ['name' => 'Import profile field category']);
+        $fieldshortname = 'countrycode';
+        $DB->insert_record('user_info_field', (object)['shortname' => $fieldshortname, 'name' => 'Custom country code',
+            'categoryid' => $categoryid, 'datatype' => 'text', 'visible' => PROFILE_VISIBLE_ALL]);
+
+        // Import the export of DR that was created before the custom profile field upgrade.
+        $importid = $this->wpgenerator->perform_import_from_file($this->importprofilefieldsfixture, [
+            rules_importer::IMPORT_CONTENT => 1,
+            rules_importer::IMPORT_INSTANCES => rules_importer::IMPORT_INSTANCES_ALL
+        ]);
+
+        // Get rules created.
+        $rules = rule::get_records();
+        $this->assertCount(1, $rules);
+        $rule = reset($rules);
+
+        // Check the configuration of the new rule conditions.
+        [$condition1, $condition2, $condition3] = condition::get_records(['ruleid' => $rule->get('id')], 'id');
+
+        $configdata = [
+            'instanceclass' => 'tool_dynamicrule:user_profile_field',
+            'userprofilefield' => 'country',
+            'country_op' => 'AU'
+        ];
+        $this->assertEqualsCanonicalizing($configdata, json_decode($condition1->get('configdata'), true));
+        $fieldshortname = \tool_dynamicrule\tool_dynamicrule\condition\user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
+        $customconfigdata = [
+            'instanceclass' => 'tool_dynamicrule:user_profile_field',
+            'userprofilefield' => $fieldshortname,
+            $fieldshortname . '_value' => '61',
+            $fieldshortname . '_op' => '2'
+        ];
+        $this->assertEqualsCanonicalizing($customconfigdata, json_decode($condition2->get('configdata'), true));
+        $this->assertEmpty(json_decode($condition3->get('configdata'), true));
+        // Validate import logs.
+        $logs = $this->wpgenerator->get_import_logs($importid);
+        $this->assertCount(1, $logs);
+        $log = reset($logs);
+        $rule1url = (new moodle_url('/admin/tool/dynamicrule/rule.php', ['id' => $rule->get('id')]))->out();
+        $this->assertEquals("Created new rule '<a href=\"{$rule1url}\">Rule profile field</a>' with 3 conditions and 0 actions",
+            $log['detail']);
+        $this->assertCount(0, $log['errors']);
+        $this->assertCount(0, $log['notices']);
     }
 }

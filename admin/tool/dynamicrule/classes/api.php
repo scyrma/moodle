@@ -715,18 +715,18 @@ class api {
                     ]);
 
                     $errors = [];
-                    try {
-                        foreach ($outcomes as $outcome) {
+                    foreach ($outcomes as $outcome) {
+                        try {
                             $outcome->apply_to_user($user);
+                        } catch (\Throwable $e) {
+                            // Outcome can't be applied for some reason. Record error.
+                            $errors[$outcome->get_id()] = [
+                                'message' => $e->getMessage(),
+                                'code' => $e->getCode(),
+                                'class' => get_class($e),
+                                'trace' => format_backtrace($e->getTrace()),
+                            ];
                         }
-                    } catch (\Throwable $e) {
-                        // Outcome can't be applied for some reason. Record error.
-                        $errors[] = [
-                            'message' => $e->getMessage(),
-                            'code' => $e->getCode(),
-                            'class' => get_class($e),
-                            'trace' => $e->getTraceAsString(),
-                        ];
                     }
 
                     // Mark as outcome applying is completed.

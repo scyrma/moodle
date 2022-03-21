@@ -154,4 +154,11 @@ $functions = array(
         'capabilities' => 'tool/dynamicrule:manage',
         'ajax'         => true,
     ),
+    'tool_dynamicrule_user_matching_rule_details' => [
+        'classname'    => tool_dynamicrule\external\user_matching_rule_details::class,
+        'description'  => 'Matched user outcome applying details',
+        'type'         => 'read',
+        'capabilities' => 'tool/dynamicrule:manage',
+        'ajax'         => true,
+    ],
 );

@@ -39,7 +39,7 @@ defined('MOODLE_INTERNAL') || die();
 // This plugin is part of Moodle Workplace product.
 $plugin->component    = 'tool_dynamicrule';
 $plugin->release      = '3.11.6';
-$plugin->version      = 2022031500;
+$plugin->version      = 2022031502;
 $plugin->requires     = 2021051706.00;
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = [

@@ -38,6 +38,7 @@
 namespace tool_dynamicrule;
 
 use advanced_testcase;
+use tool_dynamicrule\tool_dynamicrule\condition\user_profile_field;
 use tool_dynamicrule_generator;
 use tool_tenant_generator;
 
@@ -129,5 +130,42 @@ class upgradelib_test extends advanced_testcase {
         $this->assertTrue(\tool_dynamicrule\condition::record_exists($condition->get_id()));
         $this->assertTrue(\tool_dynamicrule\outcome::record_exists($outcome->get_id()));
         $this->assertTrue($DB->record_exists('tool_dynamicrule_match', ['ruleid' => $rule->id]));
+    }
+
+    /**
+     * Test test_tool_dynamicrule_upgrade_update_user_profile_files upgrade script.
+     *
+     * @uses \tool_dynamicrule\tool_dynamicrule\condition\user_profile_field
+     */
+    public function test_tool_dynamicrule_upgrade_update_user_profile_files() {
+        global $DB, $CFG;
+        require_once($CFG->dirroot . '/'.$CFG->admin.'/tool/dynamicrule/db/upgradelib.php');
+
+        // Add a custom field of text type.
+        $categoryid = $DB->insert_record('user_info_category', ['name' => 'Upgrade test category']);
+        $fieldshortname = 'countrycode';
+        $DB->insert_record('user_info_field', (object)['shortname' => $fieldshortname, 'name' => 'Custom country code',
+            'categoryid' => $categoryid, 'datatype' => 'text', 'visible' => PROFILE_VISIBLE_ALL]);
+
+        // Create new rule with the previous custom user profile field added.
+        $rule = $this->generator->create_rule(['enabled' => 1]);
+        $configform = [
+            "userprofilefield" => $fieldshortname,
+            "{$fieldshortname}_value" => "61",
+            "{$fieldshortname}_op" => user_profile_field::TEXT_IS_EQUAL_TO
+        ];
+        $condition = user_profile_field::create($rule->id, $configform);
+        $fieldshortnamenew = user_profile_field::PREFIX_PROFILE_FIELD.$fieldshortname;
+        $configdata = $condition->get_configdata();
+        $this->assertEquals($fieldshortname, $configdata['userprofilefield']);
+        $this->assertNotEquals($fieldshortnamenew, $configdata['userprofilefield']);
+
+        // Run update_user_profile_fields adhoc task.
+        (new \tool_dynamicrule\task\update_user_profile_fields())->execute();
+
+        $conditionupdated = user_profile_field::instance($condition->get_id());
+        $configdataupdated = $conditionupdated->get_configdata();
+        $this->assertNotEquals($fieldshortname, $configdataupdated['userprofilefield']);
+        $this->assertEquals($fieldshortnamenew, $configdataupdated['userprofilefield']);
     }
 }

@@ -10,11 +10,12 @@ Feature: Creating and editing conditions for user profile fields
   Scenario: Add a rule with user profile field text condition
     # Visibility values: 0 = PROFILE_VISIBLE_NONE; 2 = PROFILE_VISIBLE_ALL
     Given the following "custom profile fields" exist:
-      | datatype | shortname         | name              |  visible |
-      | text     | example_field     | Example field     |  2       |
+      | datatype | shortname         | name               |  visible |
+      | text     | example_field     | Example field      |  2       |
+      | text     | country           | Country code field |  2       |
     And the following "tool_tenant > users" exist:
-      | tenant  | username | firstname | lastname | email                | profile_field_example_field |
-      | Tenant1 | usertest | moodler   | Test     | usertest@example.com | somevalue                   |
+      | tenant  | username | firstname | lastname | email                | country   | profile_field_example_field | profile_field_country |
+      | Tenant1 | usertest | moodler   | Test     | usertest@example.com | AU        | somevalue                   | ab1                   |
     When I log in as "tenantadmin1"
     And I navigate to "Dynamic rules" in site administration
     And I follow "New rule"
@@ -24,27 +25,44 @@ Feature: Creating and editing conditions for user profile fields
     And I follow "User profile field"
     # Test for Is equal to
     And I set the following fields to these values:
-      | Field | First name |
-      | firstname_op | 2 |
-      | firstname_value | moodler |
+      | Field           | First name |
+      | firstname_op    | 2          |
+      | firstname_value | moodler    |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'First name' is equal to moodler"
+    And I should see "1 total matches"
+    # Test for contains using country default profile field.
+    And I follow "Edit condition"
+    And I set the following fields to these values:
+      | Field         | Country |
+      | country_op    | AU      |
+    And I press "Save changes"
+    Then I should see "Users whose value for profile field 'Country' is 'Australia'"
+    And I should see "1 total matches"
+    # Test for contains using country as custom profile field shortname.
+    And I follow "Edit condition"
+    And I set the following fields to these values:
+      | Field                              | Country code field |
+      | custom_profile_field_country_op    | 0                  |
+      | custom_profile_field_country_value | ab1                |
+    And I press "Save changes"
+    Then I should see "Users whose value for profile field 'Country code field' contains ab1"
     And I should see "1 total matches"
     # Test for Contains
     And I follow "Edit condition"
     And I set the following fields to these values:
-      | Field | Example field |
-      | example_field_op | 0 |
-      | example_field_value | some |
+      | Field                                    | Example field |
+      | custom_profile_field_example_field_op    | 0             |
+      | custom_profile_field_example_field_value | some          |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Example field' contains some"
     And I should see "1 total matches"
     # Test for doesn't contain
     And I follow "Edit condition"
     And I set the following fields to these values:
-      | Field | Example field |
-      | example_field_op | 1 |
-      | example_field_value | some |
+      | Field                                    | Example field |
+      | custom_profile_field_example_field_op    | 1             |
+      | custom_profile_field_example_field_value | some          |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Example field' doesn't contain some"
     # Matches includes all users that don't contain 'some' and also those users who don't have the custom profile set.
@@ -52,27 +70,27 @@ Feature: Creating and editing conditions for user profile fields
     # Test for starts with
     And I follow "Edit condition"
     And I set the following fields to these values:
-      | Field | Example field |
-      | example_field_op | 3 |
-      | example_field_value | some |
+      | Field                                    | Example field |
+      | custom_profile_field_example_field_op    | 3             |
+      | custom_profile_field_example_field_value | some          |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Example field' starts with some"
     And I should see "1 total matches"
     # Test for Ends with
     And I follow "Edit condition"
     And I set the following fields to these values:
-      | Field | Example field |
-      | example_field_op | 4 |
-      | example_field_value | some |
+      | Field                                    | Example field |
+      | custom_profile_field_example_field_op    | 4             |
+      | custom_profile_field_example_field_value | some          |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Example field' ends with some"
     And I should see "0 total matches"
      # Test for Is empty
     And I follow "Edit condition"
     And I set the following fields to these values:
-      | Field | Example field |
-      | example_field_op | 5 |
-    And "[name=example_field_value]" "css_element" should not be visible
+      | Field                                  | Example field |
+      | custom_profile_field_example_field_op  | 5             |
+    And "[name=custom_profile_field_example_field_value]" "css_element" should not be visible
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Example field' is empty"
     # Matches includes all users that contain empty 'Example field' and also those users who don't have the custom profile set.
@@ -80,17 +98,17 @@ Feature: Creating and editing conditions for user profile fields
      # Test for Is not empty
     And I follow "Edit condition"
     And I set the following fields to these values:
-      | Field | Example field |
-      | example_field_op | 6 |
-    And "[name=example_field_value]" "css_element" should not be visible
+      | Field                                 | Example field |
+      | custom_profile_field_example_field_op | 6             |
+    And "[name=custom_profile_field_example_field_value]" "css_element" should not be visible
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Example field' Is not empty"
     And I should see "1 total matches"
     And I follow "Edit condition"
     And I set the following fields to these values:
-      | Field | Example field |
-      | example_field_op | 3 |
-      | example_field_value | hello |
+      | Field                                    | Example field |
+      | custom_profile_field_example_field_op    | 3             |
+      | custom_profile_field_example_field_value | hello         |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Example field' starts with hello"
     And I should see "0 total matches"
@@ -132,8 +150,8 @@ Feature: Creating and editing conditions for user profile fields
     And I press "Save"
     And I follow "User profile field"
     And I set the following fields to these values:
-      | Field | Date Time field |
-      | datetime_field_op    | <operator> |
+      | Field                                     | Date Time field |
+      | custom_profile_field_datetime_field_op    | <operator>      |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Date Time field' is '<operatordesc>'"
     And I should see "<matches> total matches"
@@ -164,9 +182,9 @@ Feature: Creating and editing conditions for user profile fields
     And I follow "User profile field"
     # Test for Any value
     And I set the following fields to these values:
-      | Field | Date Time field |
-      | datetime_field_op    | <operator> |
-      | datetime_field_value | <fieldvalue> |
+      | Field                                     | Date Time field |
+      | custom_profile_field_datetime_field_op    | <operator>      |
+      | custom_profile_field_datetime_field_value | <fieldvalue>    |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Date Time field' is '<operatordesc>'"
     And I should see "<matches> total matches"
@@ -194,9 +212,9 @@ Feature: Creating and editing conditions for user profile fields
     And I follow "User profile field"
     # Test for Any value
     And I set the following fields to these values:
-      | Field | Date Time field |
-      | datetime_field_op    | <operator> |
-      | datetime_field_op2   | <operator2> |
+      | Field                                     | Date Time field |
+      | custom_profile_field_datetime_field_op    | <operator>      |
+      | custom_profile_field_datetime_field_op2   | <operator2>     |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Date Time field' is '<operatordesc>'"
     And I should see "<matches> total matches"
@@ -218,7 +236,7 @@ Feature: Creating and editing conditions for user profile fields
       | menu     | menu_field        | Menu field        |  2       |
     And the following "tool_tenant > users" exist:
       | tenant  | username | firstname | lastname | email                | profile_field_menu_field |
-      | Tenant1 | usertest | User      | Test     | usertest@example.com | No                        |
+      | Tenant1 | usertest | User      | Test     | usertest@example.com | No                       |
     When I log in as "tenantadmin1"
     And I navigate to "Dynamic rules" in site administration
     And I follow "New rule"
@@ -227,8 +245,8 @@ Feature: Creating and editing conditions for user profile fields
     And I press "Save"
     And I follow "User profile field"
     And I set the following fields to these values:
-      | Field | Menu field |
-      | menu_field_op | No |
+      | Field                              | Menu field |
+      | custom_profile_field_menu_field_op | No         |
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Menu field' is 'No'"
     And I should see "1 total matches"
@@ -253,7 +271,7 @@ Feature: Creating and editing conditions for user profile fields
     And I follow "User profile field"
     And I set the following fields to these values:
       | Field | Checkbox field |
-    And I click on "checkbox_field_op" "checkbox"
+    And I click on "custom_profile_field_checkbox_field_op" "checkbox"
     And I press "Save changes"
     Then I should see "Users whose value for profile field 'Checkbox field' is 'Yes'"
     And I should see "1 total matches"

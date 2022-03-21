@@ -42,6 +42,7 @@ use tool_reportbuilder\local\helpers\format;
 use tool_reportbuilder\local\filter\select;
 use tool_reportbuilder\local\filter\date_filter;
 use tool_reportbuilder\report_filter;
+use tool_reportbuilder\report_action;
 use tool_reportbuilder\local\entities\user as user_entity;
 use tool_tenant\tenancy;
 
@@ -68,6 +69,7 @@ class rule_matches_report extends system_report {
                                       FROM {tool_dynamicrule_match}
                                   GROUP BY ruleid, userid) mi ON (mi.userid = u.id AND mi.ruleid = :{$ruleidparam})
                               JOIN {tool_dynamicrule_match} m ON (m.id = mi.id)", [$ruleidparam => $ruleid]);
+        $this->add_base_fields('m.id');
         // Show only users from the current tenant and subtenants.
         $this->add_base_condition_sql(tenancy::get_users_subquery(false, false, 'u.id'));
         $this->add_base_fields(\core_user\fields::for_name()->get_sql('u', false, '', '', false)->selects);
@@ -127,6 +129,13 @@ class rule_matches_report extends system_report {
             ->set_is_sortable(true)
             ->add_callback([$this, 'status_label']);
         $this->add_column($newcolumn);
+
+        // Add details action icon.
+        $this->add_action((new report_action(new \moodle_url('#'),
+            new \pix_icon('bar-chart', '', 'tool_wp'),
+            ['title' => new \lang_string('seedetails', 'tool_dynamicrule'),
+            'data-action' => 'showdetails', 'data-id' => ':id'])));
+
     }
 
     /**
@@ -144,12 +153,10 @@ class rule_matches_report extends system_report {
                     'tool_dynamicrule_match_status_in_progress');
             case \tool_dynamicrule\api::STATUS_DONE:
                 return \html_writer::span($statusmap[$value],
-                    'tool_dynamicrule_match_status_done'
-                );
+                    'tool_dynamicrule_match_status_done');
             case \tool_dynamicrule\api::STATUS_ERROR:
                 return \html_writer::span($statusmap[$value],
-                    'tool_dynamicrule_match_status_error'
-                );
+                    'tool_dynamicrule_match_status_error');
         }
         return '';
     }

@@ -41,6 +41,7 @@ use core_user;
 use tool_dynamicrule\api;
 use tool_dynamicrule\rule;
 use tool_reportbuilder\local\helpers\relative_dates;
+use tool_wp\importer_base;
 
 /**
  * The backend class for user_profile_field condition
@@ -100,6 +101,8 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
     public const TIME_QUARTER = 4;
     /** @var int op2 value Year */
     public const TIME_YEAR = 5;
+    /** @var string custom profile field prefix */
+    public const PREFIX_PROFILE_FIELD = 'custom_profile_field_';
 
     /**
      * @var array Fields on user table that are filterable by this condition.
@@ -435,8 +438,9 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
                 // Match type defined in the class for custom 'text' profile fields.
                 $field->paramtype = PARAM_TEXT;
             }
-            // TODO WP-2758 the actual array index has to be "profile_field_{$field->shortname}" but it requires
-            // other changes and also upgrade script.
+            // We need to change the shortname and array index to allow uses 'custom profile field'
+            // with same shortnames as 'default profile fields'.
+            $field->shortname = self::PREFIX_PROFILE_FIELD.$field->shortname;
             $res[$field->shortname] = $field;
         }
 
@@ -482,6 +486,8 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
                 [$where, $params] = $this->get_menu_checkbox_sql($ud, 'data', $field);
             }
             if (!empty($where)) {
+                // We need to clean custom profile field to get real shortname.
+                $field = $this->clean_custom_profile_field($field);
                 $userprofilefield = api::generate_param_name();
                 // Get all users either they are custom profile field assigned or not,then match with current operator.
                 $join = "LEFT JOIN (SELECT $fields
@@ -830,7 +836,8 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
         if (in_array($field, self::$defaultfields)) {
             $str = $this->get_profile_fields_info()[$field]->name;
         } else {
-            $fieldobj = profile_get_custom_field_data_by_shortname($field);
+            // Clean the custom profile field to get their properties based in shortname.
+            $fieldobj = profile_get_custom_field_data_by_shortname($this->clean_custom_profile_field($field));
             $str = format_string($fieldobj->name, true, ['context' => \context_system::instance(), 'escape' => false]);
         }
         return $str;
@@ -847,7 +854,7 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
 
         $field = $this->get_userprofilefield();
         return in_array($field, self::$defaultfields) ||
-            ($field && profile_get_custom_field_data_by_shortname($field));
+            ($field && profile_get_custom_field_data_by_shortname($this->clean_custom_profile_field($field)));
     }
 
     /**
@@ -904,7 +911,8 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
                 // If no capability to viewalldetails,
                 // check if selected field is visible for this user.
                 foreach (profile_get_user_fields_with_data(0) as $f) {
-                    if ($f->get_shortname() === $configdata['userprofilefield'] && $f->is_visible()) {
+                    if ($f->get_shortname() === $this->clean_custom_profile_field($configdata['userprofilefield'])
+                        && $f->is_visible()) {
                         return true;
                     }
                 }
@@ -921,4 +929,60 @@ class user_profile_field extends \tool_dynamicrule\condition_sql {
     public function supports_rule_types(): int {
         return rule::TYPE_NORMAL + rule::TYPE_SHARED;
     }
+
+    /**
+     * Update configdata condition fields mapping during import.
+     *
+     * @param importer_base $importer
+     */
+    public function get_importer_mapping(importer_base $importer): void {
+        $configdata = $this->update_custom_profile_field($this->get_configdata());
+
+        $this->update_configdata($configdata);
+    }
+
+    /**
+     * Clean custom profile field to get real shortname.
+     *
+     * @param string $field custom profile field with prefix.
+     * @return string custom profile field shortname.
+     */
+    public function clean_custom_profile_field(string $field): string {
+        return str_replace(self::PREFIX_PROFILE_FIELD, '', $field);
+    }
+
+    /**
+     * Update custom profile field to new shortname with prefix.
+     *
+     * @param array $configdata custom profile field config data.
+     * @return array custom profile field shortname.
+     */
+    public static function update_custom_profile_field(array $configdata): array {
+        global $DB;
+
+        // If configdata is empty return it.
+        if (empty($configdata)) {
+            return $configdata;
+        }
+
+        // Set param to check if record exists in user_info_field table.
+        $conditionsparam = ['shortname' => $configdata['userprofilefield']];
+        if ($DB->record_exists('user_info_field', $conditionsparam)) {
+            // Create new profile field config name.
+            $profilefieldnew = self::PREFIX_PROFILE_FIELD.$configdata['userprofilefield'];
+
+            // Updating the configdata['userprofilefield_op'] field.
+            $configdata[$profilefieldnew.'_op'] = $configdata[$configdata['userprofilefield'].'_op'];
+            unset($configdata[$configdata['userprofilefield'].'_op']);
+
+            // Updating the configdata['userprofilefield_value'] field.
+            $configdata[$profilefieldnew.'_value'] = $configdata[$configdata['userprofilefield'].'_value'];
+            unset($configdata[$configdata['userprofilefield'].'_value']);
+
+            // Updating the configdata['userprofilefield'] field.
+            $configdata['userprofilefield'] = $profilefieldnew;
+        }
+        return $configdata;
+    }
+
 }

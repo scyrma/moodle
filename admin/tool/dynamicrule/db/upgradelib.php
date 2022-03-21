@@ -34,6 +34,8 @@
  * @license   Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 
+use tool_dynamicrule\tool_dynamicrule\condition\user_profile_field;
+
 /**
  * Remove orphaned rules that belong to tenants which no longer exists.
  */
@@ -54,5 +56,24 @@ function tool_dynamicrule_upgrade_remove_tenant_orphaned_rules() {
         $DB->delete_records('tool_dynamicrule_outcome', ['ruleid' => $rule->id]);
         $DB->delete_records('tool_dynamicrule_match', ['ruleid' => $rule->id]);
         $DB->commit_delegated_transaction($transaction);
+    }
+}
+
+/**
+ * Update previous DR conditions who uses custom profile fields.
+ */
+function tool_dynamicrule_upgrade_update_user_profile_fields() {
+    global $DB;
+
+    $conditions = $DB->get_records('tool_dynamicrule_condition',
+        ['classname' => 'tool_dynamicrule\tool_dynamicrule\condition\user_profile_field']);
+
+    foreach ($conditions as $condition) {
+        $configdata = user_profile_field::instance($condition->id)->get_configdata();
+        // Update config data for custom profile fields with prefix + shortname.
+        $configdata = user_profile_field::update_custom_profile_field($configdata);
+
+        $condition->configdata = json_encode($configdata);
+        $DB->update_record('tool_dynamicrule_condition', $condition);
     }
 }
