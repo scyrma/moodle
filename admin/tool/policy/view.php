@@ -50,7 +50,6 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_pagelayout('standard');
 
 $viewpage = new page_viewdoc($policyid, $versionid, $returnurl, $behalfid, $manage, $numpolicy, $totalpolicies);
-
 $output = $PAGE->get_renderer('tool_policy');
 
 echo $output->header();
