@@ -1252,6 +1252,12 @@ class core_plugin_manager {
      * @return bool
      */
     public function can_uninstall_plugin($component) {
+        // START MOODLECLOUD HACK.
+        global $CFG;
+        if (empty($CFG->mc_force_plugin_uninstall)) {
+            return false;
+        }
+        // END MOODLECLOUD HACK.
 
         $pluginfo = $this->get_plugin_info($component);
 
@@ -1503,6 +1509,12 @@ class core_plugin_manager {
      * @return bool true on success, false on errors/problems
      */
     public function uninstall_plugin($component, progress_trace $progress) {
+        // START MOODLECLOUD HACK.
+        global $CFG;
+        if (empty($CFG->mc_force_plugin_uninstall)) {
+            return false;
+        }
+        // END MOODLECLOUD HACK.
 
         $pluginfo = $this->get_plugin_info($component);
 
