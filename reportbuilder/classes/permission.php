@@ -96,6 +96,13 @@ class permission {
             return true;
         }
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::can_view_report_in_tenant */
+        if (!component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'can_view_report_in_tenant',
+                [$report], true)) {
+
+            return false;
+        }
+
         $reports = audience::user_reports_list($userid);
         return in_array($report->get('id'), $reports);
     }
@@ -129,6 +136,13 @@ class permission {
 
         // We can only edit custom reports.
         if ($report->get('type') !== base::TYPE_CUSTOM_REPORT) {
+            return false;
+        }
+
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::can_edit_report_in_tenant */
+        if (!component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'can_edit_report_in_tenant',
+            [$report], true)) {
+
             return false;
         }
 
