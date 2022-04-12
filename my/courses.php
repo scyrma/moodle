@@ -79,8 +79,19 @@ if ($coursecat && ($category = core_course_category::get_nearest_editable_subcat
     $coursemanagemenu['manageurl'] = new moodle_url('/course/management.php', ['categoryid' => $category->id]);
 }
 
-/** @uses tool_catalogue\api::mycourses_page() */
-$content = component_class_callback(tool_catalogue\api::class, 'mycourses_page', [&$coursemanagemenu], null);
+if (class_exists(\tool_organisation\output\managed_users_view::class) && optional_param('myteams', false, PARAM_BOOL)) {
+    // Add fixed block to the dashboard with my teams overview.
+    $output = $PAGE->get_renderer('tool_organisation');
+    $view = new \tool_organisation\output\managed_users_view();
+    $heading = get_string('myteams', 'tool_organisation');
+    $content = $output->render($view);
+    $PAGE->set_title($heading);
+    $PAGE->set_heading($heading);
+    $coursemanagemenu = [];
+} else {
+    /** @uses tool_catalogue\api::mycourses_page() */
+    $content = component_class_callback(tool_catalogue\api::class, 'mycourses_page', [&$coursemanagemenu], null);
+}
 
 if (!empty($coursemanagemenu)) {
     // Render the course management menu.
