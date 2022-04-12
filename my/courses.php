@@ -78,6 +78,10 @@ if ($coursecat && ($category = core_course_category::get_nearest_editable_subcat
     // The user has the capability to manage the course category.
     $coursemanagemenu['manageurl'] = new moodle_url('/course/management.php', ['categoryid' => $category->id]);
 }
+
+/** @uses tool_catalogue\api::mycourses_page() */
+$content = component_class_callback(tool_catalogue\api::class, 'mycourses_page', [&$coursemanagemenu], null);
+
 if (!empty($coursemanagemenu)) {
     // Render the course management menu.
     $PAGE->add_header_action($OUTPUT->render_from_template('my/dropdown', $coursemanagemenu));
@@ -89,7 +93,7 @@ if (core_userfeedback::should_display_reminder()) {
     core_userfeedback::print_reminder_block();
 }
 
-echo $OUTPUT->custom_block_region('content');
+echo $content ?? $OUTPUT->custom_block_region('content');
 
 echo $OUTPUT->footer();
 
