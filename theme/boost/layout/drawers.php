@@ -104,4 +104,13 @@ $templatecontext = [
     'addblockbutton' => $addblockbutton
 ];
 
+// MoodleCloud Portal SSO Tab
+if (isset($USER->auth) && $USER->auth == "moodlecloud") {
+    $url = new moodle_url('/auth/moodlecloud/portal.php');
+    $templatecontext['showportallink'] = true;
+    $templatecontext['cloudportalurl'] = $url->out();
+    $theme = theme_config::load('boost');
+    $templatecontext['cloudinvertedimgurl'] = $theme->image_url('cloud-logo-inverted', 'theme');
+}
+
 echo $OUTPUT->render_from_template('theme_boost/drawers', $templatecontext);
