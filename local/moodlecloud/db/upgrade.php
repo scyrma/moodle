@@ -20,6 +20,13 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_local_moodlecloud_upgrade($oldversion) {
     global $CFG, $DB;
 
+    // Moodle v4.0 release upgrade line.
+
+    if ($oldversion < 2022050400) {
+        // id 1 is typically the manager role in the roles table.
+        set_config('bigbluebuttonbn_participant_moderator_default', 1);
+    }
+
     // Moodle v3.3.0 release upgrade line.
     // Put any upgrade step following this.
 
