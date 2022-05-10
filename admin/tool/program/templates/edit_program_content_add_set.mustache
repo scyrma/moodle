@@ -1,0 +1,51 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_program/edit_program_content_add_set
+
+    Template for + icon to add set/course
+
+    Example context (json):
+    {
+        "id": 1,
+        "parent": 0
+    }
+}}
+
+<div class="dropdown d-inline-block">
+    <a href="#" class="dropdown-toggle" id="addItemToSet{{id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{#str}}addsetorcourse, tool_program{{/str}}">
+        {{#pix}}plus-circle, tool_wp{{/pix}}
+        <span class="sr-only">{{#str}}addsetorcourse, tool_program{{/str}}</span>
+    </a>
+    <div class="dropdown-menu" aria-labelledby="addItemToSet{{id}}">
+        <a class="dropdown-item add-set" data-action="add-set" data-set-id="{{id}}" href="#">
+            <span class="text-gray070">{{#pix}}a/wp-folder, theme{{/pix}}</span>
+            {{#str}} set, tool_program {{/str}}
+        </a>
+        <a class="dropdown-item add-course" data-action="add-course" data-set-id="{{id}}" href="#">
+            <span class="text-gray070">{{#pix}}a/wp-course, theme{{/pix}}</span>
+            {{#str}} course, tool_program {{/str}}
+        </a>
+    </div>
+</div>
