@@ -85,6 +85,9 @@ class uu_progress_tracker {
             'theme' => get_string('theme'),
             'deleted' => get_string('delete'),
         ];
+        if (core_component::get_component_directory('tool_wp')) {
+            $this->headers['tool_wp'] = get_string('pluginname', 'tool_wp');
+        }
         $this->columns = array_keys($this->headers);
     }
 
@@ -222,6 +225,9 @@ function uu_validate_user_upload_columns(csv_import_reader $cir, $stdfields, $pr
             // special fields for enrolments
             $newfield = $lcfield;
 
+        } else if (component_class_callback('tool_wp\tool_uploaduser', 'validate_column', [$lcfield])) {
+            /** @uses \tool_wp\tool_uploaduser::validate_column() */
+            $newfield = $lcfield;
         } else {
             $cir->close();
             $cir->cleanup();
@@ -440,9 +446,10 @@ function uu_pre_process_custom_profile_data($data) {
  * Currently checking for custom profile field or type menu
  *
  * @param array $data user profile data
+ * @param array $profilefieldvalues Used to track previous profile field values to ensure uniqueness is observed
  * @return bool true if no error else false
  */
-function uu_check_custom_profile_data(&$data) {
+function uu_check_custom_profile_data(&$data, array &$profilefieldvalues = []) {
     global $CFG;
     require_once($CFG->dirroot.'/user/profile/lib.php');
 
@@ -466,6 +473,16 @@ function uu_check_custom_profile_data(&$data) {
                         $data['status'][] = get_string('invaliduserfield', 'error', $shortname);
                         $noerror = false;
                     }
+
+                    // Ensure unique field value doesn't already exist in supplied data.
+                    $formfieldunique = $formfield->is_unique() && ($value !== '' || $formfield->is_required());
+                    if ($formfieldunique && array_key_exists($shortname, $profilefieldvalues) &&
+                            (array_search($value, $profilefieldvalues[$shortname]) !== false)) {
+
+                        $data['status'][] = get_string('valuealreadyused') . " ({$key})";
+                        $noerror = false;
+                    }
+
                     // Check for duplicate value.
                     if (method_exists($formfield, 'edit_validate_field') ) {
                         $testuser = new stdClass();
@@ -476,6 +493,11 @@ function uu_check_custom_profile_data(&$data) {
                             $data['status'][] = $err[$key].' ('.$key.')';
                             $noerror = false;
                         }
+                    }
+
+                    // Record value of unique field, so it can be compared for duplicates.
+                    if ($formfieldunique) {
+                        $profilefieldvalues[$shortname][] = $value;
                     }
                 }
             }
