@@ -1,0 +1,97 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template tool_tenant/auth_tenant
+
+    Template for editing tenant theme settings
+
+    Example context (json):
+    {
+        "tabheading": "Authentication settings",
+        "tenantid": -1,
+        "authplugins": [
+            {"title": "Manual", "users": 5, "enabled": "", "settingsform": "", "auth": "manual"}
+        ]
+    }
+}}
+
+{{> tool_wp/tab_heading }}
+{{#showwarning}}
+<div class="alert alert-warning" role="alert">
+    {{#str}}authtypeofloginwarning, tool_tenant, {{url}}{{/str}}
+</div>
+{{/showwarning}}
+<div class="mdl-right"><a href="#" data-tenantid="{{tenantid}}" data-action="commonauthsettings">{{#str}}auth_common_settings, auth{{/str}}</a></div>
+<div>
+    <div class="container-fluid">
+        <div class="row mb-3 bold">
+            <div class="col-6">{{#str}}actauthhdr, auth{{/str}}</div>
+            <div class="col-3">{{#str}}users, moodle{{/str}}</div>
+            <div class="col-3"></div>
+        </div>
+        {{#authplugins}}
+        <div class="row mb-3 {{^status}}dimmed_text{{/status}}">
+            <div class="col-6">{{title}}
+                {{^ismultitenant}}{{#pix}}t/unlock, core, {{#str}}locked, auth{{/str}}{{/pix}}{{/ismultitenant}}
+            </div>
+            <div class="col-3">{{users}}</div>
+            <div class="col-3 mdl-right">
+                {{#settingsform}}
+                    <a href="#" data-settingsform="{{settingsform}}" data-tenantid="{{tenantid}}" data-authname="{{title}}"
+                                    data-auth="{{auth}}">{{#pix}}t/edit, core, {{#str}}settings{{/str}}{{/pix}}</a>
+                {{/settingsform}}
+                <span data-region="authstatustenant">{{#editablestatus}}{{> core/inplace_editable}}{{/editablestatus}}</span>
+
+                </div>
+        </div>
+        {{/authplugins}}
+    </div>
+</div>
+{{#js}}
+    require(['tool_wp/modal_form', 'jquery', 'core/str'], function(ModalForm, $, Str) {
+        $('[data-action="commonauthsettings"][data-tenantid]').on('click', function(e) {
+            e.preventDefault();
+            new ModalForm({
+                formClass: 'tool_tenant\\form\\auth_settings_form_common',
+                args: {tenantid: $(e.currentTarget).data('tenantid')},
+                modalConfig: {title: Str.get_string('auth_common_settings', 'auth')},
+                triggerElement: $(e.currentTarget)
+            });
+        });
+        $('[data-settingsform][data-tenantid][data-auth]').on('click', function(e) {
+            e.preventDefault();
+            var el = $(e.currentTarget);
+            new ModalForm({
+                formClass: el.data('settingsform'),
+                args: {tenantid: el.data('tenantid'), auth: el.data('auth')},
+                modalConfig: {title: Str.get_string('authpluginsettings', 'tool_tenant', el.data('authname'))},
+                triggerElement: el
+            });
+        });
+        $('body').on('updated', '[data-region=authstatustenant] [data-inplaceeditable]', function(e) {
+            // Change the color of the row when plugin was enabled/disabled.
+            $(e.currentTarget).closest('div.row').toggleClass('dimmed_text', !parseInt(e.ajaxreturn.value));
+        });
+    });
+{{/js}}
