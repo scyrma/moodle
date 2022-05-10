@@ -1,0 +1,26 @@
+id,code,parent,name,description,ismanager
+1,CEO,,Chief Executive Officer,Chief Executive Officer position,1
+2,COO,CEO,Chief Operating Officer,Chief Operating Officer position,1
+3,HMD,COO,Head of Marketing and Design,Head of Marketing and Design position,1
+4,DES,HMD,Designer,Designer position,0
+5,MCO,HMD,Marketing Consultant,Marketing Consultant position,0
+6,OM,COO,Office Manager,Office Manager position,0
+7,PM,COO,Project Manager,Project Manager position,1
+8,EDI,PM,Editor,Editor position,0
+9,MEW,PM,Medical Writer,Medical Writer position,0
+10,CTO,CEO,Chief Technology Officer,Chief Technology Officer position,1
+11,LDE,CTO,Lead Developer,Lead Developer position,1
+12,DEV,LDE,Developer,Developer position,0
+13,LDO,CTO,Lead DevOps,Lead DevOps position,1
+14,DEO,LDO,DevOps,DevOps position,0
+15,SA,CTO,Sysadmin,Sysadmin position,1
+16,OPE,SA,Operator,Operator position,0
+17,CFO,CEO,Chief Financial Officer,Chief Financial Officer position,1
+18,AC,CFO,Accountant,Accountant position,0
+19,DPO,CFO,Data Privacy Officer,Data Privacy Officer position,0
+20,LEA,CFO,Legal advisor,Legal advisor position,0
+21,HHR,CFO,HR Manager,HR Manager position,1
+22,ODA,HHR,Organisational Development advisor,Organisational Development advisor position,0
+23,CCO,CEO,Chief Commercial Officer,Chief Commercial Officer position,1
+24,AMG,CCO,Account Manager,Account Manager position,0
+25,SAR,CCO,Sales Representative,Sales Representative position,0
