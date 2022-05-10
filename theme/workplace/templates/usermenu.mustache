@@ -1,0 +1,182 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace Code is dual-licensed under the terms of both the
+    single GNU General Public Licence version 3.0, dated 29 June 2007
+    and the terms of the proprietary Moodle Workplace Licence strictly
+    controlled by Moodle Pty Ltd and its certified premium partners.
+    Wherever conflicting terms exist, the terms of the MWL are binding
+    and shall prevail.
+}}
+{{!
+    @template theme_workplace/usermenu
+
+    This template renders the main content area for the workplace usermenu.
+
+    Example context (json):
+    {
+        "loggedin": true,
+        "loginurl": "http://sitename.com/login/",
+        "uniqid": 12345,
+        "avatar": "<img src='http://example.com/image.png' title='Picture of John Doe'>",
+        "username": "Mary Doe",
+        "email": "maryd@sitename.com",
+        "navitems": [
+            {
+                "url": "http://sitename.com/action.php",
+                "title": "View Profile",
+                "icon": "http://sitename.com/image.."
+            }],
+        "courses": [
+            {
+                "viewurl": "http://sitename.com/course/view.php?id=2",
+                "courseimage": "http://sitename.com/image..",
+                "showshortname": true,
+                "shortname": "Course 2",
+                "fullname": "This is Course 2",
+                "hasprogress": true,
+                "progress": 50
+            }
+        ]
+    }
+}}
+{{^loggedin}}
+<a class="nav-link" href="{{{loginurl}}}">{{#str}}login{{/str}}</a>
+{{/loggedin}}
+
+{{#loggedin}}
+    {{#guest}}
+<div class="usermenu">
+    <span class="login text-white">
+        {{#str}} loggedinasguest {{/str}} (<a href="{{{loginurl}}}">{{#str}} login {{/str}}</a>)
+    </span>
+</div>
+    {{/guest}}
+    {{^guest}}
+<div
+    id="usermenu-{{uniqid}}"
+    class="dropdown usermenu"
+    data-region="usermenu"
+    role="navigation">
+
+    <a
+        class="btn dropdown-toggle"
+        href="#"
+        role="button"
+        id="usermenulink"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+    >
+        {{#loggedinas}}
+        <span class="userbutton">
+            <span class="avatars position-relative">
+                <span class="avatar current position-absolute">
+                    {{{avatar}}}
+                </span>
+                <span class="avatar realuser">
+                    {{{realuseravatar}}}
+                </span>
+            </span>
+        </span>
+        {{/loggedinas}}
+        {{^loggedinas}}
+            <span class="userbutton notloggedinas">
+                {{{avatar}}}
+            </span>
+        {{/loggedinas}}
+    </a>
+    <div data-region="usermenu-content" class="workplace-usermenu p-0 dropdown-menu wp-boxshadow-4" aria-labelledby="usermenulink">
+        <div class="userinfo p-4 d-flex align-items-center border-bottom">
+            {{{avatar}}}
+            {{#loggedinas}}
+                <div class="userdetails">
+                    <div class="username">
+                        <strong>{{{realusername}}}</strong>
+                    </div>
+                    <div class="small">
+                        {{#str}} loggedinas, core, {{{username}}} {{/str}}
+                    </div>
+                </div>
+            {{/loggedinas}}
+            {{^loggedinas}}
+                <div class="userdetails">
+                    <div class="username">
+                        <strong>{{{username}}}</strong>
+                    </div>
+                    <div class="useremail small">
+                        {{{email}}}
+                    </div>
+                </div>
+            {{/loggedinas}}
+            <div class="navitems ml-auto">
+                {{#navitems}}
+                     <a href="{{{url}}}" class="useraction" data-toggle="tooltip" data-placement="top" title="{{title}}">
+                        {{#pix}}{{iconraw}}{{/pix}}
+                     </a>
+                {{/navitems}}
+            </div>
+        </div>
+        <div class="h-100 courses-container" style="overflow-y: auto; overflow-x:hidden;">
+            <div class="list-group" >
+                <h3 class="popover-region-header-text px-3 py-2">{{#str}}recentlyaccessedcourses, theme_workplace{{/str}}</h3>
+                {{#courses}}
+                <a href="{{viewurl}}" class="list-group-item course-listitem d-flex border-0 p-3">
+                    <div class="course-list-img rounded mr-2" style='background-image: url("{{{courseimage}}}");'>
+                        <span class="sr-only">{{#str}}aria:courseimage, core_course{{/str}}</span>
+                    </div>
+                    <div class="coursename">
+                    {{#showshortname}}
+                        <span class="sr-only">
+                            {{#str}}aria:courseshortname, core_course{{/str}}
+                        </span>
+                        <div class="text-muted muted">
+                            {{{shortname}}}
+                        </div>
+                    {{/showshortname}}
+                    <span class="sr-only">
+                        {{#str}}aria:coursename, core_course{{/str}}
+                    </span>
+                    {{{fullname}}}
+                     {{#enddate}}
+                        <div class="courseduedate font-mini text-uppercase mt-1">
+                            {{#str}} ends, theme_workplace {{/str}}: {{#userdate}} {{enddate}}, {{#str}} strftimedatefullshort, core_langconfig  {{/str}} {{/userdate}}
+                        </div>
+                     {{/enddate}}
+                    </div>
+                    {{#hasprogress}}
+                        <div class="ml-auto align-self-center d-flex align-items-center">
+                            <div class="progress mr-2">
+                                <div class="progress-bar bg-info bar" role="progressbar" aria-valuenow="{{progress}}" style="width: {{progress}}%" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="small text-nowrap progress-text">
+                                {{progress}} %
+                            </div>
+                        </div>
+                    {{/hasprogress}}
+                </a>
+                {{/courses}}
+                {{^courses}}
+                    <div class="text-xs-center text-center mt-3" data-region="empty-message">
+                        <p class="text-muted mt-3">{{#str}} nocourses, theme_workplace {{/str}}</p>
+                    </div>
+                {{/courses}}
+            </div>
+        </div>
+    </div>
+</div>
+    {{/guest}}
+{{/loggedin}}
