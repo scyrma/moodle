@@ -1,6 +1,6 @@
 name: Moodle Plugin CI
 
-on: [push, pull_request]
+on: [push, pull_request,workflow_dispatch]
 
 jobs:
   test:
@@ -31,6 +31,9 @@ jobs:
           - php: '7.4'
             moodle-branch: 'master'
             database: 'pgsql'
+#          - php: '7.4'
+#            moodle-branch: 'MOODLE_400_STABLE'
+#            database: 'mariadb'
           - php: '7.4'
             moodle-branch: 'MOODLE_311_STABLE'
             database: 'mariadb'
@@ -103,7 +106,7 @@ jobs:
         run: moodle-plugin-ci mustache
 
       - name: Grunt
-        if: ${{ always() }}
+        if: ${{ !contains(fromJSON('["MOODLE_39_STABLE", "MOODLE_310_STABLE", "MOODLE_311_STABLE"]'), matrix.moodle-branch)  }}
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
       - name: PHPUnit tests
