@@ -71,6 +71,9 @@ class core_role_admins_existing_selector extends user_selector_base {
         $mainadmin = array();
         $mainadminuser = get_admin();
         if ($mainadminuser && isset($availableusers[$mainadminuser->id])) {
+            // BEGIN MOODLECLOUD HACK.
+            $availableusers[$mainadminuser->id]->disabled = 1;
+            // END MOODLECLOUD HACK.
             $mainadmin = array($mainadminuser->id => $availableusers[$mainadminuser->id]);
             unset($availableusers[$mainadminuser->id]);
         }
