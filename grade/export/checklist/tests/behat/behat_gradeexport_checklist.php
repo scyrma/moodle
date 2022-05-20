@@ -15,25 +15,32 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * GDPR declaration
+ * Custom behat steps
  *
  * @package   gradeexport_checklist
- * @copyright 2018 Davo Smith
+ * @copyright 2022 Davo Smith, Synergy Learning
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace gradeexport_checklist\privacy;
-
 /**
- * Class provider
- * @package gradeexport_checklist
+ * Custom behat steps
  */
-class provider implements \core_privacy\local\metadata\null_provider {
+class behat_gradeexport_checklist extends behat_base {
+
     /**
-     * Explain why no personal data is stored
-     * @return string
+     * Convert page names to URLS for steps like 'When I am on the "[identifier]" "[page type]" page.
+     * @param string $type
+     * @param string $identifier
+     * @return moodle_url
      */
-    public static function get_reason(): string {
-        return 'privacy:null_reason';
+    protected function resolve_page_instance_url(string $type, string $identifier): moodle_url {
+        global $DB;
+        $courseid = $DB->get_field('course', 'id', ['shortname' => $identifier], MUST_EXIST);
+        switch (strtolower($type)) {
+            case 'export':
+                return new moodle_url('/grade/export/checklist/index.php', ['id' => $courseid]);
+            default:
+                throw new Exception('Unrecognised checklist grade export page type "'.$type.'"');
+        }
     }
 }
