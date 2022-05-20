@@ -616,6 +616,11 @@ $cache = '.var_export($cache, true).';
                 } else if (isset(self::$ignoreddirs[$pluginname])) {
                     continue;
                 }
+                // START MOODLECLOUD HACK.
+                if (isset($CFG->moodlecloud_blocked_plugins) && isset($CFG->moodlecloud_blocked_plugins[$plugintype."_".$pluginname])) {
+                    continue;
+                }
+                // END MOODLECLOUD HACK.
                 if (!self::is_valid_plugin_name($plugintype, $pluginname)) {
                     // Always ignore plugins with problematic names here.
                     continue;
@@ -1126,6 +1131,11 @@ $cache = '.var_export($cache, true).';
         $usecache = false;
         if (CACHE_DISABLE_ALL or (defined('IGNORE_COMPONENT_CACHE') and IGNORE_COMPONENT_CACHE)) {
             $usecache = true;
+            // START MOODLECLOUD HACK.
+            if (!empty($CFG->mc_force_plugin_uninstall)) {
+              self::fill_all_caches();
+            }
+            // END MOODLECLOUD HACK.
         }
 
         // Now all plugins.
