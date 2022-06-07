@@ -23,9 +23,9 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
     // Moodle v4.0 release upgrade line.
     if ($oldversion < 2022060700) {
         // Set the boost theme preset to default.scss if not set or plain.scss.
-        $boost_theme_preset = get_config('theme_boost_present');
+        $boost_theme_preset = get_config('theme_boost', 'preset');
         if ($boost_theme_preset != 'plain.scss' && $boost_theme_preset != 'default.scss') {
-            set_config('theme_boost_preset', 'default.scss');
+            set_config('preset', 'default.scss', 'theme_boost');
         }
     }
 
