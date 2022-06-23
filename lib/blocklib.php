@@ -2310,7 +2310,7 @@ function default_page_type_list($pagetype, $parentcontext = null, $currentcontex
  * @return array
  */
 function my_page_type_list($pagetype, $parentcontext = null, $currentcontext = null) {
-    return array('my-index' => get_string('page-my-index', 'pagetype'));
+    return array('my-index' => get_string('page-my-index', 'pagetype'), 'admin-tool-custompage' => 'admin-tool-custompage');
 }
 
 /**
@@ -2424,6 +2424,11 @@ function blocks_name_allowed_in_format($name, $pageformat) {
     if (!$formats) {
         $formats = array();
     }
+
+    if (array_key_exists('my', $formats) && !array_key_exists('admin-tool-custompage', $formats)) {
+        $formats['admin-tool-custompage'] = $formats['my'];
+    }
+
     foreach ($formats as $format => $allowed) {
         $formatregex = '/^'.str_replace('*', '[^-]*', $format).'.*$/';
         $depth = substr_count($format, '-');
