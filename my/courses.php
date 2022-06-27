@@ -89,8 +89,8 @@ if (class_exists(\tool_organisation\output\managed_users_view::class) && optiona
     $PAGE->set_heading($heading);
     $coursemanagemenu = [];
 } else {
-    /** @uses tool_catalogue\api::mycourses_page() */
-    $content = component_class_callback(tool_catalogue\api::class, 'mycourses_page', [&$coursemanagemenu], null);
+    /** @uses tool_catalogue\router::mycourses_page() */
+    $content = component_class_callback(tool_catalogue\router::class, 'mycourses_page', [&$coursemanagemenu], null);
 }
 
 if (!empty($coursemanagemenu)) {
