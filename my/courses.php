@@ -78,6 +78,21 @@ if ($coursecat && ($category = core_course_category::get_nearest_editable_subcat
     // The user has the capability to manage the course category.
     $coursemanagemenu['manageurl'] = new moodle_url('/course/management.php', ['categoryid' => $category->id]);
 }
+
+if (class_exists(\tool_organisation\output\managed_users_view::class) && optional_param('myteams', false, PARAM_BOOL)) {
+    // Add fixed block to the dashboard with my teams overview.
+    $output = $PAGE->get_renderer('tool_organisation');
+    $view = new \tool_organisation\output\managed_users_view();
+    $heading = get_string('myteams', 'tool_organisation');
+    $content = $output->render($view);
+    $PAGE->set_title($heading);
+    $PAGE->set_heading($heading);
+    $coursemanagemenu = [];
+} else {
+    /** @uses tool_catalogue\router::mycourses_page() */
+    $content = component_class_callback(tool_catalogue\router::class, 'mycourses_page', [&$coursemanagemenu], null);
+}
+
 if (!empty($coursemanagemenu)) {
     // Render the course management menu.
     $PAGE->add_header_action($OUTPUT->render_from_template('my/dropdown', $coursemanagemenu));
@@ -89,7 +104,7 @@ if (core_userfeedback::should_display_reminder()) {
     core_userfeedback::print_reminder_block();
 }
 
-echo $OUTPUT->custom_block_region('content');
+echo $content ?? $OUTPUT->custom_block_region('content');
 
 echo $OUTPUT->footer();
 

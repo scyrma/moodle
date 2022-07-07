@@ -124,6 +124,10 @@ class report extends dynamic_form {
     public function process_dynamic_submission() {
         $data = $this->get_data();
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::set_report_tenant() */
+        $data = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'set_report_tenant',
+            [$data], $data);
+
         if ($data->id) {
             $reportpersistent = reporthelper::update_report($data);
         } else {
