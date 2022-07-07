@@ -1,0 +1,119 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/course_cover
+
+    Template for showing a course cover page.
+
+    Example context (json):
+    {
+        "image": "http://placekitten.com/100/100",
+        "duedatestring": "2017-01-01",
+        "fullname": "Healt and Safety",
+        "category": "People & Culture",
+        "completionenabled": true,
+        "progress": "30",
+        "courseid": 6,
+        "userid": 2
+    }
+}}
+<div class="catalogue course">
+    {{#hashelp}}
+        {{> tool_catalogue/cover/helpbox }}
+    {{/hashelp}}
+
+    {{#pagesectiondescription}}
+    {{< tool_catalogue/cover/pagesection }}
+        {{$name}}{{#str}}aboutthiscourse, tool_catalogue{{/str}}{{/name}}
+        {{$collapsedlink}}{{/collapsedlink}}
+        {{$shortname}}c-about{{/shortname}}
+        {{$content}}
+            {{{description}}}
+        {{/content}}
+    {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectiondescription}}
+
+    {{#pagesectiondates}}
+    {{< tool_catalogue/cover/pagesection }}
+        {{$name}}{{#str}}dates, tool_catalogue{{/str}}{{/name}}
+        {{$shortname}}c-dates{{/shortname}}
+        {{$content}}
+            <div>
+                <strong>{{#str}}datesstartdate, tool_catalogue{{/str}}:</strong> {{{startdate}}}
+            </div>
+            <div>
+                <strong>{{#str}}datesenddate, tool_catalogue{{/str}}:</strong> {{{enddate}}}
+            </div>
+        {{/content}}
+    {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectiondates}}
+
+    {{#pagesectiontrainers}}
+        {{< tool_catalogue/cover/pagesection }}
+            {{$name}}{{#str}}trainers, tool_catalogue{{/str}}{{/name}}
+            {{$shortname}}c-trainers{{/shortname}}
+            {{$content}}
+                {{#trainers}}
+                    <div class="media align-items-center mb-2">
+                        {{{userpicture}}}
+                        <div class="media-body">
+                            <a href="{{{profileurl}}}" class="userlink">{{{fullname}}}</a>
+                        </div>
+                    </div>
+                {{/trainers}}
+            {{/content}}
+        {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectiontrainers}}
+
+    <hr class="my-4">
+    {{#hasrestrictions}}
+        <div class="courserestrictions">
+        {{#restrictions}}
+            <div class="alert alert-warning p-2 mb-3">
+                {{{.}}}
+            </div>
+        {{/restrictions}}
+        </div>
+    {{/hasrestrictions}}
+
+    {{#hasbuttons}}
+        <div class="d-flex">
+            <button data-action="start-course" class="btn btn-primary mr-2">
+                {{#str}}startcourse, tool_catalogue{{/str}}
+            </button>
+            <a href="#" class="btn btn-secondary" data-action="return">
+                {{#str}}notnow, tool_catalogue{{/str}}
+            </a>
+        </div>
+    {{/hasbuttons}}
+</div>
+{{#js}}
+require(['tool_catalogue/coursecover'], function(courseCover) {
+    courseCover.init('{{courseid}}', '{{userid}}');
+});
+{{/js}}
