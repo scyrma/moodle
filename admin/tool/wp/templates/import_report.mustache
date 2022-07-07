@@ -1,0 +1,141 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_wp/import_report
+
+    Import report
+
+    Classes required for JS:
+    * None
+
+    Data attibutes required for JS:
+    * None
+
+    Context variables required for this template:
+    * None
+
+    Example context (json):
+    {
+        "import":
+        {
+            "statusstr": "Done",
+            "date": "1 Jan 2020, 00:00 AM",
+            "user": "User Name",
+            "iscomplete": 1,
+            "isinprogress": 0,
+            "issuccess": 1,
+            "progress": 0,
+            "size": 1,
+            "version": "3.8.3 (Build: 20200518)",
+            "summary": "",
+            "conflicts": []
+        }
+    }
+}}
+<div class="container-fluid" data-region="import-report">
+    <table class="admintable generaltable">
+        <tbody>
+            <tr>
+                <td>{{#str}} status {{/str}}</td>
+                <td>
+                    <span class="import-status">{{{import.statusstr}}}</span>
+                    {{^import.iscomplete}}
+                        <button class="btn btn-sm btn-outline-secondary ml-2 my-auto float-right"
+                                title="Update import progress"
+                                data-action="update-import-progress"
+                                data-importid={{import.id}}>
+                            <i class="icon fa fa-refresh fa-fw " aria-hidden="true"></i>
+                            {{#str}} refresh, tool_wp {{/str}}
+                        </button>
+                    {{/import.iscomplete}}
+                </td>
+            </tr>
+            <tr><td>{{#str}} date {{/str}}</td><td>{{import.date}}</td></tr>
+            <tr><td>{{#str}} createdby, tool_wp {{/str}}</td><td>{{import.user}}</td></tr>
+            {{#import.tenant}}
+                <tr><td>{{#str}} tenant, tool_wp  {{/str}}</td><td>{{import.tenant}}</td></tr>
+            {{/import.tenant}}
+            <tr><td>{{#str}} importer, tool_wp {{/str}}</td><td>{{import.importerstr}}</td></tr>
+            {{#import.issuccess}}
+            <tr><td>{{#str}} imported, tool_wp {{/str}}</td><td>{{{import.summary}}}</td></tr>
+            {{#import.hasconflicts}}
+            <tr>
+                <td>{{#str}} conflicts, tool_wp {{/str}}</td>
+                <td>
+                    {{#import.conflicts}}
+                        <div class="conflictheader">{{#str}} problem, tool_wp {{/str}}: {{0}}</div>
+                        <div class="conflictsolution mb-3">{{#str}} solution, tool_wp {{/str}}: {{1}}</div>
+                    {{/import.conflicts}}
+                </td>
+            </tr>
+            {{/import.hasconflicts}}
+            {{/import.issuccess}}
+            <tr><td>{{#str}} version {{/str}}</td><td>{{import.version}}</td></tr>
+            <tr><td>{{#str}} size {{/str}}</td><td>{{import.size}}</td></tr>
+        </tbody>
+    </table>
+    {{#import.isinprogress}}
+        <div class="alert alert-info">{{#str}} safenavigation , tool_wp {{/str}}</div>
+    {{/import.isinprogress}}
+    {{#import.iscomplete}}
+        <a class="ws-toggle text-decoration-none text-gray-600 collapsed d-flex show-log" data-toggle="collapse" href="#import-log"
+           aria-expanded="true" aria-controls="import-log" data-action="show-log">
+            <span class="togglesectionicon collapsed-icon-container">
+                <i class="icon fa fa-caret-right fa-fw " title="Expand" aria-label="Expand"></i>
+            </span>
+            <span class="togglesectionicon expanded-icon-container">
+                <i class="icon fa fa-caret-down fa-fw " title="Collapse" aria-label="Collapse"></i>
+            </span>
+            <h4 class="text-primary">{{#str}} log , tool_wp {{/str}}</h4>
+        </a>
+        <div id="import-log" class="p-2 collapse">
+            {{^log}}
+                {{#str}} nodetails , tool_wp {{/str}}
+            {{/log}}
+            {{#log}}
+                <ul class="ml-3">
+                    <li>{{{detail}}}</li>
+                    {{#errors}}
+                        <ul><li>{{{.}}}</li></ul>
+                    {{/errors}}
+                    {{#notices}}
+                        <ul><li>{{{.}}}</li></ul>
+                    {{/notices}}
+                </ul>
+            {{/log}}
+        </div>
+    {{/import.iscomplete}}
+    <div class="d-flex justify-content-end">
+        <a role="button" href="{{mainurl}}" class="btn btn-secondary mt-3">{{#str}} close, core_form {{/str}}</a>
+    </div>
+</div>
+{{#js}}
+    require(['tool_wp/import_export'], function(s) {
+    s.initImportProgress(0);
+    });
+{{/js}}
