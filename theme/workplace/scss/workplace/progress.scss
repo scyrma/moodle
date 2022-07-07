@@ -1,0 +1,145 @@
+$doughnut-size: 100px;
+
+$stroke: 7.5px;
+$radius: ($doughnut-size / 2) - ($stroke * 2);
+
+@function pi() {
+    @return 3.14159265359;
+}
+
+$circumference: $radius * 2 * pi();
+$doughnut-empty-colour: $gray-200;
+$doughnut-fill-colour: $info;
+
+.progress-chart-container {
+    height: $doughnut-size;
+    width: $doughnut-size;
+
+    .progress-doughnut {
+        height: $doughnut-size;
+        width: $doughnut-size;
+
+        .progress-background {
+            width: $doughnut-size - ( 3 * $stroke);
+            height: $doughnut-size - ( 3 * $stroke);
+            top: (1.5 * $stroke);
+            left: (1.5 * $stroke);
+            border-radius: 50%;
+            border: $stroke solid $doughnut-empty-colour;
+        }
+        .progress-text {
+            top: 50%;
+            /*rtl:ignore*/
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: $doughnut-empty-colour;
+
+            &.has-percent {
+                color: $doughnut-fill-colour;
+            }
+        }
+
+        .progress-indicator {
+            height: $doughnut-size;
+            width: $doughnut-size;
+
+            svg {
+                position: relative;
+                height: $doughnut-size;
+                width: $doughnut-size;
+
+                .circle {
+                    stroke-width: $stroke;
+                    stroke: $doughnut-fill-colour;
+                    fill: none;
+                    stroke-dasharray: $circumference $circumference;
+                    stroke-dashoffset: $circumference;
+                    transform: rotate(-90deg);
+                    transform-origin: 50% 50%;
+
+                    @for $i from 1 through 100 {
+                        &.percent-#{$i} {
+                            stroke-dashoffset: $circumference - ($i / 100 * $circumference);
+                        }
+                    }
+                }
+            }
+        }
+
+        &.completed {
+            .progress-indicator {
+                svg {
+                    .circle {
+                        stroke: $success;
+                    }
+                }
+            }
+            .progress-text {
+                color: $success;
+            }
+        }
+    }
+}
+
+.progress-wrapper {
+    width: 32px;
+    height: 32px;
+    margin: auto;
+
+    img.icon {
+        width: 32px;
+        height: 32px;
+        vertical-align: top;
+        margin: 0;
+    }
+}
+
+.pie {
+    width: 100%;
+    height: 100%;
+    background-color: $gray-200;
+    border-radius: 100%;
+    overflow: hidden;
+    position: relative;
+    margin: auto;
+}
+
+.pie-progress {
+    height: 100%;
+    position: absolute;
+    transform: translate(0, -50%) rotate(90deg);
+    transform-origin: 50% 100%;
+    width: 100%;
+
+    &:after,
+    &:before {
+        background: $info;
+        content: '';
+        height: 100%;
+        position: absolute;
+        width: 100%;
+    }
+
+    @for $i from 0 through 100 {
+        &.progress-#{$i} {
+            $over50: 0;
+            @if $i > 50 {
+                $over50: 1;
+            }
+            $a: $over50 * -100%;
+            $b: (1 + $over50) * 100%;
+            clip-path: polygon($a $a, $b $a, $b $b, $a $b);
+            z-index: 1 + $over50;
+
+            &:before {
+                $degrees: $i / 100 * 360;
+                transform: translate(0, 100%) rotate($degrees * 1deg);
+                transform-origin: 50% 0%;
+            }
+
+            &:after {
+                opacity: $over50;
+            }
+        }
+    }
+}

@@ -1,0 +1,157 @@
+// Colours
+
+// Original values defined in 'theme/boost/scss/preset/default.scss'.
+// We need them here so we can use them in other variable overrides.
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #8f959e !default;
+$gray-600: #6a737b !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #1d2125 !default;
+$black:    #000 !default;
+
+$blue:    #0f6cbf !default;
+$indigo:  #6610f2 !default;
+$purple:  #613d7c !default;
+$pink:    #e83e8c !default;
+$red:     #ca3120 !default;
+$orange:  #f0ad4e !default;
+$yellow:  #ff7518 !default;
+$green:   #357a32 !default;
+$teal:    #20c997 !default;
+$cyan:    #008196 !default;
+
+$primary:       $blue !default;
+$success:       $green !default;
+$info:          $cyan !default;
+$warning:       $orange !default;
+$danger:        $red !default;
+$secondary:     $gray-400 !default;
+
+// TODO: WP-3393 will redefine brand colours.
+$brand: $blue !default;
+$brand-light: transparentize(lighten($brand, 10%), 0.75) !default;
+
+$text: #4a4a4a !default;
+
+$info-outline:    #1f7e9a;
+$warning-outline: #a6670e;
+
+// Body
+$body-bg: $white !default;
+$body-color: $gray-900 !default;
+$text-muted: $gray-500 !default;
+$enable-rounded: true !default;
+$enable-gradients: false !default;
+
+// Typography
+// stylelint-disable
+$font-family-sans-serif:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+$font-family-monospace:       SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$font-family-base:            $font-family-sans-serif !default;
+// stylelint-enable
+
+$headings-color: $gray-800 !default;
+$headings-font-weight: 700 !default;
+
+$font-size-mini: 0.625rem !default;
+$font-size-small: 0.75rem !default;
+$font-size-medium: 0.8rem !default;
+$font-size-base: 0.9375rem !default;
+$font-size-menus: 0.875rem !default;
+
+$h1-font-size: 30px !default;
+$h2-font-size: 28px !default;
+$h3-font-size: 26px !default;
+$h4-font-size: 24px !default;
+$h5-font-size: 18px !default;
+
+$icon-size-base: 1rem !default;
+$icon-size-large: 1.25rem !default;
+$icon-size-xlarge: 1.875rem !default;
+
+// Logos
+// TODO: WP-3173 rename 'headerlogo/loginlogo' to 'compactlogo/logo' for consistency.
+$loginlogo: null !default;
+$headerlogo: null !default;
+
+// Inputs
+$input-border-color: $gray-500 !default;
+$custom-control-indicator-size: 1.25rem !default;
+
+// Navbar
+$navbar-height: 60px;
+
+// Breadcrumbs
+$breadcrumb-bg: transparent !default;
+$breadcrumb-padding-x: 0;
+$breadcrumb-padding-y: .25rem !default;
+$breadcrumb-divider: "/" !default;
+$breadcrumb-divider-rtl: "/" !default;
+
+// Cards
+$card-group-margin: .25rem;
+$card-border-radius: 4px;
+
+// Nav tabs
+$nav-tabs-border-width: 1px;
+$nav-tabs-link-active-bg: $white;
+$nav-tabs-border-color: $gray-300;
+
+// Alerts
+$alert-bg-level:      -10;
+$alert-border-level:  -10;
+$alert-color-level:   6 !default;
+$alert-padding-y:     1.43rem;
+$alert-padding-x:     1.56rem;
+
+// Badges
+$badge-pill-padding-x:              8px !default;
+$badge-pill-padding-y:              5px !default;
+$badge-pill-border-radius:          10rem !default;
+$badge-font-weight:                 500 !default;
+
+// Tooltips
+$tooltip-font-size: 10px !default;
+
+// Modals
+$modal-xl: 1200px !default;
+$modal-lg: 800px !default;
+
+// Dropdowns
+$dropdown-border-color: rgba($black, .15) !default;
+$dropdown-link-color: $body-color;
+$dropdown-link-active-bg: $primary;
+$dropdown-link-active-color: $white;
+$dropdown-link-color: $body-color;
+$dropdown-link-hover-bg: $primary;
+$dropdown-link-hover-color: $white;
+
+$theme-colors: ();
+// stylelint-disable
+$theme-colors: map-merge((
+    "brand": $brand,
+    "brand-light": $brand-light,
+    "primary": $primary,
+    "secondary": $secondary,
+    "info": $info,
+    "warning": $warning,
+    "danger": $danger,
+    "success": $success,
+    "white": $white,
+    "gray-900": $gray-900,
+    "gray-800": $gray-800,
+    "gray-700": $gray-700,
+    "gray-600": $gray-600,
+    "gray-500": $gray-500,
+    "gray-400": $gray-400,
+    "gray-300": $gray-300,
+    "gray-200": $gray-200,
+    "gray-100": $gray-100,
+    "black": $black,
+), $theme-colors);
+// stylelint-enable

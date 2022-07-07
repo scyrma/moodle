@@ -1,0 +1,74 @@
+/*
+ Dynamic rule editor
+*/
+.fit-container {
+    .fill-column {
+        height: 100%;
+        overflow-y: auto;
+    }
+    .flex-1 {
+        flex: 1;
+    }
+    .overflow-hidden {
+        overflow: hidden;
+    }
+    .scroll-y {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .min-height {
+        min-height: 500px;
+    }
+    #conditions-menu,
+    #conditions-container {
+        height: 100%;
+        overflow-y: auto;
+    }
+}
+
+/*
+ Dynamic rules statuses
+*/
+.tool_dynamicrule_match_status_in_progress {
+    @extend .badge-pill;
+    @extend .badge-warning;
+}
+
+.tool_dynamicrule_match_status_error {
+    @extend .badge-pill;
+    @extend .badge-danger;
+}
+
+.tool_dynamicrule_match_status_done {
+    @extend .badge-pill;
+    @extend .badge-success;
+}
+
+/*
+ General fixes
+*/
+// Remove list styling in rules list report.
+[data-region="ruleslistwrapper"] .reportbuilder-report {
+    ol,
+    ul,
+    dl {
+        margin-bottom: 0;
+        list-style-type: none;
+        padding-left: 0;
+    }
+}
+
+/*
+ Secondary navigation tabs
+*/
+.secondary-navigation a[data-toggle="tab"] {
+    &.tab-locked {
+        flex-wrap: wrap;
+    }
+    &.tab-locked:before {
+        content: $fa-var-lock;
+        font-family: 'FontAwesome';
+        position: relative;
+        left: -0.5rem;
+    }
+}
