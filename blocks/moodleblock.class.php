@@ -633,6 +633,16 @@ class block_base {
                        && has_capability('moodle/my:manageblocks', $page->context);
             }
         }
+
+        // Hack to allow blocks with 'my' setting in applicable formats when this method is called from custom pages.
+        $capability = 'block/' . $this->name() . ':addinstance';
+        $capabilitymy = 'block/' . $this->name() . ':myaddinstance';
+        if (array_key_exists('my', $formats) && $page->pagetype === 'admin-tool-custompage'
+            && !array_key_exists('admin-tool-custompage', $formats)) {
+            return (get_capability_info($capability) && has_capability($capability, $page->context)) ||
+                (get_capability_info($capabilitymy) && has_capability($capabilitymy, $page->context));
+        }
+
         // Check if this is a block only used on /my.
         unset($formats['my']);
         if (empty($formats)) {
