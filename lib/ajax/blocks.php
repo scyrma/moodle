@@ -74,6 +74,12 @@ switch ($pagetype[0]) {
         break;
 }
 
+// Hack to assign default tenant admin capability to check when drag & drop a block.
+if ($PAGE->pagetype === 'admin-tool-custompage') {
+    $PAGE->set_blocks_editing_capability('tool/custompage:edit');
+    $PAGE->blocks->add_region($buinewregion);
+}
+
 // Send headers.
 echo $OUTPUT->header();
 
