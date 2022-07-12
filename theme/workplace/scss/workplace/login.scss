@@ -1,0 +1,77 @@
+/*
+ Login container
+*/
+// Show login container left aligned.
+@include media-breakpoint-up(md) {
+    .login-wrapper {
+        justify-content: left;
+        padding-top: 1.5rem;
+        padding-left: 10rem;
+    }
+    .login-container {
+        max-width: 500px;
+    }
+}
+// Re-style h2 headings.
+.login-container h2.login-heading {
+    margin-bottom: 1rem;
+    font-size: 20px;
+    font-weight: normal;
+}
+// Show identity providers horizontally.
+.login-identityproviders {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    .login-identityprovider-btn {
+        max-width: fit-content;
+        margin: 0;
+        padding: .5rem .75rem;
+    }
+}
+
+/*
+ Login background
+*/
+$loginbackground: null !default;
+
+@if $loginbackground {
+    body.pagelayout-login {
+        background-image: url("#{$loginbackground}");
+        background-size: cover;
+        background-attachment: fixed;
+        #page {
+            background: none;
+        }
+    }
+}
+
+/*
+ General fixes
+*/
+// Fix age verification positioning in login page.
+#page-login-verify_age_location {
+    .mform {
+        padding: 0;
+        .form-group:not([data-groupname="buttonar"]) {
+            margin-left: 0;
+            .col-form-label {
+                flex: 0 0 100%;
+                max-width: 100%;
+                padding-left: 0;
+                .form-label-addon {
+                    margin-left: 0.5rem;
+                }
+            }
+            .form-inline {
+                padding-left: 0;
+                @include media-breakpoint-down(xs) {
+                    .form-control,
+                    .custom-select {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+}
