@@ -1004,8 +1004,18 @@ function clean_param($param, $type) {
             return preg_replace('/[^a-zA-Z0-9_-]/i', '', $param);
 
         case PARAM_SAFEPATH:
-            // Remove everything not a-zA-Z0-9/_- .
-            return preg_replace('/[^a-zA-Z0-9\/_-]/i', '', $param);
+            // Replace MS \ separators.
+            $param = str_replace('\\', '/', $param);
+            // Remove any number of ../ to prevent path traversal.
+            $param = preg_replace('/\.\.+\//', '', $param);
+            // Remove everything not a-zA-Z0-9/:_- .
+            $param = preg_replace('/[^a-zA-Z0-9\/:_-]/i', '', $param);
+            // Remove leading slash.
+            $param = ltrim($param, '/');
+            if ($param === '.') {
+                $param = '';
+            }
+            return $param;
 
         case PARAM_FILE:
             // Strip all suspicious characters from filename.
@@ -1536,6 +1546,9 @@ function get_config($plugin, $name = null) {
         }
         $cache->set($plugin, $result);
     }
+
+    /** @uses \tool_tenant\config::get_config_hook() */
+    component_class_callback('tool_tenant\config', 'get_config_hook', [$plugin, &$result]);
 
     if (!empty($name)) {
         if (array_key_exists($name, $result)) {
@@ -2353,6 +2366,18 @@ function date_format_string($date, $format, $tz = 99) {
     }
 
     date_default_timezone_set(core_date::get_user_timezone($tz));
+
+    if (strftime('%p', 0) === strftime('%p', HOURSECS * 18)) {
+        $datearray = getdate($date);
+        $format = str_replace([
+            '%P',
+            '%p',
+        ], [
+            $datearray['hours'] < 12 ? get_string('am', 'langconfig') : get_string('pm', 'langconfig'),
+            $datearray['hours'] < 12 ? get_string('amcaps', 'langconfig') : get_string('pmcaps', 'langconfig'),
+        ], $format);
+    }
+
     $datestring = strftime($format, $date);
     core_date::set_default_server_timezone();
 
@@ -4292,6 +4317,13 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
             $select = "mnethostid = :mnethostid AND LOWER(email) = LOWER(:email) AND deleted = 0";
             $params = array('mnethostid' => $CFG->mnet_localhost_id, 'email' => $email);
             $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
+            // When same email is used in more than one user we need to match with current tenant based in login url.
+            if (count($users) > 1 && class_exists('tool_tenant\\tenancy')) {
+                /** @uses \tool_tenant\tenancy::get_users_subquery */
+                $select = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery',
+                        [false, true, 'id'], '').$select;
+                $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
+            }
             if (count($users) === 1) {
                 // Use email for login only if unique.
                 $user = reset($users);
@@ -5871,7 +5903,7 @@ function email_should_be_diverted($email) {
         return true;
     }
 
-    $patterns = array_map('trim', preg_split("/[\s,]+/", $CFG->divertallemailsexcept));
+    $patterns = array_map('trim', preg_split("/[\s,]+/", $CFG->divertallemailsexcept, -1, PREG_SPLIT_NO_EMPTY));
     foreach ($patterns as $pattern) {
         if (preg_match("/$pattern/", $email)) {
             return false;
@@ -10017,6 +10049,11 @@ function setup_lang_from_browser() {
     if (!empty($SESSION->lang) or !empty($USER->lang) or empty($CFG->autolang)) {
         // Lang is defined in session or user profile, nothing to do.
         return;
+    }
+
+    /** @uses \tool_wp\language::get_recommended_language */
+    if ($lang = component_class_callback('tool_wp\language', 'get_recommended_language', [])) {
+        return $lang;
     }
 
     if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) { // There isn't list of browser langs, nothing to do.

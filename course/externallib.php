@@ -478,6 +478,9 @@ class core_course_external extends external_api {
                                             array(
                                                 'label' => new external_value(PARAM_TEXT, 'date label'),
                                                 'timestamp' => new external_value(PARAM_INT, 'date timestamp'),
+                                                'relativeto' => new external_value(PARAM_INT, 'relative date timestamp',
+                                                    VALUE_OPTIONAL),
+                                                'dataid' => new external_value(PARAM_NOTAGS, 'cm data id', VALUE_OPTIONAL),
                                             )
                                         ),
                                         VALUE_DEFAULT,
@@ -3903,6 +3906,10 @@ class core_course_external extends external_api {
                 $limit
             );
         }
+
+        /** @uses tool_program\api::filter_by_hideprogramcourses() */
+        $filteredcourses = component_class_callback('tool_program\api', 'filter_by_hideprogramcourses',
+            [$filteredcourses], $filteredcourses);
 
         $renderer = $PAGE->get_renderer('core');
         $formattedcourses = array_map(function($course) use ($renderer, $favouritecourseids) {
