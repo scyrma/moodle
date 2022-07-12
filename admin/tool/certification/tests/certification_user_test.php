@@ -1,0 +1,101 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace™ Code is the collection of software scripts
+// (plugins and modifications, and any derivations thereof) that are
+// exclusively owned and licensed by Moodle under the terms of this
+// proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+// software package offering which itself is freely downloadable at
+// "download.moodle.org" and which is provided by Moodle under a single
+// GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+// MWL is strictly controlled by Moodle Pty Ltd and its certified
+// premium partners. Wherever conflicting terms exist, the terms of the
+// MWL are binding and shall prevail.
+
+namespace tool_certification;
+
+use advanced_testcase;
+use tool_certification_generator;
+use tool_wp_external;
+
+/**
+ * Tests for certification_user persistent
+ *
+ * @package    tool_certification
+ * @covers     \tool_certification\certification_user
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class certification_user_test extends advanced_testcase {
+
+    /** @var tool_certification_generator */
+    public $generator;
+
+    /**
+     * setUp.
+     */
+    public function setUp(): void {
+        $this->generator = $this->getDataGenerator()->get_plugin_generator('tool_certification');
+        $this->resetAfterTest();
+    }
+
+    /**
+     * Test callback for the user selector.
+     */
+    public function test_user_selector(): void {
+        self::setAdminUser();
+        $defaulttenantid = \tool_tenant\tenancy::get_default_tenant_id();
+
+        $certification1 = $this->generator->generate_certification(['tenantid' => $defaulttenantid]);
+        $user1 = $this->getDataGenerator()->create_user(['firstname' => 'xxzz']);
+        $user2 = $this->getDataGenerator()->create_user(['firstname' => 'zz']);
+
+        // Both users are potential users for a new certification.
+        $results = tool_wp_external::potential_users_selector('zz', 'tool_certification', 'allocate', 0);
+        $this->assertEqualsCanonicalizing([$user1->id, $user2->id], array_keys($results));
+        // Both users are potential users for an existing certification.
+        $results = tool_wp_external::potential_users_selector('zz', 'tool_certification', 'allocate', $certification1->get('id'));
+        $this->assertEqualsCanonicalizing([$user1->id, $user2->id], array_keys($results));
+        // Allocate one of the users to the certification.
+        $params = (object)[
+            'userid' => $user1->id,
+            'certificationid' => $certification1->get('id'),
+            'allocationtype' => constants::ALLOCATION_MANUAL,
+            'status' => constants::STATUS_OVERRIDE_DEFAULT,
+        ];
+        api::allocate_user($certification1, $params);
+        // Only another user is now a potential user for this certification.
+        $results = tool_wp_external::potential_users_selector('zz', 'tool_certification', 'allocate', $certification1->get('id'));
+        $this->assertEqualsCanonicalizing([$user2->id], array_keys($results));
+    }
+
+    public function test_get_certification(): void {
+        $user = $this->getDataGenerator()->create_user();
+        $certification = $this->generator->generate_certification();
+
+        $data = (object) [
+            'certificationid' => $certification->get('id'),
+            'userid' => $user->id,
+        ];
+        $certuser = new \tool_certification\certification_user(0, $data);
+        $certuser->create();
+
+        $cert1 = $certuser->get_certification();
+        $this->assertInstanceOf(certification::class, $cert1);
+        $this->assertEquals($certification->get('id'), $cert1->get('id'));
+    }
+}
