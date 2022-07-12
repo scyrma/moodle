@@ -1,0 +1,372 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace™ Code is the collection of software scripts
+// (plugins and modifications, and any derivations thereof) that are
+// exclusively owned and licensed by Moodle under the terms of this
+// proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+// software package offering which itself is freely downloadable at
+// "download.moodle.org" and which is provided by Moodle under a single
+// GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+// MWL is strictly controlled by Moodle Pty Ltd and its certified
+// premium partners. Wherever conflicting terms exist, the terms of the
+// MWL are binding and shall prevail.
+
+/**
+ * Class add_tenant_form
+ *
+ * @package     tool_tenant
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Adrian Greeve
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+namespace tool_tenant\form;
+
+use core_form\dynamic_form;
+use tool_tenant\manager;
+use tool_tenant\permission;
+use tool_tenant\tenant;
+
+/**
+ * Class add_tenant_form
+ *
+ * @package     tool_tenant
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Adrian Greeve
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class add_tenant_form extends dynamic_form {
+
+    /** @var int */
+    const CATEGORY_NONE = 0;
+    /** @var int */
+    const CATEGORY_NEW = 1;
+    /** @var int */
+    const CATEGORY_EXISTING = 2;
+
+    /** @var tenant Do not access directly, use $this->get_tenant() */
+    protected $tenant;
+
+    /**
+     * Form definition
+     */
+    public function definition() {
+        global $CFG, $OUTPUT;
+
+        $mform = $this->_form;
+        $mform->setDisableShortforms();
+
+        $mform->addElement('hidden', 'id');
+        $mform->setType('id', PARAM_INT);
+
+        $mform->addElement('header', 'basic', get_string('basicinformation', 'tool_tenant'));
+
+        $mform->addElement('text', 'name', get_string('name', 'tool_tenant'), ['size' => 50]);
+        $mform->setType('name', PARAM_RAW);
+        $mform->addRule('name', null, 'required', null, 'client');
+        $mform->addElement('text', 'sitename', get_string('sitename', 'tool_tenant'), ['size' => 50]);
+        $mform->setType('sitename', PARAM_TEXT);
+        $mform->addHelpButton('sitename', 'sitename', 'tool_tenant');
+        $mform->addElement('text', 'siteshortname', get_string('siteshortname', 'tool_tenant'), ['size' => 50]);
+        $mform->setType('siteshortname', PARAM_TEXT);
+        $mform->addHelpButton('siteshortname', 'siteshortname', 'tool_tenant');
+
+        $mform->addElement('text', 'idnumber', get_string('idnumber', 'tool_tenant'));
+        $mform->setType('idnumber', PARAM_RAW);
+        $mform->addHelpButton('idnumber', 'idnumber', 'tool_tenant');
+
+        // Login URLs.
+        $objs = [];
+        $urlid = $CFG->wwwroot.'/?tenantid=';
+        if ($id = $this->get_tenant()->get('id')) {
+            $urlid .= $id;
+            $urlid .= $OUTPUT->render_from_template('tool_wp/copy_to_clipboard', ['text' => $urlid]);
+        } else {
+            $urlid .= '{ID}';
+        }
+        $objs[] = $mform->createElement('advcheckbox', 'useloginurlid', '', $urlid);
+
+        $urlidnumber = $CFG->wwwroot.'/?tenant=';
+        if ($idnumber = $this->get_tenant()->get('idnumber')) {
+            // We need to escape the idnumber for output, but not for the clipboard template (or it will be double-escaped).
+            $urlidnumberencoded = $urlidnumber . s($idnumber);
+            $urlidnumber = $urlidnumberencoded . $OUTPUT->render_from_template('tool_wp/copy_to_clipboard', [
+                'text' => "{$urlidnumber}{$idnumber}",
+            ]);
+        } else {
+            $urlidnumber .= '{IDNUMBER}';
+        }
+        $objs[] = $mform->createElement('advcheckbox', 'useloginurlidnumber', '', $urlidnumber);
+
+        $mform->addElement('group', 'loginurl', get_string('loginurl', 'tool_tenant'), $objs, '<br/>', false);
+        $mform->addHelpButton('loginurl', 'loginurl', 'tool_tenant');
+        $mform->disabledIf('useloginurlidnumber', 'idnumber', 'eq', '');
+        $mform->setDefault('useloginurlid', 1);
+        $mform->setDefault('useloginurlidnumber', 0);
+
+        // Tenant selector.
+        if (get_config('tool_tenant', 'showtenantselector')) {
+            $mform->addElement('advcheckbox', 'showinloginselector', '', get_string('showintenantselector', 'tool_tenant'));
+            $mform->setDefault('showinloginselector', 1);
+            $mform->addHelpButton('showinloginselector', 'showintenantselector', 'tool_tenant');
+        }
+
+        $mform->addElement('header', 'management', get_string('management', 'tool_tenant'));
+
+        // Add a advanced select element to select a tenant admin. Currently only present users who are in the tenant.
+        // Obviously this will be no-one when creating the tenant.
+        if ($this->get_tenant()->get('id')) {
+            $options = [
+                'ajax' => 'tool_wp/form-potential-user-selector',
+                'multiple' => true,
+                'data-component' => 'tool_tenant',
+                'data-area' => 'tenantadmin',
+                'data-itemid' => $this->get_tenant()->get('id'),
+                'valuehtmlcallback' => [$this, 'get_admin_name'] // TODO SP-365 this gives different results then WS. Fix properly.
+            ];
+            $mform->addElement('autocomplete', 'tenantadmin', get_string('administrators', 'tool_tenant'), [], $options);
+        }
+
+        $objs = array();
+        $objs[] = $mform->createElement('radio', 'categoryradio', '',
+            get_string('nocategory', 'tool_tenant'), self::CATEGORY_NONE);
+        if (has_capability('moodle/category:manage', \context_system::instance())) {
+            $objs[] = $mform->createElement('radio', 'categoryradio', '',
+                get_string('createnewcategory', 'tool_tenant'), self::CATEGORY_NEW);
+        }
+        $objs[] = $mform->createElement('radio', 'categoryradio', '',
+            get_string('chooseexistingcategory', 'tool_tenant'), self::CATEGORY_EXISTING);
+        $objs[] = $mform->createElement('select', 'categoryid', get_string('category'), $this->get_available_categories());
+        $mform->setType('categoryid', PARAM_INT);
+        $mform->disabledIf('categoryid', 'categoryradio', 'ne', 2);
+
+        $mform->addElement('group', 'categorygroup', get_string('category', 'tool_tenant'), $objs, '<br/>', false);
+        $mform->addHelpButton('categorygroup', 'category', 'tool_tenant');
+
+        if (empty($this->_ajaxformdata['isajax'])) {
+            $this->add_action_buttons(false);
+        }
+    }
+
+    /**
+     * Tenant being edited
+     *
+     * @return tenant
+     */
+    protected function get_tenant() : tenant {
+        if ($this->tenant === null) {
+            $tenantid = $this->optional_param('id', 0, PARAM_INT);
+            if ($tenantid) {
+                $manager = new \tool_tenant\manager();
+                $this->tenant = $manager->get_tenant($tenantid);
+            } else {
+                $this->tenant = new tenant();
+            }
+        }
+        return $this->tenant;
+    }
+
+    /**
+     * Returns all unassigned categories available to be associated to a tenant.
+     *
+     * @return array A list suitable to use in a select element.
+     */
+    protected function get_available_categories() : array {
+        $tenantid = $this->get_tenant()->get('id');
+
+        $categories = array_map(function($categoryobject) {
+            return format_string($categoryobject->name);
+        }, \core_course_category::top()->get_children());
+
+        $manager = new \tool_tenant\manager();
+        $tenants = $manager->get_tenants();
+        foreach ($tenants as $tenant) {
+            if (isset($categories[$tenant->get('categoryid')]) && $tenant->get('id') !== $tenantid) {
+                unset($categories[$tenant->get('categoryid')]);
+            }
+        }
+        // Add a no category option.
+        $categories = [0 => get_string('choosedots')] + $categories;
+        return $categories;
+    }
+
+    /**
+     * Check access
+     */
+    public function check_access_for_dynamic_submission(): void {
+        if ($tenantid = $this->optional_param('id', 0, PARAM_INT)) {
+            permission::require_can_edit_tenant($tenantid);
+        } else {
+            permission::require_can_create_tenant();
+        }
+    }
+
+    /**
+     * Validation of form elements.
+     *
+     * @param  array $tenant The new tenant details.
+     * @param  array $files Files related to the user.
+     * @return array An array of errors if the validation fails.
+     */
+    public function validation($tenant, $files) {
+        global $DB;
+        // We should check that the selected category has not been used elsewhere.
+        $err = [];
+
+        if ($tenant['categoryradio'] == self::CATEGORY_EXISTING &&
+                !\tool_tenant\manager::can_change_category($tenant['id'], $tenant['categoryid'])) {
+            $err['categorygroup'] = get_string('categorytaken', 'tool_tenant');
+        }
+        if ($tenant['categoryradio'] == self::CATEGORY_NEW) {
+            // User selected "Create new category". Check that category with this name does not exist.
+            if ($DB->record_exists('course_categories', ['name' => $tenant['name'], 'parent' => 0])) {
+                $err['categorygroup'] = get_string('categorynameexist', 'tool_tenant',
+                    s($tenant['name']));
+            }
+        }
+        if (!empty($tenant['showinloginselector']) && empty($tenant['useloginurlid']) && empty($tenant['useloginurlidnumber'])) {
+            $err['showinloginselector'] = get_string('errorurlnotavailable', 'tool_tenant');
+        }
+        return $err;
+    }
+
+    /**
+     * User full name
+     * @param int $id
+     * @return bool|string
+     */
+    public function get_admin_name($id) {
+        global $DB;
+        $fieldssql = \core_user\fields::for_userpic()->get_sql('u', false, '', '', false)->selects;
+        $user = $DB->get_record_sql("SELECT $fieldssql FROM {user} u WHERE u.id = ?", [$id]);
+        return $user ? fullname($user) : false;
+    }
+
+    /**
+     * Prepare the tenant record before calling set_data()
+     *
+     * @param \tool_tenant\tenant $tenant
+     * @param array $tenantadmins A list of tenant admin IDs.
+     * @return \stdClass
+     */
+    protected function prepare_data_for_form(\tool_tenant\tenant $tenant, array $tenantadmins) : \stdClass {
+        $data = $tenant->to_record();
+        if ($data->categoryid) {
+            $data->categoryradio = self::CATEGORY_EXISTING;
+        } else {
+            $data->categoryradio = self::CATEGORY_NONE;
+        }
+        $data->tenantadmin = $tenantadmins;
+        return $data;
+    }
+
+    /**
+     * Resolves the category id, creates a new category if necessary
+     *
+     * @param \stdClass $data
+     */
+    protected function resolve_category_id(\stdClass $data) {
+        if ($data->categoryradio == self::CATEGORY_NONE) {
+            // No category.
+            $data->categoryid = 0;
+        }
+        if ($data->categoryradio == self::CATEGORY_NEW) {
+            // Create a new category.
+            $coursecat = \core_course_category::create(['name' => $data->name]);
+            $data->categoryid = $coursecat->id;
+        }
+        unset($data->categoryradio);
+    }
+
+    /**
+     * Process form submission
+     *
+     * @return \string
+     */
+    public function process_dynamic_submission() {
+        $data = $this->get_data();
+        $manager = new \tool_tenant\manager();
+        $id = $data->id;
+        $this->resolve_category_id($data);
+        if (!$id) {
+            $tenants = $manager->get_tenants_without_shared();
+            $last = end($tenants);
+            $data->sortorder = $last ? ($last->get('sortorder') + 1) : 0;
+
+            unset($data->tenantadmin);
+            $tenant = $manager->create_tenant($data);
+            $tenant->save();
+            $id = $tenant->get('id');
+        } else {
+            // Save tenant admin to change after update tenant.
+            $tenantadmin = !empty($data->tenantadmin) ? $data->tenantadmin : [];
+            unset($data->tenantadmin);
+            // Update other tenant information.
+            $manager->update_tenant($id, $data);
+            $manager->assign_tenant_admin_role($id, $tenantadmin);
+        }
+        return manager::get_edit_tenant_url($id)->out(false);
+    }
+
+    /**
+     * Set data in the modal form
+     */
+    public function set_data_for_dynamic_submission(): void {
+        $tenant = $this->get_tenant();
+        if ($tenant->get('id')) {
+            // Get the tenant admins.
+            $tenantadmins = (new \tool_tenant\manager())->get_tenant_admins($tenant->get('id'));
+            $this->set_data($this->prepare_data_for_form($tenant, $tenantadmins));
+        }
+    }
+
+    /**
+     * Renders the html form (same as display, but returns the result).
+     *
+     * Note that you can only output this rendered result once per page, as
+     * it contains IDs which must be unique.
+     *
+     * @return string HTML code for the form
+     */
+    public function render() {
+        global $PAGE;
+        $PAGE->requires->js_call_amd('tool_wp/copy_to_clipboard', 'init');
+        return parent::render();
+    }
+
+    /**
+     * Returns context where this form is used
+     *
+     * @return \context
+     */
+    public function get_context_for_dynamic_submission(): \context {
+        return \context_system::instance();
+    }
+
+    /**
+     * Returns url to set in $PAGE->set_url() when form is being rendered or submitted via AJAX
+     *
+     * @return \moodle_url
+     */
+    protected function get_page_url_for_dynamic_submission(): \moodle_url {
+        $id = $this->optional_param('id', 0, PARAM_INT);
+        return new \moodle_url('/admin/tool/tenant/index.php', [
+            'form' => get_class($this),
+            'id' => $id,
+        ]);
+    }
+}
