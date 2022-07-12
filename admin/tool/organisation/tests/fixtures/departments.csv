@@ -1,0 +1,26 @@
+id,code,parent,name,description
+1,SAL,,Sales,Sales department
+2,SAD,SAL,Sales development,Sales development department
+3,CSC,SAL,Customer Success,Customer Success department
+4,EDI,,Editorial,Editorial department
+5,AND,EDI,Art and design,Art and design department
+6,PRO,EDI,Production,Production department
+7,RNE,EDI,Research and Education,Research and Education department
+8,MED,RNE,Medical advising,Medical advising department
+9,MHR,RNE,Mental Health research,Mental Health research department
+10,ONR,RNE,Oncology research,Oncology research department
+11,MKT,,"Marketing, Promotion and Advertising","Marketing, Promotion and Advertising department"
+12,PUB,MKT,Publicity,Publicity department
+13,MH,MKT,Mental Health,Mental Health department
+14,ONC,MKT,Oncology,Oncology department
+15,IT,,Information and Technology,Information and Technology department
+16,SUP,IT,ICT Support,ICT Support department
+17,ASP,IT,Applications support,Applications support department
+18,ADE,IT,Applications development,Applications development department
+19,INF,IT,Infraestructure,Infraestructure department
+20,HR,,Human Resources,Human Resources department
+21,LND,HR,Learning and Development,Learning and Development department
+22,ADM,,Administration,Administration department
+23,LNC,ADM,Legal and Contracts,Legal and Contracts department
+24,SRI,LNC,Subsidiary Rights,Subsidiary Rights department
+25,FNA,ADM,Finance and Accounting,Finance and Accounting department
