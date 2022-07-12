@@ -1,0 +1,124 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/program_content
+
+    Template for showing a program content page.
+
+    Example context (json):
+    {
+        "fullname": "Health and Safety",
+        "completionicon": "https://placekitten.com/10/10",
+        "recentlyaccessedcourses": [
+            {
+                "name": "Advanced advises regarding body posture Advanced advises regarding body posture",
+                "courseimage": "http://placekitten.com/300/300",
+                "categoryname": "Health and Safety",
+                "progress": "50"
+            },
+            {
+                "name": "Introduction to health and safety at work",
+                "courseimage": "http://placekitten.com/320/320",
+                "categoryname": "Health and Safety",
+                "progress": "60"
+            },
+            {
+                "name": "Use more of your time in the classroom",
+                "courseimage": "http://placekitten.com/350/350",
+                "categoryname": "Health and Safety",
+                "progress": "60"
+            }
+        ],
+        "completioncriteria": "<span class=\"mr-1\"><strong>To-do: </strong></span> Complete everything in order",
+        "completionprogress": "1 of 5 completed",
+        "setid": 0,
+        "listitems": [
+            {
+                "isset": false,
+                "image": "http://placekitten.com/350/350",
+                "fullname": "Introducation to Health and Safety at work",
+                "progress": 100
+            }
+        ]
+    }
+}}
+<div id="program-container" data-region="program-container" class="catalogue program" data-programid="{{programid}}" data-fullname="{{{fullname}}}">
+    <div class="level d-none" data-region="program-heading" data-setid="0">
+        {{#hasrecentlyaccessedcourses}}
+        {{< tool_catalogue/cover/pagesection }}
+            {{$name}}{{#str}}recentlyaccessedcourses, tool_catalogue{{/str}}{{/name}}
+            {{$shortname}}p-recent{{/shortname}}
+            {{$content}}
+                <div class="card-deck dashboard-card-deck my-2" role="list">
+                {{#recentlyaccessedcourses}}
+                    <div class="card dashboard-card position-relative" role="listitem">
+                        <div class="card-img program-card-img" style='background-image: url("{{{courseimage}}}");'>
+                            <span class="sr-only">{{#str}}aria:courseimage, core_course{{/str}}</span>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="coursename">
+                                <a href="{{viewurl}}" class="aalink">
+                                    {{{name}}}
+                                </a>
+                            </div>
+                            {{#categoryname}}
+                            <div class="font-medium mt-1 categoryname">
+                                {{{categoryname}}}
+                            </div>
+                            {{/categoryname}}
+                        </div>
+                        <div class="p-2 text-muted font-medium">
+                            {{#str}}progress, tool_catalogue, {{{progress}}}{{/str}}
+                        </div>
+                    </div>
+                {{/recentlyaccessedcourses}}
+                </div>
+            {{/content}}
+        {{/ tool_catalogue/cover/pagesection }}
+        {{/hasrecentlyaccessedcourses}}
+        <div class="d-flex">
+            <span class="mr-1 d-flex align-items-center">
+                <span class="completionsvg mr-2" aria-hidden="true">
+                    <img src="{{{completionicon}}}" alt="">
+                </span>
+                <span class="mr-1"><strong>{{#str}}todo, tool_catalogue{{/str}}</strong></span>
+                {{{completioncriteria}}}
+            </span>
+            <span class="ml-auto text-muted">{{{completionprogress}}}</span>
+        </div>
+        <hr>
+    </div>
+    {{#listitems}}
+        {{> tool_catalogue/listitems/item}}
+    {{/listitems}}
+</div>
+{{#js}}
+require(['tool_catalogue/programcontent'], function(programContent) {
+    programContent.init({{#navitems}}JSON.parse('{{{navitems}}}'){{/navitems}});
+});
+{{/js}}
