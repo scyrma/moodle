@@ -288,7 +288,4 @@
         $PAGE->requires->js_call_amd('core_course/view', 'init');
     }
 
-    /** @uses \tool_catalogue\manager::get_course_cover_modal() */
-    echo component_class_callback('\tool_catalogue\manager', 'get_course_cover_modal', [$course], '');
-
     echo $OUTPUT->footer();
