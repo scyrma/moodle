@@ -114,6 +114,10 @@ class report extends dynamic_form {
 
         $mform->addElement('advcheckbox', 'uniquerows', get_string('uniquerows', 'core_reportbuilder'));
         $mform->addHelpButton('uniquerows', 'uniquerows', 'core_reportbuilder');
+
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::create_report_definition() */
+        component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'create_report_definition',
+            [$this, $mform, $this->get_custom_report()]);
     }
 
     /**
