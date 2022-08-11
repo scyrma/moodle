@@ -153,6 +153,10 @@ class reports_list extends system_report {
             })
         );
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::add_shared_space_badge */
+        component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'add_shared_space_badge',
+            [$this, $this->get_report_entity_name(), $tablealias]);
+
         // Report source column.
         $this->add_column((new column(
             'source',
