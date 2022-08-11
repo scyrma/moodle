@@ -96,11 +96,11 @@ class permission {
             return true;
         }
 
-        /** @uses \tool_tenant\reportbuilder\local\callbacks::can_view_report_in_tenant */
-        if (!component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'can_view_report_in_tenant',
-                [$report], true)) {
-
-            return false;
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::override_can_view_report() */
+        $override = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'override_can_view_report', [$report, $userid], null);
+        if ($override !== null) {
+            return $override;
         }
 
         $reports = audience::user_reports_list($userid);
@@ -139,11 +139,11 @@ class permission {
             return false;
         }
 
-        /** @uses \tool_tenant\reportbuilder\local\callbacks::can_edit_report_in_tenant */
-        if (!component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'can_edit_report_in_tenant',
-            [$report], true)) {
-
-            return false;
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::override_can_edit_report */
+        $override = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'override_can_edit_report',
+            [$report, $userid], null);
+        if ($override !== null) {
+            return $override;
         }
 
         // To edit their own reports, users must have either of the 'edit' or 'editall' capabilities. For reports belonging
