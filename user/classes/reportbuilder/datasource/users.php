@@ -77,6 +77,26 @@ class users extends datasource {
         $this->add_columns_from_entity($tagentity->get_entity_name(), ['name', 'namewithlink']);
         $this->add_filter($tagentity->get_filter('name'));
         $this->add_condition($tagentity->get_condition('name'));
+
+        // Add Job entity.
+        /** @uses \tool_organisation\reportbuilder\local\entities\job::prepare_for_user_datasource */
+        if ($jobentity = component_class_callback('\tool_organisation\reportbuilder\local\entities\job',
+            'prepare_for_user_datasource', [$usertablealias])) {
+            $this->add_entity($jobentity);
+            $this->add_columns_from_entity($jobentity->get_entity_name());
+            $this->add_filters_from_entity($jobentity->get_entity_name());
+            $this->add_conditions_from_entity($jobentity->get_entity_name());
+        }
+
+        // Add Tenant entity.
+        /** @uses \tool_tenant\reportbuilder\local\entities\tenant::prepare_for_user_datasource */
+        if ($tenantentity = component_class_callback('\tool_tenant\reportbuilder\local\entities\tenant',
+            'prepare_for_user_datasource', [$usertablealias])) {
+            $this->add_entity($tenantentity);
+            $this->add_columns_from_entity($tenantentity->get_entity_name());
+            $this->add_filters_from_entity($tenantentity->get_entity_name());
+            $this->add_conditions_from_entity($tenantentity->get_entity_name());
+        }
     }
 
     /**
