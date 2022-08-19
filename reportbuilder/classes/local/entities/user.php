@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace core_reportbuilder\local\entities;
 
 use context_system;
+use core_component;
 use html_writer;
 use lang_string;
 use moodle_url;
@@ -439,8 +440,9 @@ class user extends base {
             $this->get_entity_name(),
             "{$tablealias}.auth"
         ))
+            ->add_joins($this->get_joins())
             ->set_options_callback(static function(): array {
-                $plugins = \core_component::get_plugin_list('auth');
+                $plugins = core_component::get_plugin_list('auth');
                 $enabled = get_string('pluginenabled', 'core_plugin');
                 $disabled = get_string('plugindisabled', 'core_plugin');
                 $authoptions = [$enabled => [], $disabled => []];
