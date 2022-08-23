@@ -27,7 +27,7 @@
 if (isset($_REQUEST['lang'])) {
     $lang = preg_replace('/[^A-Za-z0-9_-]/i', '', $_REQUEST['lang']);
 } else {
-    $lang = 'en';
+    $lang = 'en_wp';
 }
 
 if (isset($_REQUEST['admin'])) {
@@ -91,6 +91,13 @@ require_once(__DIR__.'/lib/classes/component.php');
 require_once(__DIR__.'/lib/installlib.php');
 
 // TODO: add lang detection here if empty $_REQUEST['lang']
+
+if (file_exists(__DIR__.'/admin/tool/wp/classes/language.php')) {
+    require_once(__DIR__.'/admin/tool/wp/classes/language.php');
+    if (is_callable(['\tool_wp\language', 'get_default_install_language'])) {
+        $lang = \tool_wp\language::get_default_install_language(__DIR__.'/install/lang');
+    }
+}
 
 // distro specific customisation
 $distro = null;
@@ -638,7 +645,9 @@ if ($distro) {
                                   get_string('chooselanguagesub', 'install'));
 }
 
-$languages = get_string_manager()->get_list_of_translations();
+/** @uses tool_wp\language::get_list_of_workplace_translations() */
+$languages = component_class_callback('tool_wp\language', 'get_list_of_workplace_translations', [$CFG->lang],
+    get_string_manager()->get_list_of_translations());
 echo '<div class="row mb-4">';
 echo '<div class="col-md-3 text-md-right pt-1"><label for="langselect">'.get_string('language').'</label></div>';
 echo '<div class="col-md-9" data-fieldtype="select">';
