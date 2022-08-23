@@ -1,0 +1,177 @@
+.wp-organisation {
+    // Hiding empty headings and rows.
+    table > thead > tr > th:empty,
+    table > tbody > tr > td:empty {
+        display: none;
+    }
+    table.flexible {
+        padding: 0 1rem;
+        tbody {
+            tr {
+                background-color: transparent;
+            }
+            td {
+                border: 0;
+                padding: 0;
+            }
+        }
+    }
+
+    font-size: $font-size-menus;
+
+    // Fix for links and buttons in dimmed rows.
+    .dimmed_text {
+        .btn {
+            transition: none;
+        }
+        &:not(:hover) {
+            button,
+            i {
+                color: $text-muted;
+            }
+        }
+        &:hover a {
+            @extend a;
+            &.btn-outline-secondary {
+                @extend .btn-outline-secondary;
+                text-decoration: none;
+            }
+        }
+    }
+
+    .ws-toggle {
+        font-size: $font-size-menus;
+        color: $body-color;
+        text-decoration: none;
+        .icon {
+            color: $link-color;
+        }
+    }
+
+    .iconcontainer {
+        background-color: $gray010;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        text-align: center;
+        .icon {
+            color: inherit;
+        }
+    }
+    .profile_tree ul {
+        padding-left: 0;
+    }
+    .btn-circle {
+        margin: 0;
+        width: auto;
+        height: auto;
+        padding: 0.5rem 0;
+        .icon {
+            font-size: $icon-size-base;
+        }
+    }
+    .wp-jobs hr:last-child {
+        display: none;
+    }
+}
+.path-admin-tool-organisation {
+    .row.permission .checkbox {
+        position: relative;
+        left: 40px;
+        i {
+            margin-right: 7px;
+        }
+    }
+    .tool-ogranisation-perm-icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        font-size: 18px;
+        color: #99a2b2;
+        padding: 0 3px 3px;
+        &.noset {
+            opacity: 0.3;
+        }
+    }
+    .drag-handle-container {
+        width: 25px;
+    }
+    .frameworkcontent {
+        position: relative;
+        .frameworkcontent-loading {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 1;
+        }
+        .frameworkcontent-wrapper {
+            min-height: 75px;
+        }
+    }
+}
+
+/* Dashboard 'Teams' tab. */
+.pagelayout-mydashboard {
+    .wp-organisation .table-responsive {
+        padding: 0 1rem;
+        // Hide 'Edit profile' link.
+        li.editprofile {
+            display: none;
+        }
+    }
+    // Compact specific styles (mobile and region-side-pre block).
+    @mixin teams-compact {
+        .wp-organisation .table-responsive {
+            padding: 0;
+            .filters-icon {
+                display: none;
+            }
+            .team-user-container {
+                margin-bottom: 0;
+
+                .user-container {
+                    flex: 0 0 100%;
+                    max-width: 100%;
+
+                    > button {
+                        padding: .5rem !important; /* stylelint-disable-line declaration-no-important */
+                    }
+                }
+
+                .jobs-container {
+                    display: none;
+                }
+
+                .details-wrapper {
+                    background-color: $white !important; /* stylelint-disable-line declaration-no-important */
+                    .details-container {
+                        flex: 0 0 100%;
+                        max-width: 100%;
+                    }
+                }
+
+                .buttons-container {
+                    a {
+                        width: 100%;
+                    }
+
+                    .profile-button {
+                        margin: .5rem 0 0 0 !important; /* stylelint-disable-line declaration-no-important */
+                    }
+                }
+            }
+        }
+    }
+    .block-region:not(#block-region-content) .block_myteams {
+        @include teams-compact;
+    }
+    @include media-breakpoint-down(sm) {
+        @include teams-compact;
+    }
+}
