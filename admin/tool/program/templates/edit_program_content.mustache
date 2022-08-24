@@ -1,0 +1,98 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_program/edit_program_content
+
+    Template for showing program content.
+
+    Example context (json):
+    {
+        "tabheading": "Content",
+        "baseset": {
+            "id": "1",
+            "setcompletionform": "<form></form>"
+        },
+        "programid": "1",
+        "editmode": "1"
+    }
+}}
+<div class="program-items program-item-children" data-region="edit-content">
+
+    {{#mainset}}
+
+    {{#editmode}}
+    <div class="pull-right">
+        <div class="dropdown d-inline-block">
+            <button class="btn btn-primary iconlarge nomargin dropdown-toggle" type="button"
+                    id="addItemToSet{{id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{#pix}}t/add, core{{/pix}} {{#str}} add {{/str}}
+                <span class="sr-only">{{#str}}addsetorcourse, tool_program{{/str}}</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="addItemToSet{{id}}">
+                <a class="dropdown-item add-course" data-action="add-course" data-set-id="{{id}}" href="#">
+                    {{#pix}} i/course, core {{/pix}}
+                    {{#str}} course {{/str}}
+                </a>
+                <a class="dropdown-item add-set" data-action="add-set" data-set-id="{{id}}" href="#">
+                    {{#pix}} i/section, core {{/pix}}
+                    {{#str}} setofcourses, tool_program {{/str}}
+                </a>
+            </div>
+        </div>
+    </div>
+    {{/editmode}}
+
+    {{> tool_wp/tab_heading}}
+
+    {{> tool_wp/table_tree}}
+
+    <div>
+        <table class="my-4 pull-right">
+            <tr>
+                <td>
+                    <span class="mr-2">{{#str}} maincompletion, tool_program {{/str}}:</span>
+                </td>
+                <td>
+                    {{{setcompletionform}}}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+
+    {{/mainset}}
+
+</div>
+
+{{#editmode}}{{#js}}
+    M.util.js_pending('tool_program_content');
+    require(['tool_program/edit_content'], function(EditSetsAndCourses) {
+        new EditSetsAndCourses();
+        M.util.js_complete('tool_program_content');
+    });
+{{/js}}{{/editmode}}
