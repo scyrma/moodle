@@ -70,6 +70,10 @@ class primary extends view {
             if ($showcoursesnode) {
                 $this->add(get_string('mycourses'), new \moodle_url('/my/courses.php'), self::TYPE_ROOTNODE, null, 'mycourses');
             }
+
+            // Add Custom pages links.
+            /** @uses \tool_custompage\local\helpers\navigation::add_primary_nodes() */
+            component_class_callback('tool_custompage\\local\\helpers\\navigation', 'add_primary_nodes', [&$this]);
         }
 
         $showsiteadminnode = empty($this->page->theme->removedprimarynavitems) ||

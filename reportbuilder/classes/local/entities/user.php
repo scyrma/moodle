@@ -426,6 +426,31 @@ class user extends base {
         ))
             ->add_joins($this->get_joins());
 
+        // Authentication method filter.
+        $filters[] = (new filter(
+            select::class,
+            'auth',
+            new lang_string('authentication', 'moodle'),
+            $this->get_entity_name(),
+            "{$tablealias}.auth"
+        ))
+            ->set_options_callback(static function(): array {
+                $plugins = \core_component::get_plugin_list('auth');
+                $enabled = get_string('pluginenabled', 'core_plugin');
+                $disabled = get_string('plugindisabled', 'core_plugin');
+                $authoptions = [$enabled => [], $disabled => []];
+
+                foreach ($plugins as $pluginname => $unused) {
+                    $plugin = get_auth_plugin($pluginname);
+                    if (is_enabled_auth($pluginname)) {
+                        $authoptions[$enabled][$pluginname] = $plugin->get_title();
+                    } else {
+                        $authoptions[$disabled][$pluginname] = $plugin->get_title();
+                    }
+                }
+                return $authoptions;
+            });
+
         return $filters;
     }
 

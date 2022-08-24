@@ -1748,6 +1748,11 @@ abstract class admin_setting {
         $this->visiblename    = $visiblename;
         $this->description    = $description;
         $this->defaultsetting = $defaultsetting;
+
+        /** @uses \tool_tenant\config::add_flag_to_admin_setting() */
+        if ($args = component_class_callback('\tool_tenant\config', 'add_flag_to_admin_setting', [$this])) {
+            $this->set_flag_options($args[0], $args[1], $args[2], $args[3]);
+        }
     }
 
     /**
@@ -4779,6 +4784,11 @@ class admin_setting_sitesettext extends admin_setting_configtext {
      * @return mixed string or null
      */
     public function get_setting() {
+        global $DB, $SITE;
+        if ($this->name === 'fullname' || $this->name === 'shortname') {
+            $site = $DB->get_record('course', ['id' => SITEID]);
+            return $site->{$this->name} != '' ? $site->{$this->name} : null;
+        }
         $site = course_get_format(get_site())->get_course();
         return $site->{$this->name} != '' ? $site->{$this->name} : NULL;
     }

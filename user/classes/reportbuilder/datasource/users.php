@@ -20,6 +20,7 @@ namespace core_user\reportbuilder\datasource;
 
 use core_reportbuilder\datasource;
 use core_reportbuilder\local\entities\user;
+use core_reportbuilder\local\filters\boolean_select;
 use core_reportbuilder\local\helpers\database;
 
 /**
@@ -63,6 +64,26 @@ class users extends datasource {
         $this->add_columns_from_entity($userentityname);
         $this->add_filters_from_entity($userentityname);
         $this->add_conditions_from_entity($userentityname);
+
+        // Add Job entity.
+        /** @uses \tool_organisation\reportbuilder\local\entities\job::prepare_for_user_datasource */
+        if ($jobentity = component_class_callback('\tool_organisation\reportbuilder\local\entities\job',
+            'prepare_for_user_datasource', [$usertablealias])) {
+            $this->add_entity($jobentity);
+            $this->add_columns_from_entity($jobentity->get_entity_name());
+            $this->add_filters_from_entity($jobentity->get_entity_name());
+            $this->add_conditions_from_entity($jobentity->get_entity_name());
+        }
+
+        // Add Tenant entity.
+        /** @uses \tool_tenant\reportbuilder\local\entities\tenant::prepare_for_user_datasource */
+        if ($tenantentity = component_class_callback('\tool_tenant\reportbuilder\local\entities\tenant',
+            'prepare_for_user_datasource', [$usertablealias])) {
+            $this->add_entity($tenantentity);
+            $this->add_columns_from_entity($tenantentity->get_entity_name());
+            $this->add_filters_from_entity($tenantentity->get_entity_name());
+            $this->add_conditions_from_entity($tenantentity->get_entity_name());
+        }
     }
 
     /**
@@ -89,6 +110,22 @@ class users extends datasource {
      * @return string[]
      */
     public function get_default_conditions(): array {
-        return ['user:fullname', 'user:username', 'user:email'];
+        return [
+            'user:fullname',
+            'user:username',
+            'user:email',
+            'user:suspended',
+        ];
+    }
+
+    /**
+     * Return the conditions values that will be added to the report once is created
+     *
+     * @return array
+     */
+    public function get_default_condition_values(): array {
+        return [
+            'user:suspended_operator' => boolean_select::NOT_CHECKED,
+        ];
     }
 }
