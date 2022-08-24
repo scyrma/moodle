@@ -1,0 +1,113 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template block_myteams/userinfo/body
+
+    Expanded user information for My Teams block.
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "messageurl": "#",
+        "profileurl": "#",
+        "sections": [
+            {
+                "name": "Programs",
+                "link": "http://example.com",
+                "items": [
+                    {
+                        "title": "Program 01",
+                        "subtitle": "80% completed",
+                        "badges": [
+                            {
+                                "label": "Overdue",
+                                "type": "danger"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}}
+<div class="bg-gray-100 mt-2 p-3">
+
+    {{! Sections }}
+    {{#sections}}
+        <div class="mb-3">
+            <div class="d-flex align-items-center pb-2 mb-2 border-bottom">
+                <span class="font-weight-bold">{{name}}</span>
+                {{#link}}
+                    <span class="ml-auto"><a href="{{link}}">{{#str}} fullreport, block_myteams {{/str}}</a></span>
+                {{/link}}
+            </div>
+            <ul class="p-0 list-unstyled show-more-list" data-region="block_myteams-userinfo-section-items">
+                {{#items}}
+                    <li class="userinfo-item" data-region="section-item">
+                        <div class="d-flex flex-wrap my-2">
+                                {{title}} · <span class="text-muted ml-1">{{subtitle}}</span>
+                                {{#badges}}
+                                    <span class="badge badge-pill badge-{{type}} ml-2">{{label}}</span>
+                                {{/badges}}
+                        </div>
+                    </li>
+                {{/items}}
+                {{#showmorecount}}
+                    <button class="btn btn-link p-0"
+                            data-action="block_myteams-show-more"
+                    >
+                        {{#str}} showmore, block_myteams, {{showmorecount}} {{/str}}
+                    </button>
+                {{/showmorecount}}
+            </ul>
+        </div>
+    {{/sections}}
+
+    {{! Buttons }}
+    <div class="d-flex mt-4">
+        {{#messageurl}}
+            <a href="{{messageurl}}"
+               role="button"
+               class="btn btn-secondary mr-2"
+               data-action="block_myteams-send-message"
+               data-userid="{{id}}"
+            >
+                {{#str}} sendmessage, message {{/str}}
+            </a>
+        {{/messageurl}}
+        {{#profileurl}}
+            <a href="{{profileurl}}"
+               role="button"
+               class="btn btn-secondary"
+            >
+                {{#str}} seeprofile, block_myteams {{/str}}
+            </a>
+        {{/profileurl}}
+    </div>
+</div>
