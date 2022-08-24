@@ -1,0 +1,35 @@
+/*
+ Workplace launcher.
+*/
+$workplace-menu-item-width: 100px;
+.workplace-menu {
+    min-width: initial;
+    @include media-breakpoint-down(xs) {
+        max-width: 100%;
+        position: fixed !important; /* stylelint-disable-line declaration-no-important */
+        right: 0;
+        left: 2px;
+        top: $navbar-height;
+    }
+    .workplace-menu-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        @include media-breakpoint-down(xs) {
+            display: flex;
+            flex-flow: wrap;
+        }
+    }
+    .workplace-menu-item {
+        width: $workplace-menu-item-width;
+        color: $text;
+        text-decoration: none;
+        word-break: break-word;
+        &:hover {
+            background-color: $gray-100;
+            border-radius: 5px;
+        }
+        > img {
+            max-width: 100%;
+        }
+    }
+}

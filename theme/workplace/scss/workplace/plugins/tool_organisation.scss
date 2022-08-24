@@ -1,0 +1,158 @@
+/*
+ General
+*/
+.path-admin-tool-organisation {
+    .row.permission .checkbox {
+        position: relative;
+        left: 40px;
+        i {
+            margin-right: 7px;
+        }
+    }
+    .tool-ogranisation-perm-icon {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        font-size: 18px;
+        padding: 0 3px 3px;
+        &.noset {
+            opacity: 0.3;
+        }
+    }
+    .drag-handle-container {
+        width: 25px;
+    }
+    // Framework loading spinner.
+    .frameworkcontent {
+        position: relative;
+        .frameworkcontent-loading {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 1;
+        }
+        .frameworkcontent-wrapper {
+            min-height: 75px;
+        }
+    }
+    .framework-header {
+        .v-line-height {
+            height: 26px;
+        }
+    }
+}
+
+/*
+ Dashboard 'Teams' tab.
+*/
+// TODO: Move and refactor all these styles to block_myteams in WP-2560.
+.pagelayout-mydashboard {
+    .wp-organisation .reportbuilder-table {
+        padding: 0 1rem;
+        font-size: $font-size-menus;
+        tbody {
+            tr {
+                background-color: transparent;
+            }
+            td {
+                border: 0;
+                padding: 0;
+            }
+        }
+        // Hiding empty headings and rows.
+        > thead > tr > th:empty,
+        > tbody > tr > td:empty {
+            display: none;
+        }
+        .iconcontainer {
+            background-color: $gray-100;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            text-align: center;
+            .icon {
+                color: inherit;
+            }
+        }
+        .profile_tree ul {
+            padding-left: 0;
+        }
+        .btn-circle {
+            margin: 0;
+            width: auto;
+            height: auto;
+            padding: 0.5rem 0;
+            .icon {
+                font-size: $icon-size-base;
+            }
+        }
+        .wp-jobs hr:last-child {
+            display: none;
+        }
+        // Hide 'Edit profile' link.
+        li.editprofile {
+            display: none;
+        }
+        // Styles for toggle elements.
+        .ws-toggle {
+            font-size: $font-size-menus;
+            color: $body-color;
+            text-decoration: none;
+            .icon {
+                color: $link-color;
+            }
+        }
+    }
+    // Compact specific styles (mobile and region-side-pre block).
+    @mixin teams-compact {
+        .wp-organisation [data-region="core_reportbuilder/report"] {
+            padding: 0;
+            .team-user-container {
+                margin-bottom: 0;
+
+                .user-container {
+                    flex: 0 0 100%;
+                    max-width: 100%;
+
+                    > button {
+                        padding: .5rem !important; /* stylelint-disable-line declaration-no-important */
+                    }
+                }
+
+                .jobs-container {
+                    display: none;
+                }
+
+                .details-wrapper {
+                    background-color: $white !important; /* stylelint-disable-line declaration-no-important */
+                    .details-container {
+                        flex: 0 0 100%;
+                        max-width: 100%;
+                    }
+                }
+
+                .buttons-container {
+                    a {
+                        width: 100%;
+                    }
+
+                    .profile-button {
+                        margin: .5rem 0 0 0 !important; /* stylelint-disable-line declaration-no-important */
+                    }
+                }
+            }
+        }
+    }
+    .block-region:not(#block-region-content) .block_myteams {
+        @include teams-compact;
+    }
+    @include media-breakpoint-down(sm) {
+        @include teams-compact;
+    }
+}

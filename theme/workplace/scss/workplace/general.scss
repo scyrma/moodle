@@ -1,0 +1,289 @@
+/*
+ General styles.
+*/
+// Rounded user pictures
+.userpicture {
+    border-radius: 50%;
+}
+
+/*
+ Toggle icons using standard bootstrap collapse.
+*/
+.ws-toggle {
+    .collapsed-icon-container {
+        display: none;
+    }
+    .expanded-icon-container {
+        display: inline-block;
+    }
+
+    &.collapsed {
+        .collapsed-icon-container {
+            display: inline-block;
+        }
+        .expanded-icon-container {
+            display: none;
+        }
+    }
+}
+
+/*
+ Utility classs to remove transition effects.
+*/
+.notransition {
+    -webkit-transition: none !important; /* stylelint-disable-line declaration-no-important */
+    -moz-transition: none !important; /* stylelint-disable-line declaration-no-important */
+    -o-transition: none !important; /* stylelint-disable-line declaration-no-important */
+    transition: none !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/*
+ Utility class to remove caret from dropdowns.
+*/
+.dropdown-toggle.no-caret {
+    &::before,
+    &::after {
+        display: none;
+    }
+}
+
+/*
+ Utility classs to add a spinner to buttons
+*/
+@keyframes loading {
+    to {
+        transform: rotate(1turn);
+    }
+}
+button,
+a[role="button"],
+input[type="submit"],
+input[type="button"] {
+    &.loading {
+        display: inline-flex;
+        @extend .disabled;
+        &::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            align-self: center;
+            margin-left: .5rem;
+            border: 3px solid $gray-500;
+            border-top-color: $gray-800;
+            border-radius: 50%;
+            animation: loading 1s ease infinite;
+        }
+    }
+}
+
+/*
+ Performance info
+*/
+.performanceinfo.container-fluid {
+    margin: 0.5rem 0;
+    border: 1px solid $gray-800;
+    font-size: 12px;
+    padding: 0.25rem;
+    .cache-total-stats,
+    .cache-suma {
+        margin: 0;
+    }
+    .ml-1 {
+        margin-left: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+    .cache-definition-stats {
+        margin: 0 0.25rem;
+        background-color: $gray-800;
+        width: 250px;
+    }
+}
+
+/*
+ Utility classes
+*/
+.progress-bar {
+    height: inherit;
+}
+.font-size-menus,
+.font-size-medium {
+    font-size: $font-size-menus;
+}
+.font-color-headings {
+    color: $headings-color;
+}
+.font-medium {
+    font-size: $font-size-medium;
+}
+.font-small {
+    font-size: $font-size-small;
+}
+.font-mini {
+    font-size: $font-size-mini;
+}
+.icon-large .icon,
+.icon-lg {
+    font-size: $icon-size-large;
+    width: $icon-size-large;
+    height: $icon-size-large;
+    line-height: $icon-size-large;
+}
+.icon-xlarge .icon,
+.icon-xl {
+    font-size: $icon-size-xlarge;
+    width: $icon-size-xlarge;
+    height: $icon-size-xlarge;
+    line-height: $icon-size-xlarge;
+}
+.border-radius {
+    border-radius: $card-border-radius;
+}
+
+/*
+ Toogle icons style
+*/
+// TODO: Remove this when toggles are replaced with LMS toggle in WP-3163.
+[data-region="wp-toggle"] {
+    text-align: center;
+    width: 70px;
+    padding: .5rem 0 !important; /* stylelint-disable-line declaration-no-important */
+    a {
+        width: 40px;
+        color: $gray-700 !important; /* stylelint-disable-line declaration-no-important */
+
+        &:not(.hidden) {
+            display: inline-block;
+        }
+
+        &.disabled {
+            opacity: 0.3;
+        }
+
+        i {
+            font-size: 34px;
+            margin-right: 15px;
+            height: 20px;
+            width: 40px;
+
+            &.fa-toggle-on {
+                color: $success;
+            }
+        }
+    }
+}
+
+/*
+ Extends bootstrap notification classes to some that are generated automatically by Moodle
+*/
+.path-admin-tool-uploaduser {
+    .uuwarning {
+        @extend .alert-warning;
+        @extend .wp-text-to-block;
+    }
+    .uuinfo {
+        @extend .alert-info;
+        @extend .wp-text-to-block;
+    }
+    .uudanger {
+        @extend .alert-danger;
+        @extend .wp-text-to-block;
+    }
+    .uusuccess {
+        @extend .alert-success;
+        @extend .wp-text-to-block;
+    }
+}
+.wp-text-to-block {
+    display: block;
+    padding: 0.9rem;
+    border-radius: 5px;
+    margin-top: 0.5rem;
+}
+
+/*
+ Badge pills.
+*/
+.badge-pill {
+    padding-top: $badge-pill-padding-y;
+    padding-bottom: $badge-pill-padding-y;
+    border-radius: $badge-pill-border-radius;
+    font-weight: bold;
+}
+
+/*
+ Outline buttons
+*/
+.btn-outline-secondary {
+    @include button-outline-variant($gray-600);
+    border-color: $gray-600;
+}
+.btn-outline-info {
+    @include button-outline-variant($info-outline);
+}
+.btn-outline-warning {
+    @include button-outline-variant($warning-outline);
+}
+
+/*
+ Modal sizes.
+*/
+@include media-breakpoint-up(lg) {
+    .modal-xl {
+        max-width: $modal-lg;
+    }
+}
+
+@include media-breakpoint-up(xl) {
+    .modal-xl {
+        max-width: $modal-xl;
+    }
+}
+
+/*
+ General Fixes
+*/
+// Fixing date selector in modals.
+#dateselector-calendar-panel {
+    z-index: 99001 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+// Remove bottom line at modal container last form fieldset.
+.modal-body .mform fieldset:last-child {
+    border-bottom: 0;
+}
+
+// Hide footer popover while running behat.
+body.behat-site {
+    &.jsenabled #page-footer .footer-content-popover {
+        display: inherit;
+    }
+    &.jsenabled .btn-footer-popover {
+        display: none;
+    }
+}
+
+// Fix for big reportbuilder filter containers
+// TODO: remove it when MDL-74315 lands.
+.reportbuilder-filters-sidebar {
+    max-height: 50rem;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+        width: 12px;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: #6a737b;
+        border-radius: 20px;
+        border: 3px solid #f8f9fa;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f8f9fa;
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .icon-#{$color} {
+        .icon {
+            color: $value;
+        }
+    }
+}
