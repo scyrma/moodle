@@ -127,7 +127,7 @@ class completion extends base {
         // Time enrolled.
         $columns[] = (new column(
             'timeenrolled',
-            new lang_string('timeenrolled', 'enrol'),
+            new lang_string('course_completion_timeenrolled', 'tool_reportbuilder'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -139,7 +139,7 @@ class completion extends base {
         // Time started.
         $columns[] = (new column(
             'timestarted',
-            new lang_string('timestarted', 'enrol'),
+            new lang_string('course_completion_timestarted', 'tool_reportbuilder'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -151,7 +151,7 @@ class completion extends base {
         // Time completed.
         $columns[] = (new column(
             'timecompleted',
-            new lang_string('timecompleted', 'completion'),
+            new lang_string('course_completion_timecompleted', 'tool_reportbuilder'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -163,7 +163,7 @@ class completion extends base {
         // Time reaggregated.
         $columns[] = (new column(
             'reaggregate',
-            new lang_string('timereaggregated', 'enrol'),
+            new lang_string('course_completion_reaggregated', 'tool_reportbuilder'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -176,7 +176,7 @@ class completion extends base {
         $currenttime = time();
         $columns[] = (new column(
             'dayscourse',
-            new lang_string('daystakingcourse', 'course'),
+            new lang_string('course_completion_days_course', 'tool_reportbuilder'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -195,7 +195,7 @@ class completion extends base {
         // Days since last completion (days since last enrolment date until completion or until current date if not completed).
         $columns[] = (new column(
             'daysuntilcompletion',
-            new lang_string('daysuntilcompletion', 'completion'),
+            new lang_string('course_completion_daysuntilcompletion', 'tool_reportbuilder'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -261,7 +261,7 @@ class completion extends base {
         $filters[] = (new filter(
             date::class,
             'timecompleted',
-            new lang_string('timecompleted', 'completion'),
+            new lang_string('course_completion_timecompleted', 'tool_reportbuilder'),
             $this->get_entity_name(),
             "{$coursecompletion}.timecompleted"
         ))
