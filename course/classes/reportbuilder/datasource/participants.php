@@ -62,7 +62,11 @@ class participants extends datasource {
         $userenrolment = $enrolmententity->get_table_alias('user_enrolments');
         $enrol = $enrolmententity->get_table_alias('enrol');
         $enroljoin = "LEFT JOIN {enrol} {$enrol} ON {$enrol}.courseid = {$course}.id";
-        $userenrolmentjoin = " LEFT JOIN {user_enrolments} {$userenrolment} ON {$userenrolment}.enrolid = {$enrol}.id";
+        /** @uses \tool_tenant\tenancy::get_users_subquery */
+        $tenantsql = component_class_callback('\tool_tenant\tenancy',
+            'get_users_subquery', [false, true, "{$userenrolment}.userid"], '');
+        $userenrolmentjoin =
+            " LEFT JOIN {user_enrolments} {$userenrolment} ON {$tenantsql} {$userenrolment}.enrolid = {$enrol}.id";
         $enrolmententity->add_joins([$enroljoin, $userenrolmentjoin]);
         $this->add_entity($enrolmententity);
 
@@ -114,6 +118,20 @@ class participants extends datasource {
         ");
         $this->add_entity($accessentity);
 
+        // Add Job entity.
+        /** @uses \tool_organisation\reportbuilder\local\entities\job::prepare_for_participants_datasource */
+        if ($jobentity = component_class_callback('\tool_organisation\reportbuilder\local\entities\job',
+            'prepare_for_participants_datasource', [$user, $userentity->get_joins()])) {
+            $this->add_entity($jobentity);
+        }
+
+        // Add Tenant entity.
+        /** @uses \tool_tenant\reportbuilder\local\entities\tenant::prepare_for_participants_datasource */
+        if ($tenantentity = component_class_callback('\tool_tenant\reportbuilder\local\entities\tenant',
+            'prepare_for_participants_datasource', [$user, $userentity->get_joins()])) {
+            $this->add_entity($tenantentity);
+        }
+
         // Add all entities columns/filters/conditions.
         $this->add_all_from_entities();
     }
@@ -133,11 +151,14 @@ class participants extends datasource {
      * @return string[]
      */
     public function get_default_columns(): array {
-        return [
+        /** @uses \tool_tenant\reportbuilder\local\entities\tenant::add_tenant_information */
+        $tenantname = component_class_callback('\tool_tenant\reportbuilder\local\entities\tenant',
+            'add_tenant_information', []);
+        return array_merge([
             'course:coursefullnamewithlink',
             'enrolment:method',
             'user:fullnamewithlink',
-        ];
+        ], $tenantname);
     }
 
     /**
@@ -146,10 +167,13 @@ class participants extends datasource {
      * @return string[]
      */
     public function get_default_filters(): array {
-        return [
+        /** @uses \tool_tenant\reportbuilder\local\entities\tenant::add_tenant_information */
+        $tenantname = component_class_callback('\tool_tenant\reportbuilder\local\entities\tenant',
+            'add_tenant_information', []);
+        return array_merge([
             'user:suspended',
             'user:confirmed',
-        ];
+        ], $tenantname);
     }
 
     /**
@@ -158,9 +182,12 @@ class participants extends datasource {
      * @return string[]
      */
     public function get_default_conditions(): array {
-        return [
+        /** @uses \tool_tenant\reportbuilder\local\entities\tenant::add_tenant_information */
+        $tenantname = component_class_callback('\tool_tenant\reportbuilder\local\entities\tenant',
+            'add_tenant_information', []);
+        return array_merge([
             'user:suspended',
             'user:confirmed',
-        ];
+        ], $tenantname);
     }
 }
