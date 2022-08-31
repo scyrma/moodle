@@ -54,7 +54,10 @@ class users extends datasource {
         $this->set_main_table('user', $usertablealias);
 
         $userparamguest = database::generate_param_name();
-        $this->add_base_condition_sql("{$usertablealias}.id != :{$userparamguest} AND {$usertablealias}.deleted = 0", [
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, "{$usertablealias}.id"], '');
+        $this->add_base_condition_sql("{$usertablealias}.id != :{$userparamguest} AND {$tenantsql} {$usertablealias}.deleted = 0", [
             $userparamguest => $CFG->siteguest,
         ]);
 
@@ -93,7 +96,11 @@ class users extends datasource {
      * @return string[]
      */
     public function get_default_columns(): array {
-        return ['user:fullname', 'user:username', 'user:email'];
+        $columns = ['user:fullname', 'user:username', 'user:email'];
+        if (array_key_exists('tenant:name', $this->get_columns())) {
+            $columns[] = 'tenant:name';
+        }
+        return $columns;
     }
 
     /**
@@ -102,7 +109,14 @@ class users extends datasource {
      * @return string[]
      */
     public function get_default_filters(): array {
-        return ['user:fullname', 'user:username', 'user:email'];
+        $filters = ['user:fullname', 'user:username', 'user:email'];
+        if (array_key_exists('tenant:name', $this->get_filters())) {
+            $filters[] = 'tenant:name';
+        }
+        if (array_key_exists('user:hascurrentjobs', $this->get_filters())) {
+            $filters[] = 'user:hascurrentjobs';
+        }
+        return $filters;
     }
 
     /**
