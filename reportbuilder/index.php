@@ -47,6 +47,9 @@ if (permission::can_create_report()) {
 
 echo html_writer::end_div();
 
+/** @uses \tool_reportbuilder\helper::legacy_reports_warning() */
+component_class_callback(\tool_reportbuilder\helper::class, 'legacy_reports_warning', []);
+
 $report = system_report_factory::create(reports_list::class, context_system::instance());
 echo $report->output();
 
