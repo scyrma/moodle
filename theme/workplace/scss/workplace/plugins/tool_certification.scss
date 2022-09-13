@@ -1,0 +1,38 @@
+/*
+ General
+*/
+
+.path-admin-tool-certification {
+    /* User log */
+    [data-region="certification-user-log"] {
+        .table thead th {
+            border-top: 0;
+        }
+    }
+}
+
+/*
+ Certification tags and statuses.
+*/
+
+// TODO: Remove when WP-3649 lands.
+.tool_certification_cert_program_archived,
+.tool_certification_cert_user_status_overdue {
+    @extend .badge, .badge-pill, .badge-warning;
+}
+
+.tool_certification_cert_user_status_expired,
+.tool_certification_cert_user_status_suspended,
+.tool_certification_cert_program_deleted {
+    @extend .badge, .badge-pill, .badge-danger;
+}
+
+.tool_certification_cert_user_status_open,
+.tool_certification_cert_user_status_futureallocation,
+.tool_certification_cert_user_status_active {
+    @extend .badge, .badge-pill, .badge-info;
+}
+
+.tool_certification_cert_user_status_certified {
+    @extend .badge, .badge-pill, .badge-success;
+}

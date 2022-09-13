@@ -1,0 +1,50 @@
+/*
+ Workplace specific scss variables (loaded first to override some LMS variables).
+*/
+
+/* Replace primary colour with brand colour tenant setting. */
+// TODO: WP-3393 will redefine brand colours.
+$brand: #0f6cbf !default;
+$brand-light: lighten($brand, 40%) !default;
+$brand-dark: darken($brand, 10%) !default;
+$primary: $brand !default;
+
+/* Logos */
+$loginlogo: null !default;
+$headerlogo: null !default;
+
+/* Icons */
+$icon-size-base: 1rem !default;
+$icon-size-large: 1.25rem !default;
+$icon-size-xlarge: 1.875rem !default;
+
+/* Grayscale colours */
+// Add grayscale to theme-colors before importing preset so greyscale colours are added to bootstrap colour variants.
+// Colours copied from 'theme/boost/scss/preset/default'
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #8f959e !default;
+$gray-600: #6a737b !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #1d2125 !default;
+$black:    #000 !default;
+$theme-colors: ();
+// stylelint-disable
+$theme-colors: map-merge((
+        "white": $white,
+        "gray-900": $gray-900,
+        "gray-800": $gray-800,
+        "gray-700": $gray-700,
+        "gray-600": $gray-600,
+        "gray-500": $gray-500,
+        "gray-400": $gray-400,
+        "gray-300": $gray-300,
+        "gray-200": $gray-200,
+        "gray-100": $gray-100,
+        "black": $black,
+), $theme-colors);
+// stylelint-enable
