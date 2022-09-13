@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace core_reportbuilder\local\entities;
 
 use context_system;
+use core_component;
 use html_writer;
 use lang_string;
 use moodle_url;
@@ -76,12 +77,18 @@ class user extends base {
             $this->add_column($column);
         }
 
-        $filters = array_merge($this->get_all_filters(), $userprofilefields->get_filters());
+        /** @uses \tool_organisation\reportbuilder\local\helpers\user_entity_callbacks::get_filters() */
+        $jobfilters = component_class_callback(\tool_organisation\reportbuilder\local\helpers\user_entity_callbacks::class,
+            'get_filters', [$this->get_entity_name(), $this->get_table_alias('user'), $this->get_joins(), false], []);
+        $filters = array_merge($this->get_all_filters(), $userprofilefields->get_filters(), $jobfilters);
         foreach ($filters as $filter) {
             $this->add_filter($filter);
         }
 
-        $conditions = array_merge($this->get_all_filters(), $userprofilefields->get_filters());
+        /** @uses \tool_organisation\reportbuilder\local\helpers\user_entity_callbacks::get_filters() */
+        $jobconditions = component_class_callback(\tool_organisation\reportbuilder\local\helpers\user_entity_callbacks::class,
+            'get_filters', [$this->get_entity_name(), $this->get_table_alias('user'), $this->get_joins(), true], []);
+        $conditions = array_merge($this->get_all_filters(), $userprofilefields->get_filters(), $jobconditions);
         foreach ($conditions as $condition) {
             $this->add_condition($condition);
         }
@@ -101,6 +108,34 @@ class user extends base {
     }
 
     /**
+     * Returns column that corresponds to the given identity field
+     *
+     * @param string $identityfield Field from the user table, or the shortname of a custom profile field
+     * @return column
+     */
+    public function get_identity_column(string $identityfield): column {
+        if (preg_match("/^profile_field_(?<shortname>.*)$/", $identityfield, $matches)) {
+            $identityfield = 'profilefield_' . $matches['shortname'];
+        }
+
+        return $this->get_column($identityfield);
+    }
+
+    /**
+     * Returns filter that corresponds to the given identity field
+     *
+     * @param string $identityfield Field from the user table, or the shortname of a custom profile field
+     * @return filter
+     */
+    public function get_identity_filter(string $identityfield): filter {
+        if (preg_match("/^profile_field_(?<shortname>.*)$/", $identityfield, $matches)) {
+            $identityfield = 'profilefield_' . $matches['shortname'];
+        }
+
+        return $this->get_filter($identityfield);
+    }
+
+    /**
      * Returns list of all available columns
      *
      * These are all the columns available to use in any report that uses this entity.
@@ -108,6 +143,8 @@ class user extends base {
      * @return column[]
      */
     protected function get_all_columns(): array {
+        global $DB;
+
         $usertablealias = $this->get_table_alias('user');
 
         $fullnameselect = self::get_name_fields_select($usertablealias);
@@ -218,14 +255,19 @@ class user extends base {
         foreach ($userfields as $userfield => $userfieldlang) {
             $columntype = $this->get_user_field_type($userfield);
 
+            $columnfieldsql = "{$usertablealias}.{$userfield}";
+            if ($columntype === column::TYPE_LONGTEXT && $DB->get_dbfamily() === 'oracle') {
+                $columnfieldsql = $DB->sql_order_by_text($columnfieldsql, 1024);
+            }
+
             $column = (new column(
                 $userfield,
                 $userfieldlang,
                 $this->get_entity_name()
             ))
                 ->add_joins($this->get_joins())
-                ->add_field("{$usertablealias}.{$userfield}")
                 ->set_type($columntype)
+                ->add_field($columnfieldsql, $userfield)
                 ->set_is_sortable($this->is_sortable($userfield))
                 ->add_callback([$this, 'format'], $userfield);
 
@@ -425,6 +467,32 @@ class user extends base {
             "{$tablealias}.id"
         ))
             ->add_joins($this->get_joins());
+
+        // Authentication method filter.
+        $filters[] = (new filter(
+            select::class,
+            'auth',
+            new lang_string('authentication', 'moodle'),
+            $this->get_entity_name(),
+            "{$tablealias}.auth"
+        ))
+            ->add_joins($this->get_joins())
+            ->set_options_callback(static function(): array {
+                $plugins = core_component::get_plugin_list('auth');
+                $enabled = get_string('pluginenabled', 'core_plugin');
+                $disabled = get_string('plugindisabled', 'core_plugin');
+                $authoptions = [$enabled => [], $disabled => []];
+
+                foreach ($plugins as $pluginname => $unused) {
+                    $plugin = get_auth_plugin($pluginname);
+                    if (is_enabled_auth($pluginname)) {
+                        $authoptions[$enabled][$pluginname] = $plugin->get_title();
+                    } else {
+                        $authoptions[$disabled][$pluginname] = $plugin->get_title();
+                    }
+                }
+                return $authoptions;
+            });
 
         return $filters;
     }

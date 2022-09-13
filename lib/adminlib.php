@@ -1748,6 +1748,11 @@ abstract class admin_setting {
         $this->visiblename    = $visiblename;
         $this->description    = $description;
         $this->defaultsetting = $defaultsetting;
+
+        /** @uses \tool_tenant\config::add_flag_to_admin_setting() */
+        if ($args = component_class_callback('\tool_tenant\config', 'add_flag_to_admin_setting', [$this])) {
+            $this->set_flag_options($args[0], $args[1], $args[2], $args[3]);
+        }
     }
 
     /**
@@ -4779,6 +4784,11 @@ class admin_setting_sitesettext extends admin_setting_configtext {
      * @return mixed string or null
      */
     public function get_setting() {
+        global $DB, $SITE;
+        if ($this->name === 'fullname' || $this->name === 'shortname') {
+            $site = $DB->get_record('course', ['id' => SITEID]);
+            return $site->{$this->name} != '' ? $site->{$this->name} : null;
+        }
         $site = course_get_format(get_site())->get_course();
         return $site->{$this->name} != '' ? $site->{$this->name} : NULL;
     }
@@ -8785,6 +8795,7 @@ class admin_setting_managecontentbankcontenttypes extends admin_setting {
  *      page (e.g. admin/roles/allow.php, instead of admin/roles/manage.php, you can pass the alternate URL here.
  * @param array $options Additional options that can be specified for page setup.
  *      pagelayout - This option can be used to set a specific pagelyaout, admin is default.
+ *      nosearch - Do not display search bar
  */
 function admin_externalpage_setup($section, $extrabutton = '', array $extraurlparams = null, $actualurl = '', array $options = array()) {
     global $CFG, $PAGE, $USER, $SITE, $OUTPUT;
@@ -8881,7 +8892,7 @@ function admin_externalpage_setup($section, $extrabutton = '', array $extraurlpa
     $PAGE->set_title("$SITE->shortname: " . implode(": ", $visiblepathtosection));
     $PAGE->set_heading($SITE->fullname);
 
-    if ($hassiteconfig) {
+    if ($hassiteconfig && empty($options['nosearch'])) {
         $PAGE->add_header_action($OUTPUT->render_from_template('core_admin/header_search_input', [
             'action' => new moodle_url('/admin/search.php'),
             'query' => $PAGE->url->get_param('query'),
