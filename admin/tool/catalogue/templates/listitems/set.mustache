@@ -1,0 +1,134 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/listitems/set
+
+    Template for showing a set.
+
+    The example context is rendering the heading of a set page, this template is also used to render
+    a set listitem.
+
+    Example context (json):
+    {
+        "setid": 1,
+        "islocked": true,
+        "unlockrequirement": "Not available until 'Basics' is completed",
+        "setcriteriaicon": "http://placekitten.com/10/10",
+        "setcriteriastr": "Complete all in order",
+        "quote": true,
+        "completeditems": 0,
+        "totalitems": 3,
+        "parentsetid": 0,
+        "mosaicimages": [
+            "http://placekitten.com/10/10",
+            "http://placekitten.com/10/10",
+            "http://placekitten.com/10/10"
+        ],
+        "fullname": "Healt and Safety",
+        "url": "http://localhost/my/courses.php/program/3",
+        "duedatebadge": "Due in 5 days",
+        "progress": "30",
+        "numcourses": "16",
+        "unlockrequirement": "Not available until 'Basics' is completed",
+        "items": [
+            {
+                "isset": false,
+                "ishidden": false,
+                "image": "http://placekitten.com/100/100",
+                "iscatalogue": true,
+                "islocked": false,
+                "duedatebadgestr": "9 days left",
+                "fullname": "Healt and Safety",
+                "url": "http://localhost/course/view.php?id=1",
+                "categoryname": "People & Culture",
+                "progress": "30",
+                "unlockrequirement": "Not available until 'Basics' is completed",
+                "setid": 2
+            },
+            {
+                "isset": false,
+                "ishidden": true,
+                "iscatalogue": true,
+                "setid": 3
+            }
+        ]
+    }
+}}
+<div class="level d-none" data-region="set-heading" data-setid="{{setid}}">
+    {{#islocked}}
+        <div class="alert alert-warning py-2 my-3">
+            {{{unlockrequirement}}}
+        </div>
+    {{/islocked}}
+    <div class="d-flex">
+        <span class="mr-1 d-flex align-items-center">
+            <span class="setcriteriasvg mr-2" aria-hidden="true">
+                <img src="{{{setcriteriaicon}}}" alt="">
+            </span>
+            <span class="mr-1"><strong>{{#str}}todo, tool_catalogue{{/str}}</strong></span>
+            {{{setcriteriastr}}}
+        </span>
+        <span class="ml-auto text-muted">{{#str}} progresscompleted, tool_catalogue, { "completed": {{#quote}}{{completeditems}}{{/quote}}, "total": {{#quote}}{{totalitems}}{{/quote}} } {{/str}}</span>
+    </div>
+    <hr>
+</div>
+<div class="card mb-2 level d-none {{#islocked}}restricted bg-gray-100{{/islocked}}" data-region="catalogue-item" data-setid="{{parentsetid}}">
+    <div class="card-body d-flex align-items-center p-3">
+        <div class="media">
+            <div class="mosaicimages bg-secondary rounded overflow-hidden mr-3">
+                <span class="sr-only">{{#str}}programimage_help, tool_catalogue{{/str}}</span>
+                {{#mosaicimages}}
+                    <div class="mosaicimage" style='background-image: url("{{{.}}}");'></div>
+                {{/mosaicimages}}
+            </div>
+            <div class="media-body align-self-stretch d-flex flex-column justify-content-between">
+                <div class="d-flex align-items-center">
+                    <a class="stretched-link" href="{{{url}}}" data-action="show-set" data-linktype="set-link" data-setid="{{setid}}" data-region="item-name">{{{fullname}}}</a> {{#duedatebadge}}<span class="badge badge-pill badge-warning ml-2">{{{duedatebadge}}}</span>{{/duedatebadge}}
+                </div>
+                {{^islocked}}
+                    <div class="font-small text-muted">{{#str}}progress, tool_catalogue, {{progress}}{{/str}}</div>
+                {{/islocked}}
+            </div>
+        </div>
+        <div class="ml-auto d-flex align-items-center">
+            <span class="badge badge-pill badge-gray-200">{{#str}}xcourses, tool_catalogue, {{numcourses}} {{/str}}</span>
+            <div class="ml-1 icon-gray-500">{{#pix}} i/next {{/pix}}</div>
+        </div>
+    </div>
+    {{#islocked}}
+        <div class="px-3 pb-3">
+            <div class="d-flex align-items-center bg-gray-200 p-2 rounded font-small">
+                {{#pix}} i/lock {{/pix}}
+                {{{unlockrequirement}}}
+            </div>
+        </div>
+    {{/islocked}}
+</div>
+{{#items}}
+    {{> tool_catalogue/listitems/item}}
+{{/items}}

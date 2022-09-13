@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/program_tabs
+
+    Template for showing program tabs.
+
+    Example context (json):
+    {
+        "alert": [
+            {
+                "type": "info",
+                "message": "Complete this program by '06/30/22' to get the certification 'Health and Safety Certification'",
+                "hash": "f3f74ebff96afae0d0ac968eba3eb424"
+            }
+        ],
+        "contenthtml": "<p>This is the content of the program</p>",
+        "coverhtml": "<p>This is the cover of the program</p>"
+    }
+}}
+{{#alert}}
+    <div data-setid="0" data-hash="{{{hash}}}" data-region="alert-dismissible" class="level alert alert-{{type}} alert-dismissible fade show py-2 pr-3 my-3" role="alert">
+        <div class="d-flex">
+            <div>{{{message}}}</div>
+            <a href="#" class="text-nowrap font-weight-normal ml-auto" data-dismiss="alert-custom">
+                <u>{{#str}}iunderstand, tool_catalogue{{/str}}</u>
+            </a>
+        </div>
+    </div>
+{{/alert}}
+<nav class="mt-3 level moremenu observed" data-setid="0">
+    <div class="nav nav-tabs more-nav" id="nav-tab" role="tablist">
+        <a class="nav-link active" id="nav-program-tab" data-toggle="tab" href="#nav-program" role="tab" aria-controls="nav-program" aria-selected="true">
+            {{#str}}program, tool_catalogue{{/str}}
+        </a>
+        <a class="nav-link" id="nav-info-tab" data-toggle="tab" href="#nav-info" role="tab" aria-controls="nav-info" aria-selected="false">
+            {{#str}}information, tool_catalogue{{/str}}
+        </a>
+    </div>
+</nav>
+<div class="tab-content mt-3" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-program" role="tabpanel" aria-labelledby="nav-program-tab">
+        {{{contenthtml}}}
+    </div>
+    <div class="tab-pane fade" id="nav-info" role="tabpanel" aria-labelledby="nav-info-tab">
+        {{{coverhtml}}}
+    </div>
+</div>
+{{#js}}
+require(['tool_catalogue/programtabs'], function(ProgramTabs) {
+    ProgramTabs.init();
+});
+{{/js}}

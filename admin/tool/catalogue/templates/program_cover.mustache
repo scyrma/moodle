@@ -1,0 +1,219 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/program_cover
+
+    Template for showing a program cover page.
+
+    Example context (json):
+    {
+        "hashelp": true,
+        "helpid": "1",
+        "helpimage": "../../pix/help_program.svg",
+        "helptitle": "What is a program?",
+        "helptext": "Lorum Ipsum",
+        "helpurl": "https://docs.moodle.org/400/en/Programs",
+        "id": "1",
+        "hidden": false,
+        "showmorelink": true,
+        "nummore": "1",
+        "programlinks": [
+            {
+                "string": "See \"Health and Safety\"",
+                "url": "https://localhost/my/courses.php/program/5",
+                "hidden": false
+            },
+            {
+                "string": "See \"Health and Safety part 2\"",
+                "url": "https://localhost/my/courses.php/program/9",
+                "hidden": true
+            }
+        ],
+        "pagesectionabout": {
+            "collapse": false
+        },
+        "pagesectiondates": {
+            "collapse": true
+        },
+        "pagesectioncertifications": {
+            "collapse": true
+        },
+        "pagesectionstructure": {
+            "collapse": true
+        },
+        "description": "This is a description of the program.",
+        "hastags":true,
+        "tags": [
+            "Health",
+            "Safety"
+        ],
+        "customfields": [
+            {
+                "hasvalue": 1,
+                "type": "text",
+                "name": "Nick name",
+                "shortname": "nickname",
+                "value": "Star Lord"
+            }
+        ],
+        "startdatestr": "12/1/19",
+        "duedatestr": "12/12/20",
+        "duedatebadgestr":"Expired",
+        "duedatebadgetype":"danger",
+        "enddatestr": "04/04/24",
+        "hascertifications": true,
+        "certifications": [
+            {
+                "message": "Certification 1",
+                "certimage": "../../../pix/certificates.svg",
+                "type": "warning"
+            }
+        ],
+        "basesetcriteria": "Base criteria",
+        "progress": "50",
+        "programstructure": true,
+        "items": [
+            {
+                "isset": true,
+                "examplecontext": false,
+                "fullname": "Basics",
+                "progress": "10",
+                "setid": 1,
+                "setcriteriastr": "Complete all in any order",
+                "items": [
+                    {
+                        "isset": false,
+                        "fullname": "Level 1 Health and Safety in the Workplace",
+                        "examplecontext": false
+                    }
+                ]
+            }
+        ],
+        "hasbuttons": true,
+        "returnurl": "https://localhost/my/courses.php",
+        "id": "1",
+        "userid": "1"
+    }
+}}
+<div class="catalogue program">
+    {{#hashelp}}
+    {{> tool_catalogue/cover/helpbox }}
+    {{/hashelp}}
+
+    {{#pagesectionabout}}
+    {{< tool_catalogue/cover/pagesection }}
+        {{$name}}{{#str}}aboutthisprogram, tool_catalogue{{/str}}{{/name}}
+        {{$shortname}}p-about{{/shortname}}
+        {{$content}}
+            {{{description}}}
+            {{#hastags}}
+                <div class="d-flex flex-wrap my-2 mr-2">
+                    <span class="font-weight-bold mr-1">{{#str}}tags, tag{{/str}}:</span>
+                    {{#tags}}
+                        <span class="border rounded text-uppercase font-mini px-2 py-1 mr-2 mb-1">{{{.}}}</span>
+                    {{/tags}}
+                </div>
+            {{/hastags}}
+            {{#customfields}}
+                <div class="customfield customfield_{{shortname}}">
+                    <span class="customfieldname">{{{name}}}</span><span class="customfieldseparator">: </span><span class="customfieldvalue">{{{value}}}</span>
+                </div>
+            {{/customfields}}
+        {{/content}}
+    {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectionabout}}
+
+    {{#pagesectiondates}}
+    {{< tool_catalogue/cover/pagesection }}
+        {{$name}}{{#str}}dates, tool_catalogue{{/str}}{{/name}}
+        {{$shortname}}p-dates{{/shortname}}
+        {{$content}}
+            <div>
+                <strong>{{#str}}datesstartdate, tool_catalogue{{/str}}:</strong> {{{startdatestr}}}
+            </div>
+            <div>
+                <strong>{{#str}}datesduedate, tool_catalogue{{/str}}:</strong> {{{duedatestr}}}
+                {{#duedatebadgestr}}<span class="badge badge-pill badge-{{duedatebadgetype}} ml-2">{{{duedatebadgestr}}}</span>{{/duedatebadgestr}}
+            </div>
+            <div>
+                <strong>{{#str}}datesenddate, tool_catalogue{{/str}}:</strong> {{{enddatestr}}}
+            </div>
+        {{/content}}
+    {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectiondates}}
+
+    {{#pagesectioncertifications}}
+        {{< tool_catalogue/cover/pagesection }}
+            {{$name}}{{#str}}certifications, tool_catalogue{{/str}}{{/name}}
+            {{$shortname}}p-cert{{/shortname}}
+            {{$content}}
+                {{#certifications}}
+                    <div class="alert alert-{{type}} py-2 px-3 my-3">
+                        <div class="d-inline certification-svg mr-2">{{{certimage}}}</div> {{{message}}}
+                    </div>
+                {{/certifications}}
+            {{/content}}
+        {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectioncertifications}}
+
+    {{#pagesectionstructure}}
+    {{< tool_catalogue/cover/pagesection }}
+        {{$name}}{{#str}}programstructure, tool_catalogue{{/str}}{{/name}}
+        {{$addon}}{{{basesetcriteria}}} · {{#str}}progress, tool_catalogue, {{progress}}{{/str}}{{/addon}}
+        {{$shortname}}p-structure{{/shortname}}
+        {{$content}}
+        {{#programstructure}}
+            {{#baseset}}
+                <ul class="unlist pl-4">
+                    {{#items}}
+                        {{> tool_catalogue/cover/structure }}
+                    {{/items}}
+                </ul>
+            {{/baseset}}
+        {{/programstructure}}
+        {{/content}}
+    {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectionstructure}}
+
+    {{#hasbuttons}}
+        <hr class="my-4">
+        <div class="d-flex">
+            <button id="proceedtoprogram" class="btn btn-primary mr-2">
+                {{#str}}proceedtoprogram, tool_catalogue{{/str}}
+            </button>
+            <a href="{{{returnurl}}}" class="btn btn-secondary">
+                {{#str}}notnow, tool_catalogue{{/str}}
+            </a>
+        </div>
+    {{/hasbuttons}}
+</div>
+{{#js}}
+require(['tool_catalogue/programcover'], function(ProgramCover) {
+    ProgramCover.init('{{id}}', '{{userid}}');
+});
+{{/js}}

@@ -1,0 +1,182 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/course_cover
+
+    Template for showing a course cover page.
+
+    Example context (json):
+    {
+        "pagesectiondescription": {
+            "collapse": false
+        },
+        "pagesectiondates": {
+            "collapse": true
+        },
+        "pagesectiontrainers": {
+            "collapse": true
+        },
+        "hasbuttons": true,
+        "hasrestrictions": true,
+        "restrictions": [
+            "Not available unless 'Level x' is available"
+        ],
+        "description": "This is a course about health and safety",
+        "startdate": "02/04/25",
+        "enddate": "02/06/25",
+        "trainers": [
+            {
+                "fullname": "John Doe",
+                "profileurl": "https://example.com/user/profile.php?id=1",
+                "userpicture": "<img src='http://placekitten.com/100/100' class='userpicture' width='35' height='35' alt=''>"
+            }
+        ],
+        "pagesectiondescription": {
+            "collapse": false
+        },
+        "coursefiles": [
+            {
+                "isimage": true,
+                "url": "http://placekitten.com/100/100"
+            },
+            {
+                "isimage": false,
+                "url": "http://placekitten.com/100/100",
+                "name": "PDF file",
+                "image": "http://moodle.com/theme/image.php/workplace/core/1659361493/f/pdf-24"
+            }
+        ],
+        "courseid": 6,
+        "userid": 2,
+        "hashelp": true,
+        "helpid": "1",
+        "helpimage": "../../pix/help_course.svg",
+        "helptext": "Lorum Ipsum dolor sit amet",
+        "helptitle": "This course is part of some programs",
+        "helpurl": "https://docs.moodle.org/400/en/Programs",
+        "id": "1",
+        "hidden": false,
+        "showmorelink": true,
+        "nummore": "1",
+        "programlinks": [
+            {
+                "string": "See \"Health and Safety\"",
+                "url": "https://localhost/my/courses.php/program/5",
+                "hidden": false
+            },
+            {
+                "string": "See \"Health and Safety part 3\"",
+                "url": "https://localhost/my/courses.php/program/9",
+                "hidden": true
+            }
+        ],
+        "multiprogram": true,
+        "courseurl": "https://example.com/course/view.php?id=2"
+    }
+}}
+<div class="catalogue course">
+    {{#hashelp}}
+        {{> tool_catalogue/cover/helpbox }}
+    {{/hashelp}}
+
+    {{#pagesectiondescription}}
+    {{< tool_catalogue/cover/pagesection }}
+        {{$name}}{{#str}}aboutthiscourse, tool_catalogue{{/str}}{{/name}}
+        {{$collapsedlink}}{{/collapsedlink}}
+        {{$shortname}}c-about{{/shortname}}
+        {{$content}}
+            {{{description}}}
+        {{/content}}
+    {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectiondescription}}
+
+    {{#pagesectiondates}}
+    {{< tool_catalogue/cover/pagesection }}
+        {{$name}}{{#str}}dates, tool_catalogue{{/str}}{{/name}}
+        {{$shortname}}c-dates{{/shortname}}
+        {{$content}}
+            <div>
+                <strong>{{#str}}datesstartdate, tool_catalogue{{/str}}:</strong> {{{startdate}}}
+            </div>
+            <div>
+                <strong>{{#str}}datesenddate, tool_catalogue{{/str}}:</strong> {{{enddate}}}
+            </div>
+        {{/content}}
+    {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectiondates}}
+
+    {{#pagesectiontrainers}}
+        {{< tool_catalogue/cover/pagesection }}
+            {{$name}}{{#str}}trainers, tool_catalogue{{/str}}{{/name}}
+            {{$shortname}}c-trainers{{/shortname}}
+            {{$content}}
+                {{#trainers}}
+                    <div class="media align-items-center mb-2">
+                        {{{userpicture}}}
+                        <div class="media-body">
+                            <a href="{{{profileurl}}}" class="userlink">{{{fullname}}}</a>
+                        </div>
+                    </div>
+                {{/trainers}}
+            {{/content}}
+        {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectiontrainers}}
+
+    {{#pagesectionfiles}}
+        {{< tool_catalogue/cover/pagesection }}
+            {{$name}}{{#str}}coursefiles, tool_catalogue{{/str}}{{/name}}
+            {{$shortname}}c-files{{/shortname}}
+            {{$content}}
+                {{#coursefiles}}
+                    <div class="coursebox">
+                        <div class="d-flex flex-column content">
+                            {{#isimage}}
+                                <div class="courseimage mt-2">
+                                    <img class="mh-100" src="{{{url}}}">
+                                </div>
+                            {{/isimage}}
+                            {{^isimage}}
+                                <span class="coursefile fp-filename-icon mt-2">
+                                    <a href="{{{url}}}">
+                                        <span class="fp-icon">{{{image}}}</span>
+                                        <span class="fp-filename">{{{name}}}</span>
+                                    </a>
+                                </span>
+                            {{/isimage}}
+                        </div>
+                    </div>
+                {{/coursefiles}}
+            {{/content}}
+        {{/ tool_catalogue/cover/pagesection }}
+    {{/pagesectionfiles}}
+</div>
+{{#js}}
+require(['tool_catalogue/coursecover'], function(courseCover) {
+    courseCover.init('{{courseid}}', '{{userid}}');
+});
+{{/js}}
