@@ -1,0 +1,227 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template format_wplist/multisectionpage
+
+    This template renders action menu for each course.
+
+    Example context (json):
+    {
+        "uniqid": 123456,
+        "completioninfo": "completion help icon html",
+        "courseactivityclipboard": "course activity clipboard html",
+        "courseid": 3,
+        "editing": true,
+        "contextid": 2,
+        "pagetitle": "Topics outline",
+        "sections": [
+            {
+                "sectionnumber": 1,
+                "visible": true,
+                "mutedsection": false,
+                "editing": true,
+                "move": true,
+                "availableinfo": true,
+                "availabilitymsg": "Not available untill you complete..",
+                "name": "Section 1",
+                "completion": "<progress>..</progress>",
+                "editsection": "<div class='dropdown'>..</div>",
+                "expandbtn": true,
+                "summary": "This is section 2",
+                "accordion": false,
+                "coursemodules": "Course modules HTML"
+            }
+        ]
+    }
+}}
+
+<div id="format-wplist-{{uniqid}}" class="formatwplistcontent">
+    <h2 class="accesshide">{{{pagetitle}}}</h2>
+    {{{courseactivityclipboard}}}
+    <div class="accordion" id="formatwplist" data-region="section-container" data-is-root="1" data-courseid="{{courseid}}">
+        {{#sections}}
+            <div id="section-{{sectionnumber}}"
+                data-region="section"
+                data-sectionnumber="{{sectionnumber}}">
+            <div class="card border-0 b-0 section {{#visible}}bg-white{{/visible}}{{^visible}}bg-gray030{{/visible}}">
+                <div
+                    class="border-bottom section-header p-0
+                        {{#mutedsection}} bg-gray030 {{/mutedsection}}
+                        {{#visible}}bg-white{{/visible}}
+                        {{^editing}}border-top border-bottom-0{{/editing}}"
+                    id="heading{{sectionnumber}}"
+                >
+                    <div class="d-flex align-items-start">
+                        {{#move}}
+                            {{> format_wplist/movesection }}
+                        {{/move}}
+                        {{#moveplaceholder}}
+                            <span class="d-inline p-2 nomargin"><i class="icon fa fa-fw"></i></span>
+                        {{/moveplaceholder}}
+                        <button
+                            class="btn btn-link py-4 pr-3 pl-4 align-items-center border-0 ws-toggle d-none d-sm-flex course-section-toggle {{#hideexpandcollapse}}invisible{{/hideexpandcollapse}} {{^expanded}}collapsed{{/expanded}}"
+                            type="button"
+                            title="{{toggletitle}}"
+                            data-sectionname="{{sectionname}}"
+                            {{^disableexpanding}}
+                            data-toggle="collapse"
+                            data-target="#sectioncontent-{{sectionnumber}}"
+                            aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
+                            aria-controls="sectioncontent-{{sectionnumber}}"
+                            {{/disableexpanding}}
+                            {{#disableexpanding}}disabled="disabled"{{/disableexpanding}}
+                        >
+                            <span class="togglesectionicon text-gray060 collapsed-icon-container nomargin iconlarge">
+                                {{#pix}} t/collapsedcaret, core {{/pix}}
+                            </span>
+                            <span class="togglesectionicon text-gray060 expanded-icon-container nomargin iconlarge">
+                                {{#pix}} t/expanded, core {{/pix}}
+                            </span>
+                        </button>
+                        <h3
+                            class="sectionname flex-fill pt-4 {{#hideheader}}invisible{{/hideheader}}"
+                            {{^editing}}
+                                {{^disableexpanding}}
+                                {{^hideexpandcollapse}}data-toggle="collapse" {{/hideexpandcollapse}}
+                                data-target="#sectioncontent-{{sectionnumber}}"
+                                aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
+                                aria-controls="sectioncontent-{{sectionnumber}}"
+                                {{/disableexpanding}}
+                            {{/editing}}
+                        >
+                            {{{name}}}
+                        </h3>
+                        {{#editing}}
+                            {{^availableinfo}}
+                                    <span class="iconlarge nomargin py-3 px-md-4"><i class="icon fa fa-fw"></i></span>
+                            {{/availableinfo}}
+                        {{/editing}}
+
+                        {{#expandbtn}}
+                        <div class="pt-3 px-0 d-flex align-items-center">
+                            <div class="d-none d-sm-flex">
+                                <button id="expandaccordion"
+                                    class="ml-auto py-2 px-0 btn btn-link btn-sm"
+                                    data-action="expand"
+                                    data-expanded="{{^hasclosedsections}}1{{/hasclosedsections}}{{#hasclosedsections}}0{{/hasclosedsections}}"
+                                >
+                                    <span class="closed {{^hasclosedsections}}hidden{{/hasclosedsections}}" data-region="collapsed-closed">
+                                        {{#str}}expandall{{/str}}
+                                    </span>
+                                    <span class="open {{#hasclosedsections}}hidden{{/hasclosedsections}}" data-region="collapsed-open">
+                                        {{#str}}collapseall{{/str}}
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        {{/expandbtn}}
+
+                        {{#availabilitymsg}}
+                            <span class="availability">
+                                <a class="btn btn-link py-4 px-md-4 iconlarge nomargin popover-dismiss" data-toggle="popover"
+                                        data-trigger="focus" data-html="true" data-content="{{availabilitymsg}}" data-placement="left" tabindex="0">
+                                    {{#pix}} i/lock, core {{/pix}}
+                                </a>
+                            </span>
+                        {{/availabilitymsg}}
+
+                        {{^availabilitymsg}}
+                            <div class="pt-2 px-4 d-flex align-items-center">
+                                {{{completion}}}
+                            </div>
+                        {{/availabilitymsg}}
+
+                        {{#editing}}
+                            <div class="editoptions ml-auto align-self-stretch d-flex flex-column px-2 py-3">
+                                {{{editsection}}}
+                            </div>
+                        {{/editing}}
+                    </div>
+
+                    {{#summary}}
+                        <div class="d-flex align-items-center">
+                            {{^editing}}
+                                <span class="px-4"><i class="icon fa fa-fw"></i></span>
+                            {{/editing}}
+                            {{#editing}}
+                                <span class="px-3 nomargin"><i class="icon fa fa-fw"></i></span>
+                                <span class="px-4"><i class="icon fa fa-fw"></i></span>
+                            {{/editing}}
+                            <div class="sectionsummary summary pt-1 pb-4 pr-5">
+                                {{{summary}}}
+                            </div>
+                            {{#editing}}
+                                <div class="editoptions ml-auto align-self-stretch">
+                                </div>
+                            {{/editing}}
+                        </div>
+                    {{/summary}}
+                </div>
+
+                <div
+                    id="sectioncontent-{{sectionnumber}}"
+                    class="sectioncontent {{^hideexpandcollapse}}collapse {{#expanded}}show{{/expanded}}{{/hideexpandcollapse}} "
+                    aria-labelledby="section-{{sectionnumber}}"
+                    data-sectionid="{{id}}"
+                    data-sectionnumber="{{sectionnumber}}"
+                    data-sectionname ="{{sectionname}}"
+                    {{#hideexpandcollapse}}data-region="sectionexpand"{{/hideexpandcollapse}}
+                    {{^hideexpandcollapse}}data-region="sectioncollapse"{{/hideexpandcollapse}}
+                    {{#accordion}}
+                    data-isaccordion=true
+                    data-parent="#formatwplist"
+                    {{/accordion}}
+                >
+                    <div class="card-body bg-white p-0 {{^editing}}pb-4{{/editing}}">
+                        {{{coursemodules}}}
+                    </div>
+                </div>
+            </div>
+            </div>
+        {{/sections}}
+    </div>
+    {{#addsection}}
+        <div class="addsectionwrapper">
+            {{{addsection}}}
+        </div>
+    {{/addsection}}
+</div>
+{{#js}}
+require(
+[
+    'jquery',
+    'format_wplist/main',
+],
+function(
+    $,
+    Main
+) {
+    var root = $('#format-wplist-{{uniqid}}');
+    Main.init(root, {{contextid}});
+});
+{{/js}}
