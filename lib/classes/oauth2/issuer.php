@@ -201,7 +201,9 @@ class issuer extends persistent {
             $this->is_configured() &&
             $this->get('showonloginpage') != self::SERVICEONLY &&
             $this->get('enabled') &&
-            !empty($this->get_endpoint_url('userinfo'));
+            !empty($this->get_endpoint_url('userinfo')) &&
+            /** @uses \tool_tenant\local\auth\oauth2\manager::issuer_available() */
+            component_class_callback('\tool_tenant\local\auth\oauth2\manager', 'issuer_available', [$this->get('id')]);
     }
 
     /**
