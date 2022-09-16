@@ -47,6 +47,10 @@ function user_create_user($user, $updatepassword = true, $triggerevent = true) {
         $user = (object) $user;
     }
 
+    // BEGIN MOODLECLOUD HACK.
+    local_moodlecloud\restrictions\userquota::site_is_over_user_quota();
+    // END MOODLECLOUD HACK.
+
     // Check username.
     if (trim($user->username) === '') {
         throw new moodle_exception('invalidusernameblank');
