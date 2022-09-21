@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * NPS Survey block version.
  *
  * @package    block_nps_survey
  * @copyright  MoodleCloud Team
@@ -24,6 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2022051700;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2022091500;        // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2021051100;        // Requires this Moodle version.
 $plugin->component = 'block_nps_survey'; // Full name of the plugin (used for diagnostics).
