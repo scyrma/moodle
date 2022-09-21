@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Online users block.
+ * NPS Survey block class.
  *
  * @package    block_nps_survey
  * @copyright  MoodleCloud Team
@@ -75,5 +75,14 @@ class block_nps_survey extends block_base {
             'instance' => new stdClass(),
             'plugin' => $configs,
         ];
+    }
+
+    /**
+     * Locations where block can be displayed.
+     *
+     * @return array
+     */
+    public function applicable_formats() {
+        return array('my' => true);
     }
 }
