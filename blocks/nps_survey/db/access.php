@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * NPS Survey Block Capabilities.
+ * NPS Survey block capabilities.
  *
  * @package    block_nps_survey
  * @copyright  MoodleCloud Team
