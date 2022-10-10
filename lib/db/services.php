@@ -2812,6 +2812,12 @@ $functions = array(
         'type'        => 'read',
         'services'    => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
+    'core_reportbuilder_retrieve_report' => [
+        'classname'   => 'core_reportbuilder\external\reports\retrieve',
+        'description' => 'Retrieve custom report content',
+        'type'        => 'read',
+        'services'    => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
     'core_reportbuilder_view_report' => [
         'classname'   => 'core_reportbuilder\external\reports\view',
         'description' => 'Trigger custom report viewed',
