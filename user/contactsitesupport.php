@@ -28,6 +28,9 @@ if (!empty($CFG->supportpage)) {
     redirect($CFG->supportpage);
 }
 
+# temporarily force this page behind a login to prevent mis-use by non authenticated users
+require_login();
+
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url('/user/contactsitesupport.php');
 $PAGE->set_title(get_string('contactsitesupport', 'admin'));
