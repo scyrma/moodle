@@ -82,11 +82,17 @@ class listing extends external_api {
 
         // Filter list of reports by those the user can access.
         [$where, $params] = audience::user_reports_list_access_sql('r');
+
+        // Filter list of reports by the user tenant.
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::get_reports_list_tenant_clause */
+        [$where2, $params2] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'get_reports_list_tenant_clause', ['r'], ['1=1', []]);
+
         $reports = $DB->get_records_sql("
             SELECT r.*
               FROM {" . report::TABLE . "} r
-             WHERE r.type = 0 AND {$where}
-          ORDER BY r.name, r.id", $params, $page * $perpage, $perpage);
+             WHERE r.type = 0 AND {$where} AND {$where2}
+          ORDER BY r.name, r.id", $params + $params2, $page * $perpage, $perpage);
 
         $output = $PAGE->get_renderer('core');
 
