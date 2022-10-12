@@ -185,7 +185,8 @@ class audience {
         if (!has_capability('moodle/reportbuilder:editall', $context, $userid)) {
             $reports = self::user_reports_list($userid);
 
-            [$paramprefix, $paramuserid] = database::generate_param_names(2);
+            $paramprefix = database::generate_param_name();
+            $paramuserid = database::generate_param_name();
             [$reportselect, $params] = $DB->get_in_or_equal($reports, SQL_PARAMS_NAMED, "{$paramprefix}_", true, null);
 
             $where = "{$reporttablealias}.id {$reportselect}";
