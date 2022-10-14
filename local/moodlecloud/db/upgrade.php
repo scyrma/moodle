@@ -254,5 +254,17 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020040600, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2022101000) {
+        $plugins = array_flip(explode(',', get_config('core','webserviceprotocols')));
+
+        if (array_key_exists('xmlrpc', $plugins)) {
+            unset($plugins['xmlrpc']);
+            $new = implode(',', array_flip($plugins));
+            set_config('webserviceprotocols', $new);
+        }
+
+        upgrade_plugin_savepoint(true, 2022101000, 'local', 'moodlecloud');
+    }
+
     return true;
 }
