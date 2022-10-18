@@ -266,5 +266,13 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022101000, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2022101800) {
+        if ('classic' == get_config('core','theme')) {
+            set_config('theme', 'boost');
+        }
+
+        upgrade_plugin_savepoint(true, 2022101800, 'local', 'moodlecloud');
+    }
+
     return true;
 }
