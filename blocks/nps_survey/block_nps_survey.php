@@ -23,7 +23,10 @@
  */
 class block_nps_survey extends block_base {
     protected function init() {
-        $this->title = get_string('blocktitle', 'block_nps_survey');
+        $this->title = get_config('block_nps_survey', 'surveytitle');
+        if (empty($this->title)) {
+            $this->title = get_string('surveytitledefault', 'block_nps_survey');
+        }
     }
 
     public function has_config() {
@@ -44,12 +47,19 @@ class block_nps_survey extends block_base {
         }
 
         $surveytext = get_config('block_nps_survey', 'surveytext');
+        if (empty($surveytext)) {
+            $surveytext = get_string('surveytextdefault', 'block_nps_survey');
+        }
+
         $surveylink = get_config('block_nps_survey', 'surveylink');
+        if (empty($surveylink)) {
+            $surveylink = get_string('surveylinkdefault', 'block_nps_survey');
+        }
 
         $this->content->text = '
             <div class="info">' . $surveytext . '</div>
             <br/>
-            <a href="' . $surveylink . '">
+            <a href="' . $surveylink . '" target="_blank">
                 <strong>» Provide feedback</strong>
             </a>
         ';
