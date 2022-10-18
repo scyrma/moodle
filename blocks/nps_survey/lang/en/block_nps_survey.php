@@ -23,16 +23,17 @@
  */
 
 $string['pluginname'] = 'NPS';
-$string['blocktitle'] = 'Your feedback matters';
 
 // Plugin Settings.
 $string['surveytitle'] = 'Survey Title';
+$string['surveytitledefault'] = 'MoodleCloud Site Feedback';
 $string['surveytitleexplanation'] = 'Enter the survey title.';
+
 $string['surveytext'] = 'Survey Text';
+$string['surveytextdefault'] = 'The purpose of this survey is to collect your feedback to 
+improve MoodleCloud’s products and services.';
 $string['surveytextexplanation'] = 'Enter explanation text for the survey here.';
+
 $string['surveylink'] = 'Survey Link';
+$string['surveylinkdefault'] = 'https://feedback.moodle.org/index.php?r=survey/index&sid=417133&lang=en';
 $string['surveylinkexplanation'] = 'Enter the URL for the NPS survey here.';
-$string['surveyopendate'] = 'Survey Opening Date';
-$string['surveyopendateexplanation'] = 'Enter the opening date for the NPS survey here.';
-$string['surveyclosedate'] = 'Survey Closing Date';
-$string['surveyclosedateexplanation'] = 'Enter the closing date for the NPS survey here.';
