@@ -30,20 +30,20 @@ if ($ADMIN->fulltree) {
             'block_nps_survey/surveytitle',
             get_string('surveytitle', 'block_nps_survey'),
             get_string('surveytitleexplanation', 'block_nps_survey'),
-            get_string('surveytitledefault'), PARAM_TEXT)
+            get_string('surveytitledefault', 'block_nps_survey'), PARAM_TEXT)
     );
     $settings->add(
         new admin_setting_configtextarea(
             'block_nps_survey/surveytext',
             get_string('surveytext', 'block_nps_survey'),
             get_string('surveytextexplanation', 'block_nps_survey'),
-            get_string('surveytextdefault'), PARAM_TEXT)
+            get_string('surveytextdefault', 'block_nps_survey'), PARAM_TEXT)
     );
     $settings->add(
         new admin_setting_configtext(
             'block_nps_survey/surveylink',
             get_string('surveylink', 'block_nps_survey'),
             get_string('surveylinkexplanation', 'block_nps_survey'),
-            get_string('surveylinkdefault'), PARAM_URL)
+            get_string('surveylinkdefault', 'block_nps_survey'), PARAM_URL)
     );
 }
