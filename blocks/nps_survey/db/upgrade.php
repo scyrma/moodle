@@ -41,9 +41,13 @@ function xmldb_block_nps_survey_upgrade($oldversion, $block) {
         'name' => 'core_userfeedback_remind'
     ];
     $userpreference = $DB->get_record('user_preferences', $params);
-    if ($userpreference && $userpreference->value == 0) {
+    if ($userpreference && $userpreference->value < $now) {
         $userpreference->value = $now;
         $DB->update_record('user_preferences', $userpreference);
+    }
+    if (!$userpreference) {
+        $hideuserfeedback = array_merge($params, ['value' => $now]);
+        $DB->insert_record('user_preferences', $hideuserfeedback);
     }
 
     // Enable in dashboard for admin user if not already there.
