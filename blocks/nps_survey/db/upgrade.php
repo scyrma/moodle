@@ -59,7 +59,7 @@ function xmldb_block_nps_survey_upgrade($oldversion, $block) {
     if (!$blockinstance) {
         $blockinstance = [
             'blockname' => 'nps_survey',
-            'parentcontextid' => 5, //
+            'parentcontextid' => 5,
             'showinsubcontexts' => false,
             'pagetypepattern' => 'my-index',
             'subpagepattern' => 3,
@@ -73,9 +73,36 @@ function xmldb_block_nps_survey_upgrade($oldversion, $block) {
         $DB->insert_record('block_instances', $blockinstance);
     }
 
-    // Block configuration.
-    set_config('surveytext', '', 'block_nps_survey');
-    set_config('surveylink', '', 'block_nps_survey');
+    // Use defaults for block configuration.
+    set_config(
+        'surveytitle',
+        get_string('surveytitledefault', 'block_nps_survey'),
+        'block_nps_survey'
+    );
+
+    set_config(
+        'surveytext',
+        get_string('surveytextdefault', 'block_nps_survey'),
+        'block_nps_survey'
+    );
+
+    set_config(
+        'surveylink',
+        get_string('surveylinkdefault', 'block_nps_survey'),
+        'block_nps_survey'
+    );
+
+    set_config(
+        'surveyopendate',
+        get_string('surveyopendatedefault', 'block_nps_survey'),
+        'block_nps_survey'
+    );
+
+    set_config(
+        'surveyclosedate',
+        get_string('surveyclosedatedefault', 'block_nps_survey'),
+        'block_nps_survey'
+    );
 
     return true;
 }
