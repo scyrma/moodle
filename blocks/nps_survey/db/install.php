@@ -22,9 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-defined('MOODLE_INTERNAL') || die();
-
 function xmldb_block_nps_survey_install() {
     global $DB;
     $now = date('U');
@@ -53,7 +50,7 @@ function xmldb_block_nps_survey_install() {
     if (!$blockinstance) {
         $blockinstance = [
             'blockname' => 'nps_survey',
-            'parentcontextid' => 5, //
+            'parentcontextid' => 5,
             'showinsubcontexts' => false,
             'pagetypepattern' => 'my-index',
             'subpagepattern' => 3,
