@@ -34,6 +34,17 @@ class block_nps_survey extends block_base {
     }
 
     public function get_content() {
+        // Should the survey be open based on the open and close date settings?
+        $today = date('Ymd');
+        $surveyopendate = get_config('block_nps_survey', 'surveyopendate');;
+        $surveyclosedate = get_config('block_nps_survey', 'surveyclosedate');
+        if ($surveyopendate && $today < $surveyopendate) {
+            return false;
+        }
+        if ($surveyclosedate && $today > $surveyclosedate) {
+            return false;
+        }
+
         if ($this->content !== null) {
             return $this->content;
         }
@@ -59,8 +70,8 @@ class block_nps_survey extends block_base {
         $this->content->text = '
             <div class="info">' . $surveytext . '</div>
             <br/>
-            <a href="' . $surveylink . '" target="_blank">
-                <strong>» Provide feedback</strong>
+            <a href="' . $surveylink . '" target="_blank" class="btn btn-primary">
+                <strong>Provide feedback</strong>
             </a>
         ';
 

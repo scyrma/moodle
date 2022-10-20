@@ -46,4 +46,20 @@ if ($ADMIN->fulltree) {
             get_string('surveylinkexplanation', 'block_nps_survey'),
             get_string('surveylinkdefault', 'block_nps_survey'), PARAM_URL)
     );
+    $settings->add(
+        new admin_setting_configtext_with_maxlength(
+            'block_nps_survey/surveyopendate',
+            get_string('surveyopendate', 'block_nps_survey'),
+            get_string('surveyopendateexplanation', 'block_nps_survey'),
+            get_string('surveyopendatedefault', 'block_nps_survey'),
+            PARAM_INT, 0, 8)
+    );
+    $settings->add(
+        new admin_setting_configtext_with_maxlength(
+            'block_nps_survey/surveyclosedate',
+            get_string('surveyclosedate', 'block_nps_survey'),
+            get_string('surveyclosedateexplanation', 'block_nps_survey'),
+            get_string('surveyclosedatedefault', 'block_nps_survey'),
+            PARAM_INT, 0, 8)
+    );
 }
