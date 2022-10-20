@@ -30,10 +30,17 @@ $string['surveytitledefault'] = 'MoodleCloud Site Feedback';
 $string['surveytitleexplanation'] = 'Enter the survey title.';
 
 $string['surveytext'] = 'Survey Text';
-$string['surveytextdefault'] = 'The purpose of this survey is to collect your feedback to 
-improve MoodleCloud’s products and services.';
+$string['surveytextdefault'] = 'The purpose of this survey is to collect your feedback to improve MoodleCloud’s products and services.';
 $string['surveytextexplanation'] = 'Enter explanation text for the survey here.';
 
 $string['surveylink'] = 'Survey Link';
 $string['surveylinkdefault'] = 'https://feedback.moodle.org/index.php?r=survey/index&sid=417133&lang=en';
 $string['surveylinkexplanation'] = 'Enter the URL for the NPS survey here.';
+
+$string['surveyopendate'] = 'Survey open date';
+$string['surveyopendatedefault'] = '20221017';
+$string['surveyopendateexplanation'] = 'Enter the date when the survey should open in YYYYMMDD format. If empty, the survey will be open immediately';
+
+$string['surveyclosedate'] = 'Survey close date';
+$string['surveyclosedatedefault'] = '20221130';
+$string['surveyclosedateexplanation'] = 'Enter the date when the survey should close in YYYYMMDD format. If empty, the survey will remain open indefinitely (never close).';
