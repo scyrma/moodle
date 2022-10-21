@@ -821,7 +821,7 @@ function initialise_local_config_cache() {
 
     $bootstrapcachefile = $CFG->localcachedir . '/bootstrap.php';
 
-    if (!empty($CFG->siteidentifier) && !file_exists($bootstrapcachefile)) {
+    if (!empty($CFG->siteidentifier) && check_dir_exists($CFG->localcachedir) && !file_exists($bootstrapcachefile)) {
         $contents = "<?php
 // ********** This file is generated DO NOT EDIT **********
 \$CFG->siteidentifier = '" . addslashes($CFG->siteidentifier) . "';
