@@ -29,8 +29,8 @@ class block_nps_survey extends block_base {
         }
     }
 
-    public function has_config() {
-        return true;
+    public function instance_can_be_edited() {
+        return false;
     }
 
     public function get_content() {
