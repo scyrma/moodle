@@ -23,6 +23,7 @@
  */
 
 $string['pluginname'] = 'NPS';
+$string['nps_survey:addinstance'] = 'Add NPS survey';
 
 // Plugin Settings.
 $string['surveytitle'] = 'Survey Title';
