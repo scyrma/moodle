@@ -24,6 +24,7 @@
 
 function xmldb_block_nps_survey_install() {
     global $DB;
+    $future_epoch = '2000000002';
     $now = date('U');
 
     // Turn off user feedback for admin user to replace with NPS survey.
@@ -32,12 +33,12 @@ function xmldb_block_nps_survey_install() {
         'name' => 'core_userfeedback_remind'
     ];
     $userpreference = $DB->get_record('user_preferences', $params);
-    if ($userpreference && $userpreference->value < $now) {
-        $userpreference->value = $now;
+    if ($userpreference && $userpreference->value < $future_epoch) {
+        $userpreference->value = $future_epoch;
         $DB->update_record('user_preferences', $userpreference);
     }
     if (!$userpreference) {
-        $hideuserfeedback = array_merge($params, ['value' => $now]);
+        $hideuserfeedback = array_merge($params, ['value' => $future_epoch]);
         $DB->insert_record('user_preferences', $hideuserfeedback);
     }
 
