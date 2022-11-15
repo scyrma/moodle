@@ -115,6 +115,8 @@ if ($action === 'add' and $resettype !== 'none') {
         } else {
             $definitiontable = new core_role_define_role_table_basic($systemcontext, 0);
         }
+        /** @uses \tool_tenant\role::get_definition_table() */
+        $definitiontable = component_class_callback('tool_tenant\role', 'get_definition_table', [], $definitiontable);
         if (is_number($resettype)) {
             // Duplicate the role.
             $definitiontable->force_duplicate($resettype, $options);
@@ -163,6 +165,8 @@ if ($action === 'add' and $resettype !== 'none') {
         } else {
             $definitiontable = new core_role_define_role_table_basic($systemcontext, $roleid);
         }
+        /** @uses \tool_tenant\role::get_definition_table() */
+        $definitiontable = component_class_callback('tool_tenant\role', 'get_definition_table', [], $definitiontable);
         if (is_number($resettype)) {
             // Duplicate the role.
             $definitiontable->force_duplicate($resettype, $options);
@@ -192,6 +196,8 @@ if ($action === 'add' and $resettype !== 'none') {
     } else {
         $definitiontable = new core_role_define_role_table_basic($systemcontext, $roleid);
     }
+    /** @uses \tool_tenant\role::get_definition_table() */
+    $definitiontable = component_class_callback('tool_tenant\role', 'get_definition_table', [], $definitiontable);
     $definitiontable->read_submitted_permissions();
 }
 

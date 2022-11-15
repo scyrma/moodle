@@ -80,7 +80,7 @@ class custom_report_exporter_test extends advanced_testcase {
 
         $PAGE->set_url(new moodle_url('/'));
 
-        $exporter = new custom_report_exporter($report, [], false);
+        $exporter = new custom_report_exporter($report, ['pagesize' => 10], false);
         $export = $exporter->export($PAGE->get_renderer('core_reportbuilder'));
 
         $this->assertNotEmpty($export->table);
@@ -112,7 +112,7 @@ class custom_report_exporter_test extends advanced_testcase {
 
         $PAGE->set_url(new moodle_url('/'));
 
-        $exporter = new custom_report_exporter($report, [], false);
+        $exporter = new custom_report_exporter($report, ['pagesize' => 10], false);
         $export = $exporter->export($PAGE->get_renderer('core_reportbuilder'));
 
         $this->assertTrue($export->filterspresent);
@@ -142,7 +142,7 @@ class custom_report_exporter_test extends advanced_testcase {
 
         $PAGE->set_url(new moodle_url('/'));
 
-        $exporter = new custom_report_exporter($report, [], false);
+        $exporter = new custom_report_exporter($report, ['pagesize' => 10], false);
         $export = $exporter->export($PAGE->get_renderer('core_reportbuilder'));
 
         $this->assertTrue($export->filterspresent);
