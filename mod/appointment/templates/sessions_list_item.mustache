@@ -1,0 +1,65 @@
+{{!
+    This file is part of the mod_appointment plugin for Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_appointment/sessions_list_item
+
+    Template for showing session list item.
+
+    Example context (json):
+    {}
+}}
+<div class="container-fluid card session-card rounded" data-sessionid="{{sessionid}}">
+    <div class="row">
+        <div class="col-lg-5 p-4 {{#sessiontimeknown}}bg-gray020{{/sessiontimeknown}}">
+            {{> mod_appointment/session_datetime}}
+        </div>
+        <div class="col-lg-3 p-4">
+            <div class="row">
+                <div class="col">
+                    {{> mod_appointment/session_capacity}}
+                </div>
+                <div class="col">
+                    {{> mod_appointment/session_status}}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 p-4">
+            <div class="mb-0 d-flex">
+                <span class="ml-auto">
+                    <button class="btn btn-outline-secondary d-inline-block"
+                        data-action="details" data-id="{{sessionid}}"
+                        title="{{detailstitle}}">{{detailstitle}}</button>
+                    {{#bookaction}}
+                    <button class="btn btn-primary d-inline-block"
+                        data-action="{{bookaction}}" data-id="{{sessionid}}"
+                        title="{{bookactiontitle}}">{{bookactiontitle}}</button>
+                    {{/bookaction}}
+                    {{#cancelaction}}
+                    <button class="btn btn-danger d-inline-block"
+                        data-action="{{cancelaction}}" data-id="{{sessionid}}"
+                        title="{{#str}} cancelbooking, mod_appointment {{/str}}">{{#str}} cancel, mod_appointment {{/str}}</button>
+                    {{/cancelaction}}
+                    {{#actions}}
+                    <div class="d-inline-block pl-3">
+                        {{> core/action_menu}}
+                    </div>
+                    {{/actions}}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
