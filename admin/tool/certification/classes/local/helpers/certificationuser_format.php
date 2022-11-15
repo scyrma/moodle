@@ -1,0 +1,191 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace™ Code is the collection of software scripts
+// (plugins and modifications, and any derivations thereof) that are
+// exclusively owned and licensed by Moodle under the terms of this
+// proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+// software package offering which itself is freely downloadable at
+// "download.moodle.org" and which is provided by Moodle under a single
+// GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+// MWL is strictly controlled by Moodle Pty Ltd and its certified
+// premium partners. Wherever conflicting terms exist, the terms of the
+// MWL are binding and shall prevail.
+
+/**
+ * File for class certificationuser_format
+ *
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+namespace tool_certification\local\helpers;
+
+use coding_exception;
+use html_writer;
+use moodle_exception;
+use moodle_url;
+use stdClass;
+use tool_certification\api;
+use tool_certification\certification;
+use tool_certification\constants;
+use tool_certification\permission;
+
+/**
+ * Class certificationuser_format
+ *
+ * @package    tool_certification
+ * @author     2019 David Matamoros <davidmc@moodle.com>
+ * @copyright  2019 Moodle Pty Ltd <support@moodle.com>
+ * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class certificationuser_format {
+    /**
+     * Displays allocation source.
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function allocationtype(?string $value, stdClass $row): ?string {
+        switch ((int)$row->allocationtype) {
+            case constants::ALLOCATION_MANUAL:
+                return get_string('manual', 'tool_certification');
+                break;
+            case constants::ALLOCATION_DYNAMIC:
+                return get_string('dynamic', 'tool_certification');
+                break;
+            default:
+                throw new \moodle_exception('errorallocationsourcenotfound', 'tool_certification');
+                break;
+        }
+    }
+
+    /**
+     * Displays column startdate.
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     * @throws coding_exception
+     */
+    public static function startdate(?string $value, stdClass $row): string {
+        global $OUTPUT;
+        $icon = '';
+        if (1 === (int)$row->startdatelocked) {
+            $icon = $OUTPUT->pix_icon('req', get_string('dateoverrided', 'tool_certification'));
+        }
+        if (0 === (int)$value) {
+            return get_string('notset', 'tool_certification');
+        }
+        return userdate($row->startdate, get_string('strftimedatefullshort')) . ' ' . $icon;
+    }
+
+    /**
+     * Displays column duedate.
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     * @throws coding_exception
+     */
+    public static function duedate(?string $value, stdClass $row): string {
+        global $OUTPUT;
+        $icon = '';
+        if (1 === (int)$row->duedatelocked) {
+            $icon = $OUTPUT->pix_icon('req', get_string('dateoverrided', 'tool_certification'));
+        }
+        if (0 === (int)$value) {
+            return get_string('notset', 'tool_certification');
+        }
+        return userdate($row->duedate, get_string('strftimedatefullshort')) . ' ' . $icon;
+    }
+
+    /**
+     * Displays column expirydate.
+     *
+     * @param string|null $value
+     * @param stdClass $row
+     * @return string
+     * @throws coding_exception
+     */
+    public static function expirydate(?string $value, stdClass $row): string {
+        if ((!isset($row->userid) && !isset($row->certificationid)) || !isset($row->completionid)) {
+            return '';
+        }
+        if (0 === (int)$row->expirydate) {
+            return get_string('never', 'tool_certification');
+        }
+        return userdate($row->expirydate, get_string('strftimedatefullshort'));
+    }
+
+    /**
+     * Displays column status.
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function status(?string $value, stdClass $row): string {
+        if (isset($row->certificationid) && (int)$row->certificationid === 0) {
+            return '';
+        }
+        return api::get_user_allocation_status_badges((int) $row->status);
+    }
+
+    /**
+     * Round day value down to nearest whole number
+     *
+     * @param mixed $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function dayround($value, stdClass $row) : string {
+        $daysint = floor($value);
+        return ($daysint > 0) ? (string)$daysint : get_string('lessthanaday', 'tool_certification');
+    }
+
+    /**
+     * Column actions
+     *
+     * @param string $value
+     * @param stdClass $row
+     * @return string
+     * @throws \coding_exception
+     * @throws moodle_exception
+     */
+    public static function actions(?string $value, stdClass $row): string {
+        global $OUTPUT;
+        // View user profile, send message, edit user allocation (if has permission).
+        $profileicon = $OUTPUT->pix_icon('i/user', get_string('profile'));
+        $messageicon = $OUTPUT->pix_icon('t/messages', get_string('sendmessage', 'core_message'));
+        $profileurl = new moodle_url('/user/profile.php', ['id' => $row->userid]);
+        $messageurl = new moodle_url('/message/index.php', ['id' => $row->userid]);
+        $output = html_writer::link($profileurl, $profileicon) . ' ' . html_writer::link($messageurl, $messageicon);
+
+        $certification = new certification($row->certificationid);
+        if (permission::can_allocate_anybody($certification)) {
+            $str = get_string('allocateusers', 'tool_certification');
+            $usericon = $OUTPUT->pix_icon('i/enrolusers', $str);
+            $params = ['id' => $row->certificationid];
+            $editurl = new moodle_url('/admin/tool/certification/edit.php#certification_users_tab', $params);
+            $output .= html_writer::link($editurl, $usericon);
+        }
+        return $output;
+    }
+}
