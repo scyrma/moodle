@@ -1,0 +1,64 @@
+/*
+ General
+*/
+
+/* Increase textarea height for custom SCSS in branding form. */
+.path-admin-tool-tenant {
+    textarea[name="customcss"],
+    textarea[name="footertext"] {
+        min-height: 300px;
+    }
+}
+
+/*
+ Tenant switch
+*/
+
+.navbar .tenantswitch .icon {
+    font-size: small;
+    margin: 4px 0 0 4px;
+}
+
+/*
+ Login page tenant selector
+*/
+
+body.path-login {
+    .tenant-selector-alert {
+        @keyframes slide-down {
+            100% {
+                top: 0;
+            }
+        }
+        height: 40px;
+        top: -100%;
+        animation: slide-down 1s forwards;
+        animation-delay: 4s;
+    }
+    .tenant-selector-modal {
+        &:focus {
+            box-shadow: none;
+        }
+        .tenant-selector-card {
+            border: 1px solid $gray-400;
+            width: 100%;
+            background: none;
+            &.selected {
+                box-shadow: 0 0 0 2px $primary;
+            }
+            .tenant-logo {
+                width: 120px;
+                img {
+                    max-width: 100%;
+                    max-height: 40px;
+                }
+            }
+            .tenant-name {
+                max-width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}
