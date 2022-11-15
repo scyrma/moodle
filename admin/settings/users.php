@@ -119,7 +119,15 @@ if ($hassiteconfig
             $defaultuserid    = null;
             $defaultguestid   = null;
 
-            $roles = role_fix_names(get_all_roles(), null, ROLENAME_ORIGINALANDSHORT);
+            // Filter out Workplace roles.
+            // @uses \tool_wp\workplace::get_workplace_roles()
+            $workplaceroles = component_class_callback('\tool_wp\workplace', 'get_workplace_roles', [], []);
+            $roles = array_filter(get_all_roles(), function($role) use ($workplaceroles) {
+                return !in_array($role->shortname, $workplaceroles);
+            });
+
+            $roles = role_fix_names($roles, null, ROLENAME_ORIGINALANDSHORT);
+
             foreach ($roles as $role) {
                 $rolename = $role->localname;
                 switch ($role->archetype) {
@@ -236,7 +244,8 @@ if ($hassiteconfig
                         if ($field->param2 > 255 || $field->datatype != 'text') {
                             continue;
                         }
-                        $fields['profile_field_' . $field->shortname] = $field->name . ' *';
+                        $fields['profile_field_' . $field->shortname] = format_string($field->name, true,
+                            ['context' => context_system::instance()]) . ' *';
                     }
 
                     return $fields;

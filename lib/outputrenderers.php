@@ -134,7 +134,10 @@ class renderer_base {
                 // Don't allow the JavaScript helper to be executed from within another
                 // helper. If it's allowed it can be used by users to inject malicious
                 // JS into the page.
-                'disallowednestedhelpers' => ['js']));
+                'disallowednestedhelpers' => ['js'],
+                // Disable lambda rendering - content in helpers is already rendered, no need to render it again.
+                'disable_lambda_rendering' => true,
+            ));
 
         }
 
@@ -1147,21 +1150,19 @@ class core_renderer extends renderer_base {
 
         if (isset($SESSION->justloggedin)) {
             unset($SESSION->justloggedin);
-            if (!empty($CFG->displayloginfailures)) {
-                if (!isguestuser()) {
-                    // Include this file only when required.
-                    require_once($CFG->dirroot . '/user/lib.php');
-                    if ($count = user_count_login_failures($USER)) {
-                        $loggedinas .= '<div class="loginfailures">';
-                        $a = new stdClass();
-                        $a->attempts = $count;
-                        $loggedinas .= get_string('failedloginattempts', '', $a);
-                        if (file_exists("$CFG->dirroot/report/log/index.php") and has_capability('report/log:view', context_system::instance())) {
-                            $loggedinas .= ' ('.html_writer::link(new moodle_url('/report/log/index.php', array('chooselog' => 1,
-                                    'id' => 0 , 'modid' => 'site_errors')), get_string('logs')).')';
-                        }
-                        $loggedinas .= '</div>';
+            if (!isguestuser()) {
+                // Include this file only when required.
+                require_once($CFG->dirroot . '/user/lib.php');
+                if (($count = user_count_login_failures($USER)) && !empty($CFG->displayloginfailures)) {
+                    $loggedinas .= '<div class="loginfailures">';
+                    $a = new stdClass();
+                    $a->attempts = $count;
+                    $loggedinas .= get_string('failedloginattempts', '', $a);
+                    if (file_exists("$CFG->dirroot/report/log/index.php") and has_capability('report/log:view', context_system::instance())) {
+                        $loggedinas .= ' ('.html_writer::link(new moodle_url('/report/log/index.php', array('chooselog' => 1,
+                                'id' => 0 , 'modid' => 'site_errors')), get_string('logs')).')';
                     }
+                    $loggedinas .= '</div>';
                 }
             }
         }
@@ -1434,9 +1435,9 @@ class core_renderer extends renderer_base {
 
         // Provide some performance info if required
         $performanceinfo = '';
-        if (defined('MDL_PERF') || (!empty($CFG->perfdebug) and $CFG->perfdebug > 7)) {
+        if ((defined('MDL_PERF') && MDL_PERF) || (!empty($CFG->perfdebug) && $CFG->perfdebug > 7)) {
             $perf = get_performance_info();
-            if (defined('MDL_PERFTOFOOT') || debugging() || $CFG->perfdebug > 7) {
+            if ((defined('MDL_PERFTOFOOT') && MDL_PERFTOFOOT) || debugging() || $CFG->perfdebug > 7) {
                 $performanceinfo = $perf['html'];
             }
         }
@@ -2201,11 +2202,14 @@ class core_renderer extends renderer_base {
         $icon = $this->pix_icon('docs', '', 'moodle', array('class'=>'iconhelp icon-pre', 'role'=>'presentation'));
 
         $attributes['href'] = new moodle_url(get_docs_url($path));
+        $newwindowicon = '';
         if (!empty($CFG->doctonewwindow) || $forcepopup) {
-            $attributes['class'] = 'helplinkpopup';
+            $attributes['target'] = '_blank';
+            $newwindowicon = $this->pix_icon('i/externallink', get_string('opensinnewwindow'), 'moodle',
+            ['class' => 'fa fa-externallink fa-fw']);
         }
 
-        return html_writer::tag('a', $icon.$text, $attributes);
+        return html_writer::tag('a', $icon . $text . $newwindowicon, $attributes);
     }
 
     /**
@@ -2724,10 +2728,18 @@ EOD;
             $html .= <<<EOD
     <div id="file_info_{$client_id}" class="mdl-left filepicker-filelist" style="position: relative">
     <div class="filepicker-filename">
-        <div class="filepicker-container">$currentfile<div class="dndupload-message">$strdndenabled <br/><div class="dndupload-arrow"></div></div></div>
+        <div class="filepicker-container">$currentfile
+            <div class="dndupload-message">$strdndenabled <br/>
+                <div class="dndupload-arrow d-flex"><i class="fa fa-arrow-circle-o-down fa-3x m-auto"></i></div>
+            </div>
+        </div>
         <div class="dndupload-progressbars"></div>
     </div>
-    <div><div class="dndupload-target">{$strdroptoupload}<br/><div class="dndupload-arrow"></div></div></div>
+    <div>
+        <div class="dndupload-target">{$strdroptoupload}<br/>
+            <div class="dndupload-arrow d-flex"><i class="fa fa-arrow-circle-o-down fa-3x m-auto"></i></div>
+        </div>
+    </div>
     </div>
 EOD;
         }
@@ -3740,13 +3752,21 @@ EOD;
             $strlang = get_string('language');
             $currentlang = current_language();
             if (isset($langs[$currentlang])) {
-                $currentlang = $langs[$currentlang];
+                $currentlangstr = $langs[$currentlang];
             } else {
-                $currentlang = $strlang;
+                $currentlangstr = $strlang;
             }
-            $this->language = $menu->add($currentlang, new moodle_url('#'), $strlang, 10000);
+            $this->language = $menu->add($currentlangstr, new moodle_url('#'), $strlang, 10000);
             foreach ($langs as $langtype => $langname) {
-                $this->language->add($langname, new moodle_url($this->page->url, array('lang' => $langtype)), $langname);
+                $attributes = [];
+                // Set the lang attribute for languages different from the page's current language.
+                if ($langtype !== $currentlang) {
+                    $attributes[] = [
+                        'key' => 'lang',
+                        'value' => str_replace('_', '-', $langtype),
+                    ];
+                }
+                $this->language->add($langname, new moodle_url($this->page->url, ['lang' => $langtype]), null, null, $attributes);
             }
         }
 

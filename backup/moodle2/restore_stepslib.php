@@ -1806,7 +1806,8 @@ class restore_course_structure_step extends restore_structure_step {
         $category = new restore_path_element('category', '/course/category');
         $tag = new restore_path_element('tag', '/course/tags/tag');
         $customfield = new restore_path_element('customfield', '/course/customfields/customfield');
-        $allowed_module = new restore_path_element('allowed_module', '/course/allowed_modules/module');
+        $courseformatoptions = new restore_path_element('course_format_option', '/course/courseformatoptions/courseformatoption');
+        $allowedmodule = new restore_path_element('allowed_module', '/course/allowed_modules/module');
 
         // Apply for 'format' plugins optional paths at course level
         $this->add_plugin_structure('format', $course);
@@ -1829,7 +1830,7 @@ class restore_course_structure_step extends restore_structure_step {
         // Apply for admin tool plugins optional paths at course level.
         $this->add_plugin_structure('tool', $course);
 
-        return array($course, $category, $tag, $customfield, $allowed_module);
+        return array($course, $category, $tag, $customfield, $allowedmodule, $courseformatoptions);
     }
 
     /**
@@ -1951,8 +1952,6 @@ class restore_course_structure_step extends restore_structure_step {
         // Course record ready, update it
         $DB->update_record('course', $data);
 
-        course_get_format($data)->update_course_format_options($data);
-
         // Role name aliases
         restore_dbops::set_course_role_names($this->get_restoreid(), $this->get_courseid());
     }
@@ -1978,6 +1977,26 @@ class restore_course_structure_step extends restore_structure_step {
     public function process_customfield($data) {
         $handler = core_course\customfield\course_handler::create();
         $handler->restore_instance_data_from_backup($this->task, $data);
+    }
+
+    /**
+     * Processes a course format option.
+     *
+     * @param array $data The record being restored.
+     * @throws base_step_exception
+     * @throws dml_exception
+     */
+    public function process_course_format_option(array $data) : void {
+        global $DB;
+
+        $courseid = $this->get_courseid();
+        $record = $DB->get_record('course_format_options', [ 'courseid' => $courseid, 'name' => $data['name'] ], 'id');
+        if ($record !== false) {
+            $DB->update_record('course_format_options', (object) [ 'id' => $record->id, 'value' => $data['value'] ]);
+        } else {
+            $data['courseid'] = $courseid;
+            $DB->insert_record('course_format_options', (object) $data);
+        }
     }
 
     public function process_allowed_module($data) {
@@ -4220,7 +4239,8 @@ class restore_block_instance_structure_step extends restore_structure_step {
 
         // Look for the parent contextid
         if (!$data->parentcontextid = $this->get_mappingid('context', $data->parentcontextid)) {
-            throw new restore_step_exception('restore_block_missing_parent_ctx', $data->parentcontextid);
+            // Parent contextid does not exist, ignore this block.
+            return false;
         }
 
         // TODO: it would be nice to use standard plugin supports instead of this instance_allow_multiple()
@@ -4266,14 +4286,17 @@ class restore_block_instance_structure_step extends restore_structure_step {
                 $params['subpagepattern'] = $data->subpagepattern;
             }
 
-            $exists = $DB->record_exists_sql("SELECT bi.id
+            $existingblock = $DB->get_records_sql("SELECT bi.id
                                                 FROM {block_instances} bi
                                                 JOIN {block} b ON b.name = bi.blockname
                                                WHERE bi.blockname = :blockname
                                                  AND $contextsql
                                                  AND bi.pagetypepattern $pagetypepatternsql
                                                  AND $subpagepatternsql", $params);
-            if ($exists) {
+            if (!empty($existingblock)) {
+                // Save the context mapping in case something else is linking to this block's context.
+                $newcontext = context_block::instance(reset($existingblock)->id);
+                $this->set_mapping('context', $oldcontextid, $newcontext->id);
                 // There is at least one very similar block visible on the page where we
                 // are trying to restore the block. In these circumstances the block API
                 // would not allow the user to add another instance of the block, so we
@@ -4292,6 +4315,9 @@ class restore_block_instance_structure_step extends restore_structure_step {
         if ($birecs = $DB->get_records('block_instances', $params)) {
             foreach($birecs as $birec) {
                 if ($birec->configdata == $data->configdata) {
+                    // Save the context mapping in case something else is linking to this block's context.
+                    $newcontext = context_block::instance($birec->id);
+                    $this->set_mapping('context', $oldcontextid, $newcontext->id);
                     return false;
                 }
             }
@@ -5277,7 +5303,8 @@ class restore_process_file_aliases_queue extends restore_execution_step {
                 continue;
             }
 
-            if ($info->oldfile->repositorytype === 'local' or $info->oldfile->repositorytype === 'coursefiles') {
+            if ($info->oldfile->repositorytype === 'local' || $info->oldfile->repositorytype === 'coursefiles'
+                    || $info->oldfile->repositorytype === 'contentbank') {
                 // Aliases to Server files and Legacy course files may refer to a file
                 // contained in the backup file or to some existing file (if we are on the
                 // same site).
@@ -5440,7 +5467,8 @@ class restore_process_file_aliases_queue extends restore_execution_step {
 
             // Both Server files and Legacy course files repositories have a single
             // instance at the system context to use. Let us try to find it.
-            if ($info->oldfile->repositorytype === 'local' or $info->oldfile->repositorytype === 'coursefiles') {
+            if ($info->oldfile->repositorytype === 'local' || $info->oldfile->repositorytype === 'coursefiles'
+                    || $info->oldfile->repositorytype === 'contentbank') {
                 $sql = "SELECT ri.id
                           FROM {repository} r
                           JOIN {repository_instances} ri ON ri.typeid = r.id

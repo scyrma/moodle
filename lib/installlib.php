@@ -312,10 +312,10 @@ function install_print_help_page($help) {
 }
 
 /**
- * Prints installation page header, we can no use weblib yet in installer.
+ * Prints installation page header, we can not use weblib yet in installer.
  *
  * @global object
- * @param array $config
+ * @param stdClass $config
  * @param string $stagename
  * @param string $heading
  * @param string $stagetext
@@ -372,10 +372,10 @@ function install_print_header($config, $stagename, $heading, $stagetext, $stagec
 }
 
 /**
- * Prints installation page header, we can no use weblib yet in isntaller.
+ * Prints installation page header, we can not use weblib yet in installer.
  *
  * @global object
- * @param array $config
+ * @param stdClass $config
  * @param bool $reload print reload button instead of next
  * @return void
  */
@@ -406,6 +406,8 @@ function install_print_footer($config, $reload=false) {
     $homelink  = '<div class="sitelink">'.
        '<a title="Moodle '. $CFG->target_release .'" href="http://docs.moodle.org/en/Administrator_documentation" onclick="this.target=\'_blank\'">'.
        '<img src="pix/moodlelogo.png" alt="'.get_string('moodlelogo').'" /></a></div>';
+    /** @uses tool_wp\workplace::install_logo() */
+    $homelink = component_class_callback('\tool_wp\workplace', 'install_logo', []) ?: $homelink;
 
     echo '</form></div>';
     echo '<div id="page-footer">'.$homelink.'</div>';
