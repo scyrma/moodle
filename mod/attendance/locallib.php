@@ -157,7 +157,7 @@ function attendance_get_user_sessions_log_full($userid, $pageparams) {
     // al.id not null => get all marked sessions whether or not user currently still in group.
     $sql = "SELECT ats.id, ats.groupid, ats.sessdate, ats.duration, ats.description, ats.statusset,
                    al.statusid, al.remarks, ats.studentscanmark, ats.autoassignstatus,
-                   ats.preventsharedip, ats.preventsharediptime,
+                   ats.preventsharedip, ats.preventsharediptime, ats.studentsearlyopentime,
                    ats.attendanceid, att.name AS attname, att.course AS courseid, c.fullname AS cname
               FROM {attendance_sessions} ats
               JOIN {attendance} att
@@ -261,7 +261,7 @@ function attendance_form_sessiondate_selector (MoodleQuickForm $mform) {
     for ($i = 0; $i <= 23; $i++) {
         $hours[$i] = sprintf("%02d", $i);
     }
-    for ($i = 0; $i < 60; $i += 5) {
+    for ($i = 0; $i < 60; $i++) {
         $minutes[$i] = sprintf("%02d", $i);
     }
 
@@ -589,7 +589,11 @@ function attendance_can_student_mark($sess, $log = true) {
             if (empty($duration)) {
                 $duration = $attconfig->studentscanmarksessiontimeend * 60;
             }
-            if ($sess->sessdate < time() && time() < ($sess->sessdate + $duration)) {
+            if (!isset($sess->studentsearlyopentime)) {
+                // Sanity check just in case not set in this session.
+                $sess->studentsearlyopentime = 0;
+            }
+            if (($sess->sessdate - $sess->studentsearlyopentime) < time() && time() < ($sess->sessdate + $duration)) {
                 $canmark = true;
                 $reason = '';
             }
@@ -765,7 +769,7 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
         $wdaydesc = array(0 => 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat');
 
         while ($sdate < $enddate) {
-            if ($sdate < $startweek + WEEKSECS) {
+            if ($sdate < strtotime('+1 week', $startweek)) {
                 $dinfo = usergetdate($sdate);
                 if (isset($formdata->sdays) && array_key_exists($wdaydesc[$dinfo['wday']], $formdata->sdays)) {
                     $sess = new stdClass();
@@ -782,19 +786,14 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
                     $sess->includeqrcode = 0;
                     $sess->rotateqrcode = 0;
                     $sess->rotateqrcodesecret = '';
+                    $sess->automark = !empty($formdata->automark) ? $formdata->automark : 0;
+                    $sess->automarkcmid = !empty($formdata->automarkcmid) ? $formdata->automarkcmid : 0;
+                    $sess->automarkcompleted = 0;
 
                     if (!empty($formdata->usedefaultsubnet)) {
                         $sess->subnet = $att->subnet;
                     } else {
                         $sess->subnet = $formdata->subnet;
-                    }
-                    $sess->automark = $formdata->automark;
-                    $sess->automarkcompleted = 0;
-
-                    if (!empty($formdata->automarkcmid)) {
-                        $sess->automarkcmid = $formdata->automarkcmid;
-                    } else {
-                        $sess->automarkcmid = 0;
                     }
                     if (!empty($formdata->preventsharedip)) {
                         $sess->preventsharedip = $formdata->preventsharedip;
@@ -807,6 +806,9 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
                         $sess->studentscanmark = 1;
                         if (isset($formdata->autoassignstatus)) {
                             $sess->autoassignstatus = 1;
+                        }
+                        if (isset($formdata->studentsearlyopentime)) {
+                            $sess->studentsearlyopentime = $formdata->studentsearlyopentime;
                         }
 
                         if (!empty($formdata->randompassword)) {
@@ -839,9 +841,10 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
 
                     attendance_fill_groupid($formdata, $sessions, $sess);
                 }
-                $sdate += DAYSECS;
+
+                $sdate = strtotime("+1 day", $sdate); // Set start to tomorrow.
             } else {
-                $startweek += WEEKSECS * $formdata->period;
+                $startweek = strtotime("+".$formdata->period.' weeks', $startweek);
                 $sdate = $startweek;
             }
         }
@@ -887,6 +890,9 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
         if (!empty($formdata->automark)) {
             $sess->automark = $formdata->automark;
         }
+        if (!empty($formdata->automark)) {
+            $sess->automark = $formdata->automark;
+        }
         if (!empty($formdata->preventsharedip)) {
             $sess->preventsharedip = $formdata->preventsharedip;
         }
@@ -925,8 +931,8 @@ function attendance_construct_sessions_data_for_add($formdata, mod_attendance_st
             if (!empty($formdata->preventsharedip)) {
                 $sess->preventsharedip = $formdata->preventsharedip;
             }
-            if (!empty($formdata->preventsharediptime)) {
-                $sess->preventsharediptime = $formdata->preventsharediptime;
+            if (!empty($formdata->studentsearlyopentime)) {
+                $sess->studentsearlyopentime = $formdata->studentsearlyopentime;
             }
         }
         $sess->statusset = $formdata->statusset;
@@ -999,6 +1005,7 @@ SELECT a.id, a.course as courseid, c.fullname as coursename, atl.studentid AS us
                   {$joingroup}
                   WHERE ats.sessdate >= c.startdate
                     AND ats.lasttaken != 0
+                    AND stm.maxgrade > 0
                     {$where}
                 GROUP BY a.id, a.course, c.fullname, atl.studentid
                 ) p GROUP by courseid, coursename {$orderby}";
@@ -1044,6 +1051,7 @@ function attendance_get_users_to_notify($courseids = array(), $orderby = '', $al
     }
 
     $idfield = $DB->sql_concat('cm.id', 'atl.studentid', 'n.id');
+    $params['yesterday'] = time() - DAYSECS;
     $sql = "SELECT {$idfield} as uniqueid, a.id as aid, {$unames2} a.name as aname, cm.id as cmid, c.id as courseid,
                     c.fullname as coursename, atl.studentid AS userid, n.id as notifyid, n.warningpercent, n.emailsubject,
                     n.emailcontent, n.emailcontentformat, n.emailuser, n.thirdpartyemails, n.warnafter, n.maxwarn,
@@ -1067,7 +1075,10 @@ function attendance_get_users_to_notify($courseids = array(), $orderby = '', $al
                          GROUP BY attendanceid, setnumber) stm
                      ON (stm.setnumber = ats.statusset AND stm.attendanceid = ats.attendanceid)
                   {$joingroup}
-                  WHERE ats.absenteereport = 1 {$where}
+                  WHERE ats.absenteereport = 1 AND ats.attendanceid IN (SELECT distinct attendanceid
+                                                                          FROM {attendance_sessions}
+                                                                         WHERE sessdate > :yesterday)
+                  {$where}
                 GROUP BY uniqueid, a.id, a.name, a.course, c.fullname, atl.studentid, n.id, n.warningpercent,
                          n.emailsubject, n.emailcontent, n.emailcontentformat, n.warnafter, n.maxwarn,
                          n.emailuser, n.thirdpartyemails, cm.id, c.id, {$unames2} ns.userid
@@ -1108,7 +1119,7 @@ function attendance_template_variables($record) {
         '/%numtakensessions%/' => $record->numtakensessions,
         '/%points%/' => $record->points,
         '/%maxpoints%/' => $record->maxpoints,
-        '/%percent%/' => $record->percent,
+        '/%percent%/' => round($record->percent * 100),
     );
     $extrauserfields = \core_user\fields::get_name_fields();
     foreach ($extrauserfields as $extra) {
@@ -1236,6 +1247,16 @@ function attendance_strftimehm($time) {
     }
 
     $userdate = userdate($time, $format);
+    if (stripos($format, '%p') && empty($userdate)) {
+        // Failover - if %p is in use, but resulting time is empty (windows server), make sure a time is still returned.
+        $userdate = userdate($time, "%I:%M");
+        if (userdate($time, '%H') > 11) {
+            $userdate .= 'pm';
+        } else {
+            $userdate .= 'am';
+        }
+        return $userdate;
+    }
 
     // Some Lang packs use %p to suffix with AM/PM but not all strftime support this.
     // Check if %p is in use and make sure it's being respected.
@@ -1289,16 +1310,6 @@ function construct_session_full_date_time($datetime, $duration) {
 }
 
 /**
- * Render the session password.
- *
- * @param stdClass $session
- */
-function attendance_renderpassword($session) {
-    echo html_writer::tag('h2', get_string('passwordgrp', 'attendance'));
-    echo html_writer::span($session->studentpassword, 'student-password');
-}
-
-/**
  * Render the session QR code.
  *
  * @param stdClass $session
@@ -1312,8 +1323,6 @@ function attendance_renderqrcode($session) {
     } else {
         $qrcodeurl = $CFG->wwwroot . '/mod/attendance/attendance.php?sessid=' . $session->id;
     }
-
-    echo html_writer::tag('h3', get_string('qrcode', 'attendance'));
 
     $barcode = new TCPDF2DBarcode($qrcodeurl, 'QRCODE');
     $image = $barcode->getBarcodePngData(15, 15);
@@ -1332,7 +1341,7 @@ function attendance_generate_passwords($session) {
 
     for ($i = 0; $i < 30; $i++) {
         array_push($password, array("attendanceid" => $session->id,
-            "password" => mt_rand(1000, 10000), "expirytime" => time() + ($attconfig->rotateqrcodeinterval * $i)));
+            "password" => random_string(), "expirytime" => time() + ($attconfig->rotateqrcodeinterval * $i)));
     }
 
     $DB->insert_records('attendance_rotate_passwords', $password);
@@ -1357,17 +1366,15 @@ function attendance_renderqrcoderotate($session) {
             'type' => 'text/javascript'
         ]
     );
-    echo html_writer::tag('div', '', ['id' => 'rotate-time']); // Div to display timer.
-    echo html_writer::tag('h3', get_string('passwordgrp', 'attendance'));
-    echo html_writer::tag('div', '', ['id' => 'text-password']); // Div to display password.
-    echo html_writer::tag('h3', get_string('qrcode', 'attendance'));
-    echo html_writer::tag('div', '', ['id' => 'qrcode']); // Div to display qr code.
+    echo html_writer::div('', '', ['id' => 'qrcode']); // Div to display qr code.
+    echo html_writer::div(get_string('qrcodevalidbefore', 'attendance').' '.
+                          html_writer::span('0', '', ['id' => 'rotate-time']).' '
+                          .get_string('qrcodevalidafter', 'attendance'), 'qrcodevalid'); // Div to display timer.
     // Js to start the password manager.
     echo '
     <script type="text/javascript">
         let qrCodeRotate = new attendance_QRCodeRotate();
-        qrCodeRotate.start(' . $session->id . ', document.getElementById("qrcode"), document.getElementById("text-password"),
-        document.getElementById("rotate-time"));
+        qrCodeRotate.start(' . $session->id . ', document.getElementById("qrcode"), document.getElementById("rotate-time"));
     </script>';
 }
 
