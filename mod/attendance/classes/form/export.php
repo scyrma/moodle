@@ -48,7 +48,7 @@ class export extends \moodleform {
 
         $groupmode = groups_get_activity_groupmode($cm, $course);
         $groups = groups_get_activity_allowed_groups($cm, $USER->id);
-        if ($groupmode == VISIBLEGROUPS or has_capability('moodle/site:accessallgroups', $modcontext)) {
+        if ($groupmode == VISIBLEGROUPS || has_capability('moodle/site:accessallgroups', $modcontext)) {
             $grouplist[0] = get_string('allparticipants');
         }
         if ($groups) {
@@ -111,7 +111,7 @@ class export extends \moodleform {
             $checkedfields['ident[id]'] = true;
         }
 
-        $extrafields = \core_user\fields::for_identity($modcontext)->get_required_fields();
+        $extrafields = \core_user\fields::for_identity($modcontext, false)->get_required_fields();
         foreach ($extrafields as $field) {
             $ident[] =& $mform->createElement('checkbox',  $field, '', get_string( $field));
             $mform->setType($field, PARAM_NOTAGS);
@@ -120,7 +120,6 @@ class export extends \moodleform {
 
         require_once($CFG->dirroot . '/user/profile/lib.php');
         $customfields = profile_get_custom_fields();
-
         foreach ($customfields as $field) {
             if ((is_siteadmin($USER) || $field->visible == PROFILE_VISIBLE_ALL || $field->visible == PROFILE_VISIBLE_TEACHERS)
             && in_array($field->shortname, explode(',', $adminsetfields))) {
