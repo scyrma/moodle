@@ -609,7 +609,8 @@ class pdf extends TcpdfFpdi {
         $imagefilearg = \escapeshellarg($imagefile);
         $filename = \escapeshellarg($this->filename);
         $pagenoinc = \escapeshellarg($pageno + 1);
-        return "$pdftoppmexec -q -r $imageres -f $pagenoinc -l $pagenoinc -png -singlefile $filename $imagefilearg";
+        $filenamefixedarg = \escapeshellarg(self::fix_pdf($this->filename));
+        return "$pdftoppmexec -q -r $imageres -f $pagenoinc -l $pagenoinc -png -singlefile $filenamefixedarg $imagefilearg";
     }
 
     /**
@@ -626,8 +627,9 @@ class pdf extends TcpdfFpdi {
         $imagefilearg = \escapeshellarg($imagefile);
         $filename = \escapeshellarg($this->filename);
         $pagenoinc = \escapeshellarg($pageno + 1);
+        $filenamefixedarg = \escapeshellarg(self::fix_pdf($this->filename));
         return "$gsexec -q -sDEVICE=png16m -dSAFER -dBATCH -dNOPAUSE -r$imageres -dFirstPage=$pagenoinc -dLastPage=$pagenoinc ".
-            "-dDOINTERPOLATE -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sOutputFile=$imagefilearg $filename";
+            "-dDOINTERPOLATE -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sOutputFile=$imagefilearg $filenamefixedarg";
     }
 
     /**
@@ -643,8 +645,9 @@ class pdf extends TcpdfFpdi {
         $temparea = make_request_directory();
         $tempsrc = $temparea . "/source.pdf";
         $file->copy_content_to($tempsrc);
+        $tempsrcfixed = self::fix_pdf($tempsrc);
 
-        return self::ensure_pdf_file_compatible($tempsrc);
+        return self::ensure_pdf_file_compatible($tempsrcfixed);
     }
 
     /**
@@ -677,7 +680,8 @@ class pdf extends TcpdfFpdi {
         $gsexec = \escapeshellarg($CFG->pathtogs);
         $tempdstarg = \escapeshellarg($tempdst);
         $tempsrcarg = \escapeshellarg($tempsrc);
-        $command = "$gsexec -q -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -sOutputFile=$tempdstarg $tempsrcarg";
+        $tempsrcargfixed = \escapeshellarg(self::fix_pdf($tempsrc));
+        $command = "$gsexec -q -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -sOutputFile=$tempdstarg $tempsrcargfixed";
         exec($command);
         if (!file_exists($tempdst)) {
             // Something has gone wrong in the conversion.
@@ -850,6 +854,18 @@ class pdf extends TcpdfFpdi {
         $this->SetAutoPageBreak(false, 0);
         $this->Image('@' . $imagecontent, 0, 0, $size['width'], $size['height'],
             '', '', '', false, null, '', false, false, 0);
+    }
+
+    private static function fix_pdf($source) {
+        $pathinfo = pathinfo($source);
+        $fixedsource = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '-fixed.pdf';
+        $fixedsourcearg = \escapeshellarg($fixedsource);
+        $sourcearg = \escapeshellarg($source);
+        $stdout = null;
+        $cmd = "pdftocairo -pdf $sourcearg $fixedsourcearg";
+        $result = exec($cmd, $stdout);
+
+        return $fixedsource;
     }
 }
 
