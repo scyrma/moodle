@@ -1,0 +1,104 @@
+/*
+ Workplace launcher.
+*/
+
+$workplace-menu-item-width: 100px;
+.workplace-menu {
+    min-width: initial;
+    @include media-breakpoint-down(xs) {
+        max-width: 100%;
+        position: fixed !important; /* stylelint-disable-line declaration-no-important */
+        right: 0;
+        left: 2px;
+        top: $navbar-height;
+    }
+    .workplace-menu-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+    }
+    .workplace-menu-item {
+        width: $workplace-menu-item-width;
+        @include media-breakpoint-down(xs) {
+            width: initial;
+        }
+        color: $body-color;
+        text-decoration: none;
+        word-break: break-word;
+        &:hover {
+            background-color: $gray-100;
+            border-radius: 5px;
+        }
+        > img {
+            max-width: 100%;
+        }
+    }
+}
+
+/*
+ Custom navbar icons.
+*/
+
+.navbar.fixed-top #usernavigation {
+    .nav-link {
+        padding: 0 0.65rem;
+        .icon.fa-search {
+            @extend .wpicon-search;
+        }
+        .icon.fa-bell-o {
+            @extend .wpicon-bell;
+        }
+        .icon.fa-comment-o {
+            @extend .wpicon-comments;
+        }
+        .icon.fa-th {
+            @extend .wpicon-grid;
+        }
+    }
+}
+
+
+/*
+ Custom navbar colour.
+*/
+
+$navbar: null !default;
+// If navbar colour is defined by the tenant, then apply custom styles.
+@if $navbar {
+    .navbar {
+        &.bg-white {
+            background-color: $navbar !important; /* stylelint-disable-line declaration-no-important */
+        }
+        .primary-navigation .navigation .nav-link {
+            color: color-yiq($navbar);
+        }
+        .navbar-nav .nav-link,
+        .navbar-nav .dropdown-toggle {
+            color: color-yiq($navbar);
+            &.active {
+                color: rgba(color-yiq($navbar), .9);
+            }
+            &:hover,
+            &:focus {
+                color: rgba(color-yiq($navbar), .9);
+                background-color: lighten($navbar, 5%);
+            }
+        }
+        .navbar-nav form label {
+            color: color-yiq($navbar);
+        }
+    }
+}
+
+/*
+ General Fixes.
+*/
+
+/* Reducing logo size. */
+.navbar.fixed-top .navbar-brand .logo {
+    max-height: calc(#{$navbar-height} - 20px - (#{$primary-nav-padding-y} * 2));
+}
+
+/* Hide first navbar divider. */
+.navbar-hide-first-divider > .divider:first-of-type {
+    display: none !important; /* stylelint-disable-line declaration-no-important */
+}

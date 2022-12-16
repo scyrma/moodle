@@ -1,0 +1,230 @@
+/*
+ My courses
+*/
+
+/* Fade-in animation */
+@keyframes tool_catalogue-fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/*
+ Catalogue
+*/
+
+.tool_catalogue-catalogue {
+    .simplesearchform {
+        padding-left: 0;
+        padding-right: 0;
+        .input-group {
+            width: 100%;
+        }
+    }
+    .courseimage,
+    .programimage {
+        width: 105px;
+        height: 70px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+    .program-card-img {
+        height: 150px;
+        background-position: center;
+        background-size: cover;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .icon-size-smaller .icon {
+        height: 12px;
+        width: 12px;
+        font-size: 12px;
+    }
+    .certicon {
+        height: 30px;
+        width: 30px;
+    }
+    .addon:not(:empty)::before {
+        content: '\00B7'; // Centred dot.
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+    .structuretoggle {
+        margin-left: -2rem;
+    }
+    &.program .dashboard-card-deck {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow: hidden;
+        .card-body {
+            min-height: 7rem;
+        }
+    }
+    .pagesectioncontent p:last-child {
+        margin-bottom: 0;
+    }
+    .customfieldname,
+    .customfieldseparator {
+        font-weight: bold;
+    }
+    .mosaicimages {
+        display: flex;
+        flex-wrap: wrap;
+        width: 105px;
+        height: 70px;
+    }
+    .mosaicimage {
+        width: calc(105px / 2);
+        height: calc(70px / 2);
+        background-size: cover;
+    }
+    a {
+        span.highlight {
+            background-color: theme-color-level("warning", $alert-bg-level);
+            color: $link-color;
+        }
+        &:hover span.highlight {
+            color: $link-hover-color;
+        }
+    }
+    @include media-breakpoint-down(xs) {
+        .cover-help {
+            display: block;
+            > img {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+        }
+    }
+}
+
+/* Filter options visible in catalogue. When the catalogue was empty, the filter dropdown menu was not shown completely. */
+.page-mycourses #region-main {
+    overflow: visible;
+}
+
+/* Course/Program image in headings. */
+#page-my-index,
+#page-enrol-index,
+.program-cover-modal {
+    .item-heading-image {
+        width: 50px;
+        height: 50px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin-right: 0.5rem;
+    }
+    .page-header-image {
+        display: flex;
+        align-items: center;
+    }
+    .page-context-header {
+        align-items: center;
+        h1 {
+            margin: 0;
+        }
+    }
+}
+
+/* Style certifications svg images shown in alert boxes. */
+.certification-svg svg {
+    height: 30px;
+    width: 30px;
+}
+
+@each $color, $value in $theme-colors {
+    .alert-#{$color} .certification-svg path {
+        fill: theme-color-level($color, $alert-color-level);
+    }
+}
+
+/*
+ Enrolment page.
+*/
+
+/* Hide stantard LMS heading */
+#page-enrol-index #region-main {
+    h2 {
+        display: none;
+    }
+}
+
+/* Convert enrolment forms into boxes. */
+#page-enrol-index .generalbox {
+    padding: 0 !important; /* stylelint-disable-line declaration-no-important */
+    margin-bottom: 1rem;
+    background-color: $gray-100;
+    border: 1px solid $gray-300;
+    border-radius: $card-border-radius;
+    form legend {
+        background-color: $gray-300;
+        padding: .5rem;
+        a.fheader {
+            display: none;
+        }
+        h3 {
+            font-size: $font-size-base;
+        }
+    }
+}
+
+/*
+ Course cover modal
+*/
+
+.tool_catalogue-course-cover-modal-backdrop {
+    // We need to modify standard z-index to show the modal over the drawers.
+    z-index: $zindex-modal;
+}
+.tool_catalogue-course-cover-modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: tool_catalogue-fade-in .5s ease-in;
+    // We need to modify standard z-index to show the modal over the drawers.
+    z-index: $zindex-modal + 5;
+    .modal-body {
+        padding: 0 1.5rem;
+        @include thin-scrolls($white);
+    }
+    .modal-dialog {
+        width: inherit;
+    }
+    @include media-breakpoint-up(xl) {
+        .modal-lg {
+            width: 60vw;
+            max-height: calc(100% - 15rem);
+            margin: 0;
+        }
+    }
+}
+
+/*
+ Course carousel styles.
+*/
+
+.tool_catalogue-carousel {
+    .card .card-img {
+        height: 150px;
+        background-position: center;
+        background-size: cover;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .card.animate {
+        opacity: 1;
+        animation-name: tool_catalogue-fade-in;
+        animation-iteration-count: 1;
+        animation-timing-function: ease-in;
+        animation-duration: .2s;
+    }
+}
+/* Move course carousel controls to top in blocks (while not editing) */
+body:not(.editing) .block .tool_catalogue-carousel .pagination {
+    margin-top: -1.3rem;
+}
