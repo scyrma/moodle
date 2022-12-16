@@ -84,12 +84,18 @@ class user extends base {
             $this->add_column($column);
         }
 
-        $filters = array_merge($this->get_all_filters(), $userprofilefields->get_filters());
+        /** @uses \tool_organisation\reportbuilder\local\helpers\user_entity_callbacks::get_filters() */
+        $jobfilters = component_class_callback(\tool_organisation\reportbuilder\local\helpers\user_entity_callbacks::class,
+            'get_filters', [$this->get_entity_name(), $this->get_table_alias('user'), $this->get_joins(), false], []);
+        $filters = array_merge($this->get_all_filters(), $userprofilefields->get_filters(), $jobfilters);
         foreach ($filters as $filter) {
             $this->add_filter($filter);
         }
 
-        $conditions = array_merge($this->get_all_filters(), $userprofilefields->get_filters());
+        /** @uses \tool_organisation\reportbuilder\local\helpers\user_entity_callbacks::get_filters() */
+        $jobconditions = component_class_callback(\tool_organisation\reportbuilder\local\helpers\user_entity_callbacks::class,
+            'get_filters', [$this->get_entity_name(), $this->get_table_alias('user'), $this->get_joins(), true], []);
+        $conditions = array_merge($this->get_all_filters(), $userprofilefields->get_filters(), $jobconditions);
         foreach ($conditions as $condition) {
             $this->add_condition($condition);
         }
