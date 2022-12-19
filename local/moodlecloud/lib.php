@@ -136,3 +136,11 @@ function local_moodlecloud_get_fontawesome_icon_map() {
         'local_moodlecloud:i/notifications' => 'fa-info-circle'
     ];
 }
+
+// MC-5649 Load Intercom JS in standard html footer.
+function local_moodlecloud_standard_footer_html() {
+    global $CFG;
+    if (is_siteadmin()) {
+        return html_writer::script('', $CFG->wwwroot.'/local/moodlecloud/intercom.js');
+    }
+}
