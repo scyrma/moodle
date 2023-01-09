@@ -71,7 +71,7 @@ Feature: Book appointments
     And I click on "Details" "button" in the "1:00" "table_row"
     And I should see "Booked" in the "Details" "dialogue"
     And I should not see "Open" in the "Details" "dialogue"
-    And I click on "Cancel" "button" in the "Details" "dialogue"
+    And I click on "Close" "button" in the "Details" "dialogue"
     And I log out
     # Check there are no debugging messages in logs
     And I log in as "admin"
@@ -179,7 +179,7 @@ Feature: Book appointments
     And I click on "Details" "button" in the "1:00" "table_row"
     And I should see "Booked" in the "Details" "dialogue"
     And I should not see "Open" in the "Details" "dialogue"
-    And I click on "Cancel" "button" in the "Details" "dialogue"
+    And I click on "Close" "button" in the "Details" "dialogue"
     And I log out
 
   Scenario: Test overbooking is not possible
@@ -246,7 +246,7 @@ Feature: Book appointments
     And I should see "Wait-listed" in the "1:00" "table_row"
     And I click on "Details" "button" in the "1:00" "table_row"
     And I should see "Wait-listed" in the "Details" "dialogue"
-    And I click on "Cancel" "button" in the "Details" "dialogue"
+    And I click on "Close" "button" in the "Details" "dialogue"
     And I log out
 
   Scenario: Test attendees list

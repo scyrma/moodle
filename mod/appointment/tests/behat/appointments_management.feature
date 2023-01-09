@@ -312,9 +312,6 @@ Feature: Manage appointments
     And I should see "2:00" in the "##today##%A, %d %B %Y##" "table_row"
     And I should see "3:00" in the "##today##%A, %d %B %Y##" "table_row"
     And I should see "4:00" in the "##today##%A, %d %B %Y##" "table_row"
-    And I click on "Details" "button" in the "##today##%A, %d %B %Y##" "table_row"
-    And I should see "Some example text" in the "Details" "dialogue"
-    And I click on "Cancel" "button" in the "Details" "dialogue"
     # Check duplicated (second row).
     And I should see "##tomorrow##%A, %d %B %Y##" in the ".reportbuilder-table tbody tr:nth-of-type(2)" "css_element"
     And I should see "6:00" in the "##tomorrow##%A, %d %B %Y##" "table_row"
@@ -323,7 +320,7 @@ Feature: Manage appointments
     And I should see "9:00" in the "##tomorrow##%A, %d %B %Y##" "table_row"
     And I click on "Details" "button" in the "##tomorrow##%A, %d %B %Y##" "table_row"
     And I should see "Some example text" in the "Details" "dialogue"
-    And I click on "Cancel" "button" in the "Details" "dialogue"
+    And I click on "Close" "button" in the "Details" "dialogue"
 
   Scenario: Edit appointment messages
     When I log in as "teacher1"

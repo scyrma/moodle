@@ -216,6 +216,7 @@ function($, Ajax, ModalEvents, ModalFactory, Notification, Str, ModalForm, Event
         return ModalFactory.create({
             type: ModalFactory.types.CANCEL,
             title: Str.get_string('details', 'mod_appointment'),
+            buttons: {cancel: Str.get_string('closebuttontitle', 'moodle')},
             body: body,
             removeOnClose: true,
         }).done((modal) => {
