@@ -82,6 +82,7 @@ class tab_jobs extends tab {
             'addbutton' => true,
             'addbuttontitle' => get_string('addjob', 'tool_organisation'),
             'addbuttonicon' => true,
+            'addbuttonattrs' => [['name' => 'data-action', 'value' => 'newjob']],
         ];
         $deptforjobs = (new \tool_organisation\department_manager())->has_any_department_for_jobcreate();
         $posforjobs = (new \tool_organisation\position_manager())->has_any_position_for_jobcreate();
@@ -94,9 +95,9 @@ class tab_jobs extends tab {
         }
         if (isset($message)) {
             $rv['warnings'][] = ['message' => $message, "closebutton" => 0, "announce" => 1];
-            $rv['addbuttonattrs'] = [['name' => 'data-cancreatejobs', 'value' => 0]];
+            $rv['addbuttonattrs'][] = ['name' => 'data-cancreatejobs', 'value' => 0];
         } else {
-            $rv['addbuttonattrs'] = [['name' => 'data-cancreatejobs', 'value' => 1]];
+            $rv['addbuttonattrs'][] = ['name' => 'data-cancreatejobs', 'value' => 1];
         }
         $report = system_report_factory::create(jobs::class);
         $rv['systemcontextid'] = \context_system::instance()->id;

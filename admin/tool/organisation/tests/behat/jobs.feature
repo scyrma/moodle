@@ -102,7 +102,7 @@ Feature: Organisation structure jobs management
     And "organisation:allocateuserstoprogramcertificationsdept" permission should be "enabled" in the "User 11" "table_row"
     And "organisation:viewusersreportdept" permission should be "enabled" in the "User 11" "table_row"
     And "organisation:receivenotificationsdept" permission should be "disabled" in the "User 11" "table_row"
-    And I log out
+    And I should see "Job created" in the ".toast-message" "css_element"
 
   Scenario Outline: Filter jobs by position
     Given the following job assignments exist in organisation structure:
@@ -224,6 +224,7 @@ Feature: Organisation structure jobs management
     And the following should not exist in the "reportbuilder-table" table:
       | User    | End date             |
       | User 11 | ##+1 day##%d/%m/%y## |
+    And I should see "Job updated" in the ".toast-message" "css_element"
 
   Scenario: Finish job
     Given the following job assignments exist in organisation structure:
@@ -242,6 +243,7 @@ Feature: Organisation structure jobs management
     Then the following should exist in the "reportbuilder-table" table:
       | User    | Department     | Position     | End date               |
       | User 11 | Department111_ | Position111_ | ##+1 month##%d/%m/%y## |
+    And I should see "Job updated" in the ".toast-message" "css_element"
 
   Scenario: Transfer to new job
     Given the following job assignments exist in organisation structure:
@@ -265,6 +267,7 @@ Feature: Organisation structure jobs management
     And the following should not exist in the "reportbuilder-table" table:
       | User    | Department     | Position     | Start date              | End date                |
       | User 11 | Department111_ | Position111_ | ##yesterday##%d/%m/%y## | ##yesterday##%d/%m/%y## |
+    And I should see "User transfered to a new job" in the ".toast-message" "css_element"
     And I click on "Filters" "button"
     And I set the following fields in the "Show past jobs" "core_reportbuilder > Filter" to these values:
       | Show past jobs | Yes |
@@ -334,7 +337,7 @@ Feature: Organisation structure jobs management
     And I click on "Proceed" "button" in the "New job for 'User 11'" "dialogue"
     And I should see "Position111_"
     And I should see "Position112_"
-    And I log out
+    And I should see "Job created" in the ".toast-message" "css_element"
 
   Scenario: Delete jobs
     Given the following job assignments exist in organisation structure:
@@ -348,6 +351,7 @@ Feature: Organisation structure jobs management
     And I press "Delete job" action in the "User 11" report row
     And I click on "Delete" "button" in the "Confirm" "dialogue"
     Then I should not see "Position111_"
+    And I should see "Job deleted" in the ".toast-message" "css_element"
 
   Scenario: Cannot delete departments and positions with jobs assigned
     Given the following departments exist in organisation structure:
