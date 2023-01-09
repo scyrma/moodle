@@ -223,6 +223,9 @@
         animation-timing-function: ease-in;
         animation-duration: .2s;
     }
+    .card .card-badges {
+        gap: .25rem;
+    }
 }
 /* Move course carousel controls to top in blocks (while not editing) */
 body:not(.editing) .block .tool_catalogue-carousel .pagination {
