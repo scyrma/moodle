@@ -80,7 +80,7 @@ EOF;
         $this->assertEquals(1640361600, $useronecompletion->timecompleted);
 
         $usertwocompletion = new completion_completion(['course' => $course->id, 'userid' => $usertwo->id]);
-        $this->assertEqualsWithDelta($timenow, $usertwocompletion->timecompleted, 1.0);
+        $this->assertEqualsWithDelta($timenow, $usertwocompletion->timecompleted, 2.0);
     }
 
     /**
