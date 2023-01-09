@@ -92,3 +92,52 @@ Feature: Allocate users to tenants in upload users
     Then I should see "User 12"
     And I should see "User 23"
     And I should see "User 31"
+
+  Scenario: Upload users with locked profile field
+    Given "1" tenants exist with "1" users and "0" courses in each
+    And the following "custom profile fields" exist:
+      | datatype | shortname | name    | locked |
+      | text     | f0        | PField0 | 0      |
+      | text     | f1        | PField1 | 1      |
+      | text     | f2        | PField2 | 0      |
+      | text     | f3        | PField3 | 1      |
+    And the following config values are set as admin:
+      | showuseridentity | institution,department,phone1,city,profile_field_f0,profile_field_f1,profile_field_f2,profile_field_f3 |
+    And I log in as "tenantadmin1"
+    And I navigate to "Users" in workplace launcher
+    And I follow "Authentication"
+    And I click on "Settings" "link" in the "Manual accounts" "tool_wp > Row"
+    And I set the following fields to these values:
+      | field_lock_institution_custom | Custom |
+      | Lock value (Institution)      | Locked |
+      | field_lock_city_custom        | Custom |
+      | Lock value (City/town)        | Locked |
+    And I press "Save changes"
+    When I log in as "tenantadmin1"
+    And I navigate to "Users > Accounts > Upload users" in site administration
+    # Contains one user with values for "f0" and "f1" set.
+    And I upload "admin/tool/tenant/tests/fixtures/upload_users_locked_profile_fields.csv" file to "File" filemanager
+    And I press "Upload users"
+    And I click on "Expand all" "link"
+    And I click on "Show more..." "link"
+    # Make sure that fields that are set in the file, are not shown in the default values.
+    And "input[name=profile_field_f0]" "css_element" should not exist
+    And "input[name=profile_field_f0]" "css_element" should not exist
+    And "input[name=institution]" "css_element" should not exist
+    And "input[name=department]" "css_element" should not exist
+    # Make sure that the locked fields are not locked for the tenant admin.
+    And "input[name=profile_field_f2][disabled]" "css_element" should not exist
+    And I set the field "PField2" to "VF2T1"
+    And "input[name=profile_field_f3][disabled]" "css_element" should not exist
+    And I set the field "PField3" to "VF3T1"
+    And "input[name=phone][disabled]" "css_element" should not exist
+    And I set the field "Phone" to "PhoneField"
+    And "input[name=city][disabled]" "css_element" should not exist
+    And I set the field "City/town" to "CityField"
+    And I press "Upload users"
+    And I press "Continue"
+    When I navigate to "Users" in workplace launcher
+    # Make sure that the default value for the field was set.
+    Then the following should exist in the "reportbuilder-table" table:
+      | Full name | Institution      | Department      | Phone      | City/town | PField0 | PField1 | PField2 | PField3 |
+      | T1 1      | InstitutionField | DepartmentField | PhoneField | CityField | VF0T1   | VF1T1   | VF2T1   | VF3T1   |

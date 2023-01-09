@@ -42,17 +42,18 @@ Feature: Testing functionality of auth_saml2
     And I navigate to "Users" in current page administration
     And I change window size to "large"
     And I press "Edit user account" action in the "User 11" report row
-    # Can not use the step 'the "..." "field" should be disabled' because it targets the report filter instead
-    And "input[name=firstname][disabled]" "css_element" should exist in the "Edit user 'User 11'" "dialogue"
-    And "input[name=lastname][disabled]" "css_element" should exist in the "Edit user 'User 11'" "dialogue"
-    And "input[name=email][disabled]" "css_element" should exist in the "Edit user 'User 11'" "dialogue"
+    # Can not use the step 'the "..." "field" should not be disabled' because it targets the report filter instead
+    # Tenant admin can ALWAYS edit locked fields.
+    And "input[name=firstname][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And "input[name=lastname][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And "input[name=email][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
     And I set the field "City/town" in the "Edit user 'User 11'" "dialogue" to "Somewhere"
     And I press "Save"
     And I press "Edit user account" action in the "User 11" report row
-    And "input[name=firstname][disabled]" "css_element" should exist in the "Edit user 'User 11'" "dialogue"
-    And "input[name=lastname][disabled]" "css_element" should exist in the "Edit user 'User 11'" "dialogue"
-    And "input[name=email][disabled]" "css_element" should exist in the "Edit user 'User 11'" "dialogue"
-    And "input[name=city][disabled]" "css_element" should exist in the "Edit user 'User 11'" "dialogue"
+    And "input[name=firstname][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And "input[name=lastname][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And "input[name=email][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And "input[name=city][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
     And the following fields in the "Edit user 'User 11'" "dialogue" match these values:
       | First name    | User                   |
       | Surname       | 11                     |

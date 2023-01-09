@@ -225,39 +225,42 @@ class add_user_form extends dynamic_form {
     public function definition_after_data() {
         $mform = $this->_form;
         if ($user = $this->get_user()) {
+            $caneditlockedfields = permission::can_edit_locked_fields($user->id);
             // Disable fields that are locked by auth plugins.
             $fields = get_user_fieldnames();
             $authplugin = get_auth_plugin($user->auth);
             $customfields = $authplugin->get_custom_user_profile_fields();
             $customfieldsdata = profile_user_record($user->id, false);
-            $fields = array_merge($fields, $customfields);
-            foreach ($fields as $field) {
-                if ($field === 'description') {
-                    // Hard coded hack for description field. See MDL-37704 for details.
-                    $formfield = 'description_editor';
-                } else {
-                    $formfield = $field;
-                }
-                if (!$mform->elementExists($formfield)) {
-                    continue;
-                }
+            if (!$caneditlockedfields) {
+                $fields = array_merge($fields, $customfields);
+                foreach ($fields as $field) {
+                    if ($field === 'description') {
+                        // Hard coded hack for description field. See MDL-37704 for details.
+                        $formfield = 'description_editor';
+                    } else {
+                        $formfield = $field;
+                    }
+                    if (!$mform->elementExists($formfield)) {
+                        continue;
+                    }
 
-                // Get the original value for the field.
-                if (in_array($field, $customfields)) {
-                    $key = str_replace('profile_field_', '', $field);
-                    $value = isset($customfieldsdata->{$key}) ? $customfieldsdata->{$key} : '';
-                } else {
-                    $value = $user->{$field};
-                }
+                    // Get the original value for the field.
+                    if (in_array($field, $customfields)) {
+                        $key = str_replace('profile_field_', '', $field);
+                        $value = isset($customfieldsdata->{$key}) ? $customfieldsdata->{$key} : '';
+                    } else {
+                        $value = $user->{$field};
+                    }
 
-                $configvariable = 'field_lock_' . $field;
-                if (isset($authplugin->config->{$configvariable})) {
-                    if ($authplugin->config->{$configvariable} === 'locked') {
-                        $mform->hardFreeze($formfield);
-                        $mform->setConstant($formfield, $value);
-                    } else if ($authplugin->config->{$configvariable} === 'unlockedifempty' && $value != '') {
-                        $mform->hardFreeze($formfield);
-                        $mform->setConstant($formfield, $value);
+                    $configvariable = 'field_lock_' . $field;
+                    if (isset($authplugin->config->{$configvariable})) {
+                        if ($authplugin->config->{$configvariable} === 'locked') {
+                            $mform->hardFreeze($formfield);
+                            $mform->setConstant($formfield, $value);
+                        } else if ($authplugin->config->{$configvariable} === 'unlockedifempty' && $value != '') {
+                            $mform->hardFreeze($formfield);
+                            $mform->setConstant($formfield, $value);
+                        }
                     }
                 }
             }
@@ -278,7 +281,22 @@ class add_user_form extends dynamic_form {
 
             profile_definition_after_data($mform, $user->id);
         } else {
+            $caneditlockedfields = permission::can_edit_locked_fields();
+            $authplugin = get_auth_plugin($mform->_defaultValues['auth']);
+            $customfields = $authplugin->get_custom_user_profile_fields();
             profile_definition_after_data($mform, 0);
+        }
+
+        // Unlocking the profile custom fields that were previously locked in the "edit_field_set_locked" method,
+        // because the Workplace capabilities check to edit locked fields is different from the core check.
+        if ($caneditlockedfields) {
+            foreach ($customfields as $customfield) {
+                $element = $mform->getElement($customfield);
+                if ($element->isFrozen()) {
+                    $element->unfreeze();
+                    unset($mform->_constantValues[$customfield]);
+                }
+            }
         }
     }
 

@@ -14,14 +14,15 @@ Feature: Viewing and editing users with different profile fields per tenant
       | cat1 |
       | cat2 |
     And the following "custom profile fields" exist:
-      | datatype | shortname | name    | param2 | category |
-      | text     | f0        | PField0 | 100    | cat0     |
-      | text     | f1        | PField1 | 100    | cat1     |
-      | text     | f2        | PField2 | 100    | cat2     |
+      | datatype | shortname | name    | param2 | category | locked |
+      | text     | f0        | PField0 | 100    | cat0     | 0      |
+      | text     | f1        | PField1 | 100    | cat1     | 0      |
+      | text     | f2        | PField2 | 100    | cat2     | 0      |
+      | text     | f3        | PField3 | 100    | cat1     | 1      |
     And profile category "cat1" is available only for tenants "Tenant1"
     And profile category "cat2" is available only for tenants "Tenant2"
     And the following config values are set as admin:
-      | showuseridentity | country,profile_field_f0,profile_field_f1,profile_field_f2 |
+      | showuseridentity | country,profile_field_f0,profile_field_f1,profile_field_f2,profile_field_f3 |
 
   Scenario: User profile fields in the core users list visible according to the current tenant
     Given shared space is enabled
@@ -325,3 +326,75 @@ Feature: Viewing and editing users with different profile fields per tenant
     And "PField0" "field" should exist
     And "PField1" "field" should exist
     And "PField2" "field" should not exist
+
+  Scenario: Capabilities to edit locked profile fields
+    Given the following "roles" exist:
+      | shortname               | name                | archetype |
+      | tool_tenant_user_update | Update users        |           |
+      | tool_tenant_user_create | Create users        |           |
+      | tool_tenant_user_manage | Manage tenant users |           |
+    # Give different capabilities to each of the roles.
+    And the following "permission overrides" exist:
+      | capability              | permission | role                    | contextlevel | reference |
+      | moodle/user:update      | Allow      | tool_tenant_user_update | System       |           |
+      | moodle/user:create      | Prevent    | tool_tenant_user_update | System       |           |
+      | tool/tenant:manageusers | Prevent    | tool_tenant_user_update | System       |           |
+      | moodle/user:update      | Prevent    | tool_tenant_user_create | System       |           |
+      | moodle/user:create      | Allow      | tool_tenant_user_create | System       |           |
+      | tool/tenant:manageusers | Prevent    | tool_tenant_user_create | System       |           |
+      | moodle/user:update      | Prevent    | tool_tenant_user_manage | System       |           |
+      | moodle/user:create      | Prevent    | tool_tenant_user_manage | System       |           |
+      | tool/tenant:manageusers | Allow      | tool_tenant_user_manage | System       |           |
+    And the following "tool_tenant > users" exist:
+      | tenant  | username | firstname | lastname | email               | tenantadmin |
+      | Tenant1 | tuser1   | Test      | User1    | tuser1@example.com | 0           |
+      | Tenant1 | tuser2   | Test      | User2    | tuser2@example.com | 0           |
+      | Tenant1 | tuser3   | Test      | User3    | tuser3@example.com | 0           |
+    # Assign one of the roles to each tenant admin user.
+    And the following "role assigns" exist:
+      | user   | role                    | contextlevel | reference |
+      | tuser1 | tool_tenant_user_update | System       |           |
+      | tuser2 | tool_tenant_user_create | System       |           |
+      | tuser3 | tool_tenant_user_manage | System       |           |
+    And I log in as "tenantadmin1"
+    And I navigate to "Users" in workplace launcher
+    # Lock the Surname field.
+    And I follow "Authentication"
+    And I click on "Settings" "link" in the "Manual accounts" "tool_wp > Row"
+    And I set the following fields to these values:
+      | field_lock_lastname_custom | Custom |
+      | Lock value (Surname)       | Locked |
+    And I press "Save changes"
+    # Tenant admin by default CAN edit locked fields and CAN set them when creating a new user.
+    When I log in as "tenantadmin1"
+    And I navigate to "Users" in workplace launcher
+    And I press "Edit user account" action in the "User 11" report row
+    Then "input[name=lastname][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And "input[name=profile_field_f3][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And I click on "Cancel" "button" in the "Edit user 'User 11'" "dialogue"
+    And I follow "New user"
+    And "input[name=lastname][disabled]" "css_element" should not exist in the "New user" "dialogue"
+    And "input[name=profile_field_f3][disabled]" "css_element" should not exist in the "New user" "dialogue"
+    # User with "update" capability CAN edit locked fields.
+    When I log in as "tuser1"
+    And I navigate to "Users" in workplace launcher
+    And I press "Edit user account" action in the "User 11" report row
+    Then "input[name=lastname][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And "input[name=profile_field_f3][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And I click on "Cancel" "button" in the "Edit user 'User 11'" "dialogue"
+    # User with "create" capability CAN NOT edit locked fields but CAN set them when creating a new user.
+    Then I log in as "tuser2"
+    And I navigate to "Users" in workplace launcher
+    And I follow "New user"
+    And "input[name=lastname][disabled]" "css_element" should not exist in the "New user" "dialogue"
+    And "input[name=profile_field_f3][disabled]" "css_element" should not exist in the "New user" "dialogue"
+    # User with "manageusers" capability CAN edit locked fields and CAN set them when creating a new user.
+    Then I log in as "tuser3"
+    And I navigate to "Users" in workplace launcher
+    And I press "Edit user account" action in the "User 11" report row
+    Then "input[name=lastname][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And "input[name=profile_field_f3][disabled]" "css_element" should not exist in the "Edit user 'User 11'" "dialogue"
+    And I click on "Cancel" "button" in the "Edit user 'User 11'" "dialogue"
+    And I follow "New user"
+    And "input[name=lastname][disabled]" "css_element" should not exist in the "New user" "dialogue"
+    And "input[name=profile_field_f3][disabled]" "css_element" should not exist in the "New user" "dialogue"

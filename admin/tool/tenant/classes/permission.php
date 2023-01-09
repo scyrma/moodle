@@ -1218,4 +1218,16 @@ class permission {
             self::can_view_tenant_details($tenantid) ||
             self::can_edit_tenant_mobile_settings($tenantid);
     }
+
+    /**
+     * Can the current user edit locked fields of a user with id $userid.
+     *
+     * @param int $userid
+     * @return bool
+     */
+    public static function can_edit_locked_fields(int $userid = 0): bool {
+        return has_capability('tool/tenant:manageusers', \context_system::instance()) ||
+            ($userid >= 0 && has_capability('moodle/user:update', \context_system::instance())) ||
+            ($userid == 0 && has_capability('moodle/user:create', \context_system::instance()));
+    }
 }
