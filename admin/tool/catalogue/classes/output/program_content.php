@@ -166,6 +166,7 @@ class program_content implements templatable, renderable {
                 'courseimage' => $image,
                 'progress' => floor(progress::get_course_progress_percentage($course) ?? 0),
                 'viewurl' => router::build_course_url((int) $course->id),
+                'visible' => $course->visible,
             ];
         }
 

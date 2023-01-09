@@ -45,7 +45,8 @@
                 "courseimage": "http://placekitten.com/300/300",
                 "viewurl": "http://localhost/course/view.php?id=1",
                 "categoryname": "Health and Safety",
-                "progress": "50"
+                "progress": "50",
+                "visible": true
             }
         ],
         "completioncriteria": "Complete everything in order",
@@ -129,6 +130,11 @@
                                 {{{categoryname}}}
                             </div>
                             {{/categoryname}}
+                            <div class="d-flex flex-wrap mt-2">
+                                {{^visible}}
+                                    <span class="badge badge-secondary">{{#str}}hiddenfromlearners, tool_catalogue{{/str}}</span>
+                                {{/visible}}
+                            </div>
                         </div>
                         <div class="p-2 text-muted font-small">
                             {{#str}}progress, tool_catalogue, {{{progress}}}{{/str}}

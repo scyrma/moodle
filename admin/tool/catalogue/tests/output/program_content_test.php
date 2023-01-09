@@ -110,6 +110,7 @@ class program_content_test extends advanced_testcase {
         $this->assertEquals($course->fullname, $recentlyaccessedcourse['name']);
         $courseurl = router::build_course_url((int) $course->id);
         $this->assertEquals($courseurl, $recentlyaccessedcourse['viewurl']);
+        $this->assertEquals(1, $recentlyaccessedcourse['visible']);
 
         $this->assertCount(1, $programcontentdata->listitems);
         $listitem = $programcontentdata->listitems[0];
