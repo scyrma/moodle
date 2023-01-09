@@ -76,7 +76,7 @@ class myinprogress implements renderable, templatable {
         $showhiddencards = get_user_preferences(constants::PREFERENCE_SHOW_HIDDEN_CARDS, false);
 
         if ($hascourses) {
-            $hiddenbadgeclasses = 'badge badge-secondary mr-1 mb-1';
+            $hiddenbadgeclasses = 'badge badge-secondary';
             $hiddencourses = json_decode(get_user_preferences(constants::PREFERENCE_HIDDEN_COURSES, '[]'));
             $extraclasses = [];
             $extraattributes = [];
