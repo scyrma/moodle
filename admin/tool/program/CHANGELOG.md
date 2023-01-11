@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 4.1 - 2023-01-11
 ### Changed
 - `api::get_user_allocation_statuses` return array now contains 'status' and 'stringid' only.
 - The following deprecated Behat steps have now been removed:
