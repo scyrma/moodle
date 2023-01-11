@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 4.1 - 2023-01-11
 ### Changed
 * \theme_workplace\manager::get_site_name() method has been removed.
 * Styles for '[data-region="wp-toggle"]' have been removed.

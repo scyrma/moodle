@@ -38,8 +38,8 @@ defined('MOODLE_INTERNAL') || die();
 
 // This plugin is part of Moodle Workplace product.
 $plugin->component    = 'theme_workplace';
-$plugin->release      = '4.1beta';
-$plugin->version      = 2022121600;
+$plugin->release      = '4.1';
+$plugin->version      = 2023011100;
 $plugin->requires     = 2022112800.00;
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = array(
