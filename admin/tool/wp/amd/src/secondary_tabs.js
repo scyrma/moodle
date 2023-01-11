@@ -34,8 +34,8 @@
  */
 
 define(['jquery', 'core/ajax', 'core/templates', 'core/notification',
-        'core_form/dynamicform'],
-function($, Ajax, Templates, Notification, DynamicForm) {
+        'core_form/dynamicform', 'core_form/changechecker', 'core/str'],
+function($, Ajax, Templates, Notification, DynamicForm, FormChangeChecker, Str) {
 
     var
         /**
@@ -170,13 +170,35 @@ function($, Ajax, Templates, Notification, DynamicForm) {
         init = function() {
 
             M.util.js_pending('tool_wp_secondary_tabs_init_int');
+
+            // Warn user if they are navigating away with unsaved form changes.
+            $('a[data-toggle="tab"]').on('click', function(event) {
+                if (!FormChangeChecker.isAnyWatchedFormDirty()) {
+                    return;
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                Str.get_strings([
+                    {key: 'changesmade', component: 'moodle'},
+                    {key: 'changesmadereallygoaway', component: 'moodle'},
+                    {key: 'confirm', component: 'moodle'},
+                ]).then(([strChangesMade, strChangesMadeReally, strConfirm]) =>
+                    // Reset form dirty state on confirmation, re-trigger the event.
+                    Notification.confirm(strChangesMade, strChangesMadeReally, strConfirm, null, () => {
+                        FormChangeChecker.resetAllFormDirtyStates();
+                        $(event.target).trigger(event.type);
+                    })
+                ).catch(Notification.exception);
+            });
+
             // Add listener to the event when bootstrap tab is shown.
             $('a[data-toggle="tab"]').on('shown.bs.tab', function() {
                 var tab = $($(this).attr('href'));
                 if (tab.length !== 1) {
                     return;
                 }
-                // TODO call M.core_formchangechecker.report_form_dirty_state() .
                 loadTab(tab.attr('id'));
             });
 

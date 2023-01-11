@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 4.1 - 2023-01-11
 ### Changed
 - Deprecated helper::get_export_import_status_formatted() function
 - The following deprecated Behat steps have now been removed:

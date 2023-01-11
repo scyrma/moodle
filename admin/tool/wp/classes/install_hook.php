@@ -69,6 +69,11 @@ class install_hook {
                     blocks_delete_instance($blockinstance);
                 }
 
+                // Delete existing pages.
+                $params = ['name' => '__default', 'private' => 1];
+                $DB->delete_records_select('my_pages',
+                    'userid IS NOT NULL AND name = :name AND private = :private', $params);
+
                 // Add 'myinprogress' and 'myavailable' blocks.
                 $page = new \moodle_page();
                 $page->set_context(\context_system::instance());
