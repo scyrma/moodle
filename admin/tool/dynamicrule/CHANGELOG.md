@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 4.1 - 2023-01-11
 ### Changed
 - Deprecated functions \tool_dynamicrule\api::generate_alias(), generate_param_name() and
   check_condition_sql(), please use functions from \core_reportbuilder\local\helpers\database instead
