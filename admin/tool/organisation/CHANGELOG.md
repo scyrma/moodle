@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 4.1 - 2023-01-11
 ### Changed
 - The following deprecated Behat steps have now been removed:
   * `user X has a global manager position over users Y with permissions Z`

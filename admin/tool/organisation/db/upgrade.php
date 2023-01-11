@@ -181,5 +181,20 @@ function xmldb_tool_organisation_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022052500, 'tool', 'organisation');
     }
 
+    if ($oldversion < 2023010900) {
+        // Changing the default of fields shared on tables tool_organisation_position and tool_organisation_department to 1.
+        $positiontable = new xmldb_table('tool_organisation_position');
+        $positionfield = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '1', 'globalpermissions');
+        $departmenttable = new xmldb_table('tool_organisation_department');
+        $departmentfield = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '1', 'archived');
+
+        // Launch change of default for fields shared.
+        $dbman->change_field_default($positiontable, $positionfield);
+        $dbman->change_field_default($departmenttable, $departmentfield);
+
+        // Organisation savepoint reached.
+        upgrade_plugin_savepoint(true, 2023010900, 'tool', 'organisation');
+    }
+
     return true;
 }
