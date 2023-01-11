@@ -96,6 +96,9 @@ class report_tool_certificate_issues extends datasource {
             // If column 'course_category:namewithlink' exists - use it, otherwise use course_category:name.
             return 'course_category:name';
         }
+        if ($oldcolumn->get_unique_identifier() === 'user:tenant') {
+            return 'tenant:name';
+        }
         return parent::convert_get_column_unique_identifier($oldcolumn, $newsource);
     }
 
@@ -111,6 +114,9 @@ class report_tool_certificate_issues extends datasource {
         if ($oldfilter->get_unique_identifier() === 'tool_certificate_template:coursecategory') {
             return 'course_category:name';
         }
+        if ($oldfilter->get_unique_identifier() === 'user:tenant') {
+            return 'tenant:name';
+        }
         return parent::convert_get_filter_unique_identifier($oldfilter, $newsource);
     }
 
@@ -125,6 +131,9 @@ class report_tool_certificate_issues extends datasource {
                                                             \core_reportbuilder\datasource $newsource): string {
         if ($oldcondition->get_unique_identifier() === 'tool_certificate_template:coursecategory') {
             return 'course_category:name';
+        }
+        if ($oldcondition->get_unique_identifier() === 'user:tenant') {
+            return 'tenant:name';
         }
         return parent::convert_get_condition_unique_identifier($oldcondition, $newsource);
     }
