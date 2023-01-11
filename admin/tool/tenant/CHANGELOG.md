@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to the API will be documented in this file.
 
-## Unreleased
+## 4.1 - 2023-01-11
 ### Added
 - callback `tenant_get_css_config` added to extend adding css form elements to the plugin.
 
