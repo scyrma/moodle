@@ -35,6 +35,7 @@ use core_reportbuilder\local\entities\course;
 use tool_datastore\reportbuilder\local\entities\course as datastore_course;
 use tool_datastore\reportbuilder\local\entities\completion as datastore_completion;
 use tool_datastore\reportbuilder\local\entities\user as datastore_user;
+use tool_tenant\reportbuilder\local\entities\tenant;
 use tool_tenant\tenancy;
 use core_reportbuilder\local\entities\user;
 
@@ -110,6 +111,11 @@ class course_completion extends datasource {
             ->add_join($coursejoin)
             ->add_join("LEFT JOIN {course_categories} {$coursecategories} ON {$coursecategories}.id = {$course}.category"));
 
+        // Add tenant entity for the user.
+        $tenantentity = new tenant();
+        $tenantentity->add_joins($tenantentity->get_user_tenant_joins("{$user}.id"));
+        $this->add_entity($tenantentity);
+
         // Add all columns from entities to be available in custom reports.
         $this->add_columns_from_entity($datastorecourseentity->get_entity_name());
         $this->add_columns_from_entity($datastoreuserentity->get_entity_name());
@@ -117,6 +123,7 @@ class course_completion extends datasource {
         $this->add_columns_from_entity($courseentity->get_entity_name());
         $this->add_columns_from_entity($coursecatentity->get_entity_name());
         $this->add_columns_from_entity($userentity->get_entity_name());
+        $this->add_columns_from_entity($tenantentity->get_entity_name());
 
         // Add all filters from entities to be available in custom reports.
         $this->add_filters_from_entity($datastorecourseentity->get_entity_name());
@@ -125,6 +132,7 @@ class course_completion extends datasource {
         $this->add_filters_from_entity($courseentity->get_entity_name());
         $this->add_filters_from_entity($coursecatentity->get_entity_name());
         $this->add_filters_from_entity($userentity->get_entity_name());
+        $this->add_filters_from_entity($tenantentity->get_entity_name());
 
         // Add all conditions from entities to be available in custom reports.
         $this->add_conditions_from_entity($datastorecourseentity->get_entity_name());
@@ -133,6 +141,7 @@ class course_completion extends datasource {
         $this->add_conditions_from_entity($courseentity->get_entity_name());
         $this->add_conditions_from_entity($coursecatentity->get_entity_name());
         $this->add_conditions_from_entity($userentity->get_entity_name());
+        $this->add_conditions_from_entity($tenantentity->get_entity_name());
     }
 
     /**
