@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 4.1 - 2023-01-11
 ### Changed
 - `api::deallocate_users_after_grace_period_end` and `api::reallocate_user_into_initial_program` have a new argument
    $rollbackinitialcertdates that indicates if users need to be reallocated to initial program after 
