@@ -571,6 +571,10 @@ class block_base {
         if (has_capability('moodle/block:edit', $this->context)) {
             return true;
         }
+        /** @uses tool_tenant\dashboard_manager::hook_can_edit_block() */
+        if (component_class_callback('tool_tenant\dashboard_manager', 'hook_can_edit_block', [$this], false)) {
+            return true;
+        }
 
         // The blocks in My Moodle are a special case.  We want them to inherit from the user context.
         if (!empty($USER->id)
@@ -625,6 +629,16 @@ class block_base {
                        && has_capability('moodle/my:manageblocks', $page->context);
             }
         }
+
+        // Hack to allow blocks with 'my' setting in applicable formats when this method is called from custom pages.
+        $capability = 'block/' . $this->name() . ':addinstance';
+        $capabilitymy = 'block/' . $this->name() . ':myaddinstance';
+        if (array_key_exists('my', $formats) && $page->pagetype === 'admin-tool-custompage'
+            && !array_key_exists('admin-tool-custompage', $formats)) {
+            return (get_capability_info($capability) && has_capability($capability, $page->context)) ||
+                (get_capability_info($capabilitymy) && has_capability($capabilitymy, $page->context));
+        }
+
         // Check if this is a block only used on /my.
         unset($formats['my']);
         if (empty($formats)) {
