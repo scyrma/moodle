@@ -513,7 +513,8 @@ class profile_field_base {
             }
         }
 
-        return false;
+        /** @uses tool_tenant\permission::can_edit_custom_profile_field() */
+        return component_class_callback('tool_tenant\permission', 'can_edit_custom_profile_field', [$this->userid], false);
     }
 
     /**
@@ -613,6 +614,11 @@ function profile_get_user_fields_with_data(int $userid): array {
     }
     $sql .= 'ORDER BY uic.sortorder ASC, uif.sortorder ASC ';
     $fields = $DB->get_records_sql($sql, ['userid' => $userid]);
+
+    /** @uses \tool_tenant\profile_manager::filter_field_objects_list() */
+    $fields = component_class_callback('\tool_tenant\profile_manager', 'filter_field_objects_list',
+        [$fields, $userid], $fields);
+
     $data = [];
     foreach ($fields as $field) {
         require_once($CFG->dirroot . '/user/profile/field/' . $field->datatype . '/field.class.php');
@@ -717,6 +723,9 @@ function profile_validation(stdClass $usernew, array $files): array {
  */
 function profile_save_data(stdClass $usernew): void {
     global $CFG;
+
+    /** @uses \tool_tenant\profile_manager::before_profile_save_data() */
+    component_class_callback('\tool_tenant\profile_manager', 'before_profile_save_data', [$usernew]);
 
     $fields = profile_get_user_fields_with_data($usernew->id);
     foreach ($fields as $formfield) {
