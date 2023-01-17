@@ -1,0 +1,12 @@
+/*
+ General
+*/
+
+.path-admin-tool-certification {
+    /* User log */
+    [data-region="certification-user-log"] {
+        .table thead th {
+            border-top: 0;
+        }
+    }
+}
