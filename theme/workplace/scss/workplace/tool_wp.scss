@@ -1,0 +1,276 @@
+#page-admin-index {
+    .copyright.workplacecopyright {
+        padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin-bottom: 0;
+    }
+}
+
+.tool-wp-modal-form-dialogue {
+    /* Hide close button (X) in the top right corner of modal forms */
+    .modal-header {
+        [data-action="hide"] {
+            display: none;
+        }
+    }
+}
+
+/* Styles for the tree table */
+
+// Left padding generator for tree nodes.
+@mixin wp-node($value) {
+    > .tool-wp-children > .tool-wp-node {
+        // We are generating 9 levels of nodes.
+        @if ($value < 10) {
+            > .tool-wp-node-name > :first-child {
+                padding-left: $value * 20px + 10px;
+            }
+            @include wp-node($value + 1);
+        }
+        // From 9 levels and up we set a fixed padding.
+        @else {
+            .tool-wp-node-name > :first-child {
+                padding-left: 200px;
+            }
+        }
+    }
+}
+
+.tool-wp-table-tree {
+    > .tool-wp-node {
+        margin: 0 1rem;
+        overflow-wrap: break-word;
+        .mform {
+            padding: 0;
+        }
+        .form-group {
+            width: 100%;
+            * {
+                text-overflow: ellipsis;
+            }
+            > * {
+                width: inherit;
+            }
+        }
+        > .tool-wp-node-name {
+            border-bottom: 2px solid #636363;
+            font-weight: bolder;
+        }
+        > .tool-wp-children > .tool-wp-node {
+            @include wp-node(1);
+        }
+    }
+    .tool-wp-node {
+        > .tool-wp-node-name {
+            padding: 0.7rem .6rem .6rem;
+            min-height: 50px;
+            border-bottom: 1px solid #ececec;
+        }
+        .tool-wp-node-name {
+            > * {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .col-actions {
+                text-align: right;
+            }
+        }
+    }
+}
+
+/* Datasource selector accordion*/
+
+.tool-wp-accordion {
+    .card {
+        border: none;
+    }
+    [data-toggle=collapse] {
+        .fa {
+            &:before {
+                content: "\f139";
+            }
+        }
+    }
+    [data-toggle=collapse].collapsed {
+        .fa {
+            &:before {
+                content: "\f13a";
+            }
+        }
+    }
+    .ui-draggable {
+        cursor: move;
+    }
+    .ui-draggable-dragging {
+        width: 100%;
+        background-color: lightyellow;
+    }
+    .icon {
+        height: 20px;
+        width: 20px;
+        font-size: 20px;
+        color: lightgray;
+    }
+}
+
+/* Loader */
+
+.hasloader {
+    .tool-wp-processing-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #fff;
+        opacity: 0;
+        transition: opacity .15s linear;
+    }
+    .tool-wp-processing {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity .15s linear;
+        opacity: 0;
+    }
+    &.showloader {
+        .tool-wp-processing-backdrop {
+            opacity: 0.5;
+        }
+        .tool-wp-processing {
+            opacity: 1;
+        }
+    }
+}
+
+/* Migration */
+
+.path-admin-tool-wp {
+    [data-region="newexport"],
+    [data-region="newimport"] {
+        .stage {
+            width: 40px;
+            height: 40px;
+            padding: .4rem;
+            margin: .25rem;
+            box-sizing: border-box;
+            text-align: center;
+            font-weight: bold;
+            background-color: $white;
+            color: $gray060;
+            border: $gray060 2px solid;
+            &.stage-active {
+                background-color: $primary;
+                border-color: $primary;
+                color: $white;
+            }
+            &.stage-done {
+                background-color: $gray060;
+                color: $gray100;
+            }
+        }
+    }
+    [data-region="exportimport-instances"] {
+        .showmorelist {
+            ul li:nth-child(n+4) {
+                display: none;
+            }
+            button {
+                &.showless {
+                    display: none;
+                }
+            }
+        }
+    }
+    [data-region="export-report"],
+    [data-region="import-report"] {
+        tbody tr td:first-child {
+            width: 16rem;
+        }
+    }
+    [data-region="newexport"],
+    [data-region="newimport"] {
+        form {
+            input[type=radio][name=exporter],
+            input[type=radio][name=importer] {
+                align-self: baseline;
+                margin-top: .3rem;
+                margin-right: .6rem;
+            }
+            .form-group[data-groupname^="exportertenantgroup"] {
+                margin: -1.5rem 0 2rem 4.3rem;
+            }
+            .exporterimporter-selector {
+                margin-bottom: 2rem;
+                .icon {
+                    width: 40px;
+                    height: 40px;
+                    margin-right: .4rem;
+                }
+                .exporterimporter-name {
+                    font-weight: 600;
+                }
+                .exporterimporter-source {
+                    margin-top: -0.2rem;
+                    font-size: small;
+                    text-transform: uppercase;
+                    color: $gray070;
+                }
+                .exporterimporter-description {
+                    margin-top: .3rem;
+                }
+            }
+        }
+    }
+}
+
+/* Status labels */
+
+.tool_wp_status_notready,
+.tool_wp_status_scheduled,
+.tool_wp_status_success,
+.tool_wp_status_inprogress,
+.tool_wp_status_error {
+    @extend .wp_status_tag;
+}
+
+.tool_wp_status_notready {
+    @extend .badge-info;
+}
+.tool_wp_status_scheduled {
+    @extend .badge-info;
+}
+.tool_wp_status_success {
+    @extend .badge-success;
+}
+.tool_wp_status_inprogress {
+    @extend .badge-warning;
+}
+.tool_wp_status_error {
+    @extend .badge-danger;
+}
+
+/* Non-production state and not-registered warning */
+
+#wp-site-status-disclaimer {
+    padding: 5px 10px;
+    font-size: 12px;
+    background: $black;
+    color: $white;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    a {
+        margin-left: 10px;
+        color: $white;
+        text-decoration: underline;
+    }
+}
+
+body.behat-site #wp-site-status-disclaimer {
+    position: inherit;
+}
