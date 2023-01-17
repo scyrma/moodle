@@ -1,0 +1,84 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template block_myteams/userinfo/main
+
+    Collapsible user information for My Teams block.
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "id": 1,
+        "fullnamewithpicture": "<div><span class='userinitials size-35'>U1</span>User 1</div>",
+        "lastaccess": "Today",
+        "messageurl": "#",
+        "profileurl": "#",
+        "isoverdue": false,
+        "sections": [
+            {
+                "name": "Programs",
+                "link": "http://example.com",
+                "items": [
+                    {
+                        "title": "Program 01",
+                        "subtitle": "80% completed",
+                        "badges": [
+                            {
+                                "label": "Overdue",
+                                "type": "danger"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}}
+<div class="block_myteams-userinfo">
+    <div class="d-flex align-items-center position-relative align-items-center">
+        <a role="button" data-toggle="collapse"
+           href="#userinfo-collapse-{{id}}"
+           aria-expanded="false"
+           aria-controls="userinfo-collapse-{{id}}"
+           class="btn p-0 mr-1 icons-collapse-expand stretched-link justify-content-center collapsed"
+           aria-label="{{name}}">
+            <span class="expanded-icon icon-no-margin p-2" title="{{#str}} collapse, core {{/str}}">
+                <span>{{#pix}} t/expandedchevron, core {{/pix}}</span>
+            </span>
+            <span class="collapsed-icon icon-no-margin p-2" title="{{#str}} expand, core {{/str}}">
+                <span class="dir-rtl-hide">{{#pix}} t/collapsedchevron, core {{/pix}}</span>
+                <span class="dir-ltr-hide">{{#pix}} t/collapsedchevron_rtl, core {{/pix}}</span>
+            </span>
+        </a>
+        {{> block_myteams/userinfo/heading }}
+    </div>
+    <div id="userinfo-collapse-{{id}}" class="pagesectioncontent collapse">
+        {{> block_myteams/userinfo/body }}
+    </div>
+</div>
