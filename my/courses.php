@@ -86,6 +86,10 @@ if ($coursecat) {
 
     }
 }
+
+/** @uses tool_catalogue\router::mycourses_page() */
+$content = component_class_callback(tool_catalogue\router::class, 'mycourses_page', [&$coursemanagemenu], null);
+
 if (!empty($coursemanagemenu)) {
     // Render the course management menu.
     $PAGE->add_header_action($OUTPUT->render_from_template('my/dropdown', $coursemanagemenu));
@@ -97,7 +101,7 @@ if (core_userfeedback::should_display_reminder()) {
     core_userfeedback::print_reminder_block();
 }
 
-echo $OUTPUT->custom_block_region('content');
+echo $content ?? $OUTPUT->custom_block_region('content');
 
 echo $OUTPUT->footer();
 

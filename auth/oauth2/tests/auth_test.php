@@ -66,9 +66,9 @@ class auth_test extends \advanced_testcase {
 
         // Set up mock data.
         $client = $this->createMock(\core\oauth2\client::class);
-        $client->expects($this->once())->method('get_raw_userinfo')->willReturn((object)$info);
-        $client->expects($this->once())->method('get_userinfo')->willReturn($info);
-        $client->expects($this->once())->method('get_issuer')->willReturn($issuer);
+        $client->method('get_raw_userinfo')->willReturn((object)$info);
+        $client->method('get_userinfo')->willReturn($info);
+        $client->method('get_issuer')->willReturn($issuer);
 
         $sink = $this->redirectEvents();
         try {
