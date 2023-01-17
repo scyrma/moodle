@@ -1,0 +1,133 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/mycourses/filters
+
+    Template for showing filters.
+
+    Example context (json):
+    {
+        "sort": "name",
+        "urlsortname": "http://localhost/my/courses.php?page=0&sort=programname&filter=all&search",
+        "urlsortduedate": "http://localhost/my/courses.php?page=0&sort=duedate&filter=all&search",
+        "urlsortlastaccess": "http://localhost/my/courses.php?page=0&sort=lastaccess&filter=all&search",
+        "urlfilterall": "http://localhost/my/courses.php?page=0&sort=name&filter=all&search",
+        "urlfiltercourses": "http://localhost/my/courses.php?page=0&sort=name&filter=courses&search",
+        "urlfilterprograms": "http://localhost/my/courses.php?page=0&sort=name&filter=programs&search",
+        "urlfiltercomplete": "http://localhost/my/courses.php?page=0&sort=name&filter=complete&search",
+        "urlfilterincomplete": "http://localhost/my/courses.php?page=0&sort=name&filter=incomplete&search",
+        "statusfilterstr": "All",
+        "sortingfilterstr": "Sort by last accessed",
+        "searchinput": {
+            "action": "https://moodle.local/admin/search.php",
+            "extraclasses": "my-2",
+            "inputname": "search",
+            "inform": false,
+            "searchstring": "Search settings",
+            "value": "policy",
+            "btnclass": "primary",
+            "query": "themedesigner",
+            "hiddenfields": [
+                {
+                    "name": "context",
+                    "value": "11"
+                }
+            ]
+        }
+    }
+}}
+<div class="d-flex flex-wrap mb-3 dashboard-control" data-region="catalogue-controls">
+    <div class="dropdown mycourses-filter" data-region="mycourses-filter">
+        <button id="mycourses-filter-dropdown" type="button" class="btn btn-outline-secondary dropdown-toggle d-inline-flex align-items-center" data-selected="" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false" title="{{#str}} filter {{/str}}">
+            <span class="d-sm-inline-block" data-active-item-text>
+                {{statusfilterstr}}
+            </span>
+        </button>
+        <ul class="dropdown-menu" data-show-active-item data-active-item-text aria-labelledby="mycourses-filter-dropdown">
+            <li>
+                <a class="dropdown-item" href="{{{urlfilterall}}}" data-value="all">
+                    {{#str}} all, tool_catalogue {{/str}}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{{urlfiltercourses}}}" data-value="courses">
+                    {{#str}} courses, tool_catalogue {{/str}}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{{urlfilterprograms}}}" data-value="programs">
+                    {{#str}} programs, tool_catalogue {{/str}}
+                </a>
+            </li>
+            <li class="dropdown-divider" role="presentation">
+                <span class="filler">&nbsp;</span>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{{urlfilterincomplete}}}" data-value="notcompleted">
+                    {{#str}} incomplete, tool_catalogue {{/str}}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{{urlfiltercomplete}}}" data-value="completed">
+                    {{#str}} complete, tool_catalogue {{/str}}
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="dropdown mycourses-sorting {{ sort }}" data-region="mycourses-sorting">
+        <button id="mycourses-sorting-dropdown" type="button" class="btn btn-outline-secondary dropdown-toggle d-inline-flex align-items-center" data-selected="{{sort}}" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false" title="{{#str}} sortby {{/str}}">
+            <span class="d-sm-inline-block" data-active-item-text>
+                {{sortingfilterstr}}
+            </span>
+        </button>
+        <ul class="dropdown-menu" data-show-active-item data-active-item-text aria-labelledby="mycourses-sorting-dropdown">
+            <li>
+                <a class="dropdown-item" href="{{{urlsortname}}}" data-value="programname">
+                    {{#str}} name, tool_catalogue {{/str}}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{{urlsortduedate}}}" data-value="duedate">
+                    {{#str}} duedate, tool_catalogue {{/str}}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{{urlsortlastaccess}}}" data-value="lastaccess">
+                    {{#str}} lastaccess, tool_catalogue {{/str}}
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="flex-fill">
+        {{#searchinput}}
+            {{>core/search_input}}
+        {{/searchinput}}
+    </div>
+</div>
