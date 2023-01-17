@@ -1,0 +1,162 @@
+/*
+ General styles.
+*/
+
+/*
+ Toggle icons using standard bootstrap collapse.
+*/
+.ws-toggle {
+    .collapsed-icon-container {
+        display: none;
+    }
+    .expanded-icon-container {
+        display: inline-block;
+    }
+
+    &.collapsed {
+        .collapsed-icon-container {
+            display: inline-block;
+        }
+        .expanded-icon-container {
+            display: none;
+        }
+    }
+}
+
+/*
+ Utility classes.
+*/
+
+/* Utility classes for font sizes. */
+.font-large {
+    font-size: $font-size-lg;
+}
+.font-small {
+    font-size: $font-size-sm;
+}
+.font-mini {
+    font-size: $font-size-base * .67;
+}
+
+/* Utility classes for icon sizes. */
+.icon-large .icon,
+.icon-lg {
+    font-size: $icon-size-large;
+    width: $icon-size-large;
+    height: $icon-size-large;
+    line-height: $icon-size-large;
+}
+.icon-xlarge .icon,
+.icon-xl {
+    font-size: $icon-size-xlarge;
+    width: $icon-size-xlarge;
+    height: $icon-size-xlarge;
+    line-height: $icon-size-xlarge;
+}
+
+/* Utility classes for icon colours. */
+@each $color, $value in $theme-colors {
+    .icon-#{$color} {
+        .icon {
+            color: $value;
+        }
+    }
+}
+
+/* Utility class to remove caret from dropdowns. */
+.dropdown-toggle.no-caret {
+    &::before,
+    &::after {
+        display: none;
+    }
+}
+
+/* Utility classs to add a spinner to buttons */
+@keyframes loading {
+    to {
+        transform: rotate(1turn);
+    }
+}
+button,
+a[role="button"],
+input[type="submit"],
+input[type="button"] {
+    &.loading {
+        display: inline-flex;
+        @extend .disabled;
+        &::after {
+            content: "";
+            width: 20px;
+            height: 20px;
+            align-self: center;
+            margin-left: .5rem;
+            border: 3px solid $gray-500;
+            border-top-color: $gray-800;
+            border-radius: 50%;
+            animation: loading 1s ease infinite;
+        }
+    }
+}
+
+/*
+ Performance info
+*/
+
+.performanceinfo.container-fluid {
+    margin: 0.5rem 0;
+    border: 1px solid $gray-800;
+    font-size: 12px;
+    padding: 0.25rem;
+    .cache-total-stats,
+    .cache-suma {
+        margin: 0;
+    }
+    .ml-1 {
+        margin-left: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+    .cache-definition-stats {
+        margin: 0 0.25rem;
+        background-color: $gray-800;
+        width: 250px;
+    }
+}
+
+/*
+ Locked secondary navigation tabs
+*/
+
+.secondary-navigation a[data-toggle="tab"] {
+    &.tab-locked {
+        flex-wrap: wrap;
+    }
+    &.tab-locked:before {
+        content: $fa-var-lock;
+        font-family: 'FontAwesome';
+        position: relative;
+        left: -0.5rem;
+    }
+}
+
+/*
+ General Fixes
+*/
+
+/* Fixing date selector in modals. */
+#dateselector-calendar-panel {
+    z-index: 99001 !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/* Remove bottom line at modal container last form fieldset. */
+.modal-body .mform fieldset:last-child {
+    border-bottom: 0;
+}
+
+/* Hide footer popover while running behat. */
+body.behat-site {
+    &.jsenabled #page-footer .footer-content-popover {
+        display: inherit;
+    }
+    &.jsenabled .btn-footer-popover {
+        display: none;
+    }
+}
