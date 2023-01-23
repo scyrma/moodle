@@ -107,8 +107,8 @@
                 {{/mosaicimages}}
             </div>
             <div class="media-body align-self-stretch d-flex flex-column justify-content-between">
-                <div class="d-flex align-items-center">
-                    <a class="stretched-link" href="{{{url}}}" data-action="show-set" data-linktype="set-link" data-setid="{{setid}}" data-region="item-name">{{{fullname}}}</a> {{#duedatebadge}}<span class="badge badge-pill badge-warning ml-2">{{{duedatebadge}}}</span>{{/duedatebadge}}
+                <div>
+                    <a class="stretched-link mr-1" href="{{{url}}}" data-action="show-set" data-linktype="set-link" data-setid="{{setid}}" data-region="item-name">{{{fullname}}}</a>
                 </div>
                 {{^islocked}}
                     <div class="font-small text-muted">{{#str}}progress, tool_catalogue, {{progress}}{{/str}}</div>

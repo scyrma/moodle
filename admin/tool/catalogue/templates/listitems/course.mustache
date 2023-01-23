@@ -51,13 +51,13 @@
                 <span class="sr-only">{{#str}}courseimage_help, tool_catalogue{{/str}}</span>
             </div>
             <div class="media-body align-self-stretch d-flex flex-column justify-content-between">
-                <div class="d-flex align-items-center">
-                    <a class="stretched-link" href="{{{url}}}" data-region="item-name">{{{fullname}}}</a>
+                <div>
+                    <a class="stretched-link mr-1" href="{{{url}}}" data-region="item-name">{{{fullname}}}</a>
                     {{#duedatebadgestr}}
-                        <span class="badge badge-pill badge-{{{duedatebadgetype}}} ml-2">{{{duedatebadgestr}}}</span>
+                        <span class="badge badge-pill badge-{{{duedatebadgetype}}}">{{{duedatebadgestr}}}</span>
                     {{/duedatebadgestr}}
                     {{#showhiddencoursebadge}}
-                        <span class="badge badge-pill badge-secondary ml-2">{{#str}}hiddenfromlearners, tool_program{{/str}}</span>
+                        <span class="badge badge-pill badge-secondary">{{#str}}hiddenfromlearners, tool_program{{/str}}</span>
                     {{/showhiddencoursebadge}}
                 </div>
                 {{#categoryname}}
