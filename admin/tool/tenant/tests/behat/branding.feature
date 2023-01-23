@@ -28,6 +28,14 @@ Feature: Test tenant branding settings
     Then "Show more..." "link" should not exist in the "region-main" "region"
     And I should not see "Navigation bar colour" in the "region-main" "region"
 
+  Scenario: Admin can edit 'managethemeadvanced' capability
+    When I log in as "admin"
+    And I navigate to "Users > Permissions > Define roles" in site administration
+    And I follow "Tenant administrator"
+    And I press "Edit"
+    And I click on "tool/tenant:managethemeadvanced" "checkbox"
+    And I press "Save changes"
+
   Scenario: Customise advanced tenant settings
     Given the following "permission overrides" exist:
       | capability                      | permission | role                | contextlevel | reference |

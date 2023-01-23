@@ -116,6 +116,7 @@ class role {
             'moodle/site:configview' => CAP_ALLOW,
             'tool/tenant:browseusers' => CAP_ALLOW,
             'tool/tenant:managetheme' => CAP_ALLOW,
+            'tool/tenant:managethemeadvanced' => CAP_INHERIT, // Available but not allowed by default.
             'tool/tenant:managedashboard' => CAP_ALLOW,
             'tool/tenant:manageusers' => CAP_ALLOW,
             'moodle/role:assign' => CAP_ALLOW,
