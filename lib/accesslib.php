@@ -1388,6 +1388,9 @@ function assign_capability($capability, $permission, $roleid, $contextid, $overw
     if (!$capinfo = get_capability_info($capability)) {
         throw new coding_exception("Capability '{$capability}' was not found! This has to be fixed in code.");
     }
+    /** @uses \tool_tenant\role::validate_assign_capability() */
+    component_class_callback(\tool_tenant\role::class, 'validate_assign_capability',
+        [$capability, $permission, $roleid, $context]);
 
     if (empty($permission) || $permission == CAP_INHERIT) { // if permission is not set
         unassign_capability($capability, $roleid, $context->id);
