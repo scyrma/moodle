@@ -223,6 +223,11 @@ class required_capability_exception extends moodle_exception {
         } else {
             $link = $context->get_url();
         }
+        // BEGIN MOODLECLOUD HACK.
+        if (local_moodlecloud\restrictions\capability::capability_is_restricted_by_quota($capability)) {
+            $capabilityname .= ' - Quota limits have been exceeded.';
+        }
+        // END MOODLECLOUD HACK.
         parent::__construct($errormessage, $stringfile, $link, $capabilityname);
     }
 }
@@ -360,6 +365,10 @@ function default_exception_handler($ex) {
         redirect(get_login_url());
     }
 
+    // START MOODLECLOUD HACK.
+    local_logging\logger::log(get_class($ex), array('exception' => $ex), 'exceptions');
+    // END MOODLECLOUD HACK.
+
     $info = get_exception_info($ex);
 
     // If we already tried to send the header remove it, the content length
@@ -426,6 +435,26 @@ function default_error_handler($errno, $errstr, $errfile, $errline) {
         //fatal catchable error
         throw new coding_exception('PHP catchable fatal error', $errstr);
     }
+
+    // START MOODLECLOUD HACK.
+    if (error_reporting() !== 0 && strpos($errfile, 'local/logging') === false) {
+        $logerror = true;
+        $logerror = $logerror && strpos($errfile, '/typo3/') === false;
+
+        if ($logerror) {
+            // Do not log issues with the logging itself, or if the errors are surpressed.
+            $exception = array('exceptions' => array(
+                'errno' => $errno,
+                'errstr' => $errstr,
+                'errfile' => $errfile,
+                'errline' => $errline,
+                // Note: Do not include the errcontext here - things get circular.
+            ));
+            local_logging\logger::log($errstr, $exception, 'exceptions', \Monolog\Logger::ERROR);
+        }
+    }
+    // END MOODLECLOUD HACK.
+
     return false;
 }
 
@@ -792,7 +821,7 @@ function initialise_local_config_cache() {
 
     $bootstrapcachefile = $CFG->localcachedir . '/bootstrap.php';
 
-    if (!empty($CFG->siteidentifier) && !file_exists($bootstrapcachefile)) {
+    if (!empty($CFG->siteidentifier) && check_dir_exists($CFG->localcachedir) && !file_exists($bootstrapcachefile)) {
         $contents = "<?php
 // ********** This file is generated DO NOT EDIT **********
 \$CFG->siteidentifier = '" . addslashes($CFG->siteidentifier) . "';
