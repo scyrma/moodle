@@ -274,5 +274,32 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2022101800, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2023012000) {
+
+        $table = new xmldb_table('moodlecloud_notifications');
+	
+	// Changing default of field level on table moodlecloud_notifications to 1.
+        $field = new xmldb_field('level', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'body');
+
+        // Launch change of default for field level.
+        $dbman->change_field_default($table, $field);
+
+        // Changing nullability of field body on table moodlecloud_notifications to not null.
+        $field = new xmldb_field('body', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, 'name');
+
+        // Launch change of nullability for field body.
+        $dbman->change_field_notnull($table, $field);
+
+        // Changing length of field verifyany on table customcert to 10.
+        $table = new xmldb_table('customcert');
+        $field = new xmldb_field('verifyany', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'requiredtime');
+
+        // Launch change of type for field verifyany.
+        $dbman->change_field_type($table, $field);
+
+        // Moodlecloud savepoint reached.
+        upgrade_plugin_savepoint(true, 2023012000, 'local', 'moodlecloud');
+    }
+
     return true;
 }
