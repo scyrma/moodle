@@ -434,6 +434,9 @@ function url_get_variable_options($config) {
         $options[get_string('roles')] = $roleoptions;
     }
 
+    /** @uses \tool_tenant\mod_url::url_get_variable_options() */
+    component_class_callback('tool_tenant\mod_url', 'url_get_variable_options', [$config, &$options]);
+
     return $options;
 }
 
@@ -502,6 +505,9 @@ function url_get_variable_values($url, $cm, $course, $config) {
             $values['course'.$role->shortname] = $role->localname;
         }
     }
+
+    /** @uses \tool_tenant\mod_url::url_get_variable_values() */
+    component_class_callback('tool_tenant\mod_url', 'url_get_variable_values', [$config, &$values]);
 
     return $values;
 }
