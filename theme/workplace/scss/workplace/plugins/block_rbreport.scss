@@ -12,6 +12,10 @@
         [data-region="core_reportbuilder/report-header"] [data-action="toggle-edit-preview"] {
             display: none;
         }
+        // Generate scroll for the block table.
+        .table-dynamic {
+            overflow: auto;
+        }
     }
     // Always show as cards with cards layout setting.
     .rblayout.rblayout-cards {
