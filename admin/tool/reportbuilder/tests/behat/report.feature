@@ -60,6 +60,9 @@ Feature: Manage a report
     And the following should exist in the "report-table" table:
       | First name | Last name |
       | Manager    | 1       |
+    And the following config values are set as admin:
+      | customreportsliveediting | 1 |
+    Then I should not see "Data pre-visualization is disabled by the site administrator"
 
   @javascript
   Scenario: Add a new column to the report

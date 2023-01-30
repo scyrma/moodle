@@ -311,6 +311,9 @@ class customreports_test extends advanced_testcase {
 
         // Set site custom report limit = 1.
         $CFG->customreportslimit = 1;
+
+        // During this process the reports are created as tool_reporbuilder custom report,
+        // after that the conversion of tool-rb to core-rb is executed deleting the initial tool_rb.
         $this->get_workplace_generator()->perform_import_from_file($importfixturepermission, [
             \tool_wp\tool_wp\importer\site::IMPORT_REPORTS => 1,
             \tool_wp\tool_wp\importer\site::IMPORT_CERTIFICATES => 0,
@@ -319,8 +322,9 @@ class customreports_test extends advanced_testcase {
             \tool_wp\tool_wp\importer\site::IMPORT_COHORTS => 0,
         ]);
 
-        // Only one report was converted.
-        $this->assertCount(2, reportbuilder::get_records());
+        // Since the tool-RB check if the number of custom reports in tool/core together does not exceed the set limits,
+        // it only imports one report in tool-RB then converts it to core-RB respecting the set limit.
+        $this->assertCount(0, reportbuilder::get_records());
         $this->assertCount(1, report::get_records());
 
         // Set site custom report limit = 2, empty tool_reportbuilder/core_rb tables.
@@ -328,6 +332,8 @@ class customreports_test extends advanced_testcase {
         $DB->delete_records(reportbuilder::TABLE, []);
         $DB->delete_records(report::TABLE, []);
 
+        // During this process the reports are created as tool_reporbuilder custom report,
+        // after that the conversion of tool-rb to core-rb is executed deleting the initial tool_rb.
         $this->get_workplace_generator()->perform_import_from_file($importfixturepermission, [
             \tool_wp\tool_wp\importer\site::IMPORT_REPORTS => 1,
             \tool_wp\tool_wp\importer\site::IMPORT_CERTIFICATES => 0,
@@ -336,8 +342,8 @@ class customreports_test extends advanced_testcase {
             \tool_wp\tool_wp\importer\site::IMPORT_COHORTS => 0,
         ]);
 
-        // After increment site report limit, two reports was converted.
-        $this->assertCount(1, reportbuilder::get_records());
+        // Now the limit is set in 2, two reports are imported in tool-RB then converts those to core-RB respecting the set limit.
+        $this->assertCount(0, reportbuilder::get_records());
         $this->assertCount(2, report::get_records());
     }
 

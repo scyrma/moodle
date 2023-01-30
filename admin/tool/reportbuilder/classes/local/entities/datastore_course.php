@@ -135,7 +135,7 @@ class datastore_course extends entity_base {
             list($sql, $params) = api::get_datasource_field_sql('course', $field, $tablealias, null,
                 \core_reportbuilder\local\report\column::TYPE_TEXT);
 
-            $langstring = ($field == 'format' ? $field : "${field}course");
+            $langstring = ($field == 'format' ? $field : "{$field}course");
             $column = (new report_column(
                 $field,
                 new lang_string($langstring),

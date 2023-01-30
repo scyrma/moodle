@@ -97,7 +97,7 @@ class report_table extends \table_sql {
     private function display_table_data_during_editing(): bool {
         global $CFG;
 
-        return !empty($CFG->tool_reportbuilder_liveediting ?? true);
+        return !empty($CFG->tool_reportbuilder_liveediting ?? true) && $CFG->customreportsliveediting;
     }
 
     /**

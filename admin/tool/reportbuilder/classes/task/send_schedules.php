@@ -63,9 +63,11 @@ class send_schedules extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        $schedules = schedules::get_schedules();
-        foreach ($schedules as $schedule) {
-            schedules::send($schedule->get('id'), false);
+        if (!empty($CFG->enablecustomreports)) {
+            $schedules = schedules::get_schedules();
+            foreach ($schedules as $schedule) {
+                schedules::send($schedule->get('id'), false);
+            }
         }
     }
 }

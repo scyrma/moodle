@@ -40,6 +40,8 @@ namespace tool_reportbuilder;
 use advanced_testcase;
 use coding_exception;
 use context_system;
+use core_user\reportbuilder\datasource\users;
+use core_reportbuilder_generator;
 use dml_exception;
 use moodle_exception;
 use tool_reportbuilder_generator;
@@ -517,11 +519,16 @@ class permission_test extends advanced_testcase {
      * Test can_create method for user with capability to do so
      */
     public function test_can_create(): void {
+        global $CFG;
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
         $this->assign_edit_capability($user->id);
 
         $this->assertTrue(permission::can_create());
+
+        // If enablecustomreports is false, users cannot create reports.
+        $CFG->enablecustomreports = 0;
+        $this->assertFalse(permission::can_create());
     }
 
     /**
@@ -583,6 +590,70 @@ class permission_test extends advanced_testcase {
 
         // Now ignore the limit.
         $this->assertTrue(permission::can_create(true));
+    }
+
+    /**
+     * Data provider for {@see test_can_create_observe_site_core_limits}
+     *
+     * @return array
+     */
+    public function can_create_observe_site_core_limits(): array {
+        return [
+            [true, 1, 0, 0, 0, true],
+            [true, 1, 0, 1, 0, false],
+            [true, 2, 0, 1, 0, true],
+            [true, 2, 0, 1, 1, false],
+            [false, 0, 1, 0, 0, true],
+            [false, 0, 1, 1, 0, false],
+            [false, 0, 1, 0, 1, false],
+            [true, 10, 8, 5, 3, true],
+            [false, 10, 8, 5, 3, false],
+        ];
+    }
+
+    /**
+     * Test can_create method while observing site core/tool limits
+     * @param bool $toolreportslimitenabled
+     * @param int $toolreportslimit
+     * @param int $customreportslimit
+     * @param int $existingtoolreports
+     * @param int $existingcorereports
+     * @param bool $expected
+     * @dataProvider can_create_observe_site_core_limits
+     */
+    public function test_can_create_observe_site_core_limits(bool $toolreportslimitenabled, int $toolreportslimit,
+                         int $customreportslimit, int $existingtoolreports, int $existingcorereports, bool $expected): void {
+        global $CFG;
+
+        $this->setAdminUser();
+
+        // Set possible config values.
+        $CFG->tool_reportbuilder_limitsenabled = $toolreportslimitenabled;
+        $CFG->tool_reportbuilder_sitelimit = $toolreportslimit;
+        $CFG->customreportslimit = $customreportslimit;
+
+        // Check if tool reports needs to be created.
+        if ($existingtoolreports) {
+            for ($i = 0; $i < $existingtoolreports; $i++) {
+                $this->get_report_generator()->create_report(['name' => 'Tool report' . $i, 'source' => mock_report::class]);
+            }
+        }
+
+        // Check if core reports needs to be created.
+        if ($existingcorereports) {
+            /** @var core_reportbuilder_generator $generator */
+            $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
+            for ($i = 0; $i < $existingcorereports; $i++) {
+                $generator->create_report(['name' => 'Core report' . $i, 'source' => users::class]);
+            }
+        }
+
+        // Check if user can create tool rb.
+        if ($expected) {
+            $this->assertTrue(permission::can_create());
+        } else {
+            $this->assertFalse(permission::can_create());
+        }
     }
 
     /**

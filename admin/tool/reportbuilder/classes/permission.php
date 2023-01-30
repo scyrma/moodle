@@ -36,6 +36,8 @@
 
 namespace tool_reportbuilder;
 
+use core_reportbuilder\local\models\report;
+use core_reportbuilder\local\report\base;
 use moodle_exception;
 use tool_reportbuilder\local\helpers\audience;
 use tool_reportbuilder\local\models\schedule;
@@ -208,10 +210,20 @@ class permission {
     public static function is_sitelimit_reached() : bool {
         global $CFG;
 
-        $params = ['type' => constants::TYPE_DATASOURCE];
+        // Get core_reportbuilder && tool_reportbuilder customreport/datasource types counts.
+        $totalcorereports = report::count_records(['type' => base::TYPE_CUSTOM_REPORT]);
+        $totaltoolreports = reportbuilder::count_records(['type' => constants::TYPE_DATASOURCE]);
 
-        return !empty($CFG->tool_reportbuilder_limitsenabled) && isset($CFG->tool_reportbuilder_sitelimit) &&
-            $CFG->tool_reportbuilder_sitelimit <= reportbuilder::count_records($params);
+        // Let sum both rb totals (core/tool).
+        $totalreports = $totalcorereports + $totaltoolreports;
+
+        // If rb(tool) config limit values are setted, then check if both (core/tool) together reach this limit.
+        if (!empty($CFG->tool_reportbuilder_limitsenabled) && isset($CFG->tool_reportbuilder_sitelimit)) {
+            return $CFG->tool_reportbuilder_sitelimit <= $totalreports;
+        }
+
+        // If rb(tool) config limit values aren't setted, then check with rb(core) limit config.
+        return !empty($CFG->customreportslimit) && (int)$CFG->customreportslimit <= $totalreports;
     }
 
     /**
@@ -235,6 +247,12 @@ class permission {
      * @return bool
      */
     public static function can_create(bool $ignorelimit = false) : bool {
+        global $CFG;
+
+        if (empty($CFG->enablecustomreports)) {
+            return false;
+        }
+
         if (!$ignorelimit && (self::is_sitelimit_reached() || self::is_tenantlimit_reached())) {
             return false;
         }

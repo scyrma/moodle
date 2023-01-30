@@ -37,7 +37,11 @@
 defined('MOODLE_INTERNAL') || die;
 
 /** @var admin_root $ADMIN */
-$ADMIN->add('reports', new admin_category('treportbuilder', new lang_string('pluginname', 'tool_reportbuilder')));
+$ADMIN->add('reports', new admin_category(
+    'treportbuilder',
+    new lang_string('pluginname', 'tool_reportbuilder'),
+    empty($CFG->enablecustomreports)
+));
 
 $tenantid = \tool_tenant\tenancy::get_tenant_id();
 if (\tool_reportbuilder\permission::can_manage_reports($tenantid)) {
@@ -50,7 +54,8 @@ if (\tool_reportbuilder\permission::can_manage_reports($tenantid)) {
             new moodle_url('/admin/tool/reportbuilder/index.php'),
             function() use ($tenantid) {
                 return \tool_reportbuilder\permission::can_manage_reports($tenantid);
-            }
+            },
+            empty($CFG->enablecustomreports)
         )
     );
 } else {
@@ -61,7 +66,8 @@ if (\tool_reportbuilder\permission::can_manage_reports($tenantid)) {
             'tool_reportbuilder',
             new lang_string('viewreports', 'tool_reportbuilder'),
             new moodle_url('/admin/tool/reportbuilder/index.php'),
-            [\tool_reportbuilder\permission::class, 'can_view_reports_list']
+            [\tool_reportbuilder\permission::class, 'can_view_reports_list'],
+            empty($CFG->enablecustomreports)
         )
     );
 }

@@ -256,7 +256,7 @@ class course_completion extends entity_base {
         foreach ($allcolumns as $column) {
             $columns[] = (new report_column(
                 $column,
-                new lang_string("course_completion_${column}", 'tool_reportbuilder'),
+                new lang_string("course_completion_{$column}", 'tool_reportbuilder'),
                 $this->get_entity_name()
             ))
                 ->add_joins($this->get_joins())
