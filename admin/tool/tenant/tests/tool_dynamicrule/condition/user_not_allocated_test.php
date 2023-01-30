@@ -295,10 +295,14 @@ class user_not_allocated_test extends advanced_testcase {
 
         // Move user to tenant 1, they should match now.
         $this->generator->allocate_user((int)$newuser1->id, $tenant1->id);
-
-        // TODO WP-3988 remove next line.
-        (new \tool_dynamicrule\task\process_rules())->execute();
-
         $this->get_generator()->assert_user_matched_rule($this, (int)$newuser1->id, $rule1->id);
+
+        // Create a user in default tenant, they should match.
+        $newuser2 = $this->generator->create_user();
+        $this->get_generator()->assert_user_matched_rule($this, (int)$newuser2->id, $rule1->id);
+
+        // Move user to tenant 2, they should not match now.
+        $this->generator->allocate_user((int)$newuser2->id, $tenant2->id);
+        $this->get_generator()->assert_user_did_not_match_rule($this, (int)$newuser2->id, $rule1->id, 1);
     }
 }

@@ -484,9 +484,9 @@ class auth_manager {
             });
 
         $tenantid = $tenantid ?: tenancy::get_tenant_id();
-        $authenabled = preg_split('/,/', config::get_config_tenant_override($tenantid, 'core', self::CONFIG_AUTH_ENABLED),
+        $authenabled = preg_split('/,/', config::get_config_tenant_override($tenantid, 'core', self::CONFIG_AUTH_ENABLED) ?? '',
             -1, PREG_SPLIT_NO_EMPTY);
-        $authdisabled = preg_split('/,/', config::get_config_tenant_override($tenantid, 'core', self::CONFIG_AUTH_DISABLED),
+        $authdisabled = preg_split('/,/', config::get_config_tenant_override($tenantid, 'core', self::CONFIG_AUTH_DISABLED) ?? '',
             -1, PREG_SPLIT_NO_EMPTY);
         foreach ($authplugins as $auth => &$authinfo) {
             $authinfo['users'] = $DB->count_records_select('user',

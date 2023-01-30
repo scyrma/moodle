@@ -280,7 +280,6 @@ class user_allocated_test extends advanced_testcase {
         $sharedspaceid = sharedspace::enable_shared_space();
         $tenant1 = $this->generator->create_tenant();
         $tenant2 = $this->generator->create_tenant();
-
         $rule1 = $this->get_generator()->create_rule(['tenantid' => $sharedspaceid, 'enabled' => 1]);
 
         // Create condition for users allocated to tenant2.
@@ -293,9 +292,14 @@ class user_allocated_test extends advanced_testcase {
 
         // Move the user to tenant2, they should match now.
         $this->generator->allocate_user((int)$newuser1->id, $tenant2->id);
-        // TODO WP-3988 remove next line.
-        (new \tool_dynamicrule\task\process_rules())->execute();
-
         $this->get_generator()->assert_user_matched_rule($this, (int)$newuser1->id, $rule1->id);
+
+        // Create a user in default tenant, they should not match.
+        $newuser2 = $this->generator->create_user();
+        $this->get_generator()->assert_user_did_not_match_rule($this, (int)$newuser2->id, $rule1->id);
+
+        // Move the user to tenant2, they should match now.
+        $this->generator->allocate_user((int)$newuser2->id, $tenant2->id);
+        $this->get_generator()->assert_user_matched_rule($this, (int)$newuser2->id, $rule1->id);
     }
 }

@@ -170,16 +170,6 @@ abstract class condition_base extends condition_sql {
     }
 
     /**
-     * Execute as a scheduled task
-     *
-     * @return bool
-     */
-    public function is_scheduled_task(): bool {
-        // TODO WP-3988 remove this function when we can properly listen to event tenant_user_updated.
-        return true;
-    }
-
-    /**
      * Which rule types this condition supports.
      *
      * @return int Rule types bitwise added.

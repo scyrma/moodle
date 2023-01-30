@@ -130,6 +130,7 @@ class role {
             'tool/tenant:authconfig' => CAP_ALLOW,
             'tool/tenant:mobileconfig' => CAP_INHERIT, // Available but not allowed by default.
             'moodle/block:edit' => CAP_ALLOW,
+            'moodle/my:manageblocks' => CAP_INHERIT, // Available, it is default to allow for all users.
         ];
 
         foreach (\core_component::get_plugin_list('block') as $blockname => $unused) {
