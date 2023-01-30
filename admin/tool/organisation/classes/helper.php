@@ -445,7 +445,7 @@ class helper {
                     $params[$pid] = $job->get_position()->get('id');
                 } else {
                     $ppath = database::generate_param_name();
-                    $queries[] = $DB->sql_like("${p}.path", ":$ppath");
+                    $queries[] = $DB->sql_like("{$p}.path", ":$ppath");
                     $params[$ppath] = $job->get_position()->get('path') . '/%';
                 }
             }
