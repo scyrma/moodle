@@ -83,6 +83,7 @@ class permission {
 
     /**
      * Checks if program is 'visible' to the current user based on the program tenant
+     * Also checks if the given program is from the current tenant or shared program from a parent tenant
      *
      * This function does not check if program is archived or not
      *
@@ -90,22 +91,17 @@ class permission {
      * @return bool
      */
     protected static function is_program_visible_in_list(program $program): bool {
-        return tenancy::get_tenant_id() == $program->get('tenantid') ||
-            ($program->get('shared') && in_array($program->get('tenantid'), hierarchy::get_parent_tenants_ids()));
+        return hierarchy::is_own_or_parent_shared_entity($program->get('tenantid'), $program->get('shared'));
     }
 
     /**
      * User can access the program contents and view it on the dashboard (my programs overview).
-     *
-     * This method does no check program tenant ids. The Learning tab should show programs on Shared space
-     * regardless of the current tenant.
      *
      * @param program $program
      * @param int $userid
      * @return bool
      */
     public static function can_view_program(program $program, int $userid): bool {
-        // TODO this is never called for user other than current.
 
         if ($program->is_archived()) {
             return false;
@@ -116,6 +112,10 @@ class permission {
         }
 
         if (!api::is_active_allocation((int) $program->get('id'), $userid)) {
+            return false;
+        }
+
+        if (!self::is_program_visible_in_list($program)) {
             return false;
         }
 

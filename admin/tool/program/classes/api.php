@@ -2075,13 +2075,10 @@ class api {
     /**
      * Returns a list of accessible programs for the given user.
      *
-     * Uses can_view_program() which does no take into consideration program tenants.
-     *
      * @param int $userid
      * @return program[]
      */
     public static function get_user_accessible_programs(int $userid): array {
-        // TODO this is never called for user other than current user.
         /** @var program[] $programs */
         $programs = self::get_programs_by_userid($userid);
         $accessibleprograms = [];

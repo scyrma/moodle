@@ -3301,11 +3301,10 @@ class api_test extends advanced_testcase {
         $accessibleprograms = api::get_user_accessible_programs($user->id);
 
         // User was allocated to all programs, then it can access all of them.
-        $this->assertCount(5, $accessibleprograms);
-        $this->assertArrayHasKey($program1->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program2->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program3->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program4->get('id'), $accessibleprograms);
+        $this->assertEqualsCanonicalizing(
+            [$program1->get('id'), $program2->get('id'), $program3->get('id'), $program4->get('id'), $program5->get('id')],
+            array_keys($accessibleprograms)
+        );
 
         // Archive program1, then it should not be accessible.
         $program1->set('archived', true);
@@ -3313,12 +3312,10 @@ class api_test extends advanced_testcase {
 
         $accessibleprograms = api::get_user_accessible_programs($user->id);
 
-        $this->assertCount(4, $accessibleprograms);
-        $this->assertArrayNotHasKey($program1->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program2->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program3->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program4->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program5->get('id'), $accessibleprograms);
+        $this->assertEqualsCanonicalizing(
+            [$program2->get('id'), $program3->get('id'), $program4->get('id'), $program5->get('id')],
+            array_keys($accessibleprograms)
+        );
 
         // Hide program2, then it should not be accessible.
         $program2->set('visible', constants::VISIBILITY_HIDDEN);
@@ -3326,12 +3323,10 @@ class api_test extends advanced_testcase {
 
         $accessibleprograms = api::get_user_accessible_programs($user->id);
 
-        $this->assertCount(3, $accessibleprograms);
-        $this->assertArrayNotHasKey($program1->get('id'), $accessibleprograms);
-        $this->assertArrayNotHasKey($program2->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program3->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program4->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program5->get('id'), $accessibleprograms);
+        $this->assertEqualsCanonicalizing(
+            [$program3->get('id'), $program4->get('id'), $program5->get('id')],
+            array_keys($accessibleprograms)
+        );
 
         // Suspend user allocation to program3, then program3 should not be accessible.
         $programuser3->set('status', constants::STATUS_SUSPENDED);
@@ -3339,25 +3334,24 @@ class api_test extends advanced_testcase {
 
         $accessibleprograms = api::get_user_accessible_programs($user->id);
 
-        $this->assertCount(2, $accessibleprograms);
-        $this->assertArrayNotHasKey($program1->get('id'), $accessibleprograms);
-        $this->assertArrayNotHasKey($program2->get('id'), $accessibleprograms);
-        $this->assertArrayNotHasKey($program3->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program4->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program5->get('id'), $accessibleprograms);
+        $this->assertEqualsCanonicalizing(
+            [$program4->get('id'), $program5->get('id')],
+            array_keys($accessibleprograms)
+        );
 
-        // If program4 was from another tenant, then program4 should still be accesible from the Learning tab.
+        // Create a shared program and move program4 to another tenant.
+        $sharedtenantid = \tool_tenant\sharedspace::enable_shared_space();
+        $sharedprogram = $this->generator->generate_program((object)['tenantid' => $sharedtenantid]);
+        $this->generator->allocate_user_to_program($sharedprogram->get('id'), $user->id);
         $program4->set('tenantid', $tenant2->id);
         $program4->update();
 
         $accessibleprograms = api::get_user_accessible_programs($user->id);
-
-        $this->assertCount(2, $accessibleprograms);
-        $this->assertArrayNotHasKey($program1->get('id'), $accessibleprograms);
-        $this->assertArrayNotHasKey($program2->get('id'), $accessibleprograms);
-        $this->assertArrayNotHasKey($program3->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program4->get('id'), $accessibleprograms);
-        $this->assertArrayHasKey($program5->get('id'), $accessibleprograms);
+        // Check that shared program is visible and program4 not.
+        $this->assertEqualsCanonicalizing(
+            [$program5->get('id'), $sharedprogram->get('id')],
+            array_keys($accessibleprograms)
+        );
 
         // Archive certification5, then program5 should not be accessible since we only had an allocation from that certification.
         $certification5->set('archived', true);

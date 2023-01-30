@@ -158,42 +158,54 @@ class permission_test extends advanced_testcase {
      */
     public function test_can_view_program(): void {
         $data = $this->create_tenant_and_user();
-        self::setUser($data->user);
+        $sharedtenantid = \tool_tenant\sharedspace::enable_shared_space();
 
-        $program = $this->generator->generate_program((object)[
+        $program1 = $this->generator->generate_program((object)[
             'tenantid' => $data->defaulttenantid,
             'archived' => 0,
             'visible' => 1,
         ]);
+        $program2 = $this->generator->generate_program((object)[
+            'tenantid' => $data->othertenantid,
+            'archived' => 0,
+            'visible' => 1,
+        ]);
+        $sharedprogram = $this->generator->generate_program((object)['tenantid' => $sharedtenantid]);
 
         $user = self::getDataGenerator()->create_user();
-        $userid = $user->id;
-        $userdata = (object) [
-            'userid' => $userid,
-            'certificationid' => 0,
-        ];
-        api::allocate_user($program, $userdata);
+        $this->generator->allocate_user_to_program($program1->get('id'), $user->id);
+        $this->generator->allocate_user_to_program($program2->get('id'), $user->id);
+        $this->generator->allocate_user_to_program($sharedprogram->get('id'), $user->id);
+
         self::setUser($user);
 
-        $canview = permission::can_view_program($program, $userid);
+        $canview = permission::can_view_program($program1, $user->id);
         $this->assertTrue($canview);
 
-        // We archive program.
-        api::archive_program($program);
-        $canview = permission::can_view_program($program, $userid);
+        // User can not view program2 because it is in another tenant.
+        $canview = permission::can_view_program($program2, $user->id);
         $this->assertFalse($canview);
 
-        api::restore_program($program);
-        $canview = permission::can_view_program($program, $userid);
+        // We archive program1.
+        api::archive_program($program1);
+        $canview = permission::can_view_program($program1, $user->id);
+        $this->assertFalse($canview);
+
+        api::restore_program($program1);
+        $canview = permission::can_view_program($program1, $user->id);
         $this->assertTrue($canview);
 
-        // We hide program.
-        api::update_program_visibility($program, 0);
-        $canview = permission::can_view_program($program, $userid);
+        // We hide program1.
+        api::update_program_visibility($program1, 0);
+        $canview = permission::can_view_program($program1, $user->id);
         $this->assertFalse($canview);
 
-        api::update_program_visibility($program, 1);
-        $canview = permission::can_view_program($program, $userid);
+        api::update_program_visibility($program1, 1);
+        $canview = permission::can_view_program($program1, $user->id);
+        $this->assertTrue($canview);
+
+        // User can view shared program.
+        $canview = permission::can_view_program($sharedprogram, $user->id);
         $this->assertTrue($canview);
     }
 
