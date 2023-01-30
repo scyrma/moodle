@@ -121,7 +121,7 @@ class course extends base {
         foreach ($fields as $field) {
             [$sql, $params] = api::get_datasource_field_sql('course', $field, $tablealias, null, column::TYPE_TEXT);
 
-            $langstring = ($field === 'format' ? $field : "${field}course");
+            $langstring = ($field === 'format' ? $field : "{$field}course");
             $column = (new column(
                 $field,
                 new lang_string($langstring),
