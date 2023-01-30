@@ -77,7 +77,7 @@ class user_matching_rule_details implements \renderable, \templatable {
             }
             $outcomes[] = [
                 'outcomeid' => $outcome->get_id(),
-                'title' => $outcome->get_title(),
+                'title' => $outcome->get_displayed_description(),
                 'statusclass' => $statusclass,
                 'statustitle' => $statustitle,
                 'debugmessage' => $debugmessage,

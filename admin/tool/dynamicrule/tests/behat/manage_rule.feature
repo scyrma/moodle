@@ -900,14 +900,14 @@ Feature: Creating and editing rules
     And I navigate to "Dynamic rules" in workplace launcher
     And I press "View report" action in the "Rule1" report row
     And I press "See details" action in the "User 11" report row
-    And I should see "Notification"
-    And I should see "Completed"
-    And I should not see "Debug info"
+    And I should see "Send notification 'Test notification' to users" in the "Details" "dialogue"
+    And I should see "Completed" in the "Details" "dialogue"
+    And I should not see "Debug info" in the "Details" "dialogue"
     And I click on "Cancel" "button" in the "Details" "dialogue"
     And I press "See details" action in the "User 12" report row
-    And I should see "Notification"
-    And I should see "Completed"
-    And I should not see "Debug info"
+    And I should see "Send notification 'Test notification' to users" in the "Details" "dialogue"
+    And I should see "Completed" in the "Details" "dialogue"
+    And I should not see "Debug info" in the "Details" "dialogue"
     And I click on "Cancel" "button" in the "Details" "dialogue"
 
   Scenario: Check matched report debug info
@@ -939,14 +939,14 @@ Feature: Creating and editing rules
     And I navigate to "Dynamic rules" in workplace launcher
     And I press "View report" action in the "Rule1" report row
     And I press "See details" action in the "User 11" report row
-    And I should see "Notification"
-    And I should see "Completed"
-    And I should see "Debug info"
+    And I should see "Send notification 'Test notification' to users" in the "Details" "dialogue"
+    And I should see "Completed" in the "Details" "dialogue"
+    And I should see "Debug info" in the "Details" "dialogue"
     And I click on "Cancel" "button" in the "Details" "dialogue"
     And I press "See details" action in the "User 12" report row
-    And I should see "Notification"
-    And I should see "Completed"
-    And I should see "Debug info"
+    And I should see "Send notification 'Test notification' to users" in the "Details" "dialogue"
+    And I should see "Completed" in the "Details" "dialogue"
+    And I should see "Debug info" in the "Details" "dialogue"
     And I click on "Cancel" "button" in the "Details" "dialogue"
 
   Scenario: Archive rule from kebab action menu

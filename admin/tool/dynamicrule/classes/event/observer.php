@@ -38,7 +38,6 @@ namespace tool_dynamicrule\event;
 
 use tool_dynamicrule\api;
 use tool_dynamicrule\rule;
-use tool_tenant\hierarchy;
 
 /**
  * Event observer for tool_dynamicrule.
@@ -131,8 +130,9 @@ class observer {
      * @return void
      */
     public static function tenant_user_updated(\tool_tenant\event\tenant_user_updated $event): void {
-        // We process all rules for affected user within tenant.
-        $rules = rule::get_records(['tenantid' => $event->other['tenantid'], 'enabled' => 1]);
+        // We process all rules for affected user within tenant and those created in shared space.
+        $tenantid = $event->other['tenantid'];
+        $rules = rule::get_records_select("(tenantid = :tenantid OR shared = 1) AND enabled = 1", ['tenantid' => $tenantid]);
         foreach ($rules as $rule) {
             \tool_dynamicrule\api::process_rule($rule, $event->relateduserid);
         }
