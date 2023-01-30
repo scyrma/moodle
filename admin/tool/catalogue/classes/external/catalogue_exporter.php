@@ -35,6 +35,7 @@ use renderer_base;
 use tool_catalogue\constants;
 use tool_catalogue\manager;
 use tool_catalogue\router;
+use tool_program\api as program_api;
 use tool_program\persistent\program_user;
 
 /**
@@ -203,7 +204,7 @@ class catalogue_exporter extends exporter {
         $userid = $this->related['userid'] ?? (int) $USER->id;
 
         $allocations = manager::get_user_allocations($userid);
-        $programs = manager::get_user_accessible_programs($userid);
+        $programs = program_api::get_user_accessible_programs($userid);
 
         foreach ($programs as $program) {
 

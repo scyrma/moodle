@@ -79,24 +79,21 @@
         ]
     }
 }}
+{{! Set heading }}
 <div class="level d-none" data-region="set-heading" data-setid="{{setid}}">
     {{#islocked}}
         <div class="alert alert-warning py-2 my-3">
             {{{unlockrequirement}}}
         </div>
     {{/islocked}}
-    <div class="d-flex">
-        <span class="mr-1 d-flex align-items-center">
-            <span class="setcriteriasvg mr-2" aria-hidden="true">
-                <img src="{{{setcriteriaicon}}}" alt="">
-            </span>
-            <span class="mr-1"><strong>{{#str}}todo, tool_catalogue{{/str}}</strong></span>
-            {{{setcriteriastr}}}
-        </span>
-        <span class="ml-auto text-muted">{{#str}} progresscompleted, tool_catalogue, { "completed": {{#quote}}{{completeditems}}{{/quote}}, "total": {{#quote}}{{totalitems}}{{/quote}} } {{/str}}</span>
-    </div>
-    <hr>
+    {{! Completion criteria }}
+    {{< tool_catalogue/completioncriteria }}
+        {{$criteriaicon}} {{{setcriteriaicon}}} {{/criteriaicon}}
+        {{$criteriastring}} {{{setcriteriastr}}} {{/criteriastring}}
+        {{$criteriaprogress}} {{#str}} progresscompleted, tool_catalogue, { "completed": {{#quote}}{{completeditems}}{{/quote}}, "total": {{#quote}}{{totalitems}}{{/quote}} } {{/str}} {{/criteriaprogress}}
+    {{/ tool_catalogue/completioncriteria }}
 </div>
+{{! Set listitem }}
 <div class="card mb-2 level d-none {{#islocked}}restricted bg-gray-100{{/islocked}}" data-region="catalogue-item" data-setid="{{parentsetid}}">
     <div class="card-body d-flex align-items-center p-3">
         <div class="media">
@@ -129,6 +126,7 @@
         </div>
     {{/islocked}}
 </div>
+{{! Set child listitems }}
 {{#items}}
     {{> tool_catalogue/listitems/item}}
 {{/items}}

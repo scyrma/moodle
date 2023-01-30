@@ -35,10 +35,10 @@ use context_header;
 use html_writer;
 use stdClass;
 use tool_catalogue\output\course_cover_modal;
-use tool_certification\api as certificationapi;
+use tool_certification\api as certification_api;
 use tool_certification\certification;
 use tool_certification\certification_completion;
-use tool_program\api;
+use tool_program\api as program_api;
 use tool_program\permission as program_permission;
 use tool_program\persistent\program;
 use tool_program\persistent\program_user;
@@ -142,7 +142,7 @@ class manager {
         global $CFG;
         require_once($CFG->dirroot . '/course/lib.php');
 
-        $workplaceexcludedcourses = \tool_program\api::get_course_ids_with_only_enrol_program_instance($userid);
+        $workplaceexcludedcourses = program_api::get_course_ids_with_only_enrol_program_instance($userid);
         $courses = enrol_get_users_courses($userid, true, '*');
         return array_filter($courses, static function(stdClass $course) use ($workplaceexcludedcourses): bool {
             return !in_array($course->id, $workplaceexcludedcourses, true);
@@ -247,7 +247,7 @@ class manager {
             if ($certificationid === 0) {
                 continue;
             }
-            $statuses = certificationapi::get_user_allocation_status($certificationid, $userid);
+            $statuses = certification_api::get_user_allocation_status($certificationid, $userid);
             $status[$allocationid] = $statuses[0]['status'] ?? -1;
         }
 
@@ -303,7 +303,7 @@ class manager {
             if (permission::can_view_program((int) $USER->id, $program) && !$showprogrampreference) {
                 $image = $program->get_image_url();
                 if (!$image) {
-                    $image = api::get_program_pattern($program->get('id'));
+                    $image = program_api::get_program_pattern($program->get('id'));
                 }
                 $imagedata = html_writer::tag('div', '', ['class' => 'border-radius item-heading-image',
                     'style' => 'background-image: url(' . $image . ')']);

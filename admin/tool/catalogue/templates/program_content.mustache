@@ -108,6 +108,7 @@
 }}
 <div id="program-container" data-region="program-container" class="tool_catalogue-catalogue program" data-programid="{{programid}}" data-fullname="{{{fullname}}}">
     <div class="level d-none" data-region="program-heading" data-setid="0">
+        {{! Recently accessed courses }}
         {{#pagesectionrecentlyaccessedcourses}}
         {{< tool_catalogue/cover/pagesection }}
             {{$name}}{{#str}}recentlyaccessedcourses, tool_catalogue{{/str}}{{/name}}
@@ -145,18 +146,14 @@
             {{/content}}
         {{/ tool_catalogue/cover/pagesection }}
         {{/pagesectionrecentlyaccessedcourses}}
-        <div class="d-flex">
-            <span class="mr-1 d-flex align-items-center">
-                <span class="completionsvg mr-2" aria-hidden="true">
-                    <img src="{{{completionicon}}}" alt="">
-                </span>
-                <span class="mr-1"><strong>{{#str}}todo, tool_catalogue{{/str}}</strong></span>
-                {{{completioncriteria}}}
-            </span>
-            <span class="ml-auto text-muted">{{{completionprogress}}}</span>
-        </div>
-        <hr>
+        {{! Completion criteria }}
+        {{< tool_catalogue/completioncriteria }}
+            {{$criteriaicon}} {{{completionicon}}} {{/criteriaicon}}
+            {{$criteriastring}} {{{completioncriteria}}} {{/criteriastring}}
+            {{$criteriaprogress}} {{{completionprogress}}} {{/criteriaprogress}}
+        {{/ tool_catalogue/completioncriteria }}
     </div>
+    {{! Program listitems }}
     {{#listitems}}
         {{> tool_catalogue/listitems/item}}
     {{/listitems}}
