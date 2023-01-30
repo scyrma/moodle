@@ -414,8 +414,8 @@ class registration {
     public static function get_quick_stats(): array {
         global $CFG;
         $d = str_repeat('-', 5);
-        $key = "${d}BEGIN PUBLIC KEY${d}\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAOSm4VUeVf++ogMwzYtXIwjX3f//tck/\n".
-            "ayzsfJfyRSj3oVSZ/ElasFU4ayb/SvpG4UhdmdyP/z6okdU9YDvCy+ECAwEAAQ==\n${d}END PUBLIC KEY$d\n";
+        $key = "{$d}BEGIN PUBLIC KEY{$d}\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAOSm4VUeVf++ogMwzYtXIwjX3f//tck/\n".
+            "ayzsfJfyRSj3oVSZ/ElasFU4ayb/SvpG4UhdmdyP/z6okdU9YDvCy+ECAwEAAQ==\n{$d}END PUBLIC KEY{$d}\n";
         $ekeys = [];
         $plugin = \core_plugin_manager::instance()->get_plugins_of_type('tool')['wp'];
         $data = [
