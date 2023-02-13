@@ -25,6 +25,8 @@
 
 namespace mod_appointment\form;
 
+use mod_appointment\customfield\appointment_handler;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/appointment/lib.php');
@@ -87,7 +89,7 @@ class duplicate extends session {
     /**
      * Process form submission.
      *
-     * @return string
+     * @return void
      */
     public function process_dynamic_submission() {
         $data = $this->get_data();
@@ -126,10 +128,16 @@ class duplicate extends session {
         unset($session->sessiondates);
 
         // Add customfields.
-        $handler = \mod_appointment\customfield\appointment_handler::create();
+        $handler = appointment_handler::create();
         foreach ($handler->export_instance_data($data->sessionid, true) as $fielddata) {
             if (!empty($fielddata->get_value())) {
-                $session->{'customfield_' . $fielddata->get_shortname()} = $fielddata->get_value();
+                $fieldname = 'customfield_' . $fielddata->get_shortname();
+                $fieldvalue = $fielddata->get_data_controller()->get_value();
+                if ($fielddata->get_type() === 'textarea') {
+                    $fieldname = $fieldname . '_editor';
+                    $fieldvalue = ['text' => (string) $fieldvalue, 'format' => FORMAT_HTML];
+                }
+                $session->{$fieldname} = $fieldvalue;
             }
         }
 

@@ -521,7 +521,17 @@ function appointment_is_session_update_required(\stdClass $oldsession, \stdClass
     $handler = \mod_appointment\customfield\appointment_handler::create();
     foreach ($handler->export_instance_data($oldsession->id, true) as $fielddata) {
         $prop = 'customfield_' . $fielddata->get_shortname();
-        if (isset($session->$prop) && $session->$prop != $fielddata->get_data_controller()->get_value()) {
+
+        // Get new value when type is textarea.
+        $sessionvalue = $session->$prop ?? false;
+        if ($fielddata->get_type() === 'textarea') {
+            $prop = $prop . '_editor';
+            if (isset($session->{$prop}['text'])) {
+                $sessionvalue = $session->{$prop}['text'];
+            }
+        }
+
+        if ($sessionvalue !== false && $sessionvalue != $fielddata->get_data_controller()->get_value()) {
             // At least one field has changed.
             return [true, true];
         }

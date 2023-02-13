@@ -286,8 +286,22 @@ Feature: Manage appointments
     And I follow "Add a new custom field"
     And I choose "Short text" in the open action menu
     And I set the following fields to these values:
-      | Name | Example field |
-      | Short name | example |
+      | Name       | Example field |
+      | Short name | example       |
+    And I press "Save changes"
+    And I follow "Add a new custom field"
+    And I choose "Dropdown menu" in the open action menu
+    And I set the following fields to these values:
+      | Name          | Test field         |
+      | Short name    | testfield          |
+      | Default value | Test field value c |
+    And I set the field "Menu options (one per line)" to multiline:
+    """
+    Test field value a
+    Test field value b
+    Test field value c
+    Test field value d
+    """
     And I press "Save changes"
     And I log out
     When I am on the "Course 1" "course" page logged in as "teacher1"
@@ -320,6 +334,7 @@ Feature: Manage appointments
     And I should see "9:00" in the "##tomorrow##%A, %d %B %Y##" "table_row"
     And I click on "Details" "button" in the "##tomorrow##%A, %d %B %Y##" "table_row"
     And I should see "Some example text" in the "Details" "dialogue"
+    And I should see "Test field value c" in the "Details" "dialogue"
     And I click on "Close" "button" in the "Details" "dialogue"
 
   Scenario: Edit appointment messages

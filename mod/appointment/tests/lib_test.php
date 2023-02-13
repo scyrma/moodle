@@ -1200,6 +1200,118 @@ class lib_test extends advanced_testcase {
     }
 
     /**
+     * Session custom fields update.
+     *
+     * @covers ::appointment_update_session
+     */
+    public function test_session_update_custom_fields() {
+        $this->setAdminUser();
+
+        $cfgenerator = self::getDataGenerator()->get_plugin_generator('core_customfield');
+        $customfieldhandler = customfield\appointment_handler::create();
+
+        // Create appointment custom fields available in report_appointments datasource.
+        $params = [
+            'component' => 'mod_appointment',
+            'area' => 'appointment',
+            'itemid' => 0,
+            'name' => 'Appointment custom field',
+            'contextid' => \context_system::instance()->id
+        ];
+        $category = $cfgenerator->create_category($params);
+        $categoryid = $category->get('id');
+
+        $cfgenerator->create_field(['shortname' => 'textareafield', 'name' => 'Name1',
+            'type' => 'textarea', 'categoryid' => $categoryid]);
+        $cfgenerator->create_field(['shortname' => 'textfield', 'name' => 'Name2',
+            'type' => 'text', 'categoryid' => $categoryid]);
+        $cfgenerator->create_field(['shortname' => 'datefield', 'name' => 'Name3',
+            'type' => 'date', 'categoryid' => $categoryid]);
+        $cfgenerator->create_field(['shortname' => 'checkboxfield', 'name' => 'Name4',
+            'type' => 'checkbox', 'categoryid' => $categoryid]);
+        $cfgenerator->create_field(['shortname' => 'selectfield', 'name' => 'Name5',
+            'configdata' => ['options' => "a\nb\nc"], 'type' => 'select', 'categoryid' => $categoryid]);
+
+        // Create ongoing session. Customfileds are already hardcoded in email template.
+        $date = new stdClass();
+        $date->timestart = strtotime('+1 hour');
+        $date->timefinish = strtotime('+2 hour');
+        $sessionsettings = [
+            'appointment' => $this->appointment->id,
+            'customfield_textareafield_editor' => ['text' => 'Test textarea', 'format' => FORMAT_HTML],
+            'customfield_textfield' => 'Test text field',
+            'customfield_datefield' => strtotime('1 January 2020 00:00'),
+            'customfield_checkboxfield' => 1,
+            'customfield_selectfield' => 1,
+        ];
+
+        // Create session0.
+        $session = $this->get_generator()->create_session($sessionsettings, [], [$date]);
+
+        // Custom field tests are executed individually because when textarea was updated on its own it did not update,
+        // but when it was updated along with another field it was updated correctly.
+
+        // Validate custom fields values.
+        $fieldinstancedata = $customfieldhandler->export_instance_data_object($session->id, true);
+        $this->assertEquals('Test textarea', $fieldinstancedata->textareafield);
+        $this->assertEquals('Test text field', $fieldinstancedata->textfield);
+        $this->assertEquals('Wednesday, 1 January 2020, 12:00 AM', $fieldinstancedata->datefield);
+        $this->assertEquals('Yes', $fieldinstancedata->checkboxfield);
+        $this->assertEquals('a', $fieldinstancedata->selectfield);
+
+        // Edit textarea field and make sure nothing else is updated.
+        $fieldvalue = ['text' => 'Test textarea 2', 'format' => FORMAT_HTML];
+        $session->customfield_textareafield_editor = $fieldvalue;
+        appointment_update_session($session, [$date]);
+        $fieldinstancedata = $customfieldhandler->export_instance_data_object($session->id, true);
+        $this->assertEquals('Test textarea 2', $fieldinstancedata->textareafield);
+        $this->assertEquals('Test text field', $fieldinstancedata->textfield);
+        $this->assertEquals('Wednesday, 1 January 2020, 12:00 AM', $fieldinstancedata->datefield);
+        $this->assertEquals('Yes', $fieldinstancedata->checkboxfield);
+        $this->assertEquals('a', $fieldinstancedata->selectfield);
+
+        // Edit text field and make sure nothing else is updated.
+        $session->customfield_textfield = 'Test text field 2';
+        appointment_update_session($session, [$date]);
+        $fieldinstancedata = $customfieldhandler->export_instance_data_object($session->id, true);
+        $this->assertEquals('Test textarea 2', $fieldinstancedata->textareafield);
+        $this->assertEquals('Test text field 2', $fieldinstancedata->textfield);
+        $this->assertEquals('Wednesday, 1 January 2020, 12:00 AM', $fieldinstancedata->datefield);
+        $this->assertEquals('Yes', $fieldinstancedata->checkboxfield);
+        $this->assertEquals('a', $fieldinstancedata->selectfield);
+
+        // Edit date field and make sure nothing else is updated.
+        $session->customfield_datefield = strtotime('2 January 2020 00:00');
+        appointment_update_session($session, [$date]);
+        $fieldinstancedata = $customfieldhandler->export_instance_data_object($session->id, true);
+        $this->assertEquals('Test textarea 2', $fieldinstancedata->textareafield);
+        $this->assertEquals('Test text field 2', $fieldinstancedata->textfield);
+        $this->assertEquals('Thursday, 2 January 2020, 12:00 AM', $fieldinstancedata->datefield);
+        $this->assertEquals('Yes', $fieldinstancedata->checkboxfield);
+        $this->assertEquals('a', $fieldinstancedata->selectfield);
+
+        // Edit checkbox field and make sure nothing else is updated.
+        $session->customfield_checkboxfield = 0;
+        appointment_update_session($session, [$date]);
+        $fieldinstancedata = $customfieldhandler->export_instance_data_object($session->id, true);
+        $this->assertEquals('Test textarea 2', $fieldinstancedata->textareafield);
+        $this->assertEquals('Test text field 2', $fieldinstancedata->textfield);
+        $this->assertEquals('Thursday, 2 January 2020, 12:00 AM', $fieldinstancedata->datefield);
+        $this->assertEquals('No', $fieldinstancedata->checkboxfield);
+        $this->assertEquals('a', $fieldinstancedata->selectfield);
+
+        // Edit dropdown field and make sure nothing else is updated.
+        $session->customfield_selectfield = 2;
+        appointment_update_session($session, [$date]);
+        $fieldinstancedata = $customfieldhandler->export_instance_data_object($session->id, true);
+        $this->assertEquals('Test textarea 2', $fieldinstancedata->textareafield);
+        $this->assertEquals('Test text field 2', $fieldinstancedata->textfield);
+        $this->assertEquals('Thursday, 2 January 2020, 12:00 AM', $fieldinstancedata->datefield);
+        $this->assertEquals('No', $fieldinstancedata->checkboxfield);
+        $this->assertEquals('b', $fieldinstancedata->selectfield);
+    }
+
+    /**
      * User becomes booked when capacity permits and receive notification.
      *
      * @covers ::appointment_user_signup
