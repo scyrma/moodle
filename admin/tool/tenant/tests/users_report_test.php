@@ -152,18 +152,26 @@ class users_report_test extends advanced_testcase {
      * Test visible tenant columns in a multi-tenant site with a tenant admin
      */
     public function test_visible_tenant_columns_tenant_admin(): void {
+        global $CFG;
         $this->resetAfterTest(true);
         $this->setAdminUser();
+        set_config('showuseridentity', 'email');
+        set_config('hiddenuserfields', 'email');
         [$tenant1] = $this->tenantgenator->create_tenant_and_users(2);
+        $contextsys = context_system::instance();
 
         // Tenant admin cannot see tenant column.
         $tenantadmin = $this->getDataGenerator()->create_user();
         $manager = new manager();
         $manager->allocate_user($tenantadmin->id, $tenant1->id, 'tool_wp', 'test');
         $manager->assign_tenant_admin_roles([$tenantadmin->id], $tenant1->id);
+        assign_capability('moodle/user:viewhiddendetails', CAP_ALLOW, (int) $CFG->tool_tenant_adminrole, $contextsys);
         $this->setUser($tenantadmin->id);
         $report = system_report_factory::create(users::class, ['showall' => true]);
         $testableexporter = testable_system_report_table::create($report->get_report_persistent()->get('id'), ['showall' => true]);
+        // List of columns and filters contain email.
+        $this->assertContains('c3_email', array_keys($testableexporter->columns));
+        $this->assertContains('user:email', array_keys($report->get_filters()));
         // 3 users are returned - 2 tenant users and the tenant admin.
         $this->assertCount(3, $testableexporter->get_table_rows());
         $this->assertCount(4, $testableexporter->get_table_rows()[0]);

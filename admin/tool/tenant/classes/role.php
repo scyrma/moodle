@@ -126,6 +126,7 @@ class role {
             'moodle/badges:awardbadge' => CAP_ALLOW,
             'moodle/badges:viewawarded' => CAP_ALLOW,
             'moodle/user:viewalldetails' => CAP_ALLOW,
+            'moodle/user:viewhiddendetails' => CAP_INHERIT,
             'moodle/reportbuilder:editall' => CAP_ALLOW,
             'tool/tenant:authconfig' => CAP_ALLOW,
             'tool/tenant:mobileconfig' => CAP_INHERIT, // Available but not allowed by default.
