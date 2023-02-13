@@ -365,5 +365,21 @@ function xmldb_tool_wp_upgrade(int $oldversion) {
         upgrade_plugin_savepoint(true, 2022101100, 'tool', 'wp');
     }
 
+    if ($oldversion < 2023011113) {
+        // If block_mylearning is no longer present, clean up capabilities.
+        if (!file_exists($CFG->dirroot . '/blocks/mylearning/version.php')) {
+            capabilities_cleanup('block_mylearning');
+        }
+
+        // If format_wplist is no longer present, clean up web services.
+        if (!file_exists($CFG->dirroot . '/course/format/wplist/version.php')) {
+            require_once($CFG->dirroot.'/lib/externallib.php');
+            external_delete_descriptions('format_wplist');
+        }
+
+        // Wp savepoint reached.
+        upgrade_plugin_savepoint(true, 2023011113, 'tool', 'wp');
+    }
+
     return true;
 }
