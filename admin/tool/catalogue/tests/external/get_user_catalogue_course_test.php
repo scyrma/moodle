@@ -27,6 +27,7 @@
 
 namespace tool_catalogue\external;
 
+use core_customfield_generator;
 use external_api;
 use externallib_advanced_testcase;
 use moodle_exception;
@@ -60,10 +61,26 @@ class get_user_catalogue_course_test extends externallib_advanced_testcase {
 
         /** @var tool_program_generator $programgenerator */
         $programgenerator = self::getDataGenerator()->get_plugin_generator('tool_program');
+        /** @var core_customfield_generator $cfgenerator */
+        $cfgenerator = self::getDataGenerator()->get_plugin_generator('core_customfield');
+
+        // Generate course custom fields.
+        $params = [
+            'component' => 'core_course',
+            'area' => 'course',
+            'itemid' => 0,
+            'contextid' => \context_system::instance()->id
+        ];
+        $category = $cfgenerator->create_category($params);
+        $cfgenerator->create_field(['categoryid' => $category->get('id'), 'name' => 'customfield name',
+            'type' => 'text', 'shortname' => 'fld1']);
+        $cfgenerator->create_field(['categoryid' => $category->get('id'), 'name' => 'customfield name 2',
+            'type' => 'text', 'shortname' => 'fld2']);
 
         // Generate Course1, allocate user and set course as completed for the user.
         $category = self::getDataGenerator()->create_category(['name' => 'Cat 1']);
-        $params = (object)['category' => $category->id, 'fullname' => 'My course 1'];
+        $params = (object)['category' => $category->id, 'fullname' => 'My course 1',
+            'customfield_fld1' => 'Hello123', 'customfield_fld2' => ''];
         $course = $programgenerator->generate_course_with_completion_self($params);
         $this->getDataGenerator()->enrol_user((int) $USER->id, $course->id, 'student');
         $programgenerator->complete_courses([$course->id], (int) $USER->id);
@@ -94,6 +111,11 @@ class get_user_catalogue_course_test extends externallib_advanced_testcase {
         $this->assertEmpty($cleanresult['trainers']);
         $this->assertEmpty($cleanresult['restrictions']);
         $this->assertEquals('', $cleanresult['duedatebadgestr']);
+
+        // If a custom course field is left blank, the name of the custom course field should not appear.
+        $this->assertCount(1, $cleanresult['customfields']);
+        $this->assertEquals('fld1', $cleanresult['customfields'][0]['shortname']);
+        $this->assertEquals('Hello123', $cleanresult['customfields'][0]['value']);
     }
 
     /**
