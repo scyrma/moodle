@@ -1057,3 +1057,79 @@ Feature: Creating and editing rules
     And I navigate to "Dynamic rules" in workplace launcher
     And I press "View report" action in the "Rulesuspended" report row
     Then I should see "Suspended User" in the "reportbuilder-table" "table"
+
+  Scenario: Show obscured user details in matched users report when user is not in tenant anymore
+    Given the following "tool_tenant > users" exist:
+      | tenant  | username | firstname | lastname | email                |
+      | Tenant1 | user13   | User      | 13       | user13@invalid.com   |
+      | Tenant1 | user14   | User      | 14       | user14@invalid.com   |
+    When I log in as "tenantadmin1"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I follow "New rule"
+    And I set the following fields to these values:
+      | Name | Rule |
+    And I press "Save"
+    And I should see "0 total matches"
+    And I should see "Add conditions to this rule"
+    And I follow "User profile field"
+    And I set the following fields to these values:
+      | Field | First name |
+      | firstname_op | 2 |
+      | firstname_value | User |
+    And I press "Save changes"
+    And I navigate to "Actions" in current page administration
+    And I should see "Add actions to this rule"
+    And I click on "Notification" "link" in the "#ruleoutcomes" "css_element"
+    And I set the following fields to these values:
+      | Subject | Test notification |
+      | Body | Test body |
+    And I press "Save changes"
+    Then I navigate to "Dynamic rules" in workplace launcher
+    And I click on "Enable rule" "field"
+    And I click on "Enable" "button" in the "Confirm" "dialogue"
+    And I run all adhoc tasks
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I press "View report" action in the "Rule" report row
+    And the following should exist in the "reportbuilder-table" table:
+      | -1-      | Email address      |
+      | User 11  | user11@invalid.com |
+      | User 12  | user12@invalid.com |
+      | User 13  | user13@invalid.com |
+      | User 14  | user14@invalid.com |
+    And I log in as "admin"
+    And I navigate to "All users" in workplace launcher
+    And "Tenant1" "text" should exist in the "User 11" "table_row"
+    And "Tenant1" "text" should exist in the "User 12" "table_row"
+    And I set the field "Select user 'User 11'" to "1"
+    And I set the field "With selected users..." to "Default tenant"
+    And I press "Allocate users"
+    And "Default tenant" "text" should exist in the "User 11" "table_row"
+    And I set the field "Select user 'User 12'" to "1"
+    And I set the field "With selected users..." to "Tenant2"
+    And I press "Allocate users"
+    And "Tenant2" "text" should exist in the "User 12" "table_row"
+    # Test as tenant admin, moved users should be obscured.
+    When I log in as "tenantadmin1"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I press "View report" action in the "Rule" report row
+    And the following should exist in the "reportbuilder-table" table:
+      | -1-                 | Email address      |
+      | Details are hidden  | Details are hidden |
+      | Details are hidden  | Details are hidden |
+      | User 13             | user13@invalid.com |
+      | User 14             | user14@invalid.com |
+    And I should not see "user11@invalid.com"
+    And I should not see "User 11"
+    And I should not see "user12@invalid.com"
+    And I should not see "User 12"
+    # Test that admin can still see all.
+    And I log in as "admin"
+    And I switch to tenant "Tenant1"
+    And I navigate to "Dynamic rules" in workplace launcher
+    And I press "View report" action in the "Rule" report row
+    And the following should exist in the "reportbuilder-table" table:
+      | -1-      | Email address      |
+      | User 11  | user11@invalid.com |
+      | User 12  | user12@invalid.com |
+      | User 13  | user13@invalid.com |
+      | User 14  | user14@invalid.com |

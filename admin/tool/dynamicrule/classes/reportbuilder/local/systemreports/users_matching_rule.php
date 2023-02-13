@@ -43,6 +43,7 @@ use core_reportbuilder\local\report\column;
 use core_reportbuilder\local\report\filter;
 use core_reportbuilder\local\report\action;
 use tool_tenant\tenancy;
+use tool_tenant\permission as tenant_permission;
 use core_reportbuilder\local\entities\user;
 
 /**
@@ -77,6 +78,17 @@ class users_matching_rule extends system_report {
 
         $this->add_base_fields("{$entityuseralias}.suspended"); // Required by get_row_class method.
 
+        // Add "tenantid" field so we can use it in visibility permission check callback.
+        $tenantuseralias = database::generate_alias();
+        $tenantalias = database::generate_alias();
+        $tenantaliasc = database::generate_alias();
+        $defaulttenantid = tenancy::get_default_tenant_id();
+        $this->add_join("LEFT JOIN {tool_tenant_user} {$tenantuseralias} ON {$tenantuseralias}.userid = {$entityuseralias}.id");
+        $this->add_join("LEFT JOIN {tool_tenant} {$tenantalias} ON " .
+            "{$tenantalias}.id = {$tenantuseralias}.tenantid AND {$tenantalias}.archived = 0");
+        $this->add_join("LEFT JOIN {tool_tenant} {$tenantaliasc} ON " .
+            "{$tenantaliasc}.id = COALESCE({$tenantalias}.id, {$defaulttenantid}) AND {$entityuseralias}.id IS NOT NULL");
+
         // Define our internal entity for matched user elements.
         $this->annotate_entity($this->get_matched_user_entity_name(),
             new lang_string('match', 'tool_dynamicrule'));
@@ -91,10 +103,13 @@ class users_matching_rule extends system_report {
                               JOIN {tool_dynamicrule_match} m ON (m.id = mi.id)", [$ruleidparam => $ruleid]);
         $this->add_base_fields('m.id');
 
-        // Show only users from the current tenant and subtenants.
-        $this->add_base_condition_sql(tenancy::get_users_subquery(false, false, "{$entityuseralias}.id"));
+        $rule = \tool_dynamicrule\api::get_rule($ruleid);
+        if ($rule->is_shared()) {
+            // For shared rule only users from the current tenant and subtenants.
+            $this->add_base_condition_sql(tenancy::get_users_subquery(false, false, "{$entityuseralias}.id"));
+        }
 
-        $this->add_columns($entityuser);
+        $this->add_columns($entityuser, $tenantaliasc);
         $this->add_filters($entityuser);
 
         $this->set_downloadable(true);
@@ -104,20 +119,25 @@ class users_matching_rule extends system_report {
      * Define columns.
      *
      * @param user $userentity
+     * @param string $tenantalias
      */
-    protected function add_columns(user $userentity): void {
+    protected function add_columns(user $userentity, string $tenantalias): void {
         $tablealias = $this->get_main_table_alias();
 
         // The matched user.
         $this->add_column_from_entity('user:fullnamewithpicturelink')
             ->add_field("{$tablealias}.suspended")
+            ->add_field("{$tenantalias}.id", 'tenantid')
+            ->add_callback([$this, 'validate_visibility'])
             ->add_callback([$this, 'apply_suspended_label']);
 
         // Get additional fields.
         $identityfields = fields::for_identity($this->get_context(), true)->get_required_fields();
         foreach ($identityfields as $identityfield) {
             $column = $userentity->get_identity_column($identityfield);
-            $this->add_column($column);
+            $this->add_column($column)
+                ->add_field("{$tenantalias}.id", 'tenantid')
+                ->add_callback([$this, 'validate_visibility']);
         }
 
         // Matched time.
@@ -268,11 +288,29 @@ class users_matching_rule extends system_report {
      * @param stdClass $row
      * @return string
      */
-    public function apply_suspended_label($userfullname, stdClass $row) {
+    public function apply_suspended_label(string $userfullname, stdClass $row): string {
         // Display the "Suspended" badge if user is suspended.
         if ($row->suspended) {
             $userfullname .= ' ' . html_writer::span(get_string('suspended'), 'badge badge-pill badge-secondary');
         }
         return $userfullname;
+    }
+
+    /**
+     * Callback for the user field to obscure data if not visible for the current user.
+     *
+     * It could happen that user moved tenant, in this case we still have to show
+     * record that rule has been applied, but obscure user data in case if tenant
+     * is not accessible by current user.
+     *
+     * @param string $userfield
+     * @param stdClass $row
+     * @return string
+     */
+    public function validate_visibility(string $userfield, stdClass $row): string {
+        if (!tenant_permission::can_access_tenant((int) $row->tenantid)) {
+            $userfield = get_string('userdetailshidden', 'tool_dynamicrule');
+        }
+        return $userfield;
     }
 }
