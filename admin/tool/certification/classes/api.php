@@ -2125,7 +2125,7 @@ class api {
         // Check if completed as a result of program completion or as a result of manual certification.
         if (self::is_program_completed($programid, $userid)) {
             $subject = get_string_manager()->get_string('notificationsubjectcertificationcompleted', 'tool_certification',
-                $programname, $user->lang);
+                $certificationname, $user->lang);
             $fullmessage = get_string_manager()->get_string('notificationcertificationcompletedprogram', 'tool_certification',
                 $a, $user->lang);
         } else {

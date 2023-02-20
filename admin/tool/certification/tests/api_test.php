@@ -2680,6 +2680,35 @@ class api_test extends advanced_testcase {
     }
 
     /**
+     * Test send certification completed notification when it's completed through program.
+     */
+    public function test_send_certification_completed_notification_through_program(): void {
+        // Create a new certification, allocating user1 into it.
+        $user1 = self::getDataGenerator()->create_user();
+        $certname1 = 'Certification completed through program';
+        $certification1 = $this->generator->generate_certification(['fullname' => $certname1]);
+        $this->generator->allocate_user($user1->id, $certification1->get('id'));
+
+        // Make user1 complete the program1.
+        $program1 = new program($certification1->get('program'));
+        $this->programgenerator->complete_program($program1, $user1->id);
+
+        // The expected subject in notification should contain the certification name instead of program name.
+        $subject1 = get_string_manager()->get_string('notificationsubjectcertificationcompleted', 'tool_certification',
+            $certname1, $user1->lang);
+
+        // Sink should catch messages.
+        $sink = $this->redirectMessages();
+        api::send_certification_completed_notification($user1->id, $certification1->get('id'), $program1->get('id'));
+        $messages = $sink->get_messages();
+        $sink->close();
+
+        $this->assertCount(1, $messages);
+        $this->assertEquals($user1->id, $messages[0]->useridto);
+        $this->assertEquals($subject1, $messages[0]->subject);
+    }
+
+    /**
      * Test for update certification name in calendar events.
      */
     public function test_update_certification_name_in_calendar_events(): void {
