@@ -1272,6 +1272,14 @@ abstract class restore_dbops {
                 $user->timecreated = time();
             }
 
+            // BEGIN MOODLECLOUD HACK.
+            local_moodlecloud\restrictions\userquota::site_is_over_user_quota();
+            // prevent import from creating a second moodlecloud admin
+            if ($user->auth == 'moodlecloud') {
+                $user->auth = 'manual';
+            }
+            // END MOODLECLOUD HACK.
+
             // Done, let's create the user and annotate its id
             $newuserid = $DB->insert_record('user', $user);
             self::set_backup_ids_record($restoreid, 'user', $recuser->itemid, $newuserid);
