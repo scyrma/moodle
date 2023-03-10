@@ -140,7 +140,13 @@ function local_moodlecloud_get_fontawesome_icon_map() {
 // MC-5649 Load Intercom JS in standard html footer.
 function local_moodlecloud_standard_footer_html() {
     global $CFG;
+
+    $jscode = '
+    var APP_ID = "jnrsihww";
+    var MC_PERSON_ID = "'. get_config('auth_moodlecloud', 'intercom_id') . '";
+    ';
+
     if (is_siteadmin()) {
-        return html_writer::script('', $CFG->wwwroot.'/local/moodlecloud/intercom.js');
+        return html_writer::script($jscode) . html_writer::script('', $CFG->wwwroot.'/local/moodlecloud/intercom.js');
     }
 }
