@@ -78,9 +78,17 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
      * @inheritdoc
      */
     function get_userinfo($username) {
-        return auth_moodlecloud\helper::call('userinfo', array(
+        $data = auth_moodlecloud\helper::call('userinfo', array(
                 'username'          => $username,
             ));
+
+        // Intercom ID
+        if (get_config('auth_moodlecloud', 'intercom_id') !== $data['intercom_id']) {
+            set_config('intercom_id', $data['intercom_id'], 'auth_moodlecloud');
+            unset($data['intercom_id']);
+        }
+
+        return $data;
     }
 
     /**
