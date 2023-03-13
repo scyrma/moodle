@@ -366,9 +366,8 @@ class users_test extends core_reportbuilder_testcase {
 
         // Add filter, set it's values.
         $generator->create_filter(['reportid' => $report->get('id'), 'uniqueidentifier' => $filtername]);
-        user_filter_manager::set($report->get('id'), $filtervalues);
 
-        $content = $this->get_custom_report_content($report->get('id'));
+        $content = $this->get_custom_report_content($report->get('id'), 0, $filtervalues);
 
         if ($expectmatch) {
             $this->assertNotEmpty($content);

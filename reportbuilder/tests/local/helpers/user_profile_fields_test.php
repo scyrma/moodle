@@ -257,12 +257,12 @@ class user_profile_fields_test extends core_reportbuilder_testcase {
                 'user:profilefield_menu_operator' => select::NOT_EQUAL_TO,
                 'user:profilefield_menu_value' => 'Dog',
             ], 'admin'],
-            'Filter by social profile field' => ['user:profilefield_Social', [
-                'user:profilefield_Social_operator' => text::IS_EQUAL_TO,
-                'user:profilefield_Social_value' => '12345',
+            'Filter by social profile field' => ['user:profilefield_social', [
+                'user:profilefield_social_operator' => text::IS_EQUAL_TO,
+                'user:profilefield_social_value' => '12345',
             ], 'testuser'],
-            'Filter by social profile field (empty)' => ['user:profilefield_Social', [
-                'user:profilefield_Social_operator' => text::IS_EMPTY,
+            'Filter by social profile field (empty)' => ['user:profilefield_social', [
+                'user:profilefield_social_operator' => text::IS_EMPTY,
             ], 'admin'],
             'Filter by text profile field' => ['user:profilefield_text', [
                 'user:profilefield_text_operator' => text::IS_EQUAL_TO,
@@ -317,9 +317,8 @@ class user_profile_fields_test extends core_reportbuilder_testcase {
 
         // Add filter, set it's values.
         $generator->create_filter(['reportid' => $report->get('id'), 'uniqueidentifier' => $filtername]);
-        user_filter_manager::set($report->get('id'), $filtervalues);
 
-        $content = $this->get_custom_report_content($report->get('id'));
+        $content = $this->get_custom_report_content($report->get('id'), 0, $filtervalues);
 
         $this->assertCount(1, $content);
         $this->assertEquals($expectmatchuser, reset($content[0]));
