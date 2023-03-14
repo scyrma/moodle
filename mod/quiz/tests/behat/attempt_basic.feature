@@ -48,8 +48,11 @@ Feature: Attempt a quiz
     And I press "Re-attempt quiz"
 
   @javascript
-  Scenario: Attempt a quiz with mulitple sections
-    Given the following "questions" exist:
+  Scenario: Attempt a quiz with multiple sections
+    Given the following "activities" exist:
+      | activity   | name   | course | idnumber | grade |
+      | quiz       | Quiz 2 | C1     | quiz2    | 6     |
+    And the following "questions" exist:
       | questioncategory | qtype       | name  | questiontext    |
       | Test questions   | truefalse   | TF1   | First question  |
       | Test questions   | truefalse   | TF2   | Second question |
@@ -57,7 +60,7 @@ Feature: Attempt a quiz
       | Test questions   | truefalse   | TF4   | Fourth question |
       | Test questions   | truefalse   | TF5   | Fifth question  |
       | Test questions   | truefalse   | TF6   | Sixth question  |
-    And quiz "Quiz 1" contains the following questions:
+    And quiz "Quiz 2" contains the following questions:
       | question | page |
       | TF1      | 1    |
       | TF2      | 1    |
@@ -65,14 +68,14 @@ Feature: Attempt a quiz
       | TF4      | 3    |
       | TF5      | 4    |
       | TF6      | 4    |
-    And quiz "Quiz 1" contains the following sections:
+    And quiz "Quiz 2" contains the following sections:
       | heading   | firstslot | shuffle |
       | Section 1 | 1         | 0       |
       | Section 2 | 3         | 0       |
       |           | 4         | 1       |
       | Section 3 | 5         | 1       |
 
-    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student"
+    When I am on the "Quiz 2" "mod_quiz > View" page logged in as "student"
     And I press "Attempt quiz now"
 
     Then I should see "Section 1" in the "Quiz navigation" "block"
@@ -82,6 +85,7 @@ Feature: Attempt a quiz
     And I should see question "4" in section "Untitled section" in the quiz navigation
     And I should see question "5" in section "Section 3" in the quiz navigation
     And I should see question "6" in section "Section 3" in the quiz navigation
+    And I click on "True" "radio" in the "First question" "question"
 
     And I follow "Finish attempt ..."
     And I should see question "1" in section "Section 1" in the quiz navigation
@@ -97,6 +101,7 @@ Feature: Attempt a quiz
 
     And I press "Submit all and finish"
     And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    And I should see "1.00 out of 6.00 (16.67%)" in the "Grade" "table_row"
     And I should see question "1" in section "Section 1" in the quiz navigation
     And I should see question "2" in section "Section 1" in the quiz navigation
     And I should see question "3" in section "Section 2" in the quiz navigation
@@ -153,3 +158,30 @@ Feature: Attempt a quiz
     And I follow "Previous page"
     And I should see "Text of the first question"
     And I should not see "Text of the second question"
+
+  @javascript
+  Scenario: Take a quiz with number of attempts set
+    Given the following "activities" exist:
+      | activity | name   | course | grade | navmethod  | attempts |
+      | quiz     | Quiz 5 | C1     | 100   | free       | 2        |
+    And the following "questions" exist:
+      | questioncategory | qtype       | name  | questiontext    |
+      | Test questions   | truefalse   | TF7   | First question  |
+    And quiz "Quiz 5" contains the following questions:
+      | question | page |
+      | TF7      | 1    |
+    And user "student" has attempted "Quiz 5" with responses:
+      | slot | response |
+      |   1  | True     |
+    When I am on the "Quiz 5" "mod_quiz > View" page logged in as "student"
+    Then I should see "Attempts allowed: 2"
+    And I should not see "No more attempts are allowed"
+    And I press "Re-attempt quiz"
+    And I should see "First question"
+    And I click on "Finish attempt ..." "button" in the "region-main" "region"
+    And I press "Submit all and finish"
+    And I should see "Once you submit, you will no longer be able to change your answers for this attempt." in the "Confirmation" "dialogue"
+    And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    And I follow "Finish review"
+    And I should not see "Re-attempt quiz"
+    And I should see "No more attempts are allowed"

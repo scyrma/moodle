@@ -3066,12 +3066,14 @@ class assign {
                     $submission->latest = 1;
                 }
             }
+            $transaction = $DB->start_delegated_transaction();
             if ($submission->latest) {
                 // This is the case when we need to set latest to 0 for all the other attempts.
                 $DB->set_field('assign_submission', 'latest', 0, $params);
             }
             $submission->status = ASSIGN_SUBMISSION_STATUS_NEW;
             $sid = $DB->insert_record('assign_submission', $submission);
+            $transaction->allow_commit();
             return $DB->get_record('assign_submission', array('id' => $sid));
         }
         return false;
@@ -3835,11 +3837,13 @@ class assign {
                     $submission->latest = 1;
                 }
             }
+            $transaction = $DB->start_delegated_transaction();
             if ($submission->latest) {
                 // This is the case when we need to set latest to 0 for all the other attempts.
                 $DB->set_field('assign_submission', 'latest', 0, $params);
             }
             $sid = $DB->insert_record('assign_submission', $submission);
+            $transaction->allow_commit();
             return $DB->get_record('assign_submission', array('id' => $sid));
         }
         return false;
@@ -9858,7 +9862,7 @@ function move_group_override($id, $move, $assignid) {
     global $DB;
 
     // Get the override object.
-    if (!$override = $DB->get_record('assign_overrides', ['id' => $id], 'id, sortorder, groupid')) {
+    if (!$override = $DB->get_record('assign_overrides', ['id' => $id, 'assignid' => $assignid], 'id, sortorder, groupid')) {
         return false;
     }
     // Count the number of group overrides.
@@ -9887,8 +9891,8 @@ function move_group_override($id, $move, $assignid) {
 
         // Delete cache for the 2 records we updated above.
         $cache = cache::make('mod_assign', 'overrides');
-        $cache->delete("{$override->assignid}_g_{$override->groupid}");
-        $cache->delete("{$swapoverride->assignid}_g_{$swapoverride->groupid}");
+        $cache->delete("{$assignid}_g_{$override->groupid}");
+        $cache->delete("{$assignid}_g_{$swapoverride->groupid}");
     }
 
     reorder_group_overrides($assignid);

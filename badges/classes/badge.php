@@ -141,7 +141,7 @@ class badge {
         $data = $DB->get_record('badge', array('id' => $badgeid));
 
         if (empty($data)) {
-            print_error('error:nosuchbadge', 'badges', $badgeid);
+            throw new moodle_exception('error:nosuchbadge', 'badges', '', $badgeid);
         }
 
         foreach ((array)$data as $field => $value) {
@@ -379,9 +379,13 @@ class badge {
      */
     public function has_awards() {
         global $DB;
+        // Add tenant condition.
+        /** @uses \tool_tenant\tenancy::get_users_subquery */
+        $tenantcondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [true, true, 'u.id'], '');
+
         $awarded = $DB->record_exists_sql('SELECT b.uniquehash
                     FROM {badge_issued} b INNER JOIN {user} u ON b.userid = u.id
-                    WHERE b.badgeid = :badgeid AND u.deleted = 0', array('badgeid' => $this->id));
+                    WHERE ' . $tenantcondition . ' b.badgeid = :badgeid AND u.deleted = 0', array('badgeid' => $this->id));
 
         return $awarded;
     }
@@ -394,11 +398,15 @@ class badge {
     public function get_awards() {
         global $DB;
 
+        // Add tenant condition.
+        /** @uses \tool_tenant\tenancy::get_users_subquery */
+        $tenantcondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [true, true, 'u.id'], '');
+
         $awards = $DB->get_records_sql(
                 'SELECT b.userid, b.dateissued, b.uniquehash, u.firstname, u.lastname
                     FROM {badge_issued} b INNER JOIN {user} u
                         ON b.userid = u.id
-                    WHERE b.badgeid = :badgeid AND u.deleted = 0', array('badgeid' => $this->id));
+                    WHERE ' . $tenantcondition . ' b.badgeid = :badgeid AND u.deleted = 0', array('badgeid' => $this->id));
 
         return $awards;
     }

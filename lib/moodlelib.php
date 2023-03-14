@@ -206,7 +206,10 @@ define('PARAM_RAW_TRIMMED', 'raw_trimmed');
 define('PARAM_SAFEDIR',  'safedir');
 
 /**
- * PARAM_SAFEPATH - several PARAM_SAFEDIR joined by "/", suitable for include() and require(), plugin paths, etc.
+ * PARAM_SAFEPATH - several PARAM_SAFEDIR joined by "/", suitable for include() and require(), plugin paths
+ * and other references to Moodle code files.
+ *
+ * This is NOT intended to be used for absolute paths or any user uploaded files.
  */
 define('PARAM_SAFEPATH',  'safepath');
 
@@ -496,6 +499,11 @@ define('HOMEPAGE_USER', 2);
 defined('HUB_MOODLEORGHUBURL') || define('HUB_MOODLEORGHUBURL', 'https://stats.moodle.org');
 
 /**
+ * URL of the statistic server public key.
+ */
+defined('HUB_STATSPUBLICKEY') || define('HUB_STATSPUBLICKEY', 'https://moodle.org/static/statspubkey.pem');
+
+/**
  * Moodle mobile app service name
  */
 define('MOODLE_OFFICIAL_MOBILE_SERVICE', 'moodle_mobile_app');
@@ -757,13 +765,13 @@ function validate_param($param, $type, $allownull=NULL_NOT_ALLOWED, $debuginfo='
  * $options = clean_param($options, PARAM_INT);
  * </code>
  *
- * @param array $param the variable array we are cleaning
+ * @param array|null $param the variable array we are cleaning
  * @param string $type expected format of param after cleaning.
  * @param bool $recursive clean recursive arrays
  * @return array
  * @throws coding_exception
  */
-function clean_param_array(array $param = null, $type, $recursive = false) {
+function clean_param_array(?array $param, $type, $recursive = false) {
     // Convert null to empty array.
     $param = (array)$param;
     foreach ($param as $key => $value) {
@@ -1060,8 +1068,9 @@ function clean_param($param, $type) {
                 } else if (preg_match('/^' . preg_quote($CFG->wwwroot . '/', '/') . '/i', $param)) {
                     // Absolute, and matches our wwwroot.
                 } else {
+
                     // Relative - let's make sure there are no tricks.
-                    if (validateUrlSyntax('/' . $param, 's-u-P-a-p-f+q?r?')) {
+                    if (validateUrlSyntax('/' . $param, 's-u-P-a-p-f+q?r?') && !preg_match('/javascript:/i', $param)) {
                         // Looks ok.
                     } else {
                         $param = '';
@@ -1515,6 +1524,9 @@ function get_config($plugin, $name = null) {
         }
         $cache->set($plugin, $result);
     }
+
+    /** @uses \tool_tenant\config::get_config_hook() */
+    component_class_callback('tool_tenant\config', 'get_config_hook', [$plugin, &$result]);
 
     if (!empty($name)) {
         if (array_key_exists($name, $result)) {
@@ -2333,6 +2345,18 @@ function date_format_string($date, $format, $tz = 99) {
     }
 
     date_default_timezone_set(core_date::get_user_timezone($tz));
+
+    if (strftime('%p', 0) === strftime('%p', HOURSECS * 18)) {
+        $datearray = getdate($date);
+        $format = str_replace([
+            '%P',
+            '%p',
+        ], [
+            $datearray['hours'] < 12 ? get_string('am', 'langconfig') : get_string('pm', 'langconfig'),
+            $datearray['hours'] < 12 ? get_string('amcaps', 'langconfig') : get_string('pmcaps', 'langconfig'),
+        ], $format);
+    }
+
     $datestring = strftime($format, $date);
     core_date::set_default_server_timezone();
 
@@ -3359,6 +3383,11 @@ function update_user_login_times() {
         return true;
     }
 
+    if (defined('USER_KEY_LOGIN') && USER_KEY_LOGIN === true) {
+        // Do not update user login time when using user key login.
+        return true;
+    }
+
     $now = time();
 
     $user = new stdClass();
@@ -3881,10 +3910,6 @@ function create_user_record($username, $password, $auth = 'manual') {
         }
     }
 
-    if (!isset($newuser->city)) {
-        $newuser->city = '';
-    }
-
     $newuser->auth = $auth;
     $newuser->username = $username;
 
@@ -4275,6 +4300,13 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
             $select = "mnethostid = :mnethostid AND LOWER(email) = LOWER(:email) AND deleted = 0";
             $params = array('mnethostid' => $CFG->mnet_localhost_id, 'email' => $email);
             $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
+            // When same email is used in more than one user we need to match with current tenant based in login url.
+            if (count($users) > 1 && class_exists('tool_tenant\\tenancy')) {
+                /** @uses \tool_tenant\tenancy::get_users_subquery */
+                $select = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery',
+                        [false, true, 'id'], '').$select;
+                $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
+            }
             if (count($users) === 1) {
                 // Use email for login only if unique.
                 $user = reset($users);
@@ -5135,6 +5167,10 @@ function remove_course_contents($courseid, $showfeedback = true, array $options 
                         question_delete_activity($cm);
                         // Notify the competency subsystem.
                         \core_competency\api::hook_course_module_deleted($cm);
+
+                        // Delete all tag instances associated with the instance of this module.
+                        core_tag_tag::delete_instances("mod_{$modname}", null, context_module::instance($cm->id)->id);
+                        core_tag_tag::remove_all_item_tags('core', 'course_modules', $cm->id);
                     }
                     if (function_exists($moddelete)) {
                         // This purges all module data in related tables, extra user prefs, settings, etc.
@@ -5303,8 +5339,7 @@ function remove_course_contents($courseid, $showfeedback = true, array $options 
     fulldelete($CFG->dataroot.'/'.$course->id);
 
     // Delete from cache to reduce the cache size especially makes sense in case of bulk course deletion.
-    $cachemodinfo = cache::make('core', 'coursemodinfo');
-    $cachemodinfo->delete($courseid);
+    course_modinfo::purge_course_cache($courseid);
 
     // Trigger a course content deleted event.
     $event = \core\event\course_content_deleted::create(array(
@@ -5832,7 +5867,7 @@ function email_should_be_diverted($email) {
         return true;
     }
 
-    $patterns = array_map('trim', preg_split("/[\s,]+/", $CFG->divertallemailsexcept));
+    $patterns = array_map('trim', preg_split("/[\s,]+/", $CFG->divertallemailsexcept, -1, PREG_SPLIT_NO_EMPTY));
     foreach ($patterns as $pattern) {
         if (preg_match("/$pattern/", $email)) {
             return false;
@@ -7048,6 +7083,39 @@ function current_language() {
     $return = str_replace('_utf8', '', $return);
 
     return $return;
+}
+
+/**
+ * Fix the current language to the given language code.
+ *
+ * @param string $lang The language code to use.
+ * @return void
+ */
+function fix_current_language(string $lang): void {
+    global $CFG, $COURSE, $SESSION, $USER;
+
+    if (!get_string_manager()->translation_exists($lang)) {
+        throw new coding_exception("The language pack for $lang is not available");
+    }
+
+    $fixglobal = '';
+    $fixlang = 'lang';
+    if (!empty($SESSION->forcelang)) {
+        $fixglobal = $SESSION;
+        $fixlang = 'forcelang';
+    } else if (!empty($COURSE->id) && $COURSE->id != SITEID && !empty($COURSE->lang)) {
+        $fixglobal = $COURSE;
+    } else if (!empty($SESSION->lang)) {
+        $fixglobal = $SESSION;
+    } else if (!empty($USER->lang)) {
+        $fixglobal = $USER;
+    } else if (isset($CFG->lang)) {
+        set_config('lang', $lang);
+    }
+
+    if ($fixglobal) {
+        $fixglobal->$fixlang = $lang;
+    }
 }
 
 /**
@@ -8686,8 +8754,9 @@ function format_float($float, $decimalpoints=1, $localized=true, $stripzeros=fal
     }
 
     $result = number_format($float, $decimalpoints, $separator, '');
-    if ($stripzeros) {
+    if ($stripzeros && $decimalpoints > 0) {
         // Remove zeros and final dot if not needed.
+        // However, only do this if there is a decimal point!
         $result = preg_replace('~(' . preg_quote($separator, '~') . ')?0+$~', '', $result);
     }
     return $result;
@@ -9896,6 +9965,11 @@ function setup_lang_from_browser() {
     if (!empty($SESSION->lang) or !empty($USER->lang) or empty($CFG->autolang)) {
         // Lang is defined in session or user profile, nothing to do.
         return;
+    }
+
+    /** @uses \tool_wp\language::get_recommended_language */
+    if ($lang = component_class_callback('tool_wp\language', 'get_recommended_language', [])) {
+        return $lang;
     }
 
     if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) { // There isn't list of browser langs, nothing to do.

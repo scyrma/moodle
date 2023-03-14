@@ -150,7 +150,7 @@ $string['condifmodeditdefaults'] = 'Default values are used in the settings form
 $string['confeditorhidebuttons'] = 'Select the buttons that should be hidden in the HTML editor.';
 $string['configallowattachments'] = 'If enabled, emails sent from the site can have attachments, such as badges.';
 $string['configallcountrycodes'] = 'This is the list of countries that may be selected in various places, for example in a user\'s profile. If blank (the default) the list in countries.php in the standard English language pack is used. That is the list from ISO 3166-1. Otherwise, you can specify a comma-separated list of codes, for example \'GB,FR,ES\'. If you add new, non-standard codes here, you will need to add them to countries.php in \'en\' and your language pack.';
-$string['configallowassign'] = 'You can allow people who have the roles on the left side to assign some of the column roles to other people';
+$string['configallowassign'] = 'For each role in the left column, select which roles that they can assign to others.';
 $string['configallowcategorythemes'] = 'If you enable this, then themes can be set at the category level. This will affect all child categories and courses unless they have specifically set their own theme. WARNING: Enabling category themes may affect performance.';
 $string['configallowcohortthemes'] = 'If you enable this, then themes can be set at the cohort level. This will affect all users with only one cohort or more than one but with the same theme.';
 $string['configallowcoursethemes'] = 'If enabled, then courses will be allowed to set their own themes.  Course themes override all other theme choices (site, user, category, cohort or URL-defined themes).';
@@ -158,19 +158,19 @@ $string['configallowedemaildomains'] = 'List email domains that are allowed to b
 $string['configallowemailaddresses'] = 'To restrict new email addresses to particular domains, list them here separated by spaces. All other domains will be rejected. To allow subdomains, add the domain with a preceding \'.\'. To allow a root domain together with its subdomains, add the domain twice - once with a preceding \'.\' and once without e.g. .ourcollege.edu.au ourcollege.edu.au.';
 $string['configallowemojipicker'] = 'The emoji picker enables users to select emojis, such as smilies, to add to messages and other text areas via an emoji picker button in the Atto toolbar.';
 $string['configallowemojipickerincompatible'] = 'Your current database configuration does not properly support emojis. In order to enable the emoji picker you will need to <a href="https://docs.moodle.org/en/MySQL_full_unicode_support">upgrade your database for full unicode support</a>.';
-$string['configallowguestmymoodle'] = 'If enabled guests can access Dashboard, otherwise guests are redirected to the site front page.';
+$string['configallowguestmymoodle'] = 'If enabled, guests can access the Dashboard. Otherwise guests are redirected to the front page.';
 $string['configallowobjectembed'] = 'As a default security measure, normal users are not allowed to embed multimedia (like Flash) within texts using explicit EMBED and OBJECT tags in their HTML (although it can still be done safely using the mediaplugins filter).  If you wish to allow these tags then enable this option.';
 $string['configallowoverride'] = 'You can allow people with the roles on the left side to override some of the column roles';
-$string['configallowoverride2'] = 'Select which role(s) can be overridden by each role in the left column.<br />Note that these settings only apply to users who have either the capability moodle/role:override or the capability moodle/role:safeoverride allowed.';
-$string['configallowswitch'] = 'Select which roles a user may switch to, based on which roles they already have. In addition to an entry in this table, a user must also have the moodle/role:switchroles capability to be able to switch.<br />Note that it is only possible to switch to roles that have the moodle/course:view capability, and that do not have the moodle/site:doanything capability, so some columns in this table are disabled.';
+$string['configallowoverride2'] = 'For each role in the left column, select which roles that they can set overrides for.<br />Users must also have either the capability moodle/role:override or moodle/role:safeoverride.';
+$string['configallowswitch'] = 'For each role in the left column, select which roles they can switch to.<br />Users must also have the capability moodle/role:switchroles.';
 $string['configallowthemechangeonurl'] = 'If enabled, the theme can be changed by adding either:<br />?theme=themename to any Moodle URL (eg: mymoodlesite.com/?theme=afterburner ) or <br />&theme=themename to any internal Moodle URL (eg: mymoodlesite.com/course/view.php?id=2&theme=afterburner ).';
 $string['configallowuserblockhiding'] = 'Do you want to allow users to hide/show side blocks throughout this site?  This feature uses Javascript and cookies to remember the state of each collapsible block, and only affects the user\'s own view.';
 $string['configallowusermailcharset'] = 'If enabled, users can choose an email charset in their messaging preferences.';
 $string['configallowuserswitchrolestheycantassign'] = 'By default, moodle/role:assign is required for users to switch roles. Enabling this setting removes this requirement, and results in the roles available in the "Switch role to" dropdown menu being determined by settings in the "Allow role assignments" table only.
 It is recommended that the settings in the "Allow role assignments" table do not allow users to switch to a role with more capabilities than their existing role.';
 $string['configallowuserthemes'] = 'If you enable this, then users will be allowed to set their own themes.  User themes override site themes (but not course themes)';
-$string['configallowview'] = 'Select which roles a user will see, be able to filter by etc. based on which roles they already have.';
-$string['configallusersaresitestudents'] = 'For activities on the front page of the site, should ALL users be considered as students?  If you answer "Yes", then any confirmed user account will be allowed to participate as a student in those activities.  If you answer "No", then only users who are already a participant in at least one course will be able to take part in those front page activities. Only admins and specially assigned teachers can act as teachers for these front page activities.';
+$string['configallowview'] = 'For each role in the left column, select which roles that they can view, search and filter by.';
+$string['configallusersaresitestudents'] = 'For activities on the front page, should ALL users be considered as students?  If yes, then anyone with an account will be allowed to participate as a student in these activities.  If no, then only users who are already a participant in at least one course will be able to take part in these activities. Only admins and specially assigned teachers can act as teachers for site home activities.';
 $string['configauthenticationplugins'] = 'Please choose the authentication plugins you wish to use and arrange them in order of failthrough.';
 $string['configautolang'] = 'Detect default language from browser setting, if disabled site default is used.';
 $string['configautolangusercreation'] = 'If enabled, when a user\'s account is created automatically on first login (e.g. using LDAP or OAuth 2 authentication), the user\'s browser language is set as their preferred language. Otherwise, the default language for the site is set as the user\'s preferred language.';
@@ -198,9 +198,9 @@ Courses
 -All courses|/course/
 -Course search|/course/search.php
 -###
--FAQ|https://someurl.xyz/faq
--Preguntas más frecuentes|https://someurl.xyz/pmf||es
-Mobile app|https://someurl.xyz/app|Download our app
+-FAQ|https://example.org/faq
+-Preguntas más frecuentes|https://example.org/pmf||es
+Mobile app|https://example.org/app|Download our app
 </pre>';
 $string['configcustomusermenuitems'] = 'You can configure the contents of the user menu (with the exception of the log out link, which is automatically added). Each line is separated by pipe characters and consists of 1) a string in "langstringname, componentname" form or as plain text, 2) a URL, and 3) an icon either as a pix icon (in the folder pix with the structure [subfoldername]/[iconname], e.g. i/publish) or as a URL. Dividers can be used by adding a line of one or more # characters where desired.';
 $string['configdbsessions'] = 'If enabled, this setting will use the database to store information about current sessions. Note that changing this setting now will log out all current users (including you). If you are using MySQL please make sure that \'max_allowed_packet\' in my.cnf (or my.ini) is at least 4M. Other session drivers can be configured directly in config.php, see config-dist.php for more information. This option disappears if you specify session driver in config.php file.';
@@ -208,7 +208,7 @@ $string['configdebug'] = 'If you turn this on, then PHP\'s error_reporting will 
 $string['configdebugdisplay'] = 'Set to on, the error reporting will go to the HTML page. This is practical, but breaks XHTML, JS, cookies and HTTP headers in general. Set to off, it will send the output to your server logs, allowing better debugging. The PHP setting error_log controls which log this goes to.';
 $string['configdebugpageinfo'] = 'Enable if you want page information printed in page footer.';
 $string['configdebugvalidators'] = 'Enable if you want to have links to external validator servers in page footer. You may need to create new user with username <em>w3cvalidator</em>, and enable guest access. These changes may allow unauthorized access to server, do not enable on production sites!';
-$string['configdefaulthomepage'] = 'This determines the first link in the navigation for logged-in users.';
+$string['configdefaulthomepage'] = 'Which page should users be redirected to after logging in to the site? The setting also determines the first link in the navigation for users of Classic-based themes.';
 $string['configdefaultrequestcategory'] = 'Courses requested by users with the capability to request new courses in the system context will be placed in this category unless users are able to select a different category.';
 $string['configdefaultrequestedcategory'] = 'Default category to put courses that were requested into, if they\'re approved.';
 $string['configdefaultuserroleid'] = 'All logged in users will be given the capabilities of the role you specify here, at the site level, in ADDITION to any other roles they may have been given.  The default is the Authenticated user role.  Note that this will not conflict with other roles they have unless you prohibit capabilities, it just ensures that all users have capabilities that are not assignable at the course level (eg post blog entries, manage own calendar, etc).';
@@ -250,8 +250,9 @@ $string['configextramemorylimit'] = 'Some scripts like search, backup/restore or
 $string['configfilterall'] = 'Filter all strings, including headings, titles, navigation bar and so on.  This is mostly useful when using the multilang filter, otherwise it will just create extra load on your site for little gain.';
 $string['configfiltermatchoneperpage'] = 'Automatic linking filters will only generate a single link for the first matching text instance found on the complete page. All others are ignored.';
 $string['configfiltermatchonepertext'] = 'Automatic linking filters will only generate a single link for the first matching text instance found in each item of text on the page. All others are ignored. This setting has no effect if \'Filter match once per page\' is enabled.';
+$string['configfilternavigationwithsystemcontext'] = 'Normal use of the filtering is tied to the context in which it is used (e.g. course context), but for the site navigation, explicitly making everything filter with site context can yield performance improvements when using "content and headings" filtering.';
 $string['configfilteruploadedfiles'] = 'Process all uploaded HTML and text files with the filters before displaying them, only uploaded HTML files or none at all.';
-$string['configforcelogin'] = 'Normally, the front page of the site and the course listings (but not courses) can be read by people without logging in to the site.  If you want to force people to log in before they do ANYTHING on the site, then you should enable this setting.';
+$string['configforcelogin'] = 'Normally, the front page and the course listings (but not courses) can be read by people without logging in to the site. If you want to force people to log in before they do ANYTHING on the site, then you should enable this setting.';
 $string['configforceloginforprofiles'] = 'This setting forces people to log in as a real (non-guest) account before viewing any user\'s profile. If you disabled this setting, you may find that some users post advertising (spam) or other inappropriate content in their profiles, which is then visible to the whole world.';
 $string['configfrontpage'] = 'The items selected above will be displayed on the site\'s front page.';
 $string['configfrontpagecourselimit'] = 'Maximum number of courses';
@@ -315,7 +316,7 @@ $string['configpasswordresettime'] = 'This specifies the amount of time people h
 $string['configpathtodu'] = 'Path to du. Probably something like /usr/bin/du. If you enter this, pages that display directory contents will run much faster for directories with a lot of files.';
 $string['configpathtophp'] = 'Path to PHP CLI. Probably something like /usr/bin/php. If you enter this, cron scripts can be executed from admin web interface.';
 $string['configperfdebug'] = 'If you turn this on, performance info will be printed in the footer of the standard theme';
-$string['configprofileroles'] = 'List of roles that are visible on user profiles and participation page.';
+$string['configprofileroles'] = 'Roles that are listed in user profiles and on the participants page.';
 $string['configprofilesforenrolledusersonly'] = 'To prevent misuse by spammers, profile descriptions of users who are not yet enrolled in any course are hidden. New users must enrol in at least one course before they can add a profile description.';
 $string['configprotectusernames'] = 'If enabled, the forgotten password form will not display any hints allowing account usernames or email addresses to be guessed.';
 $string['configproxybypass'] = 'Comma separated list of (partial) hostnames or IPs that should bypass proxy (e.g., 192.168., .mydomain.com)';
@@ -418,7 +419,7 @@ $string['courselistshortnames_desc'] = 'If enabled, course short names will be d
 $string['coursemgmt'] = 'Manage courses and categories';
 $string['courseoverview'] = 'Course overview';
 $string['courserequestnotify'] = 'Course request notification';
-$string['courserequestnotifyemail'] = 'User {$a->user} requested a new course at {$a->link}';
+$string['courserequestnotifyemail'] = '{$a->user} requested a new course <a href="{$a->link}">{$a->link}</a>';
 $string['courserequests'] = 'Course requests';
 $string['courserequestspending'] = 'Pending course requests';
 $string['courses'] = 'Courses';
@@ -479,7 +480,7 @@ $string['debugvalidators'] = 'Show validator links';
 $string['defaultcity'] = 'Default city';
 $string['defaultcity_help'] = 'A city entered here will be the default city when creating new user accounts.';
 $string['defaultformatnotset'] = 'Error determining default course format. Please check site settings.';
-$string['defaulthomepage'] = 'Home page for users';
+$string['defaulthomepage'] = 'Start page for users';
 $string['defaultrequestcategory'] = 'Default category for course requests';
 $string['defaultsettinginfo'] = 'Default: {$a}';
 $string['defaultuserroleid'] = 'Default role for all users';
@@ -617,6 +618,7 @@ $string['filestoredinhelp'] = 'Where the file will be stored';
 $string['filterall'] = 'Filter all strings';
 $string['filtermatchoneperpage'] = 'Filter match once per page';
 $string['filtermatchonepertext'] = 'Filter match once per text';
+$string['filternavigationwithsystemcontext'] = 'Filter navigation with system context';
 $string['filters'] = 'Filters';
 $string['filtersettings'] = 'Manage filters';
 $string['filtersettingsgeneral'] = 'General filter settings';
@@ -870,7 +872,7 @@ $string['navcourselimit'] = 'Course limit';
 $string['navshowfullcoursenames'] = 'Show course full names';
 $string['navshowfullcoursenames_help'] = 'If enabled, course full names will be used in the navigation rather than short names.';
 $string['navshowfrontpagemods'] = 'Show front page activities in the navigation';
-$string['navshowfrontpagemods_help'] = 'If enabled, front page activities will be shown on the navigation under site pages.';
+$string['navshowfrontpagemods_help'] = 'If enabled, front page activities will be shown on the navigation under site pages. This setting only applies to themes based on Classic.';
 $string['navshowallcourses'] = 'Show all courses';
 $string['navshowcategories'] = 'Show course categories';
 $string['navshowmycoursecategories'] = 'Show my course categories';
@@ -1231,6 +1233,7 @@ $string['sitepolicyhandlerplugin'] = '{$a->name} ({$a->component})';
 $string['sitepolicyguest'] = 'Site policy URL for guests';
 $string['sitepolicyguest_help'] = 'The URL of the site policy that all guests must see and agree to before accessing the site. Note that this setting will only have an effect if the site policy handler is set to default (core).';
 $string['sitesectionhelp'] = 'If selected, a topic section will be displayed on the site\'s front page.';
+$string['sixtyfourbitsrequired'] = 'It has been detected that your site is not using a 64-bit PHP version. You are required to upgrade your system (operating system, PHP...) before installing this Moodle version.';
 $string['sixtyfourbitswarning'] = 'It has been detected that your site is not using a 64-bit PHP version. It is recommended that you upgrade your site to ensure future compatibility.';
 $string['slasharguments'] = 'Use slash arguments';
 $string['slashargumentswarning'] = 'It is recommended that the use of slash arguments is enabled. In future it will be required. For more details, see the documentation <a href="https://docs.moodle.org/en/admin/environment/slasharguments">Using slash arguments</a>.';
@@ -1397,12 +1400,13 @@ $string['unsupporteddbfilepertable'] = 'For full support of UTF-8 both MySQL and
 $string['unsupporteddblargeprefix'] = 'For full support of UTF-8 both MySQL and MariaDB require you to change your MySQL setting \'innodb_large_prefix\' to \'ON\'. See the documentation for further details.';
 $string['unsupporteddbstorageengine'] = 'The database storage engine being used is no longer supported.';
 $string['unsupporteddbtablerowformat'] = 'Your database has tables using Antelope as the file format. You are recommended to convert the tables to the Barracuda file format. See the documentation <a href="https://docs.moodle.org/en/cli">Administration via command line</a> for details of a tool for converting InnoDB tables to Barracuda.';
-$string['unsupportedphpversion7'] = 'PHP version 7 is not supported.';
-$string['unsupportedphpversion71'] = 'PHP version 7.1 is not supported.';
-$string['unsupportedphpversion72'] = 'PHP version 7.2 is not supported.';
-$string['unsupportedphpversion73'] = 'PHP version 7.3 is not supported.';
-$string['unsupportedphpversion74'] = 'PHP version 7.4 is not supported.';
-$string['unsupportedphpversion80'] = 'PHP version 8.0 is not supported.';
+$string['unsupportedphpversion7'] = 'PHP version 7 and higher are not supported.';
+$string['unsupportedphpversion71'] = 'PHP version 7.1 and higher are not supported.';
+$string['unsupportedphpversion72'] = 'PHP version 7.2 and higher are not supported.';
+$string['unsupportedphpversion73'] = 'PHP version 7.3 and higher are not supported.';
+$string['unsupportedphpversion74'] = 'PHP version 7.4 and higher are not supported.';
+$string['unsupportedphpversion80'] = 'PHP version 8.0 and higher are not supported.';
+$string['unsupportedphpversion81'] = 'PHP version 8.1 and higher are not supported.';
 $string['unsuspenduser'] = 'Activate user account';
 $string['updateaccounts'] = 'Update existing accounts';
 $string['updatecomponent'] = 'Update component';
@@ -1504,6 +1508,9 @@ $string['warningiconvbuggy'] = 'Your version of the iconv library does not suppo
 $string['webproxy'] = 'Web proxy';
 $string['webproxyinfo'] = 'Fill in the following options if your Moodle server cannot access the internet directly. Internet access is required for the download of environment data, language packs, RSS feeds, timezones, etc.<br /><em>The PHP cURL extension is highly recommended.</em>';
 $string['xmlrpcrecommended'] = 'The XMLRPC extension is useful for web services and Moodle networking.';
+$string['xmlrpcmaharaenabled'] = 'It has been detected that the Mahara ePortfolio is enabled on your site. This feature relies on the PHP XML-RPC extension which is no longer maintained by PHP.';
+$string['xmlrpcmnetenabled'] = 'It has been detected that the Moodle Networking is enabled on your site. This feature relies on the PHP XML-RPC extension which is no longer maintained by PHP.';
+$string['xmlrpcwebserviceenabled'] = 'It has been detected that the XML-RPC Web Service protocol is enabled on your site. This feature relies on the PHP XML-RPC extension which is no longer maintained by PHP.';
 $string['yuicomboloading'] = 'YUI combo loading';
 $string['ziprequired'] = 'The Zip PHP extension is now required by Moodle, info-ZIP binaries or PclZip library are not used anymore.';
 

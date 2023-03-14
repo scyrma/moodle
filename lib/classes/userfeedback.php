@@ -79,6 +79,7 @@ class core_userfeedback {
             'pix' => 'i/bullhorn',
             'component' => 'core'
         ];
+        $actions = component_class_callback(\theme_workplace\workplace::class, 'get_feedback_reminder_actions', [], $actions);
 
         \core\notification::add_call_to_action($icon, get_string('calltofeedback'), $actions, 'core/userfeedback');
 
