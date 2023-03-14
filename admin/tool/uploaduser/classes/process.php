@@ -167,7 +167,9 @@ class process {
     protected function find_profile_fields(): void {
         global $CFG;
         require_once($CFG->dirroot . '/user/profile/lib.php');
-        $this->allprofilefields = profile_get_user_fields_with_data(0);
+        /** @uses \tool_tenant\profile_manager::profile_get_all_user_fields() */
+        $this->allprofilefields = component_class_callback('\tool_tenant\profile_manager', 'profile_get_all_user_fields',
+            [], profile_get_user_fields_with_data(0));
         $this->profilefields = [];
         if ($proffields = $this->allprofilefields) {
             foreach ($proffields as $key => $proffield) {
@@ -873,6 +875,11 @@ class process {
             }
 
             if ($doupdate or $existinguser->password !== $oldpw) {
+                /** @uses \tool_wp\tool_uploaduser::can_update_user() */
+                if (!component_class_callback('tool_wp\tool_uploaduser', 'can_update_user', [$existinguser, $this->get_file_columns(), $this->upt], true)) {
+                    $this->upt->track('tool_wp', get_string('cannotupdateuser', 'error'), 'error');
+                    return;
+                }
                 // We want only users that were really updated.
                 user_update_user($existinguser, false, false);
 
@@ -905,6 +912,12 @@ class process {
                         $SESSION->bulk_users[] = $user->id;
                     }
                 }
+            }
+
+            /** @uses \tool_wp\tool_uploaduser::process_updated_user() */
+            if (!component_class_callback('tool_wp\tool_uploaduser', 'process_updated_user', [$user, $this->get_file_columns(), $this->upt], true)) {
+                $this->upt->track('tool_wp', get_string('cannotupdateuser', 'error'), 'error');
+                return;
             }
 
             if ($dologout) {
@@ -1009,6 +1022,13 @@ class process {
                 $this->upt->track('password', '-', 'normal', false);
             }
 
+            /** @uses \tool_wp\tool_uploaduser::can_create_user() */
+            if (!component_class_callback('tool_wp\tool_uploaduser', 'can_create_user', [$user, $this->get_file_columns(), $this->upt], true)) {
+                $this->upt->track('tool_wp', get_string('usernotaddederror', 'error'), 'error');
+                $this->userserrors++;
+                return;
+            }
+
             $user->id = user_create_user($user, false, false);
             $this->upt->track('username', \html_writer::link(
                 new \moodle_url('/user/profile.php', ['id' => $user->id]), s($user->username)), 'normal', false);
@@ -1040,6 +1060,9 @@ class process {
                     $SESSION->bulk_users[] = $user->id;
                 }
             }
+
+            /** @uses \tool_wp\tool_uploaduser::process_new_user() */
+            component_class_callback('tool_wp\tool_uploaduser', 'process_new_user', [$user, $this->get_file_columns(), $this->upt]);
         }
 
         // Update user interests.
@@ -1360,6 +1383,11 @@ class process {
                 }
             }
         }
+
+        /** @uses \tool_wp\tool_uploaduser::process_user_after_enrol() */
+        component_class_callback('tool_wp\tool_uploaduser', 'process_user_after_enrol',
+            [$user, $this->get_file_columns(), $this->upt, &$this->ccache]);
+
         if (($invalid = \core_user::validate($user)) !== true) {
             $this->upt->track('status', get_string('invaliduserdata', 'tool_uploaduser', s($user->username)), 'warning');
         }
