@@ -57,7 +57,10 @@ class users extends datasource {
         $this->set_main_table('user', $usertablealias);
 
         $userparamguest = database::generate_param_name();
-        $this->add_base_condition_sql("{$usertablealias}.id != :{$userparamguest} AND {$usertablealias}.deleted = 0", [
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, "{$usertablealias}.id"], '');
+        $this->add_base_condition_sql("{$usertablealias}.id != :{$userparamguest} AND {$tenantsql} {$usertablealias}.deleted = 0", [
             $userparamguest => $CFG->siteguest,
         ]);
 
@@ -77,6 +80,26 @@ class users extends datasource {
         $this->add_columns_from_entity($tagentity->get_entity_name(), ['name', 'namewithlink']);
         $this->add_filter($tagentity->get_filter('name'));
         $this->add_condition($tagentity->get_condition('name'));
+
+        // Add Job entity.
+        /** @uses \tool_organisation\reportbuilder\local\entities\job::prepare_for_user_datasource */
+        if ($jobentity = component_class_callback('\tool_organisation\reportbuilder\local\entities\job',
+            'prepare_for_user_datasource', [$usertablealias])) {
+            $this->add_entity($jobentity);
+            $this->add_columns_from_entity($jobentity->get_entity_name());
+            $this->add_filters_from_entity($jobentity->get_entity_name());
+            $this->add_conditions_from_entity($jobentity->get_entity_name());
+        }
+
+        // Add Tenant entity.
+        /** @uses \tool_tenant\reportbuilder\local\entities\tenant::prepare_for_user_datasource */
+        if ($tenantentity = component_class_callback('\tool_tenant\reportbuilder\local\entities\tenant',
+            'prepare_for_user_datasource', [$usertablealias])) {
+            $this->add_entity($tenantentity);
+            $this->add_columns_from_entity($tenantentity->get_entity_name());
+            $this->add_filters_from_entity($tenantentity->get_entity_name());
+            $this->add_conditions_from_entity($tenantentity->get_entity_name());
+        }
     }
 
     /**
@@ -85,7 +108,11 @@ class users extends datasource {
      * @return string[]
      */
     public function get_default_columns(): array {
-        return ['user:fullname', 'user:username', 'user:email'];
+        $columns = ['user:fullname', 'user:username', 'user:email'];
+        if (array_key_exists('tenant:name', $this->get_columns())) {
+            $columns[] = 'tenant:name';
+        }
+        return $columns;
     }
 
     /**
@@ -94,7 +121,14 @@ class users extends datasource {
      * @return string[]
      */
     public function get_default_filters(): array {
-        return ['user:fullname', 'user:username', 'user:email'];
+        $filters = ['user:fullname', 'user:username', 'user:email'];
+        if (array_key_exists('tenant:name', $this->get_filters())) {
+            $filters[] = 'tenant:name';
+        }
+        if (array_key_exists('user:hascurrentjobs', $this->get_filters())) {
+            $filters[] = 'user:hascurrentjobs';
+        }
+        return $filters;
     }
 
     /**
