@@ -1,0 +1,129 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_organisation/position_framework
+
+    Tenant/shared position framework (for management)
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "frameworkname": "Test position framework",
+        "columns": [
+            {"class": "col-8", "content": "Name"},
+            {"class": "col-2", "content": "Jobs"},
+            {"class": "col-2", "content": "Actions"}
+        ],
+        "canhavechildren": true,
+        "candelete": true,
+        "canedit": true,
+        "children": [
+            {
+                "columns": [
+                    {"class": "col-8", "content": "CEO"},
+                    {"class": "col-2", "content": "1"},
+                    {"class": "col-2", "content": "[X]"}
+                ],
+                "canhavechildren": true,
+                "children": [
+                    {"columns": [
+                        {"class": "col-8", "content": "Developement Lead"},
+                        {"class": "col-2", "content": "1 (1)"},
+                        {"class": "col-2", "content": "[Y]"}
+                    ],
+                    "canhavechildren": false,
+                    "children": []}
+                ]
+            }
+        ]
+    }
+}}
+
+<div class="card border b-0 mb-3 mt-3 positionframework"
+     data-region="positionframework"
+     data-framework-id="{{frameworkid}}"
+     data-context-id="{{contextid}}"
+     data-disable-dragdrop="{{disabledragdrop}}">
+    <div class="border-0 framework-header p-0 bg-white" id="heading{{frameworkid}}">
+        <div class="d-flex p-3 align-items-center">
+            <div class="drag-handle-container">
+                {{{moveicon}}}
+            </div>
+            <button
+                    id="framework-{{frameworkid}}"
+                    class="btn btn-link border-0 ws-toggle d-none d-sm-flex course-framework-toggle py-0 {{^expanded}}collapsed{{/expanded}}"
+                    title="{{#str}}expandpositionframework, tool_organisation, {{frameworknameformatted}}{{/str}}"
+                    data-toggle="collapse"
+                    data-target="#frameworkcontent-{{frameworkid}}"
+                    data-action="load-framework-content"
+                    aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
+                    aria-controls="frameworkcontent-{{frameworkid}}">
+            <span class="togglesectionicon text-gray-600 collapsed-icon-container nomargin iconlarge">
+                {{#pix}} t/collapsedcaret, core {{/pix}}
+            </span>
+            <span class="togglesectionicon text-gray-600 expanded-icon-container nomargin iconlarge">
+                {{#pix}} t/expanded, core {{/pix}}
+            </span>
+            </button>
+            <h5 class="frameworkname flex-fill mt-1 font-weight-normal">
+                {{{frameworkname}}}{{#locked}}{{#pix}}t/locked, core{{/pix}}{{/locked}}
+            </h5>
+            {{{editinsharedspace}}}
+            {{#canedit}}
+                <a href="#" class="btn btn-outline-secondary float-right iconsmall nomargin btn-sm" data-action="addposition" data-frameworkid="{{frameworkid}}"
+                   title="{{#str}}addposition, tool_organisation, {{frameworknameformatted}}{{/str}}">
+                    {{#pix}}plus-small, tool_wp{{/pix}}{{#str}}addnewposition, tool_organisation{{/str}}</a>
+                <span class="mx-2 border-left v-line-height"></span>
+                <a href="#" class="float-right" data-action="edit" data-positionid="{{frameworkid}}"
+                   data-frameworkid="{{frameworkid}}"
+                   title="{{#str}}editpositionframework, tool_organisation, {{frameworknameformatted}}{{/str}}">
+                    {{#pix}}i/settings, core{{/pix}}</a>
+            {{/canedit}}
+
+            {{#candelete}}
+                <a href="#" class="float-right" data-action="delete" data-positionid="{{frameworkid}}"
+                   data-name="{{frameworknameformatted}}"
+                   data-frameworkid="{{frameworkid}}"
+                   title="{{#str}}deletepositionframework, tool_organisation, {{frameworknameformatted}}{{/str}}">
+                    {{#pix}}i/trash, core{{/pix}}</a>
+            {{/candelete}}
+        </div>
+    </div>
+    <div id="frameworkcontent-{{frameworkid}}"
+         class="frameworkcontent collapse bg-gray-100 {{#expanded}}show{{/expanded}}"
+         data-parent="#frameworkslist"
+         aria-labelledby="framework-{{frameworkid}}"
+         data-region="frameworkcollapse"
+         data-loaded="0">
+        <div class="frameworkcontent-loading" style="display: none;">
+            {{> tool_wp/loading }}
+        </div>
+        <div class="frameworkcontent-wrapper m-3"></div>
+    </div>
+</div>
