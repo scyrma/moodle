@@ -56,6 +56,12 @@ function my_get_page(?int $userid, int $private = MY_PAGE_PRIVATE, string $pagen
         }
     }
 
+    /** @uses \tool_tenant\dashboard_manager::show_tenant_dashboard_if_enabled() */
+    if ($page = component_class_callback('\tool_tenant\dashboard_manager',
+            'show_tenant_dashboard_if_enabled', [$userid, $private])) {
+        return $page;
+    }
+
     // Otherwise return the system default page
     return $DB->get_record('my_pages', array('userid' => null, 'name' => $pagename, 'private' => $private), '*', IGNORE_MULTIPLE);
 }
@@ -121,9 +127,10 @@ function my_copy_page(
         $newblockinstanceids[$originalid] = $instance->id;
         $blockcontext = context_block::instance($instance->id);  // Just creates the context record
         $block = block_instance($instance->blockname, $instance);
-        if (!$block->instance_copy($originalid)) {
-            debugging("Unable to copy block-specific data for original block instance: $originalid
-                to new block instance: $instance->id", DEBUG_DEVELOPER);
+        if (empty($block) || !$block->instance_copy($originalid)) {
+            debugging("Unable to copy block-specific data for original block
+                instance: $originalid to new block instance: $instance->id for
+                block: $instance->blockname", DEBUG_DEVELOPER);
         }
     }
 
@@ -243,7 +250,7 @@ function my_reset_page_for_all_users(
                   JOIN {context} ctx ON ctx.instanceid = p.userid AND ctx.contextlevel = :usercontextlevel
                   JOIN {block_instances} bi ON bi.parentcontextid = ctx.id
                    AND bi.pagetypepattern = :pagetypepattern
-                   AND (bi.subpagepattern IS NULL OR bi.subpagepattern = " . $DB->sql_concat("''", 'p.id') . ")
+                   AND (bi.subpagepattern IS NULL OR bi.subpagepattern = " . $DB->sql_concat(':empty', 'p.id') . ")
                  WHERE p.private = :private
                    AND p.name = :name
                    AND p.userid $infragment";
@@ -252,6 +259,7 @@ function my_reset_page_for_all_users(
             'private' => $private,
             'usercontextlevel' => CONTEXT_USER,
             'pagetypepattern' => $pagetype,
+            'empty' => '',
             'name' => $pagename
         ], $inparams);
         $blockids = $DB->get_fieldset_sql($sql, $params);

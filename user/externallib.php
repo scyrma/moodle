@@ -59,7 +59,7 @@ class core_user_external extends external_api {
             'firstname' => new external_value(core_user::get_property_type('firstname'), 'The first name(s) of the user'),
             'lastname' => new external_value(core_user::get_property_type('lastname'), 'The family name of the user'),
             'email' => new external_value(core_user::get_property_type('email'), 'A valid and unique email address'),
-            'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email display', VALUE_OPTIONAL),
+            'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email visibility', VALUE_OPTIONAL),
             'city' => new external_value(core_user::get_property_type('city'), 'Home city of the user', VALUE_OPTIONAL),
             'country' => new external_value(core_user::get_property_type('country'),
                 'Home country code of the user, such as AU or CZ', VALUE_OPTIONAL),
@@ -486,7 +486,7 @@ class core_user_external extends external_api {
                 VALUE_OPTIONAL),
             'email' => new external_value(core_user::get_property_type('email'), 'A valid and unique email address', VALUE_OPTIONAL,
                 '', NULL_NOT_ALLOWED),
-            'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email display', VALUE_OPTIONAL),
+            'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email visibility', VALUE_OPTIONAL),
             'city' => new external_value(core_user::get_property_type('city'), 'Home city of the user', VALUE_OPTIONAL),
             'country' => new external_value(core_user::get_property_type('country'),
                 'Home country code of the user, such as AU or CZ', VALUE_OPTIONAL),
@@ -627,6 +627,8 @@ class core_user_external extends external_api {
                     }
                 }
 
+                /** @uses \tool_tenant\config::push_for_user() */
+                component_class_callback('tool_tenant\config', 'push_for_user', [$user['id']]);
                 user_update_user($user, true, false);
 
                 $userobject = (object)$user;
@@ -951,6 +953,11 @@ class core_user_external extends external_api {
         // Finally retrieve each users information.
         $returnedusers = array();
         foreach ($users as $user) {
+            /** @uses \tool_tenant\tenancy::is_user_hidden_by_tenancy */
+            if (component_class_callback('tool_tenant\\tenancy', 'is_user_hidden_by_tenancy', [$user->id])) {
+                continue;
+            }
+
             $userdetails = user_get_user_details_courses($user);
 
             // Return the user only if all the searched fields are returned.

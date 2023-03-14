@@ -940,6 +940,9 @@ class manager {
 
         // Init session key.
         sesskey();
+
+        // Make sure the user is correct in web server access logs.
+        set_access_log_user();
     }
 
     /**
@@ -962,7 +965,10 @@ class manager {
             $rs->close();
 
             // Kill sessions of users with disabled plugins.
-            $authsequence = get_enabled_auth_plugins();
+            /** @uses \tool_tenant\auth_manager::get_plugins_enabled_anywhere() */
+            $authsequence = component_class_callback('tool_tenant\auth_manager', 'get_plugins_enabled_anywhere', [],
+                get_enabled_auth_plugins());
+
             $authsequence = array_flip($authsequence);
             unset($authsequence['nologin']); // No login means user cannot login.
             $authsequence = array_flip($authsequence);
@@ -1137,7 +1143,8 @@ class manager {
         $PAGE->requires->js_call_amd('core/network', 'keepalive', array(
                 $frequency,
                 $timeout,
-                get_string($identifier, $component)
+                $identifier,
+                $component
             ));
     }
 

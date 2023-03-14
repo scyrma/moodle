@@ -700,7 +700,10 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         }
         $categorycontext = isset($course->category) ? context_coursecat::instance($course->category) :
             context_course::instance($course->id)->get_parent_context();
-        return has_capability('moodle/category:viewcourselist', $categorycontext, $user);
+        /** @uses \tool_program\api::is_course_in_user_programs() */
+        return has_capability('moodle/category:viewcourselist', $categorycontext, $user) ||
+            component_class_callback('tool_program\api', 'is_course_in_user_programs',
+                [(int) $course->id, $user], false);
     }
 
     /**
@@ -2278,6 +2281,11 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
             // Can not move to itself or it's own child.
             return false;
         }
+        /** @uses \tool_tenant\permission::can_change_category_parent() */
+        if (!component_class_callback('\tool_tenant\permission', 'can_change_category_parent',
+            [$this->id, $newparentcat], true)) {
+            return false;
+        }
         if ($newparentcat->id) {
             return has_capability('moodle/category:manage', context_coursecat::instance($newparentcat->id));
         } else {
@@ -2640,10 +2648,11 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
             $thislist = array();
             foreach ($rs as $record) {
                 context_helper::preload_from_record($record);
-                $context = context_coursecat::instance($record->id);
                 $canview = self::can_view_category($record);
+                $context = context_coursecat::instance($record->id);
+                $filtercontext = \context_helper::get_navigation_filter_context($context);
                 $baselist[$record->id] = array(
-                    'name' => $canview ? format_string($record->name, true, array('context' => $context)) : false,
+                    'name' => $canview ? format_string($record->name, true, array('context' => $filtercontext)) : false,
                     'path' => $record->path
                 );
                 if (!$canview || (!empty($requiredcapability) && !has_all_capabilities($requiredcapability, $context))) {

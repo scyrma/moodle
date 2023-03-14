@@ -23,9 +23,6 @@ use stdClass;
 /**
  * Class containing helper methods for formatting column data via callbacks
  *
- * Note that type hints for each $value argument are avoided to allow for these callbacks to be executed when columns are
- * aggregated using one of the "Group concatenation" methods, where the value is typically stringified
- *
  * @package     core_reportbuilder
  * @copyright   2021 Sara Arjona <sara@moodle.com> based on Alberto Lara Hernández <albertolara@moodle.com> code.
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -41,7 +38,7 @@ class format {
      * @return string
      */
     public static function userdate($value, stdClass $row, ?string $format = null): string {
-        return $value ? userdate((int) $value, $format) : '';
+        return $value ? userdate($value, $format) : '';
     }
 
     /**
@@ -54,7 +51,7 @@ class format {
         if ($value === null) {
             return '';
         }
-        return (bool) $value ? get_string('yes') : get_string('no');
+        return $value ? get_string('yes') : get_string('no');
     }
 
     /**
@@ -67,6 +64,6 @@ class format {
         if ($value === null) {
             return '';
         }
-        return get_string('percents', 'moodle', format_float((float) $value));
+        return get_string('percents', 'moodle', format_float($value));
     }
 }

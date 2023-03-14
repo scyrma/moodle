@@ -19,11 +19,11 @@ declare(strict_types=1);
 namespace core_reportbuilder\local\helpers;
 
 use context_system;
+use core_text;
 use core_reportbuilder\local\filters\boolean_select;
 use core_reportbuilder\local\filters\date;
 use core_reportbuilder\local\filters\select;
 use core_reportbuilder\local\filters\text;
-use core_reportbuilder\local\helpers\database;
 use core_reportbuilder\local\report\column;
 use core_reportbuilder\local\report\filter;
 use lang_string;
@@ -74,8 +74,8 @@ class user_profile_fields {
      * @return profile_field_base[]
      */
     private function get_user_profile_fields(): array {
-        return array_filter(profile_get_user_fields_with_data(0), static function($profilefield): bool {
-            return (int)$profilefield->field->visible === (int)PROFILE_VISIBLE_ALL;
+        return array_filter(profile_get_user_fields_with_data(0), static function(profile_field_base $profilefield): bool {
+            return $profilefield->is_visible();
         });
     }
 
@@ -132,10 +132,10 @@ class user_profile_fields {
             }
 
             $column = (new column(
-                'profilefield_' . $profilefield->field->shortname,
+                'profilefield_' . core_text::strtolower($profilefield->field->shortname),
                 new lang_string('customfieldcolumn', 'core_reportbuilder',
                     format_string($profilefield->field->name, true,
-                        ['escape' => true, 'context' => context_system::instance()])),
+                        ['escape' => false, 'context' => context_system::instance()])),
                 $this->entityname
             ))
                 ->add_joins($this->get_joins())
@@ -174,7 +174,7 @@ class user_profile_fields {
                     break;
                 case 'datetime':
                     $classname = date::class;
-                    $fieldsql = $DB->sql_cast_char2int($field);
+                    $fieldsql = $DB->sql_cast_char2int($field, true);
                     break;
                 case 'menu':
                     $classname = select::class;
@@ -198,7 +198,7 @@ class user_profile_fields {
 
             $filter = (new filter(
                 $classname,
-                'profilefield_' . $profilefield->field->shortname,
+                'profilefield_' . core_text::strtolower($profilefield->field->shortname),
                 new lang_string('customfieldcolumn', 'core_reportbuilder',
                     format_string($profilefield->field->name, true,
                         ['escape' => false, 'context' => context_system::instance()])),

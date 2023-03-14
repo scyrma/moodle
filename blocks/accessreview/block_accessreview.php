@@ -121,6 +121,7 @@ class block_accessreview extends block_base {
             switch ($COURSE->format) {
                 case accessibility::TOOL_BRICKFIELD_FORMAT_TOPIC:
                 case accessibility::TOOL_BRICKFIELD_FORMAT_WEEKLY:
+                case 'wplist':
                     $showhighlighting = true;
                     break;
             }
@@ -171,9 +172,7 @@ class block_accessreview extends block_base {
      * @return bool
      */
     public function can_block_be_added(moodle_page $page): bool {
-        global $CFG;
-
-        return $CFG->enableaccessibilitytools;
+        return accessibility::is_accessibility_enabled();
     }
 
     /**
