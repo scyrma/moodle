@@ -1,0 +1,67 @@
+/*
+ General.
+*/
+
+.block_myteams .icons-collapse-expand .icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+}
+
+/*
+ Reportbuilder table styles.
+*/
+
+.block_myteams {
+    .reportbuilder-table {
+        border-top: 1px solid #dee2e6;
+        thead {
+            display: none;
+        }
+        tr {
+            background-color: white !important; /* stylelint-disable-line declaration-no-important */
+        }
+        tr > td {
+            border-top: none;
+            border-bottom: 1px solid #dee2e6;
+            padding: .5rem;
+        }
+        // TODO: Remove when MDL-77150 lands.
+        // Hide "lastaccess" column in the report, only needed for sorting engine.
+        td.c1 {
+            display: none;
+        }
+    }
+    // Hide 'Reset table preferences' link.
+    .table-dynamic .resettable {
+        display: none;
+    }
+}
+
+/*
+'Show more' styles.
+*/
+
+.block_myteams ul {
+    &.show-more-list {
+        > li:nth-child(n+4) {
+            display: none;
+        }
+    }
+}
+
+/*
+ Quickfilters styles.
+*/
+
+.block_myteams .myteams-quickfilters {
+    gap: .5rem;
+    .dropdown-item-extra {
+        // We need to @extend in this case, to show dropdown items avoiding management by 'core/page_global'.
+        @extend .dropdown-item;
+    }
+    input[data-action="search"] {
+        width: 5rem;
+        min-width: 5rem;
+    }
+}

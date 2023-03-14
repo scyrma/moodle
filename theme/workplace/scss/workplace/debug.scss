@@ -1,0 +1,19 @@
+/*
+ Behat specific styles.
+*/
+
+body.behat-site {
+
+    /* Hide footer popover while running behat. */
+    &.jsenabled #page-footer .footer-content-popover {
+        display: inherit;
+    }
+    &.jsenabled .btn-footer-popover {
+        display: none;
+    }
+
+    /* Fix position for non-production state disclaimer. */
+    #wp-site-status-disclaimer {
+        position: inherit;
+    }
+}

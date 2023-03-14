@@ -1,0 +1,29 @@
+/*
+ General.
+*/
+
+.block_myinprogress {
+    .tool_catalogue-carousel {
+        // Min height should be empty status container.
+        min-height: 284px;
+    }
+    .empty-message-image {
+        height: 170px;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+    > .card-body .content {
+        margin-top: 0 !important; /* stylelint-disable-line declaration-no-important */
+    }
+}
+
+/* Card actions visibility */
+.block_myinprogress .card {
+    &:not([data-nothidden]) [data-action="carousel-hide-card"] {
+        display: none;
+    }
+    &[data-nothidden] [data-action="carousel-show-card"] {
+        display: none;
+    }
+}
