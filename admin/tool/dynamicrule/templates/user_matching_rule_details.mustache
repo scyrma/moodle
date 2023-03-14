@@ -1,0 +1,72 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_dynamicrule/user_matching_rule_details
+
+    Template for showing rule matching details.
+
+    Example context (json):
+    {
+        "outcomes": []
+    }
+}}
+
+<table class="table border-top-0">
+    <thead>
+    <tr>
+        <th scope="col" class="border-top-0">{{#str}} outcomes, tool_dynamicrule {{/str}}</th>
+        <th scope="col" class="border-top-0">{{#str}} matchstatus, tool_dynamicrule {{/str}}</th>
+        {{#debug}}
+            <th scope="col" class="border-top-0">{{#str}} debuginfo, debug {{/str}}</th>
+        {{/debug}}
+    </tr>
+    </thead>
+    <tbody>
+    {{#outcomes}}
+        <tr>
+            <td>{{{title}}}</td>
+            <td><span class="{{statusclass}}">{{statustitle}}</span></td>
+            {{#debug}}
+                <td>
+                {{#debugmessage}}
+                    {{{debugmessage}}}
+                    <div class="mb-0 d-flex" id="debug-info-{{outcomeid}}-heading">
+                        <a class="btn btn-link p-0 text-left ws-toggle nomargin collapsed" href="#" data-toggle="collapse" data-target="#debug-info-{{outcomeid}}" aria-expanded="false" aria-controls="debug-info-{{outcomeid}}">
+                            {{#str}} seemore, tool_dynamicrule {{/str}}
+                        </a>
+                    </div>
+                    <div id="debug-info-{{outcomeid}}" class="collapse pt-2" aria-labelledby="debug-info-{{outcomeid}}-heading">
+                        {{{debugtrace}}}
+                    </div>
+                {{/debugmessage}}
+                </td>
+            {{/debug}}
+        </tr>
+    {{/outcomes}}
+    </tbody>
+</table>
