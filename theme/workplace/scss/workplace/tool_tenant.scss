@@ -1,0 +1,82 @@
+.path-admin-tool-tenant {
+    textarea[name="customcss"],
+    textarea[name="footertext"] {
+        width: 100%;
+        min-height: 300px;
+    }
+    .system-report[data-source="tool_tenant\\users_report"] {
+        table {
+            [data-source="user:check"] {
+                max-width: 20px;
+            }
+        }
+    }
+    #activetenantstable {
+        .col-name > .icon.spacer {
+            margin-right: .5rem;
+        }
+    }
+}
+
+.navbar .tenantswitch .icon {
+    font-size: small;
+}
+
+/* Tenant selector */
+body.path-login {
+    .tenant-selector-alert {
+        @keyframes slide-up {
+            100% {
+                bottom: 0;
+            }
+        }
+        max-height: 100px;
+        z-index: 1000;
+        right: 0;
+        bottom: -100%;
+        animation: slide-up 1.5s forwards;
+        animation-delay: 4s;
+        font-size: initial;
+        @include media-breakpoint-down(xs) {
+            left: 0;
+        }
+
+        button {
+            &:hover,
+            &:focus {
+                text-decoration: none;
+            }
+        }
+    }
+    .tenant-selector-modal {
+        .tenant-selector-card {
+            border: 1px solid $gray040;
+            width: 100%;
+            background: none;
+            &.selected {
+                box-shadow: 0 0 0 2px $primary;
+            }
+
+            .tenant-logo {
+                width: 120px;
+                img {
+                    max-width: 100%;
+                    max-height: 40px;
+                }
+            }
+
+            .tenant-name {
+                max-width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}
+// Avoid tenant-selector-alert hiding part of the footer.
+@include media-breakpoint-down(xs) {
+    #login-page-footer {
+        margin-bottom: 100px;
+    }
+}

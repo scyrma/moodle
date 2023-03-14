@@ -1,0 +1,90 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template theme_boost/navbar
+
+    This template renders the top navbar.
+
+    Example context (json):
+    {
+        "output": {
+            "is_logged_in": true,
+            "should_display_navbar_logo": true,
+            "get_compact_logo_url": "http://example.com/image.png",
+            "custom_menu": "<li>..</li>",
+            "tenant_menu": "<li class='dropdown'>Tenant Menu</li>",
+            "page_heading_menu": "<li>..</li>",
+            "search_box": "<div><input type='text'></div>",
+            "navbar_plugin_output": "<div class='dropdown'>Messaging</div>",
+            "usermenu": "<div class='dropdown'>John Doe</div>"
+        },
+        "config": { "wwwroot": "#" },
+        "sitename": "Moodle Site",
+        "wpnavbarexamplecontext": true
+    }
+}}
+<nav class="fixed-top d-print-none navbar navbar-dark bg-brand navbar-expand moodle-has-zindex d-flex wp-boxshadow-3 {{# output.is_logged_in }} pl-0 {{/ output.is_logged_in }} pr-2 {{^ output.is_logged_in }} pl-5 {{/ output.is_logged_in }}" aria-label="{{#str}}sitemenubar, admin{{/str}}">
+
+    {{# output.is_logged_in }}
+    <div data-region="drawer-toggle" class="d-inline-block mr-3">
+        <button aria-expanded="{{#navdraweropen}}true{{/navdraweropen}}{{^navdraweropen}}false{{/navdraweropen}}" aria-controls="nav-drawer" type="button" class="btn nav-link mr-1 btn-link drawer-toggle-button" data-action="toggle-drawer" data-side="left" data-preference="drawer-open-nav">{{#pix}}i/menubars, core{{/pix}}<span class="sr-only">{{#str}}sidepanel, core{{/str}}</span></button>
+    </div>
+    {{/ output.is_logged_in }}
+
+    <a href="{{{ config.wwwroot }}}" class="navbar-brand d-none d-sm-flex align-items-center align-self-stretch">
+        <span class="site-name">{{{ sitename }}}
+        </span>
+        <span class="site-logo h-100">
+        </span>
+    </a>
+    <ul class="navbar-nav d-none d-md-flex mr-3 tenantswitch">
+        {{{ output.tenant_menu }}}
+    </ul>
+    <ul class="navbar-nav d-none d-md-flex">
+        {{{ output.custom_menu }}}
+    </ul>
+    <ul class="nav navbar-nav ml-auto align-items-center">
+        <li class="nav-item d-none d-lg-block">
+            {{{ output.search_box }}}
+        </li>
+        {{{ output.page_heading_menu }}}
+        <li class="nav-item d-flex">
+            {{{ output.navbar_plugin_output }}}
+        </li>
+        <li class="nav-item">
+            {{{ output.workplace_menu_link }}}
+        </li>
+        <li class="nav-item d-flex align-items-center">
+            {{{ output.user_menu }}}
+        </li>
+    </ul>
+</nav>
+{{{ output.workplace_menu_modal }}}
+{{#wpnavbarexamplecontext}}
+<div id="nav-drawer"></div>
+{{/wpnavbarexamplecontext}}

@@ -1,0 +1,65 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template theme_workplace/footer
+
+    This template renders the page footer.
+
+    Example context (json):
+    {
+        "output": {
+            "course_footer": "Course footer html",
+            "page_doc_link": "<a href='http://localhost/help'>Moodle docs for this page</a>",
+            "login_info": "You are logged in as User <a href='http://localhost'>Log out</a>",
+            "standard_footer_html": "<a href='http://localhost'>Purge all caches</a>",
+            "standard_end_of_body_html": "Footer Javascript"
+        }
+    }
+}}
+<footer id="page-footer" class="py-5 font-small">
+    <div class="mx-4">
+        <div class="ml-2 customfooter">{{{ output.custom_footer }}}</div>
+        <div class="ml-2 standardfooterlinks">
+            <div id="course-footer">{{{ output.course_footer }}}</div>
+            {{# output.page_doc_link }}
+                <p class="helplink">{{{ output.page_doc_link }}}</p>
+            {{/ output.page_doc_link }}
+
+            {{{ output.login_info }}}
+            <div class="tool_usertours-resettourcontainer"></div>
+            {{{ output.standard_footer_html }}}
+            {{{ output.standard_end_of_body_html }}}
+        </div>
+        <div class="ml-2 mt-2">
+            {{#str}} branding:poweredby, theme_workplace {{/str}}
+            <a href="https://moodle.com/workplace/" target="_blank">
+                {{#str}} branding:name, theme_workplace {{/str}}
+            </a>
+        </div>
+    </div>
+</footer>
