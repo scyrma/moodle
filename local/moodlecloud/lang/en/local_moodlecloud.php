@@ -27,6 +27,7 @@ $string['emailnotificationsinfo'] = 'Email notifications are sent to the regisit
 Disable the notifications if the account owner no longer wishes to receive these emails.';
 $string['onlysiteownercanchangesettings'] = 'Only the site owner can modify these settings.';
 $string['pluginname'] = 'MoodleCloud';
+$string['dataset_task'] = 'MoodleCloud Dataset Collection';
 $string['reporting_task'] = 'MoodleCloud Statistics Reporting';
 $string['touchpoint_task'] = 'MoodleCloud Touchpoints';
 $string['h5p_get_content_types_task'] = 'Download available H5P content types from h5p.org';
