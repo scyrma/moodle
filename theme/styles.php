@@ -83,6 +83,14 @@ if (file_exists("$CFG->dirroot/theme/$themename/config.php")) {
 $candidatedir = "$CFG->localcachedir/theme/$rev/$themename/css";
 $candidatesheet = "{$candidatedir}/" . theme_styles_get_filename($type, $themesubrev, $usesvg);
 $etag = theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg);
+// BEGIN MOODLECLOUD HACK
+if (!$CFG->moodlecloud_scss_enabled) {
+    global $clusterconfig;
+    $version = filter_var($clusterconfig['siteversion'], FILTER_SANITIZE_NUMBER_INT);
+    $sheetname = ($usesvg ? 'svg_' : 'nosvg_') . ($type == 'all' ? 'ltr_' : 'rtl_') . $themename . '_' . $version . '.css';
+    $candidatesheet = '/var/www/css/' . $sheetname;
+}
+// END MOODLECLOUD HACK
 
 if (file_exists($candidatesheet)) {
     if (!empty($_SERVER['HTTP_IF_NONE_MATCH']) || !empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {

@@ -854,6 +854,14 @@ class cachestore_file extends cache_store implements cache_is_key_aware, cache_i
             @unlink($tempfile);
             return false;
         }
+        // START MOODLECLOUD HACK.
+        if (file_exists($file)) {
+            // Change #1
+            // The reasoning behind this was not documented in 2017, but is
+            // likely to be related to a specific Gluster behaviour.
+            @unlink($file);
+        }
+        // END MOODLECLOUD HACK.
 
         // Finally rename the temp file to the desired file, returning the true|false result.
         $result = rename($tempfile, $file);

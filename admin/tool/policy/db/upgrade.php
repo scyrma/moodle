@@ -34,6 +34,87 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_tool_policy_upgrade($oldversion) {
     global $DB;
 
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2018051401) {
+        $policyid = $DB->insert_record('tool_policy', ['sortorder' => 1]);
+
+        $versionid = $DB->insert_record('tool_policy_versions', [
+            'name' => 'MoodleCloud cookies policy',
+            'type' => 0,
+            'audience' => 0,
+            'usermodified' => 2,
+            'timecreated' => time(),
+            'timemodified' => time(),
+            'policyid' => $policyid,
+            'revision' => '',
+            'summary' => '',
+            'summaryformat' => 1,
+            'content' => '',
+            'contentformat' => 1
+        ]);
+
+        $DB->update_record('tool_policy', ['id' => $policyid, 'currentversionid' => $versionid]);
+
+        set_config('moodlecloudlockedversions',
+                   get_config('tool_policy', 'moodlecloudlockedversions') . ',' . $versionid, 'tool_policy'
+        );
+
+        list($privacyid, $cookieid) = preg_split('/,/', get_config('tool_policy', 'moodlecloudlockedversions'), -1, PREG_SPLIT_NO_EMPTY);
+
+        // Fix sortorders so ours come first and second.
+        $sortorder = 2;
+        foreach ($DB->get_records('tool_policy') as $record) {
+            if ($record-> id == $privacyid) {
+                $DB->set_field('tool_policy', 'sortorder', 0, ['id' => $record->id]);
+                continue;
+            }
+
+            if ($record-> id == $cookieid) {
+                $DB->set_field('tool_policy', 'sortorder', 1, ['id' => $record->id]);
+                continue;
+            }
+
+            $DB->set_field('tool_policy', 'sortorder', $sortorder, ['id' => $record->id]);
+            $sortorder++;
+        }
+
+        upgrade_plugin_savepoint(true, 2018051401, 'tool', 'policy');
+    }
+
+    if ($oldversion < 2018082900) {
+        // Add field agreementstyle to the table tool_policy_versions.
+        $table = new xmldb_table('tool_policy_versions');
+        $field = new xmldb_field('agreementstyle', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'policyid');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2018082900, 'tool', 'policy');
+    }
+
+    if ($oldversion < 2018091800) {
+        // Add field "optional" to the table "tool_policy_versions".
+        $table = new xmldb_table('tool_policy_versions');
+        $field = new xmldb_field('optional', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'agreementstyle');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2018091800, 'tool', 'policy');
+    }
+
+    // Automatically generated Moodle v3.6.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    // Automatically generated Moodle v3.7.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    // Automatically generated Moodle v3.8.0 release upgrade line.
+    // Put any upgrade step following this.
+
     // Automatically generated Moodle v3.9.0 release upgrade line.
     // Put any upgrade step following this.
 
