@@ -301,5 +301,16 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023012000, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2023032300) {
+
+        // MC-6100 - If the contact site support is opened to anyone, we limit it to authenticated users only.
+        if (get_config('moodle','supportavailability') == 2) {
+            set_config('supportavailability', 1);
+        }
+
+        // Moodlecloud savepoint reached.
+        upgrade_plugin_savepoint(true, 2023032300, 'local', 'moodlecloud');
+    }
+
     return true;
 }
