@@ -124,7 +124,7 @@ class certification extends base {
         // Fullname with link column.
         $columns[] = (new column(
             'fullnamewithlink',
-            new lang_string('certificationnamewithlink', 'tool_certification'),
+            new lang_string('certificationnamewitheditlink', 'tool_certification'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())

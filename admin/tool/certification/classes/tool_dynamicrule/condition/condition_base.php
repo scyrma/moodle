@@ -220,7 +220,7 @@ abstract class condition_base extends \tool_dynamicrule\condition_sql {
 
         if ($certificationuser->get('isrecertification')) {
             // If is recertification, due date should be the previous expiry date.
-            $lastcompletion = self::get_last_completion_record($userid, $certificationuser->get('certificationid'));
+            $lastcompletion = api::get_last_completion_record($userid, $certificationuser->get('certificationid'));
             $duedate = (int)$lastcompletion->get('expirydate');
         } else {
             // If is the first round, due date is in program user allocation.

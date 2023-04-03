@@ -184,7 +184,7 @@ class certification_entity extends entity_base {
         // Column fullnamewithlink.
         $newcolumn = (new report_column(
             'fullnamewithlink',
-            new lang_string('certificationnamewithlink', 'tool_certification'),
+            new lang_string('certificationnamewitheditlink', 'tool_certification'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
