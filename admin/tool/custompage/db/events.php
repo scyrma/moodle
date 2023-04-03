@@ -26,22 +26,35 @@
 // MWL are binding and shall prevail.
 
 /**
- * Plugin version details
+ * Event observers for tool_custompage.
  *
- * @package     tool_custompage
- * @copyright   2022 Moodle Pty Ltd <support@moodle.com>
- * @author      2022 Paul Holden <paulh@moodle.com>
- * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ * @package   tool_custompage
+ * @copyright 2023 Moodle Pty Ltd <support@moodle.com>
+ * @author    2023 David Matamoros <davidmc@moodle.com>
+ * @license   Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-// This plugin is part of Moodle Workplace product.
-$plugin->component    = 'tool_custompage';
-$plugin->release      = '4.1.2';
-$plugin->version      = 2023011121;
-$plugin->requires     = 2022112802.00;
-$plugin->maturity     = MATURITY_STABLE;
-$plugin->dependencies = [
-    'tool_tenant'     => 2023011120,
+$observers = [
+    [
+        'eventname' => \core\event\cohort_member_added::class,
+        'callback' => 'tool_custompage\local\helpers\audience::purge_caches_by_event',
+    ],
+    [
+        'eventname' => \core\event\cohort_member_removed::class,
+        'callback' => 'tool_custompage\local\helpers\audience::purge_caches_by_event',
+    ],
+    [
+        'eventname' => \core\event\cohort_deleted::class,
+        'callback' => 'tool_custompage\local\helpers\audience::purge_caches_by_event',
+    ],
+    [
+        'eventname' => \core\event\role_assigned::class,
+        'callback' => 'tool_custompage\local\helpers\audience::purge_caches_by_event',
+    ],
+    [
+        'eventname' => \core\event\role_unassigned::class,
+        'callback' => 'tool_custompage\local\helpers\audience::purge_caches_by_event',
+    ],
 ];

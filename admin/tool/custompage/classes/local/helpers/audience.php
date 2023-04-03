@@ -238,6 +238,15 @@ class audience {
     }
 
     /**
+     * Purge the audience cache of allowed pages using events
+     *
+     * @param \core\event\base $event
+     */
+    public static function purge_caches_by_event(\core\event\base $event): void {
+        static::purge_caches();
+    }
+
+    /**
      * Generate SQL select clause and params for selecting pages specified user can access
      *
      * @param string $custompagetablealias

@@ -154,3 +154,50 @@ Feature: Manage custom page audiences
     And I select "Access" from secondary navigation
     Then I should see "User One" in the "reportbuilder-table" "table"
     And I should not see "Tenantadmin 1" in the "reportbuilder-table" "table"
+
+  Scenario: Adding/removing a user to/from an audience cohort should apply changes immediately
+    Given the following "cohorts" exist:
+      | name         | idnumber | visible |
+      | Cohort1      | C1       | 1       |
+    And the following "tool_custompage > Page" exists:
+      | name    | My page |
+      | weight  | 0       |
+      | global  | 1       |
+    And I am on the "My page" "tool_custompage > Manage" page logged in as "admin"
+    And I select "Audience" from secondary navigation
+    And I click on "Add audience 'Member of cohort'" "link"
+    And I set the field "Select members from cohort" to "Cohort1"
+    And I press "Save changes"
+    And I navigate to "Users > Accounts > Cohorts" in site administration
+    Then I should not see "My page" in the ".primary-navigation" "css_element"
+    And I press "Assign" action in the "Cohort1" report row
+    And I set the field "Potential users" to "Admin User"
+    And I press "Add"
+    And I reload the page
+    And I should see "My page" in the ".primary-navigation" "css_element"
+    And I set the field "Current users" to "Admin User"
+    And I press "Remove"
+    And I reload the page
+    And I should not see "My page" in the ".primary-navigation" "css_element"
+
+  Scenario: Adding/removing a user to/from an audience user role should apply changes immediately
+    Given the following "tool_custompage > Page" exists:
+      | name    | My page |
+      | weight  | 0       |
+      | global  | 1       |
+    And I am on the "My page" "tool_custompage > Manage" page logged in as "admin"
+    And I select "Audience" from secondary navigation
+    And I click on "Add audience 'Assigned system role'" "link"
+    And I set the field "Select a role" to "Course creator"
+    And I press "Save changes"
+    And I navigate to "Users > Permissions > Assign system roles" in site administration
+    Then I should not see "My page" in the ".primary-navigation" "css_element"
+    And I click on "Course creator" "link"
+    And I set the field "Potential users" to "Admin User"
+    And I press "Add"
+    And I reload the page
+    And I should see "My page" in the ".primary-navigation" "css_element"
+    And I set the field "Existing users" to "Admin User"
+    And I press "Remove"
+    And I reload the page
+    And I should not see "My page" in the ".primary-navigation" "css_element"

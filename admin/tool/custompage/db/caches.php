@@ -43,5 +43,8 @@ $definitions = [
         'simpledata' => true,
         'staticacceleration' => true,
         'ttl' => 3600,
+        'invalidationevents' => [
+            'custompageaudiencesmodified',
+        ],
     ]
 ];
