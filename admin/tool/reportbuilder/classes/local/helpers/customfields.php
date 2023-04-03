@@ -327,7 +327,7 @@ class customfields {
     /**
      * Format for custom fields value. We get the correct custom field value using export_value method.
      *
-     * @param null $value
+     * @param mixed $value
      * @param stdClass $row
      * @param field_controller $field
      * @return mixed|null
@@ -370,7 +370,7 @@ class customfields {
         if (!empty($row)) {
             $separator = helper::get_list_separator();
             $data = [];
-            $values = array_filter(explode($separator, current($row)));
+            $values = array_filter(explode($separator, current((array)$row) ?? ''));
             foreach ($values as $val) {
                 $data[] = $this->customfield_value($val, new stdClass(), $field);
             }

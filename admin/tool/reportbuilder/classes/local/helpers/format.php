@@ -183,7 +183,7 @@ class format {
     public static function countries_list($value, \stdClass $row) {
         $namedcountries = [];
         $separator = helper::get_list_separator();
-        $countries = explode ($separator, $value);
+        $countries = explode ($separator, $value ?? '');
         foreach ($countries as $country) {
             $namedcountries[] = self::country($country, $row);
         }

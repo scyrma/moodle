@@ -503,7 +503,7 @@ class course extends entity_base {
     public function format_aggregation(?string $value, \stdClass $row, string $fieldname) {
         if (($options = $this->get_options_for($fieldname)) !== null) {
             $formattedvalues = [];
-            $elements = explode(',', $value);
+            $elements = explode(',', $value ?? '');
             foreach ($elements as $key) {
                 $formattedvalues[] = array_key_exists($key, $options) ? $options[$key] : s($key);
             }
@@ -513,7 +513,7 @@ class course extends entity_base {
         } else {
             $values = array_map(function($value) use ($row, $fieldname): string {
                 return $this->format($value, $row, $fieldname);
-            }, explode(',', $value));
+            }, explode(',', $value ?? ''));
             return implode(', ', $values);
         }
     }
