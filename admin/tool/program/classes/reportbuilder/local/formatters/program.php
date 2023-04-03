@@ -34,6 +34,7 @@ use core_reportbuilder\local\helpers\format;
 use html_writer;
 use moodle_url;
 use stdClass;
+use tool_catalogue\router;
 use tool_program\api;
 use tool_program\constants;
 use tool_program\permission;
@@ -129,6 +130,35 @@ class program {
     }
 
     /**
+     * Returns formatted fullname with a link
+     *
+     * @param string|null $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function fullname_with_link_view(?string $value, stdClass $row): string {
+        return self::program_link_view((int) $row->id, self::formatstring($value));
+    }
+
+    /**
+     * Return the program view link to the provided text
+     *
+     * @param int $programid
+     * @param string $text
+     * @return string
+     */
+    private static function program_link_view(int $programid, string $text): string {
+        if (class_exists(router::class)) {
+            $url = router::build_program_url($programid);
+        } else {
+            // Without tool_catalogue there is no "view" link for the programs.
+            $url = '#';
+        }
+
+        return html_writer::link($url, $text);
+    }
+
+    /**
      * Returns formatted fullname with image and link
      *
      * @param string|null $value
@@ -137,6 +167,17 @@ class program {
      */
     public static function fullname_with_image_and_link(?string $value, stdClass $row): string {
         return self::program_link((int) $row->id, self::fullname_with_image($value, $row));
+    }
+
+    /**
+     * Returns formatted fullname with image and link to view
+     *
+     * @param string|null $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function fullname_with_image_and_link_view(?string $value, stdClass $row): string {
+        return self::program_link_view((int) $row->id, self::fullname_with_image($value, $row));
     }
 
     /**

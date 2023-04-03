@@ -140,10 +140,10 @@ class program extends base {
             ->set_is_sortable(true)
             ->add_callback([program_formatter::class, 'fullname_with_image']);
 
-        // Fullname with link column.
+        // Fullname with edit link column.
         $columns[] = (new column(
             'fullnamewithlink',
-            new lang_string('programnamewithlink', 'tool_program'),
+            new lang_string('programnamewitheditlink', 'tool_program'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -152,10 +152,22 @@ class program extends base {
             ->set_is_sortable(true)
             ->add_callback([program_formatter::class, 'fullname_with_link']);
 
-        // Fullname with image and link column.
+        // Fullname with view link column.
+        $columns[] = (new column(
+            'fullnamewithlinkview',
+            new lang_string('programnamewithviewlink', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_TEXT)
+            ->add_fields("{$tablealias}.fullname, {$tablealias}.id")
+            ->set_is_sortable(true)
+            ->add_callback([program_formatter::class, 'fullname_with_link_view']);
+
+        // Fullname with image and edit link column.
         $columns[] = (new column(
             'fullnamewithimageandlink',
-            new lang_string('programnamewithimageandlink', 'tool_program'),
+            new lang_string('programnamewithimageandeditlink', 'tool_program'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -163,6 +175,18 @@ class program extends base {
             ->add_fields("{$tablealias}.fullname, {$tablealias}.id")
             ->set_is_sortable(true)
             ->add_callback([program_formatter::class, 'fullname_with_image_and_link']);
+
+        // Fullname with image and view link column.
+        $columns[] = (new column(
+            'fullnamewithimageandlinkview',
+            new lang_string('programnamewithimageandviewlink', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(column::TYPE_TEXT)
+            ->add_fields("{$tablealias}.fullname, {$tablealias}.id")
+            ->set_is_sortable(true)
+            ->add_callback([program_formatter::class, 'fullname_with_image_and_link_view']);
 
         // Program image column.
         $columns[] = (new column(
@@ -467,7 +491,7 @@ class program extends base {
 
         $column = (new column(
             'associatedcertificationswithlink',
-            new lang_string('associatedcertificationswithlinks', 'tool_program'),
+            new lang_string('associatedcertificationswitheditlinks', 'tool_program'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())

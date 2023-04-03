@@ -204,10 +204,10 @@ class program_entity extends entity_base {
             ->set_is_sortable(true);
         $columns[] = $newcolumn;
 
-        // Column fullname with link.
+        // Column fullname with link to edit.
         $newcolumn = (new report_column(
             'fullnamewithlink',
-            new lang_string('programnamewithlink', 'tool_program'),
+            new lang_string('programnamewitheditlink', 'tool_program'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -221,10 +221,27 @@ class program_entity extends entity_base {
             ->set_is_sortable(true);
         $columns[] = $newcolumn;
 
-        // Column fullname with image and link.
+        // Column fullname with link to view.
+        $newcolumn = (new report_column(
+            'fullnamewithlinkview',
+            new lang_string('programnamewithviewlink', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_field($sql, 'fullname', $params)
+            ->add_field("{$tablealias}.id")
+            ->add_callback($programwithlinkfunction, 'fullnamewithlinkview')
+            ->add_aggregation_callback('groupconcat', $programwithlinkfunction, 'fullnamewithlinkview')
+            ->add_aggregation_callback('groupconcatdistinct', $programwithlinkfunction, 'fullnamewithlinkview')
+            ->set_groupby_sql(implode(', ', $concatfields))
+            ->set_is_sortable(true);
+        $columns[] = $newcolumn;
+
+        // Column fullname with image and link to edit.
         $newcolumn = (new report_column(
             'fullnamewithimageandlink',
-            new lang_string('programnamewithimageandlink', 'tool_program'),
+            new lang_string('programnamewithimageandeditlink', 'tool_program'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
@@ -234,6 +251,23 @@ class program_entity extends entity_base {
             ->add_callback($programwithlinkfunction, 'fullnamewithimageandlink')
             ->add_aggregation_callback('groupconcat', $programwithlinkfunction, 'fullnamewithimageandlink')
             ->add_aggregation_callback('groupconcatdistinct', $programwithlinkfunction, 'fullnamewithimageandlink')
+            ->set_groupby_sql(implode(', ', $concatfields))
+            ->set_is_sortable(true);
+        $columns[] = $newcolumn;
+
+        // Column fullname with image and link to view.
+        $newcolumn = (new report_column(
+            'fullnamewithimageandlinkview',
+            new lang_string('programnamewithimageandviewlink', 'tool_program'),
+            $this->get_entity_name()
+        ))
+            ->add_joins($this->get_joins())
+            ->set_type(constants::DB_TYPE_TEXT)
+            ->add_field($sql, 'fullname', $params)
+            ->add_field("{$tablealias}.id")
+            ->add_callback($programwithlinkfunction, 'fullnamewithimageandlinkview')
+            ->add_aggregation_callback('groupconcat', $programwithlinkfunction, 'fullnamewithimageandlinkview')
+            ->add_aggregation_callback('groupconcatdistinct', $programwithlinkfunction, 'fullnamewithimageandlinkview')
             ->set_groupby_sql(implode(', ', $concatfields))
             ->set_is_sortable(true);
         $columns[] = $newcolumn;
@@ -555,7 +589,7 @@ class program_entity extends entity_base {
 
         $newcolumn = (new report_column(
             'associatedcertificationswithlink',
-            new lang_string('associatedcertificationswithlinks', 'tool_program'),
+            new lang_string('associatedcertificationswitheditlinks', 'tool_program'),
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())

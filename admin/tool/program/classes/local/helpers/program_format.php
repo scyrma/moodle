@@ -32,6 +32,7 @@ use core_text;
 use html_writer;
 use moodle_url;
 use stdClass;
+use tool_catalogue\router;
 use tool_program\api;
 use tool_program\constants;
 use tool_program\permission;
@@ -71,6 +72,17 @@ class program_format {
     }
 
     /**
+     * Returns formatted fullname with a link to view
+     *
+     * @param string|null $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function fullnamewithlinkview(?string $value, stdClass $row): string {
+        return self::add_program_link_view((int) $row->id, self::fullname($value, $row));
+    }
+
+    /**
      * Returns formatted fullname with image
      *
      * @param string|null $value
@@ -96,6 +108,17 @@ class program_format {
     }
 
     /**
+     * Returns formatted fullname with image and link to view
+     *
+     * @param string|null $value
+     * @param stdClass $row
+     * @return string
+     */
+    public static function fullnamewithimageandlinkview(?string $value, stdClass $row): string {
+        return self::add_program_link_view((int) $row->id, self::fullnamewithimage($value, $row));
+    }
+
+    /**
      * Adds a program link to the provided text
      *
      * @param int $programid
@@ -104,6 +127,24 @@ class program_format {
      */
     private static function add_program_link(int $programid, string $text): string {
         $url = new moodle_url('/admin/tool/program/edit.php', ['id' => $programid]);
+
+        return html_writer::link($url, $text);
+    }
+
+    /**
+     * Adds a program view link to the provided text
+     *
+     * @param int $programid
+     * @param string $text
+     * @return string
+     */
+    private static function add_program_link_view(int $programid, string $text): string {
+        if (class_exists(router::class)) {
+            $url = router::build_program_url($programid);
+        } else {
+            // Without tool_catalogue there is no "view" link for the programs.
+            $url = '#';
+        }
 
         return html_writer::link($url, $text);
     }
