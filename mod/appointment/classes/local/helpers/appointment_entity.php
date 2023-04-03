@@ -201,6 +201,9 @@ class appointment_entity extends entity_base {
             ->add_callback([format::class, 'checkbox_as_text']);
         $columns[] = $newcolumn;
 
+        // Bookings query.
+        $bookingsquery = self::get_bookings_query($tablealias);
+
         // Column seatsbooked.
         $newcolumn = (new report_column(
             'seatsbooked',
@@ -209,7 +212,7 @@ class appointment_entity extends entity_base {
         ))
             ->add_joins($this->get_joins())
             ->set_type(constants::DB_TYPE_NUMBER)
-            ->add_field("(SELECT COUNT(id) FROM {appointment_signups} WHERE sessionid = $tablealias.id)", 'seatsbooked');
+            ->add_field($bookingsquery, 'seatsbooked');
 
         // TODO: See WP-1397 - seats booked is already an aggregate function, so can't be grouped by in MSSQL/Oracle.
         if ($dbfamily === 'mssql' || $dbfamily === 'oracle') {
@@ -228,7 +231,7 @@ class appointment_entity extends entity_base {
         ))
             ->add_joins($this->get_joins())
             ->set_type(constants::DB_TYPE_TEXT)
-            ->add_field("(SELECT COUNT(id) FROM {appointment_signups} WHERE sessionid = $tablealias.id)", 'seatsbooked')
+            ->add_field($bookingsquery, 'seatsbooked')
             ->add_field("$tablealias.capacity", 'capacity')
             ->add_callback([appointment_format::class, 'bookedvscapacity']);
 
@@ -296,6 +299,9 @@ class appointment_entity extends entity_base {
             ->add_joins($this->get_joins())
             ->set_field_sql("$tablealias.allowcancellations");
 
+        // Bookings query.
+        $bookingsquery = self::get_bookings_query($tablealias);
+
         // Filter seatsbooked.
         $filters[] = (new report_filter(
             number::class,
@@ -304,7 +310,7 @@ class appointment_entity extends entity_base {
             $this->get_entity_name()
         ))
             ->add_joins($this->get_joins())
-            ->set_field_sql("(SELECT COUNT(id) FROM {appointment_signups} WHERE sessionid = $tablealias.id)");
+            ->set_field_sql($bookingsquery);
 
         // Filter sessionavailability.
         $filters[] = (new report_filter(
@@ -315,14 +321,14 @@ class appointment_entity extends entity_base {
         ))
             ->add_joins($this->get_joins())
             ->set_field_sql("CASE WHEN
-                (SELECT COUNT(id) FROM {appointment_signups} WHERE sessionid = $tablealias.id) >= $tablealias.capacity
+                " . $bookingsquery . " >= {$tablealias}.capacity
                 THEN 1
                 WHEN
-                (SELECT COUNT(id) FROM {appointment_signups} WHERE sessionid = $tablealias.id) = 0
+                " . $bookingsquery . " = 0
                 THEN 2
                 WHEN
-                ((SELECT COUNT(id) FROM {appointment_signups} WHERE sessionid = $tablealias.id) > 0 AND
-                (SELECT COUNT(id) FROM {appointment_signups} WHERE sessionid = $tablealias.id) < $tablealias.capacity)
+                (" . $bookingsquery . " > 0 AND
+                " . $bookingsquery . " < {$tablealias}.capacity)
                 THEN 3
                 ELSE 0
             END")
@@ -342,5 +348,28 @@ class appointment_entity extends entity_base {
             2 => get_string('empty', 'mod_appointment'),
             3 => get_string('partiallyfull', 'mod_appointment'),
         ];
+    }
+
+    /**
+     * Returns a query to retrieve not cancelled session bookings.
+     *
+     * @param string $tablealias
+     * @return string
+     */
+    private static function get_bookings_query(string $tablealias): string {
+        // Bookings query.
+        $statuscancelled = MOD_APPOINTMENT_STATUS_USER_CANCELLED;
+        return "(
+            SELECT COUNT(asu.id)
+              FROM {appointment_signups} asu
+              JOIN {appointment_signups_status} asus
+                ON asu.id = asus.signupid
+              JOIN (
+                SELECT signupid, max(timecreated) AS timecreated
+                  FROM {appointment_signups_status}
+              GROUP BY signupid
+                 ) asus2
+                ON asus.signupid = asus2.signupid AND asus.timecreated = asus2.timecreated
+             WHERE asus.statuscode != {$statuscancelled} AND asu.sessionid = {$tablealias}.id)";
     }
 }

@@ -112,6 +112,90 @@ class appointments_test extends core_reportbuilder_testcase {
     }
 
     /**
+     * Test bookings and booking cancels on appointments datasource
+     */
+    public function test_appointments_datasource_bookings(): void {
+        $this->resetAfterTest();
+        self::setAdminUser();
+
+        $coursecategory = self::getDataGenerator()->create_category(['name' => 'tenant category']);
+        $coursecategory2 = self::getDataGenerator()->create_category(['parent' => $coursecategory->id]);
+        $tenant1 = $this->tenantgenerator->create_tenant(['categoryid' => $coursecategory->id]);
+        $course = self::getDataGenerator()->create_course(['category' => $coursecategory2->id, 'fullname' => 'Test course']);
+        $student = self::getDataGenerator()->create_and_enrol($course);
+        $this->tenantgenerator->allocate_user((int) $student->id, $tenant1->id);
+        $this->tenantgenerator->allocate_user((int) get_admin()->id, $tenant1->id);
+
+        // Add appointment to course.
+        $appointment = self::getDataGenerator()->create_module('appointment',
+            ['course' => $course->id, 'name' => 'My appointment']);
+
+        // Add session.
+        $date = new stdClass();
+        $date->timestart = strtotime('+1 day');
+        $date->timefinish = $date->timestart + HOURSECS;
+        $session = $this->generator->create_session(['appointment' => $appointment->id, 'capacity' => 1], [], [$date]);
+
+        $report = $this->rbgenerator->create_report([
+            'name' => 'Appointments',
+            'source' => appointments::class,
+            'default' => false,
+        ]);
+
+        // Add appointment name column to the report.
+        $this->rbgenerator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'appointment:name']);
+        // Add seats booked column to the report.
+        $this->rbgenerator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'session:seatsbooked']);
+        // Add booked vs capacity column to the report.
+        $this->rbgenerator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'session:bookedvscapacity']);
+
+        // Make sure there is only one appointment.
+        $content = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content);
+
+        // Make sure there are no signups.
+        $contentrow = array_values(reset($content));
+        $this->assertEquals([
+            'My appointment', // Appointment name.
+            "0", // Seats booked.
+            '0 / 1', // Booked VS Capacity.
+        ], $contentrow);
+
+        // Signup the user.
+        appointment_user_signup($session, $appointment, $course, MOD_APPOINTMENT_STATUS_BOOKED, (int) $student->id);
+
+        // Make sure there is still only one appointment.
+        $content1 = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content1);
+
+        // Make sure there is one signup.
+        $contentrow1 = array_values(reset($content1));
+        $this->assertEquals([
+            'My appointment', // Appointment name.
+            "1", // Seats booked.
+            '1 / 1', // Booked VS Capacity.
+        ], $contentrow1);
+
+        // Wait 1 second to make sure that book and cancel timestamps are different.
+        $this->waitForSecond();
+
+        // Cancel signup.
+        appointment_user_cancel($session, (int) $student->id, true);
+
+        // Make sure there is still only one appointment.
+        $content2 = $this->get_custom_report_content($report->get('id'));
+        $this->assertCount(1, $content2);
+
+        // Make sure there are no signups anymore.
+        $contentrow2 = array_values(reset($content2));
+        $this->assertEquals([
+            'My appointment', // Appointment name.
+            "0", // Seats booked.
+            '0 / 1', // Booked VS Capacity.
+        ], $contentrow2);
+    }
+
+    /**
      * Stress test datasource
      */
     public function test_stress_datasource(): void {
