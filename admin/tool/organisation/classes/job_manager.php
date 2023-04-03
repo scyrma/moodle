@@ -92,6 +92,8 @@ class job_manager {
             }
             $entity->save();
             job_updated::create_from_object($entity, $oldrecord)->trigger();
+            // Invalidate custom pages audience cache.
+            \cache_helper::purge_by_event('custompageaudiencesmodified');
         }
 
         return $entity;
@@ -140,6 +142,8 @@ class job_manager {
         $entity->save();
         job_created::create_from_object($entity)->trigger();
         cache::make('tool_organisation', 'myjob')->purge();
+        // Invalidate custom pages audience cache.
+        \cache_helper::purge_by_event('custompageaudiencesmodified');
         return $entity;
     }
 
@@ -183,6 +187,8 @@ class job_manager {
         $event = job_deleted::create_from_object($entity);
         if ($entity->delete()) {
             $event->trigger();
+            // Invalidate custom pages audience cache.
+            \cache_helper::purge_by_event('custompageaudiencesmodified');
         }
     }
 
