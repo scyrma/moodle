@@ -151,7 +151,7 @@ class permission {
             throw new moodle_exception('notsignedup', 'mod_appointment');
         }
 
-        if (appointment_has_session_started($session, time())) {
+        if (appointment_has_session_started($session, time()) && !appointment_is_user_on_waitlist($session)) {
             throw new moodle_exception('error:eventoccurred', 'mod_appointment');
         }
     }

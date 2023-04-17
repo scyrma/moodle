@@ -273,6 +273,31 @@ Feature: Manage appointments
     And I navigate to "Reports > Logs" in site administration
     And I press "Get these logs"
 
+  Scenario: Delete appointment session timeframe within session
+    Given the following "mod_appointment > session" exists:
+      | appointment | Test appointment   |
+      | timestart1  | ##tomorrow 01:00## |
+      | timefinish1 | ##tomorrow 02:00## |
+      | timestart2  | ##+2 days 03:00##  |
+      | timefinish2 | ##+2 days 04:00##  |
+      | timestart3  | ##+3 days 05:00##  |
+      | timefinish3 | ##+3 days 06:00##  |
+      | details     | SES1               |
+    When I am on the "Course 1" "course" page logged in as "teacher1"
+    And I follow "Test appointment"
+    And I should see "##tomorrow##%A, %d %B %Y##" in the "reportbuilder-table" "table"
+    And I should see "##+2 days##%A, %d %B %Y##" in the "reportbuilder-table" "table"
+    And I should see "##+3 days##%A, %d %B %Y##" in the "reportbuilder-table" "table"
+    And I click on "Actions menu" "link" in the "1:00" "table_row"
+    And I choose "Settings" in the open action menu
+    # I delete the second session timeframe
+    And I click on "[name='deletebutton[1]']" "css_element"
+    And I click on "Save" "button" in the "Editing appointment" "dialogue"
+    And I should see "##tomorrow##%A, %d %B %Y##" in the "reportbuilder-table" "table"
+    And I should not see "##+2 days##%A, %d %B %Y##" in the "reportbuilder-table" "table"
+    And I should see "##+3 days##%A, %d %B %Y##" in the "reportbuilder-table" "table"
+    And I log out
+
   Scenario: Duplicate appointment
     Given the following "mod_appointment > session" exists:
       | appointment | Test appointment |

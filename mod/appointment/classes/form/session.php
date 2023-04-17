@@ -215,7 +215,7 @@ class session extends dynamic_form {
         $sessiondates = array();
         for ($i = 0; $i < $data->date_repeats; $i++) {
             if (!isset($data->startdate[$i])) {
-                break;
+                continue;
             }
             $date = new \stdClass();
             $date->timestart = $data->startdate[$i] + $data->starttime[$i];
