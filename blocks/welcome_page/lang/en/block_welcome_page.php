@@ -26,10 +26,6 @@ $string['pluginname'] = 'Welcome Page';
 $string['welcome_page:addinstance'] = 'Add Welcome Page';
 
 // Plugin Settings.
-// TODO probably should be a setting instead of hardcoding
-// contentroot = https://assets.gl.moodlecloud.com/welcome/
-// blockcontent = block.html
-// blockimage = welcome.png (or perhaps block.png).
-$string['contentlocation'] = 'Content location';
-$string['contentlocationdefault'] = '?';
-$string['contentlocationexplanation'] = 'Specify the location of the content on S3';
+$string['contentbase'] = 'Content Base URL';
+$string['contentbasedefault'] = 'https://assets.gl.moodlecloud.com/welcome/';
+$string['contentbaseexplanation'] = 'Specify the base URL of the welcome block content in S3.';

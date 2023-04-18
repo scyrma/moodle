@@ -27,9 +27,9 @@ defined('MOODLE_INTERNAL') || die;
 if ($ADMIN->fulltree) {
     $settings->add(
         new admin_setting_configtext(
-            'block_welcome_page/contentlocation',
-            get_string('contentlocation', 'block_welcome_page'),
-            get_string('contentlocationexplanation', 'block_welcome_page'),
-            get_string('contentlocationdefault', 'block_welcome_page'), PARAM_TEXT)
+            'block_welcome_page/contentbase',
+            get_string('contentbase', 'block_welcome_page'),
+            get_string('contentbaseexplanation', 'block_welcome_page'),
+            get_string('contentbasedefault', 'block_welcome_page'), PARAM_TEXT)
     );
 }
