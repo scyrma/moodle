@@ -645,8 +645,10 @@ class pdf extends TcpdfFpdi {
     private function get_pdftoppm_command_for_image(int $pageno, string $imagefile): string {
         global $CFG;
         $pdftoppmexec = \escapeshellarg($CFG->pathtopdftoppm);
-        $imageres = \escapeshellarg(100);
-        $filename = \escapeshellarg($this->filename);
+	$imageres = \escapeshellarg(100);
+	// BEGIN MOODLECLOUD HACK
+	$filename = \escapeshellarg(self::fix_pdf($this->filename));
+	// END MOODLECLOUD HACK
         $pagenoinc = \escapeshellarg($pageno + 1);
         if ($pageno >= 0) {
             // Convert 1 page.
@@ -676,7 +678,9 @@ class pdf extends TcpdfFpdi {
         $gsexec = \escapeshellarg($CFG->pathtogs);
         $imageres = \escapeshellarg(100);
         $imagefilearg = \escapeshellarg($imagefile);
-        $filename = \escapeshellarg($this->filename);
+        // BEGIN MOODLECLOUD HACK
+        $filename = \escapeshellarg(self::fix_pdf($this->filename));
+        // END MOODLECLOUD HACK
         $pagenoinc = \escapeshellarg($pageno + 1);
         if ($pageno >= 0) {
             // Convert 1 page.
@@ -705,8 +709,10 @@ class pdf extends TcpdfFpdi {
         $temparea = make_request_directory();
         $tempsrc = $temparea . "/source.pdf";
         $file->copy_content_to($tempsrc);
-
-        return self::ensure_pdf_file_compatible($tempsrc);
+        // BEGIN MOODLECLOUD HACK
+        $tempsrcfixed = self::fix_pdf($tempsrc);
+        return self::ensure_pdf_file_compatible($tempsrcfixed);
+        // END MOODLECLOUD HACK
     }
 
     /**
@@ -739,7 +745,10 @@ class pdf extends TcpdfFpdi {
         $gsexec = \escapeshellarg($CFG->pathtogs);
         $tempdstarg = \escapeshellarg($tempdst);
         $tempsrcarg = \escapeshellarg($tempsrc);
-        $command = "$gsexec -q -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -sOutputFile=$tempdstarg $tempsrcarg";
+        // BEGIN MOODLECLOUD HACK
+        $tempsrcargfixed = \escapeshellarg(self::fix_pdf($tempsrc));
+        $command = "$gsexec -q -sDEVICE=pdfwrite -dSAFER -dBATCH -dNOPAUSE -sOutputFile=$tempdstarg $tempsrcargfixed";
+        // END MOODLECLOUD HACK
         exec($command);
         if (!file_exists($tempdst)) {
             // Something has gone wrong in the conversion.
@@ -913,5 +922,18 @@ class pdf extends TcpdfFpdi {
         $this->Image('@' . $imagecontent, 0, 0, $size['width'], $size['height'],
             '', '', '', false, null, '', false, false, 0);
     }
+    // BEGIN MOODLECLOUD HACK
+    private static function fix_pdf($source) {
+        $pathinfo = pathinfo($source);
+        $fixedsource = $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '-fixed.pdf';
+        $fixedsourcearg = \escapeshellarg($fixedsource);
+        $sourcearg = \escapeshellarg($source);
+        $stdout = null;
+        $cmd = "pdftocairo -pdf $sourcearg $fixedsourcearg";
+        $result = exec($cmd, $stdout);
+
+        return $fixedsource;
+    }
+    // END MOODLECLOUD HACK
 }
 

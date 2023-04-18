@@ -62,9 +62,10 @@ abstract class backup_structure_step extends backup_step {
 
         // Append the filename to the fullpath
         $fullpath = rtrim($fullpath, '/') . '/' . $this->filename;
+        $temppath = make_request_directory() . "/{$this->filename}";
 
         // Create output, transformer, writer, processor
-        $xo = new file_xml_output($fullpath);
+        $xo = new file_xml_output($temppath);
         $xt = null;
         if (class_exists('backup_xml_transformer')) {
             $xt = new backup_xml_transformer($this->get_courseid());
@@ -107,6 +108,7 @@ abstract class backup_structure_step extends backup_step {
 
         // Close everything
         $xw->stop();
+        rename($temppath, $fullpath);
         $progress->end_progress();
 
         // Destroy the structure. It helps PHP 5.2 memory a lot!

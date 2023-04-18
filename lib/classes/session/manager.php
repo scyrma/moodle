@@ -712,6 +712,15 @@ class manager {
                     // This will emit an error if debugging is on, even if $CFG->enable_read_only_sessions
                     // is not true as we need to surface this class of errors.
                     error_log($error); // phpcs:ignore
+
+                    // BEGIN MOODLECLOUD HACK - Until we've figured out what writes to read-only sessions
+                    if (function_exists('newrelic_notice_error') && $error) {
+                        newrelic_notice_error(
+                            null,
+                            new newrelic_moodle_debugging($error)
+                        );
+                    }
+                    // END MOODLECLOUD HACK.
                 }
             }
         }
