@@ -23,10 +23,7 @@
  */
 class block_welcome_page extends block_base {
     protected function init() {
-        $this->title = get_config('block_welcome_page', 'surveytitle');
-        if (empty($this->title)) {
-            $this->title = get_string('surveytitledefault', 'block_welcome_page');
-        }
+        $this->title = get_config('block_welcome_page', 'pluginname');
     }
 
     public function instance_can_be_edited() {
@@ -35,24 +32,18 @@ class block_welcome_page extends block_base {
 
     public function get_content() {
 
-        // TODO: content should be loaded from Amazon S3.
-        // Configuration of where this content lives can be set in the block.
-        // $this->content = $this->load_content_from_s3();
-
-        if ($this->content !== null) {
+        // Load block content from public assets on S3.
+        $this->content = $this->load_content_from_s3();
+        if (!$this->content || $this->content !== null) {
+            // TODO: check this error handling.
+            // What if the content doesn't load?
+            // just hide the block?
             return $this->content;
         }
-
-        $this->content = new stdClass;
-        $this->content->text = 'text';
-        $this->content->footer = 'footer';
 
         if (empty($this->instance)) {
             return $this->content;
         }
-
-
-        $this->content->text = '<div class="info"> Welcome Page </div>';
 
         return $this->content;
     }
@@ -84,5 +75,12 @@ class block_welcome_page extends block_base {
      */
     public function applicable_formats() {
         return array('my' => true);
+    }
+
+    private function load_content_from_s3() {
+        // TODO: needs some error/exception handling.
+        return file_get_contents(
+            'https://assets.gl.moodlecloud.com/welcome/block.html'
+        );
     }
 }

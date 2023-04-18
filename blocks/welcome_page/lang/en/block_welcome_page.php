@@ -17,15 +17,19 @@
 /**
  * NPS Survey block Language pack.
  *
- * @package    block_nps_survey
+ * @package    block_welcome_page
  * @copyright  MoodleCloud Team
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Welcome Page';
-$string['nps_survey:addinstance'] = 'Add Welcome Page';
+$string['welcome_page:addinstance'] = 'Add Welcome Page';
 
 // Plugin Settings.
+// TODO probably should be a setting instead of hardcoding
+// contentroot = https://assets.gl.moodlecloud.com/welcome/
+// blockcontent = block.html
+// blockimage = welcome.png (or perhaps block.png).
 $string['contentlocation'] = 'Content location';
 $string['contentlocationdefault'] = '?';
 $string['contentlocationexplanation'] = 'Specify the location of the content on S3';
