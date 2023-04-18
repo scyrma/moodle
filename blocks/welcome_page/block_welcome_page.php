@@ -78,6 +78,8 @@ class block_welcome_page extends block_base {
     }
 
     private function load_content_from_s3() {
+        // TODO: load configuration from block and do this dynamically.
+
         // TODO: needs some error/exception handling.
         return file_get_contents(
             'https://assets.gl.moodlecloud.com/welcome/block.html'
