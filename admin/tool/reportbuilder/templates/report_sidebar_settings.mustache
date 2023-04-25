@@ -1,0 +1,191 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_reportbuilder/report_sidebar_settings
+     Template for settings sidebar of the report with the filters, sorting and conditions tabs.
+     Classes required for JS:
+    -
+     Data attributes required for JS:
+    -
+    Context variables required for this template:
+        * hasfiltersselected bool
+        * nofiltersurl string
+        * nocolumnsurl string
+        * filtersform string
+        * sortablecolumns id
+
+     Example context (json):
+    {
+        "editon": true,
+        "hasfiltersselected": false,
+        "canaddfilters": true,
+        "nofiltersurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1540388927/no-filters",
+        "nocolumnsurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1535727318/no-filters",
+        "noconditionsurl": "https://moodlesite/theme/image.php/workplace/tool_reportbuilder/1535727318/no-filters",
+        "showexpandedintemplateeditor": true
+    }
+}}
+
+<div id="workplace-accordion" class="mb-3 ml-2">
+    <div class="card mb-2">
+        <div class="card-header p-0" id="settingsconditions-heading">
+            <div class="mb-0 d-flex align-items-center bg-white">
+                <div class="ml-3">
+                    {{# str }} conditionstab, tool_reportbuilder {{/ str }}
+                </div>
+                <div>
+                    {{#conditionshelp}}{{>tool_reportbuilder/help_icon}}{{/conditionshelp}}
+                </div>
+                <button class="btn ws-toggle nomargin ml-auto collapsed"
+                        data-toggle="collapse"
+                        data-target="#settingsconditions"
+                        aria-expanded="true"
+                        aria-controls="settingsconditions"
+                        title="{{#str}}expandconditions, tool_reportbuilder{{/str}}"
+                >
+                    <span class="togglesectionicon collapsed-icon-container">
+                        {{#pix}} angle-down, tool_wp, {{#str}} expand, moodle {{/str}}{{/pix}}
+                    </span>
+                    <span class="togglesectionicon expanded-icon-container">
+                        {{#pix}} angle-up, tool_wp, {{#str}} collapse, moodle {{/str}}{{/pix}}
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div id="settingsconditions" class="collapse" aria-labelledby="settingsconditions-heading">
+            <div class="card-body p-2">
+                <div class="list-group list-group-flush">
+                    {{> tool_reportbuilder/report_sidebar_settings_conditions}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-2">
+        <div class="card-header p-0" id="settingsfilters-heading">
+            <div class="mb-0 d-flex align-items-center bg-white">
+                <div class="ml-3">
+                    {{# str }} filterstab, tool_reportbuilder {{/ str }}
+                </div>
+                <div>
+                    {{#filtershelp}}{{>tool_reportbuilder/help_icon}}{{/filtershelp}}
+                </div>
+                <button class="btn ws-toggle nomargin ml-auto collapsed"
+                        data-toggle="collapse"
+                        data-target="#settingsfilters"
+                        aria-expanded="true"
+                        aria-controls="settingsfilters"
+                        title="{{#str}}expandfilters, tool_reportbuilder{{/str}}"
+                >
+                    <span class="togglesectionicon collapsed-icon-container">
+                        {{#pix}} angle-down, tool_wp, {{#str}} expand, moodle {{/str}}{{/pix}}
+                    </span>
+                    <span class="togglesectionicon expanded-icon-container">
+                        {{#pix}} angle-up, tool_wp, {{#str}} collapse, moodle {{/str}}{{/pix}}
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div id="settingsfilters" class="collapse" aria-labelledby="settingsfilters-heading">
+            <div class="card-body p-2">
+                <div class="list-group list-group-flush">
+                    {{> tool_reportbuilder/report_sidebar_settings_filters}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-2">
+        <div class="card-header p-0" id="settingssorting-heading">
+            <div class="mb-0 d-flex align-items-center bg-white">
+                <div class="ml-3">
+                    {{# str }} sortingtab, tool_reportbuilder {{/ str }}
+                </div>
+                <div>
+                    {{#sortingshelp}}{{>tool_reportbuilder/help_icon}}{{/sortingshelp}}
+                </div>
+                    <button class="btn ws-toggle nomargin ml-auto collapsed"
+                            data-toggle="collapse"
+                            data-target="#settingssorting"
+                            aria-expanded="true"
+                            aria-controls="settingssorting"
+                            title="{{#str}}expandsorting, tool_reportbuilder{{/str}}"
+                    >
+                    <span class="togglesectionicon collapsed-icon-container">
+                        {{#pix}} angle-down, tool_wp, {{#str}} expand, moodle {{/str}}{{/pix}}
+                    </span>
+                        <span class="togglesectionicon expanded-icon-container">
+                            {{#pix}} angle-up, tool_wp, {{#str}} collapse, moodle {{/str}}{{/pix}}
+                        </span>
+                    </button>
+                </div>
+        </div>
+        <div id="settingssorting" class="collapse" aria-labelledby="settingssorting-heading" data-region="settingssorting">
+            <div class="card-body p-2">
+                <div class="list-group list-group-flush">
+                    {{> tool_reportbuilder/report_sidebar_settings_sorting}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-2">
+        <div class="card-header p-0" id="settingsscreen-heading">
+            <div class="mb-0 d-flex align-items-center bg-white">
+                <span class="ml-3">
+                    {{# str }} cardview, tool_reportbuilder {{/ str }}
+                </span>
+                <div>
+                    {{#cardviewhelp}}{{>tool_reportbuilder/help_icon}}{{/cardviewhelp}}
+                </div>
+                <button class="btn ws-toggle nomargin ml-auto collapsed"
+                        data-toggle="collapse"
+                        data-target="#settingsscreen"
+                        aria-expanded="true"
+                        aria-controls="settingsscreen"
+                        title="{{#str}}expandcardview, tool_reportbuilder{{/str}}"
+                >
+                    <span class="togglesectionicon collapsed-icon-container">
+                        {{#pix}} angle-down, tool_wp, {{#str}} expand, moodle {{/str}}{{/pix}}
+                    </span>
+                    <span class="togglesectionicon expanded-icon-container">
+                        {{#pix}} angle-up, tool_wp, {{#str}} collapse, moodle {{/str}}{{/pix}}
+                    </span>
+                </button>
+            </div>
+        </div>
+        <div id="settingsscreen" class="collapse" aria-labelledby="settingsscreen-heading">
+            <div class="card-body p-2">
+                <div class="list-group list-group-flush">
+                    {{> tool_reportbuilder/report_sidebar_settings_cardview}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
