@@ -210,7 +210,9 @@ function process_file ($file, $userfield, $overwrite) {
                         strlen($extension) - 1);
 
     // userfield names are safe, so don't quote them.
-    if (!($user = $DB->get_record('user', array ($userfield => $uservalue, 'deleted' => 0)))) {
+    /** @uses \tool_tenant\tenancy::is_user_hidden_by_tenancy */
+    if (!($user = $DB->get_record('user', array ($userfield => $uservalue, 'deleted' => 0))) ||
+            component_class_callback('tool_tenant\\tenancy', 'is_user_hidden_by_tenancy', [$user->id])) {
         $a = new stdClass();
         $a->userfield = clean_param($userfield, PARAM_CLEANHTML);
         $a->uservalue = clean_param($uservalue, PARAM_CLEANHTML);

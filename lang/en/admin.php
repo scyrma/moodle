@@ -40,7 +40,7 @@ $string['adminseesallevents'] = 'Administrators see all events';
 $string['adminseesownevents'] = 'Administrators are just like other users';
 $string['advancedfeatures'] = 'Advanced features';
 $string['agedigitalconsentverification'] = 'Digital age of consent verification';
-$string['agedigitalconsentverification_desc'] = 'Enables verification of the digital age of consent before displaying the sign-up page for self-registration users. This protects your site from minors signing up without parental/guardian consent. <a target="_blank" href="{$a}">Support contact</a> details are provided to minors for further assistance.';
+$string['agedigitalconsentverification_desc'] = 'Enables verification of the digital age of consent before displaying the sign-up page for self-registration users. This protects your site from minors signing up without parental/guardian consent. <a target="_blank" href="{$a}">Support contact</a> details are provided for more help.';
 $string['ageofdigitalconsentmap'] = 'Digital age of consent';
 $string['ageofdigitalconsentmap_desc'] = 'The default digital age of consent, and the age in any country where it differs from the default, may be specified here. Enter each age on a new line with format: country code, age (separated by a comma). The default age is indicated by * in place of the country code. Country codes are as specified in ISO 3166-2.';
 $string['allcountrycodes'] = 'All country codes';
@@ -261,7 +261,7 @@ $string['configfrontpagecourselimithelp'] = 'Maximum number of courses to be dis
 $string['configfrontpageloggedin'] = 'The items selected above will be displayed on the site home when a user is logged in.';
 $string['configfullnamedisplay'] = 'This defines how names are shown when they are displayed in full. The default value, "language", leaves it to the string "fullnamedisplay" in the current language pack to decide. Some languages have different name display conventions.
 
-For most mono-lingual sites the most efficient setting is "firstname lastname", but you may choose to hide surnames altogether. Placeholders that can be used are: firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, and alternatename.';
+For most mono-lingual sites the most efficient setting is "firstname lastname", but you may choose to hide last names altogether. Placeholders that can be used are: firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, and alternatename.';
 $string['configgeoipfile'] = 'Location of GeoLite2 City binary data file. This file is not part of Moodle distribution and must be obtained separately from <a href="https://www.maxmind.com/">MaxMind</a>. You can either buy a commercial version or use the free version. You\'ll need to register to download the City database file, which you can do at <a href="https://dev.maxmind.com/geoip/geoip2/geolite2/" >https://dev.maxmind.com/geoip/geoip2/geolite2/</a>. Once you\'ve registered and downloaded the file, extract it into "{$a}" directory on your server.';
 $string['configgetremoteaddrconf'] = 'If your server is behind a reverse proxy, you can use this setting to specify which HTTP headers can be trusted to contain the remote IP address. The headers are read in order, using the first one that is available.';
 $string['configgradebookroles'] = 'This setting allows you to control who appears on the gradebook.  Users need to have at least one of these roles in a course to be shown in the gradebook for that course.';
@@ -360,7 +360,7 @@ $string['configsitemaxcategorydepth'] = 'Maximum category depth';
 $string['configsitemaxcategorydepthhelp'] = 'This specifies the maximum depth of child categories expanded when displaying categories or combo list. Deeper level categories will appear as links and user can expand them with AJAX request.';
 $string['configslasharguments'] = '\'Slash arguments\' (using <em>PATH_INFO</em>) is required for SCORM packages and multiple-file resources to display correctly. If your web server doesn\'t support \'slash arguments\' and you are unable to configure it, this setting can be disabled, though it will result in things not working.<br />Note: The use of \'slash arguments\' will be required in future versions of Moodle.';
 $string['configsmartpix'] = 'With this on, icons are served through a PHP script that searches the current theme, then all parent themes, then the Moodle /pix folder. This reduces the need to duplicate image files within themes, but has a slight performance cost.';
-$string['configsmtpauthtype'] = 'This sets the authentication type to use on smtp server.';
+$string['configsmtpauthtype'] = 'This sets the authentication type to use on SMTP server.';
 $string['configsmtphosts'] = 'Give the full name of one or more local SMTP servers that Moodle should use to send mail (eg \'mail.a.com\' or \'mail.a.com;mail.b.com\'). To specify a non-default port (i.e other than port 25), you can use the [server]:[port] syntax (eg \'mail.a.com:587\'). For secure connections, port 465 is usually used with SSL, port 587 is usually used with TLS, specify security protocol below if required. If you leave this field blank, Moodle will use the PHP default method of sending mail.';
 $string['configsmtpmaxbulk'] = 'Maximum number of messages sent per SMTP session. Grouping messages may speed up the sending of emails. Values lower than 2 force creation of new SMTP session for each email.';
 $string['configsmtpsecure'] = 'If SMTP server requires secure connection, specify the correct protocol type.';
@@ -377,7 +377,7 @@ $string['configstrictformsrequired'] = 'If enabled, users are prevented from ent
 $string['configstripalltitletags'] = 'Uncheck this setting to allow HTML tags in activity and resource names.';
 $string['configsupportemail'] = 'If SMTP is configured on this site and a support page is not set, this email address will receive messages submitted through the support form. If sending fails, the email address will be displayed to logged-in users.';
 $string['configsupportname'] = 'The name of the person or other entity providing support via the support form or support page.';
-$string['configsupportpage'] = 'A link to this page will be provided for users to contact the site support. If the field is left blank then a link to a support form will be provided instead.';
+$string['configsupportpage'] = 'Enter the URL of a support page or leave empty to link to a contact form.';
 $string['configtempdatafoldercleanup'] = 'Remove temporary data files from the data folder that are older than the selected time.';
 $string['configthemedesignermode'] = 'Normally all theme images and style sheets are cached in browsers and on the server for a very long time, for performance. If you are designing themes or developing code then you probably want to turn this mode on so that you are not served cached versions.  Warning: this will make your site slower for all users!  Alternatively, you can also reset the theme caches manually from the Theme selection page.';
 $string['configthemelist'] = 'Leave this blank to allow any valid theme to be used.  If you want to shorten the theme menu, you can specify a comma-separated list of names here (Don\'t use spaces!).
@@ -1120,6 +1120,10 @@ $string['purgethemecache'] = 'Themes';
 $string['referrernone'] = 'Browser default';
 $string['referrerpolicy'] = 'Referrer policy';
 $string['referrerpolicydesc'] = 'Set the referrer policy header to be included with responses from your site.';
+$string['resetindentation_title'] = 'Reset indentation on course page?';
+$string['resetindentation_help'] = 'This will remove any indentation previously set for courses in {$a->format}.';
+$string['resetindentation'] = 'Reset indentation';
+$string['resetindentationsuccess'] = 'Indentation reset';
 $string['restorecourse'] = 'Restore course';
 $string['restorernewroleid'] = 'Restorers\' role in courses';
 $string['restorernewroleid_help'] = 'If the user does not already have the permission to manage the newly restored course, the user is automatically assigned this role and enrolled if necessary. Select "None" if you do not want restorers to be able to manage every restored course.';
@@ -1248,6 +1252,7 @@ $string['sitepolicyhandlerplugin'] = '{$a->name} ({$a->component})';
 $string['sitepolicyguest'] = 'Site policy URL for guests';
 $string['sitepolicyguest_help'] = 'The URL of the site policy that all guests must see and agree to before accessing the site. Note that this setting will only have an effect if the site policy handler is set to default (core).';
 $string['sitesectionhelp'] = 'If selected, a topic section will be displayed on the site home.';
+$string['sixtyfourbitsrequired'] = 'It has been detected that your site is not using a 64-bit PHP version. You are required to upgrade your system (operating system, PHP...) before installing this Moodle version.';
 $string['sixtyfourbitswarning'] = 'It has been detected that your site is not using a 64-bit PHP version. It is recommended that you upgrade your site to ensure future compatibility.';
 $string['slasharguments'] = 'Use slash arguments';
 $string['slashargumentswarning'] = 'It is recommended that the use of slash arguments is enabled. In future it will be required. For more details, see the documentation <a href="https://docs.moodle.org/en/admin/environment/slasharguments">Using slash arguments</a>.';
@@ -1286,7 +1291,7 @@ $string['supportcontact'] = 'Support contact';
 $string['supportemail'] = 'Support email';
 $string['supportemailsubject'] = 'Site support request - {$a}';
 $string['supportname'] = 'Support name';
-$string['supportpage'] = 'Support page';
+$string['supportpage'] = 'Contact site support link';
 $string['suspenduser'] = 'Suspend user account';
 $string['switchlang'] = 'Switch lang directory';
 $string['systempaths'] = 'System paths';
@@ -1423,12 +1428,13 @@ $string['unsupporteddbfilepertable'] = 'For full support of UTF-8 both MySQL and
 $string['unsupporteddblargeprefix'] = 'For full support of UTF-8 both MySQL and MariaDB require you to change your MySQL setting \'innodb_large_prefix\' to \'ON\'. See the documentation for further details.';
 $string['unsupporteddbstorageengine'] = 'The database storage engine being used is no longer supported.';
 $string['unsupporteddbtablerowformat'] = 'Your database has tables using Antelope as the file format. You are recommended to convert the tables to the Barracuda file format. See the documentation <a href="https://docs.moodle.org/en/cli">Administration via command line</a> for details of a tool for converting InnoDB tables to Barracuda.';
-$string['unsupportedphpversion7'] = 'PHP version 7 is not supported.';
-$string['unsupportedphpversion71'] = 'PHP version 7.1 is not supported.';
-$string['unsupportedphpversion72'] = 'PHP version 7.2 is not supported.';
-$string['unsupportedphpversion73'] = 'PHP version 7.3 is not supported.';
-$string['unsupportedphpversion74'] = 'PHP version 7.4 is not supported.';
-$string['unsupportedphpversion80'] = 'PHP version 8.0 is not supported.';
+$string['unsupportedphpversion7'] = 'PHP version 7 and higher are not supported.';
+$string['unsupportedphpversion71'] = 'PHP version 7.1 and higher are not supported.';
+$string['unsupportedphpversion72'] = 'PHP version 7.2 and higher are not supported.';
+$string['unsupportedphpversion73'] = 'PHP version 7.3 and higher are not supported.';
+$string['unsupportedphpversion74'] = 'PHP version 7.4 and higher are not supported.';
+$string['unsupportedphpversion80'] = 'PHP version 8.0 and higher are not supported.';
+$string['unsupportedphpversion81'] = 'PHP version 8.1 and higher are not supported.';
 $string['unsuspenduser'] = 'Activate user account';
 $string['updateaccounts'] = 'Update existing accounts';
 $string['updatecomponent'] = 'Update component';
@@ -1537,7 +1543,8 @@ $string['xmlrpcwebserviceenabled'] = 'It has been detected that the XML-RPC Web 
 $string['yuicomboloading'] = 'YUI combo loading';
 $string['ziprequired'] = 'The Zip PHP extension is now required by Moodle, info-ZIP binaries or PclZip library are not used anymore.';
 $string['manageqbanks'] = 'Manage question bank plugins';
-
+$string['modassignmentinuse'] = 'Your site is still using the Assignment 2.2 plugin. Before upgrading you must 1) backup any Assignment 2.2 activities that you want to keep and restore them as Assignment activities, and 2) delete all Assignment 2.2 data from the database.';
+$string['modassignmentsubpluginsexist'] = 'Assignment 2.2. subplugins may be present. The mod/assignment folder and all of its subplugins need to be removed before upgrading.';
 
 $string['caching'] = 'Caching';
 $string['cachesettings'] = 'Cache settings';

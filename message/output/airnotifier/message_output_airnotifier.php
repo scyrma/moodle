@@ -59,6 +59,9 @@ class message_output_airnotifier extends message_output {
             return true;
         }
 
+        /** @uses \tool_tenant\config::push_for_user() */
+        component_class_callback('tool_tenant\config', 'push_for_user', [$eventdata->userto->id]);
+
         // If username is empty we try to retrieve it, since it's required to generate the siteid.
         if (empty($eventdata->userto->username)) {
             $eventdata->userto->username = $DB->get_field('user', 'username', array('id' => $eventdata->userto->id));
@@ -107,7 +110,8 @@ class message_output_airnotifier extends message_output {
 
         // We are sending to message to all devices.
         $airnotifiermanager = new message_airnotifier_manager();
-        $devicetokens = $airnotifiermanager->get_user_devices($CFG->airnotifiermobileappname, $eventdata->userto->id);
+        $devicetokens = $this->is_user_configured($eventdata->userto) ?
+            $airnotifiermanager->get_user_devices($CFG->airnotifiermobileappname, $eventdata->userto->id) : [];
 
         foreach ($devicetokens as $devicetoken) {
 
@@ -134,6 +138,8 @@ class message_output_airnotifier extends message_output {
             $resp = $curl->post($serverurl, json_encode($params));
         }
 
+        /** @uses \tool_tenant\config::pop() */
+        component_class_callback('tool_tenant\config', 'pop', []);
         return true;
     }
 
@@ -218,7 +224,21 @@ class message_output_airnotifier extends message_output {
      */
     public function is_system_configured() {
         $airnotifiermanager = new message_airnotifier_manager();
-        return $airnotifiermanager->is_system_configured();
+        /** @uses \tool_tenant\local\config\message_airnotifier::is_system_configured() */
+        return $airnotifiermanager->is_system_configured() ||
+            component_class_callback('tool_tenant\local\config\message_airnotifier', 'is_system_configured', [], false);
+    }
+
+    /**
+     * Are the message processor's user specific settings configured?
+     *
+     * @param  stdClass $user the user object, defaults to $USER.
+     * @return bool True if the user has all necessary settings in their messaging preferences
+     */
+    public function is_user_configured($user = null) {
+        /** @uses \tool_tenant\local\config\message_airnotifier::is_user_configured() */
+        return component_class_callback('tool_tenant\local\config\message_airnotifier', 'is_user_configured',
+            [$user], parent::is_user_configured($user));
     }
 }
 

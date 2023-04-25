@@ -3114,9 +3114,11 @@ function get_assignable_roles(context $context, $rolenamedisplay = ROLENAME_ALIA
     $extrafields = '';
 
     if ($withusercounts) {
+        /** @uses \tool_tenant\tenancy::get_users_subquery */
+        $tenantwhere = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [], '');
         $extrafields = ', (SELECT COUNT(DISTINCT u.id)
                              FROM {role_assignments} cra JOIN {user} u ON cra.userid = u.id
-                            WHERE cra.roleid = r.id AND cra.contextid = :conid AND u.deleted = 0
+                            WHERE ' . $tenantwhere . ' cra.roleid = r.id AND cra.contextid = :conid AND u.deleted = 0
                           ) AS usercount';
         $params['conid'] = $context->id;
     }
@@ -4044,6 +4046,9 @@ function get_role_users($roleid, context $context, $parent = false, $fields = ''
         $ejoin = "";
     }
 
+    /** @uses \tool_tenant\tenancy::get_users_subquery */
+    $tenantwhere = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [], '');
+
     $sql = "SELECT DISTINCT $fields, ra.roleid
               FROM {role_assignments} ra
               JOIN {user} u ON u.id = ra.userid
@@ -4051,7 +4056,8 @@ function get_role_users($roleid, context $context, $parent = false, $fields = ''
             $ejoin
          LEFT JOIN {role_names} rn ON (rn.contextid = :coursecontext AND rn.roleid = r.id)
         $groupjoin
-             WHERE (ra.contextid = :contextid $parentcontexts)
+             WHERE $tenantwhere
+                   (ra.contextid = :contextid $parentcontexts)
                    $roleselect
                    $groupselect
                    $extrawheretest
@@ -4273,6 +4279,11 @@ function role_switch($roleid, context $context) {
         load_all_capabilities();
     }
 
+    // Make sure that course index is refreshed.
+    if ($coursecontext = $context->get_course_context()) {
+        core_courseformat\base::session_cache_reset(get_course($coursecontext->instanceid));
+    }
+
     // Add the switch RA
     if ($roleid == 0) {
         unset($USER->access['rsw'][$context->path]);
@@ -4435,7 +4446,9 @@ function role_get_name(stdClass $role, $context = null, $rolenamedisplay = ROLEN
             case 'user':            $original = get_string('authenticateduser'); break;
             case 'frontpage':       $original = get_string('frontpageuser', 'role'); break;
             // We should not get here, the role UI should require the name for custom roles!
-            default:                $original = $role->shortname; break;
+            /** @uses \tool_tenant\role::get_default_role_name() */
+            default:                $original = component_class_callback('tool_tenant\role',
+                'get_default_role_name', [$role], $role->shortname); break;
         }
     }
 
@@ -6140,13 +6153,14 @@ class context_helper extends context {
     }
 
     /**
-     * Preloads context information from db record and strips the cached info.
+     * Preloads context cache with information from db record and strips the cached info.
      *
      * The db request has to contain all columns from context_helper::get_preload_record_columns().
      *
      * @static
      * @param stdClass $rec
-     * @return void (modifies $rec)
+     * @return void This is intentional. See MDL-37115. You will need to get the context
+     *      in the normal way, but it is now cached, so that will be fast.
      */
      public static function preload_from_record(stdClass $rec) {
          context::preload_from_record($rec);

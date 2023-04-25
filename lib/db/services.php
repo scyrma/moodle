@@ -2806,6 +2806,24 @@ $functions = array(
         'type'        => 'read',
         'ajax'        => true,
     ],
+    'core_reportbuilder_list_reports' => [
+        'classname'   => 'core_reportbuilder\external\reports\listing',
+        'description' => 'List custom reports for current user',
+        'type'        => 'read',
+        'services'    => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
+    'core_reportbuilder_retrieve_report' => [
+        'classname'   => 'core_reportbuilder\external\reports\retrieve',
+        'description' => 'Retrieve custom report content',
+        'type'        => 'read',
+        'services'    => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
+    'core_reportbuilder_view_report' => [
+        'classname'   => 'core_reportbuilder\external\reports\view',
+        'description' => 'Trigger custom report viewed',
+        'type'        => 'write',
+        'services'    => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
     'core_reportbuilder_columns_add' => [
         'classname'   => 'core_reportbuilder\external\columns\add',
         'description' => 'Add column to report',
