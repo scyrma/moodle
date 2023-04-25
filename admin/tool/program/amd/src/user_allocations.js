@@ -1,0 +1,297 @@
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace™ Code is the collection of software scripts
+// (plugins and modifications, and any derivations thereof) that are
+// exclusively owned and licensed by Moodle under the terms of this
+// proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+// software package offering which itself is freely downloadable at
+// "download.moodle.org" and which is provided by Moodle under a single
+// GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+// MWL is strictly controlled by Moodle Pty Ltd and its certified
+// premium partners. Wherever conflicting terms exist, the terms of the
+// MWL are binding and shall prevail.
+
+/**
+ * User allocation module
+ *
+ * @module     tool_program/user_allocations
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 David Matamoros <davidmc@moodle.com>
+ * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+"use strict";
+
+import Ajax from 'core/ajax';
+import ModalForm from 'core_form/modalform';
+import Notification from 'core/notification';
+import {get_string as getString, get_strings as getStrings} from 'core/str';
+import Pending from 'core/pending';
+import * as WpNotification from 'tool_wp/notification';
+import * as reportSelectors from 'core_reportbuilder/local/selectors';
+import {dispatchEvent} from 'core/event_dispatcher';
+import * as reportEvents from 'core_reportbuilder/local/events';
+import SELECTORS from "core_reportbuilder/local/selectors";
+
+/** @type {Object} The list of selectors for the program allocations area. */
+const Selector = {
+    editProgramViewRegion: '.wptabs',
+    editProgramUserList: '[data-region=edit-program-user-list]',
+    openbutton: '#userallocationbutton',
+    editUser: `${SELECTORS.regions.report} ${SELECTORS.regions.reportTable} a[data-action='user_edit_form']`,
+    deallocateUser: `${SELECTORS.regions.report} ${SELECTORS.regions.reportTable} a[data-action='deallocate_user']`,
+    resetProgram: `${SELECTORS.regions.report} ${SELECTORS.regions.reportTable} a[data-action='reset_program']`,
+    recalculateCompletion: `${SELECTORS.regions.report} ${SELECTORS.regions.reportTable} a[data-action='recalculate_completion']`,
+    allocateUsersButton: ".wptabs .tab-pane.active [data-tabs-element='addbutton']",
+};
+
+/**
+ * Confirmation dialogue to reset user program progress
+ *
+ * @param {Number} programuserid
+ * @param {String} name
+ */
+const confirmResetProgramProgress = (programuserid, name) => {
+    getStrings([
+        {'key': 'resetprogress', component: 'tool_program'},
+        {'key': 'confirmresetprogress', component: 'tool_program', param: name},
+        {'key': 'yes'}
+    ]).then(([resetprogress, confirmresetprogress, yes]) => {
+        Notification.confirm(resetprogress, confirmresetprogress, yes, null, () => {
+            const pendingPromise = new Pending('tool/program:confirmResetProgramProgress');
+            const promises = Ajax.call([{
+                methodname: 'tool_program_reset_program_progress',
+                args: {programuserid: programuserid}
+            }]);
+            promises[0].then(() => {
+                reloadReport();
+                return pendingPromise.resolve();
+            }).catch(Notification.exception);
+        });
+        return null;
+    }).catch(Notification.exception);
+};
+
+/**
+ * Confirmation dialogue to recalculate user program progress
+ *
+ * @param {Number} programuserid
+ */
+const confirmProgramRecalculation = (programuserid) => {
+    getStrings([
+        {'key': 'recalculateprogramcompletion', component: 'tool_program'},
+        {'key': 'confirmrecalculateprogress', component: 'tool_program'},
+        {'key': 'recalculateprogramcompletion', component: 'tool_program'},
+        {'key': 'usersrecalculationcompletion', component: 'tool_program', param: '1'}
+    ]).then(([resetprogress, confirmresetprogress, yes, notification]) => {
+        Notification.confirm(resetprogress, confirmresetprogress, yes, null, () => {
+            const pendingPromise = new Pending('tool/program:confirmProgramRecalculation');
+            const promises = Ajax.call([{
+                methodname: 'tool_program_recalculate_program_user_completions',
+                args: {programuserids: {programuserid}}
+            }]);
+            promises[0].then(() => {
+                reloadReport();
+                WpNotification.addNotification({message: notification, type: 'success'});
+                return pendingPromise.resolve();
+            }).catch(Notification.exception);
+        });
+        return null;
+    }).catch(Notification.exception);
+};
+
+/**
+ * Confirmation dialogue to de-allocate a user
+ *
+ * @param {Number} programid
+ * @param {Number} userid
+ * @param {string} name
+ */
+const confirmDeallocateUser = (programid, userid, name) => {
+    getStrings([
+        {'key': 'deleteuserallocation', component: 'tool_program'},
+        {'key': 'confirmdeleteuserallocation', component: 'tool_program', param: name},
+        {'key': 'yes'}
+    ]).then(([deleteuserallocation, confirmdeleteuserallocation, yes]) => {
+        Notification.confirm(deleteuserallocation, confirmdeleteuserallocation, yes, null, () => {
+            const pendingPromise = new Pending('tool/program:confirmDeallocateUser');
+            const promises = Ajax.call([{
+                methodname: 'tool_program_deallocate_user',
+                args: {
+                    programid: programid,
+                    userid: userid
+                }
+            }]);
+            promises[0].then(() => {
+                reloadReport();
+                return pendingPromise.resolve();
+            }).catch(Notification.exception);
+        });
+        return null;
+    }).catch(Notification.exception);
+};
+
+/**
+ * Displays a modal to override dates
+ *
+ * @param {Event} event
+ * @param {Number} programuserid
+ * @param {String} name
+ */
+const overrideUserDatesModal = (event, programuserid, name) => {
+    const programRegion = document.querySelector(Selector.editProgramViewRegion);
+    const programid = programRegion.dataset.id;
+    const contextid = programRegion.dataset.contextid;
+    const modal = new ModalForm({
+        formClass: 'tool_program\\form\\edit_program_users_edit_form_modal',
+        args: {id: programid, programuserid: programuserid},
+        modalConfig: {title: getString('allocationfor', 'tool_program', name)},
+        contextId: contextid,
+        returnFocus: event.target
+    });
+    modal.show();
+    // Reload user list after submit form.
+    modal.addEventListener(modal.events.FORM_SUBMITTED, () => reloadReport());
+};
+
+/**
+ * Displays a modal form to allocate users
+ *
+ * @param {Event} event
+ * @param {Number} programid
+ * @param {Number} contextid
+ */
+const allocateUsersModal = (event, programid, contextid) => {
+    const modal = new ModalForm({
+        formClass: 'tool_program\\form\\edit_program_users_form_modal',
+        args: {id: programid, allocateuser: getString('allocateusers', 'tool_program')},
+        modalConfig: {title: getString('allocateusers', 'tool_program'), scrollable: false},
+        contextId: contextid,
+        returnFocus: event.target
+    });
+    modal.show();
+    // Reload user list after submit form.
+    modal.addEventListener(modal.events.FORM_SUBMITTED, () => reloadReport());
+};
+
+/**
+ * Direct allocation to program disabled alert.
+ */
+const directAllocationDisabledAlert = () => {
+    allocationWindowClosedAlert('directallocationdisabled', null);
+};
+
+/**
+ * Allocation window closed alert.
+ *
+ * @param {String} type
+ * @param {String|null} time
+ */
+const allocationWindowClosedAlert = (type, time) => {
+    getStrings([
+        {key: 'usersallocationnotavailable', component: 'tool_program'},
+        {key: type, component: 'tool_program', param: time},
+        {key: 'ok', component: 'moodle'},
+    ]).then(([usersallocationnotavailable, typestr, ok]) => {
+        Notification.alert(usersallocationnotavailable, typestr, ok);
+        return null;
+    }).catch(Notification.exception);
+};
+
+/**
+ * Reloads the report
+ */
+const reloadReport = () => {
+    const reportElement = document.querySelector(reportSelectors.regions.report);
+    dispatchEvent(reportEvents.tableReload, {preservePagination: true}, reportElement);
+};
+
+
+let initialized = false;
+
+const init = () => {
+
+    if (initialized) {
+        // We already added the event listeners (can be called multiple times by mustache template).
+        return;
+    }
+
+    document.addEventListener('click', (event) => {
+
+        // Edit user.
+        const editUser = event.target.closest(Selector.editUser);
+        if (editUser) {
+            event.preventDefault();
+            const programuserid = editUser.dataset.programuserid;
+            const name = editUser.dataset.userfullname;
+            overrideUserDatesModal(event, programuserid, name);
+        }
+
+        // Deallocate user.
+        const deallocateUser = event.target.closest(Selector.deallocateUser);
+        if (deallocateUser) {
+            event.preventDefault();
+            const userid = deallocateUser.dataset.userid;
+            const programid = deallocateUser.dataset.id;
+            const name = deallocateUser.dataset.userfullname;
+            confirmDeallocateUser(programid, userid, name);
+        }
+
+        // Reset program.
+        const resetProgram = event.target.closest(Selector.resetProgram);
+        if (resetProgram) {
+            event.preventDefault();
+            const programuserid = resetProgram.dataset.programuserid;
+            const name = resetProgram.dataset.userfullname;
+            confirmResetProgramProgress(programuserid, name);
+        }
+
+        // Re-calculate program completion.
+        const recalculateCompletion = event.target.closest(Selector.recalculateCompletion);
+        if (recalculateCompletion) {
+            event.preventDefault();
+            const programuserid = recalculateCompletion.dataset.programuserid;
+            const name = recalculateCompletion.dataset.userfullname;
+            confirmProgramRecalculation(programuserid, name);
+        }
+
+        // User allocation modal.
+        const AllocateUser = event.target.closest(Selector.allocateUsersButton);
+        if (AllocateUser) {
+            event.preventDefault();
+            const allocationwindow = AllocateUser.dataset.allocationwindow;
+            const directallocationdisabled = AllocateUser.dataset.directallocationdisabled;
+            if (directallocationdisabled) {
+                directAllocationDisabledAlert();
+            } else if (allocationwindow) {
+                const type = AllocateUser.dataset.allocationwindowtype;
+                const time = AllocateUser.dataset.allocationwindowtime;
+                allocationWindowClosedAlert(type, time);
+            } else {
+                const programRegion = document.querySelector(Selector.editProgramViewRegion);
+                const programid = programRegion.dataset.id;
+                const contextid = programRegion.dataset.contextid;
+                allocateUsersModal(event, programid, contextid);
+            }
+        }
+    });
+
+    initialized = true;
+};
+
+export default {
+    init: init
+};
