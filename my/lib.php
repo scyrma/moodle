@@ -46,6 +46,12 @@ function my_get_page($userid, $private=MY_PAGE_PRIVATE) {
         }
     }
 
+    /** @uses \tool_tenant\dashboard_manager::show_tenant_dashboard_if_enabled() */
+    if ($page = component_class_callback('\tool_tenant\dashboard_manager',
+            'show_tenant_dashboard_if_enabled', [$userid, $private])) {
+        return $page;
+    }
+
     // Otherwise return the system default page
     return $DB->get_record('my_pages', array('userid' => null, 'name' => '__default', 'private' => $private));
 }
@@ -63,7 +69,7 @@ function my_copy_page($userid, $private=MY_PAGE_PRIVATE, $pagetype='my-index') {
     }
 
     // Get the system default page
-    if (!$systempage = $DB->get_record('my_pages', array('userid' => null, 'private' => $private))) {
+    if (!$systempage = $DB->get_record('my_pages', array('userid' => null, 'name' => '__default', 'private' => $private))) {
         return false;  // error
     }
 
@@ -144,7 +150,7 @@ function my_reset_page($userid, $private=MY_PAGE_PRIVATE, $pagetype='my-index') 
     }
 
     // Get the system default page
-    if (!$systempage = $DB->get_record('my_pages', array('userid' => null, 'private' => $private))) {
+    if (!$systempage = $DB->get_record('my_pages', array('userid' => null, 'name' => '__default', 'private' => $private))) {
         return false; // error
     }
 
