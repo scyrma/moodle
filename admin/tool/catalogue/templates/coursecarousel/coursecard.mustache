@@ -1,0 +1,114 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/coursecarousel/coursecard
+
+    Template for showing course carousel course cards.
+
+    Example context (json):
+    {
+        "examplecontext": true,
+        "id": 1,
+        "viewurl": "https://moodlesite/course/view.php?id=1",
+        "fullnamedisplay": "Advanced advises regarding body posture",
+        "courseimage": "http://placekitten.com/300/300",
+        "showprogress": true,
+        "progress": "50",
+        "filter": "isvisible",
+        "extraclasses": "mb-2",
+        "extraattributes": [{
+            "name": "data-visible",
+            "value": "1"
+        }],
+        "hascardactions": true,
+        "cardactions": [
+            {
+                "name": "Hide",
+                "dataaction": "hide-card"
+            }
+        ]
+    }
+}}
+<div class="card dashboard-card position-relative {{extraclasses}}"
+     data-region="coursecarousel-card"
+     data-courseid="{{id}}"
+    {{#extraattributes}}
+        {{name}}{{#value}}="{{value}}"{{/value}}
+    {{/extraattributes}}
+     {{^examplecontext}}role="listitem"{{/examplecontext}}
+>
+    <div class="card-img" style='background-image: url("{{{courseimage}}}");'>
+        <span class="sr-only">{{#str}}aria:courseimage, core_course{{/str}}</span>
+    </div>
+    <div class="card-body p-3">
+        <div class="d-flex">
+            <a href="{{viewurl}}" class="aalink link-stretched" data-region="coursecarousel-card-name">
+                {{{fullnamedisplay}}}
+            </a>
+        </div>
+        <div class="card-badges d-flex flex-wrap mt-2">
+            {{{extracoursename}}}
+            {{^visible}}
+                <span class="badge badge-secondary">{{#str}}hiddenfromlearners, tool_catalogue{{/str}}</span>
+            {{/visible}}
+        </div>
+    </div>
+    <div class="d-flex align-items-start">
+        {{#hasprogress}}
+            <div class="card-footer dashboard-card-footer w-100 p-3 border-0 bg-transparent">
+                <div class=" text-muted font-small">
+                    {{#str}}progress, tool_catalogue, {{{progress}}}{{/str}}
+                </div>
+            </div>
+        {{/hasprogress}}
+        {{#hascardactions}}
+            <div class="card-footer dashboard-card-footer menu border-0 bg-transparent ml-auto">
+                <div class="ml-auto dropdown">
+                    <button class="btn btn-link btn-icon icon-size-3 coursemenubtn"
+                            type="button"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                        <i class="icon fa fa-ellipsis-v fa-fw m-0" aria-hidden="true"></i>
+                        <span class="sr-only">{{#str}} aria:courseactions, tool_catalogue {{/str}}</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        {{#cardactions}}
+                            <a class="dropdown-item" href="#"
+                               data-courseid="{{id}}"
+                               data-action="{{dataaction}}"
+                            >
+                                {{name}}
+                            </a>
+                        {{/cardactions}}
+                    </div>
+                </div>
+            </div>
+        {{/hascardactions}}
+    </div>
+</div>
