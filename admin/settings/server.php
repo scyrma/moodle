@@ -69,7 +69,14 @@ if ($hassiteconfig) {
             CONTACT_SUPPORT_DISABLED => new lang_string('disabled', 'admin'),
         ]
     ));
-
+    if (core_component::get_component_directory('tool_tenant')) {
+        $temp->add(new admin_setting_configtext('servicespage', new lang_string('core_admin:servicespage', 'tool_tenant'),
+            new lang_string('core_admin:configservicespage', 'tool_tenant'), '', PARAM_URL));
+    } else {
+        $temp->add(new admin_setting_configtext('servicespage', 'Services and support link',
+            'Enter the URL of a services and support page or leave empty to link to Moodle services on moodle.com.',
+            '', PARAM_URL));
+    }
 
     $ADMIN->add('server', $temp);
 

@@ -143,7 +143,14 @@ class block_edit_form extends moodleform {
 
         // Generate pagetype patterns by callbacks if necessary (has not been set specifically)
         if (empty($pagetypelist)) {
-            $pagetypelist = generate_page_type_patterns($this->page->pagetype, $parentcontext, $this->page->context);
+            // If editing came from custom pages, limit "Display on page types" options to itself.
+            if ($this->page->pagetype === 'admin-tool-custompage') {
+                $custompagestring = get_string('pluginname', 'tool_custompage');
+                $pagetypelist = [$custompagestring => $custompagestring];
+            } else {
+                $pagetypelist = generate_page_type_patterns($this->page->pagetype, $parentcontext, $this->page->context);
+            }
+
             $displaypagetypewarning = false;
             if (!array_key_exists($this->block->instance->pagetypepattern, $pagetypelist)) {
                 // Pushing block's existing page type pattern
