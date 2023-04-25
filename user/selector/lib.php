@@ -500,8 +500,14 @@ abstract class user_selector_base {
             ? array_values($this->userfieldsmappings)
             : $this->extrafields;
 
-        return users_search_sql($search, $u, $this->searchanywhere, $extrafields,
+        list ($sql, $params) =  users_search_sql($search, $u, $this->searchanywhere, $extrafields,
                 $this->exclude, $this->validatinguserids);
+
+        // Add tenant condition.
+        /** @uses \tool_tenant\tenancy::get_users_subquery */
+        $tenantwhere = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery',
+            [true, true, ($u ? "{$u}." : '') . 'id'], '');
+        return [$tenantwhere . $sql, $params];
     }
 
     /**
@@ -586,7 +592,7 @@ abstract class user_selector_base {
      */
     protected function output_optgroup($groupname, $users, $select) {
         if (!empty($users)) {
-            $output = '  <optgroup label="' . htmlspecialchars($groupname) . ' (' . count($users) . ')">' . "\n";
+            $output = '  <optgroup label="' . htmlspecialchars($groupname, ENT_COMPAT) . ' (' . count($users) . ')">' . "\n";
             foreach ($users as $user) {
                 $attributes = '';
                 if (!empty($user->disabled)) {
@@ -604,7 +610,7 @@ abstract class user_selector_base {
                 }
             }
         } else {
-            $output = '  <optgroup label="' . htmlspecialchars($groupname) . '">' . "\n";
+            $output = '  <optgroup label="' . htmlspecialchars($groupname, ENT_COMPAT) . '">' . "\n";
             $output .= '    <option disabled="disabled">&nbsp;</option>' . "\n";
         }
         $output .= "  </optgroup>\n";
