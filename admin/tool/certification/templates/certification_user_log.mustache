@@ -1,0 +1,96 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_certification/certification_user_log
+
+    Template for showing certification user log
+
+    Example context (json):
+    {
+        "haslogs": true,
+        "lastallocationdate": "1574675721",
+        "logs": [{
+            "user": {
+                "id": 2,
+                "picture": "<img src='https://raw.githubusercontent.com/moodle/moodle/master/pix/g/f1.png' width='35' height='35' alt='pic'>",
+                "profileurl": "#",
+                "fullname": "User 01"
+            },
+            "event": "was certified",
+            "date": "1574675721"
+        }],
+        "downloadform": "<button type=\"submit\" class=\"btn btn - secondary\">Download</button>"
+    }
+}}
+<div class="tool-certification-certification-user-log" data-region="certification-user-log">
+    <div class="alert alert-info" role="alert">
+        {{#str}}lastallocationdate, tool_certification, {{#userdate}} {{lastallocationdate}}, {{#str}} strftimedatetime, langconfig {{/str}}{{/userdate}}{{/str}}
+    </div>
+    {{#haslogs}}
+        <table class="table border-top-0">
+            <thead>
+            <tr>
+                <th scope="col">{{#str}} fullnameuser {{/str}}</th>
+                <th scope="col">{{#str}} useractivity {{/str}}</th>
+                <th class="text-right" scope="col">{{#str}} date {{/str}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#logs}}
+                <tr>
+                    <td>
+                    <span class="mr-2">
+                        {{#user.picture}}
+                            {{{user.picture}}}
+                        {{/user.picture}}
+                    </span>
+                        <span class="text-truncate text-decoration-none">
+                        {{#user.profileurl}}
+                            <a href="{{user.profileurl}}">{{user.fullname}}</a>
+                        {{/user.profileurl}}
+                        {{^user.profileurl}}
+                            {{user.fullname}}
+                        {{/user.profileurl}}
+                    </span>
+                    </td>
+                    <td>{{event}}</td>
+                    <td class="text-right">{{#userdate}} {{date}}, {{#str}} strftimedatetime, langconfig {{/str}}{{/userdate}}</td>
+                </tr>
+            {{/logs}}
+            </tbody>
+        </table>
+        <div class="d-flex">
+            <div class="mx-auto">
+                {{{downloadform}}}
+            </div>
+        </div>
+    {{/haslogs}}
+    {{^haslogs}}
+        <div class="alert alert-warning">{{#str}} certificationuserlogempty, tool_certification{{/str}}</div>
+    {{/haslogs}}
+</div>
