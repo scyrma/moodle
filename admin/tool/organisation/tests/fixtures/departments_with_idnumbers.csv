@@ -1,0 +1,6 @@
+id,code,parent,name,idnumber,description
+1,SAL,,Sales,,Department framework as parent
+2,TOK,japan,Tokyo,tokyo,Using idnumber as parent
+3,SHI,tokyo,Shibuya,,Using idnumber as parent
+4,OTH,3,Another,,Using CSV ID field as parent
+5,EDI,unknown,Editorial,,Department framework as parent

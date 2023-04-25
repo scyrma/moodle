@@ -1,0 +1,4 @@
+username,firstname,lastname,email,jobdepartment1,jobposition1,jobstartdate1,jobenddate1
+jonest,Tom,Jones,jonest@example.com,exampledep,examplepos,,
+reznor,Trent,Reznor,reznor@example.com,exampledep2,examplepos2,2019-05-07,
+jon,Jon,Whatever,jon@example.com,exampledep2,examplepos2,2019-05-07,2032-01-09
