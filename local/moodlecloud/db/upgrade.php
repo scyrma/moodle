@@ -291,11 +291,11 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         $DB->get_manager()->change_field_notnull($table, $field);
 
         // Changing length of field verifyany on table customcert to 10.
-        $table = new xmldb_table('customcert');
-        $field = new xmldb_field('verifyany', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'requiredtime');
-
-        // Launch change of type for field verifyany.
-        $DB->get_manager()->change_field_type($table, $field);
+//        $table = new xmldb_table('customcert');
+//        $field = new xmldb_field('verifyany', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'requiredtime');
+//
+//        // Launch change of type for field verifyany.
+//        $DB->get_manager()->change_field_type($table, $field);
 
         // Moodlecloud savepoint reached.
         upgrade_plugin_savepoint(true, 2023012000, 'local', 'moodlecloud');
