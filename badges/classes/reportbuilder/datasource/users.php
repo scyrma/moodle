@@ -53,7 +53,10 @@ class users extends datasource {
         $this->set_main_table('user', $useralias);
 
         $paramguest = database::generate_param_name();
-        $this->add_base_condition_sql("{$useralias}.id != :{$paramguest} AND {$useralias}.deleted = 0", [
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, "{$useralias}.id"], '');
+        $this->add_base_condition_sql("{$useralias}.id != :{$paramguest} AND {$tenantsql} {$useralias}.deleted = 0", [
             $paramguest => $CFG->siteguest,
         ]);
 
