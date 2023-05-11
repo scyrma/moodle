@@ -120,6 +120,24 @@
             ga('mcglobal.send', 'pageview');
             ga('mcregion.send', 'pageview');
         </script>
+        {{#ga4_global_property}}
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{{.}}}"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{{.}}}');
+        </script>
+        {{/ga4_global_property}}
+        {{#ga4_region_property}}
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{{.}}}"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{{.}}}');
+        </script>
+        {{/ga4_region_property}}
     {{/ga_global_property}}
 </footer>
 {{#js}}
