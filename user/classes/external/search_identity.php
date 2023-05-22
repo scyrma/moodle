@@ -65,7 +65,10 @@ class search_identity extends \external_api {
         list($sortsql, $sortparams) = users_order_by_sql('', $query, $context);
         $params = array_merge($searchparams, $sortparams);
 
-        $rs = $DB->get_recordset_select('user', $searchsql, $params, $sortsql,
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery', [false, true, 'id'], '');
+
+        $rs = $DB->get_recordset_select('user', $tenantsql . $searchsql, $params, $sortsql,
             'id' . $fields->get_sql()->selects, 0, $CFG->maxusersperpage + 1);
 
         $count = 0;
