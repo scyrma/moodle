@@ -55,7 +55,11 @@ class report_access_list extends system_report {
             $allwheres = "1=0";
         }
 
-        $this->add_base_condition_sql("($allwheres)", $params);
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, "{$userentityalias}.id"], '');
+
+        $this->add_base_condition_sql("$tenantsql ($allwheres)", $params);
 
         $this->add_column_from_entity('user:fullnamewithpicturelink');
         $this->add_filter_from_entity('user:fullname');
