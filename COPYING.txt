@@ -3,25 +3,25 @@ Moodle Workplace License
 Moodle Workplace™ Code is the collection of software scripts (plugins and
 modifications, and any derivations thereof) that are exclusively owned and
 licensed by Moodle under the terms of this proprietary Moodle Workplace License
-("MWL") alongside Moodle's open software package ("Core") offering which itself
-is freely downloadable at "download.moodle.org" and which is provided by Moodle
-under a single GNU General Public License version 3.0, dated 29 June 2007
+("MWL") alongside Moodle's open software package ("Moodle LMS") offering which
+itself is freely downloadable at "download.moodle.org" and which is provided by
+Moodle under a single GNU General Public License version 3.0, dated 29 June 2007
 ("GPL"). MWL is strictly controlled by Moodle Pty Ltd and its certified premium
-partners. Wherever conflicting terms exist, the terms of the MWL are binding
-and shall prevail.
+partners. Wherever conflicting terms exist, the terms of the MWL are binding and
+shall prevail.
 
-The Moodle Core software package governed by GPL is subject to copyright
+The Moodle LMS software package governed by GPL is subject to copyright
 protection from 1999 onwards by Martin Dougiamas with portions
-contributed/copyrighted by other contributors. Such Moodle Core open software
-and corresponding documentation are distributed in the hope that they will be
+contributed/copyrighted by other contributors. Such Moodle LMS open software and
+corresponding documentation are distributed in the hope that they will be
 useful, but without any warranty; without even the implied warranty of
 merchantability or fitness for a particular purpose.
 
 By accessing Moodle Workplace™ that is governed by the MWL you agree that you
 have signed an MWL with Moodle Pty Ltd ensuring (among other things) that you:
 
-- will not possess the Moodle Workplace™ Code without being subject to the
-  terms of the MWL;
+- will not possess the Moodle Workplace™ Code without being subject to the terms
+  of the MWL;
 - will cease using Moodle Workplace™ and immediately delete all copies of the
   Moodle Workplace™ Code from your servers and any computers under your control
   if you are no longer a Moodle Certified Premium Partner or a client of a
@@ -39,9 +39,9 @@ have signed an MWL with Moodle Pty Ltd ensuring (among other things) that you:
   harmless for any damages, fines, penalties, or other liability arising out of
   any data input by you and your end users.
 
-Moodle Workplace™ websites may include a tracking pixel for statistical
-purposes and compliance monitoring. No personal data is collected or processed,
-only the site URL.
+Moodle Workplace™ websites may include a tracking pixel for statistical purposes
+and compliance monitoring. No personal data is collected or processed, only the
+site URL.
 
 This is a summary only: for the full terms of the MWL please refer to the MWL
 you have signed.
