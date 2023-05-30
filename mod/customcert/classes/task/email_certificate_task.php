@@ -25,8 +25,6 @@ namespace mod_customcert\task;
 
 use mod_customcert\helper;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * A scheduled task for emailing certificates.
  *
@@ -182,7 +180,7 @@ class email_certificate_task extends \core\task\scheduled_task {
             // Now, email the people we need to.
             foreach ($issuedusers as $user) {
                 // Set up the user.
-                cron_setup_user($user);
+                \core\cron::setup_user($user);
 
                 $userfullname = fullname($user);
                 $info->userfullname = $userfullname;
