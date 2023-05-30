@@ -2255,7 +2255,17 @@ class file_storage {
         // those are identified by time stamp of the /. root dir
         mtrace('Deleting old draft files... ', '');
         \core\cron::trace_time_and_memory();
-        $old = time() - 60*60*24*4;
+
+        // START MOODLECLOUD HACK.
+        // $old = time() - 60*60*24*4;
+        // Hard coded 4 days has been changed to a CFG variable.
+        if (empty($CFG->moodlecloud_draftpurgeage)) {
+            $old = time() - 345600; // 60*60*24*4;
+        } else {
+            $old = time() - $CFG->moodlecloud_draftpurgeage;
+        }
+        // END MOODLECLOUD HACK.
+
         $sql = "SELECT *
                   FROM {files}
                  WHERE component = 'user' AND filearea = 'draft' AND filepath = '/' AND filename = '.'
