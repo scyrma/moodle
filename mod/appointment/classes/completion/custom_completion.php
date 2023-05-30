@@ -1,0 +1,88 @@
+<?php
+// This file is part of the mod_appointment plugin for Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+namespace mod_appointment\completion;
+use core_completion\activity_custom_completion;
+
+/**
+ * Activity custom completion subclass for the appointment activity.
+ *
+ * @package   mod_appointment
+ * @copyright 2021 Moodle Pty Ltd <support@moodle.com>
+ * @author    2021 Ruslan Kabalin
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class custom_completion extends activity_custom_completion {
+
+    /**
+     * Fetches the completion state for a given completion rule.
+     *
+     * @param string $rule The completion rule.
+     * @return int The completion state.
+     */
+    public function get_state(string $rule): int {
+        $this->validate_rule($rule);
+
+        switch ($rule) {
+            case 'completionbooked':
+                $status = user_has_booked_sessions($this->userid, $this->cm->instance);
+                break;
+            case 'completionattended':
+                $status = user_has_attended_sessions($this->userid, $this->cm->instance);
+                break;
+        }
+
+        return empty($status) ? COMPLETION_INCOMPLETE : COMPLETION_COMPLETE;
+    }
+
+    /**
+     * Fetch the list of custom completion rules that this module defines.
+     *
+     * @return array
+     */
+    public static function get_defined_custom_rules(): array {
+        return [
+            'completionbooked',
+            'completionattended'
+        ];
+    }
+
+    /**
+     * Returns an associative array of the descriptions of custom completion rules.
+     *
+     * @return array
+     */
+    public function get_custom_rule_descriptions(): array {
+        return [
+            'completionbooked' => get_string('completiondetail:booked', 'appointment'),
+            'completionattended' => get_string('completiondetail:attended', 'appointment')
+        ];
+    }
+
+    /**
+     * Returns an array of all completion rules, in the order they should be displayed to users.
+     *
+     * @return array
+     */
+    public function get_sort_order(): array {
+        return [
+            'completionview',
+            'completionbooked',
+            'completionattended',
+            'completionusegrade',
+        ];
+    }
+}
