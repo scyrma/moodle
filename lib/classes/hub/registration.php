@@ -218,6 +218,9 @@ class registration {
 
         // IMPORTANT: any new fields in siteinfo have to be added to the constant CONFIRM_NEW_FIELDS.
 
+        /** @uses \tool_wp\registration::site_info() */
+        component_class_callback('tool_wp\\registration', 'site_info', [&$siteinfo, false]);
+
         return $siteinfo;
     }
 
@@ -269,6 +272,8 @@ class registration {
             'primaryauthtype' => get_string('primaryauthtype', 'hub', $siteinfo['primaryauthtype']),
         ];
 
+        /** @uses \tool_wp\registration::site_info() */
+        component_class_callback('tool_wp\\registration', 'site_info', [&$senddata, true]);
         foreach ($senddata as $key => $str) {
             $class = in_array($key, $fieldsneedconfirm) ? ' needsconfirmation mark' : '';
             $summary .= html_writer::tag('li', $str, ['class' => 'site' . $key . $class]);

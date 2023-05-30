@@ -65,6 +65,8 @@ class send_schedule extends adhoc_task {
             return;
         }
 
+        $users = helper::get_schedule_report_users($schedule);
+
         $originaluser = $USER;
 
         $scheduleuserviewas = $schedule->get('userviewas');
@@ -90,7 +92,6 @@ class send_schedule extends adhoc_task {
             return;
         }
 
-        $users = helper::get_schedule_report_users($schedule);
         foreach ($users as $user) {
             $this->log('Sending to: ' . fullname($user, true));
 
