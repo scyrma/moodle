@@ -203,9 +203,9 @@ $string['csvinvalidcolsnum'] = 'Invalid CSV file - each line must include 49 or 
 $string['csvloaderror'] = 'An error occurred while loading the CSV file: {$a}';
 $string['csvnodata'] = 'Invalid CSV file - The CSV file has headers but does not contain any data.';
 $string['csvweirdcolumns'] = 'Invalid CSV file format - number of columns is not constant!';
-$string['dbconnectionfailed'] = '<p>Error: Database connection failed</p>
-<p>It is possible that the database is overloaded or otherwise not running properly.</p>
-<p>The site administrator should also check that the database details have been correctly specified in config.php</p>';
+// START MOODLECLOUD HACK
+$string['dbconnectionfailed'] = '<p>Sorry, something went wrong.</p><p>We\'re working on it and we\'ll get it fixed as soon as we can.</p>';
+// END MOODLECLOUD HACK
 $string['dbdriverproblem'] = '<p>Error: database driver problem detected</p>
 <p>The site administrator should verify server configuration</p><p>{$a}</p>';
 $string['dbsessionbroken'] = 'Serious database session problem detected.<br /><br />Please notify server administrator.';

@@ -35,6 +35,10 @@ admin_externalpage_setup('registrationmoodleorg');
 $unregistration = optional_param('unregistration', false, PARAM_BOOL);
 $confirm = optional_param('confirm', false, PARAM_BOOL);
 
+// START MOODLECLOUD HACK.
+$unregistration = 0;
+// END MOODLECLOUD HACK.
+
 if ($unregistration && \core\hub\registration::is_registered()) {
     if ($confirm) {
         require_sesskey();
@@ -117,6 +121,8 @@ echo $renderer->moodleorg_registration_message();
 
 $siteregistrationform->display();
 
+// START MOODLECLOUD HACK.
+/*
 if (\core\hub\registration::is_registered()) {
     // Unregister link.
     $unregisterhuburl = new moodle_url("/admin/registration/index.php", ['unregistration' => 1]);
@@ -125,4 +131,6 @@ if (\core\hub\registration::is_registered()) {
     echo html_writer::div(html_writer::link(new moodle_url($returnurl), get_string('skipregistration', 'hub')),
         'skipregistration mt-2');
 }
+*/
+// END MOODLECLOUD HACK.
 echo $OUTPUT->footer();
