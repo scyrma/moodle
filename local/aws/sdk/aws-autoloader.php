@@ -2733,8 +2733,6 @@ $mapping = array(
     'GuzzleHttp\Psr7\UriNormalizer' => __DIR__ . '/GuzzleHttp/Psr7/UriNormalizer.php',
     'GuzzleHttp\Psr7\UriResolver' => __DIR__ . '/GuzzleHttp/Psr7/UriResolver.php',
     'GuzzleHttp\Psr7\Utils' => __DIR__ . '/GuzzleHttp/Psr7/Utils.php',
-    'GuzzleHttp\Psr7\functions' => __DIR__ . '/GuzzleHttp/Psr7/functions_include.php',
-    'GuzzleHttp\Psr7\functions_include' => __DIR__ . '/GuzzleHttp/Psr7/functions_include.php',
     'GuzzleHttp\Promise\AggregateException' => __DIR__ . '/GuzzleHttp/Promise/AggregateException.php',
     'GuzzleHttp\Promise\CancellationException' => __DIR__ . '/GuzzleHttp/Promise/CancellationException.php',
     'GuzzleHttp\Promise\Coroutine' => __DIR__ . '/GuzzleHttp/Promise/Coroutine.php',
@@ -2751,8 +2749,6 @@ $mapping = array(
     'GuzzleHttp\Promise\TaskQueue' => __DIR__ . '/GuzzleHttp/Promise/TaskQueue.php',
     'GuzzleHttp\Promise\TaskQueueInterface' => __DIR__ . '/GuzzleHttp/Promise/TaskQueueInterface.php',
     'GuzzleHttp\Promise\Utils' => __DIR__ . '/GuzzleHttp/Promise/Utils.php',
-    'GuzzleHttp\Promise\functions' => __DIR__ . '/GuzzleHttp/Promise/functions_include.php',
-    'GuzzleHttp\Promise\functions_include' => __DIR__ . '/GuzzleHttp/Promise/functions_include.php',
     'Psr\Http\Message\MessageInterface' => __DIR__ . '/Psr/Http/Message/MessageInterface.php',
     'Psr\Http\Message\RequestInterface' => __DIR__ . '/Psr/Http/Message/RequestInterface.php',
     'Psr\Http\Message\ResponseInterface' => __DIR__ . '/Psr/Http/Message/ResponseInterface.php',
@@ -2782,7 +2778,5 @@ spl_autoload_register(function ($class) use ($mapping) {
 
 require_once __DIR__ . '/Aws/functions.php';
 require_once __DIR__ . '/GuzzleHttp/functions_include.php';
-require_once __DIR__ . '/GuzzleHttp/Psr7/functions_include.php';
-require_once __DIR__ . '/GuzzleHttp/Promise/functions_include.php';
 require_once __DIR__ . '/JmesPath/JmesPath.php';
 require_once __DIR__ . '/Symfony/Polyfill/Intl/Idn/bootstrap.php';
