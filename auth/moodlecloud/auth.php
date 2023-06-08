@@ -83,8 +83,8 @@ class auth_plugin_moodlecloud extends auth_plugin_base {
             ));
 
         // Intercom ID
-        if (get_config('auth_moodlecloud', 'intercom_id') !== $data['intercom_id']) {
-            set_config('intercom_id', $data['intercom_id'], 'auth_moodlecloud');
+        if (get_config('auth_moodlecloud', 'person_id') !== $data['intercom_id']) {
+            set_config('person_id', $data['intercom_id'], 'auth_moodlecloud');
             unset($data['intercom_id']);
         }
 
