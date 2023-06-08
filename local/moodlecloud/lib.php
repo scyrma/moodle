@@ -141,12 +141,15 @@ function local_moodlecloud_get_fontawesome_icon_map() {
 function local_moodlecloud_standard_footer_html() {
     global $CFG;
 
-    $jscode = '
-    var APP_ID = "jnrsihww";
-    var MC_PERSON_ID = "'. get_config('auth_moodlecloud', 'intercom_id') . '";
-    ';
+    // Only load intercom if we have a valid ID and the user is a site admin
+    if ($person_id = get_config('auth_moodlecloud', 'person_id')) {
+        $jscode = '
+        var APP_ID = "'.$CFG->moodlecloud_intercom_app_id.'";
+        var MC_PERSON_ID = "'.$person_id.'";
+        ';
 
-    if (is_siteadmin()) {
-        return html_writer::script($jscode) . html_writer::script('', $CFG->wwwroot.'/local/moodlecloud/intercom.js');
+        if (is_siteadmin()) {
+            return html_writer::script($jscode) . html_writer::script('', $CFG->wwwroot.'/local/moodlecloud/intercom.js');
+        }
     }
 }
