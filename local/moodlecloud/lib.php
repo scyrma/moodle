@@ -142,10 +142,10 @@ function local_moodlecloud_standard_footer_html() {
     global $CFG;
 
     // Only load intercom if we have a valid ID and the user is a site admin
-    if ($intercom_id = get_config('auth_moodlecloud', 'intercom_id')) {
+    if ($person_id = get_config('auth_moodlecloud', 'person_id')) {
         $jscode = '
         var APP_ID = "'.$CFG->moodlecloud_intercom_app_id.'";
-        var MC_PERSON_ID = "'.$intercom_id.'";
+        var MC_PERSON_ID = "'.$person_id.'";
         ';
 
         if (is_siteadmin()) {
