@@ -312,5 +312,14 @@ function xmldb_local_moodlecloud_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2023032300, 'local', 'moodlecloud');
     }
 
+    if ($oldversion < 2023060100) {
+
+        // Prevent asking the user for registration confirmation - they have already agreed to our Privacy Notice.
+        // Value comes from CONFIRM_NEW_FIELDS in /lib/classes/hub/registration.php
+        set_config('site_regupdateversion', '2023021700', 'hub');
+
+        upgrade_plugin_savepoint(true, 2023060100, 'local', 'moodlecloud');
+    }
+
     return true;
 }
