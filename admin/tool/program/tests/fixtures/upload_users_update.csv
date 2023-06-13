@@ -1,0 +1,5 @@
+username,program1,programstartdate1,programenddate1,programduedate1
+user14,prog1,2019-05-12,,
+user15,prog1,2019-05-12,2032-01-09,2032-01-09
+user12,prog1,2019-05-12,2032-01-09,
+user13,prog1,2019-05-12,,2032-01-09
