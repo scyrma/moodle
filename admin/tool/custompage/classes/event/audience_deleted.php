@@ -1,0 +1,71 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace™ Code is the collection of software scripts
+// (plugins and modifications, and any derivations thereof) that are
+// exclusively owned and licensed by Moodle under the terms of this
+// proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+// software package offering which itself is freely downloadable at
+// "download.moodle.org" and which is provided by Moodle under a single
+// GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+// MWL is strictly controlled by Moodle Pty Ltd and its certified
+// premium partners. Wherever conflicting terms exist, the terms of the
+// MWL are binding and shall prevail.
+
+declare(strict_types=1);
+
+namespace tool_custompage\event;
+
+use tool_custompage\local\models\audience;
+
+/**
+ * Audience deleted event
+ *
+ * @package     tool_custompage
+ * @copyright   2022 Moodle Pty Ltd <support@moodle.com>
+ * @author      2022 Paul Holden <paulh@moodle.com>
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class audience_deleted extends audience_base {
+
+    /**
+     * Initialise event data
+     */
+    protected function init(): void {
+        $this->data['objecttable'] = audience::TABLE;
+        $this->data['crud'] = 'd';
+        $this->data['edulevel'] = self::LEVEL_OTHER;
+    }
+
+    /**
+     * Returns localised event name
+     *
+     * @return string
+     */
+    public static function get_name(): string {
+        return get_string('audiencedeleted', 'tool_custompage');
+    }
+
+    /**
+     * Returns non-localised event description
+     *
+     * @return string
+     */
+    public function get_description(): string {
+        return "The user with id '{$this->userid}' deleted the audience with id '{$this->objectid}' " .
+            "for the page with id '{$this->other['pageid']}'";
+    }
+}
