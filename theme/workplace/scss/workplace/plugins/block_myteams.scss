@@ -1,0 +1,40 @@
+/*
+ General.
+*/
+
+.block_myteams .icons-collapse-expand .icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+}
+
+/*
+ Reportbuilder table styles.
+*/
+
+.block_myteams .reportbuilder-table {
+    border-top: 1px solid #dee2e6;
+    thead {
+        display: none;
+    }
+    tr {
+        background-color: white !important; /* stylelint-disable-line declaration-no-important */
+    }
+    tr > td {
+        border-top: none;
+        border-bottom: 1px solid #dee2e6;
+        padding: .5rem;
+    }
+}
+
+/*
+'Show more' styles.
+*/
+
+.block_myteams ul {
+    &.show-more-list {
+        > li:nth-child(n+4) {
+            display: none;
+        }
+    }
+}
