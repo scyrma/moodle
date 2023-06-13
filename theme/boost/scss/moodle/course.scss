@@ -109,6 +109,19 @@ body:not(.editing)  .sitetopic ul.section {
         a.stealth:hover {
             color: lighten($link-color, 25%) !important; /* stylelint-disable-line declaration-no-important */
         }
+
+        &.indented {
+            .activity-item {
+                border: 0;
+                margin-left: map-get($spacers, 3);
+            }
+        }
+        &.indented + .indented {
+            .activity-item {
+                border-top: $border-width solid $border-color;
+                border-radius: unset;
+            }
+        }
     }
 
     .label {
@@ -770,6 +783,10 @@ span.editinstructions {
     font-weight: $font-weight-bold;
 }
 
+.coursebox .content .coursefile {
+    max-width: 100px;
+}
+
 .coursebox .content .courseimage img {
     max-width: 100px;
     max-height: 100px;
@@ -1003,6 +1020,7 @@ span.editinstructions {
 
             .coursename {
                 display: inline-block;
+                flex-basis: 10rem;
             }
         }
 
@@ -1394,6 +1412,18 @@ $activity-add-hover: theme-color-level('primary', -10) !default;
         .description-inner {
             padding-bottom: 0;
             border-bottom: 0;
+        }
+    }
+}
+
+.course-content .description-inner {
+    ul {
+        list-style: disc;
+        ul {
+            list-style: circle;
+            ul {
+                list-style: square;
+            }
         }
     }
 }

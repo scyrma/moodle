@@ -500,8 +500,14 @@ abstract class user_selector_base {
             ? array_values($this->userfieldsmappings)
             : $this->extrafields;
 
-        return users_search_sql($search, $u, $this->searchanywhere, $extrafields,
+        list ($sql, $params) =  users_search_sql($search, $u, $this->searchanywhere, $extrafields,
                 $this->exclude, $this->validatinguserids);
+
+        // Add tenant condition.
+        /** @uses \tool_tenant\tenancy::get_users_subquery */
+        $tenantwhere = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery',
+            [true, true, ($u ? "{$u}." : '') . 'id'], '');
+        return [$tenantwhere . $sql, $params];
     }
 
     /**
@@ -763,11 +769,11 @@ abstract class groups_user_selector_base extends user_selector_base {
         foreach ($roles as $role) {
             if ($search) {
                 $a = new stdClass;
-                $a->role = $role->name;
+                $a->role = html_entity_decode($role->name, ENT_QUOTES, 'UTF-8');
                 $a->search = $search;
                 $groupname = get_string('matchingsearchandrole', '', $a);
             } else {
-                $groupname = $role->name;
+                $groupname = html_entity_decode($role->name, ENT_QUOTES, 'UTF-8');
             }
             $groupedusers[$groupname] = $role->users;
             foreach ($groupedusers[$groupname] as &$user) {
