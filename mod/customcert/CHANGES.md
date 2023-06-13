@@ -4,11 +4,32 @@ All notable changes to this project will be documented in this file.
 
 Note - All hash comments refer to the issue number. Eg. #169 refers to https://github.com/mdjnelson/moodle-mod_customcert/issues/169.
 
-## [4.2.1] - 2023-05-22
+## [4.2.2] - 2023-06-08
+
+### Fixed
+
+- Fix TCPDF error when viewing an example PDF from the manage templates page (#558).
+- Fix images not displaying on the reposition element page (#562).
+
+### Added
+
+- Added new events (#518).
+  - An event for when an element is created.
+  - An event for when an element is updated.
+  - An event for when an element is deleted.
+  - An event for when a page is created.
+  - An event for when a page is updated.
+  - An event for when a page is deleted.
+  - An event for when a template is created. 
+  - An event for when a template is updated.
+  - An event for when a template is deleted.
+
+## [4.2.1] - 2023-05-30
 
 ### Fixed
 
 - Fix course settings error on single activity format (#544).
+- Remove debugging message caused by the user field element listing the Skype field (#478).
 - Fix deprecated usage of rendering primary buttons (#555).
 - Fix usage of deprecated `cron_setup_user` function (#547).
 - Fix broken webservice functions used by the mobile app.
