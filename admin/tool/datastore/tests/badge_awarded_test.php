@@ -1,0 +1,391 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace™ Code is the collection of software scripts
+// (plugins and modifications, and any derivations thereof) that are
+// exclusively owned and licensed by Moodle under the terms of this
+// proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+// software package offering which itself is freely downloadable at
+// "download.moodle.org" and which is provided by Moodle under a single
+// GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+// MWL is strictly controlled by Moodle Pty Ltd and its certified
+// premium partners. Wherever conflicting terms exist, the terms of the
+// MWL are binding and shall prevail.
+
+/**
+ * File containing tests for badge_awarded event
+ *
+ * @package     tool_datastore
+ * @category    test
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+namespace tool_datastore;
+
+defined('MOODLE_INTERNAL') || die();
+
+use advanced_testcase;
+use badge;
+use stdClass;
+use tool_datastore\local\action\badge_awarded;
+use tool_datastore\local\models\action;
+use tool_datastore\local\models\entity;
+use tool_datastore\local\models\field;
+use tool_datastore\local\models\snapshot;
+
+global $CFG;
+require_once($CFG->libdir . '/badgeslib.php');
+
+/**
+ * Test class
+ *
+ * @package     tool_datastore
+ * @group       tool_datastore
+ * @category    test
+ * @covers      \tool_datastore\local\action\badge_awarded
+ * @covers      \tool_datastore\local\models\action
+ * @covers      \tool_datastore\local\models\entity
+ * @covers      \tool_datastore\local\models\field
+ * @covers      \tool_datastore\local\models\snapshot
+ * @copyright   2019 Moodle Pty Ltd <support@moodle.com>
+ * @author      2019 Paul Holden <paulh@moodle.com>
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+class badge_awarded_test extends advanced_testcase {
+
+    /** @var stdClass $course */
+    protected $course;
+
+    /** @var stdClass $teacher */
+    protected $teacher;
+
+    /** @var stdClass $student */
+    protected $student;
+
+    /** @var stdClass $badge */
+    protected $badge;
+
+    /**
+     * Test setup
+     *
+     * @return void
+     */
+    protected function setUp(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        // Create our test course and users.
+        $this->course = $this->getDataGenerator()->create_course();
+        $this->teacher = $this->getDataGenerator()->create_and_enrol($this->course, 'editingteacher');
+        $this->student = $this->getDataGenerator()->create_and_enrol($this->course, 'student');
+
+        $this->setUser($this->teacher);
+
+        // Create a course badge record.
+        $time = time();
+        $this->badge = (object) [
+            'name' => 'Course badge',
+            'description' => 'Testing course badges',
+            'type' => BADGE_TYPE_COURSE,
+            'courseid' => $this->course->id,
+            'timecreated' => $time,
+            'timemodified' => $time,
+            'usercreated' => $this->teacher->id,
+            'usermodified' => $this->teacher->id,
+            'issuername' => 'Test issuer',
+            'issuerurl' => 'http://issuer-url.domain.co.nz',
+            'issuercontact' => 'issuer@example.com',
+            'expiredate' => null,
+            'expireperiod' => null,
+            'messagesubject' => 'Test message subject for badge',
+            'message' => 'Test message body for badge',
+            'attachment' => 1,
+            'notification' => 0,
+            'status' => BADGE_STATUS_ACTIVE,
+            'version' => '1',
+            'language' => 'en',
+            'imageauthorname' => 'Image author',
+            'imageauthoremail' => 'imageauthor@example.com',
+            'imageauthorurl' => 'http://image-author-url.domain.co.nz',
+            'imagecaption' => 'Caption',
+        ];
+
+        // Create badge instance and issue to student.
+        $this->badge->id = $DB->insert_record('badge', $this->badge);
+        (new badge($this->badge->id))->issue($this->student->id, true);
+    }
+
+    /**
+     * Ensure that when a badge is awarded the action is registered in the datastore action table
+     *
+     * @return void
+     */
+    public function test_get_data_in_action_table() {
+        $action = action::get_record([
+            'originalcourseid' => $this->course->id,
+            'relateduserid' => $this->student->id,
+        ]);
+
+        $this->assertEquals('badge_awarded', $action->get('action'));
+        $this->assertEquals($this->teacher->id, $action->get('usermodified'));
+    }
+
+    /**
+     * Ensure that the entities related to the badge awarded event are stored
+     *
+     * @return void
+     */
+    public function test_get_data_in_entity_table() {
+        $action = action::get_record([
+            'originalcourseid' => $this->course->id,
+            'relateduserid' => $this->student->id,
+        ]);
+
+        // Course entity.
+        $entitycourse = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'course',
+        ]);
+
+        $this->assertInstanceOf(entity::class, $entitycourse);
+        $this->assertEquals($this->course->id, $entitycourse->get('originalid'));
+
+        // Related user entity.
+        $entityrelateduser = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'user',
+            'originalid' => $action->get('relateduserid'),
+        ]);
+
+        $this->assertInstanceOf(entity::class, $entityrelateduser);
+        $this->assertEquals($this->student->id, $entityrelateduser->get('originalid'));
+
+        // User modified entity.
+        $entityusermodified = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'user',
+            'originalid' => $action->get('usermodified'),
+        ]);
+
+        $this->assertInstanceOf(entity::class, $entityusermodified);
+        $this->assertEquals($this->teacher->id, $entityusermodified->get('originalid'));
+
+        // Badge entity.
+        $entitybadge = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'badge',
+        ]);
+
+        $this->assertInstanceOf(entity::class, $entitybadge);
+        $this->assertEquals($this->badge->id, $entitybadge->get('originalid'));
+    }
+
+    /**
+     * Ensure that the snapshot data has been created with a correct hash
+     *
+     * @return void
+     */
+    public function test_get_data_in_snapshot_table() {
+        $action = action::get_record([
+            'originalcourseid' => $this->course->id,
+            'relateduserid' => $this->student->id,
+        ]);
+
+        // Course entity.
+        $entitycourse = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'course',
+        ]);
+
+        $course = api::get_course($entitycourse->get('originalid'));
+        $coursejson = json_encode($course);
+
+        $coursesnapshot = snapshot::from_entity($entitycourse);
+        $this->assertEquals($coursejson, $coursesnapshot->get('data'));
+        $this->assertEquals(md5($coursejson), $coursesnapshot->get('hash'));
+
+        // Related user entity.
+        $entityrelateduser = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'user',
+            'originalid' => $action->get('relateduserid'),
+        ]);
+
+        $relatedusersnapshot = snapshot::from_entity($entityrelateduser);
+        $relatedusersnapshotdata = $relatedusersnapshot->get('data');
+
+        // When getting the related user, we need to reset the lastloaded preference to the snapshot value.
+        $relateduser = api::get_user($entityrelateduser->get('originalid'));
+        $relateduser['preference'] = json_decode($relatedusersnapshotdata)->preference;
+
+        $relateduserjson = json_encode($relateduser);
+        $this->assertEquals($relateduserjson, $relatedusersnapshotdata);
+        $this->assertEquals(md5($relateduserjson), $relatedusersnapshot->get('hash'));
+
+        // User modified entity.
+        $entityusermodified = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'user',
+            'originalid' => $action->get('usermodified'),
+        ]);
+
+        $usermodifiedsnapshot = snapshot::from_entity($entityusermodified);
+        $usermodifiedsnapshotdata = $usermodifiedsnapshot->get('data');
+
+        // When getting the modified user, we need to reset the lastloaded preference to the snapshot value.
+        $usermodified = api::get_user($entityusermodified->get('originalid'));
+        $usermodified['preference'] = json_decode($usermodifiedsnapshotdata)->preference;
+
+        $usermodifiedjson = json_encode($usermodified);
+        $this->assertEquals($usermodifiedjson, $usermodifiedsnapshotdata);
+        $this->assertEquals(md5($usermodifiedjson), $usermodifiedsnapshot->get('hash'));
+
+        // Badge entity.
+        $entitybadge = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'badge',
+        ]);
+
+        // When getting the badge, we need to reset the status/timemodified to the snapshot value.
+        $badge = api::get_badge($entitybadge->get('originalid'));
+        $badge['status'] = (string)($this->badge->status);
+        $badge['timemodified'] = (string)($this->badge->timemodified);
+
+        $badgejson = json_encode($badge);
+
+        $badgesnapshot = snapshot::from_entity($entitybadge);
+        $this->assertEquals($badgejson, $badgesnapshot->get('data'));
+        $this->assertEquals(md5($badgejson), $badgesnapshot->get('hash'));
+    }
+
+    /**
+     * Assert contents of field returned by get_datasource_field_sql
+     *
+     * @param mixed $expected
+     * @param string $entitytype
+     * @param string $fieldname
+     * @param int $actionid
+     * @param string|null $actionfield
+     * @param int|null $fieldtype
+     * @return void
+     */
+    private function assert_datasource_field_sql($expected, string $entitytype, string $fieldname, int $actionid,
+            string $actionfield = null, ?int $fieldtype = null) {
+        global $DB;
+
+        list($fieldsql, $params) = api::get_datasource_field_sql($entitytype, $fieldname, 'dsa', $actionfield, $fieldtype);
+        $sql = "SELECT {$fieldsql} AS value FROM {tool_datastore_action} dsa WHERE dsa.id = {$actionid}";
+
+        $this->assertEquals($expected, $DB->get_field_sql($sql, $params));
+    }
+
+    /**
+     * Ensure that all fields defined for each entity have been stored
+     *
+     * @return void
+     */
+    public function test_get_data_in_fields_table() {
+        $action = action::get_record([
+            'originalcourseid' => $this->course->id,
+            'relateduserid' => $this->student->id,
+        ]);
+
+        $actionfields = badge_awarded::get_fields_to_index();
+
+        // Course entity.
+        $entitycourse = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'course',
+        ]);
+
+        $course = api::get_course($entitycourse->get('originalid'));
+
+        foreach ($actionfields['course'] as $coursefield) {
+            $field = field::get_record([
+                'entityid' => $entitycourse->get('id'),
+                'name' => $coursefield,
+            ]);
+
+            $this->assertInstanceOf(field::class, $field);
+            $this->assertEquals($course[$coursefield], $field->get('value'));
+            $this->assert_datasource_field_sql($field->get('value'), 'course', $coursefield, $action->get('id'));
+        }
+
+        // Related user entity.
+        $entityrelateduser = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'user',
+            'originalid' => $action->get('relateduserid'),
+        ]);
+
+        $relateduser = api::get_user($entityrelateduser->get('originalid'));
+
+        foreach ($actionfields['user'] as $relateduserfield) {
+            $field = field::get_record([
+                'entityid' => $entityrelateduser->get('id'),
+                'name' => $relateduserfield,
+            ]);
+
+            $this->assertInstanceOf(field::class, $field);
+            $this->assertEquals($relateduser[$relateduserfield], $field->get('value'));
+            $this->assert_datasource_field_sql($field->get('value'), 'user', $relateduserfield,
+                $action->get('id'), 'relateduserid');
+        }
+
+        // User modified entity.
+        $entityusermodified = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'user',
+            'originalid' => $action->get('usermodified'),
+        ]);
+
+        $usermodified = api::get_user($entityusermodified->get('originalid'));
+
+        foreach ($actionfields['user'] as $usermodifiedfield) {
+            $field = field::get_record([
+                'entityid' => $entityusermodified->get('id'),
+                'name' => $usermodifiedfield,
+            ]);
+
+            $this->assertInstanceOf(field::class, $field);
+            $this->assertEquals($usermodified[$usermodifiedfield], $field->get('value'));
+            $this->assert_datasource_field_sql($field->get('value'), 'user', $usermodifiedfield,
+                $action->get('id'), 'usermodified');
+        }
+
+        // Badge entity.
+        $entitybadge = entity::get_record([
+            'actionid' => $action->get('id'),
+            'type' => 'badge',
+        ]);
+
+        $badge = api::get_badge($entitybadge->get('originalid'));
+
+        foreach ($actionfields['badge'] as $badgefield) {
+            $field = field::get_record([
+                'entityid' => $entitybadge->get('id'),
+                'name' => $badgefield,
+            ]);
+
+            $this->assertInstanceOf(field::class, $field);
+            $this->assertEquals($badge[$badgefield], $field->get('value'));
+            $this->assert_datasource_field_sql($field->get('value'), 'badge', $badgefield, $action->get('id'));
+        }
+    }
+}
