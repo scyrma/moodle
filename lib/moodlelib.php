@@ -1318,8 +1318,9 @@ function fix_utf8($value) {
             // Shortcut.
             return $value;
         }
-        // No null bytes expected in our data, so let's remove it.
-        $value = str_replace("\0", '', $value);
+
+        // Remove null bytes or invalid Unicode sequences from value.
+        $value = str_replace(["\0", "\xef\xbf\xbe", "\xef\xbf\xbf"], '', $value);
 
         // Note: this duplicates min_fix_utf8() intentionally.
         static $buggyiconv = null;
@@ -1559,6 +1560,9 @@ function get_config($plugin, $name = null) {
         }
         $cache->set($plugin, $result);
     }
+
+    /** @uses \tool_tenant\config::get_config_hook() */
+    component_class_callback('tool_tenant\config', 'get_config_hook', [$plugin, &$result]);
 
     if (!empty($name)) {
         if (array_key_exists($name, $result)) {
@@ -2362,18 +2366,6 @@ function userdate_htmltime($date, $format = '', $timezone = 99, $fixday = true, 
  * @since Moodle 2.3.3
  */
 function date_format_string($date, $format, $tz = 99) {
-    global $CFG;
-
-    $localewincharset = null;
-    // Get the calendar type user is using.
-    if ($CFG->ostype == 'WINDOWS') {
-        $calendartype = \core_calendar\type_factory::get_calendar_instance();
-        $localewincharset = $calendartype->locale_win_charset();
-    }
-
-    if ($localewincharset) {
-        $format = core_text::convert($format, 'utf-8', $localewincharset);
-    }
 
     date_default_timezone_set(core_date::get_user_timezone($tz));
 
@@ -2390,10 +2382,6 @@ function date_format_string($date, $format, $tz = 99) {
 
     $datestring = core_date::strftime($format, $date);
     core_date::set_default_server_timezone();
-
-    if ($localewincharset) {
-        $datestring = core_text::convert($datestring, $localewincharset, 'utf-8');
-    }
 
     return $datestring;
 }
@@ -2899,7 +2887,8 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
 
     // Check that the user has agreed to a site policy if there is one - do not test in case of admins.
     // Do not test if the script explicitly asked for skipping the site policies check.
-    if (!$USER->policyagreed && !is_siteadmin() && !NO_SITEPOLICY_CHECK) {
+    // Or if the user auth type is webservice.
+    if (!$USER->policyagreed && !is_siteadmin() && !NO_SITEPOLICY_CHECK && $USER->auth !== 'webservice') {
         $manager = new \core_privacy\local\sitepolicy\manager();
         if ($policyurl = $manager->get_redirect_url(isguestuser())) {
             if ($preventredirect) {
@@ -4345,6 +4334,13 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
             $select = "mnethostid = :mnethostid AND LOWER(email) = LOWER(:email) AND deleted = 0";
             $params = array('mnethostid' => $CFG->mnet_localhost_id, 'email' => $email);
             $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
+            // When same email is used in more than one user we need to match with current tenant based in login url.
+            if (count($users) > 1 && class_exists('tool_tenant\\tenancy')) {
+                /** @uses \tool_tenant\tenancy::get_users_subquery() */
+                $select = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery',
+                        [false, true, 'id'], '').$select;
+                $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
+            }
             if (count($users) === 1) {
                 // Use email for login only if unique.
                 $user = reset($users);
@@ -5695,6 +5691,10 @@ function reset_course_userdata($data) {
             }
             // Update calendar events for all modules.
             course_module_bulk_update_calendar_events($modname, $data->courseid);
+        }
+        // Purge the course cache after resetting course start date. MDL-76936
+        if ($data->timeshift) {
+            course_modinfo::purge_course_cache($data->courseid);
         }
     }
 
@@ -8401,7 +8401,7 @@ function count_words($string) {
                 </                              # Start of close tag.
                 (?!                             # Do not match any of these specific close tag names.
                     a> | b> | del> | em> | i> |
-                    ins> | s> | small> |
+                    ins> | s> | small> | span> |
                     strong> | sub> | sup> | u>
                 )
                 \w+                             # But, apart from those execptions, match any tag name.
@@ -8413,7 +8413,7 @@ function count_words($string) {
     // Now remove HTML tags.
     $string = strip_tags($string);
     // Decode HTML entities.
-    $string = html_entity_decode($string);
+    $string = html_entity_decode($string, ENT_COMPAT);
 
     // Now, the word count is the number of blocks of characters separated
     // by any sort of space. That seems to be the definition used by all other systems.
@@ -8435,7 +8435,7 @@ function count_words($string) {
  */
 function count_letters($string) {
     $string = strip_tags($string); // Tags are out now.
-    $string = html_entity_decode($string);
+    $string = html_entity_decode($string, ENT_COMPAT);
     $string = preg_replace('/[[:space:]]*/', '', $string); // Whitespace are out now.
 
     return core_text::strlen($string);
@@ -9060,11 +9060,12 @@ function make_unique_id_code($extra = '') {
  *
  * @param string $addr    The address you are checking
  * @param string $subnetstr    The string of subnet addresses
+ * @param bool $checkallzeros    The state to whether check for 0.0.0.0
  * @return bool
  */
-function address_in_subnet($addr, $subnetstr) {
+function address_in_subnet($addr, $subnetstr, $checkallzeros = false) {
 
-    if ($addr == '0.0.0.0') {
+    if ($addr == '0.0.0.0' && !$checkallzeros) {
         return false;
     }
     $subnets = explode(',', $subnetstr);
@@ -9304,6 +9305,25 @@ function mtrace($string, $eol="\n", $sleep=0) {
     if ($sleep) {
         sleep($sleep);
     }
+}
+
+/**
+ * Helper to {@see mtrace()} an exception or throwable, including all relevant information.
+ *
+ * @param Throwable $e the error to ouptput.
+ */
+function mtrace_exception(Throwable $e): void {
+    $info = get_exception_info($e);
+
+    $message = $info->message;
+    if ($info->debuginfo) {
+        $message .= "\n\n" . $info->debuginfo;
+    }
+    if ($info->backtrace) {
+        $message .= "\n\n" . format_backtrace($info->backtrace, true);
+    }
+
+    mtrace($message);
 }
 
 /**
@@ -10158,6 +10178,11 @@ function setup_lang_from_browser() {
     if (!empty($SESSION->lang) or !empty($USER->lang) or empty($CFG->autolang)) {
         // Lang is defined in session or user profile, nothing to do.
         return;
+    }
+
+    /** @uses \tool_wp\language::get_recommended_language() */
+    if ($lang = component_class_callback('tool_wp\language', 'get_recommended_language', [])) {
+        return $lang;
     }
 
     if (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) { // There isn't list of browser langs, nothing to do.

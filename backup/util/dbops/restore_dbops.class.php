@@ -578,16 +578,11 @@ abstract class restore_dbops {
             CONTEXT_SYSTEM => CONTEXT_COURSE,
             CONTEXT_COURSECAT => CONTEXT_COURSE);
 
+        /** @var restore_controller $rc */
         $rc = restore_controller_dbops::load_controller($restoreid);
-        $restoreinfo = $rc->get_info();
+        $plan = $rc->get_plan();
+        $after35 = $plan->backup_release_compare('3.5', '>=') && $plan->backup_version_compare(20180205, '>');
         $rc->destroy(); // Always need to destroy.
-        $backuprelease = $restoreinfo->backup_release; // The major version: 2.9, 3.0, 3.10...
-        preg_match('/(\d{8})/', $restoreinfo->moodle_release, $matches);
-        $backupbuild = (int)$matches[1];
-        $after35 = false;
-        if (version_compare($backuprelease, '3.5', '>=') && $backupbuild > 20180205) {
-            $after35 = true;
-        }
 
         // For any contextlevel, follow this process logic:
         //
@@ -1056,6 +1051,11 @@ abstract class restore_dbops {
 
                 // Some file types do not include the files as they should already be
                 // present. We still need to create entries into the files table.
+                /** @uses \tool_wp\local\exportimport\wp_imported_entity::process_course_restore_file() */
+                if ($includesfiles && component_class_callback('\tool_wp\local\exportimport\wp_imported_entity',
+                        'process_course_restore_file', [$restoreid, $file_record, $file->contenthash], false)) {
+                    // Workplace migration hook.
+                } else
                 if ($includesfiles) {
                     // The file is not found in the backup.
                     if (!file_exists($backuppath)) {
@@ -1811,10 +1811,9 @@ abstract class restore_dbops {
     public static function calculate_course_names($courseid, $fullname, $shortname) {
         global $CFG, $DB;
 
-        $currentfullname = '';
-        $currentshortname = '';
         $counter = 0;
-        // Iteratere while the name exists
+
+        // Iterate while fullname or shortname exist.
         do {
             if ($counter) {
                 $suffixfull  = ' ' . get_string('copyasnoun') . ' ' . $counter;
@@ -1823,8 +1822,11 @@ abstract class restore_dbops {
                 $suffixfull  = '';
                 $suffixshort = '';
             }
-            $currentfullname = $fullname.$suffixfull;
-            $currentshortname = substr($shortname, 0, 100 - strlen($suffixshort)).$suffixshort; // < 100cc
+
+            // Ensure we don't overflow maximum length of name fields, in multi-byte safe manner.
+            $currentfullname = core_text::substr($fullname, 0, 254 - strlen($suffixfull)) . $suffixfull;
+            $currentshortname = core_text::substr($shortname, 0, 100 - strlen($suffixshort)) . $suffixshort;
+
             $coursefull  = $DB->get_record_select('course', 'fullname = ? AND id != ?',
                     array($currentfullname, $courseid), '*', IGNORE_MULTIPLE);
             $courseshort = $DB->get_record_select('course', 'shortname = ? AND id != ?', array($currentshortname, $courseid));

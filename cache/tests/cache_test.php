@@ -1426,6 +1426,15 @@ class cache_test extends \advanced_testcase {
         $this->assertFalse($cache->set_versioned('v', 1, 'data'));
         $this->assertFalse($cache->delete('test'));
         $this->assertTrue($cache->purge());
+        // Checking a lock should always report that we have one.
+        // Acquiring or releasing a lock should always report success.
+        $this->assertTrue($cache->check_lock_state('test'));
+        $this->assertTrue($cache->acquire_lock('test'));
+        $this->assertTrue($cache->acquire_lock('test'));
+        $this->assertTrue($cache->check_lock_state('test'));
+        $this->assertTrue($cache->release_lock('test'));
+        $this->assertTrue($cache->release_lock('test'));
+        $this->assertTrue($cache->check_lock_state('test'));
 
         // Test a session cache.
         $cache = cache::make_from_params(cache_store::MODE_SESSION, 'phpunit', 'disable');
@@ -2109,6 +2118,30 @@ class cache_test extends \advanced_testcase {
         $this->assertEquals(array('b' => 'B', 'c' => 'C'), $cache->get_many(array('b', 'c')));
         $this->assertTrue($cache->delete('a'));
         $this->assertFalse($cache->has('a'));
+    }
+
+    /**
+     * The application locking feature should work with caches that support multiple identifiers
+     * (static cache and MongoDB with a specific setting).
+     *
+     * @covers \cache_application
+     */
+    public function test_application_locking_multiple_identifier_cache() {
+        // Get an arbitrary definition (modinfo).
+        $instance = cache_config_testing::instance(true);
+        $definitions = $instance->get_definitions();
+        $definition = \cache_definition::load('phpunit', $definitions['core/coursemodinfo']);
+
+        // Set up a static cache using that definition, wrapped in cache_application so we can do
+        // locking.
+        $store = new \cachestore_static('test');
+        $store->initialise($definition);
+        $cache = new cache_application($definition, $store);
+
+        // Test the three locking functions.
+        $cache->acquire_lock('frog');
+        $this->assertTrue($cache->check_lock_state('frog'));
+        $cache->release_lock('frog');
     }
 
     /**

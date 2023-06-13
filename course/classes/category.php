@@ -700,7 +700,10 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         }
         $categorycontext = isset($course->category) ? context_coursecat::instance($course->category) :
             context_course::instance($course->id)->get_parent_context();
-        return has_capability('moodle/category:viewcourselist', $categorycontext, $user);
+        /** @uses \tool_program\api::is_course_in_user_programs() */
+        return has_capability('moodle/category:viewcourselist', $categorycontext, $user) ||
+            component_class_callback('tool_program\api', 'is_course_in_user_programs',
+                [(int) $course->id, $user], false);
     }
 
     /**
@@ -900,7 +903,7 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         // Trigger a purge for all caches listening for changes to category enrolment.
         cache_helper::purge_by_event('changesincategoryenrolment');
 
-        if (!$CFG->coursecontact || !in_array($roleid, explode(',', $CFG->coursecontact))) {
+        if (empty($CFG->coursecontact) || !in_array($roleid, explode(',', $CFG->coursecontact))) {
             // The role is not one of course contact roles.
             return;
         }
@@ -2276,6 +2279,11 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         }
         if ($newparentcat->id == $this->id || in_array($this->id, $newparentcat->get_parents())) {
             // Can not move to itself or it's own child.
+            return false;
+        }
+        /** @uses \tool_tenant\permission::can_change_category_parent() */
+        if (!component_class_callback('\tool_tenant\permission', 'can_change_category_parent',
+            [$this->id, $newparentcat], true)) {
             return false;
         }
         if ($newparentcat->id) {
