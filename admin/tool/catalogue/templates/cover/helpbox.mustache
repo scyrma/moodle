@@ -1,0 +1,91 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/cover/helpbox
+
+    Template for showing a hlpbox in course and program cover pages.
+
+    Example context (json):
+    {
+        "helpid": "1",
+        "helpimage": "../../pix/help_program.svg",
+        "helptitle": "What is a program?",
+        "helptext": "Lorum Ipsum",
+        "helpurl": "https://docs.moodle.org/400/en/Programs",
+        "id": "1",
+        "hidden": false,
+        "showmorelink": true,
+        "nummore": "1",
+        "programlinks": [
+            {
+                "string": "See \"Health and Safety\"",
+                "url": "https://localhost/my/courses.php/program/5",
+                "hidden": false
+            },
+            {
+                "string": "See \"Health and Safety part 2\"",
+                "url": "https://localhost/my/courses.php/program/7",
+                "hidden": true
+            }
+        ]
+    }
+}}
+<div id="{{{helpid}}}" class="collapse show">
+    <div class="card my-3">
+        <div class="card-body p-3">
+            <div class="media cover-help">
+                <img src="{{{helpimage}}}" class="mr-3" alt="">
+                <div class="media-body">
+                    <h3 class="h5 card-title">{{{helptitle}}}</h3>
+                    <p>{{{helptext}}}</p>
+                    <hr>
+                    <div class="d-block d-sm-flex align-items-center">
+                        {{#helpurl}}
+                        <a href="{{{helpurl}}}" class="icon-size-smaller" target="_blank">
+                            <span class="mr-2">{{#str}}moreinfo, tool_catalogue, {{nummore}}{{/str}}</span>{{#pix}}i/mnethost, core{{/pix}}
+                        </a>
+                        {{/helpurl}}
+                        {{#helpid}}
+                        <div class="mt-2 mt-sm-0 ml-auto">
+                            <button class="btn btn-sm btn-outline-secondary" id="{{{helpid}}}-seen-button">
+                                {{#str}}dontshowagain, tool_catalogue{{/str}}
+                            </button>
+                        </div>
+                        {{/helpid}}
+                    </div>
+                    {{> tool_catalogue/cover/programlinks}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{#js}}
+require(['tool_catalogue/helpbox'], function(Helpbox) {
+    Helpbox.init('{{{helpid}}}');
+});
+{{/js}}
