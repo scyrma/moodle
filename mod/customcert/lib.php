@@ -44,7 +44,7 @@ function customcert_add_instance($data, $mform) {
     $data->id = $DB->insert_record('customcert', $data);
 
     // Add a page to this customcert.
-    $template->add_page();
+    $template->add_page(false);
 
     return $data->id;
 }
@@ -233,7 +233,8 @@ function customcert_pluginfile($course, $cm, $context, $filearea, $args, $forced
         $fullpath = '/' . $context->id . '/mod_customcert/image/' . $relativepath;
 
         $fs = get_file_storage();
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) || $file->is_directory()) {
+        $file = $fs->get_file_by_hash(sha1($fullpath));
+        if (!$file || $file->is_directory()) {
             return false;
         }
 
