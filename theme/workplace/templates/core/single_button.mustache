@@ -1,0 +1,79 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template core/single_button
+
+    Moodle template for a single button submit form.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * classes - a list of classes to wrap the form.
+    * method - get or post
+    * url - the action url to submit to
+    * formid - optional id value for the form
+    * params - array of params with name and value attributes
+    * primary - true if this is a primary action button
+    * id - id for the element
+    * tooltip - tooltip text for the button
+    * disabled - true if this element is disabled
+    * label - text to show on the button
+
+    Example context (json):
+    { "method" : "get",
+      "url" : "#",
+      "id" : "#button10",
+      "formid": 10,
+      "primary" : true,
+      "tooltip" : "This is a tooltip",
+      "label" : "This is a the button text",
+      "quote": true
+    }
+}}
+<div class="{{classes}}">
+    <form method="{{method}}" action="{{url}}" {{#formid}}id="{{formid}}"{{/formid}}>
+        {{#params}}
+            <input type="hidden" name="{{name}}" value="{{value}}">
+        {{/params}}
+        <button type="submit"
+            class="btn {{#primary}}btn-primary{{/primary}}{{^primary}}btn-outline-secondary{{/primary}}"
+            id="{{id}}"
+            title="{{tooltip}}"
+            {{#disabled}}disabled{{/disabled}}
+        >
+            {{label}}
+        </button>
+    </form>
+</div>
+{{#hasactions}}
+    {{> core/actions }}
+{{/hasactions}}
