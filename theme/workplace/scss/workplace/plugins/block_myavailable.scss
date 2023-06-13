@@ -1,0 +1,15 @@
+/*
+ General.
+*/
+
+.block_myavailable {
+    .empty-message-image {
+        height: 170px;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+    > .card-body .content {
+        margin-top: 0 !important;/* stylelint-disable-line declaration-no-important */
+    }
+}
