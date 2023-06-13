@@ -1,0 +1,130 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_catalogue/program_cover_modal
+
+    Template for showing a program cover modal.
+
+    Example context (json):
+    {
+        "hashelp": false,
+        "id": "1",
+        "userid": "1",
+        "fullname": "Onboarding",
+        "image": "http://placekitten.com/100/100",
+        "hidden": false,
+        "showmorelink": true,
+        "nummore": "1",
+        "programlinks": [
+            {
+                "string": "See \"Health and Safety\"",
+                "url": "https://localhost/my/courses.php/program/5",
+                "hidden": false
+            },
+            {
+                "string": "See \"Health and Safety part 2\"",
+                "url": "https://localhost/my/courses.php/program/9",
+                "hidden": true
+            }
+        ],
+        "pagesectionabout": {
+            "collapse": false
+        },
+        "pagesectiondates": {
+            "collapse": true
+        },
+        "pagesectioncertifications": {
+            "collapse": true
+        },
+        "pagesectionstructure": {
+            "collapse": true
+        },
+        "description": "This is a description of the program.",
+        "hastags":true,
+        "tags": [
+            "Health",
+            "Safety"
+        ],
+        "customfields": [
+            {
+                "hasvalue": 1,
+                "type": "text",
+                "name": "Nick name",
+                "shortname": "nickname",
+                "value": "Star Lord"
+            }
+        ],
+        "startdatestr": "12/1/19",
+        "duedatestr": "12/12/20",
+        "duedatebadgestr":"Expired",
+        "duedatebadgetype":"danger",
+        "enddatestr": "04/04/24",
+        "hascertifications": true,
+        "certifications": [
+            {
+                "message": "Certification 1",
+                "certimage": "../../../pix/certificates.svg",
+                "type": "warning"
+            }
+        ],
+        "basesetcriteria": "Base criteria",
+        "progress": "50",
+        "programstructure": true,
+        "items": [
+            {
+                "isset": true,
+                "examplecontext": false,
+                "fullname": "Basics",
+                "progress": "10",
+                "setid": 1,
+                "setcriteriastr": "Complete all in any order",
+                "items": [
+                    {
+                        "isset": false,
+                        "fullname": "Level 1 Health and Safety in the Workplace",
+                        "examplecontext": false
+                    }
+                ]
+            }
+        ],
+        "hasbuttons": false
+    }
+}}
+<div class="program-cover-modal">
+    {{! Heading }}
+    <div class="page-context-header">
+        <div class="page-header-image mr-2">
+            <div class="border-radius item-heading-image" style="background-image: url({{image}})"></div>
+        </div>
+        <div class="page-header-headings">
+            <h1 class="h2">{{{fullname}}}</h1>
+        </div>
+    </div>
+    {{! Program cover content}}
+    {{> tool_catalogue/program_cover }}
+</div>
