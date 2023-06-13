@@ -51,10 +51,15 @@ class listing_test extends externallib_advanced_testcase {
         /** @var core_reportbuilder_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('core_reportbuilder');
 
+        $extraparameters = [];
+        if (\core_component::get_component_directory('tool_tenant')) {
+            $extraparameters = ['component' => 'tool_tenant', 'itemid' => \tool_tenant\tenancy::get_default_tenant_id()];
+        }
+
         // Create three reports.
-        $reportone = $generator->create_report(['name' => 'Report one', 'source' => users::class]);
-        $reporttwo = $generator->create_report(['name' => 'Report two', 'source' => users::class]);
-        $reportthree = $generator->create_report(['name' => 'Report three', 'source' => users::class]);
+        $reportone = $generator->create_report(['name' => 'Report one', 'source' => users::class] + $extraparameters);
+        $reporttwo = $generator->create_report(['name' => 'Report two', 'source' => users::class] + $extraparameters);
+        $reportthree = $generator->create_report(['name' => 'Report three', 'source' => users::class] + $extraparameters);
 
         // Create second user, with audience of both report one and two.
         $user = $this->getDataGenerator()->create_user();
