@@ -1,0 +1,43 @@
+/*
+ Dynamic rule editor
+*/
+
+.fit-container {
+    .fill-column {
+        height: 100%;
+        overflow-y: auto;
+    }
+    .flex-1 {
+        flex: 1;
+    }
+    .overflow-hidden {
+        overflow: hidden;
+    }
+    .scroll-y {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .min-height {
+        min-height: 500px;
+    }
+    #conditions-menu,
+    #conditions-container {
+        height: 100%;
+        overflow-y: auto;
+    }
+}
+
+/*
+ General fixes
+*/
+
+/* Remove list styling in rules list report. */
+[data-region="ruleslistwrapper"] .reportbuilder-report {
+    ol,
+    ul,
+    dl {
+        margin-bottom: 0;
+        list-style-type: none;
+        padding-left: 0;
+    }
+}
