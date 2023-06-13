@@ -1,0 +1,6 @@
+body:not(.editing) .block_myavailable .coursecarousel-controls {
+    margin-top: -1.3rem;
+}
+.block_myavailable .card-body .content {
+    margin-top: 0 !important;/* stylelint-disable-line declaration-no-important */
+}
