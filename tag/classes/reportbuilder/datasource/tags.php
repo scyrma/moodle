@@ -71,9 +71,12 @@ class tags extends datasource {
         $userentity = (new user())
             ->set_entity_title(new lang_string('tagauthor', 'core_tag'));
         $useralias = $userentity->get_table_alias('user');
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, "{$useralias}.id"], '');
         $this->add_entity($userentity
             ->add_joins($tagentity->get_joins())
-            ->add_join("LEFT JOIN {user} {$useralias} ON {$useralias}.id = {$tagalias}.userid")
+            ->add_join("JOIN {user} {$useralias} ON {$tenantsql} {$useralias}.id = {$tagalias}.userid")
         );
 
         // Add report elements from each of the entities we added to the report.
