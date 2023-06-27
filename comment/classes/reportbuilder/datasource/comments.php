@@ -51,13 +51,17 @@ class comments extends datasource {
         $this->set_main_table('comments', $commentalias);
         $this->add_entity($commententity);
 
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, false, "{$commentalias}.userid"], '');
+        $this->add_base_condition_sql("{$tenantsql}");
+
         // Join the context entity.
         $contextentity = (new context())
             ->set_table_alias('context', $commententity->get_table_alias('context'));
         $this->add_entity($contextentity
             ->add_join($commententity->get_context_join())
         );
-
         // Join the user entity to the comment userid (author).
         $userentity = new user();
         $useralias = $userentity->get_table_alias('user');

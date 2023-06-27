@@ -52,6 +52,11 @@ class files extends datasource {
         $this->set_main_table('files', $filesalias);
         $this->add_entity($fileentity);
 
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, false, "{$filesalias}.userid"], '');
+        $this->add_base_condition_sql("{$tenantsql}");
+
         // Join the context entity.
         $contextentity = new context();
         $contextalias = $contextentity->get_table_alias('context');

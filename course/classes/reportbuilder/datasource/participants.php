@@ -62,6 +62,11 @@ class participants extends datasource {
         $this->add_entity($coursecatentity
             ->add_join("JOIN {course_categories} {$categories} ON {$categories}.id = {$course}.category"));
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::filter_by_tenant_category() */
+        [$sql, $params] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'filter_by_tenant_category', ["$course.category"], ["1=1", []]);
+        $this->add_base_condition_sql($sql, $params);
+
         // Join the enrolment method entity.
         $enrolentity = new enrol();
         $enrol = $enrolentity->get_table_alias('enrol');
