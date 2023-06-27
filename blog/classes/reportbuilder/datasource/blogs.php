@@ -56,6 +56,11 @@ class blogs extends datasource {
 
         $this->add_entity($blogentity);
 
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, false, "{$postalias}.userid"], '1=1');
+        $this->add_base_condition_sql($tenantsql);
+
         // Join the files entity.
         $fileentity = (new file())
             ->set_entity_title(new lang_string('blogattachment', 'core_blog'));
