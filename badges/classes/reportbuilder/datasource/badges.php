@@ -65,10 +65,14 @@ class badges extends datasource {
         $userentity = new user();
         $useralias = $userentity->get_table_alias('user');
 
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, "{$useralias}.id"], '');
+
         $this->add_entity($userentity
             ->add_joins($badgeissuedentity->get_joins())
-            ->add_join("LEFT JOIN {user} {$useralias}
-                ON {$useralias}.id = {$badgeissuedalias}.userid")
+            ->add_join("JOIN {user} {$useralias}
+                ON {$tenantsql} {$useralias}.id = {$badgeissuedalias}.userid")
             ->set_entity_title(new lang_string('recipient', 'core_badges'))
         );
 
