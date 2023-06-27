@@ -63,11 +63,14 @@ class cohorts extends datasource {
         // Join the user entity to the cohort member entity.
         $userentity = new user();
         $usertablealias = $userentity->get_table_alias('user');
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, "{$usertablealias}.id"], '');
 
         $this->add_entity($userentity
             ->add_joins($cohortmemberentity->get_joins())
-            ->add_join("LEFT JOIN {user} {$usertablealias}
-                ON {$usertablealias}.id = {$cohortmembertablealias}.userid")
+            ->add_join("JOIN {user} {$usertablealias}
+                ON {$tenantsql} {$usertablealias}.id = {$cohortmembertablealias}.userid")
         );
 
         // Add all columns/filters/conditions from entities to be available in custom reports.
