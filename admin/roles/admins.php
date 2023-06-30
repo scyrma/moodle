@@ -136,12 +136,6 @@ if ($addusersaction) {
 
 } else if ($removeusers && confirm_sesskey()) {
 
-    // BEGIN MOODLECLOUD HACK.
-    if (local_moodlecloud\restrictions\user::user_is_restricted($confirmdel)) {
-        throw new moodle_exception('nopermissions', 'error', $PAGE->url, 'Remove main admin');
-    }
-    // END MOODLECLOUD HACK.
-
     $admins = array();
     foreach (explode(',', $CFG->siteadmins) as $admin) {
         $admin = (int)$admin;
@@ -155,6 +149,13 @@ if ($addusersaction) {
     // Can not remove self.
     foreach (explode(',', $removeusers) as $userid) {
         if ($userid != $USER->id) {
+
+            // BEGIN MOODLECLOUD HACK.
+            if (local_moodlecloud\restrictions\user::user_is_restricted($userid)) {
+                throw new moodle_exception('nopermissions', 'error', $PAGE->url, 'Remove main admin');
+            }
+            // END MOODLECLOUD HACK.
+
             unset($admins[$userid]);
         }
     }
