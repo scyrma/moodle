@@ -2436,7 +2436,12 @@ class restore_enrolments_structure_step extends restore_structure_step {
                 // And only if user is a mapped one.
                 if ($userid = $this->get_mappingid('user', $data->userid)) {
                     if (isset($this->plugins[$instance->enrol])) {
-                        $this->plugins[$instance->enrol]->restore_user_enrolment($this, $data, $instance, $userid, $oldinstancestatus);
+                        /** @uses \tool_tenant\tenancy::can_restore_user_enrolment() */
+                        if (component_class_callback('\tool_tenant\tenancy', 'can_restore_user_enrolment',
+                            [$userid, $instance->enrol, (int)$instance->roleid, (int)$instance->courseid], true)) {
+                            $this->plugins[$instance->enrol]->restore_user_enrolment($this, $data, $instance,
+                                $userid, $oldinstancestatus);
+                        }
                     }
                 }
             }
