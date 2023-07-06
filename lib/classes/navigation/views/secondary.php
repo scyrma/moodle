@@ -57,6 +57,7 @@ class secondary extends view {
         $nodes = [];
         $nodes['settings'] = [
             self::TYPE_CONTAINER => [
+                'courseinfo' => -1,
                 'coursereports' => 3,
                 'questionbank' => 4,
             ],
