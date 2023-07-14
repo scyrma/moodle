@@ -725,7 +725,6 @@ class manager {
                     // BEGIN MOODLECLOUD HACK - Until we've figured out what writes to read-only sessions
                     if (function_exists('newrelic_notice_error') && $error) {
                         newrelic_notice_error(
-                            null,
                             new newrelic_moodle_debugging($error)
                         );
                     }
