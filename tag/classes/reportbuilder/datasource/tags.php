@@ -76,7 +76,7 @@ class tags extends datasource {
             [false, true, "{$useralias}.id"], '');
         $this->add_entity($userentity
             ->add_joins($tagentity->get_joins())
-            ->add_join("JOIN {user} {$useralias} ON {$tenantsql} {$useralias}.id = {$tagalias}.userid")
+            ->add_join("LEFT JOIN {user} {$useralias} ON {$tenantsql} {$useralias}.id = {$tagalias}.userid")
         );
 
         // Add report elements from each of the entities we added to the report.
