@@ -69,7 +69,7 @@ class cohorts extends datasource {
 
         $this->add_entity($userentity
             ->add_joins($cohortmemberentity->get_joins())
-            ->add_join("JOIN {user} {$usertablealias}
+            ->add_join("LEFT JOIN {user} {$usertablealias}
                 ON {$tenantsql} {$usertablealias}.id = {$cohortmembertablealias}.userid")
         );
 
