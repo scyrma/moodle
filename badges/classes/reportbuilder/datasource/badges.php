@@ -71,7 +71,7 @@ class badges extends datasource {
 
         $this->add_entity($userentity
             ->add_joins($badgeissuedentity->get_joins())
-            ->add_join("JOIN {user} {$useralias}
+            ->add_join("LEFT JOIN {user} {$useralias}
                 ON {$tenantsql} {$useralias}.id = {$badgeissuedalias}.userid")
             ->set_entity_title(new lang_string('recipient', 'core_badges'))
         );
