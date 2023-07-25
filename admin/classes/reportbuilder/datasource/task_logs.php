@@ -55,7 +55,7 @@ class task_logs extends datasource {
         /** @uses \tool_tenant\tenancy::get_users_subquery() */
         $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
             [false, false, "{$tasklogalias}.userid"], '1=1');
-        $this->add_base_condition_sql("{$tasklogalias}.userid = 0 OR ({$tenantsql})");
+        $this->add_base_condition_sql("({$tasklogalias}.userid = 0 OR {$tenantsql})");
 
         // Join the user entity to represent the associated user.
         $userentity = new user();
