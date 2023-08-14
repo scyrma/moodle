@@ -1,3 +1,3 @@
 variables:
-  MOODLE_VERSION: "4.2.1"
+  MOODLE_VERSION: "4.2.2"
   PUSH_REPO: "git@git.in.moodle.com:hosting/moodle.git"
