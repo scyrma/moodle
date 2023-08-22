@@ -1,0 +1,15 @@
+.wp-dashboard-tabs {
+    background-color: $white;
+    .nav-link {
+        padding: 1.5rem 2rem;
+        color: $gray070;
+        &.active {
+            border-bottom: 2px solid $primary;
+            color: $body-color;
+        }
+        &:not(.active):hover {
+            background-color: $gray010;
+            border-bottom: 2px solid $gray010;
+        }
+    }
+}
