@@ -1,0 +1,7 @@
+username,certification1,certificationstartdate1,certificationduedate1,certificationexpirydate1
+user14,cert0,2019-05-12,,
+user15,cert0,2019-05-12,2032-01-09,2032-01-09
+user12,cert0,2019-05-12,2032-01-09,
+user13,cert0,2019-05-12,,2032-01-09
+user22,cert0,2019-05-12,,
+user23,cert0,2019-05-12,,
