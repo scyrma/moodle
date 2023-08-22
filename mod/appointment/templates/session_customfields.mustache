@@ -1,0 +1,43 @@
+{{!
+    This file is part of the mod_appointment plugin for Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_appointment/session_customfields
+
+    Template for showing session custom fields.
+
+    Example context (json):
+    {
+        "fields": [
+            {
+                "name": "Some field name",
+                "value": "Some field value",
+                "elementid": "randomstring1"
+            },
+            {
+                "name": "Another field name",
+                "value": "Another field value",
+                "elementid": "randomstring2"
+            }
+        ]
+    }
+}}
+{{#fields}}
+    <div class="mb-3">
+        <div class="small text-uppercase" id="session-item-customfield-{{elementid}}">{{{name}}}</div>
+        <div aria-labelledby="session-item-customfield-{{elementid}}">{{{value}}}</div>
+    </div>
+{{/fields}}
