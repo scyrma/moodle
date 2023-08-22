@@ -1,0 +1,49 @@
+/**
+ Balances a colour and returns it as a "pure" colour.
+ */
+@function get-pure-tone($colour) {
+    // Let's try to get the most pure tone of the input color.
+    $colour-saturated: saturate($colour, 100%);
+    $colour-saturated-lightness: lightness($colour-saturated);
+    @if ($colour-saturated-lightness > 80) {
+        @return scale-color($colour-saturated, $lightness: -50%);
+    }
+    @if ($colour-saturated-lightness < 20) {
+        @return scale-color($colour-saturated, $lightness: 50%);
+    }
+    @return $colour-saturated;
+}
+
+/**
+ Generates a brand grey tone.
+ */
+@function get-brand-gray-tone($graytone) {
+    $ratio: 8;
+    @if ($graytone < 600) {
+        @return scale-color($brightest-gray, $lightness: -($ratio * ($graytone * 0.01) * 1%));
+    }
+    @else {
+        @return scale-color($darkest-gray, $lightness: $ratio * (10 - ($graytone * 0.01) * 1%));
+    }
+}
+
+/**
+ Generate our pure tone colour and it's greyscale.
+ */
+$brand: #0f6cbf !default;
+$pure-tone: get-pure-tone($brand);
+$desaturated-base: desaturate($pure-tone, 90%);
+$brightest-gray: scale-color($desaturated-base, $lightness: 90%);
+$darkest-gray: scale-color($desaturated-base, $lightness: -80%);
+
+$primary: scale-color($pure-tone, $lightness: -30%);
+
+$gray-100: get-brand-gray-tone(100) !default;
+$gray-200: get-brand-gray-tone(200) !default;
+$gray-300: get-brand-gray-tone(300) !default;
+$gray-400: get-brand-gray-tone(400) !default;
+$gray-500: get-brand-gray-tone(500) !default;
+$gray-600: get-brand-gray-tone(600) !default;
+$gray-700: get-brand-gray-tone(700) !default;
+$gray-800: get-brand-gray-tone(800) !default;
+$gray-900: get-brand-gray-tone(900) !default;

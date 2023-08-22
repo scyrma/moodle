@@ -1,0 +1,214 @@
+/*
+ General
+*/
+
+// Workplace copyright in admin index.
+#page-admin-index {
+    .copyright.workplacecopyright {
+        padding-bottom: 0 !important; /* stylelint-disable-line declaration-no-important */
+        margin-bottom: 0;
+    }
+}
+
+/*
+ Table tree
+*/
+
+/* Left padding generator for tree nodes. */
+@mixin wp-node($value) {
+    > .tool-wp-children > .tool-wp-node {
+        // We are generating 9 levels of nodes.
+        @if ($value < 10) {
+            > .tool-wp-node-name > :first-child {
+                padding-left: $value * 20px + 10px;
+            }
+            @include wp-node($value + 1);
+        }
+        // From 9 levels and up we set a fixed padding.
+        @else {
+            .tool-wp-node-name > :first-child {
+                padding-left: 200px;
+            }
+        }
+    }
+}
+.tool-wp-table-tree {
+    > .tool-wp-node {
+        margin: 0 1rem;
+        overflow-wrap: break-word;
+        .mform {
+            padding: 0;
+        }
+        .form-group {
+            width: 100%;
+            * {
+                text-overflow: ellipsis;
+            }
+            > * {
+                width: inherit;
+            }
+        }
+        > .tool-wp-node-name {
+            font-weight: bolder;
+        }
+        > .tool-wp-children > .tool-wp-node {
+            @include wp-node(1);
+        }
+    }
+    .tool-wp-node {
+        > .tool-wp-node-name {
+            padding: 0.7rem .6rem .6rem;
+            min-height: 50px;
+            border-bottom: 1px solid $gray-200;
+        }
+        .tool-wp-node-name {
+            > * {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .col-actions {
+                text-align: right;
+            }
+        }
+    }
+}
+
+/*
+ Processing overlay
+*/
+
+.hasloader {
+    .tool-wp-processing-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #fff;
+        opacity: 0;
+        transition: opacity .15s linear;
+    }
+    .tool-wp-processing {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity .15s linear;
+        opacity: 0;
+    }
+    &.showloader {
+        .tool-wp-processing-backdrop {
+            opacity: 0.5;
+        }
+        .tool-wp-processing {
+            opacity: 1;
+        }
+    }
+}
+
+/*
+ Migration
+*/
+
+.path-admin-tool-wp {
+    [data-region="newexport"],
+    [data-region="newimport"] {
+        .stage {
+            width: 40px;
+            height: 40px;
+            padding: .4rem;
+            margin: .25rem;
+            box-sizing: border-box;
+            text-align: center;
+            font-weight: bold;
+            background-color: $white;
+            color: $gray-600;
+            border: $gray-600 2px solid;
+            &.stage-active {
+                background-color: $primary;
+                border-color: $primary;
+                color: $white;
+            }
+            &.stage-done {
+                background-color: $gray-600;
+                color: $gray-100;
+            }
+        }
+    }
+    [data-region="exportimport-instances"] {
+        .showmorelist {
+            ul li:nth-child(n+4) {
+                display: none;
+            }
+            button {
+                &.showless {
+                    display: none;
+                }
+            }
+        }
+    }
+    [data-region="export-report"],
+    [data-region="import-report"] {
+        tbody tr td:first-child {
+            width: 16rem;
+        }
+    }
+    [data-region="newexport"],
+    [data-region="newimport"] {
+        form {
+            input[type=radio][name=exporter],
+            input[type=radio][name=importer] {
+                align-self: baseline;
+                margin-top: .3rem;
+                margin-right: .6rem;
+            }
+            .form-group[data-groupname^="exportertenantgroup"] {
+                margin: -1.5rem 0 2rem 4.3rem;
+            }
+            .exporterimporter-selector {
+                margin-bottom: 2rem;
+                .icon {
+                    width: 40px;
+                    height: 40px;
+                    margin-right: .4rem;
+                }
+                .exporterimporter-name {
+                    font-weight: 600;
+                }
+                .exporterimporter-source {
+                    margin-top: -0.2rem;
+                    font-size: small;
+                    text-transform: uppercase;
+                    color: $gray-700;
+                }
+                .exporterimporter-description {
+                    margin-top: .3rem;
+                }
+            }
+        }
+    }
+}
+
+/*
+ Non-production state and not-registered warning
+*/
+
+#wp-site-status-disclaimer {
+    padding: 5px 10px;
+    font-size: 12px;
+    background: $black;
+    color: $white;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: $zindex-dropdown - 1;
+    a {
+        margin-left: 10px;
+        color: $white;
+        text-decoration: underline;
+    }
+}
