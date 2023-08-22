@@ -118,13 +118,16 @@ class schedule {
             return [];
         }
 
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery', [false], '');
+
         // Now convert audiences to SQL for user retrieval.
         [$wheres, $params] = audience::user_audience_sql($audiences);
         [$userorder] = users_order_by_sql('u');
 
         $sql = 'SELECT u.*
                   FROM {user} u
-                 WHERE ' . implode(' OR ', $wheres) . '
+                 WHERE ' . $tenantsql . '(' . implode(' OR ', $wheres) . ')
               ORDER BY ' . $userorder;
 
         return $DB->get_records_sql($sql, $params);

@@ -47,7 +47,7 @@ $pagetitle = get_string('mypage', 'admin');
 $PAGE->set_secondary_active_tab('appearance');
 $PAGE->set_blocks_editing_capability('moodle/my:configsyspages');
 $PAGE->set_url(new moodle_url('/my/indexsys.php'));
-admin_externalpage_setup('mypage', '', null, '', array('pagelayout' => 'mydashboard'));
+admin_externalpage_setup('mypage', '', null, '', ['pagelayout' => 'mydashboard', 'nosearch' => true]);
 $PAGE->add_body_class('limitedwidth');
 $PAGE->set_pagetype('my-index');
 $PAGE->blocks->add_region('content');
@@ -82,6 +82,10 @@ $PAGE->set_subpage($currentpage->id);
 $url = $PAGE->url;
 $url->params(['resetall' => true, 'sesskey' => sesskey()]);
 $button = $OUTPUT->single_button($url, get_string('reseteveryonesdashboard', 'my'));
+
+/** @uses \tool_tenant\dashboard_manager::default_system_dashboard() */
+$button = component_class_callback('\tool_tenant\dashboard_manager', 'default_system_dashboard', [], $button);
+
 $PAGE->set_button($button . $PAGE->button);
 
 echo $OUTPUT->header();

@@ -63,6 +63,11 @@ class courses extends datasource {
             ->add_join("JOIN {course_categories} {$coursecattablealias}
                 ON {$coursecattablealias}.id = {$coursetablealias}.category"));
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::filter_by_tenant_category() */
+        [$sql, $params] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'filter_by_tenant_category', ["$coursetablealias.category"], ["1=1", []]);
+        $this->add_base_condition_sql($sql, $params);
+
         // Add all columns from entities to be available in custom reports.
         $this->add_columns_from_entity($coursecatentity->get_entity_name());
         $this->add_columns_from_entity($courseentity->get_entity_name());

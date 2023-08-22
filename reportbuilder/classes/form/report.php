@@ -114,6 +114,10 @@ class report extends dynamic_form {
 
         $mform->addElement('advcheckbox', 'uniquerows', get_string('uniquerows', 'core_reportbuilder'));
         $mform->addHelpButton('uniquerows', 'uniquerows', 'core_reportbuilder');
+
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::create_report_definition() */
+        component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'create_report_definition',
+            [$this, $mform, $this->get_custom_report()]);
     }
 
     /**
@@ -123,6 +127,10 @@ class report extends dynamic_form {
      */
     public function process_dynamic_submission() {
         $data = $this->get_data();
+
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::set_report_tenant() */
+        $data = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'set_report_tenant',
+            [$data], $data);
 
         if ($data->id) {
             $reportpersistent = reporthelper::update_report($data);

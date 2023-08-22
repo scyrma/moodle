@@ -72,9 +72,13 @@ class send_schedule extends adhoc_task {
 
             // Handle schedule configuration as to who the report should be viewed as.
             if ($scheduleuserviewas === schedule::REPORT_VIEWAS_CREATOR) {
+                /** @uses \tool_tenant\reportbuilder\local\callbacks::setup_user_for_schedule() */
+                component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'setup_user_for_schedule', [$schedule]);
                 $scheduleattachment = helper::get_schedule_report_file($schedule);
             } else if ($scheduleuserviewas !== schedule::REPORT_VIEWAS_RECIPIENT) {
                 cron_setup_user(core_user::get_user($scheduleuserviewas));
+                /** @uses \tool_tenant\reportbuilder\local\callbacks::setup_user_for_schedule() */
+                component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'setup_user_for_schedule', [$schedule]);
                 $scheduleattachment = helper::get_schedule_report_file($schedule);
             }
 
@@ -91,9 +95,13 @@ class send_schedule extends adhoc_task {
 
                     // If we already created the attachment, send that. Otherwise generate per recipient.
                     if ($scheduleattachment !== null) {
+                        /** @uses \tool_tenant\reportbuilder\local\callbacks::setup_user_for_schedule_message() */
+                        component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'setup_user_for_schedule_message', [$schedule]);
                         helper::send_schedule_message($schedule, $user, $scheduleattachment);
                     } else {
                         cron_setup_user($user);
+                        /** @uses \tool_tenant\reportbuilder\local\callbacks::setup_user_for_schedule() */
+                        component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'setup_user_for_schedule', [$schedule]);
 
                         if ($schedulereportempty === schedule::REPORT_EMPTY_DONT_SEND &&
                             helper::get_schedule_report_count($schedule) === 0) {
@@ -103,6 +111,8 @@ class send_schedule extends adhoc_task {
                         }
 
                         $recipientattachment = helper::get_schedule_report_file($schedule);
+                        /** @uses \tool_tenant\reportbuilder\local\callbacks::setup_user_for_schedule_message() */
+                        component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'setup_user_for_schedule_message', [$schedule]);
                         helper::send_schedule_message($schedule, $user, $recipientattachment);
                         $recipientattachment->delete();
                     }
@@ -121,5 +131,7 @@ class send_schedule extends adhoc_task {
 
         // Restore cron user to original state.
         cron_setup_user($originaluser);
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::reset_user_after_schedule() */
+        component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'reset_user_after_schedule', [$schedule]);
     }
 }

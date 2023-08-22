@@ -49,3 +49,18 @@ $ADMIN->add(
         empty($CFG->enablecustomreports)
     )
 );
+
+$settings = new admin_settingpage('reportbuildersettings', get_string('customreportssettings', 'tool_reportbuilder'),
+    'moodle/site:config', empty($CFG->enablecustomreports));
+
+$settings->add(new admin_setting_configtext(
+    'customreportslimit',
+    new lang_string('customreportslimit', 'tool_reportbuilder'),
+    new lang_string('customreportslimit_desc', 'tool_reportbuilder'), 0, PARAM_INT));
+
+$settings->add(new admin_setting_configcheckbox(
+    'customreportsliveediting',
+    new lang_string('customreportsliveediting', 'tool_reportbuilder'),
+    new lang_string('customreportsliveediting_desc', 'tool_reportbuilder'), 1));
+
+$ADMIN->add('reportbuilder', $settings);

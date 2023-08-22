@@ -89,6 +89,13 @@ class permission {
             return true;
         }
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::override_can_view_report() */
+        $override = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'override_can_view_report', [$report, $userid], null);
+        if ($override !== null) {
+            return $override;
+        }
+
         $reports = audience::user_reports_list($userid);
         return in_array($report->get('id'), $reports);
     }
@@ -125,6 +132,13 @@ class permission {
             return false;
         }
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::override_can_edit_report */
+        $override = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'override_can_edit_report',
+            [$report, $userid], null);
+        if ($override !== null) {
+            return $override;
+        }
+
         // To edit their own reports, users must have either of the 'edit' or 'editall' capabilities. For reports belonging
         // to other users, they must have the specific 'editall' capability.
         $userid = $userid ?: (int) $USER->id;
@@ -150,7 +164,8 @@ class permission {
         return !empty($CFG->enablecustomreports) && has_any_capability([
             'moodle/reportbuilder:edit',
             'moodle/reportbuilder:editall',
-        ], context_system::instance(), $userid);
+        ], context_system::instance(), $userid) && !manager::report_limit_reached() &&
+            !component_class_callback('\tool_tenant\manager', 'report_tenant_limit_reached', []);
     }
 
     /**
