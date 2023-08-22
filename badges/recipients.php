@@ -86,12 +86,16 @@ echo $output->render_tertiary_navigation($actionbar);
 echo $OUTPUT->heading(print_badge_image($badge, $context, 'small') . ' ' . $badge->name);
 echo $output->print_badge_status_box($badge);
 
+// Add tenant condition.
+/** @uses \tool_tenant\tenancy::get_users_subquery */
+$tenantcondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [true, true, 'u.id'], '');
+
 $userfieldsapi = \core_user\fields::for_name();
 $namefields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
 $sql = "SELECT b.userid, b.dateissued, b.uniquehash, $namefields
     FROM {badge_issued} b INNER JOIN {user} u
         ON b.userid = u.id
-    WHERE b.badgeid = :badgeid AND u.deleted = 0
+    WHERE {$tenantcondition} b.badgeid = :badgeid AND u.deleted = 0
     ORDER BY $sortby $sorthow";
 
 $totalcount = $DB->count_records('badge_issued', array('badgeid' => $badge->id));
