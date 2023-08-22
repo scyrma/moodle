@@ -66,6 +66,7 @@ class upload_users_test extends advanced_testcase {
         set_role_contextlevels($uploadroleid, [CONTEXT_SYSTEM]);
         $systemcontext = context_system::instance();
         assign_capability('moodle/site:uploadusers', CAP_ALLOW, $uploadroleid, $systemcontext->id);
+        assign_capability('moodle/user:create', CAP_ALLOW, $uploadroleid, $systemcontext->id);
         $this->getDataGenerator()->role_assign($uploadroleid, $user->id, $systemcontext->id);
 
         // Create role with some of allowed capabilities to enrol users, and assign this role to user.
@@ -132,6 +133,7 @@ EOF;
         set_role_contextlevels($uploadroleid, [CONTEXT_SYSTEM]);
         $systemcontext = context_system::instance();
         assign_capability('moodle/site:uploadusers', CAP_ALLOW, $uploadroleid, $systemcontext->id);
+        assign_capability('moodle/user:create', CAP_ALLOW, $uploadroleid, $systemcontext->id);
         $this->getDataGenerator()->role_assign($uploadroleid, $user->id, $systemcontext->id);
 
         // Create role with some of allowed capabilities to enrol users, and assign this role to user.
