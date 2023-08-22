@@ -84,6 +84,13 @@ class backup_file_manager {
             return;
         }
 
+        /** @uses \tool_wp\local\exportimport\wp_exported_entity::process_course_backup_file() */
+        if (component_class_callback('tool_wp\local\exportimport\wp_exported_entity', 'process_course_backup_file',
+                [$backupid, $file], false)) {
+            // Workplace migration hook.
+            return;
+        }
+
         // Calculate source and target paths (use same subdirs strategy for both)
         $targetfilepath = self::get_backup_storage_base_dir($backupid) . '/' .
                           self::get_backup_content_file_location($filerecorid->contenthash);

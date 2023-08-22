@@ -90,6 +90,11 @@ class notes extends datasource {
                   AND {$postalias}.publishstate = '" . NOTES_STATE_PUBLIC . "'")
         );
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::filter_by_tenant_courses() */
+        [$sql, $params] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+        'filter_by_tenant_courses', ["$postalias.courseid"], ["1=1", []]);
+        $this->add_base_condition_sql($sql, $params);
+
         // Add report elements from each of the entities we added to the report.
         $this->add_all_from_entities();
     }
