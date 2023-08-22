@@ -119,7 +119,15 @@ if ($hassiteconfig
             $defaultuserid    = null;
             $defaultguestid   = null;
 
-            $roles = role_fix_names(get_all_roles(), null, ROLENAME_ORIGINALANDSHORT);
+            // Filter out Workplace roles.
+            // @uses \tool_wp\workplace::get_workplace_roles()
+            $workplaceroles = component_class_callback('\tool_wp\workplace', 'get_workplace_roles', [], []);
+            $roles = array_filter(get_all_roles(), function($role) use ($workplaceroles) {
+                return !in_array($role->shortname, $workplaceroles);
+            });
+
+            $roles = role_fix_names($roles, null, ROLENAME_ORIGINALANDSHORT);
+
             foreach ($roles as $role) {
                 $rolename = $role->localname;
                 switch ($role->archetype) {

@@ -60,6 +60,9 @@ function user_create_user($user, $updatepassword = true, $triggerevent = true) {
         throw new moodle_exception('invalidusername');
     }
 
+    /** @uses tool_tenant\manager::precheck_create_user() */
+    component_class_callback('tool_tenant\manager', 'precheck_create_user', [$user]);
+
     // Save the password in a temp value for later.
     if ($updatepassword && isset($user->password)) {
 
@@ -156,6 +159,8 @@ function user_update_user($user, $updatepassword = true, $triggerevent = true) {
     if (!is_object($user)) {
         $user = (object) $user;
     }
+    /** @uses \tool_tenant\manager::precheck_update_user() */
+    component_class_callback('tool_tenant\manager', 'precheck_update_user', [$user]);
 
     // Check username.
     if (isset($user->username)) {
