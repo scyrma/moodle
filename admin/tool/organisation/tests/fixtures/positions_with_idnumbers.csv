@@ -1,0 +1,6 @@
+id,code,parent,name,idnumber,description
+1,SAL,,Sales,,Position framework as parent
+2,MAN,manager,Lead,lead,Using idnumber as parent
+3,LEA,lead,Senior developer,,Using idnumber as parent
+4,JDV,3,Junior developer,,Using CSV ID field as parent
+5,UXE,unknown,UX Expert,,Position framework as parent
