@@ -1,0 +1,83 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template block_myteams/quickfilters/filter
+
+    Organisation quick filter for My Teams block
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "filteronlymyown": false,
+        "filterreportingtome": true,
+        "filteroverdue": false
+    }
+}}
+<div class="dropdown" data-region="myteams-filter">
+    <button id ="myteams-dropdown-filter"
+            type="button"
+            class="btn btn-outline-secondary dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-label="{{#str}} filterby, block_myteams {{/str}}"
+            title="{{#str}} filterby, block_myteams {{/str}}"
+    >
+        <span id="myteams-dropdown-filter-active" data-active-item-text>
+            {{#filteronlymyown}}{{#str}} filteronlymyown, block_myteams {{/str}}{{/filteronlymyown}}
+            {{#filterreportingtome}}{{#str}} filterreportingtome, block_myteams {{/str}}{{/filterreportingtome}}
+        </span>
+    </button>
+    <div class="dropdown-menu" role="menu" aria-labelledby="myteams-dropdown-filter" data-show-active-item data-skip-active-class="true">
+        <button type="button"
+                class="dropdown-item"
+                data-action="block_myteams-filter"
+                data-value='{"job:orgstructure_op": 2}'
+                {{#filterreportingtome}}aria-current="true"{{/filterreportingtome}}
+        >{{#str}}
+            filterreportingtome, block_myteams {{/str}}
+        </button>
+        <button type="button"
+                class="dropdown-item"
+                data-action="block_myteams-filter"
+                data-value='{"job:orgstructure_op": 1}'
+                {{#filteronlymyown}}aria-current="true"{{/filteronlymyown}}
+        >
+            {{#str}} filteronlymyown, block_myteams {{/str}}
+        </button>
+        <div class="dropdown-divider"></div>
+        <button type="button"
+                class="dropdown-item-extra"
+                data-action="block_myteams-filter-overdue"
+                aria-current="{{#filteroverdue}}true{{/filteroverdue}}{{^filteroverdue}}false{{/filteroverdue}}"
+        >
+            {{#str}} filteroverdue, block_myteams {{/str}}
+        </button>
+    </div>
+</div>
