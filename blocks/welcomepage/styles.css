@@ -1,0 +1,12 @@
+.block_welcomepage.card {
+   border: none !important;
+   background-color: #f3f3f3 !important;
+}
+
+#welcome-header {
+   padding-bottom: 0.5em !important;
+}
+
+#welcome-image {
+   max-width: 100% !important;
+}

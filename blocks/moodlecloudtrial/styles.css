@@ -1,0 +1,9 @@
+.block_moodlecloudtrial.card {
+   border: none !important;
+   background-color: #CCE6EA !important;
+   vertical-align: middle !important;
+}
+
+.card-body {
+   margin-top: -1rem !important;
+}
