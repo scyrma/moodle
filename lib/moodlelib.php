@@ -6268,6 +6268,11 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
         $mail->addCustomHeader('X-Moodle-Originating-Script: ' . $originheader);
     }
 
+    // BEGIN MOODLECLOUD HACK
+    global $dynamicsite;
+    $mail->addCustomHeader('X-MoodleCloud-Site: '. $dynamicsite);
+    // END MOODLECLOUD HACK
+
     if (!empty($CFG->emailheaders)) {
         $headers = array_map('trim', explode("\n", $CFG->emailheaders));
         foreach ($headers as $header) {
