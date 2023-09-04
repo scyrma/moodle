@@ -76,10 +76,11 @@ class block_moodlecloudtrial extends block_base {
         $daysleft = $this->calculate_days_left_on_trial();
         $this->content->text = str_replace('<!--daysleft-->', $daysleft, $this->content->text);
 
-        // Generate URL to hide the block.
-        $url = "https://www.moodlecloud.com/";
+        // Generate URL to the customer portal (upgrade plan tab).
+        global $dynamicsite, $clusterconfig;
+        $url = "https://" . $clusterconfig['primarydomain'] . "/auth/moodlecloud/portal.php?gotoupgradetab=1";
 
-        // Dismiss button (Got It).
+        // Upgrade button and link to customer portal.
         $button = new single_button(
             new moodle_url($url),
             get_string('upgrade', 'block_moodlecloudtrial'),
