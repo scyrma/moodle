@@ -3296,7 +3296,6 @@ function debugging($message = '', $level = DEBUG_NORMAL, $backtrace = null) {
     // BEGIN MOODLECLOUD HACK.
     if (function_exists('newrelic_notice_error') && $message) {
         newrelic_notice_error(
-            null,
             new newrelic_moodle_debugging($message)
         );
     }
