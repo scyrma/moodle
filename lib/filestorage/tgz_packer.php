@@ -239,6 +239,13 @@ class tgz_packer extends file_packer {
                     $type = 'd';
                     $size = 0;
                 } else if (is_string($file)) {
+
+                    /** BEGIN MOODLECLOUD HACK */
+                    // Give Gluster 10 milliseconds to catch up with what it says it's done
+                    // Without this, the filesize reported is *less* than the real filesize (:exploding_head:)
+                    usleep(10000);
+                    /** END MOODLECLOUD HACK */
+
                     $stat = stat($file);
                     $mtime = (int)$stat['mtime'];
                     $size = (int)$stat['size'];
