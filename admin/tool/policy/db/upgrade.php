@@ -127,7 +127,7 @@ function xmldb_tool_policy_upgrade($oldversion) {
     // Automatically generated Moodle v4.2.0 release upgrade line.
     // Put any upgrade step following this.
 
-    if ($oldversion < 2023042400) {
+    if ($oldversion < 2023042401) {
         $policyid = $DB->insert_record('tool_policy', ['sortorder' => 1]);
 
         $versionid = $DB->insert_record('tool_policy_versions', [
@@ -184,7 +184,7 @@ function xmldb_tool_policy_upgrade($oldversion) {
             $sortorder++;
         }
 
-        upgrade_plugin_savepoint(true, 2023042400, 'tool', 'policy');
+        upgrade_plugin_savepoint(true, 2023042401, 'tool', 'policy');
     }
 
     return true;
