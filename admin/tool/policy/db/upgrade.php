@@ -127,5 +127,65 @@ function xmldb_tool_policy_upgrade($oldversion) {
     // Automatically generated Moodle v4.2.0 release upgrade line.
     // Put any upgrade step following this.
 
+    if ($oldversion < 2023042401) {
+        $policyid = $DB->insert_record('tool_policy', ['sortorder' => 1]);
+
+        $versionid = $DB->insert_record('tool_policy_versions', [
+            'name' => 'MoodleCloud Terms of Use',
+            'type' => 0,
+            'audience' => 0,
+            'usermodified' => 2,
+            'timecreated' => time(),
+            'timemodified' => time(),
+            'policyid' => $policyid,
+            'revision' => '',
+            'summary' => 'You must not post, upload, publish, submit or transmit any content that:
+<ol>
+<li>infringes, misappropriates or violates any third party intellectual property rights, publicity rights or privacy laws;</li>
+<li>is fraudulent, false, misleading or deceptive;</li>
+<li>denigrates Moodle or the MoodleCloud Services;</li>
+<li>violates, or encourages any conduct that would violate, any applicable law or regulation or would give rise to civil liability;</li>
+<li>is defamatory, obscene, pornographic, vulgar, offensive, promotes discrimination, bigotry, racism, hatred, harassment or harm against any individual or group;</li>
+<li>is violent or threatening or promotes violence or actions that are threatening to any other person; or</li>
+<li>promotes illegal or harmful activities or substances.</li>
+</ol>',
+            'summaryformat' => 1,
+            'content' => '',
+            'contentformat' => 1
+        ]);
+
+        $DB->update_record('tool_policy', ['id' => $policyid, 'currentversionid' => $versionid]);
+
+        set_config('moodlecloudlockedversions',
+            get_config('tool_policy', 'moodlecloudlockedversions') . ',' . $versionid, 'tool_policy'
+        );
+
+        list($privacyid, $cookieid, $tosid) = preg_split('/,/', get_config('tool_policy', 'moodlecloudlockedversions'), -1, PREG_SPLIT_NO_EMPTY);
+
+        // Fix sortorders so ours come first and second.
+        $sortorder = 2;
+        foreach ($DB->get_records('tool_policy') as $record) {
+            if ($record-> id == $privacyid) {
+                $DB->set_field('tool_policy', 'sortorder', 0, ['id' => $record->id]);
+                continue;
+            }
+
+            if ($record-> id == $cookieid) {
+                $DB->set_field('tool_policy', 'sortorder', 1, ['id' => $record->id]);
+                continue;
+            }
+
+            if ($record-> id == $tosid) {
+                $DB->set_field('tool_policy', 'sortorder', 2, ['id' => $record->id]);
+                continue;
+            }
+
+            $DB->set_field('tool_policy', 'sortorder', $sortorder, ['id' => $record->id]);
+            $sortorder++;
+        }
+
+        upgrade_plugin_savepoint(true, 2023042401, 'tool', 'policy');
+    }
+
     return true;
 }
