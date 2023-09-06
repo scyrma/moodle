@@ -174,6 +174,8 @@ class api {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
                     } else if ($versiondata->name === 'MoodleCloud cookies policy') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/cookies.html');
+                    } else if ($versiondata->name === 'MoodleCloud Terms of Use') {
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/terms.html');
                     }
 
                     $doc = new \DOMDocument();
