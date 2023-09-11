@@ -63,6 +63,8 @@ class send_schedule extends adhoc_task {
 
         // Switch to schedule creator, and retrieve list of recipient users.
         cron_setup_user(core_user::get_user($schedule->get('usercreated')));
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::setup_user_for_schedule() */
+        component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'setup_user_for_schedule', [$schedule]);
 
         $users = helper::get_schedule_report_users($schedule);
         if (count($users) > 0) {
@@ -72,8 +74,6 @@ class send_schedule extends adhoc_task {
 
             // Handle schedule configuration as to who the report should be viewed as.
             if ($scheduleuserviewas === schedule::REPORT_VIEWAS_CREATOR) {
-                /** @uses \tool_tenant\reportbuilder\local\callbacks::setup_user_for_schedule() */
-                component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'setup_user_for_schedule', [$schedule]);
                 $scheduleattachment = helper::get_schedule_report_file($schedule);
             } else if ($scheduleuserviewas !== schedule::REPORT_VIEWAS_RECIPIENT) {
                 cron_setup_user(core_user::get_user($scheduleuserviewas));
