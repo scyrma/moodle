@@ -34,7 +34,7 @@ function xmldb_tool_policy_install() {
     ];
     $versionids = [
         'privacy' => $DB->insert_record('tool_policy_versions', [
-            'name' => 'MoodleCloud policy',
+            'name' => 'Moodle\'s Privacy Notice',
             'type' => 0,
             'audience' => 0, // Change to 1 if this is for signup/logged in users only
             'usermodified' => 2, // admin
@@ -48,7 +48,7 @@ function xmldb_tool_policy_install() {
             'contentformat' => 1 // FORMAT_HTML
         ]),
         'cookie' => $DB->insert_record('tool_policy_versions', [
-            'name' => 'MoodleCloud cookies policy',
+            'name' => 'Moodle\'s Cookies Policy',
             'type' => 0,
             'audience' => 0,
             'usermodified' => 2,

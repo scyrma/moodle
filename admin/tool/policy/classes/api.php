@@ -170,11 +170,11 @@ class api {
             foreach ($versions[$policyid] as $versiondata) {
                 # BEGIN MOODLECLOUD HACK
                 if (self::is_version_locked($versiondata->id)) {
-                    if ($versiondata->name === 'MoodleCloud policy') {
+                    if ($versiondata->name === 'Moodle\'s Privacy Notice') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
-                    } else if ($versiondata->name === 'MoodleCloud cookies policy') {
+                    } else if ($versiondata->name === 'Moodle\'s Cookies Policy') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/cookies.html');
-                    } else if ($versiondata->name === 'MoodleCloud Terms of Use') {
+                    } else if ($versiondata->name === 'MoodleCloud Terms of Service') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/terms.html');
                     }
 
@@ -249,11 +249,11 @@ class api {
                 if (self::is_version_locked($versionid)) {
                     $policystr = false;
 
-                    if ($policy->currentversion->name === 'MoodleCloud policy') {
+                    if ($policy->currentversion->name === 'Moodle\'s Privacy Notice') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle.html');
-                    } else if ($policy->currentversion->name === 'MoodleCloud cookies policy') {
+                    } else if ($policy->currentversion->name === 'Moodle\'s Cookies Policy') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/cookies.html');
-                    } else if ($policy->currentversion->name === 'MoodleCloud Terms of Use') {
+                    } else if ($policy->currentversion->name === 'MoodleCloud Terms of Service') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/terms.html');
                     }
 
