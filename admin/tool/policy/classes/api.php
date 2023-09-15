@@ -173,7 +173,7 @@ class api {
                     if ($versiondata->name === 'Moodle\'s Privacy Notice') {
                         $policystr = file_get_contents('https://moodle.com/privacy-notice/');
                     } else if ($versiondata->name === 'Moodle\'s Cookies Policy') {
-                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/cookies.html');
+                        $policystr = file_get_contents('https://moodle.com/cookies-policy/');
                     } else if ($versiondata->name === 'MoodleCloud Terms of Service') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/terms.html');
                     }
@@ -252,7 +252,7 @@ class api {
                     if ($policy->currentversion->name === 'Moodle\'s Privacy Notice') {
                         $policystr = file_get_contents('https://moodle.com/privacy-notice/');
                     } else if ($policy->currentversion->name === 'Moodle\'s Cookies Policy') {
-                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/cookies.html');
+                        $policystr = file_get_contents('https://moodle.com/cookies-policy/');
                     } else if ($policy->currentversion->name === 'MoodleCloud Terms of Service') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/terms.html');
                     }
