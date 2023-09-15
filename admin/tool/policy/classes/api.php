@@ -171,9 +171,9 @@ class api {
                 # BEGIN MOODLECLOUD HACK
                 if (self::is_version_locked($versiondata->id)) {
                     if ($versiondata->name === 'Moodle\'s Privacy Notice') {
-                        $policystr = file_get_contents('https://moodle.com/privacy-notice/');
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle-link-privacy.html');
                     } else if ($versiondata->name === 'Moodle\'s Cookies Policy') {
-                        $policystr = file_get_contents('https://moodle.com/cookies-policy/');
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle-link-cookies.html');
                     } else if ($versiondata->name === 'MoodleCloud Terms of Service') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/terms.html');
                     }
@@ -250,9 +250,9 @@ class api {
                     $policystr = false;
 
                     if ($policy->currentversion->name === 'Moodle\'s Privacy Notice') {
-                        $policystr = file_get_contents('https://moodle.com/privacy-notice/');
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle-link-privacy.html');
                     } else if ($policy->currentversion->name === 'Moodle\'s Cookies Policy') {
-                        $policystr = file_get_contents('https://moodle.com/cookies-policy/');
+                        $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/moodle-link-cookies.html');
                     } else if ($policy->currentversion->name === 'MoodleCloud Terms of Service') {
                         $policystr = file_get_contents('https://assets.gl.moodlecloud.com/legal/terms.html');
                     }
