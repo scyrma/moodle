@@ -200,6 +200,11 @@ function xmldb_tool_policy_upgrade($oldversion) {
                 $DB->set_field('tool_policy_versions', 'name', 'Moodle\'s Cookie Policy', ['id' => $record->id]);
                 continue;
             }
+
+            if ($record->id == $tosid) {
+                $DB->set_field('tool_policy_versions', 'name', 'MoodleCloud Terms of Service', ['id' => $record->id]);
+                continue;
+            }
         }
 
         upgrade_plugin_savepoint(true, 2023042402, 'tool', 'policy');
