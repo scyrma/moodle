@@ -197,7 +197,7 @@ function xmldb_tool_policy_upgrade($oldversion) {
             }
 
             if ($record->id == $cookieid) {
-                $DB->set_field('tool_policy_versions', 'name', 'Moodle\'s Cookie Policy', ['id' => $record->id]);
+                $DB->set_field('tool_policy_versions', 'name', 'Moodle\'s Cookies Policy', ['id' => $record->id]);
                 continue;
             }
 
