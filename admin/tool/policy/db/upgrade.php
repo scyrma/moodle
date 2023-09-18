@@ -131,7 +131,7 @@ function xmldb_tool_policy_upgrade($oldversion) {
         $policyid = $DB->insert_record('tool_policy', ['sortorder' => 1]);
 
         $versionid = $DB->insert_record('tool_policy_versions', [
-            'name' => 'MoodleCloud Terms of Use',
+            'name' => 'MoodleCloud Terms of Service',
             'type' => 0,
             'audience' => 0,
             'usermodified' => 2,
@@ -185,6 +185,29 @@ function xmldb_tool_policy_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2023042401, 'tool', 'policy');
+    }
+
+    if ($oldversion < 2023042402) {
+        list($privacyid, $cookieid, $tosid) = preg_split('/,/', get_config('tool_policy', 'moodlecloudlockedversions'), -1, PREG_SPLIT_NO_EMPTY);
+
+        foreach ($DB->get_records('tool_policy_versions') as $record) {
+            if ($record->id == $privacyid) {
+                $DB->set_field('tool_policy_versions', 'name', 'Moodle\'s Privacy Notice', ['id' => $record->id]);
+                continue;
+            }
+
+            if ($record->id == $cookieid) {
+                $DB->set_field('tool_policy_versions', 'name', 'Moodle\'s Cookie Policy', ['id' => $record->id]);
+                continue;
+            }
+
+            if ($record->id == $tosid) {
+                $DB->set_field('tool_policy_versions', 'name', 'MoodleCloud Terms of Service', ['id' => $record->id]);
+                continue;
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2023042402, 'tool', 'policy');
     }
 
     return true;
