@@ -22,7 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_moodlecloudtrial extends block_base {
-    const TRIAL_PERIOD_DAYS = 45;
 
     protected function init() {
         $this->title = get_string('title', 'block_moodlecloudtrial');
@@ -147,21 +146,15 @@ class block_moodlecloudtrial extends block_base {
         return file_get_contents($contentbaseurl . 'trial.html');
     }
 
-    private function calculate_days_left_on_trial() {
-        global $DB;
-        $now = date('U');
-        $firstlogentryid = $DB->get_record_sql(
-            "select min(id) as minid from {logstore_standard_log}"
-        );
-        $firstlogentry = $DB->get_record(
-            'logstore_standard_log',
-            ['id' => $firstlogentryid->minid]
-        );
-        $daysintotrial = round(($now - $firstlogentry->timecreated)/(24*60*60),0, PHP_ROUND_HALF_UP);
-        if ($daysintotrial >= $this::TRIAL_PERIOD_DAYS) {
-            return 0;
-        }
-        return $this::TRIAL_PERIOD_DAYS - $daysintotrial;
+    private function calculate_days_left_on_trial(): float|int {
+        global $clusterconfig;
+
+        $now = new \DateTime();
+        $trialStart = new \DateTime("@" . $clusterconfig['trialstart']);
+        $trialEnd = $trialStart->add(new \DateInterval('P' . $clusterconfig['trialduration'] . 'D'));
+
+        $interval = $now->diff($trialEnd);
+        return abs($interval->format('%a'));
     }
 
     private function is_free_trial() : bool {
