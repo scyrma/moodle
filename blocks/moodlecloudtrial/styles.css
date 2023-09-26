@@ -4,10 +4,6 @@
    vertical-align: middle !important;
 }
 
-.card-body {
-   margin-top: -1rem !important;
-}
-
 @media screen and (max-width: 400px) {
    .moodlecloud-trial-button {
       margin-top: 1rem !important;
