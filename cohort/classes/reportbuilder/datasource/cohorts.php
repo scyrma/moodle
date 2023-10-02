@@ -52,6 +52,11 @@ class cohorts extends datasource {
 
         $this->add_entity($cohortentity);
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::filter_by_tenant_cohort() */
+        [$sql, $params] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'filter_by_tenant_cohort', ["$cohorttablealias.id"], ["1=1", []]);
+        $this->add_base_condition_sql($sql, $params);
+
         // Join the cohort member entity to the cohort entity.
         $cohortmemberentity = new cohort_member();
         $cohortmembertablealias = $cohortmemberentity->get_table_alias('cohort_members');
