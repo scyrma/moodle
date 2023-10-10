@@ -144,10 +144,12 @@ class manage_badge_action_bar extends base_action_bar {
             $sql = '';
             switch ($stringidentifier) {
                 case 'bawards':
+                    /** @uses \tool_tenant\tenancy::get_users_subquery */
+                    $tenantcondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [true, true, 'u.id'], '');
                     $sql = "SELECT COUNT(b.userid)
                               FROM {badge_issued} b
                         INNER JOIN {user} u ON b.userid = u.id
-                             WHERE b.badgeid = :badgeid AND u.deleted = 0";
+                             WHERE $tenantcondition b.badgeid = :badgeid AND u.deleted = 0";
                     break;
                 case 'brelated':
                     $sql = "SELECT COUNT(br.badgeid)

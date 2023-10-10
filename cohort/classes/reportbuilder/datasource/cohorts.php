@@ -52,23 +52,32 @@ class cohorts extends datasource {
 
         $this->add_entity($cohortentity);
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::filter_by_tenant_cohort() */
+        [$sql, $params] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'filter_by_tenant_cohort', ["$cohorttablealias.id"], ["1=1", []]);
+        $this->add_base_condition_sql($sql, $params);
+
         // Join the cohort member entity to the cohort entity.
         $cohortmemberentity = new cohort_member();
         $cohortmembertablealias = $cohortmemberentity->get_table_alias('cohort_members');
 
-        $cohortmemberjoin = "LEFT JOIN {cohort_members} {$cohortmembertablealias}
-                               ON {$cohortmembertablealias}.cohortid = {$cohorttablealias}.id";
-
-        $this->add_entity($cohortmemberentity->add_join($cohortmemberjoin));
+        $this->add_entity($cohortmemberentity
+            ->add_join("LEFT JOIN {cohort_members} {$cohortmembertablealias}
+                ON {$cohortmembertablealias}.cohortid = {$cohorttablealias}.id")
+        );
 
         // Join the user entity to the cohort member entity.
         $userentity = new user();
         $usertablealias = $userentity->get_table_alias('user');
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, "{$usertablealias}.id"], '');
 
-        $userjoin = "LEFT JOIN {user} {$usertablealias}
-                       ON {$usertablealias}.id = {$cohortmembertablealias}.userid";
-
-        $this->add_entity($userentity->add_joins([$cohortmemberjoin, $userjoin]));
+        $this->add_entity($userentity
+            ->add_joins($cohortmemberentity->get_joins())
+            ->add_join("LEFT JOIN {user} {$usertablealias}
+                ON {$tenantsql} {$usertablealias}.id = {$cohortmembertablealias}.userid")
+        );
 
         // Add all columns from entities to be available in custom reports.
         $this->add_columns_from_entity($cohortentity->get_entity_name());
