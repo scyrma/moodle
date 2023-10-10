@@ -1,0 +1,106 @@
+{{!
+    This file is part of the mod_appointment plugin for Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_appointment/session_item/main
+
+    Template for showing session list item.
+
+    Example context (json):
+    {
+        "sessiontimes": [
+            {
+                "date": "Tue, June 11",
+                "time": "11:00 - 14:00"
+            }
+        ],
+        "capacity": "1/10",
+        "status": "Booked",
+        "details": "Some random details string",
+        "fields": [
+            {
+                "name": "Some field name",
+                "value": "Some field value",
+                "elementid": "randomstring1"
+            },
+            {
+                "name": "Another field name",
+                "value": "Another field value",
+                "elementid": "randomstring2"
+            }
+        ],
+        "actions": [
+            {
+                "classes": "",
+                "primary": {
+                    "items": [{"rawhtml": "<p>Add...</p>"}]
+                },
+                "secondary": {
+                    "items": [{"rawhtml": "<p>Add appointment</p>"}]
+                }
+            }
+        ],
+        "hasactionbutton": true,
+        "bookaction": "signup",
+        "bookactiontitle": "Book",
+        "sessionid": "1"
+    }
+}}
+<div class="px-3 card flex-row session-card rounded {{extraclasses}}" data-sessionid="{{sessionid}}">
+    <div class="flex-grow-1">
+        <div class="d-flex position-relative">
+
+            {{! Session row }}
+            {{> mod_appointment/session_item/row}}
+
+            {{! Toggle button }}
+            <div class="w-auto pl-0 py-4 pr-3">
+                <a role="button" data-toggle="collapse"
+                   href="#covercollapse{{sessionid}}"
+                   class="text-gray-900 text-decoration-none stretched-link icons-collapse-expand collapsed"
+                   aria-expanded="false"
+                   aria-controls="covercollapse{{sessionid}}">
+                    <span class="expanded-icon icon-no-margin p-2" title="{{#str}} collapse, core {{/str}}">
+                        {{#pix}} collapsedchevron, mod_appointment {{/pix}}
+                        <span class="sr-only">{{#str}} collapse, core {{/str}}</span>
+                    </span>
+                    <span class="collapsed-icon icon-no-margin p-2" title="{{#str}} expand, core {{/str}}">
+                        {{#pix}} t/expandedchevron, core {{/pix}}
+                        <span class="sr-only">{{#str}} expand, core {{/str}}</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        {{! Toggle container }}
+        <div id="covercollapse{{sessionid}}" class="position-relative z-index-1 pagesectioncontent collapse">
+            <div class="session-details bg-gray-100 rounded mr-3 mb-3 p-3">
+                {{> mod_appointment/session_details}}
+                {{> mod_appointment/session_customfields}}
+
+                {{! Book and Cancel buttons }}
+                {{#hasactionbutton}}
+                    {{> mod_appointment/session_item/book_cancel_buttons}}
+                {{/hasactionbutton}}
+            </div>
+        </div>
+    </div>
+
+    {{! Action menu }}
+    {{#hasmenu}}
+        {{> mod_appointment/session_item/action_menu}}
+    {{/hasmenu}}
+</div>
