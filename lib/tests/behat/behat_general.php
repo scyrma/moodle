@@ -28,6 +28,7 @@
 require_once(__DIR__ . '/../../behat/behat_base.php');
 
 use Behat\Gherkin\Node\TableNode;
+use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
@@ -147,7 +148,7 @@ class behat_general extends behat_base {
 
         } else if (!empty($url)) {
             // We redirect directly as we can not wait for an automatic redirection.
-            $this->getSession()->getDriver()->getClient()->request('get', $url);
+            $this->getSession()->getDriver()->getClient()->request('GET', $url);
 
         } else {
             // Reload the page if no URL was provided.
@@ -1217,20 +1218,12 @@ EOF;
      * @throws ElementNotFoundException Thrown by behat_base::find
      * @param string $element The locator of the specified selector
      * @param string $selectortype The selector type
-     * @param string $containerelement The container selector type
-     * @param string $containerselectortype The container locator
+     * @param NodeElement|string $containerelement The locator of the container selector
+     * @param string $containerselectortype The container selector type
      */
     public function should_exist_in_the($element, $selectortype, $containerelement, $containerselectortype) {
-        // Get the container node.
-        $containernode = $this->find($containerselectortype, $containerelement);
-
-        // Specific exception giving info about where can't we find the element.
-        $containerdescription = $this->get_selector_description($containerselectortype, $containerelement);
-        $locatorexceptionmsg = "{$element} not found in the {$containerdescription}}";
-        $exception = new ElementNotFoundException($this->getSession(), $selectortype, null, $locatorexceptionmsg);
-
-        // Looks for the requested node inside the container node.
-        $this->find($selectortype, $element, $exception, $containernode);
+        // Will throw an ElementNotFoundException if it does not exist.
+        $this->get_node_in_container($selectortype, $element, $containerselectortype, $containerelement);
     }
 
     /**
@@ -1242,8 +1235,8 @@ EOF;
      * @throws ExpectationException
      * @param string $element The locator of the specified selector
      * @param string $selectortype The selector type
-     * @param string $containerelement The container selector type
-     * @param string $containerselectortype The container locator
+     * @param NodeElement|string $containerelement The locator of the container selector
+     * @param string $containerselectortype The container selector type
      */
     public function should_not_exist_in_the($element, $selectortype, $containerelement, $containerselectortype) {
         // Get the container node.
@@ -2247,5 +2240,76 @@ EOF;
 
         // Set the list new list of editors.
         set_config('texteditors', implode(',', $list));
+    }
+
+    /**
+     * Allow to check for minimal Moodle version.
+     *
+     * @Given the site is running Moodle version :minversion or higher
+     * @param string $minversion The minimum version of Moodle required (inclusive).
+     */
+    public function the_site_is_running_moodle_version_or_higher(string $minversion): void {
+        global $CFG;
+        require_once($CFG->libdir . '/environmentlib.php');
+
+        $currentversion = normalize_version(get_config('', 'release'));
+
+        if (version_compare($currentversion, $minversion, '<')) {
+            throw new Moodle\BehatExtension\Exception\SkippedException(
+                'Site must be running Moodle version ' . $minversion . ' or higher'
+            );
+        }
+    }
+
+    /**
+     * Allow to check for maximum Moodle version.
+     *
+     * @Given the site is running Moodle version :maxversion or lower
+     * @param string $maxversion The maximum version of Moodle required (inclusive).
+     */
+    public function the_site_is_running_moodle_version_or_lower(string $maxversion): void {
+        global $CFG;
+        require_once($CFG->libdir . '/environmentlib.php');
+
+        $currentversion = normalize_version(get_config('', 'release'));
+
+        if (version_compare($currentversion, $maxversion, '>')) {
+            throw new Moodle\BehatExtension\Exception\SkippedException(
+                'Site must be running Moodle version ' . $maxversion . ' or lower'
+            );
+        }
+    }
+
+    /**
+     * Check that the page title contains a given string.
+     *
+     * @Given the page title should contain ":title"
+     * @param string $title The string that should be present on the page title.
+     */
+    public function the_page_title_should_contain(string $title): void {
+        $session = $this->getSession();
+        if ($this->running_javascript()) {
+            // When running on JS, the page title can be changed via JS, so it's more reliable to get the actual page title via JS.
+            $actualtitle = $session->evaluateScript("return document.title");
+        } else {
+            $titleelement = $session->getPage()->find('css', 'head title');
+            if ($titleelement === null) {
+                // Throw an exception if a page title is not present on the page.
+                throw new ElementNotFoundException(
+                    $this->getSession(),
+                    '<title> element',
+                    'css',
+                    'head title'
+                );
+            }
+            $actualtitle = $titleelement->getText();
+        }
+
+        if (strpos($actualtitle, $title) === false) {
+            throw new ExpectationException(
+                "'$title' was not found from the current page title '$actualtitle'",
+                $session
+            );
+        }
     }
 }

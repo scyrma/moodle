@@ -1437,13 +1437,14 @@ class externallib_test extends externallib_advanced_testcase {
         $eventdata->smallmessage      = $eventdata->subject;
         message_send($eventdata);
 
+        // This event contains HTML in the subject field that will be removed by the WS (otherwise it will generate an exception).
         $eventdata = new \core\message\message();
         $eventdata->courseid         = $course->id;
         $eventdata->name             = 'submission';
         $eventdata->component        = 'mod_feedback';
         $eventdata->userfrom         = $user1;
         $eventdata->userto           = $user2;
-        $eventdata->subject          = 'Feedback submitted';
+        $eventdata->subject          = 'Feedback submitted <span>with html</span>';
         $eventdata->fullmessage      = 'Feedback submitted from an user';
         $eventdata->fullmessageformat = FORMAT_PLAIN;
         $eventdata->fullmessagehtml  = '<strong>Feedback submitted</strong>';
@@ -5136,7 +5137,7 @@ class externallib_test extends externallib_advanced_testcase {
     /**
      * Data provider for test_get_conversation_counts().
      */
-    public function test_get_conversation_counts_test_cases() {
+    public function get_conversation_counts_test_cases() {
         $typeindividual = \core_message\api::MESSAGE_CONVERSATION_TYPE_INDIVIDUAL;
         $typegroup = \core_message\api::MESSAGE_CONVERSATION_TYPE_GROUP;
         $typeself = \core_message\api::MESSAGE_CONVERSATION_TYPE_SELF;
@@ -5499,7 +5500,7 @@ class externallib_test extends externallib_advanced_testcase {
     /**
      * Test the get_conversation_counts() function.
      *
-     * @dataProvider test_get_conversation_counts_test_cases()
+     * @dataProvider get_conversation_counts_test_cases()
      * @param array $conversationconfigs Conversations to create
      * @param int $deletemessagesuser The user who is deleting the messages
      * @param array $deletemessages The list of messages to delete (by index)
@@ -5596,7 +5597,7 @@ class externallib_test extends externallib_advanced_testcase {
     /**
      * Test the get_unread_conversation_counts() function.
      *
-     * @dataProvider test_get_conversation_counts_test_cases()
+     * @dataProvider get_conversation_counts_test_cases
      * @param array $conversationconfigs Conversations to create
      * @param int $deletemessagesuser The user who is deleting the messages
      * @param array $deletemessages The list of messages to delete (by index)

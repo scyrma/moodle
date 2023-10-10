@@ -555,6 +555,8 @@ class behat_mod_quiz extends behat_question_base {
 
     /**
      * Check the add or remove page-break link after a particular question contains the given parameters in its url.
+     *
+     * @When /^the "(Add|Remove)" page break link after question "(?P<question_name>(?:[^"]|\\")*) should contain:$/
      * @When /^the "(Add|Remove)" page break link after question "(?P<question_name>(?:[^"]|\\")*) should contain:"$/
      * @param string $addorremoves 'Add' or 'Remove'.
      * @param string $questionname the name of the question before the icon to click.
@@ -676,6 +678,10 @@ class behat_mod_quiz extends behat_question_base {
      * @param string $sectionheading the new heading to set.
      */
     public function i_set_the_section_heading_for($sectionname, $sectionheading) {
+        // Empty section headings will have a default names of "Untitled heading".
+        if (empty($sectionname)) {
+            $sectionname = get_string('sectionnoname', 'quiz');
+        }
         $this->execute('behat_general::click_link', $this->escape("Edit heading '{$sectionname}'"));
 
         $this->execute('behat_general::assert_page_contains_text', $this->escape(get_string('edittitleinstructions')));

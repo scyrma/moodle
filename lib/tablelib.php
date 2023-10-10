@@ -171,6 +171,16 @@ class flexible_table {
     protected $resetting;
 
     /**
+     * @var string $caption The caption of table
+     */
+    public $caption;
+
+    /**
+     * @var array $captionattributes The caption attributes of table
+     */
+    public $captionattributes;
+
+    /**
      * @var filterset The currently applied filerset
      * This is required for dynamic tables, but can be used by other tables too if desired.
      */
@@ -573,7 +583,7 @@ class flexible_table {
         global $SESSION;
         if (isset($SESSION->flextable[$uniqueid])) {
             $prefs = $SESSION->flextable[$uniqueid];
-        } else if (!$prefs = json_decode(get_user_preferences('flextable_' . $uniqueid), true)) {
+        } else if (!$prefs = json_decode(get_user_preferences("flextable_{$uniqueid}", ''), true)) {
             return '';
         }
 
@@ -1143,6 +1153,12 @@ class flexible_table {
         foreach ($row as $index => $data) {
             $column = $colbyindex[$index];
 
+            $columnattributes = $this->columnsattributes[$column] ?? [];
+            if (isset($columnattributes['class'])) {
+                $this->column_class($column, $columnattributes['class']);
+                unset($columnattributes['class']);
+            }
+
             $attributes = [
                 'class' => "cell c{$index}" . $this->column_class[$column],
                 'id' => "{$rowid}_c{$index}",
@@ -1155,7 +1171,7 @@ class flexible_table {
                 $attributes['scope'] = 'row';
             }
 
-            $attributes += $this->columnsattributes[$column] ?? [];
+            $attributes += $columnattributes;
 
             if (empty($this->prefs['collapse'][$column])) {
                 if ($this->column_suppress[$column] && $suppresslastrow !== null && $suppresslastrow[$index] === $data) {
@@ -1463,7 +1479,7 @@ class flexible_table {
 
         // Load any existing user preferences.
         if ($this->persistent) {
-            $this->prefs = json_decode(get_user_preferences('flextable_' . $this->uniqueid), true);
+            $this->prefs = json_decode(get_user_preferences("flextable_{$this->uniqueid}", ''), true);
             $oldprefs = $this->prefs;
         } else if (isset($SESSION->flextable[$this->uniqueid])) {
             $this->prefs = $SESSION->flextable[$this->uniqueid];
@@ -1833,8 +1849,35 @@ class flexible_table {
         // Start of main data table
 
         echo html_writer::start_tag('div', array('class' => 'no-overflow'));
-        echo html_writer::start_tag('table', $this->attributes);
+        echo html_writer::start_tag('table', $this->attributes) . $this->render_caption();
+    }
 
+    /**
+     * This function set caption for table.
+     *
+     * @param string $caption Caption of table.
+     * @param array|null $captionattributes Caption attributes of table.
+     */
+    public function set_caption(string $caption, ?array $captionattributes): void {
+        $this->caption = $caption;
+        $this->captionattributes = $captionattributes;
+    }
+
+    /**
+     * This function renders a table caption.
+     *
+     * @return string $output Caption of table.
+     */
+    public function render_caption(): string {
+        if ($this->caption === null) {
+            return '';
+        }
+
+        return html_writer::tag(
+            'caption',
+            $this->caption,
+            $this->captionattributes,
+        );
     }
 
     /**
@@ -2204,7 +2247,7 @@ class table_default_export_format_parent {
     function format_text($text, $format=FORMAT_MOODLE, $options=NULL, $courseid=NULL) {
         //use some whitespace to indicate where there was some line spacing.
         $text = str_replace(array('</p>', "\n", "\r"), '   ', $text);
-        return html_entity_decode(strip_tags($text));
+        return html_entity_decode(strip_tags($text), ENT_COMPAT);
     }
 
     /**
@@ -2346,4 +2389,3 @@ class table_dataformat_export_format extends table_default_export_format_parent 
         exit();
     }
 }
-

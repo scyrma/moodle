@@ -394,7 +394,7 @@ class core_string_manager_standard implements core_string_manager {
                 $normcomponent = $pluginname ? ($plugintype . '_' . $pluginname) : $plugintype;
                 debugging("String [{$identifier},{$normcomponent}] is deprecated. ".
                     'Either you should no longer be using that string, or the string has been incorrectly deprecated, in which case you should report this as a bug. '.
-                    'Please refer to https://docs.moodle.org/dev/String_deprecation', DEBUG_DEVELOPER);
+                    'Please refer to https://moodledev.io/general/projects/api/string-deprecation', DEBUG_DEVELOPER);
             }
         }
 
@@ -526,6 +526,10 @@ class core_string_manager_standard implements core_string_manager {
         $cachekey = 'list_'.$this->get_key_suffix();
         $cachedlist = $this->menucache->get($cachekey);
         if ($cachedlist !== false) {
+            /** @uses \tool_wp\language::get_list_of_translations */
+            $cachedlist = component_class_callback('tool_wp\language', 'get_list_of_translations',
+                [$cachedlist, $returnall, $this->translist, $this->transaliases], $cachedlist);
+
             // The cache content is valid.
             if ($returnall or empty($this->translist)) {
                 return $cachedlist;
@@ -578,6 +582,10 @@ class core_string_manager_standard implements core_string_manager {
 
         // Cache the list so that it can be used next time.
         $this->menucache->set($cachekey, $languages);
+
+        /** @uses \tool_wp\language::get_list_of_translations */
+        $languages = component_class_callback('tool_wp\language', 'get_list_of_translations',
+            [$languages, $returnall, $this->translist, $this->transaliases], $languages);
 
         if ($returnall or empty($this->translist)) {
             return $languages;

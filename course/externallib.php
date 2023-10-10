@@ -483,6 +483,7 @@ class core_course_external extends external_api {
                                                 'dataid' => new external_value(PARAM_NOTAGS, 'cm data id', VALUE_OPTIONAL),
                                             )
                                         ),
+                                        'Course dates',
                                         VALUE_DEFAULT,
                                         []
                                     ),
@@ -514,7 +515,7 @@ class core_course_external extends external_api {
                                                             VALUE_OPTIONAL
                                                    ),
                                               )
-                                          ), VALUE_DEFAULT, array()
+                                          ), 'Course contents', VALUE_DEFAULT, array()
                                       ),
                                     'contentsinfo' => new external_single_structure(
                                         array(
@@ -1305,7 +1306,7 @@ class core_course_external extends external_api {
                                 'value' => new external_value(PARAM_RAW, 'the value for the option 1 (yes) or 0 (no)'
                             )
                         )
-                    ), VALUE_DEFAULT, array()
+                    ), 'Course duplication options', VALUE_DEFAULT, array()
                 ),
             )
         );
@@ -1532,7 +1533,7 @@ class core_course_external extends external_api {
                                 'value' => new external_value(PARAM_RAW, 'the value for the option 1 (yes) or 0 (no)'
                             )
                         )
-                    ), VALUE_DEFAULT, array()
+                    ), 'Course import options', VALUE_DEFAULT, array()
                 ),
             )
         );
@@ -2142,6 +2143,19 @@ class core_course_external extends external_api {
             $categorycontext = context_coursecat::instance($cat['id']);
             self::validate_context($categorycontext);
             require_capability('moodle/category:manage', $categorycontext);
+
+            // If the category parent is being changed, check for capability in the new parent category
+            if (isset($cat['parent']) && ($cat['parent'] !== $category->parent)) {
+                if ($cat['parent'] == 0) {
+                    // Creating a top level category requires capability in the system context
+                    $parentcontext = context_system::instance();
+                } else {
+                    // Category context
+                    $parentcontext = context_coursecat::instance($cat['parent']);
+                }
+                self::validate_context($parentcontext);
+                require_capability('moodle/category:manage', $parentcontext);
+            }
 
             // this will throw an exception if descriptionformat is not valid
             external_validate_format($cat['descriptionformat']);
@@ -3906,6 +3920,10 @@ class core_course_external extends external_api {
                 $limit
             );
         }
+
+        /** @uses tool_program\api::filter_by_hideprogramcourses() */
+        $filteredcourses = component_class_callback('tool_program\api', 'filter_by_hideprogramcourses',
+            [$filteredcourses], $filteredcourses);
 
         $renderer = $PAGE->get_renderer('core');
         $formattedcourses = array_map(function($course) use ($renderer, $favouritecourseids) {

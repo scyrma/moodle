@@ -344,7 +344,7 @@ function install_print_header($config, $stagename, $heading, $stagetext, $stagec
           <link rel="shortcut icon" href="theme/clean/pix/favicon.ico" />';
 
     echo '<link rel="stylesheet" type="text/css" href="'.$CFG->wwwroot.'/install/css.php" />
-          <title>'.get_string('installation','install').' - Moodle '.$CFG->target_release.'</title>
+          <title>'.get_string('installation', 'install') . moodle_page::TITLE_SEPARATOR . 'Moodle '.$CFG->target_release.'</title>
           <meta name="robots" content="noindex">
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           <meta http-equiv="pragma" content="no-cache" />
@@ -411,6 +411,8 @@ function install_print_footer($config, $reload=false) {
     $homelink  = '<div class="sitelink">'.
        '<a title="Moodle '. $CFG->target_release .'" href="http://docs.moodle.org/en/Administrator_documentation" onclick="this.target=\'_blank\'">'.
        '<img src="pix/moodlelogo.png" alt="'.get_string('moodlelogo').'" /></a></div>';
+    /** @uses tool_wp\workplace::install_logo() */
+    $homelink = component_class_callback('\tool_wp\workplace', 'install_logo', []) ?: $homelink;
 
     echo '</form></div>';
     echo '<div id="page-footer">'.$homelink.'</div>';
@@ -507,8 +509,10 @@ function install_cli_database(array $options, $interactive) {
     }
 
     // Set the support email address if specified.
-    if (isset($options['supportemail'])) {
+    if (!empty($options['supportemail'])) {
         set_config('supportemail', $options['supportemail']);
+    } else if (!empty($options['adminemail'])) {
+        set_config('supportemail', $options['adminemail']);
     }
 
     // indicate that this site is fully configured

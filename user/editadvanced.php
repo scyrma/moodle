@@ -165,6 +165,8 @@ if ($returnto === 'profile') {
     } else {
         $returnurl = new moodle_url('/user/profile.php', array('id' => $user->id));
     }
+} else if ($user->id === -1) {
+    $returnurl = new moodle_url("/admin/user.php");
 } else {
     $returnurl = new moodle_url('/user/preferences.php', array('userid' => $user->id));
 }
@@ -311,6 +313,9 @@ if ($userform->is_cancelled()) {
         } else {
             redirect($returnurl, get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
         }
+    } else if ($returnto === 'profile') {
+        \core\session\manager::gc(); // Remove stale sessions.
+        redirect($returnurl, get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
         \core\session\manager::gc(); // Remove stale sessions.
         redirect("$CFG->wwwroot/$CFG->admin/user.php", get_string('changessaved'), null, \core\output\notification::NOTIFY_SUCCESS);
@@ -327,7 +332,8 @@ if ($user->id == -1 or ($user->id != $USER->id)) {
         $streditmyprofile = get_string('editmyprofile');
         $userfullname = fullname($user, true);
         $PAGE->set_heading($userfullname);
-        $PAGE->set_title("$course->shortname: $streditmyprofile - $userfullname");
+        $coursename = $course->id !== SITEID ? "$course->shortname" : '';
+        $PAGE->set_title("$streditmyprofile: $userfullname" . moodle_page::TITLE_SEPARATOR . $coursename);
         echo $OUTPUT->header();
         echo $OUTPUT->heading($userfullname);
     }

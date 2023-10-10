@@ -67,6 +67,20 @@ class reports_list extends system_report {
         // Select fields required for actions, permission checks, and row class callbacks.
         $this->add_base_fields('rb.id, rb.name, rb.source, rb.type, rb.usercreated, rb.contextid');
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::get_reports_list_tenant_fields */
+        $fields = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'get_reports_list_tenant_fields', ['rb']);
+        if (!empty($fields)) {
+            $this->add_base_fields($fields);
+        }
+
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::get_reports_list_tenant_clause */
+        [$where, $params] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'get_reports_list_tenant_clause', ['rb']);
+        if (!empty($where)) {
+            $this->add_base_condition_sql($where, $params);
+        }
+
         // Limit the returned list to those reports the current user can access.
         [$where, $params] = audience::user_reports_list_access_sql('rb');
         $this->add_base_condition_sql($where, $params);
@@ -138,6 +152,10 @@ class reports_list extends system_report {
                 return $editable->render($PAGE->get_renderer('core'));
             })
         );
+
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::add_shared_space_badge */
+        component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class, 'add_shared_space_badge',
+            [$this, $this->get_report_entity_name(), $tablealias]);
 
         // Report source column.
         $this->add_column((new column(

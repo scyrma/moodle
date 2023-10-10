@@ -24,7 +24,6 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
 require_once("$CFG->libdir/externallib.php");
 
 /**
@@ -59,7 +58,7 @@ class core_user_external extends external_api {
             'firstname' => new external_value(core_user::get_property_type('firstname'), 'The first name(s) of the user'),
             'lastname' => new external_value(core_user::get_property_type('lastname'), 'The family name of the user'),
             'email' => new external_value(core_user::get_property_type('email'), 'A valid and unique email address'),
-            'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email display', VALUE_OPTIONAL),
+            'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email visibility', VALUE_OPTIONAL),
             'city' => new external_value(core_user::get_property_type('city'), 'Home city of the user', VALUE_OPTIONAL),
             'country' => new external_value(core_user::get_property_type('country'),
                 'Home country code of the user, such as AU or CZ', VALUE_OPTIONAL),
@@ -486,7 +485,7 @@ class core_user_external extends external_api {
                 VALUE_OPTIONAL),
             'email' => new external_value(core_user::get_property_type('email'), 'A valid and unique email address', VALUE_OPTIONAL,
                 '', NULL_NOT_ALLOWED),
-            'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email display', VALUE_OPTIONAL),
+            'maildisplay' => new external_value(core_user::get_property_type('maildisplay'), 'Email visibility', VALUE_OPTIONAL),
             'city' => new external_value(core_user::get_property_type('city'), 'Home city of the user', VALUE_OPTIONAL),
             'country' => new external_value(core_user::get_property_type('country'),
                 'Home country code of the user, such as AU or CZ', VALUE_OPTIONAL),
@@ -627,6 +626,8 @@ class core_user_external extends external_api {
                     }
                 }
 
+                /** @uses \tool_tenant\config::push_for_user() */
+                component_class_callback('tool_tenant\config', 'push_for_user', [$user['id']]);
                 user_update_user($user, true, false);
 
                 $userobject = (object)$user;
@@ -951,6 +952,11 @@ class core_user_external extends external_api {
         // Finally retrieve each users information.
         $returnedusers = array();
         foreach ($users as $user) {
+            /** @uses \tool_tenant\tenancy::is_user_hidden_by_tenancy */
+            if (component_class_callback('tool_tenant\\tenancy', 'is_user_hidden_by_tenancy', [$user->id])) {
+                continue;
+            }
+
             $userdetails = user_get_user_details_courses($user);
 
             // Return the user only if all the searched fields are returned.
@@ -1191,6 +1197,7 @@ class core_user_external extends external_api {
      * Copy files from a draft area to users private files area.
      *
      * @throws invalid_parameter_exception
+     * @throws moodle_exception
      * @param int $draftid Id of a draft area containing files.
      * @return array An array of warnings
      * @since Moodle 2.6
@@ -1213,6 +1220,17 @@ class core_user_external extends external_api {
         if (has_capability('moodle/user:ignoreuserquota', $context)) {
             $maxbytes = USER_CAN_IGNORE_FILE_SIZE_LIMITS;
             $maxareabytes = FILE_AREA_MAX_BYTES_UNLIMITED;
+        } else {
+            // Get current used space for this user (private files only).
+            $fileareainfo = file_get_file_area_info($context->id, 'user', 'private');
+            $usedspace = $fileareainfo['filesize_without_references'];
+
+            // Get the total size of the new files we want to add to private files.
+            $newfilesinfo = file_get_draft_area_info($params['draftid']);
+
+            if (($newfilesinfo['filesize_without_references'] + $usedspace) > $maxareabytes) {
+                throw new moodle_exception('maxareabytes');
+            }
         }
 
         $options = array('subdirs' => 1,
@@ -1250,7 +1268,8 @@ class core_user_external extends external_api {
                 'platform'  => new external_value(PARAM_NOTAGS, 'the device platform \'iOS\' or \'Android\' etc.'),
                 'version'   => new external_value(PARAM_NOTAGS, 'the device version \'6.1.2\' or \'4.2.2\' etc.'),
                 'pushid'    => new external_value(PARAM_RAW, 'the device PUSH token/key/identifier/registration id'),
-                'uuid'      => new external_value(PARAM_RAW, 'the device UUID')
+                'uuid'      => new external_value(PARAM_RAW, 'the device UUID'),
+                'publickey' => new external_value(PARAM_RAW, 'the app generated public key', VALUE_DEFAULT, null),
             )
         );
     }
@@ -1266,10 +1285,11 @@ class core_user_external extends external_api {
      * @param string $version The device version 6.1.2 or 4.2.2 etc.
      * @param string $pushid The device PUSH token/key/identifier/registration id.
      * @param string $uuid The device UUID.
+     * @param string $publickey The app generated public key
      * @return array List of possible warnings.
      * @since Moodle 2.6
      */
-    public static function add_user_device($appid, $name, $model, $platform, $version, $pushid, $uuid) {
+    public static function add_user_device($appid, $name, $model, $platform, $version, $pushid, $uuid, $publickey = null) {
         global $CFG, $USER, $DB;
         require_once($CFG->dirroot . "/user/lib.php");
 
@@ -1280,7 +1300,8 @@ class core_user_external extends external_api {
                       'platform' => $platform,
                       'version' => $version,
                       'pushid' => $pushid,
-                      'uuid' => $uuid
+                      'uuid' => $uuid,
+                      'publickey' => $publickey,
                       ));
 
         $warnings = array();
@@ -1303,6 +1324,7 @@ class core_user_external extends external_api {
             foreach ($userdevices as $userdevice) {
                 $userdevice->version    = $params['version'];   // Maybe the user upgraded the device.
                 $userdevice->pushid     = $params['pushid'];
+                $userdevice->publickey  = $params['publickey'];
                 $userdevice->timemodified  = time();
                 $DB->update_record('user_devices', $userdevice);
             }
@@ -1317,6 +1339,7 @@ class core_user_external extends external_api {
             $userdevice->version    = $params['version'];
             $userdevice->pushid     = $params['pushid'];
             $userdevice->uuid       = $params['uuid'];
+            $userdevice->publickey  = $params['publickey'];
             $userdevice->timecreated  = time();
             $userdevice->timemodified = $userdevice->timecreated;
 

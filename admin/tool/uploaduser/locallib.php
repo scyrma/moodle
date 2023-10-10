@@ -85,6 +85,9 @@ class uu_progress_tracker {
             'theme' => get_string('theme'),
             'deleted' => get_string('delete'),
         ];
+        if (core_component::get_component_directory('tool_wp')) {
+            $this->headers['tool_wp'] = get_string('pluginname', 'tool_wp');
+        }
         $this->columns = array_keys($this->headers);
     }
 
@@ -237,6 +240,9 @@ function uu_validate_user_upload_columns(csv_import_reader $cir, $stdfields, $pr
             // special fields for enrolments
             $newfield = $lcfield;
 
+        } else if (component_class_callback('tool_wp\tool_uploaduser', 'validate_column', [$lcfield])) {
+            /** @uses \tool_wp\tool_uploaduser::validate_column() */
+            $newfield = $lcfield;
         } else {
             $cir->close();
             $cir->cleanup();
@@ -384,23 +390,32 @@ function uu_allowed_roles() {
 }
 
 /**
- * Returns mapping of roles using short role name as index.
+ * Returns assignable roles for current user using short role name and role ID as index.
+ * This function is no longer called without parameters.
  *
- * @param int|null $categoryid Id of the category to get roles for. Null means all roles.
+ * @param int|null $categoryid Id of the category to get roles for.
+ * @param int|null $courseid Id of the course to get roles for.
  * @return array
  */
-function uu_allowed_roles_cache(?int $categoryid = null): array {
-    if (is_null($categoryid)) {
-        $allowedroles = get_assignable_roles(context_course::instance(SITEID), ROLENAME_SHORT);
-    } else {
+function uu_allowed_roles_cache(?int $categoryid = null, ?int $courseid = null): array {
+    if (!is_null($categoryid) && !is_null($courseid)) {
+        return [];
+    } else if (is_null($categoryid) && !is_null($courseid)) {
+        $allowedroles = get_assignable_roles(context_course::instance($courseid), ROLENAME_SHORT);
+    } else if (is_null($courseid) && !is_null($categoryid)) {
         $allowedroles = get_assignable_roles(context_coursecat::instance($categoryid), ROLENAME_SHORT);
+    } else {
+        $allowedroles = get_assignable_roles(context_course::instance(SITEID), ROLENAME_SHORT);
     }
+
     $rolecache = [];
+    // A role can be searched for by its ID or by its shortname.
     foreach ($allowedroles as $rid=>$rname) {
         $rolecache[$rid] = new stdClass();
         $rolecache[$rid]->id   = $rid;
         $rolecache[$rid]->name = $rname;
-        if (!is_numeric($rname)) { // only non-numeric shortnames are supported!!!
+        // Since numeric short names are allowed, to avoid replacement of another role, we only accept non-numeric values.
+        if (!is_numeric($rname)) {
             $rolecache[$rname] = new stdClass();
             $rolecache[$rname]->id   = $rid;
             $rolecache[$rname]->name = $rname;

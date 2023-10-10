@@ -80,7 +80,7 @@ class participants_test extends core_reportbuilder_testcase {
 
         // Update final grade for the user.
         $courseitem = grade_item::fetch_course_item($course->id);
-        $courseitem->update_final_grade($user1->id, 80);
+        $courseitem->update_final_grade($user1->id, 42.5);
 
         // Set some last access value for the user in the course.
         $DB->insert_record('user_lastaccess',
@@ -97,10 +97,7 @@ class participants_test extends core_reportbuilder_testcase {
         $generator->create_column(['reportid' => $report->get('id'),
             'uniqueidentifier' => 'user:fullname']);
         // Order by enrolment method.
-        $generator->create_column(['reportid' => $report->get('id'),
-            'uniqueidentifier' => 'enrolment:method'])
-            ->set('sortenabled', true)
-            ->update();
+        $generator->create_column(['reportid' => $report->get('id'), 'uniqueidentifier' => 'enrolment:method', 'sortenabled' => 1]);
         $generator->create_column(['reportid' => $report->get('id'),
             'uniqueidentifier' => 'group:name']);
         $generator->create_column(['reportid' => $report->get('id'),
@@ -155,7 +152,7 @@ class participants_test extends core_reportbuilder_testcase {
             '', // Reagreggate.
             '2', // Days taking course.
             '2', // Days until completion.
-            '80.00', // Grade.
+            '42.50', // Grade.
         ], array_values($content[0]));
     }
 

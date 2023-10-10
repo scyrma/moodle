@@ -1229,7 +1229,7 @@ abstract class qbehaviour_walkthrough_test_base extends question_testcase {
         } else if ($enabled === false) {
             $expectedattributes['disabled'] = 'disabled';
         }
-        return new question_contains_tag_with_attributes('input', $expectedattributes, $forbiddenattributes);
+        return new question_contains_tag_with_attributes('button', $expectedattributes, $forbiddenattributes);
     }
 
     /**
@@ -1389,24 +1389,5 @@ class question_test_recordset extends moodle_recordset {
 
     public function close() {
         $this->records = null;
-    }
-}
-
-/**
- * Helper class for tests that help to test core_question_renderer.
- *
- * @copyright  2018 Huong Nguyen <huongnv13@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class testable_core_question_renderer extends core_question_renderer {
-
-    /**
-     * Test the private number function.
-     *
-     * @param null|string $number
-     * @return HTML
-     */
-    public function number($number) {
-        return parent::number($number);
     }
 }

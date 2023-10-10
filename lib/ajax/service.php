@@ -78,6 +78,11 @@ foreach ($requests as $request) {
     $index = clean_param($request['index'], PARAM_INT);
     $args = $request['args'];
 
+    // Hack to allow passing tenant url to some Webservices.
+    /** @uses tool_tenant\tenancy::load_tenant_config_from_tenant_url() */
+    component_class_callback('tool_tenant\tenancy', 'load_tenant_config_from_tenant_url', [$methodname, $args]);
+    unset($args['tenanturl']);
+
     $response = external_api::call_external_function($methodname, $args, true);
     $responses[$index] = $response;
     if ($response['error']) {

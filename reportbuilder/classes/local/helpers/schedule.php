@@ -43,13 +43,14 @@ class schedule {
      * Create report schedule, calculate when it should be next sent
      *
      * @param stdClass $data
+     * @param int|null $timenow Time to use as comparison against current date (defaults to current time)
      * @return model
      */
-    public static function create_schedule(stdClass $data): model {
+    public static function create_schedule(stdClass $data, ?int $timenow = null): model {
         $data->name = trim($data->name);
 
         $schedule = (new model(0, $data));
-        $schedule->set('timenextsend', self::calculate_next_send_time($schedule));
+        $schedule->set('timenextsend', self::calculate_next_send_time($schedule, $timenow));
 
         return $schedule->create();
     }
@@ -116,13 +117,16 @@ class schedule {
             return [];
         }
 
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery', [false], '');
+
         // Now convert audiences to SQL for user retrieval.
         [$wheres, $params] = audience::user_audience_sql($audiences);
         [$userorder] = users_order_by_sql('u');
 
         $sql = 'SELECT u.*
                   FROM {user} u
-                 WHERE ' . implode(' OR ', $wheres) . '
+                 WHERE ' . $tenantsql . '(' . implode(' OR ', $wheres) . ')
               ORDER BY ' . $userorder;
 
         return $DB->get_records_sql($sql, $params);
@@ -228,7 +232,7 @@ class schedule {
      * returned value is after the current date
      *
      * @param model $schedule
-     * @param int|null $timenow Time to use for calculation (defaults to current time)
+     * @param int|null $timenow Time to use as comparison against current date (defaults to current time)
      * @return int
      */
     public static function calculate_next_send_time(model $schedule, ?int $timenow = null): int {
