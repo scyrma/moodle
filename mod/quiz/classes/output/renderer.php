@@ -247,7 +247,7 @@ class renderer extends plugin_renderer_base {
 
         if ($attemptobj->get_access_manager(time())->attempt_must_be_in_popup()) {
             $this->page->requires->js_init_call('M.mod_quiz.secure_window.init_close_button',
-                    [$url], false, quiz_get_js_module());
+                    [$url->out(false)], false, quiz_get_js_module());
             return html_writer::empty_tag('input', ['type' => 'button',
                     'value' => get_string('finishreview', 'quiz'),
                     'id' => 'secureclosebutton',
@@ -1103,6 +1103,8 @@ class renderer extends plugin_renderer_base {
         // Prepare table header.
         $table = new html_table();
         $table->attributes['class'] = 'generaltable quizattemptsummary';
+        $table->caption = get_string('summaryofattempts', 'quiz');
+        $table->captionhide = true;
         $table->head = [];
         $table->align = [];
         $table->size = [];

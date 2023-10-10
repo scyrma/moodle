@@ -51,6 +51,12 @@ if (!$page->user_can_edit_blocks() || !$page->user_is_editing()) {
     throw new moodle_exception('nopermissions', '', $page->url->out(), get_string('editblock'));
 }
 
+// Hack to assign default tenant admin capability to check when drag & drop a block.
+if ($PAGE->pagetype === 'admin-tool-custompage') {
+    $PAGE->set_blocks_editing_capability('tool/custompage:edit');
+    $PAGE->blocks->add_region($buinewregion);
+}
+
 // Send headers.
 echo $OUTPUT->header();
 

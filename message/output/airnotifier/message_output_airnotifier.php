@@ -59,6 +59,9 @@ class message_output_airnotifier extends message_output {
             return true;
         }
 
+        /** @uses \tool_tenant\config::push_for_user() */
+        component_class_callback('tool_tenant\config', 'push_for_user', [$eventdata->userto->id]);
+
         // If username is empty we try to retrieve it, since it's required to generate the siteid.
         if (empty($eventdata->userto->username)) {
             $eventdata->userto->username = $DB->get_field('user', 'username', array('id' => $eventdata->userto->id));
@@ -108,7 +111,8 @@ class message_output_airnotifier extends message_output {
 
         // We are sending to message to all devices.
         $airnotifiermanager = new message_airnotifier_manager();
-        $devicetokens = $airnotifiermanager->get_user_devices($CFG->airnotifiermobileappname, $eventdata->userto->id);
+        $devicetokens = $this->is_user_configured($eventdata->userto) ?
+            $airnotifiermanager->get_user_devices($CFG->airnotifiermobileappname, $eventdata->userto->id) : [];
 
         foreach ($devicetokens as $devicetoken) {
             if (!$devicetoken->enable) {
@@ -131,23 +135,26 @@ class message_output_airnotifier extends message_output {
             $curl->setopt(array('CURLOPT_TIMEOUT' => 2, 'CURLOPT_CONNECTTIMEOUT' => 2));
             $curl->setHeader($header);
 
-            $extra->encrypted = $encryptnotifications;
-            $extra = $this->encrypt_payload($extra, $devicetoken);
+            // Clone the data to avoid modifying the original.
+            $deviceextra = clone $extra;
+
+            $deviceextra->encrypted = $encryptnotifications;
+            $deviceextra = $this->encrypt_payload($deviceextra, $devicetoken);
 
             // We use Firebase to deliver all Push Notifications, and for all device types.
             // Firebase has a 4KB payload limit.
             // https://firebase.google.com/docs/cloud-messaging/concept-options#notifications_and_data_messages
             // If the message is over that limit we remove unneeded fields and replace the title with a simple message.
-            if (\core_text::strlen(json_encode($extra), '8bit') > 4000) {
-                $extra->smallmessage = get_string('view_notification', 'message_airnotifier');
+            if (\core_text::strlen(json_encode($deviceextra), '8bit') > 4000) {
+                $deviceextra->smallmessage = get_string('view_notification', 'message_airnotifier');
             }
 
             $params = array(
                 'device'    => $devicetoken->platform,
                 'token'     => $devicetoken->pushid,
-                'extra'     => $extra
+                'extra'     => $deviceextra
             );
-            if ($extra->encrypted) {
+            if ($deviceextra->encrypted) {
                 // Setting alert to null makes air notifier send the notification as a data payload,
                 // this forces Android phones to call the app onMessageReceived function to decrypt the notification.
                 // Otherwise notifications are created by the Android system and will not be decrypted.
@@ -158,6 +165,8 @@ class message_output_airnotifier extends message_output {
             $resp = $curl->post($serverurl, json_encode($params));
         }
 
+        /** @uses \tool_tenant\config::pop() */
+        component_class_callback('tool_tenant\config', 'pop', []);
         return true;
     }
 
@@ -178,8 +187,6 @@ class message_output_airnotifier extends message_output {
             return $payload;
         }
 
-        // Clone the data to avoid modifying the original.
-        $payload = clone $payload;
         $publickey = sodium_base642bin($devicetoken->publickey, SODIUM_BASE64_VARIANT_ORIGINAL);
         $fields = [
             'userfromfullname',
@@ -204,7 +211,6 @@ class message_output_airnotifier extends message_output {
         unset($payload->usertoid);
         unset($payload->replyto);
         unset($payload->replytoname);
-        unset($payload->name);
         unset($payload->siteshortname);
         unset($payload->customdata);
         unset($payload->contexturlname);
@@ -296,6 +302,20 @@ class message_output_airnotifier extends message_output {
      */
     public function is_system_configured() {
         $airnotifiermanager = new message_airnotifier_manager();
-        return $airnotifiermanager->is_system_configured();
+        /** @uses \tool_tenant\local\config\message_airnotifier::is_system_configured() */
+        return $airnotifiermanager->is_system_configured() ||
+            component_class_callback('tool_tenant\local\config\message_airnotifier', 'is_system_configured', [], false);
+    }
+
+    /**
+     * Are the message processor's user specific settings configured?
+     *
+     * @param  stdClass $user the user object, defaults to $USER.
+     * @return bool True if the user has all necessary settings in their messaging preferences
+     */
+    public function is_user_configured($user = null) {
+        /** @uses \tool_tenant\local\config\message_airnotifier::is_user_configured() */
+        return component_class_callback('tool_tenant\local\config\message_airnotifier', 'is_user_configured',
+            [$user], parent::is_user_configured($user));
     }
 }

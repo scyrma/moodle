@@ -1737,7 +1737,7 @@ function course_get_cm_edit_actions(cm_info $mod, $indent = -1, $sr = null) {
             $enabledclass = '';
         }
         $actions['moveleft'] = new action_menu_link_secondary(
-            new moodle_url($baseurl, ['id' => $mod->id, 'indent' => '0']),
+            new moodle_url($baseurl, ['id' => $mod->id, 'indent' => '-1']),
             new pix_icon($leftarrow, '', 'moodle', ['class' => 'iconsmall']),
             $str->moveleft,
             [
@@ -3456,10 +3456,9 @@ function duplicate_module($course, $cm, int $sectionid = null, bool $changename 
         // triggering a lot of create/update duplicated events.
         $newcm = get_coursemodule_from_id($cm->modname, $newcmid, $cm->course);
         if ($changename) {
-            // Add ' (copy)' to duplicates. Note we don't cleanup or validate lengths here. It comes
-            // from original name that was valid, so the copy should be too.
+            // Add ' (copy)' language string postfix to duplicated module.
             $newname = get_string('duplicatedmodule', 'moodle', $newcm->name);
-            $DB->set_field($cm->modname, 'name', $newname, ['id' => $newcm->instance]);
+            set_coursemodule_name($newcm->id, $newname);
         }
 
         $section = $DB->get_record('course_sections', ['id' => $sectionid ?? $cm->section, 'course' => $cm->course]);
@@ -3768,7 +3767,7 @@ function core_course_drawer(): string {
     }
 
     // Show course index to users can access the course only.
-    if (!can_access_course($PAGE->course)) {
+    if (!can_access_course($PAGE->course, null, '', true)) {
         return '';
     }
 
