@@ -1,0 +1,80 @@
+.path-admin-tool-certification {
+    .certificationitem:hover {
+        -moz-box-shadow: 0 0 5px #ccc;
+        -webkit-box-shadow: 0 0 5px #ccc;
+        box-shadow: 0 0 3px #ccc;
+        cursor: pointer;
+    }
+
+    .certificationitem:hover .middle {
+        opacity: 1;
+    }
+
+    [data-region="edit-certification-calendar"] {
+        .calendar-fix-selector-width select {
+            min-width: 221px;
+        }
+    }
+
+    [data-region="edit-content"] {
+        .dropdown-toggle::after {
+            display: none;
+            visibility: hidden;
+            height: 0;
+            width: 0;
+        }
+
+        .certification-item.sortable-list-current-position .card-body {
+            background-color: #d7f0ee;
+        }
+
+        .certification-item.sortable-list-is-dragged {
+            opacity: 0.65;
+        }
+    }
+
+    .cert-user-log {
+        &.modal-xl .modal-body {
+            max-height: 80vh;
+            overflow: auto;
+        }
+    }
+
+    [data-region="certification-user-log"] {
+        .table thead th {
+            border-top: 0;
+        }
+
+        .wp-info-circle.systemusericon {
+            margin-right: 0;
+            padding: 9px;
+            margin-top: 1px;
+        }
+    }
+}
+
+// Certification tags and statuses.
+.tool_certification_cert_program_archived,
+.tool_certification_cert_user_status_overdue {
+    @extend .wp_status_tag;
+    @extend .badge-warning;
+}
+
+.tool_certification_cert_user_status_expired,
+.tool_certification_cert_user_status_suspended,
+.tool_certification_cert_program_deleted {
+    @extend .wp_status_tag;
+    @extend .badge-danger;
+}
+
+.tool_certification_cert_user_status_open,
+.tool_certification_cert_user_status_futureallocation,
+.tool_certification_cert_user_status_active {
+    @extend .wp_status_tag;
+    @extend .badge-info;
+}
+
+.tool_certification_cert_user_status_certified {
+    @extend .wp_status_tag;
+    @extend .badge-success;
+}
