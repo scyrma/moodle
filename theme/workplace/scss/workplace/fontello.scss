@@ -1,0 +1,59 @@
+/*
+ Fontello font with custom WP icons.
+*/
+
+@font-face {
+    font-family: 'fontello';
+    src: url([[font:theme|fontello.eot]]?8356621);
+    src:
+        url([[font:theme|fontello.eot]]?8356621#iefix) format('embedded-opentype'),
+        url([[font:theme|fontello.woff2]]?8356621) format('woff2'),
+        url([[font:theme|fontello.woff]]?8356621) format('woff'),
+        url([[font:theme|fontello.ttf]]?8356621) format('truetype'),
+        url([[font:theme|fontello.svg]]?8356621#fontello) format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Mixin to use the icons. */
+@mixin wpicon($code: null) {
+    &:before {
+        font-family: "fontello";
+        font-style: normal;
+        font-weight: normal;
+        speak: none;
+        display: inline-block;
+        text-decoration: inherit;
+        width: 1em;
+        margin-right: .2em;
+        text-align: center;
+
+        /* For safety - reset parent styles, that can break glyph codes*/
+        font-variant: normal;
+        text-transform: none;
+
+        /* fix buttons height, for twitter bootstrap */
+        line-height: 1em;
+
+        /* Font smoothing. That was taken from TWBS */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        @if ($code) {
+            content: $code;
+        }
+    }
+}
+
+/* Helper classes for the icons. */
+.wpicon-bell {
+    @include wpicon('\e800');
+}
+.wpicon-comments {
+    @include wpicon('\e801');
+}
+.wpicon-search {
+    @include wpicon('\e802');
+}
+.wpicon-grid {
+    @include wpicon('\e803');
+}
