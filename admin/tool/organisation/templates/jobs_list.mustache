@@ -1,0 +1,68 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the discrete and self-executable
+    collection of software scripts (plugins and modifications, and any
+    derivations thereof) that are exclusively owned and licensed by
+    Moodle Pty Ltd (Moodle) under the terms of its proprietary Moodle
+    Workplace License ("MWL") made available with Moodle's open software
+    package ("Moodle LMS") offering which itself is freely downloadable
+    at "download.moodle.org" and which is provided by Moodle under a
+    single GNU General Public License version 3.0, dated 29 June 2007
+    ("GPL"). MWL is strictly controlled by Moodle Pty Ltd and its Moodle
+    Certified Premium Partners. Wherever conflicting terms exist, the
+    terms of the MWL shall prevail.
+}}
+{{!
+    @template tool_organisation/jobs_list
+
+    Tab with jobs (for management)
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "jobs": [
+            { "positionname": "Main developer", "departmentname": "Product", "inusertenant": true, "hasreporters": true, "totalreporters": 5, "islast": false},
+            { "positionname": "Team lead", "departmentname": "Main office", "inusertenant": true, "hasreporters": false, "totalreporters": 2, "islast": true}
+        ]
+    }
+}}
+<div class="wp-jobs">
+    {{#jobs}}
+    <div class="row">
+        <div class="col-md-12 font-weight-bold">
+            <span class="text-muted">{{#pix}} position, tool_organisation {{/pix}}</span> {{{positionname}}}
+        </div>
+        {{#departmentname}}
+        <div class="col-md-12">
+            <span class="text-muted">{{#pix}} department, tool_organisation {{/pix}}</span> {{{departmentname}}}
+            {{^inusertenant}}
+                <span class="text-danger ml-1">
+                    {{#pix}} exclamation-circle, tool_wp, {{#str}} jobtenantdoesnotmatch, tool_organisation {{/str}} {{/pix}}
+                </span>
+            {{/inusertenant}}
+        </div>
+        {{/departmentname}}
+        {{#hasreporters}}
+        <div class="col-md-12">
+            <span class="text-muted">{{#pix}} sitemap, tool_tenant {{/pix}}</span> {{{totalreporters}}}
+        </div>
+        {{/hasreporters}}
+    </div>
+    {{^islast}}<hr class="my-2">{{/islast}}
+    {{/jobs}}
+</div>

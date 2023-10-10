@@ -1,0 +1,79 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the discrete and self-executable
+    collection of software scripts (plugins and modifications, and any
+    derivations thereof) that are exclusively owned and licensed by
+    Moodle Pty Ltd (Moodle) under the terms of its proprietary Moodle
+    Workplace License ("MWL") made available with Moodle's open software
+    package ("Moodle LMS") offering which itself is freely downloadable
+    at "download.moodle.org" and which is provided by Moodle under a
+    single GNU General Public License version 3.0, dated 29 June 2007
+    ("GPL"). MWL is strictly controlled by Moodle Pty Ltd and its Moodle
+    Certified Premium Partners. Wherever conflicting terms exist, the
+    terms of the MWL shall prevail.
+}}
+{{!
+    @template tool_organisation/user_jobs
+
+    User job assignments and reporing lines page
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "jobsassignedreport": "Job assigned report table here",
+        "reportstoreport": "Report table here",
+        "reportingtoreport": "Report table here",
+        "assignjobbuttonattrib": [{"name": "data-foo", "value": "bar"}],
+        "assignmanagerbuttonattrib": [{"name": "data-foo", "value": "bar"}],
+        "assignmanagedbuttonattrib": [{"name": "data-foo", "value": "bar"}],
+        "user": [{"username": "usertest", "firstname": "User", "lastname": "User"}],
+        "systemcontextid": 10
+    }
+}}
+{{< tool_organisation/user_jobs_section }}
+    {{$extraclasses}} userjobs-section-jobsassigned table-headings-hidden{{/extraclasses}}
+    {{$title}} {{#str}}jobsassigned, tool_organisation{{/str}} {{/title}}
+    {{$button}}
+        <button class="btn btn-primary" {{#assignjobbuttonattrib}}{{name}}="{{value}}"{{/assignjobbuttonattrib}}>{{#pix}}t/add, core{{/pix}} {{#str}}assignjob, tool_organisation{{/str}}</button>
+    {{/button}}
+    {{$report}} {{{jobsassignedreport}}} {{/report}}
+{{/ tool_organisation/user_jobs_section }}
+
+{{< tool_organisation/user_jobs_section }}
+    {{$extraclasses}} userjobs-section-reportsto table-headings-hidden{{/extraclasses}}
+    {{$title}} {{#str}}reportsto, tool_organisation{{/str}} {{/title}}
+    {{$button}}
+        <button class="btn btn-primary" {{#assignmanagerbuttonattrib}}{{name}}="{{value}}"{{/assignmanagerbuttonattrib}}>{{#pix}}t/add, core{{/pix}} {{#str}}assignmanager, tool_organisation{{/str}}</button>
+    {{/button}}
+    {{$report}} {{{reportstoreport}}} {{/report}}
+{{/ tool_organisation/user_jobs_section }}
+
+{{< tool_organisation/user_jobs_section }}
+    {{$extraclasses}} userjobs-section-peoplereportingto {{/extraclasses}}
+    {{$title}} {{#str}} peoplereportingto, tool_organisation, {{{user.firstname}}} {{/str}} {{/title}}
+    {{$button}}
+        <button class="btn btn-primary" {{#assignmanagedbuttonattrib}}{{name}}="{{value}}"{{/assignmanagedbuttonattrib}}>{{#pix}}t/add, core{{/pix}} {{#str}}assignstaff, tool_organisation{{/str}}</button>
+    {{/button}}
+    {{$report}} {{{reportingtoreport}}} {{/report}}
+{{/ tool_organisation/user_jobs_section }}
+{{#js}}
+    require(['tool_organisation/manage_jobs', 'tool_organisation/manage_mam'], function(Managejobs, Managemgrs) {
+    Managejobs.init({{systemcontextid}});
+    Managemgrs.init({{systemcontextid}});
+    });
+{{/js}}
