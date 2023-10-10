@@ -5,6 +5,10 @@ information provided here is intended especially for developers.
 * The method \completion_criteria_completion::mark_complete() now has the optional $timecompleted parameter to specify when the
   criteria was completed.
 
+=== 3.11.3 ===
+* New method mark_course_completions_activity_criteria() has been added to mark course completions instantly. It is
+  based on cron for completion_criteria_activity.php which is refactored to use it as well.
+
 === 3.11 ===
 * New Behat steps for activity completion in the behat_completion class:
   - activity_completion_condition_displayed_as()

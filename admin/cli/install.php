@@ -153,7 +153,7 @@ moodle_require_minimum_php_version();
 // set up configuration
 global $CFG;
 $CFG = new stdClass();
-$CFG->lang                 = 'en';
+$CFG->lang                 = 'en_wp';
 $CFG->dirroot              = dirname(dirname(__DIR__));
 $CFG->libdir               = "$CFG->dirroot/lib";
 $CFG->wwwroot              = "http://localhost";
@@ -287,9 +287,12 @@ if ($options['help']) {
 }
 
 //Print header
-cli_logo();
-echo PHP_EOL;
-echo get_string('cliinstallheader', 'install', $CFG->target_release)."\n";
+/** @uses tool_wp\workplace::print_cli_logo() */
+if (!component_class_callback('tool_wp\workplace', 'print_cli_logo', [])) {
+    cli_logo();
+    echo PHP_EOL;
+    echo get_string('cliinstallheader', 'install', $CFG->target_release) . "\n";
+}
 
 //Fist select language
 if ($interactive) {
@@ -297,18 +300,23 @@ if ($interactive) {
     // Do not put the langs into columns because it is not compatible with RTL.
     $default = $CFG->lang;
     cli_heading(get_string('chooselanguagehead', 'install'));
+    if (array_key_exists($default . '_wp', $languages)) {
+        // Automatically switch to workplace language pack if available.
+        echo $default . '_wp - ' . $languages[$default . '_wp'] . "\n";
+        $CFG->lang = $default . '_wp';
+    }
     if (array_key_exists($default, $languages)) {
         echo $default.' - '.$languages[$default]."\n";
     }
-    if ($default !== 'en') {
-        echo 'en - English (en)'."\n";
+    if ($default !== 'en_wp') {
+        echo 'en_wp - '.$languages['en_wp']."\n";
     }
     echo '? - '.get_string('availablelangs', 'install')."\n";
     $prompt = get_string('clitypevaluedefault', 'admin', $CFG->lang);
     $error = '';
     do {
         echo $error;
-        $input = cli_input($prompt, $default);
+        $input = cli_input($prompt, $CFG->lang);
 
         if ($input === '?') {
             echo implode("\n", $languages)."\n";
@@ -758,8 +766,11 @@ if (!$skipdatabase) {
         if (!$options['agree-license']) {
             cli_separator();
             cli_heading(get_string('copyrightnotice'));
-            echo "Moodle  - Modular Object-Oriented Dynamic Learning Environment\n";
-            echo get_string('gpl3')."\n\n";
+            /** @uses tool_wp\workplace::print_cli_copyright_notice() */
+            if (!component_class_callback('tool_wp\workplace', 'print_cli_copyright_notice', [])) {
+                echo "Moodle  - Modular Object-Oriented Dynamic Learning Environment\n";
+                echo get_string('gpl3')."\n\n";
+            }
             echo get_string('doyouagree')."\n";
             $prompt = get_string('cliyesnoprompt', 'admin');
             $input = cli_input($prompt, '', array(get_string('clianswerno', 'admin'), get_string('cliansweryes', 'admin')));
