@@ -1,0 +1,77 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template tool_tenant/auth_plugins_default
+
+    Template for editing tenant theme settings
+
+    Example context (json):
+    {
+        "authplugins": [
+            {"title": "Manual", "users": 5, "enabled": "", "settingsform": "", "auth": "manual"}
+        ]
+    }
+}}
+
+<table class="generaltable">
+    <tr>
+        <th>{{#str}}name, core{{/str}}</th>
+        <th>{{#str}}users, core{{/str}}</th>
+        <th>{{#str}}status, core{{/str}}</th>
+        <th>{{#str}}up, core{{/str}} / {{#str}}down, core{{/str}}</th>
+        <th>{{#str}}settings, core{{/str}}</th>
+        <th>{{#str}}testsettings, core_auth{{/str}}</th>
+        <th>{{#str}}uninstallplugin, core_admin{{/str}}</th>
+    </tr>
+    {{#authplugins}}
+        <tr {{^status}}class="dimmed_text"{{/status}}>
+            <td>{{{title}}} {{#ismultitenant}}<span class="badge badge-secondary ml-1">{{#str}}ismultitenant, tool_tenant{{/str}}</span>{{/ismultitenant}}</td>
+            <td>{{users}}</td>
+            <td data-region="authstatus">{{#editablestatus}}{{> core/inplace_editable}}{{/editablestatus}}</td>
+            <td>
+                {{#upurl}}<a href="{{upurl}}">{{#pix}}t/up, core, {{#str}}moveup, core{{/str}}{{/pix}}</a>{{/upurl}}&nbsp;
+                {{#downurl}}<a href="{{downurl}}">{{#pix}}t/down, core, {{#str}}movedown, core{{/str}}{{/pix}}</a>{{/downurl}}
+            </td>
+            <td>{{#settingsurl}}<a href="{{settingsurl}}">{{#str}}settings, core{{/str}}</a>{{/settingsurl}}</td>
+            <td>{{#testsettingsurl}}<a href="{{testsettingsurl}}">{{#str}}testsettings, core_auth{{/str}}</a>{{/testsettingsurl}}</td>
+            <td>{{#uninstallurl}}<a href="{{uninstallurl}}">{{#str}}uninstallplugin, core_admin{{/str}}</a>{{/uninstallurl}}</td>
+        </tr>
+    {{/authplugins}}
+</table>
+{{#js}}
+require(['jquery'], function($) {
+    $('body').on('updated', '[data-region=authstatus] [data-inplaceeditable]', function(e) {
+        // Refresh the whole page if the status changed and the row needs to be dimmed/shown or rearranged.
+        var oldvalue = parseInt(e.oldvalue);
+        var newvalue = parseInt(e.ajaxreturn.value);
+        if (!!oldvalue !== !!newvalue) {
+            window.location.href = M.cfg.wwwroot + '/' + M.cfg.admin + '/settings.php?section=manageauths';
+        }
+    });
+});
+{{/js}}
