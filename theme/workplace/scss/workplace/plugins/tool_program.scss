@@ -1,0 +1,37 @@
+/*
+ General
+*/
+
+.path-admin-tool-program {
+    /* Content tab */
+    [data-region="edit-content"] {
+        .sortable-list-current-position {
+            background-color: $gray-200;
+        }
+        .sortable-list-is-dragged {
+            opacity: 0.65;
+        }
+        .tool-wp-table-tree .dropdown-toggle::after {
+            display: none;
+        }
+        [data-groupname="completioncriteriagroup"] {
+            margin-bottom: 0;
+            margin-left: 0;
+            margin-right: 0;
+            // Removes empty form group label spacing.
+            &.femptylabel {
+                margin-left: 0;
+                .col-md-3 {
+                    display: none;
+                    visibility: hidden;
+                }
+                .col-md-9 {
+                    flex: 0 0 100%;
+                    max-width: 100%;
+                    padding-right: 0;
+                    padding-left: 0;
+                }
+            }
+        }
+    }
+}
