@@ -1255,6 +1255,9 @@ abstract class webservice_base_server extends webservice_server {
     /** @var  array List of struct classes generated for the web service methods. */
     protected $servicestructs;
 
+    /** @var string service class name. */
+    protected $serviceclass;
+
     /**
      * This method parses the request input, it needs to get:
      *  1/ user authentication - username+password or token
@@ -1337,6 +1340,12 @@ abstract class webservice_base_server extends webservice_server {
         if (!empty($newtimezone) && (!isset($CFG->forcetimezone) || $CFG->forcetimezone == 99)) {
             $USER->timezone = $newtimezone;
         }
+
+        // Hack to allow passing tenant url to some Webservices.
+        /** @uses tool_tenant\tenancy::load_tenant_config_from_tenant_url() */
+        component_class_callback('tool_tenant\tenancy', 'load_tenant_config_from_tenant_url',
+            [$this->functionname, $this->parameters]);
+        unset($this->parameters['tenanturl']);
 
         // finally, execute the function - any errors are catched by the default exception handler
         $this->execute();

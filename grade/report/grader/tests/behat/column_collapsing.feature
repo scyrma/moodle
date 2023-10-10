@@ -40,9 +40,8 @@ Feature: Within the grader report, test that we can collapse columns
       | assign   | C1     | a4       | Test assignment four  |
     And the following config values are set as admin:
       | showuseridentity | idnumber,email,city,country,phone1,phone2,department,institution,profile_field_enduro |
-    And I am on the "Course 1" "Course" page logged in as "teacher1"
     And I change window size to "large"
-    And I navigate to "View > Grader report" in the course gradebook
+    And I am on the "Course 1" "grades > Grader report > View" page logged in as "teacher1"
 
   Scenario: An admin collapses a user info column and then reloads the page to find the column still collapsed
     Given I should see "Email" in the "First name / Last name" "table_row"
@@ -55,7 +54,6 @@ Feature: Within the grader report, test that we can collapse columns
     When I reload the page
     Then I should not see "Email" in the "First name / Last name" "table_row"
     # Check that the collapsed column is only for the user that set it.
-    And I log out
     And I am on the "Course 1" "Course" page logged in as "admin"
     And I change window size to "large"
     And I navigate to "View > Grader report" in the course gradebook
@@ -73,7 +71,7 @@ Feature: Within the grader report, test that we can collapse columns
     Given I click on grade item menu "Test assignment one" of type "gradeitem" on "grader" page
     When I choose "Collapse" in the open action menu
     And I should not see "Test assignment one</a>" in the "First name / Last name" "table_row"
-    Then I should see "Reopen Test assignment one column"
+    Then I should see "Expand column Test assignment one"
     And I should see "Collapsed columns 1"
 
   Scenario: Collapsed columns can have their name searched and triggered to expand but the contents are not searched
@@ -128,8 +126,8 @@ Feature: Within the grader report, test that we can collapse columns
     Given I click on user profile field menu "Email"
     And I choose "Collapse" in the open action menu
     And I should not see "Email" in the "First name / Last name" "table_row"
-    And I hover "Reopen email column" "button"
-    When I press "Reopen email column"
+    And I hover "Expand column email" "button"
+    When I press "Expand column email"
     Then I should see "Email" in the "First name / Last name" "table_row"
 
   Scenario: When a grade item is collapsed, the grade category is shown alongside the column name.
@@ -222,10 +220,10 @@ Feature: Within the grader report, test that we can collapse columns
     And I click on user profile field menu "city"
     And I press the escape key
     And I press the tab key
-    And the focused element is "Reopen country column" "button"
+    And the focused element is "Expand column country" "button"
     And I press the enter key
     And I press the tab key
-    And the focused element is "Reopen phone1 column" "button"
+    And the focused element is "Expand column phone1" "button"
     And I press the enter key
     And I should not see "Email" in the "First name / Last name" "table_row"
     And I should see "Phone" in the "First name / Last name" "table_row"

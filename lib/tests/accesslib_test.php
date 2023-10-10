@@ -2468,6 +2468,8 @@ class accesslib_test extends advanced_testcase {
     /**
      * Tests get_user_capability_contexts() which checks a capability across all courses and categories.
      * Testing for categories only because courses results are covered by test_get_user_capability_course.
+     *
+     * @covers ::get_user_capability_contexts
      */
     public function test_get_user_capability_contexts() {
         $this->resetAfterTest();
@@ -2495,9 +2497,9 @@ class accesslib_test extends advanced_testcase {
         assign_capability($cap, CAP_PROHIBIT, $prohibitroleid, $systemcontext->id);
 
         // Create three categories (two of them nested).
-        $cat1 = $generator->create_category();
-        $cat2 = $generator->create_category();
-        $cat3 = $generator->create_category(['parent' => $cat1->id]);
+        $cat1 = $generator->create_category(['name' => 'Aardvarks']);
+        $cat2 = $generator->create_category(['name' => 'Badgers']);
+        $cat3 = $generator->create_category(['parent' => $cat1->id, 'name' => 'Cheetahs']);
 
         // Category overrides: in cat 1, empty role is allowed; in cat 2, empty role is prevented.
         assign_capability($cap, CAP_ALLOW, $emptyroleid,
@@ -2518,7 +2520,7 @@ class accesslib_test extends advanced_testcase {
         $u1 = $generator->create_user();
 
         // It returns false (annoyingly) if there are no course categories.
-        list($categories, $courses) = get_user_capability_contexts($cap, true, $u1->id, true, '', '', '', 'id');
+        list($categories, $courses) = get_user_capability_contexts($cap, true, $u1->id);
         $this->assertFalse($categories);
 
         // User 2 has allow role (system wide).
@@ -2526,7 +2528,7 @@ class accesslib_test extends advanced_testcase {
         role_assign($allowroleid, $u2->id, $systemcontext->id);
 
         // Should get $defaultcategory only. cat2 is prohibited; cat1 is prevented, so cat3 is not allowed.
-        list($categories, $courses) = get_user_capability_contexts($cap, true, $u2->id, true, '', '', '', 'id');
+        list($categories, $courses) = get_user_capability_contexts($cap, true, $u2->id);
         // Using same assert_course_ids helper even when we are checking course category ids.
         $this->assert_course_ids([$defaultcategoryid], $categories);
 
@@ -2534,8 +2536,8 @@ class accesslib_test extends advanced_testcase {
         $u3 = $generator->create_user();
         role_assign($emptyroleid, $u3->id, $systemcontext->id);
 
-        // Should get cat1 and cat3. cat2 is prohibited; no access to system level.
-        list($categories, $courses) = get_user_capability_contexts($cap, true, $u3->id, true, '', '', '', 'id');
+        // Should get cat1 and cat3. cat2 is prohibited; no access to system level. Sorted by category name.
+        list($categories, $courses) = get_user_capability_contexts($cap, true, $u3->id, true, '', '', '', 'name');
         $this->assert_course_ids([$cat1->id, $cat3->id], $categories);
 
         // User 4 has prohibit role (system wide).
@@ -2544,7 +2546,7 @@ class accesslib_test extends advanced_testcase {
 
         // Should not get any, because all of them are prohibited at system level.
         // Even if we try to allow an specific category.
-        list($categories, $courses) = get_user_capability_contexts($cap, true, $u4->id, true, '', '', '', 'id');
+        list($categories, $courses) = get_user_capability_contexts($cap, true, $u4->id);
         $this->assertFalse($categories);
     }
 
@@ -2946,6 +2948,90 @@ class accesslib_test extends advanced_testcase {
         // Get users without any group on the system context (it should throw an exception).
         $this->expectException('coding_exception');
         get_enrolled_users($systemcontext, '', USERSWITHOUTGROUP);
+    }
+
+    /**
+     * Test that enrolled users returns only users in those groups that are
+     * specified, and they are allowed to see members of.
+     *
+     * @covers ::get_enrolled_users
+     * @covers ::get_enrolled_sql
+     * @covers ::get_enrolled_with_capabilities_join
+     * @covers ::get_enrolled_join
+     * @covers ::get_with_capability_join
+     * @covers ::groups_get_members_join
+     * @covers ::get_suspended_userids
+     */
+    public function test_get_enrolled_sql_userswithhiddengroups() {
+        $this->resetAfterTest();
+
+        $course = $this->getDataGenerator()->create_course();
+        $coursecontext = context_course::instance($course->id);
+        $user1 = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $user3 = $this->getDataGenerator()->create_user();
+        $user4 = $this->getDataGenerator()->create_user();
+        $user5 = $this->getDataGenerator()->create_user();
+        $user6 = $this->getDataGenerator()->create_user();
+
+        $this->getDataGenerator()->enrol_user($user1->id, $course->id);
+        $this->getDataGenerator()->enrol_user($user2->id, $course->id);
+        $this->getDataGenerator()->enrol_user($user3->id, $course->id);
+        $this->getDataGenerator()->enrol_user($user4->id, $course->id);
+        $this->getDataGenerator()->enrol_user($user5->id, $course->id);
+        $this->getDataGenerator()->enrol_user($user6->id, $course->id);
+
+        $group1 = $this->getDataGenerator()->create_group([
+                'courseid' => $course->id,
+                'visibility' => GROUPS_VISIBILITY_ALL,
+        ]);
+        groups_add_member($group1, $user1);
+        $group2 = $this->getDataGenerator()->create_group([
+                'courseid' => $course->id,
+                'visibility' => GROUPS_VISIBILITY_MEMBERS,
+        ]);
+        groups_add_member($group2, $user2);
+        groups_add_member($group2, $user5);
+        $group3 = $this->getDataGenerator()->create_group([
+                'courseid' => $course->id,
+                'visibility' => GROUPS_VISIBILITY_OWN,
+        ]);
+        groups_add_member($group3, $user3);
+        groups_add_member($group3, $user6);
+        $group4 = $this->getDataGenerator()->create_group([
+                'courseid' => $course->id,
+                'visibility' => GROUPS_VISIBILITY_NONE,
+        ]);
+        groups_add_member($group4, $user4);
+
+        $groupids = [$group1->id, $group2->id, $group3->id, $group4->id];
+        // User 1 can only see members of Group 1.
+        $this->setUser($user1);
+        $user1groupusers = get_enrolled_users($coursecontext, '', $groupids);
+        $this->assertCount(1, $user1groupusers);
+        $this->assertArrayHasKey($user1->id, $user1groupusers);
+        $this->assertEquals(1, count_enrolled_users($coursecontext, '', $groupids));
+        // User 2 can see all members of Group 1 and Group 2.
+        $this->setUser($user2);
+        $user2groupusers = get_enrolled_users($coursecontext, '', $groupids);
+        $this->assertCount(3, $user2groupusers);
+        $this->assertArrayHasKey($user1->id, $user2groupusers);
+        $this->assertArrayHasKey($user2->id, $user2groupusers);
+        $this->assertArrayHasKey($user5->id, $user2groupusers);
+        $this->assertEquals(3, count_enrolled_users($coursecontext, '', $groupids));
+        // User 3 can see members of Group 1, and themselves in Group 3 but not other members.
+        $this->setUser($user3);
+        $user3groupusers = get_enrolled_users($coursecontext, '', $groupids);
+        $this->assertCount(2, $user3groupusers);
+        $this->assertArrayHasKey($user1->id, $user3groupusers);
+        $this->assertArrayHasKey($user3->id, $user3groupusers);
+        $this->assertEquals(2, count_enrolled_users($coursecontext, '', $groupids));
+        // User 4 can only see members of Group 1.
+        $this->setUser($user4);
+        $user4groupusers = get_enrolled_users($coursecontext, '', $groupids);
+        $this->assertCount(1, $user4groupusers);
+        $this->assertArrayHasKey($user1->id, $user4groupusers);
+        $this->assertEquals(1, count_enrolled_users($coursecontext, '', $groupids));
     }
 
     public function get_enrolled_sql_provider() {
@@ -4204,70 +4290,6 @@ class accesslib_test extends advanced_testcase {
             $perms2 = array_values($DB->get_records('role_capabilities', array('capability'=>'mod/page:addinstance', 'roleid'=>$role->id), 'contextid, permission', 'contextid, permission'));
         }
         $this->assertEquals($perms1, $perms2);
-    }
-
-    /**
-     * Checks install performance in update_capabilities.
-     *
-     * @covers ::update_capabilities()
-     */
-    public function test_update_capabilities_install_performance(): void {
-        global $DB;
-
-        $this->resetAfterTest();
-
-        // Get rid of all the capabilities for forum.
-        $testmodule = 'forum';
-        $DB->delete_records_select('capabilities', 'name LIKE ?', ['mod/' . $testmodule . ':%']);
-
-        $beforeq = $DB->perf_get_queries();
-        update_capabilities('mod_' . $testmodule);
-        $afterq = $DB->perf_get_queries();
-
-        // In my testing there are currently 237 queries; there were 373 before a performance
-        // fix. This test confirms performance doesn't degrade to near the previous level.
-        $this->assertLessThan(300, $afterq - $beforeq);
-    }
-
-    /**
-     * Checks install performance in update_capabilities when a new capability is cloned.
-     *
-     * This only has impact if there are a significant number of overrides of the existing
-     * capability.
-     *
-     * @covers ::update_capabilities()
-     */
-    public function test_update_capabilities_clone_performance(): void {
-        global $DB;
-
-        $this->resetAfterTest();
-
-        // Create a bunch of activities in a course. In each one, override so manager doesn't have
-        // moodle/course:manageactivities.
-        $generator = $this->getDataGenerator();
-        $course = $generator->create_course();
-        $roleid = $DB->get_field('role', 'id', ['shortname' => 'manager']);
-        for ($i = 0; $i < 100; $i++) {
-            $page = $generator->create_module('page', ['course' => $course->id]);
-            $contextid = context_module::instance($page->cmid)->id;
-            assign_capability('moodle/course:manageactivities', CAP_PREVENT, $roleid, $contextid);
-        }
-
-        // Get rid of one of the capabilities for forum, which clones moodle/course:manageactivities.
-        $DB->delete_records('capabilities', ['name' => 'mod/forum:addinstance']);
-
-        // Clear the context cache to simulate a realistic situation where we don't already have
-        // all those contexts in the cache.
-        accesslib_clear_all_caches_for_unit_testing();
-
-        $beforeq = $DB->perf_get_queries();
-        update_capabilities('mod_forum');
-        $afterq = $DB->perf_get_queries();
-
-        // In my testing there are currently 214 queries after performance was improved for cloning,
-        // compared to 414 before. This test confirms performance doesn't degrade to near the
-        // previous level.
-        $this->assertLessThan(300, $afterq - $beforeq);
     }
 
     /**

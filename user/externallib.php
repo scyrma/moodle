@@ -622,6 +622,8 @@ class core_user_external extends \core_external\external_api {
                     }
                 }
 
+                /** @uses \tool_tenant\config::push_for_user() */
+                component_class_callback('tool_tenant\config', 'push_for_user', [$user['id']]);
                 user_update_user($user, true, false);
 
                 $userobject = (object)$user;
@@ -946,6 +948,11 @@ class core_user_external extends \core_external\external_api {
         // Finally retrieve each users information.
         $returnedusers = array();
         foreach ($users as $user) {
+            /** @uses \tool_tenant\tenancy::is_user_hidden_by_tenancy() */
+            if (component_class_callback('tool_tenant\\tenancy', 'is_user_hidden_by_tenancy', [$user->id])) {
+                continue;
+            }
+
             $userdetails = user_get_user_details_courses($user);
 
             // Return the user only if all the searched fields are returned.
@@ -1212,8 +1219,10 @@ class core_user_external extends \core_external\external_api {
             $maxbytes = USER_CAN_IGNORE_FILE_SIZE_LIMITS;
             $maxareabytes = FILE_AREA_MAX_BYTES_UNLIMITED;
         } else {
-            // Get current used space for this user.
-            $usedspace = file_get_user_used_space();
+            // Get current used space for this user (private files only).
+            $fileareainfo = file_get_file_area_info($context->id, 'user', 'private');
+            $usedspace = $fileareainfo['filesize_without_references'];
+
             // Get the total size of the new files we want to add to private files.
             $newfilesinfo = file_get_draft_area_info($params['draftid']);
 

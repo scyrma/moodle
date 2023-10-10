@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /*!
- * Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2023 Fonticons, Inc.
  */
@@ -2026,7 +2026,7 @@
 }
 
 /*!
- * Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2023 Fonticons, Inc.
  */
@@ -2049,7 +2049,7 @@
 }
 
 /*!
- * Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2023 Fonticons, Inc.
  */
@@ -2093,7 +2093,7 @@
 }
 
 /*!
- * Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2023 Fonticons, Inc.
  */
@@ -4911,20 +4911,8 @@
   font-weight: 400;
 }
 
-:root, :host {
-  --fa-style-family-brands: "Font Awesome 4 Compatibility";
-  --fa-font-brands: normal 400 1em/1 "Font Awesome 4 Compatibility";
-}
-
-@font-face {
-  font-family: "Font Awesome 4 Compatibility";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("[[font:core|fa-v4compatibility.woff2]]") format("woff2"), url("[[font:core|fa-v4compatibility.ttf]]") format("truetype");
-}
 /*!
- * Font Awesome Free 6.3.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2023 Fonticons, Inc.
  */
@@ -22873,9 +22861,19 @@ a.text-dark:hover, a.text-dark:focus {
 .dir-rtl .custom-select {
   background-position: 0.75rem center;
 }
-
 .dir-rtl .custom-switch .custom-control-input:checked ~ .custom-control-label::after {
   transform: translateX(-0.75rem);
+}
+.dir-rtl .tooltip.bs-tooltip-left .arrow, .dir-rtl .tooltip.bs-tooltip-auto[x-placement^=left] .arrow, .dir-rtl .tooltip.bs-tooltip-right .arrow, .dir-rtl .tooltip.bs-tooltip-auto[x-placement^=right] .arrow {
+  transform: rotate(180deg);
+}
+.dir-rtl .tooltip.bs-tooltip-left .arrow, .dir-rtl .tooltip.bs-tooltip-auto[x-placement^=left] .arrow {
+  left: auto;
+  right: 0;
+}
+.dir-rtl .tooltip.bs-tooltip-right .arrow, .dir-rtl .tooltip.bs-tooltip-auto[x-placement^=right] .arrow {
+  left: 0;
+  right: auto;
 }
 
 /**
@@ -23296,8 +23294,15 @@ form.popupform div {
 }
 
 .no-overflow > .generaltable {
-  position: relative;
   margin-bottom: 0;
+}
+
+.no-overflow .generaltable .sr-only,
+.no-overflow .generaltable .accesshide,
+.table-responsive .generaltable .sr-only,
+.table-responsive .generaltable .accesshide {
+  position: relative;
+  display: block;
 }
 
 .accesshide {
@@ -24940,7 +24945,7 @@ a.disabled {
   text-decoration: none;
   cursor: default;
   font-style: italic;
-  color: #808080;
+  color: #6a737b;
 }
 
 body.lockscroll {
@@ -25044,11 +25049,6 @@ h3.sectionname .inplaceeditable.inplaceeditingon .editinstructions {
 }
 .chart-area .chart-table.accesshide .chart-table-data {
   display: block;
-}
-
-ul {
-  padding-left: 1rem;
-  -webkit-margin-start: 0.2rem; /* stylelint-disable-line */
 }
 
 /* YUI 2 Tree View */
@@ -26055,6 +26055,7 @@ blockquote {
 .activityiconcontainer .activityicon,
 .activityiconcontainer .icon {
   margin: 0;
+  font-size: 24px;
   height: 24px;
   width: 24px;
 }
@@ -28455,6 +28456,10 @@ span.editinstructions .alert-link {
   font-weight: 700;
 }
 
+.coursebox .content .coursefile {
+  max-width: 100px;
+}
+
 .coursebox .content .courseimage img {
   max-width: 100px;
   max-height: 100px;
@@ -28582,6 +28587,9 @@ span.editinstructions .alert-link {
 #course-category-listings .listitem[data-selected="1"] {
   border-left: calc(1px + 5px) solid #0f6cbf;
   padding-left: calc(1.25rem - 5px);
+}
+#course-category-listings .listitem:hover {
+  z-index: 2;
 }
 #course-category-listings .item-actions {
   margin-right: 1em;
@@ -33806,8 +33814,8 @@ img.userpicture {
 }
 
 #page-mod-quiz-edit ul.slots li.section li.activity .instancemaxmarkcontainer {
-  padding: 0;
-  margin: 0 0.4em;
+  padding: 0.5em 0 0.5em 0.1em;
+  margin: 2px;
 }
 
 /* Countdown timer. */
@@ -34958,12 +34966,13 @@ p.arrow_button {
 /**
  * Grader report.
  */
-.path-grade-report-grader .gradeparent {
-  z-index: 5;
-}
 .path-grade-report-grader .gradeparent tr .cell,
 .path-grade-report-grader .gradeparent .floater .cell {
   background-color: #fff;
+}
+.path-grade-report-grader .gradeparent tr .cell.gradecell .dropdown-menu.show,
+.path-grade-report-grader .gradeparent .floater .cell.gradecell .dropdown-menu.show {
+  z-index: 1;
 }
 .path-grade-report-grader .gradeparent table,
 .path-grade-report-grader .gradeparent .cell {
@@ -34980,11 +34989,20 @@ p.arrow_button {
 .path-grade-report-grader .gradeparent tr.heading {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 4;
+}
+.path-grade-report-grader .gradeparent tr.userrow th {
+  z-index: 2;
+}
+.path-grade-report-grader .gradeparent tr.userrow th.actions-menu-active {
+  z-index: 3;
 }
 .path-grade-report-grader .gradeparent tr.lastrow {
   position: sticky;
-  bottom: 0;
+  bottom: -1px;
+}
+.path-grade-report-grader .gradeparent tr.lastrow.pinned {
+  z-index: 4;
 }
 .path-grade-report-grader .gradeparent tr.lastrow td,
 .path-grade-report-grader .gradeparent tr.lastrow th {
@@ -34992,7 +35010,6 @@ p.arrow_button {
 }
 .path-grade-report-grader .gradeparent th.header {
   position: sticky;
-  z-index: 1;
 }
 @media (max-width: 767.98px) {
   .path-grade-report-grader .gradeparent th.header {
@@ -35003,6 +35020,9 @@ p.arrow_button {
   .path-grade-report-grader .gradeparent th.header {
     left: -3rem;
   }
+}
+.path-grade-report-grader .gradeparent th.header#studentheader {
+  z-index: 1;
 }
 .path-grade-report-grader .gradeparent td.noborder {
   border-right: transparent;
@@ -36814,6 +36834,10 @@ div.editor_atto_toolbar button .icon {
 
 .pagelayout-embedded #page {
   margin-top: 0;
+}
+
+:root {
+  --navbar-height: 50px;
 }
 
 /**

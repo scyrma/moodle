@@ -14,26 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Legacy Cron Quiz Reports Task
- *
- * @package    quiz_statistics
- * @copyright  2017 Michael Hughes, University of Strathclyde
- * @author Michael Hughes <michaelhughes@strath.ac.uk>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- */
+declare(strict_types=1);
+
+namespace qtype_calculatedmulti;
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = [
-    [
-        'classname' => 'quiz_statistics\task\recalculate',
-        'blocking' => 0,
-        'minute' => 'R',
-        'hour' => '*/4',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
-    ]
-];
+require_once($CFG->dirroot . '/question/type/questionbase.php');
+
+/**
+ * Class to represent a calculated question answer.
+ *
+ * @package   qtype_calculatedmulti
+ * @copyright 2023 Matt Porritt <matt.porritt@moodle.com>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class qtype_calculatedmulti_answer extends \question_answer {
+    /** @var int The length of the correct answer. */
+    public $correctanswerlength;
+
+    /** @var int The format of the correct answer. */
+    public $correctanswerformat;
+}

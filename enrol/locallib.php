@@ -199,6 +199,13 @@ class course_enrolment_manager {
         if ($this->totalotherusers === null) {
             list($ctxcondition, $params) = $DB->get_in_or_equal($this->context->get_parent_context_ids(true), SQL_PARAMS_NAMED, 'ctx');
             $params['courseid'] = $this->course->id;
+            /** @uses \tool_tenant\tenancy::get_users_subquery() */
+            $tenantcondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [true, true, 'u.id'], '');
+            // Exclude tenant admin (system) and tenant user (category) roles, but leave the tenant admin (category) role since it can
+            // have course-related capabilities and may be helpful in this list.
+            /** @uses \tool_tenant\role::get_exclude_tenant_roles_subquery() */
+            $tenantcondition .= component_class_callback('tool_tenant\\role', 'get_exclude_tenant_roles_subquery',
+                [['user', 'admin'], 'ra.roleid'], '');
             $sql = "SELECT COUNT(DISTINCT u.id)
                       FROM {role_assignments} ra
                       JOIN {user} u ON u.id = ra.userid
@@ -210,6 +217,7 @@ class course_enrolment_manager {
                             WHERE e.courseid = :courseid
                          ) ue ON ue.userid=u.id
                      WHERE ctx.id $ctxcondition AND
+                           $tenantcondition
                            ue.id IS NULL";
             $this->totalotherusers = (int)$DB->count_records_sql($sql, $params);
         }
@@ -350,6 +358,13 @@ class course_enrolment_manager {
             ['selects' => $fieldselect, 'joins' => $fieldjoin, 'params' => $fieldjoinparams] =
                     (array)$userfields->get_sql('u', true);
             $params += $fieldjoinparams;
+            /** @uses \tool_tenant\tenancy::get_users_subquery() */
+            $tenantcondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [true, true, 'u.id'], '');
+            // Exclude tenant admin (system) and tenant user (category) roles, but leave the tenant admin (category) role since it can
+            // have course-related capabilities and may be helpful in this list.
+            /** @uses \tool_tenant\role::get_exclude_tenant_roles_subquery() */
+            $tenantcondition .= component_class_callback('tool_tenant\\role', 'get_exclude_tenant_roles_subquery',
+                [['user', 'admin'], 'ra.roleid'], '');
             $sql = "SELECT ra.id as raid, ra.contextid, ra.component, ctx.contextlevel, ra.roleid,
                            coalesce(u.lastaccess,0) AS lastaccess
                            $fieldselect
@@ -364,6 +379,7 @@ class course_enrolment_manager {
                         WHERE e.courseid = :courseid
                        ) ue ON ue.userid=u.id
                      WHERE ctx.id $ctxcondition AND
+                           $tenantcondition
                            ue.id IS NULL
                   ORDER BY $sort $direction, ctx.depth DESC";
             $this->otherusers[$key] = $DB->get_records_sql($sql, $params, $page*$perpage, $perpage);
@@ -425,6 +441,10 @@ class course_enrolment_manager {
             $tests[] = '(' . implode(' OR ', $conditions) . ')';
         }
         $wherecondition = implode(' AND ', $tests);
+
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $wherecondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery',
+                [], '') . $wherecondition;
 
         $selects = $fieldselects . ', u.username, u.lastaccess, u.maildisplay';
         return [$selects, $fieldjoins, $params, $wherecondition];
@@ -570,17 +590,28 @@ class course_enrolment_manager {
      */
     public function search_users(string $search = '', bool $searchanywhere = false, int $page = 0, int $perpage = 25,
             bool $returnexactcount = false) {
+        global $USER;
+
         [$ufields, $joins, $params, $wherecondition] = $this->get_basic_search_conditions($search, $searchanywhere);
+
+        $groupmode = groups_get_course_groupmode($this->course);
+        if ($groupmode == SEPARATEGROUPS && !has_capability('moodle/site:accessallgroups', $this->context)) {
+            $groups = groups_get_all_groups($this->course->id, $USER->id, 0, 'g.id');
+            $groupids = array_column($groups, 'id');
+        } else {
+            $groupids = [];
+        }
+
+        [$enrolledsql, $enrolledparams] = get_enrolled_sql($this->context, '', $groupids);
 
         $fields      = 'SELECT ' . $ufields;
         $countfields = 'SELECT COUNT(u.id)';
         $sql = " FROM {user} u
                       $joins
-                 JOIN {user_enrolments} ue ON ue.userid = u.id
-                 JOIN {enrol} e ON ue.enrolid = e.id
-                WHERE $wherecondition
-                  AND e.courseid = :courseid";
-        $params['courseid'] = $this->course->id;
+                 JOIN ($enrolledsql) je ON je.id = u.id
+                WHERE $wherecondition";
+
+        $params = array_merge($params, $enrolledparams);
 
         return $this->execute_search_queries($search, $fields, $countfields, $sql, $params, $page, $perpage, 0, $returnexactcount);
     }

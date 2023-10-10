@@ -183,7 +183,7 @@ class registration {
         $siteinfo['activeparticipantnumberaverage'] = average_number_of_participants(true, time() - DAYSECS * 30);
         $siteinfo['modulenumberaverage'] = average_number_of_courses_modules();
         $siteinfo['dbtype'] = $CFG->dbtype;
-        $siteinfo['coursesnodates'] = $DB->count_records_select('course', 'startdate = ? AND enddate = ?', [0, 0]) - 1;
+        $siteinfo['coursesnodates'] = $DB->count_records_select('course', 'enddate = ?', [0]) - 1;
         $siteinfo['sitetheme'] = get_config('core', 'theme');
 
         // Primary auth type.
@@ -217,6 +217,9 @@ class registration {
         $siteinfo['analyticsactionsnotuseful'] = \core_analytics\stats::actions_not_useful();
 
         // IMPORTANT: any new fields in siteinfo have to be added to the constant CONFIRM_NEW_FIELDS.
+
+        /** @uses \tool_wp\registration::site_info() */
+        component_class_callback('tool_wp\\registration', 'site_info', [&$siteinfo, false]);
 
         return $siteinfo;
     }
@@ -269,6 +272,8 @@ class registration {
             'primaryauthtype' => get_string('primaryauthtype', 'hub', $siteinfo['primaryauthtype']),
         ];
 
+        /** @uses \tool_wp\registration::site_info() */
+        component_class_callback('tool_wp\\registration', 'site_info', [&$senddata, true]);
         foreach ($senddata as $key => $str) {
             $class = in_array($key, $fieldsneedconfirm) ? ' needsconfirmation mark' : '';
             $summary .= html_writer::tag('li', $str, ['class' => 'site' . $key . $class]);

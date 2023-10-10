@@ -66,6 +66,11 @@ class courses extends datasource {
             ->add_join("JOIN {course_categories} {$coursecattablealias}
                 ON {$coursecattablealias}.id = {$coursetablealias}.category"));
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::filter_by_tenant_category() */
+        [$sql, $params] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'filter_by_tenant_category', ["$coursetablealias.category"], ["1=1", []]);
+        $this->add_base_condition_sql($sql, $params);
+
         // Join the tag entity.
         $tagentity = (new tag())
             ->set_table_alias('tag', $courseentity->get_table_alias('tag'));

@@ -51,11 +51,19 @@ class comments extends datasource {
 
         $this->add_entity($commententity);
 
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, false, "{$commentalias}.userid"], '');
+        $this->add_base_condition_sql("{$tenantsql}");
+
         // Join the user entity to the comment userid (author).
         $userentity = new user();
         $useralias = $userentity->get_table_alias('user');
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, "{$useralias}.id"], '');
         $this->add_entity($userentity
-            ->add_join("LEFT JOIN {user} {$useralias} ON {$useralias}.id = {$commentalias}.userid"));
+            ->add_join("JOIN {user} {$useralias} ON {$tenantsql} {$useralias}.id = {$commentalias}.userid"));
 
         // Add report elements from each of the entities we added to the report.
         $this->add_all_from_entities();
