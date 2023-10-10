@@ -1,0 +1,43 @@
+/*
+ Reports from core reportbuilder displayed in a block
+ */
+
+.block-region {
+    .block_rbreport {
+        // Remove 'Show all X' link in Custom report blocks.
+        [data-action="showcount"][data-target-page-size] {
+            display: none;
+        }
+        // Remove "Edit" button.
+        [data-region="core_reportbuilder/report-header"] [data-action="toggle-edit-preview"] {
+            display: none;
+        }
+        // Generate scroll for the block table.
+        .table-dynamic {
+            overflow: auto;
+        }
+    }
+    // Always show as cards with cards layout setting.
+    .rblayout.rblayout-cards {
+        @include table-cards;
+    }
+    // Hide export form.
+    [data-region="core_reportbuilder/report"] .dataformatselector {
+        display: none !important; /* stylelint-disable-line declaration-no-important */
+    }
+    // Show as cards in side regions except with table layout setting.
+    @include media-breakpoint-up(xl) {
+        &:not(#block-region-content) .block_rbreport {
+            .rblayout:not(.rblayout-table) {
+                @include table-cards;
+            }
+        }
+    }
+    // Show as cards in small screens except with table layout setting.
+    // TODO WP-3659 CSS in the core reportbuilder includes the same mixin regardless of .rblayout-table.
+    @include media-breakpoint-down(xs) {
+        .block_rbreport .rblayout:not(.rblayout-table) {
+            @include table-cards;
+        }
+    }
+}
