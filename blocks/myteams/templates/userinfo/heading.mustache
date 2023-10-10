@@ -1,0 +1,65 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the collection of software scripts
+    (plugins and modifications, and any derivations thereof) that are
+    exclusively owned and licensed by Moodle under the terms of this
+    proprietary Moodle Workplace License ("MWL") alongside Moodle's open
+    software package offering which itself is freely downloadable at
+    "download.moodle.org" and which is provided by Moodle under a single
+    GNU General Public License version 3.0, dated 29 June 2007 ("GPL").
+    MWL is strictly controlled by Moodle Pty Ltd and its certified
+    premium partners. Wherever conflicting terms exist, the terms of the
+    MWL are binding and shall prevail.
+}}
+{{!
+    @template block_myteams/userinfo/heading
+
+    Heading user information for My Teams block.
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "fullnamewithpicture": "<div><span class='userinitials size-35'>U1</span>User 1</div>",
+        "lastaccess": "5 hours 9 mins",
+        "lastaccessdate": "02/09/2022, 11:18",
+        "isoverdue": true
+    }
+}}
+<div>
+    {{{fullnamewithpicture}}}
+</div>
+{{#isoverdue}}
+    <div class="d-flex align-items-center ml-2 icon-no-margin icon-danger icon-size-2">
+        {{#pix}}i/item, core {{/pix}}
+    </div>
+{{/isoverdue}}
+<div class="ml-auto d-flex flex-column text-right">
+    <span class="text-uppercase font-small text-gray-700">{{#str}} lastaccess, core {{/str}}</span>
+    <span class="text-right font-small z-index-1">
+        {{lastaccess}}
+        <button
+            class="icon-info btn p-0 icon-no-margin"
+            data-toggle="tooltip"
+            data-placement="right"
+            title="{{lastaccessdate}}"
+        >
+            {{#pix}}info-circle, tool_wp{{/pix}}
+            <span class="sr-only">{{#str}} lastaccess, core {{/str}}</span>
+        </button>
+    </span>
+</div>
