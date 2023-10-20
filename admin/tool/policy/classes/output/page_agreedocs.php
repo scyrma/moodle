@@ -279,6 +279,16 @@ class page_agreedocs implements renderable, templatable {
             $cachekey = 'tool_policy_viewedpolicies';
 
             $viewedpolicies = $cache->get($cachekey) ?: [];
+            
+            foreach ($allpolicies as $ix => $policy) {
+                $islocked = api::is_version_locked($policy->id);
+                if ($islocked && !in_array($policy->id, $viewedpolicies)) {
+                    // Do not display locked policies
+                    $viewedpolicies[] = $policy->id;
+                    $cache->set($cachekey, $viewedpolicies);
+                }
+            }
+            
             if (!empty($viewedpolicies)) {
                 // Get the list of the policies docs which the user haven't viewed during this session.
                 $pendingpolicies = array_diff($currentpolicyversionids, $viewedpolicies);
