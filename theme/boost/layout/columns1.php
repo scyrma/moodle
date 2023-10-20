@@ -28,7 +28,7 @@ $bodyattributes = $OUTPUT->body_attributes([]);
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'output' => $OUTPUT,
-    'bodyattributes' => $bodyattributes,
+    'bodyattributes' => $bodyattributes
 ];
 
 if (empty($PAGE->layout_options['noactivityheader'])) {
@@ -36,6 +36,8 @@ if (empty($PAGE->layout_options['noactivityheader'])) {
     $renderer = $PAGE->get_renderer('core');
     $templatecontext['headercontent'] = $header->export_for_template($renderer);
 }
+
+$templatecontext['footer_links'] = theme_boost_get_footerlinks($OUTPUT->page->context);
 
 echo $OUTPUT->render_from_template('theme_boost/columns1', $templatecontext);
 

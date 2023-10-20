@@ -51,17 +51,23 @@ reports,core_reportbuilder|/reportbuilder/index.php',
     $ADMIN->add('themes', $temp);
     $ADMIN->add('themes', new admin_externalpage('themeselector', new lang_string('themeselector','admin'), $CFG->wwwroot . '/theme/index.php'));
 
-    // settings for each theme
-    foreach (core_component::get_plugin_list('theme') as $theme => $themedir) {
-        $settings_path = "$themedir/settings.php";
-        if (file_exists($settings_path)) {
-            $settings = new admin_settingpage('themesetting'.$theme, new lang_string('pluginname', 'theme_'.$theme));
-            include($settings_path);
-            if ($settings) {
-                $ADMIN->add('themes', $settings);
+    // BEGIN MOODLECLOUD HACK
+    // Hide access to theme settings if SCSS isn't enabled
+    // Every theme setting requires SCSS recompilation
+    if ($CFG->moodlecloud_scss_enabled) {
+        // settings for each theme
+        foreach (core_component::get_plugin_list('theme') as $theme => $themedir) {
+            $settings_path = "$themedir/settings.php";
+            if (file_exists($settings_path)) {
+                $settings = new admin_settingpage('themesetting'.$theme, new lang_string('pluginname', 'theme_'.$theme));
+                include($settings_path);
+                if ($settings) {
+                    $ADMIN->add('themes', $settings);
+                }
             }
         }
     }
+    // END MOODLECLOUD HACK
 
     // Logos section.
     $temp = new admin_settingpage('logos', new lang_string('logossettings', 'admin'));

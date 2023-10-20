@@ -428,6 +428,16 @@ form.popupform div {
     }
 }
 
+// BEGIN MOODLECLOUD HACK
+div[data-region="datarequests"] {
+    div[data-region="data-requests-table"] {
+        .no-overflow {
+            overflow: visible;
+        }
+    }
+}
+// END MOODLECLOUD HACK
+
 // Accessibility features
 
 // Accessibility: text 'seen' by screen readers but not visual users.

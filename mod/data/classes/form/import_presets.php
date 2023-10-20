@@ -38,7 +38,7 @@ class import_presets extends dynamic_form {
      */
     public function process_dynamic_submission(): array {
         global $CFG;
-        $filepath = $this->save_temp_file('importfile');
+        $filepath = $this->save_temp_file('importfile', true);
         $context = $this->get_context_for_dynamic_submission();
         $returnurl = new moodle_url('/mod/data/preset.php', [
             'id' => $context->instanceid,

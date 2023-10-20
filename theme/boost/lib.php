@@ -164,3 +164,30 @@ function theme_boost_get_pre_scss($theme) {
 
     return $scss;
 }
+
+function theme_boost_get_footerlinks($context) {
+    global $OUTPUT;
+
+    $links = array();
+
+    if ($doclink = $OUTPUT->page_doc_link()) {
+        $links[] = $doclink;
+    }
+
+    if (theme_boost_is_teacher($context)) {
+        $title = get_string('supportforums', 'theme_boost');
+        $link = new moodle_url('https://moodle.org/community');
+        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
+    }
+    if (is_siteadmin()) {
+        $title = get_string('faq', 'theme_boost');
+        $link = new moodle_url('https://support.moodlecloud.com');
+        $links[] = html_writer::link($link, $title, array('target' => '_blank'));
+    }
+    return implode(' | ', $links);
+}
+
+function theme_boost_is_teacher($context) {
+    // The same capability as is used with page_doc_link().
+    return has_capability('moodle/site:doclinks', $context);
+}
