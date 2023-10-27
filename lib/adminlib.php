@@ -3968,6 +3968,19 @@ class admin_setting_configduration extends admin_setting {
      * @since Moodle 3.10
      */
     protected function validate_setting(int $data): string {
+
+        // BEGIN MOODLECLOUD HACK
+        // This could be done the same way as sessiontimeoutwarning does it
+        // in admin/settings/server, but if we do it this way when core
+        // (possibly) add their own, it won't conflict.
+        // TODO: Core has now added their own (below), this needs refactoring
+        //       to take advantage of it. Though Cloud's error message is
+        //       clearer.
+        if ($data < 5 * 60 && $this->name == 'sessiontimeout') {
+            return get_string('invalidsessiontimeout', 'local_moodlecloud');
+        }
+        //END MOODLECLOUD HACK
+
         if ($data < $this->minduration) {
             return get_string(
                 'configduration_low',
@@ -4201,11 +4214,36 @@ class admin_setting_configiplist extends admin_setting_configtextarea {
                 $badips[] = $ip;
             }
         }
-        if($result) {
-            return true;
-        } else {
+
+        // BEGIN MOODLECLOUD HACK
+        if(!$result) {
             return get_string('validateiperror', 'admin', join(', ', $badips));
         }
+
+        $notallowedips = array_filter(
+            array_map(
+                function($line) {
+                    return trim(explode('#', $line)[0]);
+                },
+                explode("\n", $data)
+            ),
+            function($ip) {
+                global $CFG;
+                return !empty(array_filter(
+                    $CFG->moodlecloud_disallowed_ip_whitelist_values,
+                    function($notallowedip) use ($ip) {
+                        return strpos($ip, $notallowedip) === 0;
+                    }
+                ));
+            }
+        );
+
+        if (!empty($notallowedips)) {
+            return get_string('validateiperror', 'local_moodlecloud', join(', ', $notallowedips));
+        }
+
+        return true;
+        // END MOODLECLOUD HACK
     }
 }
 
@@ -6718,6 +6756,17 @@ class admin_setting_manageenrols extends admin_setting {
             }
         }
 
+// START MOODLECLOUD HACK.
+if (isset($CFG->moodlecloud_blocked_enrol)) {
+    foreach ($CFG->moodlecloud_blocked_enrol as $k => $mcblocked) {
+        if (!$mcblocked) {
+            continue;
+        }
+        unset($allenrols[$k]);
+    }
+}
+// END MOODLECLOUD HACK.
+
         $return = $OUTPUT->heading(get_string('actenrolshhdr', 'enrol'), 3, 'main', true);
         $return .= $OUTPUT->box_start('generalbox enrolsui');
 
@@ -7268,6 +7317,17 @@ class admin_setting_manageauths extends admin_setting {
                 $registrationauths[$auth] = $authtitle;
             }
         }
+
+// START MOODLECLOUD HACK.
+if (isset($CFG->moodlecloud_blocked_auth)) {
+    foreach ($CFG->moodlecloud_blocked_auth as $k => $mcblocked) {
+        if (!$mcblocked) {
+            continue;
+        }
+        unset($displayauths[$k]);
+    }
+}
+// END MOODLECLOUD HACK.
 
         $return = $OUTPUT->heading(get_string('actauthhdr', 'auth'), 3, 'main');
         $return .= $OUTPUT->box_start('generalbox authsui');

@@ -81,6 +81,12 @@ class user_editadvanced_form extends moodleform {
                 $cannotchangeusername[] = $auth;
             }
 
+            // BEGIN MOODLECLOUD HACK.
+            // TODO: Could be fixed by MDL-50462 in core (respecting $authinst->can_be_manually_set() here).
+            if ($auth !== 'auth_moodlecloud' && $user->auth != $auth) {
+                continue;
+            }
+            // END MOODLECLOUD HACK.
             $passwordurl = $authinst->change_password_url();
             if (!($authinst->can_change_password() && empty($passwordurl))) {
                 if ($userid < 1 and $authinst->is_internal()) {
@@ -186,7 +192,9 @@ class user_editadvanced_form extends moodleform {
         }
 
         // User can not change own auth method.
-        if ($userid == $USER->id) {
+        // BEGIN MOODLECLOUD HACK.
+        if ($userid == $USER->id || local_moodlecloud\restrictions\user::user_is_restricted($userid)) {
+            // END MOODLECLOUD HACK.
             $mform->hardFreeze('auth');
             $mform->hardFreeze('preference_auth_forcepasswordchange');
         }

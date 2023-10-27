@@ -1,0 +1,11 @@
+.block_moodlecloudtrial.card {
+   border: none !important;
+   background-color: #CCE6EA !important;
+   vertical-align: middle !important;
+}
+
+@media screen and (max-width: 400px) {
+   .moodlecloud-trial-button {
+      margin-top: 1rem !important;
+   }
+}
