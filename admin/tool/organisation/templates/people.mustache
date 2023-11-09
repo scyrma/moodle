@@ -1,0 +1,92 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the discrete and self-executable
+    collection of software scripts (plugins and modifications, and any
+    derivations thereof) that are exclusively owned and licensed by
+    Moodle Pty Ltd (Moodle) under the terms of its proprietary Moodle
+    Workplace License ("MWL") made available with Moodle's open software
+    package ("Moodle LMS") offering which itself is freely downloadable
+    at "download.moodle.org" and which is provided by Moodle under a
+    single GNU General Public License version 3.0, dated 29 June 2007
+    ("GPL"). MWL is strictly controlled by Moodle Pty Ltd and its Moodle
+    Certified Premium Partners. Wherever conflicting terms exist, the
+    terms of the MWL shall prevail.
+}}
+{{!
+    @template tool_organisation/people
+
+    Tab with jobs (for management)
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "tabheading": "People",
+        "peoplelist": "List of jobs goes here",
+        "systemcontextid": 10
+    }
+}}
+{{> tool_wp/tab_heading }}
+
+<div class="clearfix mt-2">
+{{{peoplelist}}}
+</div>
+
+{{#bulkactionsselect}}
+<div class="clearfix">
+    <form method="POST" action="{{action}}" id="bulk_selector_form">
+        <div class="{{classes}} d-inline-block">
+            {{#params}}
+                <input type="hidden" name="{{name}}" value="{{value}}">
+            {{/params}}
+            {{#label}}
+                <label for="{{id}}"{{#labelattributes}} {{name}}="{{value}}"{{/labelattributes}}>
+                {{{label}}}
+                </label>
+            {{/label}}
+            {{#helpicon}}
+                {{>core/help_icon}}
+            {{/helpicon}}
+            <select {{#attributes}}{{name}}="{{value}}" {{/attributes}} id="{{id}}" class="custom-select {{classes}}" name="{{name}}">
+            {{#options}}
+                {{#optgroup}}
+                    <optgroup label="{{name}}">
+                        {{#options}}
+                            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
+                        {{/options}}
+                    </optgroup>
+                {{/optgroup}}
+                {{^optgroup}}
+                    <option {{ignore}} value="{{value}}" {{#selected}}selected{{/selected}}>{{{name}}}</option>
+                {{/optgroup}}
+            {{/options}}
+            </select>
+            <noscript>
+                <input type="submit" class="btn btn-secondary" value="{{#str}}go, core{{/str}}">
+            </noscript>
+        </div>
+    </form>
+</div>
+{{/bulkactionsselect}}
+
+{{#js}}
+    {{#bulkactionsselect}}
+    require(['tool_organisation/people_bulk_actions'], function(PeopleBulk) {
+        PeopleBulk.init('#bulk_selector_form', {{systemcontextid}});
+    });
+    {{/bulkactionsselect}}
+{{/js}}

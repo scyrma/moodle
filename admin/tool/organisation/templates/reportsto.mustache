@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the discrete and self-executable
+    collection of software scripts (plugins and modifications, and any
+    derivations thereof) that are exclusively owned and licensed by
+    Moodle Pty Ltd (Moodle) under the terms of its proprietary Moodle
+    Workplace License ("MWL") made available with Moodle's open software
+    package ("Moodle LMS") offering which itself is freely downloadable
+    at "download.moodle.org" and which is provided by Moodle under a
+    single GNU General Public License version 3.0, dated 29 June 2007
+    ("GPL"). MWL is strictly controlled by Moodle Pty Ltd and its Moodle
+    Certified Premium Partners. Wherever conflicting terms exist, the
+    terms of the MWL shall prevail.
+}}
+{{!
+    @template tool_organisation/reportsto
+
+    Tab with managers users
+
+    Context variables required for this template:
+
+    Example context (json):
+    {
+        "reportsto": [
+            {
+                "userpicture": "<span>LL</span>",
+                "fullname": "Laura Lorem",
+                "departmentname": "DepA",
+                "id": "1",
+                "urlmessage": "http://local.instance/message/index.php"
+             },
+             {
+                "userpicture": "<span>JD</span>",
+                "fullname": "Jane Doe",
+                "departmentname": "DepB",
+                "id": "2",
+                "urlmessage": "http://local.instance/message/index.php"
+             }
+        ]
+    }
+}}
+<div class="wp-reportsto">
+    {{#reportsto}}
+        <div class="row py-2">
+            <div class="col-md-2 pr-0 d-flex justify-content-center">
+                {{{userpicture}}}
+            </div>
+            <div class="col-md-8 pl-0">
+                <b>{{{fullname}}}</b><br>
+                {{{departmentname}}}
+            </div>
+            <div class="col-md-2">
+                <a role="button" class="btn" href="{{{urlmessage}}}">
+                    {{#pix}} t/message, core, {{#str}} message {{/str}} {{/pix}}
+                </a>
+            </div>
+        </div>
+    {{/reportsto}}
+</div>

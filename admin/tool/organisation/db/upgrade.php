@@ -1,0 +1,297 @@
+<?php
+// This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+//
+// Moodle Workplace™ Code is the discrete and self-executable
+// collection of software scripts (plugins and modifications, and any
+// derivations thereof) that are exclusively owned and licensed by
+// Moodle Pty Ltd (Moodle) under the terms of its proprietary Moodle
+// Workplace License ("MWL") made available with Moodle's open software
+// package ("Moodle LMS") offering which itself is freely downloadable
+// at "download.moodle.org" and which is provided by Moodle under a
+// single GNU General Public License version 3.0, dated 29 June 2007
+// ("GPL"). MWL is strictly controlled by Moodle Pty Ltd and its Moodle
+// Certified Premium Partners. Wherever conflicting terms exist, the
+// terms of the MWL shall prevail.
+
+/**
+ * Plugin upgrade steps are defined here.
+ *
+ * @package     tool_organisation
+ * @category    upgrade
+ * @copyright   2018 Moodle Pty Ltd <support@moodle.com>
+ * @author      2018 Marina Glancy
+ * @license     Moodle Workplace License, distribution is restricted, contact support@moodle.com
+ */
+
+/**
+ * Execute tool_organisation upgrade from the given old version.
+ *
+ * @param int $oldversion
+ * @return bool
+ */
+function xmldb_tool_organisation_upgrade($oldversion) {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2019041000) {
+
+        // Rename field level on table tool_organisation_position to pathlevel.
+        $table = new xmldb_table('tool_organisation_position');
+        $field = new xmldb_field('level', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'parentid');
+
+        // Launch rename field level.
+        $dbman->rename_field($table, $field, 'pathlevel');
+
+        // Rename field level on table tool_organisation_department to pathlevel.
+        $table = new xmldb_table('tool_organisation_department');
+        $field = new xmldb_field('level', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'parentid');
+
+        // Launch rename field level.
+        $dbman->rename_field($table, $field, 'pathlevel');
+
+        // Organisation savepoint reached.
+        upgrade_plugin_savepoint(true, 2019041000, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2019052801) {
+        // Create default role "Certification manager".
+        \tool_tenant\manager::create_workplace_role('tool_organisation_manager',
+            get_string('rolemanager', 'tool_organisation'),
+            get_string('rolemanagerdescription', 'tool_organisation'),
+            ['tool/organisation:managedepartments', 'tool/organisation:managepositions', 'tool/organisation:assignjobs']);
+
+        // Certification savepoint reached.
+        upgrade_plugin_savepoint(true, 2019052801, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2020020500) {
+        // Clean up orphaned jobs, departments and positions.
+        $jobs = $DB->get_fieldset_sql("SELECT j.id from {tool_organisation_job} j
+            LEFT JOIN {tool_tenant} t ON j.tenantid = t.id
+            WHERE t.id IS NULL");
+        if ($jobs) {
+            list($sql, $params) = $DB->get_in_or_equal($jobs);
+            $DB->delete_records_select('tool_organisation_job', 'id '.$sql, $params);
+        }
+
+        $ids = $DB->get_fieldset_sql("SELECT p.id from {tool_organisation_position} p
+            LEFT JOIN {tool_tenant} t ON p.tenantid = t.id
+            WHERE t.id IS NULL");
+        if ($ids) {
+            foreach ($ids as $id) {
+                get_file_storage()->delete_area_files(context_system::instance()->id,
+                    'tool_organisation', 'positiondescription', $id);
+            }
+            list($sql, $params) = $DB->get_in_or_equal($ids);
+            $DB->delete_records_select('tool_organisation_position', 'id '.$sql, $params);
+        }
+
+        $ids = $DB->get_fieldset_sql("SELECT d.id from {tool_organisation_department} d
+            LEFT JOIN {tool_tenant} t ON d.tenantid = t.id
+            WHERE t.id IS NULL");
+        if ($ids) {
+            foreach ($ids as $id) {
+                get_file_storage()->delete_area_files(context_system::instance()->id,
+                    'tool_organisation', 'departmentdescription', $id);
+            }
+            list($sql, $params) = $DB->get_in_or_equal($ids);
+            $DB->delete_records_select('tool_organisation_department', 'id '.$sql, $params);
+        }
+
+        // Certification savepoint reached.
+        upgrade_plugin_savepoint(true, 2020020500, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2020063001) {
+        // We are deleteing user preferences because we are changing the filters.
+        $reports = $DB->get_records('tool_reportbuilder', ['source' => 'tool_organisation\managed_users_table']);
+        foreach ($reports as $report) {
+            $DB->delete_records('user_preferences', ['name' => 'filters_report_' . $report->id]);
+        }
+
+        // Organisation savepoint reached.
+        upgrade_plugin_savepoint(true, 2020063001, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2021011902) {
+        // Define field shared to be added to tool_organisation_department.
+        $table = new xmldb_table('tool_organisation_department');
+        $field = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'archived');
+
+        // Conditionally launch add field shared.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field shared to be added to tool_organisation_position.
+        $table = new xmldb_table('tool_organisation_position');
+        $field = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'globalpermissions');
+
+        // Conditionally launch add field shared.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Organisation savepoint reached.
+        upgrade_plugin_savepoint(true, 2021011902, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2021032501) {
+        // Schedule ad-hoc task to end orphaned jobs.
+        $record = new \stdClass();
+        $record->classname = '\tool_organisation\task\end_orphaned_jobs';
+        $record->component = 'tool_organisation';
+        // Next run time based from nextruntime computation in \core\task\manager::queue_adhoc_task().
+        $nextruntime = time() - 1;
+        $record->nextruntime = $nextruntime;
+        $DB->insert_record('task_adhoc', $record);
+
+        upgrade_plugin_savepoint(true, 2021032501, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2022052500) {
+        // Changing precision of field path on table tool_organisation_position to (1333).
+        $table = new xmldb_table('tool_organisation_position');
+        $field = new xmldb_field('path', XMLDB_TYPE_CHAR, '1333', null, XMLDB_NOTNULL, null, null, 'pathlevel');
+
+        // Launch change of precision for field path.
+        $dbman->change_field_precision($table, $field);
+
+        // Changing precision of field path on table tool_organisation_department to (1333).
+        $table = new xmldb_table('tool_organisation_department');
+        $field = new xmldb_field('path', XMLDB_TYPE_CHAR, '1333', null, XMLDB_NOTNULL, null, null, 'pathlevel');
+
+        // Launch change of precision for field path.
+        $dbman->change_field_precision($table, $field);
+
+        // Organisation savepoint reached.
+        upgrade_plugin_savepoint(true, 2022052500, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2023010900) {
+        // Changing the default of fields shared on tables tool_organisation_position and tool_organisation_department to 1.
+        $positiontable = new xmldb_table('tool_organisation_position');
+        $positionfield = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '1', 'globalpermissions');
+        $departmenttable = new xmldb_table('tool_organisation_department');
+        $departmentfield = new xmldb_field('shared', XMLDB_TYPE_INTEGER, '1', null, null, null, '1', 'archived');
+
+        // Launch change of default for fields shared.
+        $dbman->change_field_default($positiontable, $positionfield);
+        $dbman->change_field_default($departmenttable, $departmentfield);
+
+        // Organisation savepoint reached.
+        upgrade_plugin_savepoint(true, 2023010900, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2023011702) {
+
+        // Define field locked to be added to tool_organisation_department.
+        $table = new xmldb_table('tool_organisation_department');
+        $field = new xmldb_field('locked', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'shared');
+
+        // Conditionally launch add field locked.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field locked to be added to tool_organisation_position.
+        $table = new xmldb_table('tool_organisation_position');
+        $field = new xmldb_field('locked', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'shared');
+
+        // Conditionally launch add field locked.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Organisation savepoint reached.
+        upgrade_plugin_savepoint(true, 2023011702, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2023061301) {
+
+        // Define table tool_organisation_reporting to be created.
+        $table = new xmldb_table('tool_organisation_reporting');
+
+        // Adding fields to table tool_organisation_reporting.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('tenantid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('managerid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('permissions', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('depth', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1');
+        $table->add_field('path', XMLDB_TYPE_CHAR, '1333', null, null, null, null);
+        $table->add_field('isdirect', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+
+        // Adding keys to table tool_organisation_reporting.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+        $table->add_key('managerid', XMLDB_KEY_FOREIGN, ['managerid'], 'user', ['id']);
+        $table->add_key('tenantid', XMLDB_KEY_FOREIGN, ['tenantid'], 'tool_tenant', ['id']);
+
+        // Adding indexes to table tool_organisation_reporting.
+        $table->add_index('tenantdepth', XMLDB_INDEX_NOTUNIQUE, ['tenantid', 'depth']);
+
+        // Conditionally launch create table for tool_organisation_reporting.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        // Schedule ad-hoc task to build reporting line in each existing tenant.
+        $tenants = $DB->get_fieldset_select('tool_tenant', 'id', '1=1', []);
+        foreach ($tenants as $tenantid) {
+            $task = new \tool_organisation\task\build_reporting();
+            $task->set_custom_data(['tenantid' => $tenantid]);
+            \core\task\manager::queue_adhoc_task($task, true);
+        }
+
+        // Organisation savepoint reached.
+        upgrade_plugin_savepoint(true, 2023061301, 'tool', 'organisation');
+    }
+
+    if ($oldversion < 2023091200) {
+
+        // Define table tool_organisation_manual_mgr to be created.
+        $table = new xmldb_table('tool_organisation_manual_mgr');
+
+        // Adding fields to table tool_organisation_manual_mgr.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('managerid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('tenantid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('permissions', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table tool_organisation_manual_mgr.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+        $table->add_key('managerid', XMLDB_KEY_FOREIGN, ['managerid'], 'user', ['id']);
+        $table->add_key('tenantid', XMLDB_KEY_FOREIGN, ['tenantid'], 'tool_tenant', ['id']);
+
+        // Adding indexes to table tool_organisation_manual_mgr.
+        $table->add_index('usermanager', XMLDB_INDEX_UNIQUE, ['userid', 'managerid']);
+
+        // Conditionally launch create table for tool_organisation_manual_mgr.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Organisation savepoint reached.
+        upgrade_plugin_savepoint(true, 2023091200, 'tool', 'organisation');
+    }
+
+    return true;
+}
