@@ -1,0 +1,84 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the discrete and self-executable
+    collection of software scripts (plugins and modifications, and any
+    derivations thereof) that are exclusively owned and licensed by
+    Moodle Pty Ltd (Moodle) under the terms of its proprietary Moodle
+    Workplace License ("MWL") made available with Moodle's open software
+    package ("Moodle LMS") offering which itself is freely downloadable
+    at "download.moodle.org" and which is provided by Moodle under a
+    single GNU General Public License version 3.0, dated 29 June 2007
+    ("GPL"). MWL is strictly controlled by Moodle Pty Ltd and its Moodle
+    Certified Premium Partners. Wherever conflicting terms exist, the
+    terms of the MWL shall prevail.
+}}
+{{!
+    @template tool_catalogue/categoryselector/selector_and_search
+
+    Template for showing search and category dropdown selector.
+
+    Example context (json):
+    [
+        {
+            "name":"Default tenant",
+            "category_id":1,
+            "url": "full_url",
+            "haschildren":true,
+            "subcategories":[
+                {
+                    "name":"Business",
+                    "category_id":2,
+                    "url":"full_url",
+                    "haschildren":false,
+                    "subcategories": null
+                }
+            ]
+        }
+    ]
+}}
+
+<div class="tool_catalogue-category-selector w-100 d-flex">
+    {{#hascategories}}
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle bg-pulse-grey d-flex justify-content-between align-items-center remove-icon tool_catalogue-category-selector-btn" type="button" id="categorySelectorBtn"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{#str}} categories, tool_catalogue {{/str}}
+                <span class="order-2">
+                    {{#pix}} t/more, core {{/pix}}
+                </span>
+            </button>
+            <div class="dropdown-menu multi-level border-radius" aria-labelledby="categorySelectorBtn">
+                <a class="tool_catalogue-dropdown-close py-2 px-2 d-lg-none d-sm-block text-reset text-primary text-decoration-none" href="#">
+                    {{#pix}} e/cancel, core {{/pix}}
+                </a>
+                {{#categories}}
+                    {{> tool_catalogue/categoryselector/category}}
+                {{/categories}}
+            </div>
+        </div>
+    {{/hascategories}}
+    <div class="divider h-100 bg-secondary mx-2" style="width: 3px"></div>
+    {{#inputname}}
+        {{>core/search_input}}
+    {{/inputname}}
+</div>
+
+{{#js}}
+    require(['tool_catalogue/category_dropdown'], function(categoryDropdown) {
+    categoryDropdown.init({{maxdepth}});
+    });
+{{/js}}

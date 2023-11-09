@@ -1,0 +1,91 @@
+{{!
+    This file is part of Moodle Workplace https://moodle.com/workplace based on Moodle
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Moodle Workplace™ Code is the discrete and self-executable
+    collection of software scripts (plugins and modifications, and any
+    derivations thereof) that are exclusively owned and licensed by
+    Moodle Pty Ltd (Moodle) under the terms of its proprietary Moodle
+    Workplace License ("MWL") made available with Moodle's open software
+    package ("Moodle LMS") offering which itself is freely downloadable
+    at "download.moodle.org" and which is provided by Moodle under a
+    single GNU General Public License version 3.0, dated 29 June 2007
+    ("GPL"). MWL is strictly controlled by Moodle Pty Ltd and its Moodle
+    Certified Premium Partners. Wherever conflicting terms exist, the
+    terms of the MWL shall prevail.
+}}
+{{!
+    @template tool_catalogue/categoryselector/category
+
+    Template for showing nested category dropdown list.
+
+    Example context (json):
+    [
+        {
+            "name":"Default tenant",
+            "category_id":1,
+            "url": "full_url",
+            "haschildren":true,
+            "subcategories":[
+                {
+                    "name":"Business",
+                    "category_id":2,
+                    "url":"full_url",
+                    "haschildren":false,
+                    "subcategories": null
+                }
+            ]
+        }
+    ]
+}}
+<div class="dropdown-submenu position-static d-flex flex-row align-content-center justify-content-between align-items-center text-truncate">
+    <a class="dropdown-item p-lg-2 py-1 px-2 w-100 d-lg-block {{^haschildren}}d-flex flex-row align-content-center justify-content-between align-items-center{{/haschildren}} text-truncate nowrap remove-icon {{#haschildren}} dropdown-toggle has-submenu d-block pt-3{{/haschildren}}" data-item-type="category" href="{{url}}">
+        {{{name}}}
+    </a>
+    {{#haschildren}}
+        <span class="order-2">
+            {{#pix}} i/next, core {{/pix}}
+        </span>
+        <ul class="dropdown-menu">
+            <li>
+                <a class="tool_catalogue-dropdown-close py-2 px-2 d-lg-none d-sm-block text-reset text-primary text-decoration-none" href="#">
+                    {{#pix}} e/cancel, core {{/pix}}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item p-lg-2 tool_catalogue-back-button py-3 px-2 d-lg-none d-flex align-items-center" href="#">{{#pix}} e/right_to_left, core {{/pix}}
+                    {{#str}}back, core {{/str}}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item p-lg-2 all-items py-1 px-2 d-lg-none align-content-center justify-content-between align-items-center text-truncate pt-3" href="{{url}}">
+                    {{#str}} all, tool_catalogue {{/str}} {{{name}}}
+                </a>
+            </li>
+            {{#subcategories}}
+                {{^haschildren}}
+                    <li>
+                    <a class="dropdown-item p-lg-2 py-1 px-2 d-flex flex-row align-content-center justify-content-between align-items-center w-100 nowrap remove-icon" href="{{url}}" data-item-type="category">{{{name}}}</a>
+                    </li>
+                {{/haschildren}}
+                {{#haschildren}}
+                    <li>
+                    {{> tool_catalogue/categoryselector/category }}
+                    </li>
+                {{/haschildren}}
+            {{/subcategories}}
+        </ul>
+    {{/haschildren}}
+</div>
