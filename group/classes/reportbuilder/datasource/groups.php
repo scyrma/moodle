@@ -54,6 +54,11 @@ class groups extends datasource {
         $paramsiteid = database::generate_param_name();
         $this->add_base_condition_sql("{$coursealias}.id != :{$paramsiteid}", [$paramsiteid => SITEID]);
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::filter_by_tenant_category() */
+        [$sql, $params] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'filter_by_tenant_category', ["$coursealias.category"], ["1=1", []]);
+        $this->add_base_condition_sql($sql, $params);
+
         // Re-use the context table alias/join from the course entity in subsequent entities.
         $contextalias = $courseentity->get_table_alias('context');
         $this->add_join($courseentity->get_context_join());

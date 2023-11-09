@@ -54,6 +54,11 @@ class categories extends datasource {
         $this->set_main_table('course_categories', $categoryalias);
         $this->add_entity($categoryentity);
 
+        /** @uses \tool_tenant\reportbuilder\local\callbacks::filter_by_tenant_category() */
+        [$sql, $params] = component_class_callback(\tool_tenant\reportbuilder\local\callbacks::class,
+            'filter_by_tenant_category', ["{$categoryalias}.id"], ["1=1", []]);
+        $this->add_base_condition_sql($sql, $params);
+
         // Join course entity.
         $courseentity = new course();
         $coursealias = $courseentity->get_table_alias('course');
@@ -72,9 +77,14 @@ class categories extends datasource {
         $roleentity = (new role())
             ->set_table_alias('context', $contextalias);
         $role = $roleentity->get_table_alias('role');
+
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $usertenantsql = component_class_callback(\tool_tenant\tenancy::class, 'get_users_subquery',
+            [false, true, 'ras.userid'], '');
+
         $this->add_entity($roleentity
             ->add_join($categoryentity->get_context_join())
-            ->add_join("LEFT JOIN {role_assignments} ras ON ras.contextid = {$contextalias}.id")
+            ->add_join("LEFT JOIN {role_assignments} ras ON {$usertenantsql} ras.contextid = {$contextalias}.id")
             ->add_join("LEFT JOIN {role} {$role} ON {$role}.id = ras.roleid"));
 
         // Join user entity.

@@ -118,6 +118,11 @@ class badges extends system_report {
         // TODO: Move this column to the entity when MDL-76392 is integrated.
         $tempbadgealias = database::generate_alias();
         $badgeentityalias = $badgeentity->get_table_alias('badge');
+
+        // Add tenant condition.
+        /** @uses \tool_tenant\tenancy::get_users_subquery() */
+        $tenantcondition = component_class_callback('tool_tenant\\tenancy', 'get_users_subquery', [true, true, 'u.id'], '');
+
         $this->add_column((new column(
             'issued',
             new lang_string('awards', 'core_badges'),
@@ -129,7 +134,7 @@ class badges extends system_report {
                             FROM {badge_issued} {$tempbadgealias}
                       INNER JOIN {user} u
                               ON {$tempbadgealias}.userid = u.id
-                           WHERE {$tempbadgealias}.badgeid = {$badgeentityalias}.id AND u.deleted = 0)", 'issued')
+                           WHERE {$tenantcondition} {$tempbadgealias}.badgeid = {$badgeentityalias}.id AND u.deleted = 0)", 'issued')
             ->set_is_sortable(true));
 
         // Remove title from image column.
