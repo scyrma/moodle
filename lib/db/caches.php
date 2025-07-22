@@ -655,4 +655,12 @@ $definitions = array(
         'simpledata' => true,
         'ttl' => 1800,
     ],
+
+    // Grader report single view "perpage" cache
+    'gradereport_singleview' => array(
+        'mode' => cache_store::MODE_SESSION,
+        'invalidationevents' => array(
+            'changesingradecategories',
+        )
+    ),
 );
