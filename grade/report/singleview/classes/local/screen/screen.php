@@ -127,7 +127,7 @@ abstract class screen {
 
         $this->page = optional_param('page', 0, PARAM_INT);
 
-        $cache = \cache::make_from_params(\cache_store::MODE_SESSION, 'gradereport_singleview', 'perpage');
+        $cache = \cache::make('core', 'gradereport_singleview');
         $perpage = optional_param('perpage', null, PARAM_INT);
         if (!in_array($perpage, self::$validperpage) && ($perpage !== 0)) {
             // Get from cache.
